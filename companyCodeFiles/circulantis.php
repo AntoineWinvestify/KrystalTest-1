@@ -25,21 +25,27 @@
  * @date 2016-11-10
  * @package
 
+function calculateLoanCost()										[not OK, not tested]
+function collectCompanyMarketplaceData()								[OK, tested]
+function companyUserLogin()										[OK, tested]
+function companyUserLogout										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+parallelization                                                                                         [OK, tested]
 
-  2016-11-10	  version 2016_0.1
-  Basic version
-  function calculateLoanCost()											[not OK, not tested]
-  function collectCompanyMarketplaceData()								[not OK, not tested]
-  function companyUserLogin()												[not OK, not tested]
-  function companyUserLogout												[not OK, not tested]
-  function collectUserInvestmentData()									[not OK, not tested]
+2016-11-10	  version 2016_0.1
+Basic version
 
- 2017/05/11
- OUTSTANDING PRINCIPAL
- transaction id
- period of investiment
+2017/05/11
+ * OUTSTANDING PRINCIPAL
+ * transaction id
+ * period of investiment
 
-  Pending:
+2017-05-16          version 2017_0.2
+ * Added parallelization
+ * Dom verification
+
+Pending:
+
 
 
 
