@@ -50,6 +50,10 @@
  */
 
 class arboribus extends p2pCompany {
+    
+    private $credentials = array();
+    private $numberOfTries = 1;
+    private $strListInvestments;
 
     function __construct() {
         parent::__construct();
