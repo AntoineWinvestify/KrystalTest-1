@@ -26,29 +26,32 @@
  * @package
 
 
-  2016-08-04	  version 2016_0.1
-  Basic version
-  function calculateLoanCost()											[OK, tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()												[OK, tested]
-  function companyUserLogout												[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
+function calculateLoanCost()										[OK, tested]
+function collectCompanyMarketplaceData()								[OK, tested]
+function companyUserLogin()										[OK, tested]
+function companyUserLogout										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+parallelization on collectUserInvestmentData                                                                                        [OK, tested]
 
-  2016-11-30	  version 2016_0.2
-  Zank introduced csrf code for improved security
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()												[OK, tested]
+2016-08-04	  version 2016_0.1
+Basic version
 
-
-  function companyUserLogout										[OK, STILL TO CHECK]
-  function collectUserInvestmentData()									[OK, STILL TO CHECK]
+2016-11-30	  version 2016_0.2
+* Zank introduced csrf code for improved security
 
 
+2017-04-25
+Estado amortizado
 
-  2017/4/25
-  Estado amortizado
-  2017/4/26
-  Total invertido correcto, fecha
+2017-04-26
+Total invertido correcto, fecha
+
+2017-05-16      version 2017_0.3
+
+* Added parallelization to collectUserInvestmentData
+* Added dom verification to collectUserInvestmentData
+
+
  * 
   Pending:
   Fecha en duda
