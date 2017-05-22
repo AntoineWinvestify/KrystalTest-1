@@ -50,6 +50,11 @@ class MarketPlacesController extends AppController {
     var $helpers = array('Html', 'Form', 'Js');
     var $uses = array('Marketplace', 'Company', 'Urlsequence');
     var $components = array('Security', 'Session');
+    
+    private $queueCurls;
+    private $newComp = array();
+    private $tempArray = array();
+    private $companyId = array();
 
     function beforeFilter() {
 
