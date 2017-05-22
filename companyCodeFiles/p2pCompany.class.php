@@ -73,6 +73,33 @@ class p2pCompany{
 	const TRACE		= 6;	// Not implemented yet)
 	const CONNECT           = 7;	// Not implemented yet)
 	const HEAD 		= 8;	// Not implemented yet)
+        
+        //Variable to use in this method
+        
+        // MarketplacesController
+        protected $marketplaces;
+        //Data for the queue
+        protected $idForQueue;
+        protected $idForSwitch = 0;
+        //User data
+        protected $user = "";
+        protected $password = "";
+        //Data to take investor data
+        protected $tempArray;
+        protected $data1;
+        protected $tempUrl;
+        protected $numberOfInvestments;
+        protected $accountPosition = 0;
+        //Variable for debugging
+        protected $hasElements = true;
+        protected $tracingDir;
+        protected $logDir;
+        protected $testConfig;
+        protected $config;
+        protected $errorInfo;
+        //Backup variables
+        protected $urlSequenceBackup = array();
+        protected $tries = 0;
 	
 /**
 *
@@ -263,8 +290,9 @@ function doCompanyLogin(array $loginCredentials) {
 		$this->doTracing($this->config['traceID'], "LOGIN" , $str);
 	}
 	return $str;
-}	
+}
 
+    
 
 
 
@@ -475,6 +503,223 @@ function getCompanyWebpage($url) {
 	return($str);
 }
 
+
+/** used by both the investors and the admin user for obtaining marketplace data
+    *
+    * 	Enter the Webpage of the user's portal
+    * 	@param string 		$url	The url is read from the urlSequence array, i.e. contents of first element
+    * 	@return	string		$str	html string
+    *
+    */
+
+    function doCompanyLoginMultiCurl(array $loginCredentials) {
+
+        $url = array_shift($this->urlSequence);
+        echo $url;
+        $this->errorInfo = $url;
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "<strong>" . "TestSystem: file = $currentScreen<br>" . "</strong>";
+                return $str;
+            }
+        }
+
+        //traverse array and prepare data for posting (key1=value1)
+        foreach ($loginCredentials as $key => $value) {
+            $postItems[] = $key . '=' . $value;
+        }
+
+        //create the final string to be posted using implode()
+        $postString = implode('&', $postItems);
+
+        $request = new \cURL\Request();
+
+        // check if extra headers have to be added to the http message  
+        if (!empty($this->headers)) {
+            $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, $this->headers);
+            unset($this->headers);   // reset fields
+        }
+
+        $request->getOptions()
+                ->set(CURLOPT_URL, $url)
+                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
+                ->set(CURLOPT_FOLLOWLOCATION, true)
+                ->set(CURLOPT_POSTFIELDS, $postString)
+                ->set(CURLOPT_FAILONERROR, true)
+                ->set(CURLOPT_RETURNTRANSFER, true)
+                ->set(CURLOPT_CONNECTTIMEOUT, 30)
+                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_SSL_VERIFYHOST, false)
+                ->set(CURLOPT_SSL_VERIFYPEER, false)
+                ->set(CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt')
+                ->set(CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');
+
+        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
+        // Add the url to the queue
+        $this->marketplaces->addRequetsToQueueCurls($request);
+    }
+
+    
+    /**
+    *
+    * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
+    * 	
+    */
+    function doCompanyLogoutMultiCurl(array $logoutCredentials = null) {
+        /*
+          //traverse array and prepare data for posting (key1=value1)
+          foreach ( $logoutData as $key => $value) {
+          $postItems[] = $key . '=' . $value;
+          }
+          //create the final string to be posted using implode()
+          $postString = implode ('&', $postItems);
+         */
+//  barzana@gmail.com 	939233Maco048 
+        $url = array_shift($this->urlSequence);
+        echo $url;
+        $this->errorInfo = $url;
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
+        }
+
+        $request = new \cURL\Request();
+
+        if (!empty($this->headers)) {
+            $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, $this->headers);
+            unset($this->headers);   // reset fields
+        }
+
+        if (!empty($logoutCredentials)) {
+            foreach ($logoutCredentials as $key => $value) {
+                $postItems[] = $key . '=' . $value;
+            }
+
+            //create the final string to be posted using implode()
+            $postString = implode('&', $postItems);
+
+            $request->getOptions()
+                    ->set(CURLOPT_POSTFIELDS, $postString);
+        }
+
+        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGOUT";
+
+        $request->getOptions()
+                ->set(CURLOPT_URL, $url)
+                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
+                ->set(CURLOPT_FOLLOWLOCATION, true)
+                ->set(CURLOPT_FAILONERROR, true)
+                ->set(CURLOPT_RETURNTRANSFER, true)
+                ->set(CURLOPT_CONNECTTIMEOUT, 30)
+                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_SSL_VERIFYHOST, false)
+                ->set(CURLOPT_SSL_VERIFYPEER, false)
+                ->set(CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt')
+                ->set(CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');
+
+        $this->marketplaces->addRequetsToQueueCurls($request);
+    }
+    
+    
+    
+    /**
+    *
+    * 	Load the received Webpage into a string.
+    * 	If an url is provided then that url is used instead of reading it from the urlSequence array
+    * 	@param string 		$url	The url the connect to
+    *
+    */
+    function getCompanyWebpageMultiCurl($url) {
+
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
+            echo $url;
+            $this->errorInfo = $url;
+        }
+
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                echo "currentScreen = $currentScreen";
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
+        }
+
+        $request = new \cURL\Request();
+        
+
+        if ($this->config['postMessage'] == true) {
+            $request->getOptions()
+                ->set(CURLOPT_POST, true);
+        //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
+        }
+
+        // check if extra headers have to be added to the http message  
+        if (!empty($this->headers)) {
+            echo "EXTRA HEADERS TO BE ADDED<br>";
+            $request->getOptions()
+                //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
+                ->set(CURLOPT_HTTPHEADER, $this->headers);
+            
+            unset($this->headers);   // reset fields
+        }
+        $request->_page = $this->idForQueue . ";". $this->idForSwitch . ";WEBPAGE";
+        $request->getOptions()
+                // Set the file URL to fetch through cURL
+                ->set(CURLOPT_URL, $url)
+                // Set a different user agent string (Googlebot)
+                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                // Follow redirects, if any
+                ->set(CURLOPT_FOLLOWLOCATION, true)
+                // Fail the cURL request if response code = 400 (like 404 errors) 
+                ->set(CURLOPT_FAILONERROR, true)
+                
+                ->set(CURLOPT_AUTOREFERER, true)
+                //->set(CURLOPT_VERBOSE, 1)
+                // Return the actual result of the curl result instead of success code
+                ->set(CURLOPT_RETURNTRANSFER, true)
+                // Wait for 10 seconds to connect, set 0 to wait indefinitely
+                ->set(CURLOPT_CONNECTTIMEOUT, 30)
+                // Execute the cURL request for a maximum of 50 seconds
+                ->set(CURLOPT_TIMEOUT, 100)
+                // Do not check the SSL certificates
+                ->set(CURLOPT_SSL_VERIFYHOST, false)
+                ->set(CURLOPT_SSL_VERIFYPEER, false)
+                ->set(CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt') // important
+                ->set(CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt'); // Important
+
+        //Add the request to the queue in the marketplaces controller
+        $this->marketplaces->addRequetsToQueueCurls($request);
+        
+        if ($this->config['appDebug'] == true) {
+            echo "VISITED COMPANY URL = $url <br>";
+        }
+    }
 
 
 
