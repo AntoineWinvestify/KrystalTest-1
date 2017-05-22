@@ -156,6 +156,268 @@ class circulantis extends p2pCompany {
         $this->print_r2($totalArray);
         return $totalArray;
     }
+    
+    /**
+     *
+     * 	Collects the investment data of the user
+     * 	@return array	Data of each investment of the user as an element of an array
+     * 	
+     */
+    function collectUserInvestmentData($str) {
+
+        //CHANGE URLSEQUENCES ON DB
+        switch ($this->idForSwitch) {
+            case 0:
+                echo __FILE__ . " " . __LINE__ . "<br>";
+                $this->idForSwitch++;
+                //We need to delete a urlsequence on DB for Circulantis to work
+                //$this->getCompanyWebpage();
+                //$resultMicirculantis = $this->companyUserLogin($user, $password);
+                //break;
+            case 1:
+                $credentials = array();
+                /**
+                 * Change user and password
+                 */
+                $credentials['user'] = "antoiba86@gmail.com";
+                $credentials['password'] = "lendwin1234";
+                $credentials['login'] = 1;
+                $credentials['tipo'] = "I";
+                $this->idForSwitch++;
+                $this->doCompanyLogin($credentials);
+                break;
+            case 2:
+                /*$dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;*/
+                $this->idForSwitch++;
+                $this->getCompanyWebpage();
+                break;
+            case 3:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false; 
+                $divs = $this->getElements($dom, 'div', 'id', 'sub-menu');	
+                if (empty($divs)) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                /*
+                 * MAKE COMPROBATION
+                if (empty($divs)) {
+                        return 0;
+                }
+                */
+                $lis = $this->getElements($divs[0], 'li');
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $resultMicirculantis = false;
+                if ($lis[0]->nodeValue === "Mis datos") {			// JSON response with wallet value
+                        $resultMicirculantis = true;		
+                }
+
+                if (!$resultMicirculantis) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    exit;
+                }
+
+                // Load page  panel-inversor
+                $this->idForSwitch++;
+                $this->getCompanyWebpage();
+                //echo "INVERSOR_PANEL" . $str;	
+                break;
+            case 4:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                //echo $str . __LINE__;
+                $dom->preserveWhiteSpace = false;
+
+                //error_reporting(2);
+                // Get information about each individual transaction
+                $numberOfInvestments = 0;
+
+                $rows = $this->getElements($dom, "div", "class", "row");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                // get all current investments
+                echo __FILE__ . " " . __LINE__ . "<br>";
+
+                $trs = $this->getElements($rows[3], "tr");   // operaciones vigentes
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($trs as $keyTemp => $tr) {
+                    if ($keyTemp == 0) {
+                        continue;       // don't treat the table header	
+                    }
+                    $key = $keyTemp - 1;
+                    //echo __FILE__ . " " . __LINE__ . "<br>";
+                    $numberOfInvestments++;
+                    $tds = $this->getElements($tr, "td");
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    //echo __FILE__ . " " . __LINE__ . "<br>";
+
+//Duration. The unit (=dÃ­as) is hardcoded
+                    $data1[$key]['loanId'] = trim($tds[1]->nodeValue); //trim($tds[2]->nodeValue);
+                    $data1[$key]['date'] = trim($tds[6]->nodeValue);
+
+                    $now = time();
+                    $date = trim($tds[6]->nodeValue);
+                    $dateAux = explode("/", $date);
+                    $date = strtotime($dateAux[2] . "/" . $dateAux[1] . "/" . $dateAux[0]);
+                    $duration = $date - $now;
+                    //echo "<h1>" . $date . " " . $now . "</h1>";
+
+                    $data1[$key]['duration'] = floor($duration / (60 * 60 * 24)) + 1 . __(" dias"); //trim($tds[1]->nodeValue);
+                    $data1[$key]['invested'] = $this->getMonetaryValue($tds[4]->nodeValue);
+                    $data1[$key]['commission'] = 0;
+                    $data1[$key]['interest'] = $this->getPercentage($tds[5]->nodeValue);
+                    //echo __FILE__ . " " . __LINE__ . "<br>";
+// Get amortization table. first get base URL for amortization table
+//		$baseUrl = array_shift($this->urlSequence);
+//		$as = $tds[0]->getElementsByTagName('a');		 // only 1 will be found
+//		$dataId =  $as[0]->getAttribute("data-id");
+// Deal with the amortization table
+//		$strAmortizationTable = $this->getCompanyWebpage($baseUrl . "/" .$dataId);
+//		$domAmortizationTable = new DOMDocument;
+//	 	$domAmortizationTable->loadHTML($strAmortizationTable);	
+//		$domAmortizationTable->preserveWhiteSpace = false;		
+//		$amortizationData = $this->getElements($domAmortizationTable, "tr", "class", "detail");	// only 1 found
+// Convert into table
+                    $mainIndex = -1;
+                    /*
+                      foreach ($amortizationData as $key1 => $trAmortizationTable ) {
+                      $mainIndex = $mainIndex + 1;
+                      $subIndex = -1;
+                      $tdsAmortizationTable  = $trAmortizationTable ->getElementsByTagName('td');
+                      foreach( $tdsAmortizationTable  as $tdAmortizationTable ) {
+                      $subIndex = $subIndex + 1;
+                      $amortizationTable[$mainIndex][$subIndex] = trim($tdAmortizationTable->nodeValue);
+                      }
+                      }
+
+                      $data1[$key]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable,
+                      date("Y-m-d"),
+                      "dd-mm-yyyy",
+                      1, 3);
+                      $data1[$key]['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable,
+                      date("Y-m-d"),
+                      "dd-mm-yyyy",
+                      1, 4);
+                     */
+// map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED			
+                    $data1[$key]['status'] = OK;
+                    $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + ($data1[$key]['invested'] /* - $data1[$key]['amortized'] */);
+                    $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] + $data1[$key]['profitGained'];
+                    $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
+                }
+
+
+                $trs = $this->getElements($rows[4], "tr");  // Operaciones con incidencias
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($trs as $key => $tr) {
+                    if ($key == 0) {
+                        continue;       // don't treat the table header	
+                    }
+
+                    echo __FILE__ . " " . __LINE__ . "<br>";
+                    $numberOfInvestments++;
+                    $tds = $this->getElements($tr, "td");
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+//Duration. The unit (=días) is hardcoded
+                    $data1[$key]['loanId'] = trim($tds[2]->nodeValue);
+                    $data1[$key]['date'] = trim($tds[6]->nodeValue);
+                    $data1[$key]['duration'] = trim($tds[1]->nodeValue);
+                    $data1[$key]['invested'] = $this->getMonetaryValue($tds[4]->nodeValue);
+                    $data1[$key]['commission'] = 0;
+                    $data1[$key]['interest'] = $this->getPercentage($tds[5]->nodeValue);
+
+// Get amortization table. first get base URL for amortization table
+//		$baseUrl = array_shift($this->urlSequence);
+//		$as = $tds[0]->getElementsByTagName('a');		 // only 1 will be found
+//		$dataId =  $as[0]->getAttribute("data-id");
+// Deal with the amortization table
+//		$strAmortizationTable = $this->getCompanyWebpage($baseUrl . "/" .$dataId);
+//		$domAmortizationTable = new DOMDocument;
+//	 	$domAmortizationTable->loadHTML($strAmortizationTable);	
+//		$domAmortizationTable->preserveWhiteSpace = false;		
+//		$amortizationData = $this->getElements($domAmortizationTable, "tr", "class", "detail");	// only 1 found
+// Convert into table
+                    $mainIndex = -1;
+                    /*
+                      foreach ($amortizationData as $key1 => $trAmortizationTable ) {
+                      $mainIndex = $mainIndex + 1;
+                      $subIndex = -1;
+                      $tdsAmortizationTable  = $trAmortizationTable ->getElementsByTagName('td');
+                      foreach( $tdsAmortizationTable  as $tdAmortizationTable ) {
+                      $subIndex = $subIndex + 1;
+                      $amortizationTable[$mainIndex][$subIndex] = trim($tdAmortizationTable->nodeValue);
+                      }
+                      }
+                      echo __FILE__ . " " . __LINE__ . "<br>";
+                      $data1[$key]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable,
+                      date("Y-m-d"),
+                      "dd-mm-yyyy",
+                      1, 3);
+                      $data1[$key]['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable,
+                      date("Y-m-d"),
+                      "dd-mm-yyyy",
+                      1, 4);
+                     */
+// map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED	
+                    $data1[$key]['status'] = PAYMENT_DELAYED;
+
+                    echo __FILE__ . " " . __LINE__ . "<br>";
+                    $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] + $data1[$key]['profitGained'];
+                    $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
+                    echo __FILE__ . " " . __LINE__ . "<br>";
+                }
+
+// Get global data, like "fondos disponible"
+                $tables = $this->getElements($rows[2], "table");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($tables as $key => $table) {         // get mean profit value divs[0]->nodeValue
+                }
+                $tds = $this->getElements($tables[2], "td");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $tempArray['global']['myWallet'] = $this->getMonetaryValue($tds[1]->nodeValue);
+
+                echo __FILE__ . " " . __LINE__ . "<br>";
+
+// Get global data, like profitability
+                $divs = $this->getElements($rows[6], "class", "total_fondos");
+                foreach ($divs as $key => $div) {         // get mean profit value divs[0]->nodeValue
+                    // get Rentabilidad
+                    echo "key = $key and " . $div->nodeValue . "<br>";
+                    echo __FILE__ . " " . __LINE__ . "<br>";
+                }
+                $tempArray['global']['profitibility'] = $this->getPercentage($div[0]->nodeValue);
+                $tempArray['global']['investments'] = $numberOfInvestments;
+                $tempArray['investments'] = $data1;
+                $this->print_r2($tempArray);
+                return $tempArray;
+        }
+    }
 
     /**
      *
@@ -163,7 +425,7 @@ class circulantis extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentData($user, $password) {
+    function collectUserInvestmentDataSequencial($user, $password) {
         echo __FILE__ . " " . __LINE__ . "<br>";
         $resultMicirculantis = $this->companyUserLogin($user, $password);
         echo __FILE__ . " " . __LINE__ . "<br>";
