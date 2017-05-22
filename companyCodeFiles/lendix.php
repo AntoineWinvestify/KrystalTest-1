@@ -198,6 +198,89 @@ function collectCompanyMarketplaceData() {
         $this->print_r2($totalArray);
         return $totalArray;
     }
+    
+    /**
+    *
+    * 	Collects the investment data of the user
+    * 	@return array	Data of each investment of the user as an element of an array
+    * 	also do logout
+    * 	
+    */
+    function collectUserInvestmentData($str) {
+        // user: inigo.iturburua@gmail.com
+        // password: Ap_94!56
+        // $this->config['appDebug'] = true;
+        switch ($this->idForSwitch) {
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpage();
+                break;
+            case 1:
+                $credentials = array();
+                $credentials['email'] = "manoloherrero@msn.com";
+                $credentials['password'] = "Mecano1980";
+                $credentials['user'] = null;
+                $this->idForSwitch++;
+                $this->doCompanyLogin($credentials);
+                break;
+            case 2:
+                $this->mainPortalPage = $str;
+                $result = json_decode($this->mainPortalPage, $assoc = true);
+        // check if user actually has entered the portal of the company
+                $resultLendix = false;
+                if (!empty($result['session']['user']['id'])) {
+                    $resultLendix = true;
+                }
+                if (!$resultLendix) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Lendix login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    exit;
+                }
+                $session = json_decode($this->mainPortalPage, $assoc = true);
+        //$this->print_r2($session);
+                $lendixSessionId = $session['session']['id'];
+                $lendixSessionToken = $session['session']['token'];
+                $userId = $session['session']['user']['id'];
+                $header1 = "sessionToken: $lendixSessionToken";
+                $header2 = "userId: $userId";
+        // construct extra headers for next http message
+                $this->defineHeaderParms(array($header1, $header2));
+                $this->idForSwitch++;
+                $this->getCompanyWebpage();  // https://api.lendix.com/transactions/summary?finsquare=true
+                break;
+            case 3:
+                $summaryData = json_decode($str, $assoc = true);
+                $this->print_r2($summaryData);
+                foreach ($summaryData['investments'] as $key => $item) {
+                    $this->data1[$key]['name'] = $item['project']['name'];
+                    $this->data1[$key]['loanId'] = $item['project']['name'];
+                    $this->data1[$key]['date'] = "00-00-0000";
+                    $this->data1[$key]['duration'] = $item['investment']['monthsLeft'] . " Meses";
+                    $this->data1[$key]['invested'] = (int) (preg_replace('/\D/', '', $item['investment']['total'])) * 100;
+                    $this->data1[$key]['commission'] = (int) (preg_replace('/\D/', '', $item['investment']['taxes'])) * 100;
+                    $this->data1[$key]['interest'] = $this->getPercentage($item['project']['rate']);
+                    $this->data1[$key]['amortized'] = $item['investment']['total'] - $item['investment']['remaining'];
+                    $this->data1[$key]['profitGained'] = $item['investment']['interests'] - $item['investment']['taxes'];
+
+                    $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] + $tis->data1[$key]['profitGained'];
+                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
+                    $this->tempArray['global']['activeInInvestments'] = ($this->tempArray['global']['activeInInvestments'] + $item['investment']['remaining'])*100;
+                    $this->tempArray['global']['totalInvestments'] = $this->tempArray['global']['totalInvestments'] + $this->data1[$key]['invested'];
+
+                }         
+                $this->tempArray['global']['profitibility'] = $this->getPercentage($summaryData['averageRate']);
+                $this->tempArray['global']['investments'] = count($summaryData['investments']);
+                $this->tempArray['investments'] = $this->data1;
+                $this->tempArray['global']['myWallet'] = $session['session']['user']['credit'];
+                $this->print_r2($this->tempArray);
+                return $this->tempArray;
+        }
+    }
 
     /**
      *
@@ -206,7 +289,7 @@ function collectCompanyMarketplaceData() {
      * 	also do logout
      * 	
      */
-    function collectUserInvestmentData($user, $password) {
+    function collectUserInvestmentDataSequencial($user, $password) {
 // user: inigo.iturburua@gmail.com
 // password: Ap_94!56
 //	$this->config['appDebug'] = true;
