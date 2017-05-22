@@ -31,7 +31,7 @@ function collectCompanyMarketplaceData()								[OK, tested]
 function companyUserLogin()										[OK, tested]
 function companyUserLogout										[OK, tested]
 function collectUserInvestmentData()									[OK, tested]
-parallelization on collectUserInvestmentData                                                                                        [OK, tested]
+parallelization on collectUserInvestmentData                                                            [OK, tested]
 
 2016-08-04	  version 2016_0.1
 Basic version
@@ -60,6 +60,10 @@ Total invertido correcto, fecha
  */
 
 class zank extends p2pCompany {
+    
+    private $credentials = array();
+    private $userId;
+    private $resultMiZank = false;
 
     function __construct() {
         parent::__construct();
