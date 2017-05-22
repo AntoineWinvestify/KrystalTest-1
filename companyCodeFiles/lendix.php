@@ -26,22 +26,28 @@
  * @package
   2017-04-12	  version 2017_0.3
   Updated according to new structure of web of Lendix
+  
+function calculateLoanCost()										[Not OK, not tested]
+function collectCompanyMarketplaceData(): write the same value in the fields       			[OK, tested]
+ * $tempArray['marketplace_purpose'] and $tempArray['marketplace_name']
+function companyUserLogin()										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+function companyUserLogout()                                                                            [OK, tested]
+parallelization                                                                                         [OK, tested]
 
-  function calculateLoanCost()									[Not OK, not tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()									[OK, tested]
-  function collectUserInvestmentData()								[Not OK]
-  function companyUserLogout()									[Not OK, not tested]
-
-
-  function collectUserInvestmentData(): write the same value in the fields                        [OK, tested]
-  $tempArray['marketplace_purpose'] and $tempArray['marketplace_name']
-
-  2017-04-24
-  collectUserInvestmentData fixed partial
+2016-11-06	  version 2016_0.2
+Updated according to new structure of web of Lendix
  
- 2017-04-24
- collectUserInvestmentData fixed total
+2017-04-24
+* collectUserInvestmentData fixed partial
+ 
+2017-04-24
+* collectUserInvestmentData fixed total
+ 
+2017-05-16      version 2017_0.4
+ * Added parallelization
+ * Added dom verification
+ 
   Pending
   Date
  * 
