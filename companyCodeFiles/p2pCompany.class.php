@@ -152,6 +152,9 @@ function defineConfigParms($configurationParameters) {
 	$this->config['appDebug'] = false;
 }
 
+public function getConfig() {
+    return $this->config;
+}
 
 
 
@@ -192,6 +195,9 @@ function defineTestParms($testParameters) {
 	$this->testConfig['active'] = true;
 }
 
+public function getTestConfig() {
+    return $this->testConfig;
+}
 
 
 
@@ -582,7 +588,7 @@ function getCompanyWebpage($url) {
           //create the final string to be posted using implode()
           $postString = implode ('&', $postItems);
          */
-//  barzana@gmail.com 	939233Maco048 
+        //  barzana@gmail.com 	939233Maco048 
         $url = array_shift($this->urlSequence);
         echo $url;
         $this->errorInfo = $url;
@@ -849,6 +855,19 @@ public function getElements($dom, $tag, $attribute, $value) {
 	return $list;
 }
 
+/**
+ * Verify if a node has elements or it is empty
+ * @param node $elements They are the nodes to verify if contains a element
+ * @param type $limit If we need to verify that a node has certain number of nodes
+ */
+public function verifyNodeHasElements($elements, $limit = null) {
+    if ($elements->length == 0) {
+        $this->hasElements = false;
+    }
+    else if (!empty($limit) && $elements->length < $limit) {
+        $this->hasElements = false;
+    }
+}
 
 
 
