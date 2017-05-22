@@ -1,0 +1,164 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-05-01 17:03+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: Plugin/DocumentManager/Controller/DocumentsController.php:32
+msgid "Le nom d'un dossier ne peut pas commencer par un point."
+msgstr ""
+
+#: Plugin/DocumentManager/Controller/DocumentsController.php:86
+msgid "Le fichier n'a pu être supprimé."
+msgstr ""
+
+#: Plugin/DocumentManager/Controller/DocumentsController.php:88
+msgid "Ce fichier ne vous appartient pas."
+msgstr ""
+
+#: Plugin/DocumentManager/Controller/DocumentsController.php:104
+msgid "Le dossier n'a pu être supprimé."
+msgstr ""
+
+#: Plugin/DocumentManager/Controller/DocumentsController.php:106
+msgid "Ce dossier contient des fichiers qui ne vous appartiennent pas."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:30
+msgid "Fichier non trouvé."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:92;157
+#: Plugin/DocumentManager/Model/Behavior/DocumentedBehavior.php:109
+msgid "Un fichier portant ce nom existe déjà."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:104
+#: Plugin/DocumentManager/Model/Behavior/DocumentedBehavior.php:117
+msgid "Le fichier n'a pu être sauvegardé."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:118
+msgid "Le nom d'un fichier ne peut pas commencer par un point."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:126
+msgid "Les fichiers de plus de %d Mb ne peuvent être mis en ligne."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:128
+msgid "Le fichier n'a put être mis en ligne. Veuillez réessayer."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:148
+msgid "Ce fichier n'existe plus."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:172
+msgid "Le fichier n'a pu être renommé."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:232
+msgid "Veuillez fournir un nom de dossier."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:236
+msgid "Ce dossier existe déjà."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Document.php:238
+msgid "Le dossier n'a pu être créé. Veuillez vérifer le nom ou les permissions d'écriture du répertoire racine."
+msgstr ""
+
+#: Plugin/DocumentManager/Model/Behavior/DocumentedBehavior.php:145
+msgid "Le document n'a pas pu être créé."
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:7
+msgid "Gestion des documents"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:11
+msgid "Dossier: "
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:26
+msgid "Remonter dans l'arborescence"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:52
+msgid "Créer un nouveau dossier"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:55
+msgid "Nom du dossier"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:56
+msgid "Chosissez un nom de dossier puis appuyez sur le bouton créer."
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:58
+msgid "Créer"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:73;75
+msgid "Ajouter un fichier"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:81
+msgid "Description du fichier"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Documents/index.ctp:82
+msgid "Mettre en ligne"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/file.ctp:5
+msgid "Propriétaire %s %s"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/file.ctp:11
+msgid "Détails"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/file.ctp:13
+msgid "Copier l'URL"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/file.ctp:19
+msgid "Renommer"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/file.ctp:27
+msgid "Nouveau nom de fichier :"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/file.ctp:31
+#: Plugin/DocumentManager/View/Elements/folder.ctp:20
+msgid "Supprimer"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/file.ctp:39
+#: Plugin/DocumentManager/View/Elements/folder.ctp:28
+msgid "Etes-vous certain de vouloir supprimer cette entrée ?"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/file.ctp:49;51
+msgid "Image de profil"
+msgstr ""
+
+#: Plugin/DocumentManager/View/Elements/folder.ctp:12
+msgid "Ouvrir"
+msgstr ""
+

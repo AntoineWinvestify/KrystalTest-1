@@ -1,0 +1,3405 @@
+terminology
+
+(after defaults)
+	
+	"(con posibles retrasos)"
+(before defaults)
+	
+	"(sin posibles retrasos)"
+(click here)
+	
+	"(haga clic aquí)"
+(create a new business)
+	
+	"(crear una nueva empresa)"
+(less than 3 months)
+	
+	"(menos de 3 meses)"
+(linked to an existing business)
+	
+	"(ligada a una empresa existente)"
+(score : {{score}} points)
+	
+	"(clasificación: {{score}} puntos)"
+//en.lendix.com
+	
+	"//es.lendix.com"
+//en.lendix.com/question/how-is-lendix-paid/
+	
+	"//es.lendix.com/question/de-donde-obtiene-los-ingresos-lendix/"
+//en.lendix.com/question/how-is-managed-the-split-of-loans-between-the-different-types-of-investors/
+	
+	"//es.lendix.com/question/como-se-gestiona-la-distribucion-de-los-creditos-entre-los-distintos-tipos-de-inversores/"
+//en.lendix.com/question/rate-return-calculated
+	
+	"https://help.lendix.com/tutoriales-en-espanol/administrar-mis-reembolsos/calculo-de-la-tasa-de-rentabilidad"
+//en.lendix.com/question/what-does-being-eligible-mean/
+	
+	"//es.lendix.com/question...significa-ser-elegible/"
+//en.lendix.com/question/what-taxes-are-there-on-interests-received
+	
+	"https://help.lendix.com/...ntes-fiscales-en-espana"
+//en.lendix.com/questions/taxation/
+	
+	"https://help.lendix.com/...ntes-fiscales-en-espana"
+//en.lendix.com/risks/
+	
+	"//es.lendix.com/riesgos/"
+//help.lendix.com/tutoriels-en-francais/preter-a-un-projet/la-garantie-du-financement-du-projet
+	
+	"//help.lendix.com/tutori...os-han-sido-financiados"
+//lendix.com/pme-emprunter-sur-lendix-en-4-etapes/
+	
+	"//lendix.com/pme-emprunter-sur-lendix-en-4-etapes/"
+3 characters at least
+	
+	"un mínimo de 3 caracteres"
+94 rue de la Victoire, 75009, Paris
+	
+	"Calle Bárbara de Braganza 2, 3ºB, 28004 Madrid"
+<a href='//en.lendix.com/borrow/' target='_blank'>Borrow</a>
+	
+	"<a href='//es.lendix.com...>Solicitar préstamo</a>"
+<a href='//en.lendix.com/gtc-lendix/' target='_blank'>Terms and Conditions</a>
+	
+	"<a href='//es.lendix.com...minos y Condiciones</a>"
+<a href='//en.lendix.com/learn-more/about/' target='_blank'>About</a>
+	
+	"<a href='//es.lendix.com...='_blank'>Acerca de</a>"
+<a href='//en.lendix.com/learn-more/faq/' target='_blank'>FAQ</a>
+	
+	"<a href='//es.lendix.com...reguntas frecuentes</a>"
+<a href='//en.lendix.com/lend/' target='_blank'>Lend</a>
+	
+	"<a href='//es.lendix.com...et='_blank'>Prestar</a>"
+<a>Contact us here</a>
+	
+	"<a>Póngase en contacto con nosotros aquí</a>"
+<b>100% of the funding</b> guaranteed
+	
+	"100% de los proyectos <b>han sido financiados</b>"
+<b>A user action is required</b> in order to continue with your loan application
+	
+	"<b>Una acción es requeri...licitud de financiación"
+<b>Some required documents are missing</b> in order to continue with your loan application.
+	
+	"<b>Hacen falta los docum...icitud de financiación."
+<b>{{amount}}</b> in <b>{{duration}} months</b>
+	
+	"<b>{{amount}}</b> en <b>{{duration}} meses </b>"
+<b>{{filename}}</b> is ready to be sent
+	
+	"<b>{{filename}}</b> está listo para ser enviado"
+A brief summary of your project (max. 140 characters)
+	
+	"Un breve resumen de su p...o (máx. 140 caracteres)"
+A copy of your loan contract will be located in your transactions list.
+	
+	"Podrá encontrar una copi...lista de transacciones."
+A document with your IBAN/BIC details
+	
+	"Justificante de la cuent...a detallando IBAN / BIC"
+A firm answer within 48 hours
+	
+	"Respuesta en firme en 48h"
+A fixed advance of 24% for income tax as well as 15.5% for social contribution (CGS, CRDS…) is withheld at the time of interests repayment. Amounts credited to your Lendix account are net of these.
+	
+	"Un depósito fijo del 19%...tas de estos conceptos."
+A recovery link has been sent to your email address ({{email}}).
+	
+	"Un enlace de activación ...lectrónico ({{email}})."
+A verification email has been sent to {{email}}.
+	
+	"Un mensaje de verificaci...do enviado a {{email}}."
+Accept project
+	
+	"Aceptar el proyecto"
+Accept the decision
+	
+	"Aceptar la decisión"
+Accepted
+	
+	"Aceptada"
+Accepted formats
+	
+	"Formatos aceptados"
+Accepted requests
+	
+	"Solicitudes aceptadas"
+Access rights
+	
+	"Permisos de acceso"
+Account security
+	
+	"Seguridad de la Cuenta"
+Account type
+	
+	"Clase de Cuenta"
+Account verification
+	
+	"Verificar mi Cuenta"
+Activate your account
+	
+	"Active su Cuenta"
+Activated
+	
+	"Activado"
+Activated account
+	
+	"Cuenta activada"
+Activity
+	
+	"Actividad"
+Ad blocker detected
+	
+	"Ad blocker detectado"
+Add
+	
+	"Añadir"
+Add a <b>paragraph</b>
+	
+	"Añadir un <b>párrafo</b>"
+Add a <b>table</b>
+	
+	"Insertar una <b>tabla</b>"
+Add a <b>title</b>
+	
+	"Añadir un <b>título</b>"
+Add a <b>video</b>
+	
+	"Añadir un <b>video</b>"
+Add a business
+	
+	"Agregar una empresa"
+Add a company
+	
+	"Añadir una nueva empresa"
+Add a new document
+	
+	"Añadir un documento"
+Add a new {{type}}
+	
+	"Insertar nueva {{type}}"
+Add an <b>image</b>
+	
+	"Añadir una <b>imagen</b>"
+Add funds
+	
+	"Abonar fondos"
+Add funds to your account
+	
+	"Abonar fondos a su Cuenta"
+Additional details
+	
+	"Detalles adicionales"
+Additional documents
+	
+	"Documentación adicional"
+Address
+	
+	"Dirección"
+Adjust the loan agreement by adding special clauses and conditions.
+	
+	"Ajuste el contrato de pr...condiciones especiales."
+Administration
+	
+	"Administración"
+Administrator
+	
+	"Administrador"
+Affiliate users
+	
+	"Usuarios afiliados"
+Affiliates
+	
+	"Afiliados"
+After acceptance, you will be able to download and save your contract. It will be located in your transactions list.
+	
+	"Después de aceptar podrá...es de su Cuenta Lendix."
+After collecting {{tax}} of social taxes on {{interest}} of interests.
+	
+	"Descontados {{tax}} de i...est}} de los intereses."
+Agree and lend
+	
+	"Aceptar y prestar"
+Agriculture
+	
+	"Agricultura"
+All applications
+	
+	"Todas las peticiones"
+All businesses
+	
+	"Todos los negocios"
+All projects
+	
+	"Todos los proyectos"
+All requests
+	
+	"Todas las solicitudes"
+All users
+	
+	"Todos los usuarios"
+All your customers
+	
+	"Todos sus clientes"
+Among these financial instruments, you've already made transactions on…
+	
+	"Entre estos instrumentos...hecho transacciones en…"
+Amount
+	
+	"Cantidad"
+Amount in euros
+	
+	"Importe en euros"
+Amount to be funded
+	
+	"Cantidad solicitada"
+Amount to transfer
+	
+	"Importe a transferir"
+An error occurred
+	
+	"Ha ocurrido un error"
+An error occurred and your transaction has been cancelled.
+	
+	"Ha sucedido un error y s...ción ha sido cancelada."
+An error occurred while processing your loan.
+	
+	"Ha ocurrido un error al procesar su solicitud."
+An unexpected error occured during the file transfer
+	
+	"Se ha producido un error...ansferencia de archivos"
+Analyst
+	
+	"Analista"
+Applicant
+	
+	"Solicitante"
+Application by {{user}}
+	
+	"Peticiones de {{user}}"
+April
+	
+	"abril"
+Are you sure you want to ask the user for a new password?
+	
+	"¿Está seguro de que dese...tablecer la contraseña?"
+Are you sure you want to cancel your loan offer?
+	
+	"¿Está seguro de que dese...sta oferta de préstamo?"
+Are you sure you want to close this account?
+	
+	"¿Está seguro de que quiere cerrar esta cuenta?"
+Are you sure you want to delete this block?
+	
+	"¿Está seguro de que quiere borrar este bloque?"
+Are you sure you want to delete {{name}}?
+	
+	"¿Está seguro de que quie...ar el archivo {{name}}?"
+Ask a new upload
+	
+	"Solicitar una nueva carga"
+Ask reset password
+	
+	"Solicitar una nueva contraseña"
+Assign project to myself
+	
+	"Asignarme el proyecto"
+At least one closed set of account and a positive operating result.
+	
+	"Por lo menos un año fisc...ado operativo positivo."
+August
+	
+	"agosto"
+Average
+	
+	"Promedio"
+BIC
+	
+	"BIC"
+BIC Lendix
+	
+	"BIC de Lendix"
+Back
+	
+	"Regresar"
+Balanced (+ 1 point)
+	
+	"Equilibradas (+ 1 punto)"
+Bank
+	
+	"Banco"
+Bank account details
+	
+	"Información de la cuenta bancaria"
+Bank account identification
+	
+	"Identificación de la cuenta bancaria"
+Bank address
+	
+	"Dirección bancaria"
+Bank name
+	
+	"Nombre del banco"
+Bank transfer
+	
+	"Transferencia bancaria"
+Bank verifications
+	
+	"Verificaciones bancarias"
+Banking information
+	
+	"Información bancaria"
+Become a sponsor
+	
+	"Conviértase en patrocinador"
+Before you can fully use your account, we need to check your identity.
+	
+	"Para prestar más de 240€...verificar su identidad."
+Belgium
+	
+	"Bélgica"
+Beneficiary
+	
+	"Beneficiario"
+Between 3 and 84 months
+	
+	"Entre 3 y 84 meses"
+Birth name
+	
+	"Nombre"
+Birth place
+	
+	"Lugar de nacimiento"
+Bonus amount
+	
+	"Cantidad de bonificación"
+Bonus amount for the affiliate
+	
+	"Bonificación para el afiliado"
+Bonus amount for the referrer
+	
+	"Bonificación para el patrocinador"
+Borrow money from the community
+	
+	"Recibir dinero prestado de la comunidad"
+Borrow reason
+	
+	"Motivo para solicitar el préstamo"
+Borrow type
+	
+	"Clase de préstamo"
+Borrower
+	
+	"Empresa"
+Borrower's details
+	
+	"Detalles de la empresa"
+Borrower's name
+	
+	"Nombre de la empresa"
+Borrowers
+	
+	"Empresas clientes de Lendix"
+Briefly explain to what will be used the money you wish to borrow.
+	
+	"Explique brevemente en q...nero que desea recibir."
+Building & public Works
+	
+	"Construcción y obras públicas"
+Business
+	
+	"Empresa"
+Business data
+	
+	"Datos de la empresa"
+Business description
+	
+	"Descripción de la empresa"
+Business identity
+	
+	"Identidad de la empresa"
+Business name
+	
+	"Nombre de la empresa"
+Business presentation
+	
+	"Presentación de la empresa"
+Business selection
+	
+	"Selección de la empresa"
+Business services
+	
+	"Servicios empresariales"
+Business type
+	
+	"Clase de negocio"
+Businesses
+	
+	"Empresas"
+By closing this modal window, you will be logged out.
+	
+	"Al cerrar esta ventana, se finalizará su sesión."
+CADS
+	
+	"CADS"
+CEO
+	
+	"Director general"
+Can lend a limited amount
+	
+	"Puede prestar un importe limitado"
+Can't find your address?
+	
+	"¿No encuentra su dirección?"
+Canada
+	
+	"Canadá"
+Cancel your loan offer
+	
+	"Cancelar su oferta de préstamo"
+Capital
+	
+	"Capital"
+Capital investment (+ 1 point)
+	
+	"Inversión de capital (+ 1 punto)"
+Capital repayment
+	
+	"Pagos de capital"
+Chairman
+	
+	"Presidente"
+Changing your password logs you out of your Lendix account on all your devices: you will have to log in again.
+	
+	"Cambiar la contraseña ci...rá conectarse de nuevo."
+Check identity
+	
+	"Verifique su identidad"
+Check your emails
+	
+	"Revise sus correos"
+Chief Executive
+	
+	"Director Ejecutivo"
+Choose a new password
+	
+	"Elija una Contraseña"
+Claim
+	
+	"Reclamar"
+Click here or drag & drop your {{type}}
+	
+	"Haga clic aquí o arrastre y suelte su {{type}}"
+Click here to complete it
+	
+	"Haga clic aquí para completar"
+Click here to view for all projects
+	
+	"Haga clic aquí para ver todos los proyectos"
+Clients
+	
+	"Clientes"
+Close
+	
+	"Cerrar"
+Close account
+	
+	"Cerrar la cuenta"
+Close out fee
+	
+	"Comisión de cierre"
+Close the account
+	
+	"Cerrar la cuenta"
+Closed
+	
+	"Cerrado"
+Closed by an administrator
+	
+	"Cerrado por un administrador"
+Code
+	
+	"Código"
+Collected payments
+	
+	"Importes recaudados"
+Comment
+	
+	"Comentar"
+Comment about your decision
+	
+	"Comentar sobre su decisión"
+Commerce
+	
+	"Comercio"
+Communication
+	
+	"Comunicación"
+Company name
+	
+	"Nombre de la empresa"
+Company's history
+	
+	"Historial de la compañía"
+Complete the quiz
+	
+	"Completar el cuestionario"
+Complete your account
+	
+	"Completar su cuenta"
+Completed
+	
+	"Completado"
+Completed account
+	
+	"Cuenta verificada"
+Conditions
+	
+	"Condiciones"
+Confirm identity
+	
+	"Confirme su identidad"
+Confirm your new password
+	
+	"Confirmar su nueva contraseña"
+Confirm your registration
+	
+	"Confirme su registro"
+Confirmation
+	
+	"Confirmación"
+Confirmed by the bank partner
+	
+	"Confirmado por el banco asociado"
+Congratulations! You are qualified to open a Lendix account.
+	
+	"¡Felicidades! Está prepa...brir una Cuenta Lendix."
+Congratulations! Your investment has been processed
+	
+	"¡Felicidades! Su inversi...ue procesada con éxito."
+Consistent payments
+	
+	"Pagos periódicos"
+Contact
+	
+	"Contacto"
+Contact us
+	
+	"Contáctenos"
+Continue
+	
+	"Continuar"
+Continue your registration
+	
+	"Continuar su registro"
+Contract
+	
+	"Contrato"
+Contract identifier
+	
+	"Identificador del contrato"
+Contract number
+	
+	"Número de contrato"
+Contract version for lenders
+	
+	"Versión del contrato para inversores"
+Contractual version
+	
+	"Versión contractual"
+Contribution threshold
+	
+	"Límite de contribución"
+Country of residence
+	
+	"País de residencia"
+Create project
+	
+	"Crear mi proyecto"
+Create user
+	
+	"Crear usuario"
+Created {{creation}}, last activity {{lastActivity}}
+	
+	"Creada el {{creation}}, ...dad el {{lastActivity}}"
+Creation year
+	
+	"Año de creación"
+Credit
+	
+	"Crédito"
+Credit card
+	
+	"Tarjeta de crédito"
+Current password
+	
+	"Contraseña actual"
+Current session
+	
+	"Sesión Actual"
+Customer management
+	
+	"Gestión de clientes"
+Date
+	
+	"Fecha"
+Date of birth
+	
+	"Fecha de nacimiento"
+Debit your account
+	
+	"Debitar su cuenta"
+December
+	
+	"diciembre"
+Decline project
+	
+	"Rechazar el proyecto"
+Decline the decision
+	
+	"Rechazar la decisión"
+Default French taxes (39.5%)
+	
+	"Tipo estándar español (19%)"
+Default Spanish taxes (19%)
+	
+	"Tipo estándar español (19%)"
+Delete this {{type}}
+	
+	"Eliminar {{type}}"
+Description
+	
+	"Descripción"
+Destination…
+	
+	"Destino…"
+Development financing
+	
+	"Financiación de desarrollo"
+Document
+	
+	"Documento"
+Document added on {{date}}
+	
+	"Documentación proporcionada el {{date}}"
+Document is being sent... ({{progress}})
+	
+	"Se está enviando el documento... ({{progress}})"
+Document type
+	
+	"Tipo de documento"
+Documents
+	
+	"Documentos"
+Documents to provide
+	
+	"Documentación requerida"
+Done
+	
+	"Completado"
+Download report
+	
+	"Descargar reporte"
+Download the ID card
+	
+	"Descargar el DNI"
+Download the banking information
+	
+	"Descargar la información bancaria"
+Download the framework contract
+	
+	"Descargar el contrato marco"
+Download the loan contract
+	
+	"Descargar el contrato de préstamo"
+Download the loan contracts
+	
+	"Descargar los contratos de préstamo"
+Download the master agreement signed by the borrower
+	
+	"Vea el contrato de préstamo firmado por la empresa"
+Download the master contract
+	
+	"Ver el contrato marco de la empresa"
+Download the proof of residence
+	
+	"Descargar el justificante de residencia"
+Draft
+	
+	"Borrador"
+Drag a file or <u>select it from your computer</u>
+	
+	"Arrastre un archivo o <u... desde su ordenador</u>"
+Duration
+	
+	"Plazo"
+Duration (month)
+	
+	"Plazo (meses)"
+Duration of funding
+	
+	"Plazo de la financiación"
+Dynamic (+ 2 points)
+	
+	"Dinámico (+ 2 puntos)"
+EBITDA
+	
+	"EBITDA"
+Each investment must be a multiple of {{amount}}.
+	
+	"Cada inversión debe ser un múltiplo de {{amount}}."
+Each user referred by this user and exceeding the contribution threshold will receive a bonus, as its referrer.
+	
+	"Cada usuario recomendado...ción al igual que éste."
+Early payment Lendix
+	
+	"Pago anticipado Lendix"
+Early payment lenders
+	
+	"Pago anticipado inversores"
+Edit
+	
+	"Editar"
+Edit access rights
+	
+	"Editar los permisos de acceso"
+Edit the project
+	
+	"Editar el proyecto"
+Edit your account
+	
+	"Editar su cuenta"
+Education
+	
+	"Educación"
+Electricity bill
+	
+	"Factura de electricidad"
+Eligibility
+	
+	"Elegibilidad"
+Eligibility test
+	
+	"Test de elegibilidad"
+Email address
+	
+	"Correo electrónico"
+Email address of the borrower
+	
+	"Correo electrónico de la Empresa cliente"
+Employed
+	
+	"Empleado/a"
+Employees
+	
+	"Empleados"
+End session
+	
+	"Finalizar la sesión"
+Energy
+	
+	"Energía"
+English
+	
+	"Inglés"
+Enter your email address
+	
+	"Introduzca su correo electrónico"
+Entertainment
+	
+	"Entretenimiento"
+Environement
+	
+	"Medio Ambiente"
+Equity
+	
+	"Fondos propios"
+Equity < (SC/2) test
+	
+	"Test FP < (CP/2)"
+Error
+	
+	"Error"
+Estimated amount of your monthly payment at the {{date}}
+	
+	"Importe estimado de su mensualidad al {{date}}"
+Estimated date, assuming a debit on {{date}}. <a href="//en.lendix.com/question/when-are-the-repayments-credited-on-lendix-accounts/" target="_blank">Learn more ></a>
+	
+	"Fecha estimada, suponien...k">Para saber más ›</a>"
+European resident taxes (0%)
+	
+	"Impuestos a residentes europeos (0%)"
+Events
+	
+	"Eventos"
+Excellent
+	
+	"Excelente"
+Existing business
+	
+	"Empresa existente"
+Explain how this loan will allow you to increase your turnover, and why you will repay.
+	
+	"Explique cómo este prést... cómo va a amortizarlo."
+Explain your business activity to investors.
+	
+	"Explique su actividad em...arial a los inversores."
+Export returns
+	
+	"Exportar datos"
+Export the results
+	
+	"Exportar los resultados"
+Extracting
+	
+	"Descargando"
+FC
+	
+	"CF"
+FCCR
+	
+	"FCCR"
+February
+	
+	"febrero"
+Fees
+	
+	"Comisiones"
+Female
+	
+	"Mujer"
+File export is not supported by Safari
+	
+	"La exportación de archiv...s compatible con Safari"
+File is being sent
+	
+	"El archivo se está enviando"
+File to send
+	
+	"Archivo a enviar"
+File transfer is currently unavailable
+	
+	"La transferencia de arch... disponible actualmente"
+Filed on {{date}}
+	
+	"Depositada el {{date}}"
+Financial
+	
+	"Finanzas"
+Financial health
+	
+	"Situación financiera"
+Financial leasing
+	
+	"Servicios de arrendamiento financiero"
+Financial statement
+	
+	"Situación financiera"
+Financing new equipment
+	
+	"Financiación de nuevos equipos"
+First and last name
+	
+	"Nombre y apellidos"
+First name
+	
+	"Nombre"
+For safety purposes, any changes to these data require a verification. Here are the necessary information:
+	
+	"Por razones de seguridad... información necesaria:"
+Foreign residents can lend on Lendix if they provide the necessary documents for their identification.
+	
+	"Los residentes extranjer...para su identificación."
+Forgot your password?
+	
+	"¿Ha olvidado su contraseña?"
+Forgotten password
+	
+	"He olvidado mi contraseña"
+Form code
+	
+	"Forma jurídica"
+France
+	
+	"Francia"
+French
+	
+	"Francés"
+French Guiana
+	
+	"Guyana Francesa"
+French Polynesia
+	
+	"Polinesia Francesa"
+French company
+	
+	"Empresa francesa"
+From
+	
+	"De"
+From 10% to 30% of my financial wealth (+ 3 points)
+	
+	"De 10% a 30% de mi patri...financiero (+ 3 puntos)"
+From 30% to 50% of my financial wealth (+ 1 point)
+	
+	"De 30% a 50% de mi patri... financiero (+ 1 punto)"
+Full name
+	
+	"Nombre Completo"
+Fund your account
+	
+	"Abonar fondos en su Cuenta"
+Funded
+	
+	"Financiado"
+Funding application
+	
+	"Solicitudes de financiación"
+Funding application creator
+	
+	"Generador de la solicitud de financiación"
+Funding applications
+	
+	"Solicitudes de financiación"
+Funding need
+	
+	"Necesidad de financiación"
+Future repayments
+	
+	"Pagos futuros"
+Gas bill
+	
+	"Factura de gas"
+Gender
+	
+	"Sexo"
+General information
+	
+	"Información general"
+Germany
+	
+	"Alemania"
+Get started
+	
+	"Empezar"
+Given address
+	
+	"Domicilio otorgado"
+Good
+	
+	"Bueno"
+Got a question? Contact us
+	
+	"¿Tiene alguna pregunta? Contáctenos"
+Grade {{grade}}
+	
+	"Calificación {{grade}}"
+Guadeloupe
+	
+	"Guadalupe"
+Health
+	
+	"Salud"
+Home address
+	
+	"Domicilio"
+How much do you want to withdraw from your account?
+	
+	"¿Cuánto desea retirar de su Cuenta Lendix?"
+I agree and accept the <a href={{cguLendix}} target="_blank">Lendix General Terms & Conditions</a> and the <a href={{cguLemonway}} target="_blank">Lemon Way General Terms & Conditions</a>.
+	
+	"Estoy de acuerdo y acept...rales de Lemon Way</a>."
+I agree and accept the terms of the subordinated loan contract.
+	
+	"Estoy de acuerdo y acept...e préstamo subordinado."
+I agree to the <a href="{{url}}" target="_blank">{{name}} General Terms & Conditions</a>
+	
+	"Estoy de acuerdo con los...minos y Condiciones</a>"
+I am aware that to lend money to SMEs presents a risk of non-repayment, capital loss and requires immobilisation of my savings.
+	
+	"Soy consciente de que pr...ización de mis ahorros."
+I consent to the use of cookies
+	
+	"Acepto el uso de cookies"
+I didn't receive the code
+	
+	"No he recibido el código"
+I didn't receive the email
+	
+	"No he recibido el correo electrónico"
+I didn't receive the recovery email
+	
+	"No he recibido el correo...trónico de recuperación"
+I do not know
+	
+	"No lo sé"
+I have read and agree to the contract changes of the <a href="//lendix.com/cgu-ingenico" target="_blank">Ingenico FS Terms and Conditions</a> related to the repayment
+	
+	"He leído y aceptado los ...onados con el reembolso"
+I notify the termination of my Ingenico FS account and ask to Ingenico FS to refund the available balance to my Lemon Way's account
+	
+	"Notifico la terminación ... mi cuenta de Lemon Way"
+I realize that I will eventually have to provide an IBAN, an ID card and proof of address to verify my account and make transfers and withdrawals to my bank account.
+	
+	"Soy plenamente conscient...os de mi Cuenta Lendix."
+I sign the Lemon Way framework contract and I agree with the opening of my account
+	
+	"Firmo el contrato marco ...a apertura de mi cuenta"
+I understand and accept that I am lending to a company based in France, the project is presented by Lendix IFP (France) regulated by ACPR and conforms to French regulation requirements.
+	
+	"Entiendo y accepto que e...la regulación francesa."
+I understand and accept that I am lending to a company based in Spain, the project is presented by España PFP regulated by the Comisión Nacional del Mercado de Valores (CNMV) and conforms to Spanish regulation requirements.
+	
+	"Entiendo y acepto que es...de regulación española."
+IBAN
+	
+	"IBAN"
+IBAN Lendix
+	
+	"IBAN de Lendix"
+ID
+	
+	"Identificación"
+ID card
+	
+	"DNI"
+ID card expiration date
+	
+	"Fecha de caducidad del DNI"
+Identity
+	
+	"Identidad"
+Identity document
+	
+	"Documento de identidad"
+If there is any problem with the transferred documents, you can give back the control to the user and ask him to upload again its files.
+	
+	"Si encuentra algún probl... otra vez sus archivos."
+If you lend money to a single company, the risk of capital loss may reach 100% of your investment
+	
+	"Si presta dinero a una ú...al 100% de su inversión"
+Image processing function
+	
+	"Tratamiento de imágenes"
+Image size
+	
+	"Tamaño de la imagen"
+In a few months
+	
+	"En algunos meses"
+In a few weeks
+	
+	"En algunas semanas"
+In euros, from {{amount}}
+	
+	"En euros, desde {{amount}}"
+In euros, from {{min}}
+	
+	"En euros, desde {{min}}"
+In order to begin your identity check, please provide us the needed documents.
+	
+	"Para comenzar su identif...ocumentación necesaria."
+In order to remove these limitations and to allow withdrawals to your personal bank account, you first need to confirm your identity.
+	
+	"Para eliminar estas limi...confirmar su identidad."
+In order to use our services, you must first agree to the Terms of Services relatives to your country of residence.
+	
+	"Para usar nuestros servi... su país de residencia."
+In the company since
+	
+	"En el cargo desde"
+In thousands €
+	
+	"En miles de €"
+Include Finsquare loans
+	
+	"Mostrar los proyectos de Finsquare"
+Income tax
+	
+	"Impuesto"
+Incoming
+	
+	"Próximos"
+Indicative monthly repayment rounded up to the nearest Euro cent. Lending money to SMEs presents a risk of loss of capital and requires your savings to be immobilised.
+	
+	"La cantidad mensual tran...ros sean inmovilizados."
+Industry
+	
+	"Industria"
+Information
+	
+	"Información"
+Information & Communication
+	
+	"Información y comunicación"
+Information about the contract signatory
+	
+	"Información de quien firma el contrato"
+Installment
+	
+	"Cuota mensual total"
+Insurance
+	
+	"Seguros"
+Interest repayment
+	
+	"Pagos mensuales"
+Internal verifications
+	
+	"Verificaciones internas"
+Invitation
+	
+	"Invitación"
+Invitation code
+	
+	"Código de invitación"
+Invitation code of this user
+	
+	"Código de invitación de este usuario"
+Invitation link
+	
+	"Enlace de invitación"
+Invite
+	
+	"Solicitar"
+Invite a friend
+	
+	"Invitar a un amigo"
+Invite friends
+	
+	"Invitar a amigos"
+Invite your friends and receive {{bonus}} each to lend on projects presented by Lendix.
+	
+	"Invite a un amigo y bene...tar a proyectos Lendix."
+It usually takes less than a day (excluding weekends)
+	
+	"Por lo general, se tarda...uyendo fines de semana)"
+It's all about sharing
+	
+	"¡Invite, regale y gane!"
+It's on us
+	
+	"¡Aquí tiene un regalo!\r"
+Italian
+	
+	"Italiano"
+Italian company
+	
+	"Empresa italiana"
+Italy
+	
+	"Italia"
+January
+	
+	"enero"
+Join me on Lendix!
+	
+	"¡Participe en Lendix!"
+July
+	
+	"julio"
+June
+	
+	"junio"
+Landline / mobile telephone or internet bill
+	
+	"Teléfono fijo / teléfono...l o factura de Internet"
+Language
+	
+	"Idioma"
+Language selection
+	
+	"Selección de idioma"
+Last name
+	
+	"Apellidos"
+Last quarter
+	
+	"Último trimestre"
+Last save {{time}}
+	
+	"Guardado por última vez {{time}}"
+Late payment flat
+	
+	"Comisión por pago atrasado"
+Late payment interests
+	
+	"Intereses por pago atrasado"
+Latest balance sheet date
+	
+	"Fecha del último balance"
+Learn more about corporate ratings
+	
+	"Descubra las etapas de s...e una empresa en Lendix"
+Learn more about our eligibility criteria
+	
+	"Para saber más sobre nue...iterios de elegibilidad"
+Learn more about tax…
+	
+	"Para saber más sobre impuestos…"
+Learn more about the price of a loan at Lendix
+	
+	"Descubra de dónde obtiene los ingresos Lendix"
+Legal form
+	
+	"Forma jurídica"
+Legal form code
+	
+	"Código de forma jurídica"
+Legal procedure
+	
+	"Procedimiento judicial"
+Lend
+	
+	"Prestar"
+Lend to
+	
+	"Prestar a"
+Lend to this project
+	
+	"Prestar a este proyecto"
+Lend to {{project}}
+	
+	"Prestar a {{project}}"
+Lend your money directly to SMEs
+	
+	"Prestar su dinero directamente a las empresas"
+Lender
+	
+	"Inversor"
+Lending money to SMEs presents a risk of loss of capital and requires your savings to be immobilised.
+	
+	"Prestar dinero a empresa...ros sean inmovilizados."
+Lending projects
+	
+	"Proyectos de préstamo Lendix"
+Lendix Croissance is an innovative funding solution launched by Lendix. For legal reasons, Lendix Croissance funding is only available for qualified investors yet. We are working currently to open them to private investors
+	
+	"Lendix Croissance es una...nversores particulares."
+Lendix Terms of Services
+	
+	"Términos de Servicio de Lendix"
+Lendix application
+	
+	"Aplicación de Lendix"
+Lendix created a quick quiz (2 minutes) to check your investment knowledge.
+	
+	"Lendix ha creado un cues...miento de la inversión."
+Lendix helps you lend your money directly to SMEs we selected.
+	
+	"Lendix le ayuda a presta...eleccionado para usted."
+Lendix is changing its service payment provider. To open your Lendix payment account at Lemon Way and confirm the transfer of the funds from Ingenico FS to Lemon Way, please sign the contract below.
+	
+	"Lendix está cambiando de...ontrato a continuación."
+Lendix uses cookies to simplify and ensure your connection. Use of this website constitutes your consent to this condition.
+	
+	"Lendix usa cookies para ...epta el uso de cookies."
+Lendix, as a intermediary in participatory financing, is using the financial partner Lemon Way in order to manage financial flows between lenders and borrowers. To open your Lendix payment account at Lemon Way, please sign the contract below.
+	
+	"Lendix, como intermediar...ontrato a continuación."
+Lent
+	
+	"Prestado"
+Less than 10% of my financial wealth (+ 3 points)
+	
+	"Menos de 10% de mi patri...financiero (+ 3 puntos)"
+Less than 400 000 €
+	
+	"Menos de 400.000€"
+Less than {{amount}}
+	
+	"Menos de {{amount}}"
+Line of business
+	
+	"Actividad"
+Load more
+	
+	"Cargar más"
+Loading content, please wait…
+	
+	"Cargando, espere por favor…"
+Loan
+	
+	"Préstamo"
+Loan Contract Specific Clauses
+	
+	"Cláusulas específicas del contrato de préstamo"
+Loan amount
+	
+	"Importe del préstamo"
+Loan modalities
+	
+	"Modalidades de préstamo"
+Loan repayment schedule
+	
+	"Calendario de amortización de la deuda"
+Loan term
+	
+	"Plazo del préstamo"
+Loans from {{from}} to {{to}} and from 3 to 84 months
+	
+	"Préstamos de {{from}} a {{to}} y de 3 a 84 meses"
+Local tax (from 01/11 to 30/04)
+	
+	"Una copia del IRPF (Impu... las Personas Físicas)\r"
+Location
+	
+	"Ubicación"
+Log in
+	
+	"Entrar"
+Login
+	
+	"Registro"
+Luxembourg
+	
+	"Luxemburgo"
+Mailing address
+	
+	"Dirección postal"
+Make sure the information you provided is valid, then continue your registration.
+	
+	"Por favor, asegúrese de ...núe con su inscripción."
+Male
+	
+	"Hombre"
+Manager
+	
+	"Gerente"
+Mandatory fields
+	
+	"Campos obligatorios"
+March
+	
+	"marzo"
+Marketing
+	
+	"Marketing"
+Marketing surveys & consulting
+	
+	"Estudios de mercado / consultoría"
+Martinique
+	
+	"Martinica"
+Maximum size
+	
+	"Tamaño máximo"
+May
+	
+	"mayo"
+Message
+	
+	"Mensaje"
+Modalities
+	
+	"Modalidades"
+Modalities for {{project}}
+	
+	"Modalidades para {{project}}"
+Monthly fee
+	
+	"Comisiones mensuales"
+Monthly interests
+	
+	"Intereses mensuales"
+Monthly repayment
+	
+	"Pagos mensuales"
+Months passed
+	
+	"Meses transcurridos"
+More information
+	
+	"Más información"
+More information needed
+	
+	"Información adicional necesaria"
+More than 1000
+	
+	"Más de 1.000"
+More than 400 000 €
+	
+	"Más de 400.000€"
+More than 50% of my financial wealth (- 3 points)
+	
+	"Más de 50% de mi patrimo...financiero (- 3 puntos)"
+More than {{amount}}
+	
+	"Más de {{amount}}"
+NACE code
+	
+	"Código CNAE"
+NAF code
+	
+	"Código CNAE"
+Name
+	
+	"Nombre"
+Name of birth
+	
+	"Nombre de nacimiento"
+Name or business ID (3 chars at least)
+	
+	"Nombre o identificación ...caracteres como mínimo)"
+Name your project
+	
+	"Asignar un nombre al proyecto"
+National identity card (both sides)
+	
+	"Documento Nacional de Identidad (doble cara)"
+Need help?
+	
+	"¿Necesita ayuda?"
+Need more information
+	
+	"Información adicional necesaria"
+Need more information before lending
+	
+	"Información adicional necesaria antes de prestar"
+Net debt
+	
+	"Deuda neta"
+Net debt / EBITDA
+	
+	"Deuda neta / EBITDA"
+Net debt / Equity
+	
+	"Deuda neta / Fondos propios"
+Net income
+	
+	"Ingreso netos"
+Net payment
+	
+	"Pagos netos"
+New Caledonia
+	
+	"Nueva Caledonia"
+New bank transfer
+	
+	"Nueva transferencia bancaria"
+New bonus
+	
+	"Nueva bonificación"
+New business
+	
+	"Nueva empresa"
+New credit card input
+	
+	"Nuevo abono de tarjeta de crédito"
+New loan for
+	
+	"Nuevo préstamo para"
+New password
+	
+	"Nueva contraseña"
+New project
+	
+	"Nuevo proyecto"
+New repayment for project
+	
+	"Supongo el reembolso a"
+New user
+	
+	"Nuevo usuario"
+New withdraw
+	
+	"Nuevo retiro"
+Next question
+	
+	"Siguiente pregunta"
+No (- 5 points)
+	
+	"No (- 5 puntos)"
+No active session
+	
+	"No hay sesiones activas"
+No balance sheet
+	
+	"No hay balance general"
+No document yet
+	
+	"No hay ningún documento aún"
+No immediate need
+	
+	"No tengo necesidad inmediata"
+No loans yet
+	
+	"Aún no hay préstamos"
+No payment scheduled
+	
+	"Sin pago programado"
+No personal guarantee or insurance and an interest rate known in advance
+	
+	"Sin garantías reales y c...fijo desde el principio"
+No recent balance sheet available
+	
+	"No hay un balance actualizado disponible"
+No report yet
+	
+	"No ha sido reportado aún"
+No result
+	
+	"No se han encontrado resultados"
+No transaction
+	
+	"No se ha encontrado transacción"
+Non contractual version
+	
+	"Versión no contractual"
+Non-verified account
+	
+	"Cuenta no verificada"
+Not registered yet?
+	
+	"¿Todavía no está registrado?"
+Not yet activated
+	
+	"Todavía no se ha activado"
+Note
+	
+	"Nota"
+Note that the charge transaction may take up to 5 business days.
+	
+	"Tenga en cuenta que el p...r hasta 5 días hábiles."
+November
+	
+	"noviembre"
+Number
+	
+	"Número"
+Number of lenders
+	
+	"Número de inversores"
+Observed year
+	
+	"Año analizado"
+October
+	
+	"octubre"
+Offline project
+	
+	"Proyecto no disponible"
+One of your affiliates joined Lendix
+	
+	"Uno de sus afiliados se ... la comunidad de Lendix"
+One of your clients joined Lendix
+	
+	"Uno de sus clientes se u... la comunidad de Lendix"
+Online
+	
+	"Online"
+Only one possible answer
+	
+	"Una única respuesta posible"
+Only our team and the borrower will be able to see this comment.
+	
+	"Sólo nuestro equipo y la...án ver este comentario."
+Only our team will be able to see this comment.
+	
+	"Sólo nuestro equipo podrá ver este comentario."
+Only the committee and the borrower will see this comment.
+	
+	"Sólo el comité y la empr... verán este comentario."
+Open an account
+	
+	"Abrir una cuenta"
+Operating income
+	
+	"Resultado de explotación"
+Optional: add a message to your invitation
+	
+	"Opcional: añadir un mensaje a su invitación"
+Origin
+	
+	"Origen"
+Other
+	
+	"Otro"
+Other investments
+	
+	"Otras inversiones"
+Our analyst team is studying your project
+	
+	"Nuestro equipo de analis... estudiando su proyecto"
+Our bank partner is examining your documents. It can take up to 48 hours.
+	
+	"Nuestro banco asociado e... un máximo de 48 horas."
+Our marketing team is busy formatting it.
+	
+	"Nuestro equipo de market... ocupado formateándolo."
+Outstanding
+	
+	"Pendiente"
+Outstanding Capital
+	
+	"Pendiente"
+Overall
+	
+	"Total"
+Partner
+	
+	"Socio"
+Partners
+	
+	"Socios"
+Passport (page 2 and 3)
+	
+	"Pasaporte (páginas 2 y 3)"
+Password
+	
+	"Contraseña"
+Past repayments
+	
+	"Pagos pasados"
+Paste from Excel
+	
+	"Pegar desde Excel"
+Paste now content copied from Excel
+	
+	"Pegar aquí el contenido del fichero Excel"
+Payment schedule
+	
+	"Calendario de pagos"
+Payments are less than 30 days late
+	
+	"Los pagos tienen menos de 30 días de retraso"
+Payments are over 120 days late
+	
+	"Los pagos tienen más de 120 días de retraso"
+Payments are over 30 days late
+	
+	"Los pagos tienen más de 30 días de retraso"
+Payments are {{health}}
+	
+	"Estado de pago: {{health}}"
+Payments for the project {{project}} are now {{health}}
+	
+	"Los pagos del proyecto {...e encuentran {{health}}"
+Pending
+	
+	"Pendiente"
+Pending admin
+	
+	"A la espera de aprobación"
+Pending analysis
+	
+	"A la espera de análisis"
+Pending assignment
+	
+	"A la espera de asignación"
+Pending bank
+	
+	"A la espera del banco"
+Pending credit committee
+	
+	"A la espera del Comité de Crédito"
+Pending documents validation by an administrator
+	
+	"A la espera de validació...rte de un administrador"
+Pending documents validation by the bank partner
+	
+	"A la espera de validació...arte del banco asociado"
+Pending further information
+	
+	"A la espera de información adicional"
+Pending requests
+	
+	"Solicitudes pendientes"
+Pending to go online
+	
+	"A la espera de su publicación online"
+Pending validation
+	
+	"Validación pendiente"
+Pending verification
+	
+	"Verificación pendiente"
+Permanent resident permit (both sides), if you are not a EU national, please provide your permanent resident permit or a second ID (photo driving license etc.)
+	
+	"De no tener nacionalidad... identidad (doble cara)"
+Personal services
+	
+	"Servicios personales"
+Phone
+	
+	"Teléfono:"
+Phone +33 1 82 83 28 00
+	
+	"Teléfono +34 91 790 67 70"
+Phone number
+	
+	"Número de teléfono"
+Place of birth
+	
+	"Lugar de nacimiento"
+Please check the SIREN number
+	
+	"Por favor, revise el número de CIF/NIF"
+Please check the business name
+	
+	"Por favor, revise el nombre de la empresa"
+Please check the email address
+	
+	"Por favor, revise la dir...n de correo electrónico"
+Please check the name
+	
+	"Por favor, revise el nombre"
+Please check the type
+	
+	"Por favor, revise la clase"
+Please check your SIREN/CIF number or try again later.
+	
+	"Por favor, compruebe su ...elo de nuevo más tarde."
+Please complete it and submit it again.
+	
+	"Por favor, complételo y envíelo de nuevo."
+Please fill your email address so we can send you a recovery link.
+	
+	"Por favor, añada su dire...enlace de recuperación."
+Please provide a colour copy of your current passport or national identity card (both sides). Please note: you can only send one file. If you need to send several pages please combine them in a single file.
+	
+	"Por favor, envíenos un d...los en un solo archivo."
+Please provide us with a proof of residence (e.g. phone bill) less than 3 months old.
+	
+	"Por favor, proporcione u...es meses de expedición."
+Please provide us your bank account details. Your bank account will be linked to you Lendix account.
+	
+	"Por favor, facilítenos l... a su Cuenta de Lendix."
+Please select a borrow reason
+	
+	"Por favor, seleccione la...la que pide un préstamo"
+Please select a borrow type
+	
+	"Por favor, elija un clase de préstamo"
+Please select a contract version
+	
+	"Por favor, seleccione una versión del contrato"
+Please select a gender
+	
+	"Por favor, seleccione género"
+Please select a grade
+	
+	"Por favor, seleccione un grado"
+Please select a position
+	
+	"Por favor, seleccione una posición"
+Please select an account type
+	
+	"Por favor, seleccione un clase de cuenta"
+Please select the user gender
+	
+	"Por favor, seleccione el género del usuario"
+Please select the user status
+	
+	"Por favor, seleccione el estado del usuario"
+Please select the user tax
+	
+	"Por favor, seleccione el impuesto del usuario"
+Please select your business legal form
+	
+	"Por favor, seleccione la forma legal de su negocio"
+Please select your business workforce
+	
+	"Por favor, seleccione el...bajadores de su negocio"
+Please verify at first that the banking information are in the name of {{user}}, then complete the IBAN and BIC from this document. Be careful, this operation is irreversible.
+	
+	"Por favor, verifique pri...ración es irreversible."
+Please verify at first that the name shown on the ID card is {{user}}, then complete the date and place of birth to validate this step.
+	
+	"Por favor, verifique en ...alidación de este paso."
+Please verify at first that the proof of residence is in the name of {{user}}, it has less than 3 months and complete the address to confirm this step.
+	
+	"Por favor, verifique pri...ra confirmar este paso."
+Please verify your account before lending
+	
+	"Por favor verifique su Cuenta antes de prestar"
+Please wait while we activate your account…
+	
+	"Por favor, espere mientras activamos tu cuenta…"
+Please wait while we check your account…
+	
+	"Por favor, espere mientras verificamos su cuenta…"
+Please wait while we create the wallet…
+	
+	"Por favor, espere mientras creamos su Cartera…"
+Please wait while we process your transaction…
+	
+	"Por favor, espere mientr...rocesamos su operación…"
+Please wait, we're generating your loan contract…
+	
+	"Por favor espere, estamo...u contrato de préstamo…"
+Please wait, we're updating your information…
+	
+	"Por favor espere, estamo...lizando su información…"
+Please wait…
+	
+	"Por favor, espere…"
+Portfolio
+	
+	"Cartera de préstamos"
+Position
+	
+	"Posición"
+Pre-accepted for a Lendix Loan
+	
+	"Preseleccionado para un préstamo en Lendix"
+Pre-tax current result
+	
+	"Resultado actual antes de impuestos"
+Presentation
+	
+	"Presentación"
+President
+	
+	"Presidente"
+Preview
+	
+	"Vista previa"
+Priority
+	
+	"Prioridad"
+Priority of your loan
+	
+	"Necesidad de su préstamo"
+Processed on {{date}}
+	
+	"Procesado el {{date}}"
+Profile picture
+	
+	"Foto de perfil"
+Profitability
+	
+	"Rentabilidad"
+Project
+	
+	"Proyecto"
+Project description
+	
+	"Descripción del Proyecto"
+Project grade
+	
+	"Clasificación del proyecto"
+Project illustration
+	
+	"Ilustración del proyecto"
+Project management
+	
+	"Gestión de proyectos"
+Project name
+	
+	"Nombre del proyecto"
+Project presentation
+	
+	"Presentación del proyecto"
+Project {{project}} has been funded by {{lenders}} lenders in {{duration}}
+	
+	"El proyecto {{project}} ...ersores en {{duration}}"
+Project {{project}} is now {{status}}
+	
+	"El proyecto {{project}} ya está {{status}}"
+Projects
+	
+	"Proyectos"
+Proof of address
+	
+	"Justificante de residencia"
+Proof of residence
+	
+	"Justificante de residencia"
+Properties
+	
+	"Propiedades"
+Property tax or provisional third (from 01/10 to 31/03)
+	
+	"Una copia del IBI (Impue...e los Bienes Inmuebles)"
+Prospective application
+	
+	"Peticiones futuras"
+Prospective application by {{user}}
+	
+	"Potenciales peticiones de {{user}}"
+Provide a document from the following list:
+	
+	"Deberá facilitarnos uno ...s siguientes documentos"
+Provided document:
+	
+	"Documentación proporcionada"
+Public sector
+	
+	"Sector público"
+Quit the initiation
+	
+	"Abandonar la iniciación"
+Rate
+	
+	"Interés"
+Rate of return
+	
+	"Tasa de rentabilidad"
+Rating {{score}}
+	
+	"Clasificación {{score}}"
+Raw materials
+	
+	"Materias primas"
+Ready to be reviewed
+	
+	"Disponible para ser revisado"
+Real estate (+ 1 point)
+	
+	"Patrimonio inmobiliario (+ 1 punto)"
+Reasons for refusal
+	
+	"Motivos de denegación"
+Reassure investors
+	
+	"Tranquilice a los inversores"
+Received
+	
+	"Recibido"
+Recent activity
+	
+	"Actividad reciente"
+Recent activity for {{project}}
+	
+	"Actividad reciente del {{project}}"
+Recovered amount of {{recovered}} recovered versus {{initial}} euros expected.
+	
+	"Importe recuperado {{rec...e esperado {{initial}}."
+Reduced French taxes (15.5%)
+	
+	"Impuestos españoles reducidos (19%)"
+Referral
+	
+	"Invitar a amigos"
+Referral code
+	
+	"Código del patrocinador"
+Referrer
+	
+	"Patrocinador"
+Referrer code
+	
+	"Código del patrocinador"
+Referrer of this user
+	
+	"Patrocinador de este usuario"
+Refusal reason
+	
+	"Motivo de denegación"
+Refused
+	
+	"Rechazada"
+Refused requests
+	
+	"Solicitudes rechazadas"
+Register
+	
+	"Registrarse"
+Register now
+	
+	"Regístrese ahora"
+Registered
+	
+	"Registrado"
+Registered since
+	
+	"Registrado desde"
+Registered since {{date}}
+	
+	"Registrado desde {{date}}"
+Registration
+	
+	"Registro"
+Registration completed
+	
+	"Registro completado"
+Registration date
+	
+	"Fecha de registro"
+Related business
+	
+	"Negocio relacionado"
+Related projects
+	
+	"Proyectos relacionados"
+Relative business for {{project}}
+	
+	"Empresa relacionada con {{project}}"
+Remaining time
+	
+	"Tiempo restante"
+Renewal of equipment
+	
+	"Renovación de equipos"
+Rent receipt issued by a legal entity
+	
+	"Contrato de alquiler"
+Repayment amount
+	
+	"Importe total a reembolsar"
+Repayments take place around the 15th of each month.
+	
+	"El pago tendrá lugar apr... el día 15 de cada mes."
+Reports
+	
+	"Reportes"
+Representative
+	
+	"Representante"
+Request referral
+	
+	"Origen de la recomendación"
+Request source
+	
+	"Origen de la petición"
+Requests
+	
+	"Solicitudes"
+Reset password sent
+	
+	"El enlace de recuperació... contraseña fue enviada"
+Reset your password
+	
+	"Cambiar contraseña"
+Resize
+	
+	"Ajustar"
+Rest of the world
+	
+	"Resto del mundo"
+Restaurants and catering services
+	
+	"Restaurantes y servicios de comida"
+Retired
+	
+	"Jubilado"
+Retry the quiz
+	
+	"Volver a hacer el test"
+Retype your new password
+	
+	"Repita su nueva contraseña"
+Reunion
+	
+	"Reunión"
+Revenue
+	
+	"Ingresos"
+Revenue decrease
+	
+	"Disminución de los ingresos"
+Revenue n-1
+	
+	"Ingresos n-1"
+Rights
+	
+	"Derechos"
+Risk
+	
+	"Riesgo"
+SICAV & FCP (+ 1 point)
+	
+	"Obligaciones y Fondos de inversión (+ 1 punto)"
+SIREN
+	
+	"NIF"
+SIREN code of your company
+	
+	"NIF de su empresa"
+SIREN number
+	
+	"Número NIF"
+Save
+	
+	"Guardar"
+Score
+	
+	"Clasificación"
+Search a business by name or SIREN (3 characters at least)
+	
+	"Buscar una empresa por s...caracteres como mínimo)"
+Search a project by name (3 characters at least)
+	
+	"Búsqueda de un proyecto ...e (3 caracteres mínimo)"
+Search an user by name (3 characters at least)
+	
+	"Buscar un usuario por su...caracteres como mínimo)"
+Search by name (3 characters at least)
+	
+	"Búsqueda por nombre (3 caracteres mínimo)"
+Secure your session
+	
+	"Proteger su conexión"
+Secured (0 point)
+	
+	"Garantizadas (0 puntos)"
+Securitised mutual fund
+	
+	"Fondo común de titulización"
+Security
+	
+	"Seguridad"
+See all projects
+	
+	"Ver todos los proyectos"
+See more
+	
+	"Ver más"
+See my portfolio
+	
+	"Ver mi Cartera"
+See projects
+	
+	"Ver proyectos"
+See the project
+	
+	"Ver el proyecto"
+Select a country
+	
+	"Seleccione un país"
+Select a document type
+	
+	"Por favor, seleccione un tipo de documento"
+Select a language
+	
+	"Selecciona un idioma"
+Select the project health
+	
+	"Seleccione el estado de pago del proyecto"
+Self-employed
+	
+	"Autónomo"
+Send
+	
+	"Enviar"
+Send a comment
+	
+	"Enviar un comentario"
+Send a confirmation email
+	
+	"Enviar un correo de confirmación"
+Send a document
+	
+	"Enviar un documento"
+Send an invite
+	
+	"Enviar una invitación"
+Send the document
+	
+	"Enviar el documento"
+Send this document
+	
+	"Enviar este documento"
+Send your documents
+	
+	"Envíe sus documentos"
+Send your last fiscal record
+	
+	"Envíe su última declaración de impuestos"
+September
+	
+	"septiembre"
+Session
+	
+	"Sesión"
+Settlement date: {{date}}.
+	
+	"Fecha de reembolso: {{date}}."
+Several possible answers
+	
+	"Varias respuestas posibles"
+Share capital
+	
+	"Capital social"
+Share on Facebook
+	
+	"Compartir en Facebook"
+Shares (+ 1 point)
+	
+	"Acciones (+ 1 punto)"
+Show
+	
+	"Mostrar"
+Sign out
+	
+	"Cerrar sesión"
+Sign the framework contract
+	
+	"Firmar el contrato marco"
+Simplified balance sheet
+	
+	"Balance general simplificado"
+Simply send us the required documents by e-mail to <a href='{{mailto}}'>borrowers@lendix.com</a> for us to complete our analysis and give you a firm offer.
+	
+	"Sólo tiene que enviar lo...os una oferta en firme."
+Since
+	
+	"Desde"
+Siren
+	
+	"CIF/NIF"
+Small or medium sized businesses incorporated in France.
+	
+	"Empresas establecidas en España"
+Social contributions
+	
+	"Cotizaciones sociales"
+Source
+	
+	"Origen"
+Source: {{source}}
+	
+	"Fuente: {{source}}"
+Spain
+	
+	"España"
+Spanish
+	
+	"Español"
+Spanish company
+	
+	"Empresa española"
+Specific clauses
+	
+	"Cláusulas específicas"
+Sponsor
+	
+	"Patrocinador"
+Sponsorship configuration
+	
+	"Configuración del patrocinio"
+Start again
+	
+	"Empezar de nuevo"
+State
+	
+	"Estado"
+Status
+	
+	"Estatus"
+Stay logged in for two weeks
+	
+	"Permanezca conectado durante dos semanas"
+Street
+	
+	"Calle"
+Subject
+	
+	"Asunto"
+Submit
+	
+	"Enviar"
+Submit your project
+	
+	"Enviar su solicitud"
+Super analyst
+	
+	"Súper analista"
+Support
+	
+	"Soporte"
+Sweden
+	
+	"Suecia"
+Switzerland
+	
+	"Suiza"
+Take the quiz
+	
+	"Responda al cuestionario"
+Tax
+	
+	"Impuesto"
+Tax residency
+	
+	"Residencia fiscal"
+Taxation
+	
+	"Fiscalidad"
+Taxes
+	
+	"Impuestos"
+Tell us more about you
+	
+	"Cuéntenos un poco más acerca de usted"
+Test
+	
+	"Test"
+Test eligibility
+	
+	"Test de elegibilidad"
+Test my eligibility
+	
+	"Comprobar mi elegibilidad"
+Test your eligibility for free and without commitment
+	
+	"Compruebe su elegibilida...costes y sin compromiso"
+Thank you for completing the quiz
+	
+	"Gracias por completar el cuestionario"
+The Lendix account of {{user}} is now {{status}}
+	
+	"La Cuenta Lendix de {{user}} está ahora {{status}}"
+The Lendix support may be restricted by some ad blockers. If there is a problem, please contact us at support@lendix.com.
+	
+	"La asistencia técnica pr...con soporte@lendix.com."
+The Loan contract is in French (with translations provided for your convenience), subject to French law and any dispute with the borrower will be brought in front of a French court of law.
+	
+	"El contrato de préstamo ...jeto a la ley francesa."
+The Loan contract is in Spanish (with a translation provided for your convenience), and subject to Spanish law.
+	
+	"El contrato de préstamo ...jeto a la ley francesa."
+The Loan contract is in Spanish (with translations provided for your convenience), subject to Spanish law and any dispute with the borrower will be brought in front of a Spanish court of law.
+	
+	"El contrato de préstamo ...te un tribunal español."
+The SIREN number
+	
+	"El número de CIF/NIF"
+The amount
+	
+	"El importe"
+The amount you plan to invest with your Lendix Account constitutes…
+	
+	"El importe que desea inv...a en Lendix constituye…"
+The bank account linked to the following IBAN will be credited
+	
+	"El ingreso tendrá lugar ...ulada al siguiente IBAN"
+The borrower is filling the project
+	
+	"La empresa cliente está completando el proyecto"
+The borrower's last three set of accounts certified by the accountant and provisional accounts
+	
+	"Los tres últimos impuest...y cuentas provisionales"
+The business
+	
+	"El negocio"
+The default illustration is the relative business logo
+	
+	"La ilustración predeterm...de la empresa implicada"
+The documents you send to Lendix are stored securely and <b>will never</b> be shared with a third party without your consent.
+	
+	"Los documentos que usted... sin su consentimiento."
+The duration and amount are transferred to Lendix but do not impact the eligibility test result.
+	
+	"El importe y el plazo so...l test de elegibilidad."
+The earnings summary of {{user}} for {{year}} is available
+	
+	"El resumen de ingresos d...{year}} está disponible"
+The following information including your name will appear on all your investment contracts on Lendix
+	
+	"La siguiente información... de inversión en Lendix"
+The following information including your name will appear on all your investment contracts on Lendix.
+	
+	"La siguiente información...de inversión en Lendix."
+The format ({{format}}) of your file is not supported
+	
+	"El formato ({{format}}) ...rchivo no es compatible"
+The funding
+	
+	"La financiación"
+The funds in your account on the <b>{{date}}</b>
+	
+	"Los fondos en su cuenta el <b>{{date}}</b>"
+The loan
+	
+	"El préstamo"
+The loan term
+	
+	"Plazo del préstamo"
+The operating income <b>is negative</b>
+	
+	"El resultado de explotación <b>es negativo</b>"
+The project
+	
+	"El proyecto"
+The project application for {{business}} is {{state}}
+	
+	"La solicitud de financia...business}} es {{state}}"
+The project will be archived
+	
+	"El proyecto será archivado"
+The project will be returned to the analyst
+	
+	"El proyecto será devuelto al analista"
+The project will be returned to the borrower
+	
+	"El proyecto será devuelto a la empresa cliente"
+The project will be sent to the borrower
+	
+	"El proyecto será enviado a la empresa cliente"
+The project will be sent to the committee
+	
+	"El proyecto será enviado al Comité de Créditos"
+The project {{project}} has been assigned to {{name}}
+	
+	"El proyecto {{project}} ...ido asignado a {{name}}"
+The project {{project}} has been created
+	
+	"El proyecto {{project}} ha sido creado"
+The request has failed
+	
+	"La solicitud ha sido rechazada"
+The service is unavailable at this moment
+	
+	"El servicio no está disponible en este momento"
+The user's information can not be edited.
+	
+	"No se puede editar la información del usuario."
+There's no recent activity
+	
+	"No hay actividad reciente"
+This business has no related project
+	
+	"Este negocio no tiene ningún proyecto relacionado"
+This business is eligible for our rapid financing offer without personal guarantee.
+	
+	"Este negocio es elegible...s bancarias ni seguros."
+This company is based in France, the project is presented by Lendix IFP (France) regulated by ACPR and conforms to French regulation.
+	
+	"Esta empresa tiene su se...la regulación francesa."
+This company is based in Spain, the project is presented by Lendix España PFP regulated by the Comisión Nacional del Mercado de Valores (CNMV) and conforms to Spanish regulation requirements.
+	
+	"Esta empresa tiene su se...la regulación francesa."
+This message will disappear in {{remaining}} {{time}}
+	
+	"Este mensaje desaparecer... {{remaining}} {{time}}"
+This page does not exist
+	
+	"Esta página no existe"
+This presentation will appear to your customers on the signup page.
+	
+	"Esta presentación aparec... la página de registro."
+This project does not have a description.
+	
+	"Este proyecto no tiene una descripción."
+This project's amortisation is deferred for the first {{months}} months. For the first {{months}} months, only interest will be paid. From the {{supmonth}}th month, both interest and principal will be repaid. You can find more details in the loan contract.
+	
+	"La amortización de este ...l contrato de préstamo."
+This user can edit access rights of other users
+	
+	"Este usuario puede admin...cceso de otros usuarios"
+This user can edit email addresses
+	
+	"Este usuario puede edita...s de correo electrónico"
+This user can edit phone numbers of other users
+	
+	"Este usuario puede edita...éfono de otros usuarios"
+This user can edit sponsorships
+	
+	"Este usuario puede editar los patrocinios"
+This user can edit the project contract
+	
+	"Este usuario puede modif...l contrato del proyecto"
+This user can edit the project health
+	
+	"Este usuario puede cambi...do de pago del proyecto"
+This user can export funding applications
+	
+	"Este usuario puede expor...citudes de financiación"
+This user can export the users list
+	
+	"Este usuario puede exportar la lista de usuarios"
+This user can invest without any limits
+	
+	"Este usuario puede invertir sin límite alguno"
+Time in business
+	
+	"Antigüedad de la empresa"
+To change your IBAN/BIC details, send us your new bank account identification.
+	
+	"Para cambiar sus datos b...s su nueva información."
+To check your identity, a 6-digit code has been sent to your mobile. Please input it below.
+	
+	"Para confirmar su identi...r, introdúzcalo debajo."
+To confirm your registration, please check your inbox and click the link in that email.
+	
+	"Para confirmar su inscri...n el enlace facilitado."
+To continue our analysis, we need the last three fiscal records and a debt repayment schedule.
+	
+	"Para continuar con nuest...registro de sus deudas."
+To continue you need to select a business
+	
+	"Para continuar es necesa...seleccionar una empresa"
+To continue, please provide us you personal information and correct them if needed
+	
+	"Para continuar, por favo...fíquela si es necesario"
+To credit your Lendix Account by bank transfer, please provide the following instructions to your bank. We will automatically inform you by email of the arrival of the funds. Bank transfers can take up to 2 to 5 business days.
+	
+	"Para efectuar una transf... de 2 a 5 días hábiles."
+To ensure that your session is secure, please enter your mobile phone number.
+	
+	"Para garantizar la segur...mero de teléfono móvil."
+To ensure that your session is secure, we have sent a 6 digits code to your phone number {{phone}}.
+	
+	"Para garantizar la segur...léfono móvil {{phone}}."
+To fully utilise your Lendix account, you must first check your investment skills.
+	
+	"Para el uso completo de ...ilidades como inversor."
+To get started, please fill your email address.
+	
+	"Para empezar, por favor ... su correo electrónico."
+To obtain these information, you can copy/paste the <strong>BANK</strong> and <strong>ADDRESS</strong> fields from <a href={{link}} target="_blank">here</a>.
+	
+	"Para obtener esta inform...rget="_blank">here</a>."
+To process your eligibility test, we need to verify your email address.
+	
+	"Para procesar su test de... de correo electrónico."
+To update your address, a proof of residence not older than three months;
+	
+	"Para actualizar su direc...ga menos de tres meses;"
+To update your phone number, specify the new number, we will verify it by calling you;
+	
+	"Para actualizar su númer...alo y lo verificaremos;"
+Total amount lent
+	
+	"Importe total prestado"
+Transaction failed
+	
+	"Error en la operación"
+Transaction id: {{id}}
+	
+	"ID de la operación: {{id}}"
+Transaction registered
+	
+	"Operación registrada"
+Transactions
+	
+	"Transacciones"
+Transactions history
+	
+	"Historial de transacciones"
+Transport
+	
+	"Transporte"
+Trim
+	
+	"Cortar"
+Turnover
+	
+	"Volumen de negocio"
+Turnover exceeding € 400 000.
+	
+	"Volumen de negocio superior a 400.000€"
+Tutorials
+	
+	"Tutoriales"
+Type in the security code
+	
+	"Escriba el código de seguridad"
+Unfortunately, you are not qualified right now to open a Lendix account, because it doesn't match your investment expectations.
+	
+	"Desafotunadamente, usted...ectativas de inversión."
+Unidentified browser
+	
+	"Navegador no identificado"
+Unique Mandate Reference
+	
+	"Referencia única de mandato"
+United Kingdom
+	
+	"Reino Unido"
+Unknown
+	
+	"Desconocido"
+Unlimited amount, within 3 days
+	
+	"Importe ilimitado dentro de tres días"
+Up to {{amount}} maximum
+	
+	"Importe máximo {{amount}}"
+Upcoming repayments
+	
+	"Sus próximos reembolsos"
+Update fee
+	
+	"Cuota actualizada"
+Upfront fee
+	
+	"Comisión inicial"
+Urgent
+	
+	"Inmediata"
+Use of cookies
+	
+	"Uso de cookies"
+User management
+	
+	"Administración de usuarios"
+Users
+	
+	"Usuarios"
+Validate
+	
+	"Validar"
+Validating your account
+	
+	"Validando su cuenta"
+Validation code
+	
+	"Código de validación"
+Verification problem?
+	
+	"¿Problemas de verificación?"
+Verify
+	
+	"Verificar"
+Verify your account
+	
+	"Verifique su Cuenta Lendix"
+Verify your mobile phone number
+	
+	"Confirme su número de teléfono"
+View my account
+	
+	"Ver mi cuenta"
+View the contract in
+	
+	"Ver el contrato en"
+View the other projects
+	
+	"Ver los otros proyectos"
+View your account
+	
+	"Ver su cuenta"
+Waiting to be sent
+	
+	"Esperando para ser enviado"
+Waiting to be sent:
+	
+	"Esperando para ser enviado:"
+Wallet ID
+	
+	"Wallet ID"
+Warning
+	
+	"Advertencia"
+Warning to investors who are not tax residents in {{country}}
+	
+	"Advertencia a inversores...sidentes en {{country}}"
+Warning:
+	
+	"Advertencia:"
+Warning: remember to include your wallet ID in one of the following headings: object or reference (depending on your bank)
+	
+	"Advertencia. Recuerde in...(dependiendo del banco)"
+Watch my contract
+	
+	"Ver mi contrato"
+Water bill
+	
+	"Factura del agua"
+We are examining your documents.
+	
+	"Estamos examinando su documentación."
+We are offering you a credit of {{amount}} on your Lendix Account, valid for a Lendix Account opened and credited with {{minimumInput}}.
+	
+	"Al abonar a su Cuenta Le...es invertir con Lendix!"
+We do not have access to a recent balance sheet to automatically determine its eligibility. Please send us by e-mail to <a href='{{mailto}}'>borrowers@lendix.com</a> the latest certified tax return so that we can check its eligibility.
+	
+	"No tenemos acceso a info...probar su elegibilidad."
+We do not store your personal bank information.
+	
+	"Lendix no guarda su información personal bancaria."
+We have all the elements necessary to review your identity. Check that all the documents you have provided are valid, then submit your file.
+	
+	"Tenemos todos los elemen...luego envíe su archivo."
+We have analyzed the financial data we have in our database. Unfortunately, your loan application at Lendix does not meet our eligibility criteria.
+	
+	"Hemos analizado los dato...terios de elegibilidad."
+We have analyzed the financial data we have in our database. Your loan application at Lendix meet our eligibility criteria.
+	
+	"Sobre la base de los dat...terios de elegibilidad."
+We only cover loans between 3 and 84 months
+	
+	"Sólo abarcamos préstamos de 3 a 84 meses"
+We will send a recovery link to your email address. By clicking on it, you'll be able to choose a new password.
+	
+	"Le enviaremos un enlace ...r una nueva contraseña."
+We've texted you a security code to your registered mobile phone number.
+	
+	"Le hemos enviado un códi...éfono móvil registrado."
+Website
+	
+	"Website"
+Welcome on Lendix
+	
+	"Bienvenido/a a Lendix"
+Welcome {{name}} !
+	
+	"¡Bienvenido/a {{name}}!"
+Welcome!
+	
+	"¡Bienvenido/a!"
+What is the borrower's turnover?
+	
+	"¿Cuál es volumen del negocio?"
+What is the priority of your loan?
+	
+	"¿Cuál es la prioridad de su préstamo?"
+What is your activity?
+	
+	"¿Cuál es su actividad?"
+What is your turnover?
+	
+	"¿Cuál es su volumen de negocio?"
+What kind of credit card do you want to use to add funds to your account?
+	
+	"¿Qué tipo de tarjeta de ...dos a su Cuenta Lendix?"
+Who can borrow on Lendix?
+	
+	"¿Quién puede pedir un crédito en Lendix?"
+Withdraw funds
+	
+	"Retirar fondos"
+Withdraw funds from your account
+	
+	"Retirar fondos de su Cuenta Lendix"
+Without personal guarantees
+	
+	"Sin garantías bancarias ni seguros"
+Workforce
+	
+	"Total de trabajadores"
+Write here specific clauses (max 5000 characters)
+	
+	"Escribir aquí cláusulas ...máximo 5000 caracteres)"
+Year
+	
+	"Año"
+Year of creation
+	
+	"Año de creación"
+Yes (+ 1 point)
+	
+	"Sí (+ 1 punto)"
+You are a foreign resident
+	
+	"Usted es un residente extranjero"
+You are eligible for a loan at Lendix
+	
+	"Usted es elegible para un préstamo en Lendix"
+You are required to accept the General Terms and Conditions
+	
+	"Es necesario que acepte ...y Condiciones Generales"
+You can add from {{min}} up to {{max}} to your account. You will automatically be redirected to our bank partner website.
+	
+	"Puede ingresar en su Cue...nuestro banco asociado."
+You can add funds to your account from {{min}} up to {{max}}. You will automatically be redirected to our bank partner website.
+	
+	"Puede abonar fondos a su...nuestro banco asociado."
+You can lend up to {{amount}} to your account without confirming your identity.
+	
+	"Puede prestar hasta {{am...confirmar su identidad."
+You can lend up to {{amount}} without confirming your identity. To remove this limitation, your account needs to be verified.
+	
+	"Puede prestar hasta {{am...ecesita ser verificada."
+You can lend {{amount}} to this project and your investment must be a multiple of {{multiple}}.
+	
+	"Puede prestar {{amount}}...ltiplo de {{multiple}}."
+You can lend {{amount}} to this project out of a maximum of {{max}} per project and your investment must be a multiple of {{multiple}}.
+	
+	"Puede prestar {{amount}}...ltiplo de {{multiple}}."
+You can lend {{amount}} to this project out of a maximum of {{max}} per project.
+	
+	"Puede prestar {{amount}}...e {{max}} por proyecto."
+You can lend {{amount}} to this project.
+	
+	"Puede prestar {{amount}} a este proyecto."
+You can now choose a new password
+	
+	"Ahora puede elegir una nueva contraseña"
+You can now consult their decision and accept or decline it.
+	
+	"Puede consultar la decis...aceptarla o rechazarla."
+You can now type your new password.
+	
+	"Ahora puede escribir la nueva contraseña."
+You can omit the legal form in the company name
+	
+	"Puede omitir la forma le...el nombre de la empresa"
+You can separate recipients using a semicolon
+	
+	"Puede separar los destin...lizando un punto y coma"
+You can't add a company
+	
+	"No puede añadir una empresa"
+You can't lend to an offline project.
+	
+	"No puede prestar a un proyecto que esté offline."
+You cannot add less than {{amount}} to your account.
+	
+	"No puede ingresar menos ...{amount}} en su cuenta."
+You cannot edit your own rights
+	
+	"No puede administrar sus propios derechos"
+You cannot submit your project at this time because it is incomplete.
+	
+	"No puede presentar su pr...porque está incompleto."
+You cannot withdraw money from your account because it is empty.
+	
+	"No puede retirar dinero ...ndix porque está vacía."
+You didn't send any documents yet
+	
+	"Todavía no ha enviado ningún documento"
+You generally favour investments which are…
+	
+	"Por lo general usted pre...as inversiones que son…"
+You got {{score}} points
+	
+	"Obtuvo {{score}} puntos"
+You have a {{type}} account
+	
+	"Usted tiene una cuenta {{type}}"
+You have already added {{amount}} to your account.
+	
+	"Ya ha añadido {{amount}} a su cuenta."
+You have already lent {{amount}}
+	
+	"Ya ha prestado {{amount}}"
+You have already lent {{amount}} and reached the maximum amount on this project.
+	
+	"Ya ha prestado {{amount}...ima para este proyecto."
+You have filled all the information necessary to verify this user. These information is ready to be sent to our bank partner.
+	
+	"Ha completado correctame...nuestro banco asociado."
+You have no affiliate
+	
+	"No tiene ningún afiliado"
+You have no customer
+	
+	"No tiene ningún cliente"
+You must check this user documents and complete the missing information in order to submit this application to our banking partner.
+	
+	"Compruebe la documentaci...nuestra banca asociada."
+You need a borrower account to create a new project
+	
+	"Se necesita una cuenta d...crear un nuevo proyecto"
+You need an administrator account to create a user
+	
+	"Necesita una cuenta de a...r para crear un usuario"
+You need to fill the business address first
+	
+	"Primero necesita llenar el domicilio profesional"
+You will be notified on the activity feed when an action from you on this project is needed.
+	
+	"Recibirá una notificació...proyecto sea necesaria."
+You will soon be able to consult their decision here.
+	
+	"En breve podrá consultar su decisión aquí."
+You're not yet eligible for a loan
+	
+	"A día de hoy, no es elegible para un préstamo"
+Your Lendix Account balance does not allow you to lend to this project.
+	
+	"El saldo disponible de s...estar en este proyecto."
+Your Lendix payment account
+	
+	"Su cuenta de pago de Lendix"
+Your account has been credited with {{amount}}
+	
+	"Su cuenta ha sido cargada con {{amount}}"
+Your account has been verified.
+	
+	"Su cuenta ha sido verificada."
+Your account is activated. To continue, please fill your birth date and your email address.
+	
+	"Su cuenta ha sido activa... su correo electrónico."
+Your account is empty
+	
+	"Su cuenta está vacía"
+Your account is limited
+	
+	"Su cuenta está limitada"
+Your account is not verified
+	
+	"Su cuenta no está verificada"
+Your account is now activated.
+	
+	"Su cuenta está activada."
+Your affiliate {{user}} joined Lendix
+	
+	"Su afiliado {{user}} se ... la comunidad de Lendix"
+Your balance does not allow you to lend on this project.
+	
+	"Su saldo disponible no l...estar en este proyecto."
+Your business sector <b>is under high vigilance</b>
+	
+	"Su sector de actividad e...ajo alta vigilancia</b>"
+Your businesses
+	
+	"Sus negocios"
+Your client {{user}} joined Lendix
+	
+	"Su cliente {{user}} se u... la comunidad de Lendix"
+Your company <b>has an additional repayment capacity</b>
+	
+	"Su empresa <b>tiene una ...bolso suplementaria</b>"
+Your company <b>is a commercial company</b>
+	
+	"Su empresa <b>es una sociedad comercial</b>"
+Your company <b>is facing bankruptcy proceedings</b>
+	
+	"Su empresa <b>está en pr...ento de insolvencia</b>"
+Your company <b>is not a commercial company</b>
+	
+	"Su empresa <b>no es una sociedad comercial</b>"
+Your company <b>is profitable</b>
+	
+	"Su empresa <b>es rentable</b>"
+Your company is not located in <b>Metropolitan France</b>
+	
+	"Su empresa no está ubica...ancia metropolitana</b>"
+Your company’s debt ratio <b>is too high</b>
+	
+	"El endeudamiento de su e...á demasiado elevado</b>"
+Your current balance is
+	
+	"Su saldo actual es"
+Your current password
+	
+	"Su contraseña actual"
+Your documents
+	
+	"Sus documentos"
+Your email address
+	
+	"Introduzca su correo electrónico"
+Your email address has been confirmed
+	
+	"Su correo electrónico ha sido confirmado"
+Your file is too big (max {{size}}MB)
+	
+	"Su archivo es demasiado pesado (max {{size}}MB)"
+Your file should have an extension
+	
+	"Su archivo debe tener una extensión"
+Your financial reports are not published in our databases. We could not conduct a financial analysis of your company. To continue, please send us your last fiscal records so that we can analyze your loan request.
+	
+	"Sus balances contables n... solicitud de préstamo."
+Your financing request will be handled by Lendix Factory, a wholly-owned subsidiary of Lendix SA, an asset management company authorised by the Autorité des Marchés Financiers (AMF) under number GP-16000030.
+	
+	"Su solicitud de préstamo...e registro GP-16000030."
+Your first loan is offered on @lendix when you register using this link: %link%
+	
+	"@Lendix_ES le ofrece su ...ndo este enlace: %link%"
+Your home address
+	
+	"Su domicilio"
+Your invitation has been sent
+	
+	"¡Su invitación ha sido enviada!"
+Your loan
+	
+	"Su préstamo"
+Your loan application
+	
+	"Su solicitud de préstamo"
+Your loans
+	
+	"Sus préstamos"
+Your message will be followed by a registration link
+	
+	"Un enlace de registro se...tinuación de su mensaje"
+Your new password
+	
+	"Su nueva contraseña"
+Your password
+	
+	"Su contraseña"
+Your password has been changed
+	
+	"Su contraseña ha sido modificada"
+Your password must contain at least one number and 8 characters.
+	
+	"La contraseña debe conte... número y 8 caracteres."
+Your password needs to be strong: it needs at least 8 characters, including at least a number.
+	
+	"Elija una contraseña seg...por lo menos un número."
+Your personal information
+	
+	"Sus datos personales"
+Your portfolio
+	
+	"Su cartera de préstamos"
+Your project has been accepted
+	
+	"Su proyecto ha sido aceptado"
+Your project has been studied by our analyst team but they need more information
+	
+	"Su proyecto ha sido estu...n información adicional"
+Your project name must contain at least 5 characters.
+	
+	"El nombre del proyecto d... al menos 5 caracteres."
+Your project will be drafted again
+	
+	"Su proyecto será redactado de nuevo"
+Your project will be studied by our analyst team. Their decision will be available on this page and you will be able to accept, discuss or decline it.
+	
+	"Su proyecto será estudia...iscutirla o rechazarla."
+Your project will go online later
+	
+	"Su proyecto será publicado más adelante"
+Your project will soon be online
+	
+	"Su proyecto será publicado en breve"
+Your projects
+	
+	"Sus proyectos"
+Your registration is completed
+	
+	" El registro ha sido completado."
+Your registration is pending validation
+	
+	"Su inscripción está pendiente de validación"
+Your sponsor code (optional)
+	
+	"Código de patrocinador (opcional)"
+Your turnover is below than <b>{{amount}}</b>
+	
+	"Su facturación es inferior a <b>{{amount}}</b>"
+Your turnover is over <b>{{amount}}</b>
+	
+	"Su facturación es superior a <b>{{amount}}</b>"
+Your withdrawal has been successfully processed
+	
+	"Su retiro se ha procesado correctamente"
+Zip code
+	
+	"Código postal"
+Zip code or city
+	
+	"Código postal o ciudad"
+affiliate
+	
+	"afiliado"
+all projects
+	
+	"todos los proyectos"
+all transactions
+	
+	"todas las transacciones"
+an analyst
+	
+	"un analista"
+and offer your beneficiary its first loan! When a person registers on Lendix using your promotion code and credit €500 on his account, you both receive €20 to lend on projects published by Lendix.
+	
+	"¡y ofrezca a su benefici... publicados por Lendix."
+at {{hours}}:{{minutes}}
+	
+	"a las {{hours}}:{{minutes}}"
+available balance on your account
+	
+	"saldo disponible en su Cuenta Lendix"
+bonuses
+	
+	"bonificaciones"
+borrower
+	
+	"Empresa cliente de Lendix"
+cancelled
+	
+	"cancelado"
+capital
+	
+	"capital"
+capital still outstanding
+	
+	"capital pendiente de pago"
+cash inputs
+	
+	"transferencia de fondos"
+cash withdrawals
+	
+	"retiros"
+column
+	
+	"columna"
+completed
+	
+	"completado"
+days
+	
+	"días"
+document
+	
+	"documento"
+during the first {{months}} months
+	
+	"durante los primeros {{months}} meses"
+during the following months
+	
+	"durante los siguientes meses"
+eligible
+	
+	"elegible"
+estimated
+	
+	"estimada"
+estimated monthly gross payment
+	
+	"mensualidad bruta estimada"
+every single project presented on Lendix is guaranteed to be 100% funded, learn more
+	
+	"100% de los proyectos ap...inanciados, aprenda más"
+failed
+	
+	"error en la operación"
+future repayments
+	
+	"pagos futuros"
+gross
+	
+	"bruta"
+gross interest
+	
+	"intereses brutos"
+hours
+	
+	"horas"
+https://www.iban.com
+	
+	"https://es.iban.com"
+image
+	
+	"imagen"
+incl {{amount}} underway
+	
+	"incluidos {{amount}} en progreso"
+incoming
+	
+	"en espera"
+incomplete
+	
+	"incompleta"
+invested on this project
+	
+	"invertidos en este proyecto"
+late (less than 30 days)
+	
+	"con menos de 30 dí­as de retraso"
+late (over 120 days)
+	
+	"con más de 120 días de retraso"
+late (over 30 days)
+	
+	"con más de 30 días de retraso"
+learn more about how we grade our projects
+	
+	"aprenda más sobre nuestr...lasificar los proyectos"
+line
+	
+	"fila"
+live
+	
+	"al día"
+loans
+	
+	"préstamos"
+mailto:borrowers@lendix.com?subject={{code}} - {{user}}&body=Hello,%0A%0AFollowing%20my%20eligibility%20test,%20you%20will%20find%20attached%20the%20necessary%20documents%20to%20the%20development%20of%20this%20project:%0A%0A1.%20Description%20of%20the%20company%20and%20group%20organisation;%0A2.%20The%203%20last%20balance%20sheets%20signed%20by%20a%20certified%20accountant;%0A3.%20A%20debt%20schedule%20(including%20operational%20and%20financial%20leasing);%0A4.%20Project%20description%20and%20activity%20forecast%20(especially%20in%20the%20case%20of%20an%20acquisition);%0A5.%20The%203%20last%20bank%20account%20statements%20from%20which%20direct%20debits%20will%20be%20made%20(main%20account);%0A6.%20Name%20and%20contact%20of%20the%20certified%20accountant;%0A7.%20Cash%20flow%20forecast%20(term%20%3C%20or%20=%20to%2012%20months).%0A%0AKind%20regards,%0A%0A{{user}}%0A%0A
+	
+	"mailto:empresas@lendix.c...es,%0A%0A{{user}}%0A%0A"
+minutes
+	
+	"minutos"
+months
+	
+	"meses"
+net interest income
+	
+	"intereses netos"
+not confirmed
+	
+	"no confirmada"
+not transferred to Lendix
+	
+	"no transferido a Lendix"
+of the borrower
+	
+	"de la Empresa cliente de Lendix"
+of which Capital
+	
+	"Capital incluido"
+of which Interest
+	
+	"Intereses incluidos"
+of which {{percentage}} of qualified investors and institutional
+	
+	"de los cuales {{percenta...ersores institucionales"
+on
+	
+	" en"
+or send us an email at <a href="mailto:contact@lendix.com">contact@lendix.com</a> to update these informations.
+	
+	"o por email en <a href="...lizar esta información."
+partner
+	
+	"socio"
+past repayments
+	
+	"pagos pasados"
+per month
+	
+	"por mes"
+per year
+	
+	"por año"
+projects financed
+	
+	"proyectos financiados"
+received bonus
+	
+	"bonificaciones recibidas"
+recently
+	
+	"recientemente"
+refused
+	
+	"rechazada"
+repayments
+	
+	"pagos"
+second
+	
+	"segundo"
+seconds
+	
+	"segundos"
+starting at
+	
+	"a partir de"
+total
+	
+	"total"
+total amount lent
+	
+	"importe total prestado"
+transferred to Lendix
+	
+	"transferido a Lendix"
+unknown
+	
+	"desconocida"
+years
+	
+	"años"
+{{browser}} on {{os}} {{version}}
+	
+	"{{browser}} en {{os}} {{version}}"
+{{count}} months
+	
+	"{{count}} meses"
+{{count}} {{duration}}
+	
+	"{{count}} {{duration}}"
+{{count}} {{duration}} ago
+	
+	"hace {{count}} {{duration}}"
+{{creator}} accepted the {{agreement}} user agreement
+	
+	"{{creator}} aceptó el ac... usuario {{agreement}} "
+{{creator}} changed {{user}} status to {{status}}
+	
+	"{{creator}} cambió el es...e {{user}} a {{status}}"
+{{creator}} has modified a property of {{user}}
+	
+	"{{creator}} ha modificad...a propiedad de {{user}}"
+{{creator}} has modified {{user}}'s email address
+	
+	"{{creator}} ha modificad...electrónico de {{user}}"
+{{creator}} has modified {{user}}'s rights
+	
+	"{{creator}} ha modificado los derechos de {{user}}"
+{{creator}} has modified {{user}}'s sponsorship
+	
+	"{{creator}} ha modificado el patrocino de {{user}}"
+{{duration}} months
+	
+	"{{duration}} meses"
+{{elapsed}} ({{date}})
+	
+	"{{elapsed}} ({{date}})"
+{{field}} is not valid
+	
+	"{{field}} no es válido"
+{{grade}} risk
+	
+	"riesgo {{grade}}"
+{{left}} remaining questions
+	
+	"{{left}} preguntas restantes"
+{{min}} to {{max}}
+	
+	"{{min}} al {{max}}"
+{{months}} months remaining
+	
+	"{{months}} meses restantes"
+{{name}} ({{year}})
+	
+	"{{name}} ({{year}})"
+{{number}} months
+	
+	"{{number}} meses"
+{{score}} score
+	
+	"calificación {{score}}"
+{{sent}} on 3 sent
+	
+	"{{sent}} en 3 enviados"
+{{state}} funding application
+	
+	"{{state}} peticiones de financiación"
+{{state}} loan offer
+	
+	"Oferta de préstamo {{state}}"
+{{state}} transaction
+	
+	"{{state}} transacción"
+{{type}} <b>{{id}}</b>
+	
+	"{{type}} <b>{{id}}</b>"
+{{user}} edited the {{project}} health, from {{before}} to {{after}}
+	
+	"{{user}} ha editado la s... {{before}} a {{after}}"
+{{user}} has cancelled a loan offer on {{project}}
+	
+	"{{user}} ha cancelado un...préstamo en {{project}}"
+{{user}} has credited his account and you received a bonus of {{amount}}
+	
+	"{{user}} ha efectuado un...ificación de {{amount}}"
+{{user}} has credited {{amount}} on his account
+	
+	"{{user}} ha ingresado {{amount}} en su cuenta"
+{{user}} has invested {{amount}} on the project {{project}}
+	
+	"{{user}} ha invertido {{...el proyecto {{project}}"
+{{user}} has modified his password
+	
+	"{{user}} ha modificado su contraseña"
+{{user}} has modified the property {{property}} of {{project}} from {{old}} to {{new}}
+	
+	"{{user}} ha modificado l...}, de {{old}} a {{new}}"
+{{user}} has received a bonus of {{amount}}
+	
+	"{{user}} ha recibido una...ificación de {{amount}}"
+{{user}} has received a repayment of {{amount}}
+	
+	"{{user}} ha recibido un pago de {{amount}}"
+{{user}} has received a repayment of {{amount}} including {{netInterest}} of net interest
+	
+	"{{user}} ha recibido un ...st}} de intereses netos"
+{{user}} has withdrawn {{amount}} from his account
+	
+	"{{user}} ha retirado {{a...t}} de su Cuenta Lendix"
+{{user}} joined Lendix
+	
+	"{{user}} se unió a la comunidad de Lendix"
+{{user}} posted a new message to the project {{project}}
+	
+	"{{user}} publicó un nuev...el proyecto {{project}}"
+{{user}} won't be able to log in again and won't appear in the user list either.
+	
+	"{{user}} no podrá inicia...n la lista de usuarios."
+{{user}}'s {{service}} account has been merged with your Lendix account

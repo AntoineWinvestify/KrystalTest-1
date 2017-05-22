@@ -1,0 +1,69 @@
+/********************************************************************
+Custom CSS - megaKit
+********************************************************************/
+
+.li-navbar {
+    float: left;
+    margin-left: 10px;
+}
+
+.li-navbar > a {
+    color: #003300;
+} 
+
+.tableCookie{
+    border: 1px solid gray;
+    width: 95%;
+    margin: 0 auto;
+}
+td {
+    padding: 5px;
+    text-align: center;
+}
+.tableCookieHeader {
+    padding: 2px 0px;
+}
+
+.thCookie {
+    font-weight: bold;
+    text-align: center;
+    width: 25%;
+    padding: 5px;
+    font-size: large;
+}
+
+.light {
+    background-color: #99ff99;
+    font-weight: bold;
+    text-align: center;
+}
+.tdCookie {
+    font-style: italic;
+}
+
+.blue {
+    border: 2px solid rgb(90, 204, 90) !important;
+    border-radius: 50px !important;
+    text-transform: none !important; 
+    font-weight: bold;
+}
+
+.redBorder {
+    border-color: #ff5886 !important;
+}
+
+.redBorderText{
+    color: #ff5886 !important;
+    margin-top: -15px; 
+    margin-left: 25px; 
+    padding-bottom: 20px;
+}
+
+textarea[name="contactFormMessage"] {
+  resize: none;
+}
+
+.responsiveImg {
+  display:block;
+  width:100%;
+}
