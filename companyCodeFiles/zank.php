@@ -226,6 +226,268 @@ class zank extends p2pCompany {
         }
         return $totalArray;
     }
+    
+    /**
+    * Collects the investment data of the user
+    *	
+    * @param string $str   It is the web converted to string of the company
+    * @return array	Data of each investment of the user as an element of an array
+    */
+    function collectUserInvestmentData($str) {
+    
+    
+        switch ($this->idForSwitch) {
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpage();  // needed so I can read the csrf code
+                break;
+            case 1:
+                //Change account
+                $this->credentials['_username'] = $this->user;
+                $this->credentials['_password'] = $this->password;
+                $this->credentials['_username'] = "Klauskuk@gmail.com";
+                $this->credentials['_password'] = "P2Pes2017";
+
+                // get login page
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $forms = $dom->getElementsByTagName('form');
+                $this->verifyNodeHasElements($forms);
+                $index = 0;
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                foreach ($forms as $form) {
+                    $index = $index + 1;
+                    if ($index == 1) {
+                        continue;
+                    }
+                    $inputs = $form->getElementsByTagName('input');
+                    $this->verifyNodeHasElements($inputs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    
+                    foreach ($inputs as $input) {
+                        if (!empty($input->getAttribute('value'))) {  // look for the csrf code
+                            $this->credentials[$name] = $input->getAttribute('value');
+                        }
+                    }
+                    
+                }
+                $this->idForSwitch++;
+                $this->doCompanyLogin($this->credentials);
+                break;
+                
+                
+            case 2:
+                //This is an error because we don't verify if we have entered
+                if ($str == 200 or $str == 103) {
+                    //echo "CODE 103 or 200 received, so do it again , OK <br>";
+                    $this->idForSwitch++;
+                    $this->doCompanyLogin($this->credentials);
+                    //$this->mainPortalPage = $str;
+                    $this->resultMiZank = true;
+                }
+                break;
+            case 3:
+                
+                $this->mainPortalPage = $str;
+                
+                //echo "user = $user and pw = $password<br>";
+                if (!$this->resultMiZank) {			// Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__  . " \n";
+                    $tracings .= "Zank login: userName =  " . $this->config['company_username'] .  ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    //fix this problem
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                echo "LOGIN CONFIRMED";
+                // We are at page: "MI ZANK". Look for the "internal user identification"
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($this->mainPortalPage); // obtained in the function	"companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+
+                $scripts = $dom->getElementsByTagName('script');
+                $this->verifyNodeHasElements($scripts);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                foreach ($scripts as $script) {
+                    $position = stripos($script->nodeValue, "$.ajax");
+                    if ($position !== false) {  // We found an entry
+                        echo "ENTRY FOUND";
+                        break;
+                    }
+                }
+                $testArray = explode(":", $script->nodeValue);
+                $this->print_r2($testArray);
+                $this->userId = trim(preg_replace('/\D/', ' ', $testArray[4]));
+
+                if (!is_numeric($this->userId)) {
+                    echo "<br>An error has occured, could not find internal userId<br>";
+                }
+
+                $needle = "kpi_panel";
+
+                $index = 0;
+                $ps = $dom->getElementsByTagName('p');
+                /*if ($ps.length > 0) {
+                    Verify there are som elements
+                }*/
+                $this->verifyNodeHasElements($ps);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($ps as $p) {
+                    $class = trim($p->getAttribute('class'));
+                    $position = stripos($class, $needle);
+                    if ($position !== false) {  // found a kpi
+                        switch ($index) {
+                            case 0:
+                                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 1:
+                                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 2:
+                                $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 3:
+                                $this->tempArray['global']['profitibility'] = $this->getPercentage($p->nodeValue);
+                                break;
+                        }
+                        $index++;
+                    }
+                }
+                // goto page "MI CARTERA"
+                $this->idForSwitch++;
+                $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed	
+                break;
+                
+            case 4:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                $needle = "kpi_panel";
+                $index = 0;
+
+                // Look for the kpi's 
+                $ps = $dom->getElementsByTagName('p');
+                $this->verifyNodeHasElements($ps);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($ps as $p) {
+                    $class = trim($p->getAttribute('class'));
+                    $position = stripos($class, $needle);
+                    if ($position !== false) {  // found a kpi
+                        switch ($index) {
+                            case 0:
+                                $this->tempArray['global']['totalInvestments'] = $this->getMonetaryValue($p->nodeValue); // Money still tied up in active investment(s)
+                                break;
+                            case 1:
+                                $this->tempArray['global']['activeInvestments'] = $p->nodeValue; // The number of active investments
+                                break;
+                        }
+                        $index++;
+                    }
+                }
+
+                // Download the list of the individual investments of this user
+                $this->idForSwitch++;
+                $this->getCompanyWebpage();
+                break;
+            case 5:
+                $url = array_shift($this->urlSequence);
+                $url = $url . $this->userId . "/0";
+                $this->idForSwitch++;
+                //Add here the Edu's adaption to the url
+                $this->getCompanyWebpage($url);
+                break;
+            case 6:
+                $temp = json_decode($str, $assoc = true);
+                $this->numberOfInvestments = 0;
+                foreach ($temp['data'] as $key => $item) {  // mapping of the data to a generic, own format.
+                    // Keep all which don't have status == "amortizado"
+                    //$this->data1[$key]['status'] = 10;    // dummy value											
+                    if (strncasecmp($item['Estado'], "Retrasado")) {
+                        $this->data1[$key]['status'] = PAYMENT_DELAYED;
+                    }
+                    if (strncasecmp($item['Estado'], "amortizaci")) {
+                        $this->data1[$key]['status'] = OK;
+                    }
+
+                    if (strpos($item['Estado'], "Amortizado")) {
+                        $this->data1[$key]['status'] = TERMINATED_OK;
+                    }
+
+                    //		if (!($data1[$key]['status'] <> OK OR $data1[$key]['status'] <> PAYMENT_DELAYED)) {
+                    //			continue;									// flush non required loans
+                    //		echo "FLUSH";
+                    //		}
+
+                    if ($this->data1[$key]['status'] == TERMINATED_OK) {
+                        unset($this->data1[$key]);
+                        continue;
+                    }
+
+                    $this->numberOfInvestments++;
+                    $day = 1; //substr($item['Fecha'],0,2);
+                    
+                    if ($item['Plazo'] <= 50) {
+                        $month = substr($item['Fecha'], 3, 2) + 1;
+
+                        $year = substr($item['Fecha'], 6, 4);
+                        if ($month == 13) {
+                            $month = 1;
+                            $year++;
+                        }
+                    }
+                    if ($item['Plazo'] >= 50) {
+                        $month = substr($item['Fecha'], 3, 2) - 1;
+
+                        $year = substr($item['Fecha'], 6, 4);
+                        if ($month == 0) {
+                            $month = 1;
+                        }
+                    }
+
+                    //if($month==13){$month=1; $year = $year+1; } 
+                    $date = $year . "/" . $month . "/" . $day;
+                    $date = date('d/m/Y', strtotime("+" . $item['Plazo'] . "months", strtotime($date)));
+                    //$date = date('d/m/Y', strtotime("+".$item['Plazo']." months", strtotime($date)));
+
+                    $this->data1[$key]['loanId'] = $item['Prestamo'];
+                    $this->data1[$key]['dateOriginal'] = $item['Fecha'];
+                    $this->data1[$key]['date'] = $date;
+                    $this->data1[$key]['interest'] = $this->getPercentage($item['Rentabilidad']);
+                    $this->data1[$key]['invested'] = $this->getMonetaryValue($item['Inversion']);
+                    $this->data1[$key]['amortized'] = $this->getMonetaryValue($item['Amortizado']);
+                    $this->data1[$key]['profitGained'] = $this->getPercentage($item['InteresesOrdinarios']);
+                    $this->data1[$key]['duration'] = $item['Plazo'] . " Meses";
+                    $this->data1[$key]['commission'] = $item['Comission'];
+                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
+                }
+                $this->data1 = array_values($this->data1);
+                $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                //echo __FILE__ . " " . __LINE__ . "<br>";
+                $this->tempArray['investments'] = $this->data1;
+                $this->print_r2($this->tempArray);
+                return $this->tempArray;                    
+        }
+    }
 
     /**
      *
@@ -233,7 +495,7 @@ class zank extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentData($user, $password) {
+    function collectUserInvestmentDataSequencial($user, $password) {
 // velascogestorpatrimonial@hotmail.com
 // D547336  wrong
         $resultMiZank = $this->companyUserLogin($user, $password);
