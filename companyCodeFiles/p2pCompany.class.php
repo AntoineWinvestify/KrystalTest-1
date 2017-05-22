@@ -1059,6 +1059,117 @@ function print_r2($val){
         echo  '</pre>';
 }
 
+    /**
+    *
+    *	Sets the url data for the sequence if something fails. Any
+    *	existing data will be overwritten
+    *
+    *	@param 	array	urlData		array of all the urls to be loaded		
+    *
+    */
+    function setUrlSequenceBackup($urlSequence){
+            $this->urlSequenceBackup = $urlSequence;	
+    }
+
+
+     /**
+     *	Gets the url backup data for the sequence if something fails.
+     *
+     *      @return array	urlData		array of all the urls to be loaded
+     */
+    function getUrlSequenceBackup(){
+            return $this->urlSequenceBackup;	
+    }
+
+
+    /**
+     * Sets the controller that uses the queue
+     * 
+     * @param object $marketPlacesController It is the controller to be used
+     */
+    public function setMarketPlaces($marketPlacesController) {
+        $this->marketplaces = $marketPlacesController;
+    }
+    
+    /**
+     * Sets the id's company on the queue
+     * 
+     * @param number $id It is the id's company on the queue
+     */
+    public function setIdForQueue($id) {
+        $this->idForQueue = $id;
+    }
+    
+    /**
+     * Gets the id for the function of collectUserInvestmentData
+     * 
+     * @return number The id for the switch
+     */
+    public function getIdForSwitch() {
+        return $this->idForSwitch;
+    }
+    
+    /**
+     * Sets the id for the function of collectUserInvestmentData
+     * 
+     * @param number $id It is the id for the switch
+     */
+    public function setIdForSwitch($id) {
+        $this->idForSwitch = $id;
+    }
+    
+    /**
+     * Gets the investor's username
+     * 
+     * @return string It is the investor's username
+     */
+    public function getUser() {
+        return $this->user;
+    }
+    
+    /**
+     * Sets the investor's username
+     * 
+     * @param string $user It is the investor's username
+     */
+    public function setUser($user) {
+        $this->user = $user;
+    }
+    
+    /**
+     * Gets the investor's password
+     * 
+     * @return string It is the investor's password
+     */
+    public function getPassword() {
+        return $this->password;
+    }
+    
+    /**
+     * Sets the investor's password
+     * 
+     * @param string $password It is the investor's password 
+     */
+    public function setPassword($password) {
+        $this->password = $password;
+    }
+    
+    public function getTries() {
+        return $this->tries;
+    }
+    
+    public function setTries($tries) {
+        $this->tries = $tries;
+    }
+    
+    public function getError($line, $file) {
+        $this->tempArray['global']['error'] = "ERROR START<br>"
+                . "An error has ocurred with the data <br> on the line " . $line . " and the file " . $file
+                . "<br> The error was caused in the urlsequence: " . $this->errorInfo . "<br>"
+                . "ERROR FINISHED<br>";
+        return $this->tempArray;
+    }
+
 
 }
 ?>
