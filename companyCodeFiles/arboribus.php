@@ -24,26 +24,29 @@
  * @date 2016-11-05
  * @package
 
+function calculateLoanCost()										[Not OK]
+function collectCompanyMarketplaceData()								[OK, tested]
+function companyUserLogin()										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+function companyUserLogout()										[Not OK, testing]
+parallelization on collectUserInvestmentData                                                            [OK, testing]
 
   2016-11-05	  version 2016_0.1
   Basic version
-  function calculateLoanCost()											[Not OK]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()												[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
-  function companyUserLogout()											[Not yet OK]
 
-
-  2017-3-27
+  2017-03-27
   line 251 - changed parameter for url.
 
-  2017-3-18
+  2017-03-18
   Captured exceptions for table errors.
 
-
-  2017-4-18
+  2017-04-18
   Login error fixed always forcing login
  * They forced logout after a login
+ 
+ 2017-04-19
+  Added parallelization
+ * Added verification of elements on userinvestmentdata
   PENDING:
   logout procedure
 
