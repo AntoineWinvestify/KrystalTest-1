@@ -25,13 +25,15 @@
 * @package
 
 
+function calculateLoanCost()										[OK, tested]
+function collectCompanyMarketplaceData()								[OK, tested]
+function companyUserLogin()										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+function isNewEntry()											[Not Done]
+parallelization                                                                                         [OK, tested]
+
 2016-08-29	  version 2016_0.1
 Basic version
-function calculateLoanCost()                                                            	[OK, tested]
-function collectCompanyMarketplaceData()								[OK]
-function companyUserLogin()									[OK, tested]
-function collectUserInvestmentData()								[Not OK, not tested]
-function isNewEntry()										[Not Done]
 
 2017-02-16		version 2017_0.1
 
@@ -39,6 +41,14 @@ function isNewEntry()										[Not Done]
 ['marketplace_name'] field, it contained  ...CONSTRUCCIONES ALVEDRO SL "SYCA" (extra "") in title		[OK, tested]
 
 Added loading of ALL investments
+
+2017-04-15          version 2017_0.2
+ * Added modification to collectCompanyMarketplaceData(), added factoring with new for
+
+2017-05-16          version 2017_0.3
+ * Added parallelization
+ * Addde dom verification
+
 
 
 
