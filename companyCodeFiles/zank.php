@@ -274,7 +274,7 @@ class zank extends p2pCompany {
         foreach ($ps as $p) {
             $class = trim($p->getAttribute('class'));
             $position = stripos($class, $needle);
-            
+
             if ($position !== false) {  // found a kpi
                 switch ($index) {
                     case 0:
@@ -352,7 +352,7 @@ class zank extends p2pCompany {
                 unset($data1[$key]);
                 continue;
             }
-            
+
             $numberOfInvestments = $numberOfInvestments + 1;
             $day = 1; //substr($item['Fecha'],0,2);
             if ($item['Plazo'] <= 50) {
@@ -372,8 +372,8 @@ class zank extends p2pCompany {
                     $month = 1;
                 }
             }
-            
-            
+
+
             //if($month==13){$month=1; $year = $year+1; } 
             $date = $year . "/" . $month . "/" . $day;
             $date = date('d/m/Y', strtotime("+" . $item['Plazo'] . "months", strtotime($date)));
@@ -463,100 +463,100 @@ class zank extends p2pCompany {
 
     function getCompanyWebpage($url) {
 
-  if (empty($url)) {
-    $url = array_shift($this->urlSequence);
-  }
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
+        }
 
-  if (!empty($this->testConfig['active']) == true) {    // test system active, so read input from prepared files
-    if (!empty($this->testConfig['siteReadings'])) {
-      $currentScreen = array_shift($this->testConfig['siteReadings']);
-      echo "currentScreen = $currentScreen";
-      $str = file_get_contents($currentScreen);
-      
-      if ($str === false) {
-        echo "cannot find file<br>";
-        exit;
-      }
-      echo "TestSystem: file = $currentScreen<br>";
-      return $str;
-    }
-  }
+        if (!empty($this->testConfig['active']) == true) {    // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                echo "currentScreen = $currentScreen";
+                $str = file_get_contents($currentScreen);
 
-  $curl = curl_init(); 
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
+        }
 
-    if (!$curl) {
-    $msg = __FILE__ . " " . __LINE__  . "Could not initialize cURL handle for url: " . $url . " \n";
-    $msg = $msg . " \n";
-    $this->logToFile("Warning", $msg);
-    exit;   
-    }
+        $curl = curl_init();
 
-  if ($this->config['postMessage'] == true) {
-    curl_setopt($curl, CURLOPT_POST, true);
+        if (!$curl) {
+            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
+            $msg = $msg . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+        if ($this->config['postMessage'] == true) {
+            curl_setopt($curl, CURLOPT_POST, true);
 //    echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
-  }
+        }
 
 // check if extra headers have to be added to the http message  
-  if (!empty($this->headers)) {
-    echo "EXTRA HEADERS TO BE ADDED<br>";
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-    unset($this->headers);      // reset fields
-  } 
+        if (!empty($this->headers)) {
+            echo "EXTRA HEADERS TO BE ADDED<br>";
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+            unset($this->headers);      // reset fields
+        }
 
-        
+
         $form = ["length" => 100];
-        foreach ( $form as $key => $value) {
-      $postItems[] = $key . '=' . $value;
-  }
-        $postString = implode ('&', $postItems);
+        foreach ($form as $key => $value) {
+            $postItems[] = $key . '=' . $value;
+        }
+        $postString = implode('&', $postItems);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-        
-        
-    // Set the file URL to fetch through cURL
-  curl_setopt($curl, CURLOPT_URL, $url);
-  
-    // Set a different user agent string (Googlebot)
-    curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0'); 
- 
-    // Follow redirects, if any
-    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); 
- 
-    // Fail the cURL request if response code = 400 (like 404 errors) 
-    curl_setopt($curl, CURLOPT_FAILONERROR, true); 
 
-    // Return the actual result of the curl result instead of success code
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
- 
-    // Wait for 10 seconds to connect, set 0 to wait indefinitely
-    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
- 
-    // Execute the cURL request for a maximum of 50 seconds
-    curl_setopt($curl, CURLOPT_TIMEOUT, 100);
- 
-    // Do not check the SSL certificates
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
 
-    $result = curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');   // important
-    $result = curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');    // Important
+        // Set the file URL to fetch through cURL
+        curl_setopt($curl, CURLOPT_URL, $url);
 
-    // Fetch the URL and save the content
-    $str = curl_exec($curl);
-  if (!empty($this->testConfig['active']) == true) {  
-      print_r(curl_getinfo($curl));
-    echo "<br>";
-    print_r(curl_error($curl));
-    echo "<br>";
-  }
+        // Set a different user agent string (Googlebot)
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
 
-  if ($this->config['appDebug'] == true) {
-    echo "VISITED COMPANY URL = $url <br>";
-  }
-  if ($this->config['tracingActive'] == true) {
-    $this->doTracing($this->config['traceID'], "WEBPAGE" , $str);
-  }
-  return($str);
-}
+        // Follow redirects, if any
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        // Fail the cURL request if response code = 400 (like 404 errors) 
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+        // Return the actual result of the curl result instead of success code
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        // Wait for 10 seconds to connect, set 0 to wait indefinitely
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+
+        // Execute the cURL request for a maximum of 50 seconds
+        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+
+        // Do not check the SSL certificates
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');   // important
+        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');    // Important
+        // Fetch the URL and save the content
+        $str = curl_exec($curl);
+        if (!empty($this->testConfig['active']) == true) {
+            print_r(curl_getinfo($curl));
+            echo "<br>";
+            print_r(curl_error($curl));
+            echo "<br>";
+        }
+
+        if ($this->config['appDebug'] == true) {
+            echo "VISITED COMPANY URL = $url <br>";
+        }
+        if ($this->config['tracingActive'] == true) {
+            $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
+        }
+        return($str);
+    }
+
 }
 
 ?> 
