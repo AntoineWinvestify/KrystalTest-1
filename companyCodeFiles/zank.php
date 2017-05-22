@@ -726,7 +726,7 @@ class zank extends p2pCompany {
         return true;
     }
 
-    function getCompanyWebpage($url) {
+    /*function getCompanyWebpage($url) {
 
   if (empty($url)) {
     $url = array_shift($this->urlSequence);
@@ -821,7 +821,7 @@ class zank extends p2pCompany {
     $this->doTracing($this->config['traceID'], "WEBPAGE" , $str);
   }
   return($str);
-}
+}*/
 }
 
 ?> 
