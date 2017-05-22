@@ -585,9 +585,34 @@ class arboribus extends p2pCompany {
      * 	@returnboolean	true: user has logged out 
      * 	
      */
-    function companyUserLogout() {
-        return true;
-        $str = $this->doCompanyLogout();
+    function companyUserLogout($str) {
+        $dom = new DOMDocument;
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $form_login = $dom->getElementById('form-login');
+        $this->verifyNodeHasElements($form_login);
+        if (!$this->hasElements) {
+            return $this->tempArray['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
+        }
+        $inputs = $form_login->getElementsByTagName('input');
+        $this->verifyNodeHasElements($inputs);
+        if (!$this->hasElements) {
+            return $this->tempArray['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
+        }
+        $credentials = array();
+        foreach ($inputs as $input) {
+            if (!empty($input->getAttribute('name'))) {  // check all hidden input fields for name and value
+                $name = $input->getAttribute('name');
+                $value = $input->getAttribute('value');
+                $credentials[$name] = $value;
+                //1 $credentials['option'] = "com_users";
+                //2 $credentials['task'] = "user.logout";
+                //3 $credentials['return'] = "aW5kZXgucGhwP0l0ZW1pZD0xMDE=";
+                //4 $credentials['70911af336f4c9937561a76c4d9217ad'] = "1"; 
+            }
+        }
+        $this->doCompanyLogout($credentials);
         return true;
     }
 
