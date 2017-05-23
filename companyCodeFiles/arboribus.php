@@ -178,7 +178,7 @@ class arboribus extends p2pCompany {
             /////////////LOGIN
             case 0:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();
+                $this->getCompanyWebpageMultiCurl();
                 //$resultMyArboribus = $this->companyUserLogin($user, $password);
                 break;
             case 1:
@@ -201,11 +201,11 @@ class arboribus extends p2pCompany {
                     }
                 }
                 $this->idForSwitch++;
-                $this->doCompanyLogin($this->credentials);
+                $this->doCompanyLoginMultiCurl($this->credentials);
                 break;
             case 2:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 3:
                 $dom = new DOMDocument;
@@ -275,7 +275,7 @@ class arboribus extends p2pCompany {
                 $this->tempArray['global']['profitibility'] = $this->getPercentage($h3s[0]->nodeValue);
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();     // list of investments as JSON
+                $this->getCompanyWebpageMultiCurl();     // list of investments as JSON
                 break;
             case 4:
                 $strListInvestments = $str;
@@ -303,7 +303,7 @@ class arboribus extends p2pCompany {
                     $this->numberOfInvestments++;
                 }
                 $this->idForSwitch++;
-                $this->getCompanyWebpage($this->tempUrl[$this->investmentSequence]);
+                $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                 break;
             case 5:
                 //echo $str;
@@ -381,7 +381,7 @@ class arboribus extends p2pCompany {
                 if ($this->numberOfInvestments != $this->investmentSequence) {
                     $this->idForSwitch = 5;
                     $this->investmentSequence++;
-                    $this->getCompanyWebpage($this->tempUrl[$this->investmentSequence]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                     break;
                 }
                 else {
@@ -661,7 +661,7 @@ class arboribus extends p2pCompany {
                 //4 $credentials['70911af336f4c9937561a76c4d9217ad'] = "1"; 
             }
         }
-        $this->doCompanyLogout($credentials);
+        $this->doCompanyLogoutMultiCurl($credentials);
         return true;
     }
 
