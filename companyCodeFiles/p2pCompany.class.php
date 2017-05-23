@@ -837,7 +837,7 @@ function getDurationValue($inputValue) {
 *	$list is empty if no match was found
 *
 */
-public function getElements($dom, $tag, $attribute, $value) {
+/*public function getElements($dom, $tag, $attribute, $value) {
 
 	$list = array();
 		
@@ -853,6 +853,46 @@ public function getElements($dom, $tag, $attribute, $value) {
 		}
 	}
 	return $list;
+}*/
+
+/**
+*
+*	Look for ALL elements (or only first) which fullfil the tag item. 
+*	Obtain the following:
+*		<div id="myId"....>      getElements($dom, "div", "id", "myId");
+*		or
+*		<div class="myClass" ....>  getElements($dom, "div", "class", "myClass");
+*		
+*	@param $dom
+*	@param $tag			string 	name of tag, like "div"
+*	@param $attribute	string	name of the attribute like "id"   optional parameter
+*	@param $value		string	value of the attribute like< "myId"  optional parameter. Must be defined if $attribute is defined
+*	@return array $list of doms
+*	$list is empty if no match was found
+*
+*/
+public function getElements($dom, $tag, $attribute, $value) {
+
+	$list = array();
+		
+	$attributeTrimmed = trim($attribute);
+	$valueTrimmed = trim($value);
+	$tagTrimmed = trim($tag);
+        libxml_use_internal_errors(true);
+	$tags = $dom->getElementsByTagName($tagTrimmed);
+	if ($tags->length > 0) {
+            foreach ($tags as $tagFound) {
+		$attValue = trim($tagFound->getAttribute($attributeTrimmed));
+		if ( strncasecmp ($attValue, $valueTrimmed, strlen($valueTrimmed)) == 0) {
+			$list[] = $tagFound;	
+		}
+            }
+            return $list;
+        }
+        else {
+            $this->hasElements = false;
+        }
+	
 }
 
 /**
