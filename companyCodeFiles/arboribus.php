@@ -242,7 +242,10 @@ class arboribus extends p2pCompany {
                 echo __FILE__ . " " . __LINE__ . "<br>";
 
                 echo __FILE__ . " " . __LINE__ . "<br>";
-                $summary = $this->getCompanyWebpage();
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+            case 4:
+                $summary = $str;
                 //echo $summary;
                 $dom = new DOMDocument;
                 $dom->loadHTML($summary); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
@@ -277,7 +280,7 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();     // list of investments as JSON
                 break;
-            case 4:
+            case 5:
                 $strListInvestments = $str;
                 $investmentListItems = json_decode($strListInvestments, true);
                 echo __FILE__ . " " . __LINE__ . "<br>";
@@ -305,7 +308,7 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                 break;
-            case 5:
+            case 6:
                 //echo $str;
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
@@ -379,7 +382,7 @@ class arboribus extends p2pCompany {
                 // Force a logout with data elements provided in the last read page.
                 //$this->companyUserLogout();
                 if ($this->numberOfInvestments != $this->investmentSequence) {
-                    $this->idForSwitch = 5;
+                    $this->idForSwitch = 6;
                     $this->investmentSequence++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                     break;
