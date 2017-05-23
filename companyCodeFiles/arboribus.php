@@ -57,7 +57,6 @@ parallelization on collectUserInvestmentData                                    
 class arboribus extends p2pCompany {
     
     private $credentials = array();
-    private $numberOfTries = 1;
     private $strListInvestments;
     private $tempDataInvestment;
     private $investmentSequence = 0;
