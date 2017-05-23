@@ -216,8 +216,8 @@ class arboribus extends p2pCompany {
                 foreach ($as as $a) {
                     if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed
                         $this->mainPortalPage = $str;
-                        array_shift($this->urlSequence);
-                        array_shift($this->urlSequence);
+                        //array_shift($this->urlSequence);
+                        //array_shift($this->urlSequence);
                         $resultMyArboribus = true;
                     }
                 }
