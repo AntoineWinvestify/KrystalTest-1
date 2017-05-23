@@ -57,6 +57,8 @@ class arboribus extends p2pCompany {
     private $credentials = array();
     private $numberOfTries = 1;
     private $strListInvestments;
+    private $tempDataInvestment;
+    private $investmentSequence = 0;
 
     function __construct() {
         parent::__construct();
@@ -187,7 +189,6 @@ class arboribus extends p2pCompany {
                 $this->credentials['password'] = $this->password;
 
                 $forms = $dom->getElementsByTagName('form');
-
                 foreach ($forms as $form) {
                     $inputs = $form->getElementsByTagName('input');
                     foreach ($inputs as $input) {
@@ -210,143 +211,183 @@ class arboribus extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 $as = $dom->getElementsByTagName('a');
+                $resultMyArboribus = false;
                 foreach ($as as $a) {
-
-                    if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {  // Login confirmed
+                    if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed
                         $this->mainPortalPage = $str;
-                        if ($this->numberOfTries == 1) {         // First try successfull, so flush some entries
-                            $dummy = array_shift($this->urlSequence);
-                            $dummy = array_shift($this->urlSequence);
-                        }
-                        //Cambiar true por idForSwitch
-                        $this->idForSwitch++;
+                        array_shift($this->urlSequence);
+                        array_shift($this->urlSequence);
                         $resultMyArboribus = true;
-                    } else {
-                        $this->numberOfTries++;
-                        $resultMyArboribus = false;
                     }
                 }
-                collectUserInvestmentLogin($resultMyArboribus);
-                break;
-            case 4:
-                echo $strListInvestments = $str;
-                echo $strListInvestments;
+                
+                if (!$resultMyArboribus) {   // Error while logging in
+                    echo __FILE__ . " " . __LINE__ . " LOGIN ERROR<br>";
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Arboribus login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                    
+                }
+                echo __FILE__ . " " . __LINE__ . " LOGIN CONFIRMED<br>";
+                $dom = new DOMDocument;
+                $dom->loadHTML($this->mainPortalPage); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+        //        echo $this->mainPortalPage;
                 echo __FILE__ . " " . __LINE__ . "<br>";
 
-                $divs = $this->getElements($dom, "div", "class", "arb_detail_right");
                 echo __FILE__ . " " . __LINE__ . "<br>";
-                echo "ANTOINE";
+                $summary = $this->getCompanyWebpage();
+                //echo $summary;
+                $dom = new DOMDocument;
+                $dom->loadHTML($summary); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+
+
+                echo __FILE__ . " " . __LINE__ . "<br>";
+
+                $divs = $this->getElements($dom, "div", "class", "arb_detail_right col-xs-12 col-sm-6");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                echo __FILE__ . " " . __LINE__ . "<br>";
+
                 foreach ($divs as $key => $div) {
                     echo "key = $key, " . $div->nodeValue . "<br>";
                 }
-                echo "DE POORTER";
+
                 $trs = $this->getElements($divs[1], "td", "class", "tcell-align-right");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($trs[1]->nodeValue);
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $h3s = $this->getElements($dom, "h3", "style", "font-size:xx-large;");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
                 $this->tempArray['global']['profitibility'] = $this->getPercentage($h3s[0]->nodeValue);
                 echo __FILE__ . " " . __LINE__ . "<br>";
+                $this->idForSwitch++;
                 $this->getCompanyWebpage();     // list of investments as JSON
                 break;
-            case 5:
-                $str1 = $str;
-                echo $str1;
+            case 4:
+                $strListInvestments = $str;
+                $investmentListItems = json_decode($strListInvestments, true);
                 echo __FILE__ . " " . __LINE__ . "<br>";
-                $this->getCompanyWebpage();
-                break;
-            case 6:
-                $str2 = $str;
-                echo __FILE__ . " " . __LINE__ . "<br>";
-                echo $str2;
-                $this->print_r2($str2);
-                $investmentListItems = json_decode($this->strListInvestments, true);
-                echo __FILE__ . " " . __LINE__ . "<br>";
-                $this->print_r2($investmentListItems);
+                //$this->print_r2($investmentListItems);
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 // Get next msg from the urlSequence queue:
                 $url = array_shift($this->urlSequence);
                 echo __FILE__ . " " . __LINE__ . "<br>";
+                //echo $url;
                 print_r($this->urlSequence);
-                echo __FILE__ . " " . __LINE__ . "<br>";
-                $numberIfInvestments = 0;
+                //echo __FILE__ . " " . __LINE__ . "<br>";
+                $this->numberOfInvestments = 0;
                 foreach ($investmentListItems as $key => $investmentListItem) {
-                    $numberIfInvestments++;
-
                     // mapping of the investment data to internal dashboard format of Winvestify
-                    $tempDataInvestment['loanId'] = $investmentListItem['id_company'];
-                    $tempDataInvestment['interest'] = $this->getPercentage(trim($investmentListItem['interes']));
-                    $tempDataInvestment['xxxx'] = $this->getMonetaryValue(trim($investmentListItem['capitalpendiente']));
-                    $this->print_r2($tempDataInvestment);
+                    $this->tempDataInvestment[$this->numberIfInvestments]['loanId'] = $investmentListItem['id_company'];
+                    $this->tempDataInvestment[$this->numberIfInvestments]['interest'] = $this->getPercentage(trim($investmentListItem['interes']));
+                    $this->tempDataInvestment[$this->numberIfInvestments]['xxxx'] = $this->getMonetaryValue(trim($investmentListItem['capitalpendiente']));
+                    //$this->print_r2($tempDataInvestment);
                     echo __FILE__ . " " . __LINE__ . "<br>";
-                    $str = $this->getCompanyWebpage($url . $investmentListItem['id_company']);   // is the amortization table
-                    
-                    //compañía
-                    echo $str;
-                    $dom = new DOMDocument;
-                    $dom->loadHTML($str);
-                    $dom->preserveWhiteSpace = false;
+                    //Changed the parameter for the url
+                    $this->tempUrl[$this->numberIfInvestments] = $url . $investmentListItem['id_company'];
+                    //$str = $this->getCompanyWebpage($url . $investmentListItem['id_company']);   // is the amortization table
+                    $this->numberOfInvestments++;
+                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpage($this->tempUrl[$this->investmentSequence]);
+                break;
+            case 5:
+                //echo $str;
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                echo __FILE__ . " " . __LINE__ . "<br>";
+                // deal with amortization table and normalize the loan state
+                /*try {*/   
+                $projectAmortizationData = $this->getElements($dom, "table", "class", "resumen"); // only 1 found
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                echo __FILE__ . " " . __LINE__ . "<br>";
+                $trs = $projectAmortizationData[0]->getElementsByTagName('tr');
+                $this->verifyNodeHasElements($trs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                echo __FILE__ . " " . __LINE__ . "<br>";
+                $mainIndex = -1;
+                foreach ($trs as $key1 => $tr) {
+                    $mainIndex = $mainIndex + 1;
+                    $subIndex = -1;
+                    $tds = $tr->getElementsByTagName('td');
+                    /*$this->verifyNodeHasElements($tds);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }*/
                     echo __FILE__ . " " . __LINE__ . "<br>";
-                    // deal with amortization table and normalize the loan state
-                    $projectAmortizationData = $this->getElements($dom, "table", "class", "resumen"); // only 1 found
-                    echo __FILE__ . " " . __LINE__ . "<br>";
-                    $trs = $projectAmortizationData[0]->getElementsByTagName('tr');
-                    echo __FILE__ . " " . __LINE__ . "<br>";
-                    $mainIndex = -1;
-                    foreach ($trs as $key1 => $tr) {
-                        $mainIndex = $mainIndex + 1;
-                        $subIndex = -1;
-                        $tds = $tr->getElementsByTagName('td');
-                        echo __FILE__ . " " . __LINE__ . "<br>";
-                        foreach ($tds as $td) {
-                            $subIndex = $subIndex + 1;
-                            echo __FILE__ . " " . __LINE__ . "<br>";
-                            if ($subIndex == 7) {
-                                $imgs = $this->getElements($td, "img");
-                                if (!empty($imgs)) { // We found the footer, simply ignore			
-                                    $actualState = $imgs[0]->getAttribute("title");
-                                    $amortizationTable[$mainIndex][$subIndex] = $this->getLoanState($actualState);
-                                }
-                            } else {
-                                $amortizationTable[$mainIndex][$subIndex] = $td->nodeValue;
+                    foreach ($tds as $td) {
+                        $subIndex = $subIndex + 1;
+ //                       echo __FILE__ . " " . __LINE__ . "<br>";
+                        //¿
+                        if ($subIndex == 7) {
+                            $imgs = $this->getElements($td, "img", "title", "pagado");
+                            if (!empty($imgs)) { // We found the footer, simply ignore			
+                                $actualState = $imgs[0]->getAttribute("title");
+                                $amortizationTable[$mainIndex][$subIndex] = $this->getLoanState($actualState);
                             }
+                        } else {
+                            $amortizationTable[$mainIndex][$subIndex] = $td->nodeValue;
                         }
                     }
-                    echo __FILE__ . " " . __LINE__ . "<br>";
-                    $tempInvested = array_pop($amortizationTable);  // get contents of "footer" and remove it from the amortization table 
-                    //	$tempDataInvestment['invested'] = stripos(trim($tempInvested[3]));
-                    $tempDataInvestment['invested'] = trim(preg_replace('/\D/', '', $tempInvested[3]));
-
-                    // map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED		
-                    //		if (strncasecmp($investmentListItem['estado'], "Al d", 2) == 0) {		// checking for status words "Al día"
-                    //			$tempDataInvestment['status'] = OK;
-                    //		}
-                    echo __FILE__ . " " . __LINE__ . "<br>";
-                    $tempDataInvestment['commission'] = 0;
-                    //Duration	Unit (=meses) is hard coded		
-                    $tempDataInvestment['duration'] = count($amortizationTable) . " Meses";
-                    $tempDataInvestment['date'] = $this->getHighestDateValue($amortizationTable, "dd-mm-yyyy", 1);
-                    $tempDataInvestment['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 7);
-                    $tempDataInvestment['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 7);
-                    $this->tempArray['investments'][] = $tempDataInvestment;
-                    echo __FILE__ . " " . __LINE__ . "<br>";
-                    // update the global data of Arboribus
-                    $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] +
-                            $tempDataInvestment['xxxx'];
-                    $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
-                            $tempDataInvestment['profitGained'];
-                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $tempDataInvestment['invested'];
-                    $this->tempArray['global']['investments'] = $this->tempArray['global']['investments'] + $numberOfInvestments + 1;
-                    echo __FILE__ . " " . __LINE__ . "<br>";
-                    unset($tempDataInvestment);
                 }
-                break;
-            case 7:
-                
-                break;
-        }
-        
+//                echo __FILE__ . " " . __LINE__ . "<br>";
+                $tempInvested = array_pop($amortizationTable);  // get contents of "footer" and remove it from the amortization table 
+//		$tempDataInvestment['invested'] = stripos(trim($tempInvested[3]));
+                $this->tempDataInvestment[$this->investmentSequence]['invested'] = trim(preg_replace('/\D/', '', $tempInvested[3]));
 
+// map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED		
+//		if (strncasecmp($investmentListItem['estado'], "Al d", 2) == 0) {		// checking for status words "Al día"
+//			$tempDataInvestment['status'] = OK;
+//		}
+ //               echo __FILE__ . " " . __LINE__ . "<br>";
+                $this->tempDataInvestment[$this->investmentSequence]['commission'] = 0;
+//Duration	Unit (=meses) is hard coded		
+                $this->tempDataInvestment[$this->investmentSequence]['duration'] = count($amortizationTable) . " Meses";
+                $this->tempDataInvestment[$this->investmentSequence]['date'] = $this->getHighestDateValue($amortizationTable, "dd-mm-yyyy", 1);
+                $this->tempDataInvestment[$this->investmentSequence]['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 7);
+                $this->tempDataInvestment[$this->investmentSequence]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 7);
+                $this->tempArray['investments'][] = $this->tempDataInvestment[$this->investmentSequence];
+ //               echo __FILE__ . " " . __LINE__ . "<br>";
+// update the global data of Arboribus
+                $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] +
+                        $this->tempDataInvestment[$this->investmentSequence]['xxxx'];
+                $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
+                        $this->tempDataInvestment[$this->investmentSequence]['profitGained'];
+                $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->tempDataInvestment[$this->investmentSequence]['invested'];
+//                echo __FILE__ . " " . __LINE__ . "<br>";
+
+                // The normal logout procedure does not work so do a workaround
+                // Force a logout with data elements provided in the last read page.
+                //$this->companyUserLogout();
+                if ($this->numberOfInvestments != $this->investmentSequence) {
+                    $this->idForSwitch = 5;
+                    $this->investmentSequence++;
+                    $this->getCompanyWebpage($this->tempUrl[$this->investmentSequence]);
+                    break;
+                }
+                else {
+                    $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                    return $this->tempArray;
+                }
+        }
         //return $tempArray;
     }
 
