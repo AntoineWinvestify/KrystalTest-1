@@ -49,7 +49,7 @@ of ONLY adding cuotas realmente pagados.
 
 */
 
-		
+require_once "../../vendors/autoload.php";
 
 class p2pCompany{
 	const DAY 		= 1;
