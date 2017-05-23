@@ -41,7 +41,7 @@ parallelization on collectUserInvestmentData                                    
   Captured exceptions for table errors.
 
   2017-04-18
-  Login error fixed always forcing login
+  Login error fixed, it was always forcing login
  * They forced logout after a login
  
   2017-05-23
