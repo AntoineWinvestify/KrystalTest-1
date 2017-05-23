@@ -44,9 +44,11 @@ parallelization on collectUserInvestmentData                                    
   Login error fixed always forcing login
  * They forced logout after a login
  
- 2017-04-19
-  Added parallelization
+  2017-05-23
+ * Added parallelization
  * Added verification of elements on userinvestmentdata
+ 
+ 
   PENDING:
   logout procedure
 
