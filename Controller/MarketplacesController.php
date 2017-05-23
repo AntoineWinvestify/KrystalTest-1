@@ -486,7 +486,7 @@ class MarketPlacesController extends AppController {
      * 	as a JSON object in databasetable "datas"
      *
      */
-    function cronQueueEventParallel() {
+    function cronQueueEvent() {
 
         $this->autoRender = false;
         Configure::write('debug', 2);
@@ -703,7 +703,7 @@ class MarketPlacesController extends AppController {
      * 	as a SON object in databasetable "datas"
      *
      */
-    function cronQueueEvent($queueType) {
+    /*function cronQueueEvent($queueType) {
 
         $this->autoRender = false;
         Configure::write('debug', 2);
@@ -820,7 +820,7 @@ class MarketPlacesController extends AppController {
         } else {
             // log error
         }
-    }
+    }*/
     
      public function clearCache() {
         $this->autoRender = false;
