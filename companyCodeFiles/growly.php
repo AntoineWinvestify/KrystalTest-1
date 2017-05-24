@@ -28,14 +28,15 @@ function calculateLoanCost()										[Not OK]
 function collectCompanyMarketplaceData()								[OK, tested]
 function companyUserLogin()										[OK, tested]
 function collectUserInvestmentData()									[OK, tested]
-parallelization                                                                                         [Not OK, testing]
+parallelization                                                                                         [OK, tested]
 
 
 2016-08-12	  version 2016_0.1
 Basic version
 
 2017-05-24
- * Adding parallelization 
+ * Added parallelization 
+ * Added dom verification
  
  
 TODO
@@ -211,14 +212,14 @@ function collectCompanyMarketplaceData() {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 1:
                 $credentials = array();
                 $credentials['login.email'] = $this->user;
                 $credentials['login.password'] = $this->password;
                 $this->idForSwitch++;
-                $this->doCompanyLogin($credentials);
+                $this->doCompanyLoginMultiCurl($credentials);
                 break;
             case 2:
                 $dom = new DOMDocument;
@@ -255,7 +256,7 @@ function collectCompanyMarketplaceData() {
                 $dom->loadHTML($this->mainPortalPage);	// obtained in the function	"companyUserLogin"	
                 $dom->preserveWhiteSpace = false;
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();		// load Webpage into a string variable so it can be parsed SHOULD SHOW LIST OF INVESTMENTS
+                $this->getCompanyWebpageMultiCurl();		// load Webpage into a string variable so it can be parsed SHOULD SHOW LIST OF INVESTMENTS
                 break;
             case 3:
                 $dom = new DOMDocument;
@@ -278,10 +279,13 @@ function collectCompanyMarketplaceData() {
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->print_r2($tempArray);
 
-                echo "STRING = " . $str;
+                //echo "STRING = " . $str;
 
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $projectListTable = $this->getElements($dom, "table", "class", "m-project-list");
+                /*if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }*/
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 foreach ($projectListTable as $project) {    // Only 1 exists
                     $projectListData = $this->getElements($project, "tr", "class", "toggle-title");
@@ -290,10 +294,18 @@ function collectCompanyMarketplaceData() {
                     foreach ($projectListData as $key => $projectList) {  // Per project
                         $numberOfInvestments = $numberOfInvestments + 1;
                         $tds = $projectList->getElementsByTagName('td');
+                        $this->verifyNodeHasElements($tds);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__);
+                        }
                         echo __FILE__ . " " . __LINE__ . "<br>";
                         // loanId
                         $tempLoanId = $tds[0]->nodeValue;
                         $as = $tds[0]->getElementsByTagName('a');
+                        $this->verifyNodeHasElements($as);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__);
+                        }
                         $data1[$key]['loanId'] = trim(preg_replace('/\D/', ' ', $as[0]->getAttribute('href')));  // Get decimals of loanId
 
                         $data1[$key]['interest'] = $this->getPercentage($tds[5]->nodeValue);
@@ -301,8 +313,15 @@ function collectCompanyMarketplaceData() {
                         // duration
                         $tempDuration = $tds[6]->nodeValue;
                         $strongs = $tds[6]->getElementsByTagName('strong');
+                        $this->verifyNodeHasElements($strongs);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__);
+                        }
                         $spans = $tds[6]->getElementsByTagName('span');
-
+                        $this->verifyNodeHasElements($spans);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__);
+                        }
                         $data1[$key]['duration'] = trim($strongs[0]->nodeValue) . " " . trim($spans[0]->nodeValue);
                         $data1[$key]['profitGained'] = $this->getMonetaryValue($tds[4]->nodeValue);
                         $data1[$key]['invested'] = $this->getMonetaryValue($tds[2]->nodeValue);
@@ -564,7 +583,7 @@ function companyUserLogin($user, $password) {
 */	
 function companyUserLogout() {
 
-	$str = $this->doCompanyLogout();
+	$str = $this->doCompanyLogoutMultiCurl();
 	return true;
 }
 
