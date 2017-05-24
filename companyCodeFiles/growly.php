@@ -24,16 +24,18 @@
 * @date 2016-08-12
 * @package
 
+function calculateLoanCost()										[Not OK]
+function collectCompanyMarketplaceData()								[OK, tested]
+function companyUserLogin()										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+parallelization                                                                                         [Not OK, testing]
+
 
 2016-08-12	  version 2016_0.1
 Basic version
- 
-function calculateLoanCost()											[Not OK]
-function collectCompanyMarketplaceData()								[OK, tested]
-function companyUserLogin()												[OK, tested]
-function collectUserInvestmentData()									[Not OK]
 
- 
+2017-05-24
+ * Adding parallelization 
  
  
 TODO
