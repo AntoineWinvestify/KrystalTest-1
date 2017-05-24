@@ -887,6 +887,7 @@ public function getElements($dom, $tag, $attribute, $value) {
 			$list[] = $tagFound;	
 		}
             }
+            $this->hasElements = true;
             return $list;
         }
         else {
@@ -906,6 +907,9 @@ public function verifyNodeHasElements($elements, $limit = null) {
     }
     else if (!empty($limit) && $elements->length < $limit) {
         $this->hasElements = false;
+    }
+    else {
+        $this->hasElements = true;
     }
 }
 

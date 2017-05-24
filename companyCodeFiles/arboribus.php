@@ -60,6 +60,7 @@ class arboribus extends p2pCompany {
     private $strListInvestments;
     private $tempDataInvestment;
     private $investmentSequence = 0;
+    private $numberIfInvestments;
 
     function __construct() {
         parent::__construct();
@@ -173,7 +174,7 @@ class arboribus extends p2pCompany {
      * 	
      */
     function collectUserInvestmentData($str) {
-
+        
         switch ($this->idForSwitch) {
             /////////////LOGIN
             case 0:
@@ -200,6 +201,7 @@ class arboribus extends p2pCompany {
                         }
                     }
                 }
+                $this->credentials['task'] = "user.login";
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($this->credentials);
                 break;
@@ -244,6 +246,7 @@ class arboribus extends p2pCompany {
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
+                break;
             case 4:
                 $summary = $str;
                 //echo $summary;
@@ -292,7 +295,7 @@ class arboribus extends p2pCompany {
                 //echo $url;
                 print_r($this->urlSequence);
                 //echo __FILE__ . " " . __LINE__ . "<br>";
-                $this->numberOfInvestments = 0;
+                $this->numberIfInvestments = 0;
                 foreach ($investmentListItems as $key => $investmentListItem) {
                     // mapping of the investment data to internal dashboard format of Winvestify
                     $this->tempDataInvestment[$this->numberIfInvestments]['loanId'] = $investmentListItem['id_company'];
@@ -303,7 +306,7 @@ class arboribus extends p2pCompany {
                     //Changed the parameter for the url
                     $this->tempUrl[$this->numberIfInvestments] = $url . $investmentListItem['id_company'];
                     //$str = $this->getCompanyWebpage($url . $investmentListItem['id_company']);   // is the amortization table
-                    $this->numberOfInvestments++;
+                    $this->numberIfInvestments++;
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
@@ -381,14 +384,14 @@ class arboribus extends p2pCompany {
                 // The normal logout procedure does not work so do a workaround
                 // Force a logout with data elements provided in the last read page.
                 //$this->companyUserLogout();
-                if ($this->numberOfInvestments != $this->investmentSequence) {
+                if (($this->numberIfInvestments-1) != $this->investmentSequence) {
                     $this->idForSwitch = 6;
                     $this->investmentSequence++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                     break;
                 }
                 else {
-                    $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                    $this->tempArray['global']['investments'] = $this->numberIfInvestments;
                     return $this->tempArray;
                 }
         }
