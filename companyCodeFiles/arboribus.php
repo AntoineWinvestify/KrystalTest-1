@@ -29,7 +29,7 @@ function collectCompanyMarketplaceData()								[OK, tested]
 function companyUserLogin()										[OK, tested]
 function collectUserInvestmentData()									[OK, tested]
 function companyUserLogout()										[Not OK, testing]
-parallelization on collectUserInvestmentData                                                            [OK, testing]
+parallelization on collectUserInvestmentData                                                            [OK, tested]
 
   2016-11-05	  version 2016_0.1
   Basic version
@@ -392,8 +392,16 @@ class arboribus extends p2pCompany {
                 }
                 else {
                     $this->tempArray['global']['investments'] = $this->numberIfInvestments;
-                    return $this->tempArray;
+                    $this->idForSwitch++;
+                    $this->getCompanyWebpageMultiCurl();
+                    break;
+                    
                 }
+            case 7:
+                //Added urlsequences on database for logout
+                //When it is here, the logout is already made so if we make the logout,
+                //it is unnecessary but we make it otherwise
+                return $this->tempArray;
         }
         //return $tempArray;
     }
@@ -644,13 +652,14 @@ class arboribus extends p2pCompany {
         $dom = new DOMDocument;
         libxml_use_internal_errors(true);
         $dom->loadHTML($str);
+        //echo $str;
         $dom->preserveWhiteSpace = false;
-        $form_login = $dom->getElementById('form-login');
-        $this->verifyNodeHasElements($form_login);
+        $forms = $dom->getElementsByTagName('form');
+        $this->verifyNodeHasElements($forms);
         if (!$this->hasElements) {
             return $this->tempArray['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
         }
-        $inputs = $form_login->getElementsByTagName('input');
+        $inputs = $forms[0]->getElementsByTagName('input');
         $this->verifyNodeHasElements($inputs);
         if (!$this->hasElements) {
             return $this->tempArray['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
