@@ -1,9 +1,10 @@
+
 <?php
 /**
  * This is core configuration file.
  *
  * Use it to configure core behavior of Cake.
- *
+ * 
  * PHP 5
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
@@ -21,7 +22,8 @@
  */
 
 /**
- * CakePHP Debug Level
+ * CakePHP Debug Level:
+ *
  *
  * Production Mode:
  * 	0: No error messages, errors, or warnings shown. Flash messages redirect.
@@ -33,12 +35,12 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-	Configure::write('debug', 0);
-/*
+	Configure::write('debug', 0); 
+/**
  * Configure the Error handler used to handle errors for your application. By default
  * ErrorHandler::handleError() is used. It will display errors using Debugger, when debug > 0
  * and log errors with CakeLog when debug = 0.
- *
+ * 
  * Options:
  *
  * - `handler` - callback - The callback to handle errors. You can set this to any callable type,
@@ -150,7 +152,7 @@
  *	`manager_index()` and `/manager/controller/index`
  *
  */
-	//Configure::write('Routing.prefixes', array('admin'));
+Configure::write('Routing.prefixes', array('admin'));
 
 /**
  * Turn off all caching application-wide.
@@ -218,7 +220,10 @@
  */
 
 	Configure::write('Session', array(
-		'defaults' => 'cake'
+		'defaults' 		=> 'cake',
+		'cookie'		=> 'CompareCookie',
+		'cookieTimeout' => 60,
+		
 	));
 
 /*
@@ -354,7 +359,7 @@
 $engine = 'File';
 
 // In development mode, caches should expire quickly.
-$duration = '+30 days';
+$duration = '+999 days';
 if (Configure::read('debug') > 0) {
 	$duration = '+10 seconds';
 }
@@ -407,8 +412,4 @@ Configure::write('CakePdf', array(
 		'orientation' => 'landscape',
 		'download' => true
     ));
-
-
-
-
 

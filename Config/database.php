@@ -65,9 +65,9 @@ class DATABASE_CONFIG {
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
 		'host' => 'localhost',
-		'login' => 'amdaluci_alc',
+		'login' => 'root',
 		'password' => '8870mit',
-		'database' => 'amdaluci_search',
+		'database' => 'search',
 		'prefix' => '',
 		//'encoding' => 'utf8',
 	); 

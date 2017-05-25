@@ -14,25 +14,25 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: Controller/AdministratorsController.php:122
-#: Controller/UsersController.php:169
+#: Controller/UsersController.php:171
 #: Plugin/Admin/Controller/UsersController.php:258
 msgid "Username or password is incorrect"
 msgstr ""
 
 #: Controller/AdministratorsController.php:153
-#: Controller/UsersController.php:598
+#: Controller/UsersController.php:600
 #: Plugin/Admin/Controller/UsersController.php:146
 msgid "Invalid user"
 msgstr ""
 
 #: Controller/AdministratorsController.php:157
-#: Controller/UsersController.php:602
+#: Controller/UsersController.php:604
 #: Plugin/Admin/Controller/UsersController.php:150
 msgid "Password has been changed"
 msgstr ""
 
 #: Controller/AdministratorsController.php:161
-#: Controller/UsersController.php:606
+#: Controller/UsersController.php:608
 #: Plugin/Admin/Controller/UsersController.php:154
 msgid "Password could not be changed."
 msgstr ""
@@ -71,25 +71,25 @@ msgstr ""
 
 #: Controller/ChatsController.php:199
 #: Controller/CompanysController.php:191
-#: Controller/DashboardsController.php:161
+#: Controller/DashboardsController.php:163
 #: Controller/FollowersController.php:175
-#: Controller/InvestorsController.php:65;104;184;284
+#: Controller/InvestorsController.php:68;107;187;287
 #: Controller/InvitationsController.php:65
 #: Controller/MarketplacesController.php:105;125;151
 #: Controller/NotificationsController.php:65;93
 #: Controller/PollsController.php:108;137
 #: Controller/ServicesController.php:89
 #: Controller/UsererrorsController.php:70;110
-#: Controller/UsersController.php:109;269;317;373;419;456;551;630;674
+#: Controller/UsersController.php:111;271;319;375;421;458;553;632;676
 #: Plugin/Admin/Controller/StartupsController.php:159;195;230;291;330
 msgid "You cannot access this page directly"
 msgstr ""
 
-#: Controller/InvestorsController.php:245
+#: Controller/InvestorsController.php:248
 msgid "New account linked"
 msgstr ""
 
-#: Controller/InvestorsController.php:247
+#: Controller/InvestorsController.php:250
 msgid "You linked your account of platform "
 msgstr ""
 
@@ -97,15 +97,15 @@ msgstr ""
 msgid "Error sending the invitation"
 msgstr ""
 
-#: Controller/UsersController.php:155
+#: Controller/UsersController.php:157
 msgid "Account not activated. contact Winvestify"
 msgstr ""
 
-#: Controller/UsersController.php:354
+#: Controller/UsersController.php:356
 msgid "You entered an incorrect code, please try again"
 msgstr ""
 
-#: Controller/UsersController.php:563;580
+#: Controller/UsersController.php:565;582
 msgid "Password Not Valid"
 msgstr ""
 
@@ -429,7 +429,6 @@ msgstr ""
 #: Plugin/Admin/View/Startups/read_startup_basic_company_data.ctp:125;131;163;169
 #: Plugin/Admin/View/Startups/read_startup_investment_options_data.ctp:168;174;207;213;245;251;282;288
 #: Plugin/Admin/View/Startups/read_startup_key_people_data.ctp:149;155;187;193;231;237
-#: View/Invitation/create_invitation_panel.ctp:212;218
 #: View/Users/register_panel_a.ctp:473
 #: View/Users/request_new_password_panel.ctp:114
 msgid "Error"
@@ -675,16 +674,8 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: View/Contactforms/form.ctp:25
-msgid "Your Name"
-msgstr ""
-
 #: View/Contactforms/form.ctp:31
 msgid "Name not valid"
-msgstr ""
-
-#: View/Contactforms/form.ctp:38
-msgid "Your Email"
 msgstr ""
 
 #: View/Contactforms/form.ctp:44
@@ -697,10 +688,6 @@ msgstr ""
 
 #: View/Contactforms/form.ctp:60
 msgid "Message"
-msgstr ""
-
-#: View/Contactforms/form.ctp:66
-msgid "Your message"
 msgstr ""
 
 #: View/Contactforms/form.ctp:72
@@ -1265,22 +1252,6 @@ msgstr ""
 msgid "Invitar a friend"
 msgstr ""
 
-#: View/Invitation/create_invitation_panel.ctp:189
-msgid "Name of Contact"
-msgstr ""
-
-#: View/Invitation/create_invitation_panel.ctp:200
-msgid "Surname(s) of Contact"
-msgstr ""
-
-#: View/Invitation/create_invitation_panel.ctp:224
-msgid "Email of Invitee"
-msgstr ""
-
-#: View/Invitation/create_invitation_panel.ctp:230
-msgid "Introduzca su texto para el/la invitado/a"
-msgstr ""
-
 #: View/Invitation/create_invitation_panel.ctp:231
 msgid "I like the services of Winvestify a lot, have a look"
 msgstr ""
@@ -1358,7 +1329,7 @@ msgstr ""
 msgid "ENTER YOUR DASHBOARD<br/>All your investments are shown on one single page"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:210;427
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:210;436
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:323
 msgid "Register NOW"
 msgstr ""
@@ -1412,34 +1383,34 @@ msgstr ""
 msgid "Winvestify connects to the principal <strong>Invoice\n\t\t\t\tTrading</strong> and <strong>Crowdlending</strong> platforms of Spain in a simple and secure way"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:423
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:432
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:319
 msgid "Register for FREE and get ALL the advantages of a unified marketplace and single dashboard"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:459
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:468
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:498
 msgid "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:462
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:471
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:501
 msgid "Got it!"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:570
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:579
 msgid "DASHBOARD<br/>All your investments are shown on one single page"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:571
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:580
 msgid "MARKETPLACE<br/>Our global marketplace contains all the investment opportunities in real time"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:572
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:581
 msgid "LINKED ACCOUNTS PANEL<br/>Incorporate all your Investment Accounts in our linked accounts panel"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:573
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:582
 msgid "PERSONAL DATA PANEL<br/>Access to your personal data is simple, secure and fast"
 msgstr ""
 
