@@ -235,10 +235,7 @@
         <a name="mark_features"></a>
         <div id="js__scroll-to-section" class="container" style="margin-top: 75px;">
             <div class="g-text-center--xs g-margin-b-100--xs">
-               <!-- <p class="text-uppercase g-font-size-18--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs">
-                    <img src="/img/logo_winvestify/Logo_texto.png" alt="winvestify logo" class="responsiveImg center-block" style="float:center; max-width:400px;"/>
-                </p>-->
-                <p style="text-align:center" class="g-font-size-18--xs">
+                <p id="pDescription" style="text-align:center" class="g-font-size-18--xs">
                     <strong>
                         <?php echo __('Centralize all your investment accounts and connect to the major Crowdlending and Invoice Trading platforms
 							  from a single portal. Our tool lets you organize and manage all your investments more efficiently. 
@@ -246,7 +243,7 @@
                     </strong>
                 </p>
             </div>
-            <div class="row g-margin-b-60--xs g-margin-b-70--md">
+            <div id="featuresPadding" class="row g-margin-b-60--xs g-margin-b-70--md">
                 <div class="col-sm-4 g-margin-b-60--xs g-margin-b-0--md">
                     <div class="clearfix">
                         <div class="g-media__body g-padding-x-20--xs">
