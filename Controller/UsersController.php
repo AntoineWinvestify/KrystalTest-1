@@ -15,24 +15,27 @@
 *
 *
 * @author 
-* @version 0.1
-* @date 2016-10-25
+* @version 0.3
+* @date 2017-05-25
 * @package
 *
 
-Version 0.1		2016-10-25
-Basic version with simple user authentication									[Not fully tested, ]
+2016-10-25Version 0.1		
+Basic version with simple user authentication							[Not fully tested, ]
 
 
-Model checks for unique username key (i.e. email)								[OK]
+Model checks for unique username key (i.e. email)						[OK]
 Placeholder in login page which indicates that userid = email					[OK]
-Added routine for field "lastAccessed"											[OK]
+Added routine for field "lastAccessed"								[OK]
 
 
-Version 0.2		2017-03-28
+2017-03-28      Version 0.2		
 also sent telephone number to view of registerPanelB to improve accuracy of Google Analytics function  [Not Tested yet]
 New method, initLoad, for first loading location BEFORE presenting the real landingpage
 
+
+2017-05-25      Version 0.3
+Removal of initLoan.
 
 
 
@@ -57,14 +60,11 @@ $id = $this->Auth->user('id');
 If the current user is not logged in or the key doesn’t exist, null will be returned.	
 	
 	
-	
-
-	
 */
+?>
 
+<?php
  
-
-
 App::uses('CakeEvent', 'Event');
 App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class UsersController extends AppController

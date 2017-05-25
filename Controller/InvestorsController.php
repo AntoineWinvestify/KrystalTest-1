@@ -1,8 +1,7 @@
 <?php
-
 /*
  * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
+ * | Copyright (C) 2016, http://www.winvestify.com                         |
  * +-----------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify     |
  * | it under the terms of the GNU General Public License as published by  |
@@ -13,24 +12,22 @@
  * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
  * | GNU General Public License for more details.                          |
  * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
  *
  *
- * @author Antoine de Poorter
+ * @author 
  * @version 0.1
  * @date 2016-08-25
  * @package
  *
 
-  2016-08-25	  version 2016_0.1
-  function linkAccount										[OK]
-  function acceptConditionsTempPanel                            				[OK]
-  removed acceptConditionsTempPanel after finishing Beta testing period                         [OK, tested]
+  2016-08-25	  version 0.1
+  function linkAccount									[OK]
+  function acceptConditionsTempPanel                            			[OK]
+  removed acceptConditionsTempPanel after finishing Beta testing period                 [OK, tested]
 
 
   Pending:
-  Generate a miniview for the extended notification of the event "newAccountLinked"             [OK, not yet tested]
+  Generate a miniview for the extended notification of the event "newAccountLinked"     [OK, not yet tested]
 
  */
 
