@@ -1,7 +1,7 @@
 <?php
 /*
 * +-----------------------------------------------------------------------+
-* | Copyright (C) 2016, http://beyond-language-skills.com                 |
+* | Copyright (C) 2017, http://www.winvestify.com                         |
 * +-----------------------------------------------------------------------+
 * | This file is free software; you can redistribute it and/or modify     |
 * | it under the terms of the GNU General Public License as published by  |
@@ -12,17 +12,15 @@
 * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
 * | GNU General Public License for more details.                          |
 * +-----------------------------------------------------------------------+
-* | Author: Antoine de Poorter                                            |
-* +-----------------------------------------------------------------------+
 *
 *
-* @author Antoine de Poorter
+* @author
 * @version 0.1
 * @date 2016-09-22
 * @package
 *
 
-2016-09-22	  version 2016_0.1
+2016-09-22	  version 0.1
 
 
 

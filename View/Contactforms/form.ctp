@@ -22,7 +22,7 @@
                     <?php
                     echo $this->Form->input('name', array('type' => 'text', 
                                                         'class' => "username form-control blue s-form-v2__input", 
-                                                        'placeholder' => "Your Name", 
+                                                        'placeholder' => __("Your Name"), 
                                                         'label' => false));
                     ?>
                 </div>
@@ -35,7 +35,7 @@
                     <?php
                     echo $this->Form->input('email', array('type' => 'email', 
                                                             'class' => "useremail form-control blue s-form-v2__input", 
-                                                            'placeholder' => "Your Email", 
+                                                            'placeholder' => __("Your Email"), 
                                                             'label' => false));
                     ?>
                 </div>
@@ -63,7 +63,7 @@
                     'style' => "border-radius: 25px !important;", 
                     'class' => "usermsg blue form-control s-form-v2__input", 
                     'rows' => '8', 
-                    'placeholder' => "Your message", 
+                    'placeholder' => __("Your message"), 
                     'label' => false, 
                     'name' => 'contactFormMessage'));
                 ?>

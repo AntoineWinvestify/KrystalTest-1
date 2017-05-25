@@ -186,7 +186,7 @@ app.utils.trace("received error");
 								
                                 <div class="form-group" id ="invitationForm">
 									<div class="col-xs-12 col-sm-5  nomargin nopadding-left">
-											<?php echo __("Name of Contact) ?>
+											<?php echo __("Name of Contact") ?>
 									
 <?php
 echo $this->Form->input('Invitation.invitation_name', array('id' 	=> 'ContentPlaceHolder_invitation_name',
