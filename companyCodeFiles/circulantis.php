@@ -43,7 +43,11 @@ Basic version
 2017-05-16          version 2017_0.2
  * Added parallelization
  * Dom verification
+ * 
 
+2017-05-25
+ * There is an array_shift to delete the first url of urlsequence on case 0 of the swithc
+ * We would need to delete the urlsequence on DB for Circulantis to work
 Pending:
 
 

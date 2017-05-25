@@ -49,7 +49,8 @@ parallelization on collectUserInvestmentData                                    
  * Added verification of elements on userinvestmentdata
  
   2017-05-24
- * Logout procedure is not possible to try because when we are on the urlsequence to make the logout is already made
+ * Logout procedure is not possible to try because when we get the urlsequence to make, the logout is already made
+ * We should try to insert
  
  
   PENDING:
