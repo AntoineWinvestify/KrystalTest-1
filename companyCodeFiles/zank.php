@@ -243,14 +243,14 @@ class zank extends p2pCompany {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  // needed so I can read the csrf code
+                $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
                 break;
             case 1:
                 //Change account
                 $this->credentials['_username'] = $this->user;
                 $this->credentials['_password'] = $this->password;
-                $this->credentials['_username'] = "Klauskuk@gmail.com";
-                $this->credentials['_password'] = "P2Pes2017";
+                //$this->credentials['_username'] = "Klauskuk@gmail.com";
+                //$this->credentials['_password'] = "P2Pes2017";
 
                 // get login page
                 $dom = new DOMDocument;
@@ -284,7 +284,7 @@ class zank extends p2pCompany {
                     
                 }
                 $this->idForSwitch++;
-                $this->doCompanyLogin($this->credentials);
+                $this->doCompanyLoginMultiCurl($this->credentials);
                 break;
                 
                 
@@ -293,7 +293,7 @@ class zank extends p2pCompany {
                 if ($str == 200 or $str == 103) {
                     //echo "CODE 103 or 200 received, so do it again , OK <br>";
                     $this->idForSwitch++;
-                    $this->doCompanyLogin($this->credentials);
+                    $this->doCompanyLoginMultiCurl($this->credentials);
                     //$this->mainPortalPage = $str;
                     $this->resultMiZank = true;
                 }
@@ -376,7 +376,7 @@ class zank extends p2pCompany {
                 }
                 // goto page "MI CARTERA"
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed	
+                $this->getCompanyWebpageMultiCurl();  // load Webpage into a string variable so it can be parsed	
                 break;
                 
             case 4:
@@ -411,14 +411,14 @@ class zank extends p2pCompany {
 
                 // Download the list of the individual investments of this user
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 5:
                 $url = array_shift($this->urlSequence);
                 $url = $url . $this->userId . "/0";
                 $this->idForSwitch++;
                 //Add here the Edu's adaption to the url
-                $this->getCompanyWebpage($url);
+                $this->getCompanyWebpageMultiCurl($url);
                 break;
             case 6:
                 $temp = json_decode($str, $assoc = true);

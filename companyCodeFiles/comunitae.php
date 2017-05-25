@@ -224,7 +224,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                 $credentials['j_username'] = $this->user;
                 $credentials['j_password'] = $this->password;
                 $this->idForSwitch++;
-                $this->doCompanyLogin($credentials);
+                $this->doCompanyLoginMultiCurl($credentials);
                 break;
             
             case 1:
@@ -291,7 +291,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
 
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
+                $this->getCompanyWebpageMultiCurl();  // load Webpage into a string variable so it can be parsed
                 break;
 
             case 2:
@@ -299,7 +299,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                 $this->random = rand(111, 900);
                 $url = array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $this->getCompanyWebpage($url . time() . $this->random); // https://www.comunitae.com/pastillaCuenta.html?aleat=1487321358524	
+                $this->getCompanyWebpageMultiCurl($url . time() . $this->random); // https://www.comunitae.com/pastillaCuenta.html?aleat=1487321358524	
                 break;
             case 3:
                 echo __FILE__ . " " . __LINE__ . "<br>";
@@ -326,19 +326,19 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                 $this->random++;
                 $url = array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $this->getCompanyWebpage($url . time() . $this->random); // https://www.comunitae.com/www.comunitae.com/mi-cartera/pagares
+                $this->getCompanyWebpageMultiCurl($url . time() . $this->random); // https://www.comunitae.com/www.comunitae.com/mi-cartera/pagares
                 break;
             case 4:
                 $url = array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $this->getCompanyWebpage($url);   // https://www.comunitae.com/listarParticipaciones.html?method=mostrarBloques&_=1487322997347 
+                $this->getCompanyWebpageMultiCurl($url);   // https://www.comunitae.com/listarParticipaciones.html?method=mostrarBloques&_=1487322997347 
                 break;
             
             case 5:
                 //echo $str;
                 $url = array_shift($this->urlSequence);  // https://www.comunitae.com/listarParticipaciones.html?method=irPestanaListado&id=1&PARAM_PAGINACION_PAGINA_ACTUAL=
                 $this->idForSwitch++;
-                $this->getCompanyWebpage($url . "1");
+                $this->getCompanyWebpageMultiCurl($url . "1");
                 break;
             case 6:
                 //echo "KKKKKKKKK" . $str;
@@ -432,7 +432,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                 }
             case 7:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage($this->tempUrl[$this->accountPosition]);	// https://www.comunitae.com/listarParticipaciones.html?method=irPestanaListado&id=2&PARAM_PAGINACION_PAGINA_ACTUAL=
+                $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);	// https://www.comunitae.com/listarParticipaciones.html?method=irPestanaListado&id=2&PARAM_PAGINACION_PAGINA_ACTUAL=
                 break;
             case 8:
                 $domAccount = new DOMDocument;
@@ -485,7 +485,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                 if ($this->numberOfPages-1 != $this->accountPosition) {
                     $this->idForSwitch = 7;
                     $this->accountPosition++;
-                    $this->getCompanyWebpage($this->tempUrl[$this->accountPosition]);     // Load amortization Table
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Load amortization Table
                     break;
                 }
                 else {

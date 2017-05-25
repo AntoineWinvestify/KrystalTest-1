@@ -206,12 +206,12 @@ function collectCompanyMarketplaceData() {
                 username	antoine.de.poorter@gmail.com				
                 */
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  // Go to home page of the company
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
             case 1:
 
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  // Click "login" needed so I can read the csrf code
+                $this->getCompanyWebpageMultiCurl();  // Click "login" needed so I can read the csrf code
                 break;
             case 2:
                 $credentials['username'] = $this->user;
@@ -246,7 +246,7 @@ function collectCompanyMarketplaceData() {
                     }
                 }
                 $this->idForSwitch++;
-                $this->doCompanyLogin($credentials);
+                $this->doCompanyLoginMultiCurl($credentials);
                 break;
             case 3:
                 $dom = new DOMDocument;
@@ -322,27 +322,27 @@ function collectCompanyMarketplaceData() {
                 }
                 $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($spans[0]->nodeValue);
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  //str1 load Webpage into a string variable so it can be parsed	
+                $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  //str2 load Webpage into a string variable so it can be parsed
+                $this->getCompanyWebpageMultiCurl();  //str2 load Webpage into a string variable so it can be parsed
                 break;
             case 5:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  //str3 load Webpage into a string variable so it can be parsed	
+                $this->getCompanyWebpageMultiCurl();  //str3 load Webpage into a string variable so it can be parsed	
                 break;
             case 6:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  //str4 load Webpage into a string variable so it can be parsed	
+                $this->getCompanyWebpageMultiCurl();  //str4 load Webpage into a string variable so it can be parsed	
                 break;
             case 7:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  //str5 load Webpage into a string variable so it can be parsed	
+                $this->getCompanyWebpageMultiCurl();  //str5 load Webpage into a string variable so it can be parsed	
                 break;
             case 8:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  //str6 load Webpage into a string variable so it can be parsed	
+                $this->getCompanyWebpageMultiCurl();  //str6 load Webpage into a string variable so it can be parsed	
                 break;
             case 9:
                 $dom = new DOMDocument;
@@ -395,7 +395,7 @@ function collectCompanyMarketplaceData() {
                     //$strAmortizationTable = $this->getCompanyWebpage($baseUrl . "/" . $dataId);
                 }
                 $this->idForSwitch++;
-                $this->getCompanyWebpage($this->tempUrl[$this->accountPosition]);     // Deal with the amortization table
+                $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Deal with the amortization table
                 break;
             case 10:
                 $strAmortizationTable = $str;
@@ -447,7 +447,7 @@ function collectCompanyMarketplaceData() {
                 if ($this->accountPosition != ($this->numberOfInvestments-1)) {
                     $this->idForSwitch = 10;
                     $this->accountPosition++;
-                    $this->getCompanyWebpage($this->tempUrl[$this->accountPosition]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);
                     break;
                 }
                 else {

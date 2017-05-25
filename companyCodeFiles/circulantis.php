@@ -190,7 +190,7 @@ class circulantis extends p2pCompany {
                 $credentials['login'] = 1;
                 $credentials['tipo'] = "I";
                 $this->idForSwitch++;
-                $this->doCompanyLogin($credentials);
+                $this->doCompanyLoginMultiCurl($credentials);
                 break;
             case 2:
                 /*$dom = new DOMDocument;
@@ -198,7 +198,7 @@ class circulantis extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;*/
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 3:
                 $dom = new DOMDocument;
@@ -237,7 +237,7 @@ class circulantis extends p2pCompany {
 
                 // Load page  panel-inversor
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();
+                $this->getCompanyWebpageMultiCurl();
                 //echo "INVERSOR_PANEL" . $str;	
                 break;
             case 4:

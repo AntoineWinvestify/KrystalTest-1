@@ -241,7 +241,7 @@ class mytriplea extends p2pCompany {
                 error_reporting(0);
                 //$this->config['appDebug'] = true;
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  // Go to home page of the company
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
             case 1:
                 $tempCredentials = array();
@@ -267,7 +267,7 @@ class mytriplea extends p2pCompany {
                 $credentials['_sourcePage'] = $tempCredentials['_sourcePage'];
                 $credentials['__fp'] = $tempCredentials['__fp'];
                 $this->idForSwitch++;
-                $this->doCompanyLogin($credentials);
+                $this->doCompanyLoginMultiCurl($credentials);
                 break;
                 
                 
@@ -319,7 +319,7 @@ class mytriplea extends p2pCompany {
                 $tempWallet = $this->getElements($infoBodys[5], "div", "class", "panel-info-cell-value");
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($tempWallet[0]->nodeValue);
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  // page "mi-posicion/cartera-viva"
+                $this->getCompanyWebpageMultiCurl();  // page "mi-posicion/cartera-viva"
                 break;
             case 3:
                 
@@ -380,7 +380,7 @@ class mytriplea extends p2pCompany {
                     //$this->getCompanyWebpage($tempUrl);     // Load amortization Table
                 }
                 $this->idForSwitch++;
-                $this->getCompanyWebpage($this->tempUrl[$this->accountPosition]);     // Load amortization Table
+                $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Load amortization Table
                 break;
             case 4:
                 $domAmortizationTable = new DOMDocument;
@@ -440,7 +440,7 @@ class mytriplea extends p2pCompany {
                 if ($this->accountPosition != ($this->numberOfInvestments-1) ) {
                     $this->idForSwitch = 4;
                     $this->accountPosition++;
-                    $this->getCompanyWebpage($this->tempUrl[$this->accountPosition]);     // Load amortization Table
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Load amortization Table
                     break;
                 }
                 else {

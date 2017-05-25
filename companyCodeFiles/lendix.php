@@ -213,7 +213,7 @@ function collectCompanyMarketplaceData() {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 1:
                 $credentials = array();
@@ -221,7 +221,7 @@ function collectCompanyMarketplaceData() {
                 $credentials['password'] = "Mecano1980";
                 $credentials['user'] = null;
                 $this->idForSwitch++;
-                $this->doCompanyLogin($credentials);
+                $this->doCompanyLoginMultiCurl($credentials);
                 break;
             case 2:
                 $this->mainPortalPage = $str;
@@ -251,7 +251,7 @@ function collectCompanyMarketplaceData() {
         // construct extra headers for next http message
                 $this->defineHeaderParms(array($header1, $header2));
                 $this->idForSwitch++;
-                $this->getCompanyWebpage();  // https://api.lendix.com/transactions/summary?finsquare=true
+                $this->getCompanyWebpageMultiCurl();  // https://api.lendix.com/transactions/summary?finsquare=true
                 break;
             case 3:
                 $summaryData = json_decode($str, $assoc = true);
