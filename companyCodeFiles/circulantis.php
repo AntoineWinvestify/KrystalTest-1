@@ -185,8 +185,8 @@ class circulantis extends p2pCompany {
                 /**
                  * Change user and password
                  */
-                $credentials['user'] = "antoiba86@gmail.com";
-                $credentials['password'] = "lendwin1234";
+                $credentials['user'] = $this->user;
+                $credentials['password'] = $this->password;
                 $credentials['login'] = 1;
                 $credentials['tipo'] = "I";
                 $this->idForSwitch++;

@@ -217,8 +217,8 @@ function collectCompanyMarketplaceData() {
                 break;
             case 1:
                 $credentials = array();
-                $credentials['email'] = "manoloherrero@msn.com";
-                $credentials['password'] = "Mecano1980";
+                $credentials['email'] = $this->user;
+                $credentials['password'] = $this->password;
                 $credentials['user'] = null;
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($credentials);
