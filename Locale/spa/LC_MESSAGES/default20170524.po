@@ -1,0 +1,1875 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"PO-Revision-Date: 2017-04-20 16:22+0200\n"
+"Language-Team: EMAIL@ADDRESS\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"POT-Creation-Date: \n"
+"X-Generator: Poedit 2.0.1\n"
+"Last-Translator: \n"
+"Language: es\n"
+
+#: Controller/AdministratorsController.php:122
+#: Controller/UsersController.php:173
+msgid "Username or password is incorrect"
+msgstr "Usuario o Contraseña incorrectos"
+
+#: Controller/AdministratorsController.php:153
+#: Controller/UsersController.php:603
+msgid "Invalid user"
+msgstr "Usuario no válido"
+
+#: Controller/AdministratorsController.php:157
+#: Controller/UsersController.php:607
+msgid "Password has been changed"
+msgstr "Su contraseña ha sido cambiada"
+
+#: Controller/AdministratorsController.php:161
+#: Controller/UsersController.php:611
+msgid "Password could not be changed."
+msgstr "Su contraseña no se pudo cambiar"
+
+#: Controller/AppController.php:228
+msgid "P2P Crowdlending"
+msgstr "P2P Crowdlending"
+
+#: Controller/AppController.php:229
+msgid "P2B Crowdlending"
+msgstr "P2B  Crowdlending"
+
+#: Controller/AppController.php:230
+msgid "P2P Invoice Trading"
+msgstr "P2P Invoice Trading"
+
+#: Controller/AppController.php:231
+msgid "Crowd Houser"
+msgstr "Crowd Houser"
+
+#: Controller/ChatsController.php:199 Controller/CompanysController.php:191
+#: Controller/DashboardsController.php:163
+#: Controller/FollowersController.php:175
+#: Controller/InvestorsController.php:68;107;183;283
+#: Controller/InvitationsController.php:65
+#: Controller/MarketplacesController.php:113;137;167
+#: Controller/NotificationsController.php:65;93
+#: Controller/PollsController.php:108;137 Controller/ServicesController.php:89
+#: Controller/UsererrorsController.php:70;110
+#: Controller/UsersController.php:111;274;322;378;424;461;556;635;679
+msgid "You cannot access this page directly"
+msgstr "No puede acceder directamente a esta página"
+
+#: Controller/InvestorsController.php:244
+msgid "New account linked"
+msgstr "Nueva cuenta enlazada"
+
+#: Controller/InvestorsController.php:246
+msgid "You linked your account of platform "
+msgstr "Ha enlazado su cuenta de la plataforma"
+
+#: Controller/InvitationsController.php:83
+msgid "Error sending the invitation"
+msgstr "Se ha producido un error "
+
+#: Controller/UsersController.php:158
+msgid "Account not activated. contact Winvestify"
+msgstr "Cuenta deshabilitada. Contacte con Winvestify"
+
+#: Controller/UsersController.php:359
+msgid "You entered an incorrect code, please try again"
+msgstr "Ha introducido un código incorrecto"
+
+#: Controller/UsersController.php:568;585
+msgid "Password Not Valid"
+msgstr "Contraseña no válida"
+
+#: Controller/Component/UniqueLinkComponent.php:78;87;91
+msgid "Could not find the resource"
+msgstr "No se pudo encontrar el recurso"
+
+#: Controller/Component/UniqueLinkComponent.php:116
+msgid "Could not find the resource: Not Existent"
+msgstr "No se pudo encontrar el recurso: No existe"
+
+#: Event/GlobalEmailListener.php:100;152;205
+msgid "Subscribed User"
+msgstr "Usuario Registrado"
+
+#: Event/GlobalEmailListener.php:101
+msgid "Thank you for subscribing to our Beta product"
+msgstr "Gracias por suscribirse a nuestra versión Beta"
+
+#: Event/GlobalEmailListener.php:118;169;225
+msgid "Admin"
+msgstr "Administrador"
+
+#: Event/GlobalEmailListener.php:119
+msgid "New beta-user has subscribed"
+msgstr "Nuevo usuario beta suscrito"
+
+#: Event/GlobalEmailListener.php:153
+msgid "Thank you for sending information about an encountered error"
+msgstr "Gracias por enviar información acerca del error encontrado"
+
+#: Event/GlobalEmailListener.php:170
+msgid "Error report received"
+msgstr "Error reportado correctamente"
+
+#: Event/GlobalEmailListener.php:206
+msgid ""
+"Thank you for sending a new suggestion for product improvement to the "
+"Winvestify team"
+msgstr ""
+"Gracias por enviarnos información acerca de una mejora de nuestro producto"
+
+#: Event/GlobalEmailListener.php:226
+msgid "New suggestion for product improvement"
+msgstr "Nueva sugerencia de mejora del producto"
+
+#: Event/GlobalEmailListener.php:266
+msgid "Client Winvestify"
+msgstr "Cliente Winvestify"
+
+#: Event/GlobalEmailListener.php:267
+msgid "Thank you for registering at Winvestify"
+msgstr "Gracias por registrarse en Winvestify"
+
+#: Event/GlobalEmailListener.php:284
+msgid "Admin Winvestify"
+msgstr "Administrador Winvestify"
+
+#: Event/GlobalEmailListener.php:285
+msgid "Registration of new user at Winvestify"
+msgstr "Registro de nuevo usuario en Winvestify"
+
+#: Model/Data.php:104
+msgid "Your dashboard has been updated"
+msgstr "Su dashboard ha sido actualizado"
+
+#: Model/Data.php:105
+msgid ""
+"The system has updated your dashboard data. You can access your dashboard "
+"here"
+msgstr ""
+"El sistema ha actualizado la información de su dashboard. Puedes acceder aquí"
+
+#: Model/Behavior/PasswordableBehavior.php:380
+msgid "valErrPwdNotMatch"
+msgstr ""
+
+#: Plugin/AjaxMultiUpload/Controller/UploadsController.php:69
+msgid "File parameter is missing"
+msgstr "El parámetro del archivo no ha sido encontrado"
+
+#: Plugin/AjaxMultiUpload/Controller/UploadsController.php:75
+msgid "File deleted!"
+msgstr "¡Archivo Borrado!"
+
+#: Plugin/AjaxMultiUpload/Controller/UploadsController.php:77
+msgid "Unable to delete File"
+msgstr "No se puede eliminar el archivo"
+
+#: Plugin/AjaxMultiUpload/Controller/UploadsController.php:80
+msgid "File does not exist!"
+msgstr "El archivo no existe"
+
+#: Plugin/AjaxMultiUpload/View/Helper/UploadHelper.php:23
+msgid "Files"
+msgstr "Archivos"
+
+#: Plugin/Highcharts/Controller/BoostCake/Controller/BoostCakeController.php:22
+msgid "Debug setting does not allow access to this url."
+msgstr ""
+
+#: Plugin/Highcharts/Controller/BoostCake/Controller/BoostCakeController.php:31
+#: Plugin/Highcharts/Controller/BoostCake/View/Elements/bootstrap2/alerts.ctp:6
+msgid "Alert notice message testing..."
+msgstr ""
+
+#: Plugin/Highcharts/Controller/BoostCake/Controller/BoostCakeController.php:34;45
+#: Plugin/Highcharts/Controller/BoostCake/View/Elements/bootstrap2/alerts.ctp:10
+#: Plugin/Highcharts/Controller/BoostCake/View/Elements/bootstrap3/alerts.ctp:6
+msgid "Alert success message testing..."
+msgstr ""
+
+#: Plugin/Highcharts/Controller/BoostCake/Controller/BoostCakeController.php:38
+#: Plugin/Highcharts/Controller/BoostCake/View/Elements/bootstrap2/alerts.ctp:15
+msgid "Alert error message testing..."
+msgstr ""
+
+#: Plugin/Highcharts/Controller/BoostCake/Controller/BoostCakeController.php:49
+#: Plugin/Highcharts/Controller/BoostCake/View/Elements/bootstrap3/alerts.ctp:11
+msgid "Alert info message testing..."
+msgstr ""
+
+#: Plugin/Highcharts/Controller/BoostCake/Controller/BoostCakeController.php:53
+#: Plugin/Highcharts/Controller/BoostCake/View/Elements/bootstrap3/alerts.ctp:16
+msgid "Alert warning message testing..."
+msgstr ""
+
+#: Plugin/Highcharts/Controller/BoostCake/Controller/BoostCakeController.php:57
+#: Plugin/Highcharts/Controller/BoostCake/View/Elements/bootstrap3/alerts.ctp:21
+msgid "Alert danger message testing..."
+msgstr ""
+
+#: Plugin/Highcharts/Controller/Component/HighchartsComponent.php:95
+msgid "Please provide a type for chart %s!"
+msgstr ""
+
+#: Plugin/Highcharts/View/Helper/HighchartsHelper.php:111
+msgid ""
+"Chart: \"%s\" could not be found. Ensure that Chart Name is the same string "
+"that is passed to $this->Highcharts->render() in your view."
+msgstr ""
+
+#: Plugin/Highcharts/View/Layouts/chart.demo.ctp:20
+msgid "CakePHP Highcharts plugin demos / tests"
+msgstr ""
+
+#: Plugin/Highcharts/View/Layouts/chart.demo.ctp:64
+msgid "CakePHP: the rapid development php framework"
+msgstr ""
+
+#: View/Chats/chats_panel.ctp:577
+msgid "Chats"
+msgstr "Chats"
+
+#: View/Chats/chats_panel.ctp:589
+msgid "Search for Chat"
+msgstr "Buscar nuevo chat"
+
+#: View/Chats/chats_panel.ctp:590
+msgid "Create New Chat"
+msgstr "Crear nuevo chat"
+
+#: View/Chats/chats_panel.ctp:591
+msgid "my Chats"
+msgstr "Mis Chats"
+
+#: View/Chats/chats_panel.ctp:599
+msgid "Most Active Chats"
+msgstr "Chats más activos"
+
+#: View/Chats/chats_panel.ctp:724
+msgid "Search for existing Chats"
+msgstr "Buscar por chat"
+
+#: View/Chats/chats_panel.ctp:728;766
+#: View/Companys/show_company_data_panel.ctp:159
+#: View/Investors/link_account.ctp:61
+#: View/Marketplaces/get_global_market_place_data_test.ctp:477
+msgid "Company"
+msgstr "Compañía"
+
+#: View/Chats/chats_panel.ctp:741;779
+msgid "Loan Identifier"
+msgstr "Identificador del préstamo"
+
+#: View/Chats/chats_panel.ctp:763
+msgid "New Chat"
+msgstr "Chat nuevo"
+
+#: View/Chats/chats_panel.ctp:792
+msgid "Subject"
+msgstr "Sujeto"
+
+#: View/Companys/read_company_extended_data.ctp:95
+msgid "Number of investors: "
+msgstr "Número de inversores:"
+
+#: View/Companys/show_company_data_panel.ctp:151
+msgid "Company Data NEW FORMAT"
+msgstr ""
+
+#: View/Companys/show_company_data_panel.ctp:164
+msgid "Logo"
+msgstr "Logo"
+
+#: View/Companys/show_company_data_panel.ctp:169
+#: View/Marketplaces/get_global_market_place_data_test.ctp:269
+#: View/Marketplaces/list_market_place.ctp:64
+#: View/Marketplaces/show_market_place.ctp:222
+msgid "Rating"
+msgstr "Rating"
+
+#: View/Companys/show_company_data_panel.ctp:174
+#: View/Investors/link_account.ctp:71
+#: View/Marketplaces/list_market_place.ctp:67
+#: View/Marketplaces/show_market_place.ctp:225
+msgid "Action"
+msgstr "Acción"
+
+#: View/Dashboards/get_dashboard_data.ctp:172;402
+#: View/Dashboards/get_dashboard_data_OLD.ctp:172;407
+msgid "My Balance"
+msgstr "Capital Disponible"
+
+#: View/Dashboards/get_dashboard_data.ctp:215
+#: View/Dashboards/get_dashboard_data_OLD.ctp:215
+msgid "Outstanding Principal"
+msgstr "Capital Vivo"
+
+#: View/Dashboards/get_dashboard_data.ctp:257;329;436
+#: View/Dashboards/get_dashboard_data_OLD.ctp:257;334;441
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:417
+msgid "Amount Invested"
+msgstr "Capital Invertido"
+
+#: View/Dashboards/get_dashboard_data.ctp:289
+#: View/Dashboards/get_dashboard_data_OLD.ctp:289
+msgid "EMPTY DASHBOARD"
+msgstr "DASHBOARD VACÍO"
+
+#: View/Dashboards/get_dashboard_data.ctp:292
+#: View/Dashboards/get_dashboard_data_OLD.ctp:292
+msgid ""
+"We don't have any Dashboard data for you as you don't have any of your "
+"crowdlending platform\n"
+"\t\t\t\t\t\t\t\taccounts linked to your Dashboard account"
+msgstr ""
+"No tenemos información al no enlazar con ninguna plataforma de crowdlending"
+
+#: View/Dashboards/get_dashboard_data.ctp:298
+#: View/Dashboards/get_dashboard_data_OLD.ctp:298
+msgid "Link your Accounts"
+msgstr "Enlace sus cuentas"
+
+#: View/Dashboards/get_dashboard_data.ctp:310
+#: View/Dashboards/get_dashboard_data_OLD.ctp:311
+msgid "The information presented in your dashboard dates from "
+msgstr "La información mostrada en su dashboard fue actualizada el "
+
+#: View/Dashboards/get_dashboard_data.ctp:315
+#: View/Dashboards/get_dashboard_data_OLD.ctp:316
+msgid "We are currently collecting the data for your updated dashboard. "
+msgstr "Estamos recogiendo datos para su dashboard"
+
+#: View/Dashboards/get_dashboard_data.ctp:316
+#: View/Dashboards/get_dashboard_data_OLD.ctp:317
+msgid "You will receive a notification once the process is finished."
+msgstr "Recibirá una notificación una vez el proceso finalice"
+
+#: View/Dashboards/get_dashboard_data.ctp:327
+#: View/Dashboards/get_dashboard_data_OLD.ctp:332
+msgid "Amount of money currently invested"
+msgstr "Capital Total Invertido"
+
+#: View/Dashboards/get_dashboard_data.ctp:340
+#: View/Dashboards/get_dashboard_data_OLD.ctp:345
+msgid "Amount of money in all your Wallets"
+msgstr "Capital Disponible"
+
+#: View/Dashboards/get_dashboard_data.ctp:343
+#: View/Dashboards/get_dashboard_data_OLD.ctp:348
+msgid "Available Funds"
+msgstr "Capital Disponible"
+
+#: View/Dashboards/get_dashboard_data.ctp:353
+#: View/Dashboards/get_dashboard_data_OLD.ctp:358
+msgid "The average profitibility of all your active investments"
+msgstr "Rentabilidad Media Global"
+
+#: View/Dashboards/get_dashboard_data.ctp:356
+#: View/Dashboards/get_dashboard_data_OLD.ctp:361
+msgid "Return"
+msgstr "Rentabilidad"
+
+#: View/Dashboards/get_dashboard_data.ctp:366
+#: View/Dashboards/get_dashboard_data_OLD.ctp:371
+msgid ""
+"The number of active investments, i.e investments not yet fully recovered"
+msgstr "Número de inversiones activas"
+
+#: View/Dashboards/get_dashboard_data.ctp:369
+#: View/Dashboards/get_dashboard_data_OLD.ctp:374
+#: View/Marketplaces/test1.ctp:248
+msgid "Active Investments"
+msgstr "Inversiones Activas"
+
+#: View/Dashboards/get_dashboard_data.ctp:388
+#: View/Dashboards/get_dashboard_data_OLD.ctp:393
+#: View/Marketplaces/test1.ctp:275
+msgid "Global Accounts Overview"
+msgstr "Vista Global"
+
+#: View/Dashboards/get_dashboard_data.ctp:403;420;437
+#: View/Dashboards/get_dashboard_data_OLD.ctp:408;425;442
+msgid "No data in piechart"
+msgstr "Sin datos"
+
+#: View/Dashboards/get_dashboard_data.ctp:419
+#: View/Dashboards/get_dashboard_data_OLD.ctp:424
+msgid "Amount not yet recovered"
+msgstr "Capital Vivo"
+
+#: View/Dashboards/get_dashboard_data.ctp:525
+#: View/Dashboards/get_dashboard_data_OLD.ctp:530
+msgid "AVAILABLE FUNDS"
+msgstr "CAPITAL DISPONIBLE"
+
+#: View/Dashboards/get_dashboard_data.ctp:534
+#: View/Dashboards/get_dashboard_data_OLD.ctp:539
+msgid "RETURN"
+msgstr "RENTABILIDAD"
+
+#: View/Dashboards/get_dashboard_data.ctp:542
+#: View/Dashboards/get_dashboard_data_OLD.ctp:547
+msgid "INVESTED"
+msgstr "CAPITAL INVERTIDO"
+
+#: View/Dashboards/get_dashboard_data.ctp:549
+#: View/Dashboards/get_dashboard_data_OLD.ctp:554
+msgid "OUTSTANDING PRINCIPAL"
+msgstr "CAPITAL VIVO"
+
+#: View/Dashboards/get_dashboard_data.ctp:556
+#: View/Dashboards/get_dashboard_data_OLD.ctp:561
+msgid "ACTIVE INVESTMENTS"
+msgstr "INVERSIONES ACTIVAS"
+
+#: View/Dashboards/get_dashboard_data.ctp:574
+#: View/Dashboards/get_dashboard_data_OLD.ctp:579
+msgid "Transaction Id"
+msgstr "ID Transacción"
+
+#: View/Dashboards/get_dashboard_data.ctp:575
+#: View/Dashboards/get_dashboard_data_OLD.ctp:580
+msgid "Due Date"
+msgstr "Fecha vencimiento"
+
+#: View/Dashboards/get_dashboard_data.ctp:576
+#: View/Dashboards/get_dashboard_data_OLD.ctp:581
+#: View/Marketplaces/test1.ctp:354
+msgid "Interest"
+msgstr "Interés"
+
+#: View/Dashboards/get_dashboard_data.ctp:577
+#: View/Dashboards/get_dashboard_data_OLD.ctp:582
+msgid "Invested"
+msgstr "Invertido"
+
+#: View/Dashboards/get_dashboard_data.ctp:578
+#: View/Dashboards/get_dashboard_data_OLD.ctp:583
+#: View/Marketplaces/test1.ctp:356
+msgid "Amortized"
+msgstr "Amortizado"
+
+#: View/Dashboards/get_dashboard_data.ctp:579
+#: View/Dashboards/get_dashboard_data_OLD.ctp:584
+#: View/Marketplaces/test1.ctp:357
+msgid "Gained profit"
+msgstr "Intereses obtenidos"
+
+#: View/Dashboards/get_dashboard_data.ctp:580
+#: View/Dashboards/get_dashboard_data_OLD.ctp:585
+#: View/Marketplaces/test1.ctp:358
+msgid "Comission"
+msgstr "Comisión"
+
+#: View/Dashboards/get_dashboard_data.ctp:581
+#: View/Dashboards/get_dashboard_data_OLD.ctp:586
+msgid "Period of<br>Investment"
+msgstr "Duración"
+
+#: View/Dashboards/get_dashboard_data.ctp:582
+#: View/Dashboards/get_dashboard_data_OLD.ctp:587
+#: View/Marketplaces/test1.ctp:360
+msgid "Status"
+msgstr "Estado"
+
+#: View/Elements/headerline.ctp:125
+msgid "Profile"
+msgstr "Perfil"
+
+#: View/Elements/headerline.ctp:128
+msgid "Sign out"
+msgstr "Salir"
+
+#: View/Elements/leftnavigationmenu.ctp:57
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: View/Elements/leftnavigationmenu.ctp:64
+msgid "Investor Comunity"
+msgstr "Comunidad de Inversores"
+
+#: View/Elements/leftnavigationmenu.ctp:78
+#: View/Marketplaces/get_global_market_place_data_test.ctp:213
+msgid "Global Marketplace"
+msgstr "Global Marketplace"
+
+#: View/Elements/leftnavigationmenu.ctp:84
+msgid "My Marketplace"
+msgstr "Mi Marketplace"
+
+#: View/Elements/leftnavigationmenu.ctp:85
+msgid "Spain"
+msgstr "España"
+
+#: View/Elements/leftnavigationmenu.ctp:86
+msgid "France"
+msgstr "Francia"
+
+#: View/Elements/leftnavigationmenu.ctp:87
+msgid "Germany"
+msgstr "Alemania"
+
+#: View/Elements/leftnavigationmenu.ctp:93
+msgid "Loan Control"
+msgstr "Incidencias"
+
+#: View/Elements/leftnavigationmenu.ctp:106
+msgid "Companies"
+msgstr "Compañías"
+
+#: View/Elements/leftnavigationmenu.ctp:122
+msgid "Suggestion Box"
+msgstr "Sugerencias"
+
+#: View/Elements/leftnavigationmenu.ctp:135
+msgid "Link Account"
+msgstr "Enlazar Cuentas"
+
+#: View/Elements/leftnavigationmenu.ctp:141
+#: View/Investors/user_profile_data_panel.ctp:130
+msgid "Personal Data"
+msgstr "Datos Personales"
+
+#: View/Elements/leftnavigationmenu.ctp:150
+msgid "Logout"
+msgstr "Salir"
+
+#: View/Elements/privatefooter.ctp:33
+msgid "Winvestify"
+msgstr "Winvestify"
+
+#: View/Elements/progresswizard.ctp:59;97
+msgid "User Data"
+msgstr "Datos de Usuario"
+
+#: View/Elements/progresswizard.ctp:78
+msgid "Confirmation Code"
+msgstr "Código de Confirmación"
+
+#: View/Elements/progresswizard.ctp:116
+msgid "Investment Information"
+msgstr "Información de Inversiones"
+
+#: View/Elements/progresswizard.ctp:135
+msgid "Account Created"
+msgstr "Cuenta Creada"
+
+#: View/Elements/publicfooter.ctp:32 View/Layouts/azarus_private_layout.ctp:111
+msgid "Home"
+msgstr "Home"
+
+#: View/Elements/publicfooter.ctp:33
+msgid "About Us"
+msgstr "Sobre Winvestify"
+
+#: View/Elements/publicfooter.ctp:34 View/Invitation/contact.ctp:81
+#: View/Pages/contact.ctp:5
+msgid "Contact"
+msgstr "Contáctanos"
+
+#: View/Elements/publicfooter.ctp:39
+msgid "LinkedIn"
+msgstr "Lin‌kedIn"
+
+#: View/Elements/publicfooter.ctp:40
+msgid "Facebook"
+msgstr "Facebook"
+
+#: View/Elements/publicfooter.ctp:41
+msgid "Twitter"
+msgstr "Twitter"
+
+#: View/Elements/publicfooter.ctp:46
+msgid "Privacy Policy"
+msgstr "Politica de Privacidad"
+
+#: View/Elements/publicfooter.ctp:47
+msgid "Terms &amp; Conditions"
+msgstr "Términos y Condiciones de Uso"
+
+#: View/Elements/publicfooter.ctp:54
+msgid ""
+"Our mission is to help investors minimize the risks of investing in the "
+"crowdlending market\n"
+"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand increase their earnings. We "
+"support continuous, global growth of a dynamic crowdlending market,\n"
+"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tboth by market size and investors"
+msgstr ""
+"Nacemos con el propósito de ayudar a los inversores a minimizar su riesgo y "
+"aumentar su rentabilidad. Favorecemos que el mercado de Crowdlending siga "
+"creciendo y gane más adeptos"
+
+#: View/Emails/html/admin.ctp:21
+msgid "A new user has registered"
+msgstr "Se ha registrado un nuevo usuario"
+
+#: View/Emails/html/admin.ctp:22
+msgid "email: "
+msgstr "email:"
+
+#: View/Emails/html/admin.ctp:23
+msgid "telephone: "
+msgstr "teléfono:"
+
+#: View/Emails/html/new_user.ctp:15
+msgid "Welcome to <strong>Winvestify</strong>"
+msgstr "¡Gracias por registrarse en <strong>Winvestify</strong>!"
+
+#: View/Emails/html/new_user.ctp:17
+msgid ""
+"We are the first community for investors specialized in Crowdlending and "
+"Invoice Trading."
+msgstr ""
+"Somos la primera comunidad de inversores especializada en Crowdlending e "
+"Invoice Trading."
+
+#: View/Emails/html/new_user.ctp:33
+msgid "First steps"
+msgstr "Primeros Pasos"
+
+#: View/Emails/html/new_user.ctp:66
+msgid "1) Complete your investment profile"
+msgstr "1) Complete su perfil de inversor"
+
+#: View/Emails/html/new_user.ctp:69
+msgid ""
+"Enter your personal data in order to connect your investment accounts to our "
+"platform"
+msgstr "Rellene sus datos personales para poder enlazar sus cuentas"
+
+#: View/Emails/html/new_user.ctp:112
+msgid "2) Link your accounts"
+msgstr "2) Enlace sus cuentas"
+
+#: View/Emails/html/new_user.ctp:115
+msgid "Connect to the principal alternative financing plataforms"
+msgstr "Conecte con las principales plataformas de financiación participativa"
+
+#: View/Emails/html/new_user.ctp:159
+msgid "3) Manage your investments"
+msgstr "3) Gestione sus inversiones"
+
+#: View/Emails/html/new_user.ctp:162
+msgid "All your investments will be automatically completely organized"
+msgstr "Sus inversiones estarán completamente organizadas automáticamente"
+
+#: View/Emails/html/new_user.ctp:206
+msgid "4) Global Market"
+msgstr "4) Mercado Global"
+
+#: View/Emails/html/new_user.ctp:208
+msgid "Access all active investment opportunities in real time"
+msgstr "Acceda a todas las oportunidades de inversiones en tiempo real"
+
+#: View/Emails/html/new_user.ctp:224
+msgid "Go to Winvestify"
+msgstr "Ir a Winvestify"
+
+#: View/Emails/html/standard_email_layout.ctp:209
+msgid ""
+"Este mensaje y sus ficheros adjuntos tienen carácter privado y confidencial "
+"y van dirigidos exclusivamente a sus destinatarios.\n"
+"\t\t\t\t\t\t\t Si ha recibido este mensaje por error, no debe revelarlo, "
+"copiarlo o distribuirlo en ningún sentido sin previo consentimiento\n"
+"\t\t\t\t\t\t\t por escrito de Winvestify Asset Management. Rogamos lo "
+"comunique al remitente y elimine dicho mensaje y cualquier documento\n"
+"\t\t\t\t\t\t\t adjunto que pudiera contener. De no hacerlo así puede "
+"vulnerar la legislación vigente."
+msgstr ""
+
+#: View/Helper/CaptchaHelper.php:37
+msgid "Can't read? Reload"
+msgstr ""
+
+#: View/Helper/CaptchaHelper.php:39
+msgid "<p>Enter security code shown above:</p>"
+msgstr "Teclee código de seguridad"
+
+#: View/Helper/CaptchaHelper.php:41
+msgid "<p>Answer Simple Math</p>"
+msgstr ""
+
+#: View/Investors/account_linking_error.ctp:45
+msgid ""
+"The combination of user/password is incorrect. Please check your data and "
+"try again"
+msgstr ""
+"Usuario o Contraseña incorrecto. Compruebe los datos e inténtelo otra vez"
+
+#: View/Investors/edit_user_profile_data.ctp:162
+msgid "You're data has been successfully modified"
+msgstr "Sus datos han sido actualizados con éxito"
+
+#: View/Investors/edit_user_profile_data.ctp:174
+#: View/Investors/read_linked_accounts.ctp:326
+#: View/Investors/read_user_profile_data.ctp:123
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:199
+#: View/Users/login.ctp:94 View/Users/register_panel_a.ctp:363;377
+msgid "Password"
+msgstr "Contraseña"
+
+#: View/Investors/edit_user_profile_data.ctp:185
+#: View/Investors/read_user_profile_data.ctp:133
+msgid "New Password"
+msgstr "Contraseña Nueva"
+
+#: View/Investors/edit_user_profile_data.ctp:194
+#: View/Investors/read_user_profile_data.ctp:142
+#: View/Users/register_panel_a.ctp:398;407
+msgid "Repeat Password"
+msgstr "Repita contraseña"
+
+#: View/Investors/edit_user_profile_data.ctp:205
+#: View/Investors/read_user_profile_data.ctp:153
+msgid "Repeat new Password"
+msgstr "Repita nueva contraseña"
+
+#: View/Investors/edit_user_profile_data.ctp:215
+msgid ""
+"Your password should be at least 8 characters long and contain uppercase and "
+"lowercase characters, a number and another symbol"
+msgstr ""
+"Su contraseña debe contener al menos 8 caracteres, letras mayúsculas y "
+"minúsculas, un número y otro símbolo"
+
+#: View/Investors/edit_user_profile_data.ctp:237;249
+#: View/Investors/read_user_profile_data.ctp:180;192
+#: View/Marketplaces/show_market_place.ctp:218
+#: View/Marketplaces/store_beta_tester.ctp:102
+msgid "Name"
+msgstr "Nombre"
+
+#: View/Investors/edit_user_profile_data.ctp:259
+#: View/Investors/read_user_profile_data.ctp:201
+msgid "Surname(s)"
+msgstr "Apellido(s)"
+
+#: View/Investors/edit_user_profile_data.ctp:270
+#: View/Investors/read_user_profile_data.ctp:212
+msgid "Surname"
+msgstr "Apellido"
+
+#: View/Investors/edit_user_profile_data.ctp:313;324
+#: View/Investors/read_user_profile_data.ctp:255;266
+msgid "Address"
+msgstr "Dirección"
+
+#: View/Investors/edit_user_profile_data.ctp:334;345
+#: View/Investors/read_user_profile_data.ctp:276;287
+msgid "PostCode"
+msgstr "Código Postal"
+
+#: View/Investors/edit_user_profile_data.ctp:354;365
+#: View/Investors/read_user_profile_data.ctp:296;307
+msgid "City"
+msgstr "Ciudad"
+
+#: View/Investors/edit_user_profile_data.ctp:418;429
+#: View/Investors/read_user_profile_data.ctp:360;371
+msgid "Country"
+msgstr "País"
+
+#: View/Investors/edit_user_profile_data.ctp:456;467
+#: View/Investors/read_user_profile_data.ctp:398;409
+msgid "Id"
+msgstr "DNI"
+
+#: View/Investors/edit_user_profile_data.ctp:476;489
+#: View/Investors/read_user_profile_data.ctp:420;431
+msgid "Telephone"
+msgstr "Teléfono"
+
+#: View/Investors/edit_user_profile_data.ctp:504;516
+#: View/Investors/read_user_profile_data.ctp:443;455;497
+msgid "Date of Birth"
+msgstr "Fecha de Nacimiento"
+
+#: View/Investors/edit_user_profile_data.ctp:567
+#: View/Investors/read_user_profile_data.ctp:551
+msgid "Save"
+msgstr "Guardar"
+
+#: View/Investors/link_account.ctp:66
+#: View/Investors/read_linked_accounts.ctp:312
+msgid "Username"
+msgstr "Usuario"
+
+#: View/Investors/linkedaccounts_list.ctp:65
+msgid "The account has been successfully added"
+msgstr "Su cuenta ha sido añadida correctamente"
+
+#: View/Investors/linkedaccounts_list.ctp:68
+msgid "The account has been deleted"
+msgstr "Su cuenta ha sido eliminada"
+
+#: View/Investors/linkedaccounts_list.ctp:81
+#: View/Investors/read_linked_accounts.ctp:182;294
+msgid "CrowdLending Company"
+msgstr "Compañía de Crowdlending"
+
+#: View/Investors/linkedaccounts_list.ctp:94
+#: View/Investors/read_linked_accounts.ctp:195;307
+msgid "Your User"
+msgstr "Usuario"
+
+#: View/Investors/linkedaccounts_list.ctp:107
+#: View/Investors/read_linked_accounts.ctp:208;320
+msgid "Your Password"
+msgstr "Contraseña"
+
+#: View/Investors/linkedaccounts_list.ctp:124
+#: View/Investors/read_linked_accounts.ctp:228
+msgid "Delete"
+msgstr "Eliminar"
+
+#: View/Investors/linkedaccounts_list.ctp:141
+msgid ""
+"You currently don't have any account defined. By adding your crowdlending "
+"accounts\n"
+"\t\t\t\t\t\t\t\t\t\tyou will be able see all your global investment position "
+"in your global\n"
+"\t\t\t\t\t\t\t\t\t\tdashboard"
+msgstr ""
+"No tiene ninguna cuenta enlazada. Incorporar las cuentas de sus Plataformas "
+"de Financiación Participativa le permitirá tener mayor control de su cartera "
+"de inversión. Una vez enlazadas podrá conocer el estado de sus inversiones "
+"accediendo a su Dashboard."
+
+#: View/Investors/new_account_link.ctp:31
+msgid "What do you like to do?"
+msgstr "¿Qué quiere hacer?"
+
+#: View/Investors/new_account_link.ctp:34
+#: View/Marketplaces/get_global_market_place_data_test.ctp:169;187
+#: View/Marketplaces/list_market_place.ctp:51
+#: View/Notifications/read_notification_content.ctp:146
+msgid "Close"
+msgstr "Cerrar"
+
+#: View/Investors/new_account_link.ctp:37
+msgid "Go to next notification"
+msgstr "Siguiente notificación"
+
+#: View/Investors/new_account_link.ctp:43
+#: View/Notifications/get_notifications_list.ctp:138
+#: View/Notifications/read_notification_content.ctp:122
+#: View/Usererrors/get_error_modal.ctp:131
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: View/Investors/read_linked_accounts.ctp:245
+msgid ""
+"You currently don't have any account defined. By adding your crowdlending "
+"accounts\n"
+"\t\t\t\t\t\t\t\t\t\tyou will be able see all your global investment position "
+"in our global\n"
+"\t\t\t\t\t\t\t\t\t\tdashboard"
+msgstr ""
+"No tiene ninguna cuenta enlazada. Incorporar  las cuentas de sus Plataformas "
+"de Financiación Participativa le permitirá tener mayor control de su cartera "
+"de inversión. Una vez enlazadas podrá conocer el estado de sus inversiones "
+"accediendo a su Dashboard."
+
+#: View/Investors/read_linked_accounts.ctp:262
+msgid "Add New Account"
+msgstr "Añadir Cuenta"
+
+#: View/Investors/read_linked_accounts.ctp:275
+msgid ""
+"Both the 'Username' and 'Password' of a linked account are encrypted before "
+"they are stored on our servers"
+msgstr ""
+"Encriptaremos su nombre de usuario y contraseña al enlazar su cuenta por "
+"motivos de seguridad."
+
+#: View/Investors/read_linked_accounts.ctp:337
+msgid "Link this Account"
+msgstr "Enlazar Cuenta"
+
+#: View/Investors/user_profile_data_panel.ctp:133
+msgid "Linked Accounts"
+msgstr "Cuentas Enlazadas"
+
+#: View/Investors/user_profile_data_panel.ctp:136
+msgid "Social Network"
+msgstr "Red Social"
+
+#: View/Invitation/create_invitation_panel.ctp:148
+msgid "Invite your Contacts"
+msgstr "Recomiéndelo a sus Contactos"
+
+#: View/Invitation/create_invitation_panel.ctp:155
+msgid "Recommend Winvestify to my Contacts"
+msgstr "Recomendar Winvestify a mis Contactos"
+
+#: View/Invitation/create_invitation_panel.ctp:157
+msgid ""
+"We don't store your password and we encrypt your contacts before storing them"
+msgstr ""
+"No almacenamos su contraseña y ciframos sus contactos antes de almacenarlos"
+
+#: View/Invitation/create_invitation_panel.ctp:185
+msgid "Invitar a friend"
+msgstr "Invitar a un amigo"
+
+#: View/Invitation/create_invitation_panel.ctp:189
+msgid "Name of Contact"
+msgstr "Nombre del Contacto"
+
+#: View/Invitation/create_invitation_panel.ctp:200
+msgid "Surname(s) of Contact"
+msgstr "Apellido(s) del Contacto"
+
+#: View/Invitation/create_invitation_panel.ctp:212;218
+#: View/Marketplaces/get_global_market_place_data_test.ctp:180
+#: View/Marketplaces/store_beta_tester.ctp:112;128
+#: View/Users/register_panel_a.ctp:475
+#: View/Users/request_new_password_panel.ctp:114
+msgid "Error"
+msgstr "Error"
+
+#: View/Invitation/create_invitation_panel.ctp:224
+msgid "Email of Invitee"
+msgstr "Email del Invitado"
+
+#: View/Invitation/create_invitation_panel.ctp:230
+msgid "Introduzca su texto para el/la invitado/a"
+msgstr ""
+
+#: View/Invitation/create_invitation_panel.ctp:231
+msgid "I like the services of Winvestify a lot, have a look"
+msgstr "Me gustan los servicios que ofrece esta companía. Echa un vistazo"
+
+#: View/Invitation/create_invitation_panel.ctp:244
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:225
+#: View/Tests/automatic_reconcile_payments.ctp:62
+#: View/Tests/create_structure.ctp:282
+msgid "Send"
+msgstr "Enviar"
+
+#: View/Layouts/azarus_private_layout.ctp:84
+msgid "Search..."
+msgstr "Buscar..."
+
+#: View/Layouts/azarus_private_layout.ctp:153
+msgid "Recent Activity"
+msgstr "Actividad reciente"
+
+#: View/Layouts/azarus_private_layout.ctp:191
+msgid "Tasks Progress"
+msgstr "Progreso"
+
+#: View/Layouts/compare_public_landingpage_layout.ctp:269
+#: View/Layouts/compare_public_landingpage_layoutORIG.ctp:264
+#: View/Layouts/compare_public_landingpage_layout_simple.ctp:205
+msgid ""
+"WINVESTIFY PROVIDES YOU WITH A SINGLE POINT OF ACCESS FOR MANAGING ALL YOUR "
+"CROWDLENDING INVESTMENTS"
+msgstr ""
+"WINVESTIFY OFRECE UN SITIO CENTRALIZADO PARA GESTIONAR SUS INVERSIONES DE "
+"CROWDLENDING"
+
+#: View/Layouts/compare_public_landingpage_layout.ctp:281
+#: View/Layouts/compare_public_landingpage_layoutORIG.ctp:276
+#: View/Layouts/compare_public_landingpage_layout_simple.ctp:217
+msgid "SEE ALL YOUR INVESTMENTS JUST ON ONE WEBPAGE"
+msgstr "VER TODAS SUS INVERSIONES EN UNA ÚNICA PÁGINA"
+
+#: View/Layouts/compare_public_landingpage_layout.ctp:292
+#: View/Layouts/compare_public_landingpage_layoutORIG.ctp:287
+#: View/Layouts/compare_public_landingpage_layout_simple.ctp:228
+msgid ""
+"WINVESTIFY ALSO GIVES YOU INFORMATION ABOUT INVESTMENTS WITH REPAYMENT ISSUES"
+msgstr "WINVESTIFY DA TODA LA INFORMACIÓN DE SUS INVERSIONES CON INCIDENCIAS"
+
+#: View/Layouts/compare_public_layout.ctp:145
+msgid "Language"
+msgstr "Idioma"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:101
+msgid "Features"
+msgstr "Características"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:102
+msgid "Investor Toolbox"
+msgstr "Investor Toolbox"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:103
+msgid "Platforms"
+msgstr "Plataformas"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:104
+msgid "Statistics"
+msgstr "Estadísticas"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:129
+msgid "Connect to the major crowdlending platforms from our portal"
+msgstr ""
+"Conecta con las principales plataformas de crowdlending desde una única "
+"plataforma"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:133;258
+#: View/Users/login.ctp:109
+msgid "Register"
+msgstr "Registro"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:144
+#: View/Users/login.ctp:101
+msgid "Login"
+msgstr "Accede"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:177
+#: View/Marketplaces/store_beta_tester.ctp:118
+#: View/Users/register_panel_a.ctp:335
+msgid "Email"
+msgstr "Email"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:247
+msgid ""
+"Centralize all your investment accounts and connect to the major "
+"Crowdlending and Invoice Trading platforms\n"
+"\t\t\t\t\t\t\t  from a single portal. Our tool lets you organize and manage "
+"all your investments more efficiently. \n"
+"\t\t\t\t\t\tAt the same time you can access all investment oportunities in "
+"real time and have a truly global view of the Crowdlending market"
+msgstr ""
+"Winvestify le permite centralizar todas sus cuentas de inversión y conectar "
+"con las principales plataformas de Crowdlending e Invoice Trading desde un "
+"único portal. Nuestra herramienta está orientada a organizar y gestionar "
+"todas sus inversiones de un modo más eficiente.\n"
+"Además podrá acceder a las oportunidades de inversión activas en tiempo "
+"real, ofreciéndole una visión más global del mercado "
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:259
+msgid "Use our platform for free and enjoy all the benefits"
+msgstr "Acceda gratis a nuestra plataforma y disfrute de todas sus ventajas"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:268
+msgid "Link your accounts"
+msgstr "Enlace sus cuentas"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:269
+msgid "Connect to the principal alternative financing platforms"
+msgstr ""
+"Conecte con las principales plataformas de crowdlending desde una única "
+"plataforma"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:277
+msgid "Manage your investments"
+msgstr "Gestione sus inversiones"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:278
+msgid "Your investments are completely organized, all automatically"
+msgstr "Sus inversiones estarán completamente organizadas automáticamente"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:292
+msgid "Investor ToolBox Manager"
+msgstr "Crowdlending ToolBox Manager"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:312
+msgid "A SMALL STEP FOR YOU, BUT A BIG STEP FOR YOUR INVESTMENTS"
+msgstr "UN PEQUEÑO PASO PARA USTED, UN GRAN PASO PARA SU INVERSIÓN"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:313
+msgid ""
+"Winvestify connects to the principal <strong>Invoice\n"
+"\t\t\t\tTrading</strong> and <strong>Crowdlending</strong> platforms of "
+"Spain in a simple and secure way"
+msgstr ""
+"En Winvestify encontrará las principales plataformas de "
+"<strong>crowdlending</strong> e <strong>Invoice Trading</strong> de España.\n"
+"Podrá conectar con cualquiera de estas plataformas de un modo sencillo y "
+"seguro "
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:428
+msgid "Open investments"
+msgstr "Oportunidades de Inversión"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:441
+msgid "Total Investment"
+msgstr "Capital Total de Inversión"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:454
+msgid ""
+"Register for FREE and get ALL the advantages of a unified marketplace and "
+"single dashboard"
+msgstr "Accede GRATIS a nuestra plataforma y disfruta de TODAS sus ventajas"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:497
+msgid "Got it!"
+msgstr "¡Entendido!"
+
+#: View/Layouts/Emails/html/standard_email_layout.ctp:210
+msgid ""
+"This message and its attached files are private and confidential and are "
+"addressed exclusively to its recipients. "
+msgstr ""
+"Este mensaje y sus archivos adjuntos son privados y confidenciales y se "
+"dirigen exclusivamente a sus destinatarios."
+
+#: View/Layouts/Emails/html/standard_email_layout.ctp:211
+msgid ""
+"If you have received this message by error, you should not disclose, copy or "
+"distribute it in any way without prior written consent "
+msgstr ""
+"Si ha recibido este mensaje por error, no debe divulgarlo, copiarlo ni "
+"distribuirlo de ninguna forma sin previo consentimiento por escrito"
+
+#: View/Layouts/Emails/html/standard_email_layout.ctp:212
+msgid ""
+"from Winvestify Asset Management. Please notify the sender and delete this "
+"message and any attached document "
+msgstr ""
+"de Winvestify Asset Management. Por favor, notifique al remitente y elimine "
+"este mensaje y cualquier archivo adjunto"
+
+#: View/Layouts/Emails/html/standard_email_layout.ctp:213
+msgid "that it may contain. Failure to do so may violate existing legislation"
+msgstr "que pueda contener. De no hacerlo puede violar la legislación vigente"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:162
+msgid "Confirmation"
+msgstr "Confirmación"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:165
+msgid "Thank you very much for your registration"
+msgstr "Muchas gracias por registrarse"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:166
+#: View/Marketplaces/list_market_place.ctp:48
+msgid "We will send you an email when you can start using our platform."
+msgstr ""
+"Le enviaremos un email cuando pueda empezar a utilizar nuestra plataforma."
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:183
+msgid "A technical error occured"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:184
+msgid "Please try to register again in a couple of minutes."
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:216
+msgid ""
+" A truly global Marketplace with all investments of the crowdlending "
+"companies in your country"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:224
+msgid "Extensive Company Information"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:227
+msgid ""
+"Winvestify keeps track of all crowdlending companies with respect to their "
+"strengths and weaknesses"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:235
+msgid "Keep track of any incident related to your investments "
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:238
+msgid ""
+"Keeping track of payment arrears that might appear of any of your investment "
+"is easier than ever"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:246
+msgid "Investor Community"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:249
+msgid ""
+"A social network where investors can freely exchange experiences with other "
+"investors"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:258
+msgid "Account Aggregator"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:261
+msgid ""
+"Check all your crowdlending investments in just one place, a real universal "
+"Dashboard"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:272
+msgid "Users can rate the management of any of the crowdlending companies"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:342
+msgid "AZARUS GLOBAL MARKET"
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:352
+#: View/Marketplaces/show_market_place.ctp:124
+msgid "Active Companies"
+msgstr "Compañías activas"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:363
+msgid "Open<br>Investments"
+msgstr "Oportunidades de Inversión"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:375
+#: View/Marketplaces/my_test.ctp:295
+msgid "Total Amount Already<br>Invested"
+msgstr "Capital total<br>Invertido"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:388
+#: View/Marketplaces/my_test.ctp:307
+msgid "Total Investment <br>Amount"
+msgstr "Capital total<br>de Inversión"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:458
+msgid "GLOBAL INVESTMENTS"
+msgstr "INVERSIONES GLOBALES"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:478
+msgid "Active<br>Investments"
+msgstr "Inversiones<br>Activas"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:479
+msgid "Amount Already<br>Invested"
+msgstr "Capital<br>Invertido"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:480
+#: View/Marketplaces/show_market_place.ctp:223
+msgid "Progress"
+msgstr "Progreso"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:481
+msgid "Total Amount<br>to Invest"
+msgstr "Capital  para<br>invertir"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:548
+msgid "More Info"
+msgstr "Más info"
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:569
+msgid ""
+"If you want to try our pre-commercial Beta version for FREE, just leave us "
+"your email address\n"
+"\t\t\t\t\t and we will contact you when it becomes available "
+msgstr ""
+
+#: View/Marketplaces/get_global_market_place_data_test.ctp:571
+msgid "YES,<br>I LIKE TO TRY IT"
+msgstr ""
+
+#: View/Marketplaces/list_market_place.ctp:44
+msgid "Subscription"
+msgstr "Suscripción"
+
+#: View/Marketplaces/list_market_place.ctp:47
+msgid "Thank you very much for your subscription"
+msgstr "Muchas gracias por su suscripción"
+
+#: View/Marketplaces/list_market_place.ctp:60
+msgid "Portal"
+msgstr "Portal"
+
+#: View/Marketplaces/list_market_place.ctp:61
+msgid "Applicant / Purpose<br>of Loan"
+msgstr "Concepto de la inversión"
+
+#: View/Marketplaces/list_market_place.ctp:62
+msgid "Interest<br>Rate"
+msgstr "Interés "
+
+#: View/Marketplaces/list_market_place.ctp:63
+#: View/Marketplaces/show_market_place.ctp:221 View/Marketplaces/test1.ctp:359
+msgid "Duration"
+msgstr "Duración"
+
+#: View/Marketplaces/list_market_place.ctp:65
+msgid "Subscribed [%]"
+msgstr "Suscrito [%]"
+
+#: View/Marketplaces/list_market_place.ctp:66
+#: View/Marketplaces/show_market_place.ctp:224
+msgid "Amount"
+msgstr "Importe"
+
+#: View/Marketplaces/list_market_place.ctp:107
+#: View/Marketplaces/json/list_market_place.ctp:81
+msgid "Invest"
+msgstr "Invertir"
+
+#: View/Marketplaces/my_test.ctp:230;272
+msgid "Active Crowdlending Companies"
+msgstr "Compañías Activas de Crowdlending"
+
+#: View/Marketplaces/my_test.ctp:262
+msgid "GLOBAL INVESTMENT1"
+msgstr "INVERSIONES GLOBALES"
+
+#: View/Marketplaces/my_test.ctp:283
+msgid "Currently Open Investments"
+msgstr "Oportunidades de Inversión"
+
+#: View/Marketplaces/show_market_place.ctp:118
+msgid "Number of Companies with Open Investments"
+msgstr "Número de Empresas con oportunidades de inversiones Abiertas"
+
+#: View/Marketplaces/show_market_place.ctp:129
+msgid "Amount already invested in Open Investments"
+msgstr "Capital total invertido"
+
+#: View/Marketplaces/show_market_place.ctp:135
+msgid "Total Amount Already Invested"
+msgstr "Capital Total invertido"
+
+#: View/Marketplaces/show_market_place.ctp:141
+msgid "Total Amount of all the open investments"
+msgstr "Capital total de inversiones activas"
+
+#: View/Marketplaces/show_market_place.ctp:170
+msgid "Total Investment Amount"
+msgstr "Capital Total Invertido"
+
+#: View/Marketplaces/show_market_place.ctp:180
+msgid "Total Number of Investments in Global Marketplace"
+msgstr "Total de oportunidades de inversión en el marketplace global"
+
+#: View/Marketplaces/show_market_place.ctp:189
+msgid "Open Investments"
+msgstr "Oportunidades de Inversión"
+
+#: View/Marketplaces/show_market_place.ctp:200
+msgid "Global Market Place"
+msgstr "Mercado Global"
+
+#: View/Marketplaces/show_market_place.ctp:219
+msgid "Purpose"
+msgstr "Propósito"
+
+#: View/Marketplaces/show_market_place.ctp:220
+msgid "Interest Rate"
+msgstr "Interés "
+
+#: View/Marketplaces/store_beta_tester.ctp:96
+msgid "Subscribe "
+msgstr "Suscribirse"
+
+#: View/Marketplaces/store_beta_tester.ctp:105
+msgid "Your name"
+msgstr "Su nombre"
+
+#: View/Marketplaces/store_beta_tester.ctp:121
+msgid "Your email"
+msgstr "Su email"
+
+#: View/Marketplaces/store_beta_tester.ctp:138
+msgid "SEND"
+msgstr "ENVIAR"
+
+#: View/Marketplaces/store_beta_tester_success.ctp:52
+msgid "Your subscription has been registered"
+msgstr "Su suscripción ha sido registrada"
+
+#: View/Marketplaces/test1.ctp:206
+msgid "This is the total amount of money currently invested"
+msgstr "Cantidad Total Invertida"
+
+#: View/Marketplaces/test1.ctp:208
+msgid "Amount Inverted"
+msgstr "Cantidad Invertido"
+
+#: View/Marketplaces/test1.ctp:219
+msgid "The total amount of all your Wallets"
+msgstr ""
+
+#: View/Marketplaces/test1.ctp:222
+msgid "Total Inverted"
+msgstr "Total Invertido"
+
+#: View/Marketplaces/test1.ctp:232
+msgid "This is the average profitibility of all your active investments"
+msgstr "Es la rentabilidad media de todas sus inversiones activas"
+
+#: View/Marketplaces/test1.ctp:235
+msgid "Profitability?"
+msgstr ""
+
+#: View/Marketplaces/test1.ctp:245
+msgid "The number of active investments, i.e not yet fully recovered"
+msgstr ""
+
+#: View/Marketplaces/test1.ctp:306
+msgid "Company:"
+msgstr "Compañía:"
+
+#: View/Marketplaces/test1.ctp:312
+msgid "Wallet:"
+msgstr "Monedero:"
+
+#: View/Marketplaces/test1.ctp:318
+msgid "Profitibility:"
+msgstr "Rentabilidad:"
+
+#: View/Marketplaces/test1.ctp:324
+msgid "Invested:"
+msgstr "Invertido:"
+
+#: View/Marketplaces/test1.ctp:330
+msgid "Not yet recovered:"
+msgstr "Capital Vivo"
+
+#: View/Marketplaces/test1.ctp:336
+msgid "Active Investments:"
+msgstr "Inversiones Activas:"
+
+#: View/Marketplaces/test1.ctp:352
+msgid "Loan Id"
+msgstr "ID Préstamo"
+
+#: View/Marketplaces/test1.ctp:353
+msgid "Date"
+msgstr "Fecha"
+
+#: View/Marketplaces/test1.ctp:355
+msgid "Inverted"
+msgstr "Invertido"
+
+#: View/Notifications/get_notifications_list.ctp:111
+#: View/Notifications/read_notification_content.ctp:94
+msgid "Notification"
+msgstr "Notificación"
+
+#: View/Notifications/get_notifications_list.ctp:121
+#: View/Notifications/read_notification_content.ctp:104
+msgid ""
+"A technical error occured while reading the contents of the notification."
+msgstr "Error al cargar el contenido de su notificaciones"
+
+#: View/Notifications/get_notifications_list.ctp:122
+#: View/Notifications/read_notification_content.ctp:105
+msgid "Please try again after a few minutes"
+msgstr "Inténtelo de nuevo en unos minutos"
+
+#: View/Notifications/get_notifications_list.ctp:128
+#: View/Notifications/read_notification_content.ctp:110
+msgid "OK"
+msgstr "OK"
+
+#: View/Notifications/get_notifications_list.ctp:135
+#: View/Notifications/read_notification_content.ctp:118
+#: View/Usererrors/get_error_modal.ctp:128
+msgid "&#946; Version"
+msgstr "&#946; Version"
+
+#: View/Notifications/get_notifications_list.ctp:158
+msgid "You have no notifications"
+msgstr "No tienes notificaciones"
+
+#: View/Notifications/get_notifications_list.ctp:163
+msgid "You have "
+msgstr "Tienes"
+
+#: View/Notifications/get_notifications_list.ctp:164
+msgid " notifications"
+msgstr " notificiaciones"
+
+#: View/Notifications/get_notifications_list.ctp:182
+msgid "View all"
+msgstr "Ver todas"
+
+#: View/Notifications/read_notification_content.ctp:140
+msgid "Primary Modal"
+msgstr ""
+
+#: View/Notifications/read_notification_content.ctp:147
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+#: View/Pages/about_us.ctp:31
+msgid "Sobre Winvestify"
+msgstr "Acerca de Winvestify"
+
+#: View/Pages/privacy_policy.ctp:5
+msgid "Protección de Datos"
+msgstr ""
+
+#: View/Pages/privacy_policy.ctp:7
+msgid "WINVESTIFY"
+msgstr "WINVESTIFY"
+
+#: View/Pages/privacy_policy.ctp:7
+msgid ""
+" tratará los datos del Usuario, entre los que se encuentran la dirección de "
+"correo electrónico y número de móvil, las claves de acceso a la información "
+"de las cuentas que se agreguen, el historial de movimientos en dichas "
+"cuentas, así como los derivados de las acciones que el usuario realice a "
+"través de las utilidades del Servicio mediante el fichero USUARIOS inscrito "
+"en la AEPD para:"
+msgstr ""
+
+#: View/Pages/privacy_policy.ctp:8
+msgid ""
+"La prestación del Servicio, la extracción de promedios y tendencias de "
+"situación y gastos disociados que se utilizan para evaluar la situación de "
+"cada usuario, y para realizar informes de mercado sobre datos agregados, la "
+"extracción de información disociada y aproximada del Historial de "
+"Movimientos para compartirla con compañías de los sectores de Distribución, "
+"Energía, Telecomunicaciones, Agua, Salud y Belleza, Ocio, Hoteles, "
+"Restaurantes, Automoción, Banca, Seguros, Transporte, Inmobiliario, "
+"Electrónica, Viajes, Servicios Profesionales o Seguridad para realizar "
+"análisis estadístico de las tendencias y evolución de los mercados, la "
+"extracción del perfil del usuario con fines comerciales, para enviar al "
+"usuario a través de la página web dentro del ámbito del Servicio, o por "
+"medio de e-mail o SMS, información comercial sobre productos o servicios "
+"adaptados a sus hábitos de consumo de los sectores financiero, seguros, "
+"energía, telecomunicaciones, electrónica, viajes, ocio, automoción, "
+"inmobiliarios, productos de consumo, o servicios profesionales u otros."
+msgstr ""
+
+#: View/Pages/privacy_policy.ctp:9
+msgid ""
+"Los derechos de acceso, rectificación, cancelación u oposición podrán ser "
+"ejercidos mediante comunicación por escrito a WINVESTIFY, Calle Magistral "
+"Dominguez 23, Almería, mediante correo electrónico a sac@winvestify.com o a "
+"través del propio servicio, en el área privada del usuario (www.winvestify."
+"com)."
+msgstr ""
+
+#: View/Pages/privacy_policy.ctp:10
+msgid ""
+"En relación con el apartado (iii) anterior, WINVESTIFY NO FACILITARÁ en "
+"ningún caso el nombre, apellidos, DNI, cuenta bancaria, importe exacto de la "
+"transacción, o su lugar exacto, ni otros datos que puedan permitir "
+"identificar al usuario."
+msgstr ""
+
+#: View/Pages/privacy_policy.ctp:11
+msgid ""
+"En todo caso, dado que el Servicio se financia con la publicidad y el "
+"análisis estadístico de la información disociada extraída del Historial de "
+"Movimientos, el ejercicio de los derechos de cancelación y de oposición "
+"requerirá que previamente el Usuario se dé de baja del mismo."
+msgstr ""
+
+#: View/Pages/privacy_policy.ctp:12
+msgid ""
+"Mediante la aceptación de estas condiciones generales, usted confirma que ha "
+"leído y acepta la política de privacidad."
+msgstr ""
+
+#: View/Pages/privacy_policy.ctp:14
+msgid "Cookies Policy"
+msgstr "Política de Cookies"
+
+#: View/Pages/privacy_policy.ctp:15
+msgid "párrafo 1 sobre cookies"
+msgstr ""
+
+#: View/Pages/privacy_policy.ctp:20;167
+msgid "Domain"
+msgstr "Dominio"
+
+#: View/Pages/privacy_policy.ctp:21;168 View/Users/register_panel_c.ctp:96
+msgid "Description"
+msgstr "Descripción"
+
+#: View/Pages/privacy_policy.ctp:22;169
+msgid "Name of Cookie"
+msgstr "Nombre del Cookie"
+
+#: View/Pages/terms_of_service.ctp:34
+msgid "Terms of Service"
+msgstr "Términos del servicio y condiciones de uso"
+
+#: View/Polls/store_poll_data.ctp:101
+msgid "Your rating has been saved"
+msgstr "Su rating ha sido guardado"
+
+#: View/Tests/automatic_reconcile_payments.ctp:71
+#: View/Tests/get_list_students.ctp:52
+#: View/Tests/reconcile_manual_payments.ctp:91
+msgid "No results found"
+msgstr "No se han encontrado resultados"
+
+#: View/Tests/create_structure.ctp:301
+msgid "Select"
+msgstr "Seleccionar"
+
+#: View/Tests/create_structure.ctp:302
+msgid "GroupName"
+msgstr ""
+
+#: View/Tests/create_structure.ctp:303
+msgid "ClassNumber"
+msgstr ""
+
+#: View/Tests/create_structure.ctp:304
+msgid "Day of Course"
+msgstr ""
+
+#: View/Tests/create_structure.ctp:305
+msgid "Start of Course<br>(Format HHMM)"
+msgstr ""
+
+#: View/Tests/cronjob_do__billing__audit.ctp:66
+#: View/Tests/get_list_groups.ctp:172
+msgid "Add"
+msgstr "Añadir"
+
+#: View/Tests/cronjob_do__billing__audit.ctp:81
+#: View/Tests/get_database_data.ctp:258 View/Tests/get_list_groups.ctp:187
+#: View/Tests/prepare_manual_payment.ctp:147
+msgid "Confirm"
+msgstr "Confirmar"
+
+#: View/Tests/reconcile_manual_payments.ctp:109
+msgid "Payment<br>Received??"
+msgstr ""
+
+#: View/Tests/reconcile_manual_payments.ctp:117
+msgid "Cancel Payment"
+msgstr "Cancelar"
+
+#: View/Usererrors/get_error_modal.ctp:94
+msgid "- W I N V E S T I F Y -"
+msgstr "- W I N V E S T I F Y -"
+
+#: View/Usererrors/get_error_modal.ctp:95
+msgid "Error Reporting"
+msgstr "Reportar Error"
+
+#: View/Usererrors/get_error_modal.ctp:107
+msgid "Brief Error Description"
+msgstr "Describe el error"
+
+#: View/Usererrors/get_error_modal.ctp:118
+msgid "Send Report"
+msgstr "Enviar Error"
+
+#: View/Users/change_password_one_time_panel.ctp:99
+msgid "Introduce tu nueva contraseña"
+msgstr ""
+
+#: View/Users/change_password_one_time_panel.ctp:100
+msgid ""
+"Recuerda que debe tener al menos una mayúscula y un número, si además es "
+"algo que puedas recordar facilmente, sería perfecto."
+msgstr ""
+
+#: View/Users/change_password_one_time_panel.ctp:105
+msgid "Nueva contraseña"
+msgstr ""
+
+#: View/Users/change_password_one_time_panel.ctp:111
+msgid "Repite tu nueva contraseña"
+msgstr ""
+
+#: View/Users/login.ctp:87
+msgid "Login | Register"
+msgstr ""
+
+#: View/Users/login.ctp:91
+msgid "iuiEmail"
+msgstr ""
+
+#: View/Users/login.ctp:98
+msgid "LOGIN"
+msgstr "Accede"
+
+#: View/Users/login.ctp:108
+msgid "Forgot your password?"
+msgstr "¿Ha olvidado su contraseña?"
+
+#: View/Users/register_panel_a.ctp:328
+msgid "All fields are required"
+msgstr "Todos los campos son obligatorios"
+
+#: View/Users/register_panel_a.ctp:366
+msgid ""
+"Your password should be at least 8 characters long and contain uppercase and "
+"lowercase characters and a number."
+msgstr ""
+"Formato incorrecto. Su contraseña debe contener un mínimo de 8 caracteres, "
+"contener caracteres en minúscula, mayúscula y algún número\n"
+" "
+
+#: View/Users/register_panel_a.ctp:428
+msgid "Mobile Phone"
+msgstr "Teléfono Móvil"
+
+#: View/Users/register_panel_a.ctp:430
+msgid ""
+"For security reasons it is mandatory to include your mobile phone number so "
+"we can send you an account activation code"
+msgstr ""
+"Por motivos de seguridad debido a la naturaleza de la actividad es "
+"obligatorio incluir su teléfono para activar su cuenta"
+
+#: View/Users/register_panel_a.ctp:444
+msgid "123456789"
+msgstr "123456789"
+
+#: View/Users/register_panel_a.ctp:469
+msgid "I accept"
+msgstr "Acepto"
+
+#: View/Users/register_panel_a.ctp:469
+msgid " the terms of service"
+msgstr " los términos del servicio"
+
+#: View/Users/register_panel_a.ctp:470
+msgid " and the "
+msgstr " y la"
+
+#: View/Users/register_panel_a.ctp:470
+msgid "privacy policy"
+msgstr "política de privacidad"
+
+#: View/Users/register_panel_a.ctp:483 View/Users/register_panel_c.ctp:135
+#: View/Users/register_panel_d.ctp:152
+msgid "NEXT"
+msgstr "SIGUIENTE"
+
+#: View/Users/register_panel_b.ctp:86
+msgid "A confirmation code has been sent to"
+msgstr "Un código de confirmación ha sido enviado a su teléfono móvil"
+
+#: View/Users/register_panel_b.ctp:93
+msgid "Enter Code"
+msgstr "Introduzca el Código"
+
+#: View/Users/register_panel_b.ctp:120
+msgid "You did not receive a code?"
+msgstr "¿No ha recibido el código?"
+
+#: View/Users/register_panel_b.ctp:123
+msgid "Request New Code"
+msgstr "Solicitar un nuevo código"
+
+#: View/Users/register_panel_b.ctp:140
+msgid "ACTIVATE"
+msgstr "ACTIVAR"
+
+#: View/Users/register_panel_c.ctp:90
+msgid "Which people do you like to follow? [Select al least 1]"
+msgstr "¿A quién quieres seguir? [Seleccione al menos 1]"
+
+#: View/Users/register_panel_c.ctp:94
+msgid "User"
+msgstr "Usuario"
+
+#: View/Users/register_panel_c.ctp:97
+msgid "Follow"
+msgstr "Seguir"
+
+#: View/Users/register_panel_d.ctp:75
+msgid "Are you an accredited investor?"
+msgstr "¿Eres inversor acreditado?"
+
+#: View/Users/register_panel_d.ctp:76
+msgid "Yes"
+msgstr "Sí"
+
+#: View/Users/register_panel_d.ctp:77
+msgid "No"
+msgstr "No"
+
+#: View/Users/register_panel_d.ctp:92
+msgid "In how many crowdlending platforms do you have active investments?"
+msgstr ""
+"¿En cuántas plataformas de crowdlending tiene actualmente inversiones "
+"activas?"
+
+#: View/Users/register_panel_d.ctp:99
+msgid "Choose one"
+msgstr "Seleccione uno"
+
+#: View/Users/register_panel_d.ctp:113
+msgid ""
+"In which type of crowdlending platform do you invest? <small>[mark all that "
+"apply]</small>"
+msgstr ""
+"¿En qué tipo de plataformas de crowdlending ha invertido?<Small>[marca todas "
+"las que apliquen]</small>"
+
+#: View/Users/register_panel_d.ctp:121
+msgid "Peer-to-Peer Lending Consumer"
+msgstr "Peer-to-Peer Lending Consumer"
+
+#: View/Users/register_panel_d.ctp:126
+msgid "Peer-to-Peer Lending Business"
+msgstr "Peer-to-Peer Lending Business"
+
+#: View/Users/register_panel_d.ctp:131
+msgid "Invoice Trading"
+msgstr "Invoice Trading"
+
+#: View/Users/register_panel_d.ctp:136
+msgid "Crowdfunding Real Estate"
+msgstr "Crowdfunding Inmobiliario"
+
+#: View/Users/register_panel_e.ctp:62
+msgid "Your account has been successfully created"
+msgstr "Su cuenta ha sido creada éxito"
+
+#: View/Users/register_panel_e.ctp:63
+msgid "Press the button to enter your account"
+msgstr "Pulse el botón para entrar en su cuenta"
+
+#: View/Users/register_panel_e.ctp:70
+msgid "Go to My Account"
+msgstr "Ir a mi Dashboard"
+
+#: View/Users/request_new_password_panel.ctp:102
+msgid "Recuperar contraseña"
+msgstr ""
+
+#: View/Users/request_new_password_panel.ctp:123
+msgid "Recuperar"
+msgstr ""
+
+#: View/Users/request_new_password_panel.ctp:125
+msgid "Volver"
+msgstr ""
+
+#: companyCodeFiles/mytriplea.php:351
+msgid "Meses"
+msgstr ""
+
+#: Model/Invitation.php:validation for field invitation_name
+msgid "Su nombre es obligatorio"
+msgstr ""
+
+#: Model/Invitation.php:validation for field invitation_surnames
+msgid "El/Los apellido(s) es/son obligatorio(s)"
+msgstr ""
+
+#: Model/Invitation.php:validation for field invitation_message
+msgid "El mensaje es obligatorio"
+msgstr ""
+
+#: Model/Invitation.php:validation for field email
+msgid "Email no válido"
+msgstr "Email no válido"
+
+#: Model/User.php:validation for field username
+msgid "Email provided is not available"
+msgstr "El Email no está disponible"
+
+#: Model/User.php:validation for field password
+msgid ""
+"Incorrect format. Your password should be at least 8 characters long and "
+"contain uppercase and lowercase characters and a number."
+msgstr ""
+"Formato incorrecto. Su contraseña debe tener un mínimo de 8 caracteres, "
+"contener caracteres menusculas y mayusculas y un número\n"
+" "

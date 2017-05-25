@@ -3,7 +3,7 @@
 /**
   // @(#) $Id$
   // +-----------------------------------------------------------------------+
-  // | Copyright (C) 2009, http://yoursite                                   |
+  // | Copyright (C) 2009, http://www.winvestify.com                         |
   // +-----------------------------------------------------------------------+
   // | This file is free software; you can redistribute it and/or modify     |
   // | it under the terms of the GNU General Public License as published by  |
@@ -14,10 +14,8 @@
   // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
   // | GNU General Public License for more details.                          |
   // +-----------------------------------------------------------------------+
-  // | Author: Antoine de Poorter                                            |
-  // +-----------------------------------------------------------------------+
   //
- * @author Antoine de Poorter
+ * @author
  * @version 0.2
  * @date 2017-03-04
  * @package

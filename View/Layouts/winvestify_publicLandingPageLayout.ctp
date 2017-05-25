@@ -310,19 +310,9 @@
         <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/06.jpg) 50% 0 no-repeat fixed;">
             <div class="container g-padding-y-80--xs g-padding-y-125--sm">
                 <div class="row">
-
-                
-                
-                
-                <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
-                    <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Our Global Market Place ') ?></h2>      
-                </div>                
-
-                
-                
-                
-                
-                
+                    <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
+                        <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Our Global Market Place ') ?></h2>      
+                    </div>                
                     <div id="counter1" class="col-md-4 col-xs-6 g-full-width--xs g-margin-b-70--xs g-margin-b-0--sm">
                         <div class="g-text-center--xs">
                             <span class="g-display-block--xs g-font-size-60--xs g-color--white g-margin-b-10--xs js__counter value1">

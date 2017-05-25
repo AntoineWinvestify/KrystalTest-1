@@ -26,16 +26,17 @@
  * its action called 'display', and we pass a param to select the view file
  * to use (in this case, /app/View/Pages/home.ctp)...
  */ 
-	//Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
-	//Router::connect('/', array('controller' => 'marketplaces', 'action' => 'getGlobalMarketPlaceData'));
-	
-	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
-    Router::connect('/', array('controller' => 'marketplaces', 'action' => 'getGlobalMarketPlaceData'));
-//   	Router::connect('/', array('controller' => 'users', 'action' => 'initLoad')); 
+//	Router::connect('/', array('controller' => 'users', 'action' => 'access'));
+//	Router::connect('/users/login', array('controller' => 'users', 'action' => 'access'));
+//	Router::connect('/users/accessPanel', array('controller' => 'users', 'action' => 'login'));		
 /**
  * ...and connect the rest of 'Pages' controller's urls.
  */
-	
+	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+	Router::connect('/', array('controller' => 'marketplaces', 'action' => 'getGlobalMarketPlaceData'));
+//   	Router::connect('/', array('controller' => 'marketplaces', 'action' => 'initLoad'));     
+        
+        
 //	Router::connect('/admin', array('plugin' => 'admin', 'controller' => 'users', 'action' => 'login'));
 //	Router::connect('/admin/:controller/:action/*', array('plugin' => 'admin'));
 //Router::parseExtensions('csv');

@@ -429,7 +429,6 @@ msgstr ""
 #: Plugin/Admin/View/Startups/read_startup_basic_company_data.ctp:125;131;163;169
 #: Plugin/Admin/View/Startups/read_startup_investment_options_data.ctp:168;174;207;213;245;251;282;288
 #: Plugin/Admin/View/Startups/read_startup_key_people_data.ctp:149;155;187;193;231;237
-#: View/Invitation/create_invitation_panel.ctp:212;218
 #: View/Users/register_panel_a.ctp:473
 #: View/Users/request_new_password_panel.ctp:114
 msgid "Error"
@@ -1251,22 +1250,6 @@ msgstr ""
 
 #: View/Invitation/create_invitation_panel.ctp:185
 msgid "Invitar a friend"
-msgstr ""
-
-#: View/Invitation/create_invitation_panel.ctp:189
-msgid "Name of Contact"
-msgstr ""
-
-#: View/Invitation/create_invitation_panel.ctp:200
-msgid "Surname(s) of Contact"
-msgstr ""
-
-#: View/Invitation/create_invitation_panel.ctp:224
-msgid "Email of Invitee"
-msgstr ""
-
-#: View/Invitation/create_invitation_panel.ctp:230
-msgid "Introduzca su texto para el/la invitado/a"
 msgstr ""
 
 #: View/Invitation/create_invitation_panel.ctp:231

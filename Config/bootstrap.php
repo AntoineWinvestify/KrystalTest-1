@@ -67,22 +67,25 @@ Cache::config('default', array('engine' => 'File'));
  * Uncomment one of the lines below, as you need. make sure you read the documentation on CakePlugin to use more
  * advanced ways of loading plugins
  *
+ * CakePlugin::loadAll(); // Loads all plugins at once
 */
-  CakePlugin::loadAll(); // Loads all plugins at once
-
-//              CakePlugin::load('DebugKit'); //Loads a single plugin named DebugKit
+//CakePlugin::load('Admin');
+CakePlugin::load('DebugKit'); //Loads a single plugin named DebugKit
 //CakePlugin::load('MobileDetect');
-//              CakePlugin::load('CakePdf', array('bootstrap' => true, 'routes' => true));
+//CakePlugin::load('CakePdf', array('bootstrap' => true, 'routes' => true));
+//CakePlugin::load('Mandrill');		// for using their email gateway (this is a paid service)
+
 //App::import('Vendor', array('file' => 'autoload'));
 //CakePlugin::load('BoostCake');
-/*
 
 // Library for generating any type of chart
-//             CakePlugin::load('Highcharts');	
+//CakePlugin::load('Highcharts');
+//CakePlugin::load('GoogleAPI');	
+/*
 
  *
  */
-
+//Configure::write('Config.language', 'nl');
 /**
  * You can attach event listeners to the request lifecycle as Dispatcher Filter . By Default CakePHP bundles two filters:
  *
@@ -121,7 +124,6 @@ CakeLog::config('error', array(
 
 
 
-
 /**
 *	For using with event listening
 */
@@ -129,10 +131,16 @@ App::uses('ClassRegistry', 'Utility');
 App::uses('CakeEventManager', 'Event');
 App::uses('GlobalCommunicationListener', 'Event');
 App::uses('GlobalEmailListener', 'Event');
-CakeEventManager::instance()->attach(new GlobalCommunicationListener()); //Needed for SMS and its worked
+//CakeEventManager::instance()->attach(new GlobalCommunicationListener()); //Needed for SMS and it worked
 CakeEventManager::instance()->attach(new GlobalEmailListener());
-//$investorListener = ClassRegistry::init('Investor');
-//$investorListener->getEventManager()->attach(new GlobalCommunicationListener());
+CakeEventManager::instance()->attach(new GlobalCommunicationListener());
+/*
+$investorListener = ClassRegistry::init('Investor');
+$investorListener->getEventManager()->attach(new GlobalCommunicationListener());
 
-//$investmentListener = ClassRegistry::init('Investment');
-//$investmentListener->getEventManager()->attach(new GlobalEmailListener());
+$betatesterListener = ClassRegistry::init('Betatester');
+$betatesterListener->getEventManager()->attach(new GlobalEmailListener());
+
+$usererrorListener = ClassRegistry::init('errorReported');
+$usererrorListener->getEventManager()->attach(new GlobalEmailListener());
+*/
