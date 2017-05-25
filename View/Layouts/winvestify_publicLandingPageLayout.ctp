@@ -168,9 +168,9 @@
                     <div class="visible-xs-block clearfix"></div>
                     <div class="collapse navbar-collapse" id="principal_navbar">
                         <ul class="nav navbar-nav navbar-right">
-                            <li style="float:left"><a href="http://www.facebook.com/winvestify/"><small><i class="g-padding-r-5--xs ti-facebook"></i></small></a></li>
-                            <li style="float:left"><a href="https://www.linkedin.com/company-beta/11000640/"><small><i class="g-padding-r-5--xs ti-linkedin"></i></small></a></li>
-                            <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
+                            <li style="float:left"><a target="_blank" href="http://www.facebook.com/winvestify/"><small><i class="g-padding-r-5--xs ti-facebook"></i></small></a></li>
+                            <li style="float:left"><a target="_blank" href="https://www.linkedin.com/company-beta/11000640/"><small><i class="g-padding-r-5--xs ti-linkedin"></i></small></a></li>
+                            <li style="float:left"><a target="_blank" href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-left">
                             <li><a href="#mark_features"><?php echo __('Features') ?></a></li>
@@ -310,9 +310,19 @@
         <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/06.jpg) 50% 0 no-repeat fixed;">
             <div class="container g-padding-y-80--xs g-padding-y-125--sm">
                 <div class="row">
-                    <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
-                        <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Our Global Market Place ') ?></h2>      
-                    </div>                
+
+                
+                
+                
+                <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
+                    <h2 style="padding-bottom: 10px;text-align:center" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Our Global Market Place ') ?></h2>      
+                </div>                
+
+                
+                
+                
+                
+                
                     <div id="counter1" class="col-md-4 col-xs-6 g-full-width--xs g-margin-b-70--xs g-margin-b-0--sm">
                         <div class="g-text-center--xs">
                             <span class="g-display-block--xs g-font-size-60--xs g-color--white g-margin-b-10--xs js__counter value1">
@@ -388,7 +398,7 @@
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/MyTripleA.png" alt="MyTripleA">
                             </div>
                             <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Ecrowd.png" alt="EcrowdInvest">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Growly.png" alt="Growly">
                             </div>
                             <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Lendix.png" alt="Lendix">
@@ -396,16 +406,7 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Growly.png" alt="Growly">
-                            </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/Finanzarel.png" alt="Finanzarel">
-                            </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/excelend.png" alt="Excelend"> 
-                            </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Circulantis.png" alt="Circulantis">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Circulantis.png" alt="Circulantis">
                             </div>
                         </div>
                     </div>
