@@ -169,8 +169,10 @@ class circulantis extends p2pCompany {
         switch ($this->idForSwitch) {
             case 0:
                 echo __FILE__ . " " . __LINE__ . "<br>";
+                
                 $this->idForSwitch++;
                 //We need to delete a urlsequence on DB for Circulantis to work
+                array_shift($this->urlSequence);
                 //$this->getCompanyWebpage();
                 //$resultMicirculantis = $this->companyUserLogin($user, $password);
                 //break;
