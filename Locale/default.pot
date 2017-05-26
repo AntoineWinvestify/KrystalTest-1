@@ -737,7 +737,7 @@ msgid "Outstanding Principal"
 msgstr ""
 
 #: View/Dashboards/get_dashboard_data.ctp:260;334;444
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:330
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:333
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:438
 msgid "Amount Invested"
 msgstr ""
@@ -1027,7 +1027,7 @@ msgid "2) Link your accounts"
 msgstr ""
 
 #: View/Emails/html/new_user.ctp:115
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:262
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:265
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:275
 msgid "Connect to the principal alternative financing plataforms"
 msgstr ""
@@ -1323,7 +1323,7 @@ msgstr ""
 msgid "CLOSE"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:153;251
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:153;254
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:138;264
 #: View/Users/login.ctp:109
 msgid "Register"
@@ -1358,88 +1358,88 @@ msgstr ""
 msgid "ENTER YOUR DASHBOARD<br/>All your investments are shown on one single page"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:210;433
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:210;427
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:323
 msgid "Register NOW"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:240
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:243
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:253
 msgid "Centralize all your investment accounts and connect to the major Crowdlending and Invoice Trading platforms\n\t\t\t\t\t\t\t  from a single portal. Our tool lets you organize and manage all your investments more efficiently. \n\t\t\t\t\t\tAt the same time you can access all investment oportunities in real time and have a truly global view of the Crowdlending market"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:252
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:255
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:265
 msgid "Use our platform for free and enjoy all the benefits"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:261
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:264
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:274
 msgid "Link your accounts"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:270
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:273
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:283
 msgid "Manage your investments"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:271
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:274
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:284
 msgid "Your investments are completely organized, all automatically"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:315
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:318
 msgid "Our Global Market Place "
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:342
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:345
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:449
 msgid "Open investments"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:356
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:359
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:462
 msgid "Total Investment"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:370
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:373
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:335
 msgid "A SMALL STEP FOR YOU, BUT A BIG STEP FOR YOUR INVESTMENTS"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:371
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:374
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:336
 msgid "Winvestify connects to the principal <strong>Invoice\n\t\t\t\tTrading</strong> and <strong>Crowdlending</strong> platforms of Spain in a simple and secure way"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:429
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:423
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:319
 msgid "Register for FREE and get ALL the advantages of a unified marketplace and single dashboard"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:465
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:459
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:498
 msgid "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:468
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:462
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:501
 msgid "Got it!"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:576
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:570
 msgid "DASHBOARD<br/>All your investments are shown on one single page"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:577
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:571
 msgid "MARKETPLACE<br/>Our global marketplace contains all the investment opportunities in real time"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:578
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:572
 msgid "LINKED ACCOUNTS PANEL<br/>Incorporate all your Investment Accounts in our linked accounts panel"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:579
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:573
 msgid "PERSONAL DATA PANEL<br/>Access to your personal data is simple, secure and fast"
 msgstr ""
 
