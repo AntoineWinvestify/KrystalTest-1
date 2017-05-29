@@ -128,6 +128,7 @@ class ocr extends AppModel {
             'conditions' => array('Investor_id' => $id),
             'recursive' => -1,
         ));
+        
         return $info;
     }
 

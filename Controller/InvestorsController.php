@@ -36,7 +36,7 @@ class InvestorsController extends AppController {
 
     var $name = 'Investors';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Investor', 'Linkedaccount', 'Company', 'Urlsequence');
+    var $uses = array('Investor', 'Linkedaccount', 'Company', 'Urlsequence','Ocr');
     var $error;
 
     
