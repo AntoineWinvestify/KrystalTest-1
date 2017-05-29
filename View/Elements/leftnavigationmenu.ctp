@@ -145,6 +145,12 @@ $(document).ready(function() {
             <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>*/?>
           </ul>
         </li>
+        <li class="treeview">
+            <a href="/ocrs/ocrTabsPanel">
+              <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
+            </a>
+        </li>
+        
  
 <?php /*<li class="treeview">
 			<a href="/invitations/recommend"><i class="fa fa-power-off"></i><span><?php //echo __('Recommend to a friend')?></a></span>
