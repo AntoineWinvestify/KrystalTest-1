@@ -1168,6 +1168,105 @@ textarea[name="error"] {
      float: right;
      padding: 5px !important;
  }
+/************************************
+    ONE CLICK REGISTRATION STYLES
+************************************/
+#investmentVehicle {
+    display: none;
+}
+
+.platformLogo {
+    max-width: 100px !important;
+    height: auto;
+    vertical-align: middle !important;
+}
+
+#investorSelection {
+    max-height: 100px !important;
+    overflow: auto !important;
+    width: 100%;
+}
+#platformSelection{
+
+    width: 100%;
+}
+
+#investorFilters {
+    padding-bottom: 10px;
+}
+.box-widget {
+    border: 1px solid gray !important;
+}
+.selectedPlatform {
+    border: 1px solid gray !important;
+}
+.registeredPlatform {
+    border: 1px solid rgb(90, 204, 90) !important;
+}
+.pendingPlatform {
+    border: 1px solid #FF5886 !important;
+}
+
+.btnP2P {
+    background-color: #5299D3 !important; /*azul claro*/
+    border: 1px solid gray !important;
+    color: white !important;
+    margin: 10px auto;
+}
+.btnP2P:hover {
+    color: black !important;
+}
+.btnP2P:active {
+    background-color: #3487cb !important;
+    border: 1px solid gray !important;
+    color: black !important;
+}
+.btnP2B {
+    background-color: #ff6600 !important; /*naranja*/
+    border: 1px solid gray !important;
+    color: white !important;
+    margin: 10px auto;
+}
+.btnP2B:hover {
+    color: black !important;
+}
+.btnP2B:active {
+    background-color: #cc5200 !important;
+    border: 1px solid gray !important;
+    color: black !important;
+}
+.btnIT {
+    background-color: #cc00cc !important; /*Morado oscuro*/
+    border: 1px solid gray !important;
+    color: white !important;
+    margin: 10px auto;
+}
+.btnIT:hover {
+    color: black !important;
+}
+.btnIT:active {
+    background-color: #990099 !important;
+    border: 1px solid gray !important;
+    color: black !important;
+}
+.btnMargin {
+    margin: 10px 0;
+}
+.header1CR {
+    padding-left: 20px;
+}
+hr.nomargin {
+    margin: 2px !important;
+}
+.input_platforms {
+    padding-left: 10px !important;
+    margin: 5px auto;
+}
+.prueba {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+}
 
 
 
