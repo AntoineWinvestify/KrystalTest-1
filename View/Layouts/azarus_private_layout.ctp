@@ -17,6 +17,8 @@
   <link rel="stylesheet" href="/plugins/jvectormap/jquery-jvectormap-1.2.2.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/adminLTE/dist/css/AdminLTE.min.css">
+  <!-- iCheck Plugin -->
+  <link rel="stylesheet" href="/plugins/iCheck/all.css">
 	
   <!-- Winvestify Styles -->
 <link type="text/css" rel="stylesheet" href="/css/compare_styles.css">	
@@ -358,6 +360,9 @@
 <!-- jvectormap -->
 <script src="/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
 <script src="/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+
+<!-- iCheck plugin -->
+<script type="text/javascript" src="/plugins/iCheck/icheck.min.js"></script>
 
 <!-- SlimScroll 1.3.0 -->
 <script src="/plugins/slimScroll/jquery.slimscroll.min.js"></script>
