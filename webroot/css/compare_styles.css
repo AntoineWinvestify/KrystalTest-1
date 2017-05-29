@@ -1089,6 +1089,7 @@ textarea[name="error"] {
      height: 100px;
      font-size: 20px;
  }
+
 /*Screenshots slider*/
 #screen {
     background: url('../megaKit/img/mockups/device_01.png') no-repeat top left;
@@ -1198,6 +1199,16 @@ textarea[name="error"] {
                         }
                         #liLogin {
                             width: 60px !important;
+                        }
+                        #pDescription {
+                            padding-top: 0px !important;
+                            color: white;
+                        }
+                        .featuresP {
+                            padding-left: 0px;
+                        }
+                        #registerButton {
+                            left: 25%;
                         }
                     }
 
@@ -1316,15 +1327,32 @@ textarea[name="error"] {
                 margin-left: -10px;
             }
         }
+        
                     
                     /*LARGE MOBILE MEDIA QUERY SWAP >480px & <768px*/
-                    @media (min-width: 480px) and (max-width: 768px){
+                    @media (max-width: 768px){
                         #popUp {
-                            width: 50% !important;
+                            width: 75% !important;
                         }
-                         /*#headerBlue {
-                            padding-top: 150px; 
-                         }*/
+                        #pDescription {
+                            color: white !important;
+                        }
+                        #featuresPadding {
+                            margin-top: 150px !important;
+                        }
+                        #registerButton {
+                            left: 25% !important;
+                        }
+                        #parallaxFeatures {
+                            padding-top: 50px !important;
+                        }
+                        .featuresP {
+                            margin-top: 100px;
+                            padding-left: 0px;
+                        }
+                        #features_right {
+                            margin-top: -100px !important;
+                        }
                     }
                     
         /*TABLET MEDIA QUERY >768px & <1024px*/
@@ -1384,6 +1412,20 @@ textarea[name="error"] {
             }
             #popUp {
                 width: 50%;
+            }
+            #pDescription {
+                padding-top: 0px;
+                color: #66615b !important;
+                margin-top: 120px !important;
+            }
+            #registerButton {
+                left: 45% !important;
+            }
+            #features_right {
+                margin-top: -25px !important;
+            }
+            .featuresP {
+                padding-left: 50px;
             }
         }
                 @media (min-width: 1024px) and (max-width: 1200px) {
