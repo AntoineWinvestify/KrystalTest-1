@@ -351,11 +351,37 @@ function userProfileDataPanel() {
     
     
     
-    function ocrUserData(){
+    //One Click Registration - Investor Views
+    function ocrInvestorDataPanel(){
+        $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
+        $data2 = $this->Ocr->ocrGetData($this->Session->read('Auth.User.id'));
+        $this->set('investor', $data);
+        $this->set('ocr', $data2);
         echo " ";
+        return 1;
     }
     
-    function ocrDataPanel(){
+    function ocrInvestorPlatformSelection(){
+        $this->set('company', $this->Company->companiesDataOCR());
+        echo " ";
+        return 1;
+    }
+    
+    function ocrInvestorDocuments() {
+        echo " ";
+    }
+    //One Click Registration - Admin PFP Views
+    function ocrPfpBillingPanel() {
+        echo " ";
+    }
+    function ocrPfpUsersPanel() {
+        echo " ";
+    }
+    //One Click Registration - Winvestify Admin Views
+    function ocrWinadminInvestorChecking() {
+        echo " ";
+    }
+    function ocrWinadminBillingPanel() {
         echo " ";
     }
     
