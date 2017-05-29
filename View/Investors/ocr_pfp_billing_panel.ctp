@@ -77,7 +77,7 @@
                                         <td>01-01-2017</td>
                                         <td>number ofhgfg billing</td>
                                         <td>conceptsgnbhgtttt</td>
-                                        <td align="center">0.0550 €</td>
+                                        <td align="right">0.0550 €</td>
                                         <td>
                                             <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
                                         </td>
@@ -86,7 +86,7 @@
                                         <td>01-01-2017</td>
                                         <td>numberdsghh of billing</td>
                                         <td>concefssdpttttt</td>
-                                        <td align="center">0.0567470 €</td>
+                                        <td align="right">0.0567470 €</td>
                                         <td>
                                             <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
                                         </td>
@@ -95,7 +95,7 @@
                                         <td>01-01-2017</td>
                                         <td>number ofhgfhf billing</td>
                                         <td>concesdfsfpttttt</td>
-                                        <td align="center">0.066660 €</td>
+                                        <td align="right">0.066660 €</td>
                                         <td>
                                             <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
                                         </td>
@@ -104,7 +104,7 @@
                                         <td>01-01-2017</td>
                                         <td>number sdfghgof billing</td>
                                         <td>concepgghgggttttt</td>
-                                        <td align="center">0.099990 €</td>
+                                        <td align="right">0.099990 €</td>
                                         <td>
                                             <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
                                         </td>
@@ -113,7 +113,7 @@
                                         <td>01-01-2017</td>
                                         <td>numbedfdffr of billing</td>
                                         <td>conhhghhcepttttt</td>
-                                        <td align="center">22220.00 €</td>
+                                        <td align="right">22220.00 €</td>
                                         <td>
                                             <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
                                         </td>
