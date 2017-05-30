@@ -42,6 +42,7 @@ App::uses('CakeEvent', 'Event');
 class ocrsController extends AppController {
 
     var $name = 'Ocrs';
+    var $helpers = array('Session');
     var $uses = array('Ocr', 'Company', 'Investor');
     var $error;
 
@@ -106,6 +107,14 @@ class ocrsController extends AppController {
         }
     }
 
+    function upload() {
+        $this->autoRender = false;
+        $data = $this->params['data']['Files'];
+        $id = $this->Session->read('Auth.User.id');
+        echo "<h1>ID " . $id . "</h1>";
+        $this->Ocr->ocrFileSave($data, $id);
+    }
+
 //Envia solicitud de las compañias seleccionadas al admin. Ademas te actualizaria la seccion de compañias seleccionadas
     function OneClickInvestorII() {
         if (!$this->request->is('ajax')) {
@@ -150,14 +159,14 @@ class ocrsController extends AppController {
     function OneClickCompany() {
         $this->Orc->ocrEnd($datos);
     }
-    
+
     //Tabs panel
     function ocrTabsPanel() {
         $this->layout = 'azarus_private_layout';
     }
-    
+
     //One Click Registration - Investor Views
-    function ocrInvestorDataPanel(){
+    function ocrInvestorDataPanel() {
         $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
         $data2 = $this->Ocr->ocrGetData($this->Session->read('Auth.User.id'));
         $this->set('investor', $data);
@@ -165,37 +174,38 @@ class ocrsController extends AppController {
         echo " ";
         return 1;
     }
-    
-    function ocrInvestorPlatformSelection(){
+
+    function ocrInvestorPlatformSelection() {
         $this->set('company', $this->Company->companiesDataOCR());
         echo " ";
         return 1;
     }
-    
+
     function ocrInvestorDocuments() {
         echo " ";
     }
+
     //One Click Registration - Admin PFP Views
     function ocrPfpBillingPanel() {
         echo " ";
     }
+
     function ocrPfpUsersPanel() {
         echo " ";
     }
+
     //One Click Registration - Winvestify Admin Views
     function ocrWinadminInvestorChecking() {
         echo " ";
     }
+
     function ocrWinadminBillingPanel() {
         echo " ";
     }
-    
-    
+
     /*
      * 
      * Talliman
      * 
      */
 }
-
-
