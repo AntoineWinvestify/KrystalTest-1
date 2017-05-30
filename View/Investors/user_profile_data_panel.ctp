@@ -132,25 +132,6 @@ console.log("Loading all the profile data of my Social network");
 							<li>
 								<a href = "/investors/readLinkedAccounts" id="linkedAccountsData"  rel="tooltip" data-target="#linkedAccountsTab" data-toggle="tabajax"><h4><?php echo __('Linked Accounts')?></h4></a>
 							</li>
-							</li>
-                                                        <li>
-								<a href = "/investors/ocrInvestorPlatformSelection" id="ocr1"  rel="tooltip" data-target="#OCR1Tab" data-toggle="tabajax"><h4><?php echo __('Investor I')?></h4></a>
-							</li>
-							<li>
-								<a href = "/investors/ocrInvestorDataPanel" id="ocr2"  rel="tooltip" data-target="#OCR2Tab" data-toggle="tabajax"><h4><?php echo __('Investor II')?></h4></a>
-							</li>
-                                                        <li>
-								<a href = "/investors/ocrPfpBillingPanel" id="ocr3"  rel="tooltip" data-target="#OCR3Tab" data-toggle="tabajax"><h4><?php echo __('PFP Admin I')?></h4></a>
-							</li>
-                                                        <li>
-								<a href = "/investors/ocrPfpUsersPanel" id="ocr4"  rel="tooltip" data-target="#OCR4Tab" data-toggle="tabajax"><h4><?php echo __('PFP Admin II')?></h4></a>
-							</li>
-                                                        <li>
-								<a href = "/investors/ocrWinadminInvestorChecking" id="ocr5"  rel="tooltip" data-target="#OCR5Tab" data-toggle="tabajax"><h4><?php echo __('WinAdmin I')?></h4></a>
-							</li>
-                                                        <li>
-								<a href = "/investors/ocrWinadminBillingPanel" id="ocr6"  rel="tooltip" data-target="#OCR6Tab" data-toggle="tabajax"><h4><?php echo __('WinAdmin II')?></h4></a>
-							</li>
 						</ul>
 					</div>
  
@@ -171,48 +152,6 @@ console.log("Loading all the profile data of my Social network");
 						</div>
 						<!-- /.tab-pane -->
 <!-- ------------------------------------------------------------------------------------------------------------- -->				
-						<div class = "tab-pane fade" id="socialNetworkTab">
-						<!-- here goes the content of the "socialNetwork" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
-                                                <div class = "tab-pane fade" id="OCR1Tab">
-						<!-- here goes the content of the "Investor Panel I" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
-                                                <div class = "tab-pane fade" id="OCR2Tab">
-						<!-- here goes the content of the "Investor Panel II" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
-                                                <div class = "tab-pane fade" id="OCR3Tab">
-						<!-- here goes the content of the "PFD Admin I" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
-                                                <div class = "tab-pane fade" id="OCR4Tab">
-						<!-- here goes the content of the "PFD Admin II" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
-                                                <div class = "tab-pane fade" id="OCR5Tab">
-						<!-- here goes the content of the "WinAdmin I" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
-                                                <div class = "tab-pane fade" id="OCR6Tab">
-						<!-- here goes the content of the "WinAdmin II" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
 
 					</div>
 				</div>	
