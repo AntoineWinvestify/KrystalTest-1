@@ -351,7 +351,7 @@ class arboribus extends p2pCompany {
 
 
 //Login fixed
-        array_shift($this->urlSequence);
+        
         $str = $this->getCompanyWebpage();    // Load main page, needed so I can read the csrf code
 
         $dom = new DOMDocument;
