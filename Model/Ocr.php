@@ -83,11 +83,11 @@ class ocr extends AppModel {
                     'Investor_iban' => $datos['Investor_iban'],
                 );
             }
-        //Si no existe, creo una nueva fila ocr    
+            //Si no existe, creo una nueva fila ocr    
         } else {
             echo 'no existe';
             if ($datos['Ocr_vehicle'] == 1) {
-                $data = array(  
+                $data = array(
                     'Investor_id' => $datos['Investor_id'],
                     'Ocr_vehicle' => 1,
                     'Investor_cif' => $datos['Investor_cif'],
@@ -128,12 +128,46 @@ class ocr extends AppModel {
             'conditions' => array('Investor_id' => $id),
             'recursive' => -1,
         ));
-        
+
         return $info;
     }
 
-    public function saveDocuments() {
-        
+    public function ocrFileSave($data, $id) {
+        echo 'patata' . $id;
+        print_r($data);
+
+        foreach ($data as $data) {
+            echo 'procesando archivo</br>';
+            if ($data['size'] == 0 || $data['error'] !== 0) {
+                echo 'Error al subir archivo';
+                continue;
+            }
+            $filename = basename($data['name']);
+            echo 'Nombre base ' . $filename . '</br>';
+            $uploadFolder = 'files/investors/' . $id . '';
+            echo 'Dirctorio ' . $uploadFolder . '</br>';
+            $filename = time() . '_' . $filename;
+            echo 'nombre completo ' . $filename . '</br>';
+            $uploadPath = $uploadFolder . DS . $filename;
+            echo 'ruta ' . $uploadPath . '</br>';
+
+            if (!file_exists($uploadFolder)) {
+                echo 'carpeta no existe, creandola </br>';
+                mkdir($uploadFolder, 0755, true);
+            }
+
+            if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
+                echo 'fallo al mover';
+                continue;
+            }
+            echo 'terminado de guardar directorio</br>';
+            /* echo 'Insertando en base de datos</br>'
+              $dataDb = {
+
+
+
+              } */
+        }
     }
 
 }

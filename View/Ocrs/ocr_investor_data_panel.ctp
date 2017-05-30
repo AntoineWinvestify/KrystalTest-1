@@ -483,3 +483,10 @@
         </div> <!-- /.col 9 -->
     </div> <!-- /.row general -->
 </div>
+<?php 
+echo $this->Form->create('Files',array('action' => '../Ocrs/upload', 'type' => 'file'));
+echo $this->Form->file('nif');
+echo $this->Form->file('iban');
+echo $this->Form->submit(__('Upload', true));
+
+?>
