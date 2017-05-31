@@ -181,17 +181,13 @@ class arboribus extends p2pCompany {
         $dom = new DOMDocument;
         $dom->loadHTML($this->mainPortalPage); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
         $dom->preserveWhiteSpace = false;
-//        echo $this->mainPortalPage;
+
         echo __FILE__ . " " . __LINE__ . "<br>";
 
         echo __FILE__ . " " . __LINE__ . "<br>";
-        array_shift($this->urlSequence);
-        array_shift($this->urlSequence);
-        array_shift($this->urlSequence);
-        array_shift($this->urlSequence);
-        $resumen = $this->getCompanyWebpage();             
-        print_r($resumen);
-//      echo $resumen;
+
+        $resumen = $this->getCompanyWebpage();
+
         $dom = new DOMDocument;
         $dom->loadHTML($resumen); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
         $dom->preserveWhiteSpace = false;
@@ -214,19 +210,19 @@ class arboribus extends p2pCompany {
         $tempArray['global']['profitibility'] = $this->getPercentage($h3s[0]->nodeValue);
         echo __FILE__ . " " . __LINE__ . "<br>";
         $str1 = $this->getCompanyWebpage();     // list of investments as JSON
-//       $this->print_r2($str1);
+
         $strListInvestments = $str1;
 
 
         $investmentListItems = json_decode($strListInvestments, true);
         echo __FILE__ . " " . __LINE__ . "<br>";
-//        $this->print_r2($investmentListItems);
+
         echo __FILE__ . " " . __LINE__ . "<br>";
 // Get next msg from the urlSequence queue:
         $url = array_shift($this->urlSequence);
         echo __FILE__ . " " . __LINE__ . "<br>";
-        echo $url;
-        print_r($this->urlSequence);
+
+      
         //       echo __FILE__ . " " . __LINE__ . "<br>";
         $numberIfInvestments = 0;
         foreach ($investmentListItems as $key => $investmentListItem) {
@@ -241,7 +237,7 @@ class arboribus extends p2pCompany {
 //Changed the parameter for the url
 
             $str = $this->getCompanyWebpage($url . $investmentListItem['id_company']);   // is the amortization table
-            echo $str;
+
             $dom = new DOMDocument;
             $dom->loadHTML($str);
             $dom->preserveWhiteSpace = false;
@@ -265,11 +261,9 @@ class arboribus extends p2pCompany {
                 $mainIndex = $mainIndex + 1;
                 $subIndex = -1;
                 $tds = $tr->getElementsByTagName('td');
-                echo __FILE__ . " " . __LINE__ . "<br>";
                 foreach ($tds as $td) {
                     $subIndex = $subIndex + 1;
-                    //                       echo __FILE__ . " " . __LINE__ . "<br>";
-                    //¿
+
                     if ($subIndex == 7) {
                         $imgs = $this->getElements($td, "img", "title", "pagado");
                         if (!empty($imgs)) { // We found the footer, simply ignore			
@@ -290,7 +284,7 @@ class arboribus extends p2pCompany {
 //		if (strncasecmp($investmentListItem['estado'], "Al d", 2) == 0) {		// checking for status words "Al día"
 //			$tempDataInvestment['status'] = OK;
 //		}
-            //               echo __FILE__ . " " . __LINE__ . "<br>";
+
             $tempDataInvestment['commission'] = 0;
 //Duration	Unit (=meses) is hard coded		
             $tempDataInvestment['duration'] = count($amortizationTable) . " Meses";
@@ -298,7 +292,7 @@ class arboribus extends p2pCompany {
             $tempDataInvestment['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 7);
             $tempDataInvestment['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 7);
             $tempArray['investments'][] = $tempDataInvestment;
-            //               echo __FILE__ . " " . __LINE__ . "<br>";
+
 // update the global data of Arboribus
             $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] +
                     $tempDataInvestment['xxxx'];
@@ -306,7 +300,7 @@ class arboribus extends p2pCompany {
                     $tempDataInvestment['profitGained'];
             $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $tempDataInvestment['invested'];
             $tempArray['global']['investments'] = $tempArray['global']['investments'] + $numberOfInvestments + 1;
-//                echo __FILE__ . " " . __LINE__ . "<br>";
+
             unset($tempDataInvestment);
             /* } catch (Exception $e) {
               echo 'Excepción capturada: ', $e->getMessage(), "\n";
@@ -322,13 +316,10 @@ class arboribus extends p2pCompany {
 
 // The normal logout procedure does not work so do a workaround
 // Force a logout with data elements provided in the last read page.
-        $str = $this->getCompanyWebpage("https://www.arboribus.com");   // is the amortization table
-            echo $str;
+
         $credentials['username'] = $user;
         $credentials['password'] = $password;
         $this->companyUserLogout($credentials);
-        $str = $this->getCompanyWebpage("https://www.arboribus.com");   // is the amortization table
-            echo $str;
         return $tempArray;
     }
 
@@ -362,14 +353,11 @@ class arboribus extends p2pCompany {
 
 
 //Login fixed
+        $this->companyUserLogout($credentials);
 
+        /* $credentials = companyUserLogout($credentials); */
 
-        print_r($this->urlSequence);
-
-        /*$credentials = companyUserLogout($credentials);*/
-
-        $str = $this->getCompanyWebpage("https://www.arboribus.com");    // Load main page, needed so I can read the csrf code
-
+        $str = $this->getCompanyWebpage();    // Load main page, needed so I can read the csrf code
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -390,21 +378,17 @@ class arboribus extends p2pCompany {
 
         //Forced user.login
         $credentials['task'] = "user.login";
-         
         $str = $this->doCompanyLogin($credentials);   // Send the post request with authentication information
-        $str = $this->getCompanyWebpage("https://www.arboribus.com");    
-        
-        $dom = new DOMDocument;
+
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        
+
+        $forms = $dom->getElementsByTagName('form');
         $as = $dom->getElementsByTagName('a');
+
         foreach ($as as $a) {
-            if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed
-            
+            if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed           
                 $this->mainPortalPage = $str;
-                /*array_shift($this->urlSequence);
-                array_shift($this->urlSequence);*/
                 return true;
             }
         }
@@ -419,12 +403,12 @@ class arboribus extends p2pCompany {
      * 	
      */
     function companyUserLogout($credentials) {
-        
-        $str = $this->getCompanyWebpage("https://www.arboribus.com");    // Load main page, needed so I can read the csrf code
+
+        $str = $this->getCompanyWebpage();    // Load main page, needed so I can read the csrf code
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-              
+
         $as = $dom->getElementsByTagName('a');
         $forms = $dom->getElementsByTagName('form');
 
@@ -438,6 +422,7 @@ class arboribus extends p2pCompany {
                 }
             }
         }
+
         foreach ($as as $a) {
             if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed
                 $this->mainPortalPage = $str;
@@ -445,8 +430,6 @@ class arboribus extends p2pCompany {
                 $str = $this->doCompanyLogin($credentials);
             }
         }
-        print_r($forms[0]);
-        return $credentials;
     }
 
     /**
