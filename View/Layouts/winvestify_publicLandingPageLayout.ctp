@@ -202,7 +202,7 @@
         <!-- Mockup -->
         <div class="container_features row">
             <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-offset-2 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
-                <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><?php echo __('ENTER YOUR DASHBOARD<br/>All your investments are shown on one single page') ?></p>
+                <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><?php echo __('<strong>ENTER YOUR DASHBOARD</strong><br/>All your investments are shown on one single page') ?></p>
                 <div class="row" id="featuresButton">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <a class="center-block" style="text-align: center;" href="/users/registerPanel">
@@ -234,15 +234,6 @@
         
         <a name="mark_features"></a>
         <div id="js__scroll-to-section" class="container" style="margin-top: 75px;">
-            <div class="g-text-center--xs g-margin-b-100--xs">
-                <p id="pDescription" style="text-align:center" class="g-font-size-18--xs">
-                    <strong>
-                        <?php echo __('Centralize all your investment accounts and connect to the major Crowdlending and Invoice Trading platforms
-							  from a single portal. Our tool lets you organize and manage all your investments more efficiently. 
-						At the same time you can access all investment oportunities in real time and have a truly global view of the Crowdlending market') ?>
-                    </strong>
-                </p>
-            </div>
             <div id="featuresPadding" class="row g-margin-b-60--xs g-margin-b-70--md">
                 <div class="col-sm-4 g-margin-b-60--xs g-margin-b-0--md">
                     <div class="clearfix">
@@ -272,6 +263,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="g-text-center--xs g-margin-b-100--xs">
+                <p id="pDescription" style="text-align:center" class="g-font-size-18--xs">
+                    <strong>
+                        <?php echo __('Centralize all your investment accounts and connect to the major Crowdlending and Invoice Trading platforms
+							  from a single portal. Our tool lets you organize and manage all your investments more efficiently. 
+						At the same time you can access all investment oportunities in real time and have a truly global view of the Crowdlending market') ?>
+                    </strong>
+                </p>
             </div>
             <!-- // end row  -->
         </div>
@@ -374,44 +374,40 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="row">
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Zank.png" alt="Zank">
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/Comunitae.png" alt="Comunitae">
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Arboribus.png" alt="Arboribus">
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/LoanBook.png" alt="Loanbook">
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Colectual.png" alt="Colectual">
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/MyTripleA.png" alt="MyTripleA">
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Ecrowd.png" alt="EcrowdInvest">
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Lendix.png" alt="Lendix">
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Growly.png" alt="Growly">
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/Finanzarel.png" alt="Finanzarel">
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/excelend.png" alt="Excelend"> 
                             </div>
-                            <div class="col-lg-2 col-lg-offset-1 col-md-4 col-sm-5 col-sm-offset-1 col-xs-12">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Circulantis.png" alt="Circulantis">
                             </div>
                         </div>
@@ -570,13 +566,13 @@
                                 $(".featuresP").hide();
                                 $(".featuresP").html(sliderText[current]);
                                 $(".featuresP").fadeIn("slow");
-			}, 5000);
+			}, 7000);
 		};
 		self.move(0);
-                var sliderText = ["<?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?>", 
-                                  "<?php echo __('MARKETPLACE<br/>Our global marketplace contains all the investment opportunities in real time') ?>", 
-                                  "<?php echo __('LINKED ACCOUNTS PANEL<br/>Incorporate all your Investment Accounts in our linked accounts panel') ?>", 
-                                  "<?php echo __('PERSONAL DATA PANEL<br/>Access to your personal data is simple, secure and fast') ?>"
+                var sliderText = ["<?php echo __('<strong>DASHBOARD</strong><br/>All your investments are shown on one single page') ?>", 
+                                  "<?php echo __('<strong>MARKETPLACE</strong><br/>Our global marketplace contains all the investment opportunities in real time') ?>", 
+                                  "<?php echo __('<strong>LINKED ACCOUNTS PANEL</strong><br/>Incorporate all your Investment Accounts in our linked accounts panel') ?>", 
+                                  "<?php echo __('<strong>PERSONAL DATA PANEL</strong><br/>Access to your personal data is simple, secure and fast') ?>"
                                  ];
                 
                 //enlarge img
