@@ -120,7 +120,10 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-
+            
+            $this->layout = 'ajax';
+            $this->disableCache();
+            
             $companyNumber = $_REQUEST['numberCompanies'];
 
             $companies = array(
@@ -131,8 +134,8 @@ class ocrsController extends AppController {
             for ($i = 0; $i < $companyNumber; $i++) {
                 $companies[$i] = $_REQUEST[$i];
             }
-            print_r($companies);
-            $this->Orc->saveCompaniesOcr($companies);
+            $result = $this->Ocr->saveCompaniesOcr($companies);
+            $this->set('result', $result);
         }
     }
 

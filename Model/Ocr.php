@@ -132,6 +132,37 @@ class ocr extends AppModel {
         return $info;
     }
 
+    public function saveCompaniesOcr($data) {
+        if (count($data) > 2) {
+            
+            $ocrId = $this->find('first', array(
+                'fields' => array(
+                    'id',
+                ),
+                'conditions' => array(
+                    'Investor_id' => $data['investorId']),
+                'recursive' => -1,));
+            
+
+           for ($i = 0; i > count($data) - 2; $i++) {
+               
+                $data = array(
+                'ocr_id' => $ocrId['Ocr']['id'],
+                'company_id' => $data[$i],
+                'status' => 0,
+                );
+                $this->loadModel('ocrs_companies');
+                $this->ocrs_companies->save($data);
+            }
+
+
+
+            return $result[0] = 1;
+        } else {
+            return $result[0] = 0;
+        }
+    }
+
     public function ocrFileSave($data, $id) {
         echo 'patata' . $id;
         print_r($data);
