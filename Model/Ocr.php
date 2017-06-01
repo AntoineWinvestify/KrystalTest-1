@@ -21,11 +21,16 @@
  * @package
  *
 
-  2016/29/2017 version 0.1
+  2017/29/5 version 0.1
   function ocrDataSave   Save ocr data in db                         [OK]
   function ocrGetData    Get info of ocr                             [OK]
-
-
+ * 
+2017/29/5 version 0.2
+    ocrFileSave         Upload files                                 [OK]
+ * 
+  2017/1/6 version 0.3  
+    saveCompaniesOcr                                                 [OK]
+    getSelectedCompanies                                             [OK]
  */
 App::uses('CakeEvent', 'Event');
 
