@@ -173,7 +173,7 @@ public function editUserProfileData() {
 /**
  *
  * 	Manage linked accounts, i.e. store new pair of userid/password for newly linked account 
- * 	Return list of currently linked accounts and a alert message about result of successfull linking of account
+ * 	Return list of currently linked accounts and an alert message about result of successfull linking of account
  * 	
  */
 function linkAccount() {

@@ -398,7 +398,7 @@ class zank extends p2pCompany {
                 $data1[$key]['amortized'] = $this->getMonetaryValue($item['Amortizado']);
                 $data1[$key]['profitGained'] = $this->getPercentage($item['InteresesOrdinarios']);
                 $data1[$key]['duration'] = $item['Plazo'] . " Meses";
-                $data1[$key]['commission'] = $item['Comission'];
+                $data1[$key]['commission'] = $this->getMonetaryValue($item['Comision']);
                 $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
             }
             //If the investments are 100, we repeat the process to take more investments

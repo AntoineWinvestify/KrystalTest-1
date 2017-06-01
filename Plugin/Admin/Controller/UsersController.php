@@ -57,7 +57,7 @@ class UsersController extends AdminAppController
 
 
 function beforeFilter() {
-//	Configure::write('debug', 2);
+	Configure::write('debug', 2);
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 
@@ -65,15 +65,19 @@ function beforeFilter() {
 															// as it is "dynamic" and would fail the CSRF test
 
 
-	$this->Security->requireSecure(	'login'	);
-	$this->Security->csrfCheck = false;
-	$this->Security->validatePost = false;	
+//	$this->Security->requireSecure(	'login'	);
+//	$this->Security->csrfCheck = false;
+//	$this->Security->validatePost = false;	
 // Allow only the following actions.
 	$this->Security->requireAuth();
-	$this->Auth->allow('login','session');    // allow the actions without logon
+	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
+   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
-	
+var_dump($_REQUEST);
+var_dump($this->request);
+      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
+
 }
 
 
@@ -214,32 +218,43 @@ echo "<br/>";
 
 
 
-
-public function login() {
-		
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-	if ($this->Auth->loggedIn()){
+public function loginAction() {
+    echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
+$this->print_r2($this->request->data);
+ echo "Antoine";
+$this->autoRender = false;
+	 
+        if ($this->Auth->login()) {
+            echo "SESSION1 <br>";
+            echo "We have logged in <br>";
+          
+        }
+        else {
+            echo"User not logged on<br>";
+        }
+        
+  exit;  
+        if ($this->Auth->loggedIn()){
 		echo "user is logged on";	
 	}
 	else {
 		echo "User not logged on";
 	}
-	
+
 	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";	
 //	echo $this->Auth->authError();
-var_dump($this->params);	
+exit;	
 	$this->layout = 'zastac_admin_login_layout';
 //echo $this->Session->flash();
 //echo $this->Session->flash('auth');	
-var_dump($_REQUEST);		
-pr($this->Session->read());
-pr($this->request->data);
+	
+
 	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
 echo $this->Auth->user('id');
 debug($this->request->data);
 echo  $this->Auth->loggedIn();
 	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-var_dump($this->request);	
+//var_dump($this->request);	
 	if ($this->request->is('post')) {
 	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
 	
@@ -262,10 +277,28 @@ var_dump($this->request);
 		}
 	}
 	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-//	exit;
+	exit;
 }
 
 
+
+/**
+*
+*	Shows the login panel
+*
+*/
+public function login()
+{
+	if ( $this->request->is('ajax')) {
+		$this->layout = 'ajax';
+		$this->disableCache();
+	}
+	else {
+		$this->layout = 'zastac_admin_login_layout';
+	}
+	$error = false;
+	$this->set("error", $error);
+}
 
 
 
