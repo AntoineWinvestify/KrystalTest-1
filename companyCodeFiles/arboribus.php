@@ -183,13 +183,32 @@ class arboribus extends p2pCompany {
             /////////////LOGIN
             case 0:
                 $this->idForSwitch++;
-                //$this->getCompanyWebpageMultiCurl();
-                //break;
-                array_shift($this->urlSequence);
-                array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl();
+                break;  
             case 1:
                 //Login fixed
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                $this->credentials['username'] = $this->user;
+                $this->credentials['password'] = $this->password;
+                $forms = $dom->getElementsByTagName('form');
+                foreach ($forms as $form) {
+                    $inputs = $form->getElementsByTagName('input');
+                    foreach ($inputs as $input) {
+                        if (!empty($input->getAttribute('name'))) {  // look for the post variables
+                            if ($input->getAttribute('type') == "hidden") {
+                                $this->credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                            }
+                        }
+                    }
+                }
+                $this->credentials['task'] = "user.logout";
                 $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($this->credentials);
+                unset($this->credentials);
+                break;
             case 2:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -219,10 +238,6 @@ class arboribus extends p2pCompany {
                 $this->doCompanyLoginMultiCurl($this->credentials);
                 break;
             case 4:
-                $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
-                break;
-            case 5:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
@@ -260,7 +275,7 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
-            case 6:
+            case 5:
                 $summary = $str;
                 //echo $summary;
                 $dom = new DOMDocument;
@@ -296,7 +311,7 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();     // list of investments as JSON
                 break;
-            case 7:
+            case 6:
                 $strListInvestments = $str;
                 $investmentListItems = json_decode($strListInvestments, true);
                 echo __FILE__ . " " . __LINE__ . "<br>";
@@ -324,7 +339,7 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                 break;
-            case 8:
+            case 7:
                 //echo $str;
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
@@ -398,7 +413,7 @@ class arboribus extends p2pCompany {
                 // Force a logout with data elements provided in the last read page.
                 //$this->companyUserLogout();
                 if (($this->numberIfInvestments-1) != $this->investmentSequence) {
-                    $this->idForSwitch = 6;
+                    $this->idForSwitch = 7;
                     $this->investmentSequence++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                     break;
@@ -410,7 +425,7 @@ class arboribus extends p2pCompany {
                     break;
                     
                 }
-            case 9:
+            case 8:
                 //Added urlsequences on database for logout
                 //When it is here, the logout is already made so if we make the logout,
                 //it is unnecessary but we make it otherwise
