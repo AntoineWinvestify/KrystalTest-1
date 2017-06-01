@@ -33,12 +33,13 @@ class ocr extends AppModel {
 
     var $name = 'Ocr';
     var $validate = array();
-    public $hasMany = array(
+    public $hasAndBelongsToMany = array(
         'Comapany' => array(
             'className' => 'Comapany',
+            'joinTable' => 'companies_ocrs',
             'foreignKey' => 'ocr_id',
-            'fields' => '',
-            'order' => '',
+            'associationForeignKey' => 'company_id',
+            'unique' => true,
         ),
     );
 
@@ -134,7 +135,8 @@ class ocr extends AppModel {
 
     public function saveCompaniesOcr($data) {
         if (count($data) > 2) {
-            
+
+
             $ocrId = $this->find('first', array(
                 'fields' => array(
                     'id',
@@ -142,21 +144,25 @@ class ocr extends AppModel {
                 'conditions' => array(
                     'Investor_id' => $data['investorId']),
                 'recursive' => -1,));
-            
 
-           for ($i = 0; i > count($data) - 2; $i++) {
-               
-                $data = array(
-                'ocr_id' => $ocrId['Ocr']['id'],
-                'company_id' => $data[$i],
-                'status' => 0,
+
+            $comp = array_slice($data, 2);
+
+            for ($i = 0; $i < count($comp); $i++) {
+                $compocr[$i] = array(
+                    'Company' => array(
+                        'id' => $comp[$i]),
+                    'Ocr' => array(
+                        'id' => $ocrId['Ocr']['id'],
+                    ),
+                    'status' => 0,
                 );
-                $this->loadModel('ocrs_companies');
-                $this->ocrs_companies->save($data);
             }
 
 
 
+            print_r($compocr);
+            $this->saveAll($compocr);
             return $result[0] = 1;
         } else {
             return $result[0] = 0;
