@@ -93,7 +93,7 @@
 					<li class="user-header">
 					    <img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Investor']['investor_photoChatGUID']?>" class="img-circle" alt="Big User Image">
 	
-					    <p style="color: black !important;><?php echo $sessionData['Auth']['User']['Investor']['investor_name'] . " " . $sessionData['Auth']['User']['Investor']['investor_surname'] ?> - Inversor
+					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Investor']['investor_name'] . " " . $sessionData['Auth']['User']['Investor']['investor_surname'] ?> - Inversor
 							<small></small>
 					    </p>
 					</li>
