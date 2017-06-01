@@ -49,7 +49,10 @@
   Estado amortizado
   2017/4/26
   Total invertido correcto, fecha
- * 
+ 
+  2017/06/01
+ * Added loop when we take json investments                                     [OK, STILL TO CHECK]
+ 
   Pending:
   Fecha en duda
 
