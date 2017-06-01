@@ -185,7 +185,7 @@ class arboribus extends p2pCompany {
 
         echo __FILE__ . " " . __LINE__ . "<br>";
         $resumen = $this->getCompanyWebpage();
-//      echo $resumen;
+ echo $resumen;
         $dom = new DOMDocument;
         $dom->loadHTML($resumen); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
         $dom->preserveWhiteSpace = false;
@@ -200,7 +200,7 @@ class arboribus extends p2pCompany {
         foreach ($divs as $key => $div) {
             echo "key = $key, " . $div->nodeValue . "<br>";
         }
-
+        echo __FILE__ . " " . __LINE__ . "<br>";
         $trs = $this->getElements($divs[1], "td", "class", "tcell-align-right");
         echo __FILE__ . " " . __LINE__ . "<br>";
         $tempArray['global']['myWallet'] = $this->getMonetaryValue($trs[1]->nodeValue);
