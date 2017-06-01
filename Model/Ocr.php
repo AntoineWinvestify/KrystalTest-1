@@ -39,7 +39,6 @@ class ocr extends AppModel {
             'joinTable' => 'companies_ocrs',
             'foreignKey' => 'ocr_id',
             'associationForeignKey' => 'company_id',
-            'unique' => true,
         ),
     );
 
@@ -149,24 +148,34 @@ class ocr extends AppModel {
             $comp = array_slice($data, 2);
 
             for ($i = 0; $i < count($comp); $i++) {
-                $compocr[$i] = array(
-                    'Company' => array(
-                        'id' => $comp[$i]),
-                    'Ocr' => array(
-                        'id' => $ocrId['Ocr']['id'],
-                    ),
-                    'status' => 0,
-                );
+
+                if ($i == 0) {
+                    $query = "INSERT INTO `search`.`companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
+                } else {
+                    $query = $query . "INSERT INTO `search`.`companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
+                }
             }
-
-
-
-            print_r($compocr);
-            $this->saveAll($compocr);
+            echo $query;
+            $query = $this->query($query);
+            $this->set('data', $data);
             return $result[0] = 1;
         } else {
             return $result[0] = 0;
         }
+    }
+
+    public function getSelectedCompanies($id) {
+        $ocrId = $this->find('first', array(
+            'fields' => array(
+                'id',
+            ),
+            'conditions' => array(
+                'Investor_id' => $id),
+            'recursive' => -1,));
+
+        $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . ";";
+        return $this->query($query);
+  
     }
 
     public function ocrFileSave($data, $id) {

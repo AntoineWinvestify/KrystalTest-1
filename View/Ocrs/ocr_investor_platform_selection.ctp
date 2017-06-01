@@ -104,10 +104,9 @@
                 value = $(this).attr("aria-checked");
                 arrayCheck[index] = value;
             });
-            if (arrayCheck[0] == "true" && arrayCheck[1] == "true") {   
+            if (arrayCheck[0] == "true" && arrayCheck[1] == "true") {
                 $(this).parentsUntil(".box-footer").find(".btnSelect").prop('disabled', false);
-            }
-            else{
+            } else {
                 $(this).parentsUntil(".box-footer").find(".btnSelect").prop('disabled', true);
             }
 
@@ -119,7 +118,11 @@
 <div id="OCR_InvestorPanelB">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-<?php /* DIV 1: Selected platforms */ ?>
+            <?php
+            /* DIV 1: Selected platforms */
+            //print_r($selected);
+            // print_r($company);
+            ?>          
             <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
             <div id="investorSelection" class="row">
 
@@ -132,12 +135,35 @@
                     'type' => 'hidden',
                     'value' => 0
                 ));
-                ?>
 
 
 
 
-<?php echo $this->Form->end(); ?> 
+                
+                //Automatic feedback
+                /*for ($i = 0; $i < count($selected); $i++) {
+                    if ($selected['companies_ocrs']['statusOcr'] == 0) {
+                        $idSel = $selected[$i]['companies_ocrs']['company_id'];
+                        for ($j = 0; $j < count($company); $j++) {
+                            if ($idSel == $company[$j]['Company']['id']) {
+                                $logo = $company[$j]['Company']['company_logoGUID'];
+                                ?>
+                                <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                                    <div class="box box-widget widget-user-2 pendingPlatform">
+                                        <div class="widget-user-header">
+                                            <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
+                                            <img src="/img/logo/<?php echo $logo ?>" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php
+                            }
+                        }
+                    }
+                }*/
+                
+                echo $this->Form->end();
+                ?> 
 
                 <!--<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
                     <div class="box box-widget widget-user-2 selectedPlatform">
@@ -170,12 +196,12 @@
                 </div>
                 <hr width="100%">
             </div>
-<?php /* DIV 2: Filters */ ?>
+            <?php /* DIV 2: Filters */ ?>
             <div id="investorFilters" class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <h4 class="header1CR"><?php echo __('Filter by:') ?></h4>
                     <div class="row">
-                            <?php echo $this->Form->create(); ?>
+                        <?php echo $this->Form->create(); ?>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <?php
                             $class = "filter form-control blue investorCountry" . ' ' . $errorClass;
@@ -218,12 +244,12 @@
                             ));
                             ?>
                         </div>
-<?php echo $this->Form->end(); ?>
+                        <?php echo $this->Form->end(); ?>
                     </div>
                 </div>
             </div>
             <hr class="nomargin" width="100%"/>
-<?php /* Div 2: Platforms Selection */ ?>
+            <?php /* Div 2: Platforms Selection */ ?>
             <h4 class="header1CR"><?php echo __('Select platforms to register') ?></h4>
             <div id="platformSelection" class="row">
                 <?php

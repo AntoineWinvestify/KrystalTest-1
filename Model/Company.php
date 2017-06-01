@@ -40,14 +40,15 @@ class Company extends AppModel {
     var $hasMany = array(
         'Marketplace' => array(
             'className' => 'Marketplace',
-            'joinTable' => 'companies_ocrs',
             'foreignKey' => 'company_id',
         )
     );
     public $hasAndBelongsToMany = array(
         'Ocr' => array(
             'className' => 'Ocr',
+            'joinTable' => 'companies_ocrs',
             'foreignKey' => 'company_id',
+            'associationForeignKey' => 'ocr_id',
         ),
     );
 

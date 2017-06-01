@@ -120,10 +120,10 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            
+
             $this->layout = 'ajax';
             $this->disableCache();
-            
+
             $companyNumber = $_REQUEST['numberCompanies'];
 
             $companies = array(
@@ -180,6 +180,7 @@ class ocrsController extends AppController {
 
     function ocrInvestorPlatformSelection() {
         $this->set('company', $this->Company->companiesDataOCR());
+        $this->set('selected', $this->Ocr->getSelectedCompanies($this->Session->read('Auth.User.id')));
         echo " ";
         return 1;
     }
