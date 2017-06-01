@@ -21,14 +21,14 @@
  * @package
  *
 
-  2017/29/5 version 0.1
+  2017/5/29 version 0.1
   function ocrDataSave   Save ocr data in db                         [OK]
   function ocrGetData    Get info of ocr                             [OK]
  * 
-2017/29/5 version 0.2
+2017/5/30 version 0.2
     ocrFileSave         Upload files                                 [OK]
  * 
-  2017/1/6 version 0.3  
+  2017/6/1 version 0.3  
     saveCompaniesOcr                                                 [OK]
     getSelectedCompanies                                             [OK]
  */
