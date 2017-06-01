@@ -264,7 +264,7 @@ class zank extends p2pCompany {
         $userId = trim(preg_replace('/\D/', ' ', $testArray[4]));
 
         if (!is_numeric($userId)) {
-            echo "<br>An eror has occured, could not find internal userId<br>";
+            echo "<br>An error has occured, could not find internal userId<br>";
         }
 
         $needle = "kpi_panel";
@@ -327,68 +327,84 @@ class zank extends p2pCompany {
 // build the Web URL for downloading the list of the individual investments of this user
         $url = array_shift($this->urlSequence);
         $url = $url . $userId . "/0";
+        //Start is the value from we get the investments
+        $start = 0;
+        $form = [
+            "length" => 100,
+            "start" => $start];
+        //This value is 100 to enter in the while but when we are inside we change to the real number of investments
+        $numberJsonInvestments = 100;
+        while ($numberJsonInvestments % 100 == 0) {
+            $str = $this->getCompanyWebpageJson($url, $form);
+            $temp = json_decode($str, $assoc = true);
+            //We take the real number of investments
+            $numberJsonInvestments = count($temp['data']);
 
-        $str = $this->getCompanyWebpage($url);
-        $temp = json_decode($str, $assoc = true);
-
-        $numberOfInvestments = 0;
-        foreach ($temp['data'] as $key => $item) {  // mapping of the data to a generic, own format.										// Keep all which don't have status == "amortizado"
-            //$data1[$key]['status'] = 10;  // dummy value											
-            if (strpos($item['Estado'], "Retrasado")) {
-                $data1[$key]['status'] = PAYMENT_DELAYED;
-            }
-            if (strpos($item['Estado'], "Amortizaci")) {
-                $data1[$key]['status'] = OK;
-            }
-            if (strpos($item['Estado'], "Amortizado")) {
-                $data1[$key]['status'] = TERMINATED_OK;
-            }
-
-//		if (!($data1[$key]['status'] <> OK OR $data1[$key]['status'] <> PAYMENT_DELAYED)) {
-//			continue;									// flush non required loans
-//		echo "FLUSH";
-//		}
-            if ($data1[$key]['status'] == TERMINATED_OK) {
-                unset($data1[$key]);
-                continue;
-            }
-            
-            $numberOfInvestments = $numberOfInvestments + 1;
-            $day = 1; //substr($item['Fecha'],0,2);
-            if ($item['Plazo'] <= 50) {
-                $month = substr($item['Fecha'], 3, 2) + 1;
-
-                $year = substr($item['Fecha'], 6, 4);
-                if ($month == 13) {
-                    $month = 1;
-                    $year++;
+            $numberOfInvestments = 0;
+            foreach ($temp['data'] as $key => $item) {  // mapping of the data to a generic, own format.										// Keep all which don't have status == "amortizado"
+                //$data1[$key]['status'] = 10;  // dummy value											
+                if (strpos($item['Estado'], "Retrasado")) {
+                    $data1[$key]['status'] = PAYMENT_DELAYED;
                 }
-            }
-            if ($item['Plazo'] >= 50) {
-                $month = substr($item['Fecha'], 3, 2) - 1;
-
-                $year = substr($item['Fecha'], 6, 4);
-                if ($month == 0) {
-                    $month = 1;
+                if (strpos($item['Estado'], "Amortizaci")) {
+                    $data1[$key]['status'] = OK;
                 }
+                if (strpos($item['Estado'], "Amortizado")) {
+                    $data1[$key]['status'] = TERMINATED_OK;
+                }
+
+    //		if (!($data1[$key]['status'] <> OK OR $data1[$key]['status'] <> PAYMENT_DELAYED)) {
+    //			continue;									// flush non required loans
+    //		echo "FLUSH";
+    //		}
+                if ($data1[$key]['status'] == TERMINATED_OK) {
+                    unset($data1[$key]);
+                    continue;
+                }
+
+                $numberOfInvestments = $numberOfInvestments + 1;
+                $day = 1; //substr($item['Fecha'],0,2);
+                if ($item['Plazo'] <= 50) {
+                    $month = substr($item['Fecha'], 3, 2) + 1;
+
+                    $year = substr($item['Fecha'], 6, 4);
+                    if ($month == 13) {
+                        $month = 1;
+                        $year++;
+                    }
+                }
+                if ($item['Plazo'] >= 50) {
+                    $month = substr($item['Fecha'], 3, 2) - 1;
+
+                    $year = substr($item['Fecha'], 6, 4);
+                    if ($month == 0) {
+                        $month = 1;
+                    }
+                }
+
+
+                //if($month==13){$month=1; $year = $year+1; } 
+                $date = $year . "/" . $month . "/" . $day;
+                $date = date('d/m/Y', strtotime("+" . $item['Plazo'] . "months", strtotime($date)));
+                //$date = date('d/m/Y', strtotime("+".$item['Plazo']." months", strtotime($date)));
+                $data1[$key]['loanId'] = $item['Prestamo'];
+                $data1[$key]['dateOriginal'] = $item['Fecha'];
+                $data1[$key]['date'] = $date;
+                $data1[$key]['interest'] = $this->getPercentage($item['Rentabilidad']);
+                $data1[$key]['invested'] = $this->getMonetaryValue($item['Inversion']);
+                $data1[$key]['amortized'] = $this->getMonetaryValue($item['Amortizado']);
+                $data1[$key]['profitGained'] = $this->getPercentage($item['InteresesOrdinarios']);
+                $data1[$key]['duration'] = $item['Plazo'] . " Meses";
+                $data1[$key]['commission'] = $item['Comission'];
+                $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
             }
-            
-            
-            //if($month==13){$month=1; $year = $year+1; } 
-            $date = $year . "/" . $month . "/" . $day;
-            $date = date('d/m/Y', strtotime("+" . $item['Plazo'] . "months", strtotime($date)));
-            //$date = date('d/m/Y', strtotime("+".$item['Plazo']." months", strtotime($date)));
-            $data1[$key]['loanId'] = $item['Prestamo'];
-            $data1[$key]['dateOriginal'] = $item['Fecha'];
-            $data1[$key]['date'] = $date;
-            $data1[$key]['interest'] = $this->getPercentage($item['Rentabilidad']);
-            $data1[$key]['invested'] = $this->getMonetaryValue($item['Inversion']);
-            $data1[$key]['amortized'] = $this->getMonetaryValue($item['Amortizado']);
-            $data1[$key]['profitGained'] = $this->getPercentage($item['InteresesOrdinarios']);
-            $data1[$key]['duration'] = $item['Plazo'] . " Meses";
-            $data1[$key]['commission'] = $item['Comission'];
-            $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
+            //If the investments are 100, we repeat the process to take more investments
+            //And increasea start by 100
+            if ($numberJsonInvestments % 100 == 0) {
+                $start = $start + 100;
+            }
         }
+        
         $data1 = array_values($data1);
         $tempArray['global']['investments'] = count($data1);
         $tempArray['investments'] = $data1;
@@ -468,7 +484,7 @@ class zank extends p2pCompany {
      * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
      * @return string $str It is the website resulted of the curl petition
      */
-    function getCompanyWebpageJson($url) {
+    function getCompanyWebpageJson($url, $form) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -509,9 +525,7 @@ class zank extends p2pCompany {
             curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);      // reset fields
         }
-
-
-        $form = ["length" => 100];
+        
         foreach ($form as $key => $value) {
             $postItems[] = $key . '=' . $value;
         }
