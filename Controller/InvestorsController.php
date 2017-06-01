@@ -259,7 +259,7 @@ function linkAccount() {
                 
                 
                 
-                $this->render('accountLinkingOk');
+                //$this->render('accountLinkingOk');
                 $this->render('linkedaccountsList');
             } else {
                 $this->set('error', true);
