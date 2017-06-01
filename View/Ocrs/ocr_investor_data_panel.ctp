@@ -44,7 +44,7 @@
                 investor_surname: $("#ContentPlaceHolder_surname").val(),
                 investor_DNI: $("#dni").val(),
                 investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
-                /*investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),*/
+                investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
                 investor_address1: $("#ContentPlaceHolder_address1").val(),
                 investor_postCode: $("#ContentPlaceHolder_postCode").val(),
                 investor_city: $("#ContentPlaceHolder_city").val(),
@@ -476,7 +476,7 @@
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
                 <!-- Activate Button -->
                 <hr width="100%" style="margin:10px;">
-                <button type="button" href="../Ocrs/OneClickInvestorI" id="activateOCR" class="btn btn-primary btn-lg btn-win5"><?php echo __('Activate 1CR') ?></button>
+                <button type="button" href="../Ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-primary btn-lg btn-win5"><?php echo __('Activate 1CR') ?></button>
                 <?php echo $this->Form->end(); ?>
                 <!-- /activate button -->
             </div>

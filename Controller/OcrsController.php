@@ -59,7 +59,7 @@ class ocrsController extends AppController {
      */
 
 //Envia datos personales a la bd.
-    function OneClickInvestorI() {
+    function oneClickInvestorII() {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
@@ -116,7 +116,7 @@ class ocrsController extends AppController {
     }
 
 //Envia solicitud de las compañias seleccionadas al admin. Ademas te actualizaria la seccion de compañias seleccionadas
-    function OneClickInvestorII() {
+    function oneClickInvestorI() {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
@@ -132,7 +132,7 @@ class ocrsController extends AppController {
                 $companies[$i] = $_REQUEST[$i];
             }
             print_r($companies);
-            $this->Orc->saveCompaniesOcr();
+            $this->Orc->saveCompaniesOcr($companies);
         }
     }
 
@@ -151,12 +151,12 @@ class ocrsController extends AppController {
     }
 
 //Para el admin- Revisa y envia los datos del inversor a la compañia.
-    function OneClickAdmin() {
+    function oneClickAdmin() {
         $this->Orc->investorDataToCompany($datos);
     }
 
 //Para la compañia- Revisa y termina el registro del inversor
-    function OneClickCompany() {
+    function oneClickCompany() {
         $this->Orc->ocrEnd($datos);
     }
 

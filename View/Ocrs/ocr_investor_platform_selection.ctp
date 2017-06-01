@@ -46,7 +46,7 @@
             }
 
 
-            link = "../Ocrs/OneClickInvestorII";
+            link = "../Ocrs/oneClickInvestorI";
             var data = jQuery.param(params);
             getServerData(link, data, successFilter, errorFilter);
         });
