@@ -183,10 +183,19 @@ class arboribus extends p2pCompany {
             /////////////LOGIN
             case 0:
                 $this->idForSwitch++;
+                //$this->getCompanyWebpageMultiCurl();
+                //break;
+                array_shift($this->urlSequence);
+                array_shift($this->urlSequence);
+            case 1:
+                //Login fixed
+                $this->idForSwitch++;
+            case 2:
+                $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 //$resultMyArboribus = $this->companyUserLogin($user, $password);
                 break;
-            case 1:
+            case 3:
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
@@ -209,24 +218,24 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($this->credentials);
                 break;
-            case 2:
+            case 4:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
-            case 3:
+            case 5:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 $as = $dom->getElementsByTagName('a');
                 $resultMyArboribus = false;
+                
                 foreach ($as as $a) {
-                    if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed
+                    if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed           
                         $this->mainPortalPage = $str;
-                        array_shift($this->urlSequence);
-                        array_shift($this->urlSequence);
                         $resultMyArboribus = true;
                     }
                 }
+
                 
                 if (!$resultMyArboribus) {   // Error while logging in
                     echo __FILE__ . " " . __LINE__ . " LOGIN ERROR<br>";
@@ -251,7 +260,7 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
-            case 4:
+            case 6:
                 $summary = $str;
                 //echo $summary;
                 $dom = new DOMDocument;
@@ -287,7 +296,7 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();     // list of investments as JSON
                 break;
-            case 5:
+            case 7:
                 $strListInvestments = $str;
                 $investmentListItems = json_decode($strListInvestments, true);
                 echo __FILE__ . " " . __LINE__ . "<br>";
@@ -315,7 +324,7 @@ class arboribus extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                 break;
-            case 6:
+            case 8:
                 //echo $str;
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
@@ -401,7 +410,7 @@ class arboribus extends p2pCompany {
                     break;
                     
                 }
-            case 7:
+            case 9:
                 //Added urlsequences on database for logout
                 //When it is here, the logout is already made so if we make the logout,
                 //it is unnecessary but we make it otherwise
@@ -605,9 +614,11 @@ class arboribus extends p2pCompany {
 
 
 //Login fixed
+        $this->companyUserLogout($credentials);
+
+        /* $credentials = companyUserLogout($credentials); */
 
         $str = $this->getCompanyWebpage();    // Load main page, needed so I can read the csrf code
-
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -619,31 +630,32 @@ class arboribus extends p2pCompany {
             foreach ($inputs as $input) {
                 if (!empty($input->getAttribute('name'))) {  // look for the post variables
                     if ($input->getAttribute('type') == "hidden") {
-                            $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
-                        }
+                        $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
                     }
                 }
             }
-            //Forced user.login
-            $credentials['task'] = "user.login";
-            $str = $this->doCompanyLogin($credentials);   // Send the post request with authentication information
-            $str = $this->getCompanyWebpage();
+        }
 
-            $dom = new DOMDocument;
-            $dom->loadHTML($str);
-            $dom->preserveWhiteSpace = false;
 
-            $as = $dom->getElementsByTagName('a');
-            foreach ($as as $a) {
-                if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed
-                    $this->mainPortalPage = $str;
-                    array_shift($this->urlSequence);
-                    array_shift($this->urlSequence);
-                    return true;
-                }
+        //Forced user.login
+        $credentials['task'] = "user.login";
+        $str = $this->doCompanyLogin($credentials);   // Send the post request with authentication information
+
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        $forms = $dom->getElementsByTagName('form');
+        $as = $dom->getElementsByTagName('a');
+
+        foreach ($as as $a) {
+            if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed           
+                $this->mainPortalPage = $str;
+                return true;
             }
+        }
         return 0; // Log in fails due to authentication error 
     }
+
 
     /**
      *
@@ -652,37 +664,68 @@ class arboribus extends p2pCompany {
      * 	@returnboolean	true: user has logged out 
      * 	
      */
-    function companyUserLogout($str) {
+    function companyUserLogout($credentials) {
+
+        $str = $this->getCompanyWebpage();    // Load main page, needed so I can read the csrf code
         $dom = new DOMDocument;
-        libxml_use_internal_errors(true);
         $dom->loadHTML($str);
-        //echo $str;
         $dom->preserveWhiteSpace = false;
+
+        $as = $dom->getElementsByTagName('a');
         $forms = $dom->getElementsByTagName('form');
-        $this->verifyNodeHasElements($forms);
-        if (!$this->hasElements) {
-            return $this->tempArray['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
-        }
-        $inputs = $forms[0]->getElementsByTagName('input');
-        $this->verifyNodeHasElements($inputs);
-        if (!$this->hasElements) {
-            return $this->tempArray['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
-        }
-        $credentials = array();
-        foreach ($inputs as $input) {
-            if (!empty($input->getAttribute('name'))) {  // check all hidden input fields for name and value
-                $name = $input->getAttribute('name');
-                $value = $input->getAttribute('value');
-                $credentials[$name] = $value;
-                //1 $credentials['option'] = "com_users";
-                //2 $credentials['task'] = "user.logout";
-                //3 $credentials['return'] = "aW5kZXgucGhwP0l0ZW1pZD0xMDE=";
-                //4 $credentials['70911af336f4c9937561a76c4d9217ad'] = "1"; 
+
+        foreach ($forms as $form) {
+            $inputs = $form->getElementsByTagName('input');
+            foreach ($inputs as $input) {
+                if (!empty($input->getAttribute('name'))) {  // look for the post variables
+                    if ($input->getAttribute('type') == "hidden") {
+                        $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                    }
+                }
             }
         }
-        $this->doCompanyLogoutMultiCurl($credentials);
-        return true;
+
+        foreach ($as as $a) {
+            if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed
+                $this->mainPortalPage = $str;
+                $credentials['task'] = "user.logout";
+                $str = $this->doCompanyLogin($credentials);
+            }
+        }
     }
+    
+    function companyUserLogoutMultiCurl($str) {
+
+        
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $credentials['username'] = $this->user;
+        $credentials['password'] = $this->password;
+
+        $as = $dom->getElementsByTagName('a');
+        $forms = $dom->getElementsByTagName('form');
+
+        foreach ($forms as $form) {
+            $inputs = $form->getElementsByTagName('input');
+            foreach ($inputs as $input) {
+                if (!empty($input->getAttribute('name'))) {  // look for the post variables
+                    if ($input->getAttribute('type') == "hidden") {
+                        $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                    }
+                }
+            }
+        }
+
+        foreach ($as as $a) {
+            if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed
+                $this->mainPortalPage = $str;
+                $credentials['task'] = "user.logout";
+                $str = $this->doCompanyLogoutMultiCurl($credentials);
+            }
+        }
+    }
+
 
     /**
      *
