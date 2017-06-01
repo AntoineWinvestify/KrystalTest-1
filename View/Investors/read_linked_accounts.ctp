@@ -242,7 +242,7 @@ $(document).on('click', '#tooltipLA', function() {
                     id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
                     onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
                     "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
-                    class="btn btn-primary form submitButton deleteLinkedAccount btn-invest"><?php echo __('Delete')?>
+                    class="btn btn-primary form submitButton deleteLinkedAccount btn-invest btnRounded"><?php echo __('Delete')?>
                     </button>	
                 </div>					
             </div>						
@@ -271,7 +271,7 @@ $(document).on('click', '#tooltipLA', function() {
 	<div class="row">
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                 <div class="form-group">
-                    <button type="submit" id="addNewAccount" class="btn btn-primary btn-invest line-btn"
+                    <button type="submit" id="addNewAccount" class="btn btn-primary btn-invest line-btn btnRounded"
                     onclick='ga_addNewAccountClick()'><?php echo __('Add New Account')?></button>
 		</div>
             </div>	
@@ -345,7 +345,7 @@ $(document).on('click', '#tooltipLA', function() {
                 <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                     <div class="form-group">
                         <label>&nbsp;</label><br/>
-                        <button type="button" id="linkNewAccount" href="/investors/linkAccount" class="btn btn-primary btn-invest">
+                        <button type="button" id="linkNewAccount" href="/investors/linkAccount" class="btn btn-primary btn-invest btnRounded">
                             <?php echo __('Link this Account')?>
                         </button>
                         <img src="/img/gif_carga.gif" class="imagenCargando guardarUserData" style="display: none;" />
