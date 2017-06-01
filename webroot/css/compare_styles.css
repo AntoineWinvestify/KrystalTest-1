@@ -1191,6 +1191,7 @@ textarea[name="error"] {
 }
 #liLogin {
     cursor: pointer;
+    padding-left: 15px;
 }
 
 
