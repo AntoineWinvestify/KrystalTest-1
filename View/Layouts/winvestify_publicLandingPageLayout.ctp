@@ -312,7 +312,7 @@
                 
                 
                 <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
-                    <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Our Global Market Place ') ?></h2>      
+                    <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white center-block"><?php echo __('Our Global Market Place ') ?></h2>      
                 </div>                
 
                 

@@ -1223,7 +1223,6 @@ textarea[name="error"] {
                         }
                         #pDescription {
                             padding-top: 0px !important;
-                            color: white;
                         }
                         .featuresP {
                             padding-left: 0px;
@@ -1351,7 +1350,8 @@ textarea[name="error"] {
                 margin-top: -50px;
             }
             #featuresPadding {
-                padding-top: 100px !important;
+                top: -350px !important;
+                background-color: white !important;
             }
         }
         
@@ -1373,9 +1373,6 @@ textarea[name="error"] {
                     @media (max-width: 768px){
                         #popUp {
                             width: 75% !important;
-                        }
-                        #pDescription {
-                            color: white !important;
                         }
                         #registerButton {
                             left: 25% !important;
@@ -1453,16 +1450,20 @@ textarea[name="error"] {
             #pDescription {
                 padding-top: 0px;
                 color: #66615b !important;
+            }
+            #featuresPadding {
                 margin-top: 120px !important;
             }
             #registerButton {
                 left: 45% !important;
+                margin-bottom: 20px;
             }
             #features_right {
-                margin-top: -25px !important;
+                margin-top: 0px !important;
             }
             .featuresP {
                 padding-left: 50px;
+                margin-top: 50px;
             }
         }
                 @media (min-width: 1024px) and (max-width: 1200px) {
