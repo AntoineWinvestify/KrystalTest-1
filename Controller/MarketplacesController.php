@@ -763,7 +763,7 @@ class MarketPlacesController extends AppController {
 
 
             echo "MICROTIME_START = " . microtime() . "<br>";
-            $tempArray = $newComp->collectUserInvestmentData($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
+            $tempArray = $newComp->collectUserInvestmentDataSequencial($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
 
             $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
@@ -860,7 +860,7 @@ class MarketPlacesController extends AppController {
         $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$ids[0]], LOGOUT_SEQUENCE);
         echo "Company = $this->companyId[$ids[0]]";
         $this->newComp[$ids[0]]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $this->newComp[$ids[0]]->companyUserLogout($str);
+        $this->newComp[$ids[0]]->companyUserLogoutMultiCurl($str);
     }
     
     /**

@@ -124,6 +124,16 @@ function __construct() {
 	mkdir ($this->logDir, 0770);
 }
 
+    /**
+     *
+     * 	Logout of user from to company portal with MultiCurl.
+     * 	
+     * 	@returnboolean	true: user has logged out 
+     * 	
+     */
+    function companyUserLogoutMultiCurl($str) {
+        $this->doCompanyLogoutMultiCurl();
+    }
 
 
 

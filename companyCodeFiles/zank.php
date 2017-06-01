@@ -286,8 +286,6 @@ class zank extends p2pCompany {
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($this->credentials);
                 break;
-                
-                
             case 2:
                 //This is an error because we don't verify if we have entered
                 if ($str == 200 or $str == 103) {
