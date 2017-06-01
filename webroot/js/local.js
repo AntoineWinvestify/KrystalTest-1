@@ -112,7 +112,7 @@ function contactForm() {
     link = $("#send").attr('href');
     $("#send").prop('disabled', true);
     $("#overlay").addClass("overlay");
-    $("#spinner").addClass("fa fa-spin fa-refresh");
+    $("#spinner").addClass("fa fa-spin fa-spinner");
     //event.stopPropagation();
     //event.preventDefault();
 
