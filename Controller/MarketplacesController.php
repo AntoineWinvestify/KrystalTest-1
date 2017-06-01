@@ -27,8 +27,8 @@
   2017-01-12
   added functions xxx yyy zzz . These are AJAX functions which the browser sends for requesting Dashboard data
 
-2017-05-02      version 0.3                                                                     [OK, tested]
-Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
+  2017-05-02      version 0.3                                                                     [OK, tested]
+  Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
 
 
 
@@ -70,8 +70,8 @@ class MarketPlacesController extends AppController {
          */
 //	$this->Security->requireAuth();
         $this->Auth->allow(array('cronMarketStart', 'listMarketPlace', 'getGlobalMarketPlaceData',
-					 'readInvestmentData', 'readGlobalDashboardData', 'cronQueueEvent',
-					 'test_linkingAccount'));
+            'readInvestmentData', 'readGlobalDashboardData', 'cronQueueEvent',
+            'test_linkingAccount'));
     }
 
     /**
@@ -81,18 +81,18 @@ class MarketPlacesController extends AppController {
      */
     function getGlobalMarketPlaceData() {
 
-	$this->layout = 'winvestify_publicLandingPageLayout'; 
-    $userIp = $this->request->clientIp($safe = false);      // To avoid that the user manipulates the HTTP_CLIENT_IP header.
-    $geoData = $this->getGeoLocationData($userIp);          // Where is the user?
+        $this->layout = 'winvestify_publicLandingPageLayout';
+        $userIp = $this->request->clientIp($safe = false);      // To avoid that the user manipulates the HTTP_CLIENT_IP header.
+        $geoData = $this->getGeoLocationData($userIp);          // Where is the user?
 
-	$countryCode = $geoData['country_code'];
-	$filterConditions = array('Company.company_country' => $countryCode);
+        $countryCode = $geoData['country_code'];
+        $filterConditions = array('Company.company_country' => $countryCode);
 
-	$results = $this->Company->getCompanyList($filterConditions);
-	$filterConditions = array('company_id' => $results);
-	$globalResults = $this->Marketplace->getGlobalMarketData($filterConditions);
-	$this->set('globalResults', $globalResults);
-}
+        $results = $this->Company->getCompanyList($filterConditions);
+        $filterConditions = array('company_id' => $results);
+        $globalResults = $this->Marketplace->getGlobalMarketData($filterConditions);
+        $this->set('globalResults', $globalResults);
+    }
 
     /**
      *
@@ -210,18 +210,17 @@ class MarketPlacesController extends AppController {
 
     /**
      *
-     *********************************************************************************************
+     * ********************************************************************************************
      * CRONTAB OPERATIONS
-     *********************************************************************************************
+     * ********************************************************************************************
      */
-       
+
     /**
      *
      * 	cycles through ALL known and registered p2p companies and stores all the new found marketplaces
      * 	and marketplaces which were changed since the last reading, for instance  Number of investors
      *
      */
-
 // start the cronjob
     function cronMarketStart() {
 
@@ -582,6 +581,28 @@ class MarketPlacesController extends AppController {
             } else {
                 // log error
             }
+
+            foreach ($dashboardGlobals['investments'] as $company => $value) {
+                $inversiones = count($dashboardGlobals['investments'][$company]['investments']);
+                echo '<h1>';
+                print_r($inversiones);
+                echo '</h1>';
+                for ($key = 0; $key < $inversiones; $key++) {
+                    echo "comprobando" . $key . "</br>";
+                    if ($dashboardGlobals['investments'][$company]['investments'][$key]['status'] == -1) {
+                        echo '<h1>' . $key . "eliminada</h1></br>";
+                        unset($dashboardGlobals['investments'][$company]['investments'][$key]);
+                        $dashboardGlobals['investments'][$company]['global']['investments'] --;
+                        $dashboardGlobals['activeInvestments'] --;
+                        continue;
+                    }
+                }
+                $dashboardGlobals['investments'][$company]['investments'] = array_values($dashboardGlobals['investments'][$company]['investments']);
+            }
+            echo "<h1>            aqui";
+            $this->print_r2($dashboardGlobals);
+            echo "</h1>";
+            
             echo "<br>******* End of Loop ****** <br>";
         }
 
@@ -599,10 +620,10 @@ class MarketPlacesController extends AppController {
             // log error
         }
     }
-    
-     public function clearCache() {
+
+    public function clearCache() {
         $this->autoRender = false;
-        
+
         Cache::clear();
         clearCache();
         $files = array();
@@ -618,9 +639,9 @@ class MarketPlacesController extends AppController {
             }
         }
 
-        if(function_exists('apc_clear_cache')):      
-        apc_clear_cache();
-        apc_clear_cache('user');
+        if (function_exists('apc_clear_cache')):
+            apc_clear_cache();
+            apc_clear_cache('user');
         endif;
 
         $this->set(compact('files'));
