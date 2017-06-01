@@ -1189,7 +1189,10 @@ textarea[name="error"] {
 .newHeader, .user-header {
     background-color: #ecf0f5 !important;
 }
-
+#liLogin {
+    cursor: pointer;
+    padding-left: 15px;
+}
 
 
 
