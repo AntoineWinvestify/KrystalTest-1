@@ -160,7 +160,6 @@ class ocr extends AppModel {
                     $query = $query . "INSERT INTO `search`.`companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
                 }
             }
-            echo $query;
             $query = $this->query($query);
             $this->set('data', $data);
             return $result[0] = 1;

@@ -48,7 +48,7 @@
 
             link = "../Ocrs/oneClickInvestorI";
             var data = jQuery.param(params);
-            getServerData(link, data, successFilter, errorFilter);
+            getServerData(link, data, successSentCompanies, errorSentCompanies);
         });
 
 
@@ -65,8 +65,13 @@
 
 
     function successSentCompanies(result) {
-
-
+        $(".selected").each(function(){
+            selid =$(this).attr("value");
+            $('#selection').append("<div class='selected' value='" + selid + "'><input type='hidden' ></input></div>");      
+            $(this).remove();
+            $("#sel").css("display", "none");
+            
+        });
     }
 
     function errorSentCompanies(result) {}
@@ -77,7 +82,18 @@
         $('input').iCheck({
             checkboxClass: 'icheckbox_flat-blue'
         });
+        $("#sel").css("display", "none");
 
+
+<?php
+foreach ($selected as $selected) {
+    $idSel = $selected['companies_ocrs']['company_id'];
+    ?>
+
+            $('#selection').append("<div class='selected' value='<?php echo $idSel ?>'><input type='hidden' ></input></div>");
+    <?php
+}
+?>
         $("#platformSelection").find(".btnSelect").prop('disabled', true);
         //Te elimina las compañias ya seleccionadas despues de un filtro
         $('#selection').children('.selected').each(function () {
@@ -95,6 +111,11 @@
             $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + i + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             i++;
             $("#numberCompanies").val(i);
+            if ($("#numberCompanies").val() > 0) {
+                $("#sel").fadeIn();
+            } else {
+                $("#sel").css("display", "none");
+            }
         });
         //Te comprueba los dos checkbox de la plataforma y te habilita o desabilita el select
         $(".iCheck-helper").click(function () {
@@ -122,80 +143,84 @@
             /* DIV 1: Selected platforms */
             //print_r($selected);
             // print_r($company);
-            ?>          
-            <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
-            <div id="investorSelection" class="row">
+            ?>
+            <div id="sel">
+                <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
 
-                <?php
-                echo $this->Form->create(array("id" => "selection"));
-                echo $this->Form->input('numberCompanies', array(
-                    'name' => 'numberCompanies',
-                    'id' => 'numberCompanies',
-                    'label' => false,
-                    'type' => 'hidden',
-                    'value' => 0
-                ));
+                <div id="investorSelection" class="row">
+
+                    <?php
+                    echo $this->Form->create(array("id" => "selection"));
+                    echo $this->Form->input('numberCompanies', array(
+                        'name' => 'numberCompanies',
+                        'id' => 'numberCompanies',
+                        'label' => false,
+                        'type' => 'hidden',
+                        'value' => 0
+                    ));
 
 
 
 
-                
-                //Automatic feedback
-                /*for ($i = 0; $i < count($selected); $i++) {
-                    if ($selected['companies_ocrs']['statusOcr'] == 0) {
-                        $idSel = $selected[$i]['companies_ocrs']['company_id'];
-                        for ($j = 0; $j < count($company); $j++) {
-                            if ($idSel == $company[$j]['Company']['id']) {
-                                $logo = $company[$j]['Company']['company_logoGUID'];
-                                ?>
-                                <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                                    <div class="box box-widget widget-user-2 pendingPlatform">
-                                        <div class="widget-user-header">
-                                            <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
-                                            <img src="/img/logo/<?php echo $logo ?>" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php
-                            }
-                        }
-                    }
-                }*/
-                
-                echo $this->Form->end();
-                ?> 
 
-                <!--<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                    <div class="box box-widget widget-user-2 selectedPlatform">
-                        <div class="widget-user-header">
-                            <img src="/img/logo/Finanzarel.png" style="max-height: 100px" alt="platform-logotype" class="responsiveImg center-block platformLogo"/>
+                    //Automatic feedback
+                    /* for ($i = 0; $i < count($selected); $i++) {
+                      if ($selected['companies_ocrs']['statusOcr'] == 0) {
+                      $idSel = $selected[$i]['companies_ocrs']['company_id'];
+                      for ($j = 0; $j < count($company); $j++) {
+                      if ($idSel == $company[$j]['Company']['id']) {
+                      $logo = $company[$j]['Company']['company_logoGUID'];
+                      ?>
+                      <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                      <div class="box box-widget widget-user-2 pendingPlatform">
+                      <div class="widget-user-header">
+                      <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
+                      <img src="/img/logo/<?php echo $logo ?>" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
+                      </div>
+                      </div>
+                      </div>
+                      <?php
+                      }
+                      }
+                      }
+                      } */
+
+                    echo $this->Form->end();
+                    ?> 
+
+                    <!--<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                        <div class="box box-widget widget-user-2 selectedPlatform">
+                            <div class="widget-user-header">
+                                <img src="/img/logo/Finanzarel.png" style="max-height: 100px" alt="platform-logotype" class="responsiveImg center-block platformLogo"/>
+                            </div>
                         </div>
                     </div>
+                    <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                        <div class="box box-widget widget-user-2 pendingPlatform">
+                            <div class="widget-user-header">
+                                <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
+                                <img src="/img/logo/Zank.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                        <div class="box box-widget widget-user-2 registeredPlatform">
+                            <div class="widget-user-header">
+                                <i class="fa fa-check-circle prueba" style="color: rgb(90, 204, 90)"></i>
+                                <img src="/img/logo/Comunitae.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
+                            </div>
+                        </div>
+                    </div>-->
+
                 </div>
-                <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                    <div class="box box-widget widget-user-2 pendingPlatform">
-                        <div class="widget-user-header">
-                            <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
-                            <img src="/img/logo/Zank.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
-                        </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <button id="sentCompanies" type="button" class="btn btn-default btn-lg btn-win1 center-block" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Go!') ?></button>
                     </div>
+                    <hr width="100%">
                 </div>
-                <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                    <div class="box box-widget widget-user-2 registeredPlatform">
-                        <div class="widget-user-header">
-                            <i class="fa fa-check-circle prueba" style="color: rgb(90, 204, 90)"></i>
-                            <img src="/img/logo/Comunitae.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
-                        </div>
-                    </div>
-                </div>-->
-
             </div>
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <button id="sentCompanies" type="button" class="btn btn-default btn-lg btn-win1 center-block" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Go!') ?></button>
-                </div>
-                <hr width="100%">
-            </div>
+
             <?php /* DIV 2: Filters */ ?>
             <div id="investorFilters" class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
