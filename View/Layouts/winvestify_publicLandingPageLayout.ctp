@@ -402,12 +402,6 @@
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Growly.png" alt="Growly">
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/Finanzarel.png" alt="Finanzarel">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/excelend.png" alt="Excelend"> 
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
                                 <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Circulantis.png" alt="Circulantis">
                             </div>
                         </div>
