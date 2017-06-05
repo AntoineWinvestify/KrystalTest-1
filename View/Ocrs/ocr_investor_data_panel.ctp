@@ -1,11 +1,36 @@
 <?php
-/*
- * One Click Registration - Investor Data Panel
- * Investor data panel to collect all data to register on platforms
- * 
- * [2017-05-23] Completed view
- *              [pending] data saving
- */
+/**
+* +---------------------------------------------------------------------------------------------+
+* | Copyright (C) 2017, http://www.winvestify.com                                               |
+* +---------------------------------------------------------------------------------------------+
+* | This file is free software; you can redistribute it and/or modify 				|
+* | it under the terms of the GNU General Public License as published by  			|
+* | the Free Software Foundation; either version 2 of the License, or                           |
+* | (at your option) any later version.                                      			|
+* | This file is distributed in the hope that it will be useful   				|
+* | but WITHOUT ANY WARRANTY; without even the implied warranty of                          	|
+* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                                |
+* | GNU General Public License for more details.        			              	|
+* +---------------------------------------------------------------------------------------------+
+*
+*
+* @author
+* @version 0.2
+* @date 2017-05-23
+* @package
+
+* One Click Registration - Investor Data Panel
+* Investor data panel to collect all data to register on platforms
+* 
+* [2017-05-23]  Version 0.1
+* Completed view 
+* 
+* [2017-06-05] Version 0.2
+* Added all error divs & classes to check form 
+* 
+* Pending:
+* Server validation
+*/
 ?>
 
 <link rel="stylesheet" type="text/css" href="/plugins/intlTelInput/css/intlTelInput.css">
@@ -543,7 +568,17 @@
                                             'class' => $class,
                                             'value' => $investor[0]['Investor']['investor_name'],
                                         ));
-                                        ?>									
+                                        $errorClassesText = "errorInputMessage ErrorName";
+                                        if (array_key_exists('investor_name',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
+                                        ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_name'][0] ?>
+                                            </span>
+                                        </div>									
                                     </div>					
                                 </div>
                                 <!-- /name -->
@@ -566,7 +601,18 @@
                                             'class' => $class,
                                             'value' => $investor[0]['Investor']['investor_surname'],
                                         ));
+
+                                        $errorClassesText = "errorInputMessage ErrorSurname";
+                                        if (array_key_exists('investor_surname',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
                                         ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_surname'][0] ?>
+                                            </span>
+                                        </div>	
                                     </div>		
                                 </div>
                                 <!-- /Surname(s) -->
@@ -589,7 +635,17 @@
                                             'class' => $class,
                                             'value' => $investor[0]['Investor']['investor_DNI'],
                                         ));
+                                        $errorClassesText = "errorInputMessage ErrorId";
+                                        if (array_key_exists('investor_DNI',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
                                         ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                    <?php echo $investorValidationErrors['investor_DNI'][0] ?>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- /NIF -->
@@ -611,6 +667,18 @@
                                                 <i class="fa fa-calendar"></i>
                                             </div>
                                             <input type="text" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php echo $investor[0]['Investor']['investor_dateOfBirth']; ?>">
+                                            <?php
+                                            	$errorClassesText = "errorInputMessage ErrorDateOfBirth";
+                                                if (array_key_exists('investor_dateOfBirth',$investorValidationErrors)) {
+                                                        $errorClassesText .= " ". "actived";
+                                                }
+                                            ?>
+                                            <div class="<?php echo $errorClassesText?>">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                <span class="errorMessage">
+                                                    <?php echo $investorValidationErrors['investor_dateOfBirth'][0] ?>
+                                                </span>
+                                            </div>	
                                         </div>
                                     </div>
                                 </div>
@@ -634,7 +702,17 @@
                                             'class' => $class,
                                             'value' => $investor[0]['Investor']['investor_email'],
                                         ));
+                                        $errorClassesText = "errorInputMessage ErrorEmail";
+                                        if (array_key_exists('investor_email',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
                                         ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_email'][0] ?>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- /email -->
@@ -664,7 +742,17 @@
                                             if (array_key_exists('investor_telephone', $validationResult)) {
                                                 $errorClassesForTexts .= " " . "actived";
                                             }
+                                            	$errorClassesText = "errorInputMessage ErrorTelephone";
+                                            if (array_key_exists('investor_telephone',$investorValidationErrors)) {
+                                                    $errorClassesText .= " ". "actived";
+                                            }
                                             ?>
+                                            <div class="<?php echo $errorClassesText?>">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                <span class="errorMessage">
+                                                    <?php echo $investorValidationErrors['investor_telephone'][0] ?>
+                                                </span>
+                                            </div>	
                                         </div>
                                     </div>
                                 </div>
@@ -689,7 +777,17 @@
                                             'class' => $class,
                                             'value' => $investor[0]['Investor']['investor_postCode'],
                                         ));
+                                        $errorClassesText = "errorInputMessage ErrorPostCode";
+                                        if (array_key_exists('investor_postCode',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
                                         ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_postCode'][0] ?>
+                                            </span>
+                                        </div>		
                                     </div>
                                 </div>
                                 <!-- /postal code -->
@@ -711,7 +809,17 @@
                                             'class' => $class,
                                             'value' => $investor[0]['Investor']['investor_address1'],
                                         ));
+                                        $errorClassesText = "errorInputMessage ErrorAddress";
+                                        if (array_key_exists('investor_address1',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
                                         ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_address1'][0] ?>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- /Address -->
@@ -721,7 +829,7 @@
                                 <!-- city -->
                                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                                     <div class="form-group">
-                                        <label for="exampleInputPassword1"><?php echo __('City') ?></label>
+                                        <label for="exampleInputCity"><?php echo __('City') ?></label>
                                         <?php
                                         $errorClass = "";
                                         if (array_key_exists('investor_city', $investorValidationErrors)) {
@@ -736,7 +844,17 @@
                                             'class' => $class,
                                             'value' => $investor[0]['Investor']['investor_city'],
                                         ));
+                                        $errorClassesText = "errorInputMessage ErrorCity";
+                                        if (array_key_exists('investor_city',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
                                         ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_city'][0] ?>
+                                            </span>
+                                        </div>						
                                     </div>	
                                 </div>
                                 <!-- /city -->
@@ -760,14 +878,48 @@
                                             'class' => $class,
                                             'value' => $investor[0]['Investor']['investor_country'],
                                         ));
+                                        $errorClassesText = "errorInputMessage ErrorCountry";
+                                        if (array_key_exists('investor_country',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
                                         ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_country'][0] ?>
+                                            </span>
+                                        </div>
                                     </div>	
                                 </div>
                                 <!-- /country -->
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
-                                        <input id="Iban" type="text" class="form-control blue_noborder2" value = <?php echo $ocr[0]['Ocr']['Investor_iban'] ?>>
+                                        <?php
+                                        $errorClass = "";
+                                        if (array_key_exists('investor_iban', $investorValidationErrors)) {
+                                            $errorClass = "redBorder";
+                                        }
+                                        $class = "form-control blue_noborder2 investorIban" . ' ' . $errorClass;
+                                        echo $this->Form->input('Ocr.investor_iban', array(
+                                            'name' => 'iban',
+                                            'id' => 'ContentPlaceHolder_iban',
+                                            'label' => false,
+                                            'placeholder' => __('IBAN'),
+                                            'class' => $class,
+                                            'value' => $Ocr[0]['Ocr']['investor_iban'],
+                                        ));
+                                        $errorClassesText = "errorInputMessage ErrorIban";
+                                        if (array_key_exists('investor_iban',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
+                                        ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_iban'][0] ?>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div><!-- /Cif + Business Name -->
                             </div>
@@ -791,7 +943,31 @@
                                 <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
-                                        <input id="CIF" type="text" class="form-control blue_noborder2" value = "<?php echo $ocr[0]['Ocr']['Investor_cif'] ?>">
+                                        <?php
+                                        $errorClass = "";
+                                        if (array_key_exists('investor_cif', $investorValidationErrors)) {
+                                            $errorClass = "redBorder";
+                                        }
+                                        $class = "form-control blue_noborder2 investorCif" . ' ' . $errorClass;
+                                        echo $this->Form->input('Ocr.investor_cif', array(
+                                            'name' => 'cif',
+                                            'id' => 'ContentPlaceHolder_cif',
+                                            'label' => false,
+                                            'placeholder' => __('Your company CIF'),
+                                            'class' => $class,
+                                            'value' => $Ocr[0]['Ocr']['investor_cif'],
+                                        ));
+                                        $errorClassesText = "errorInputMessage ErrorCif";
+                                        if (array_key_exists('investor_cif',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
+                                        ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_cif'][0] ?>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- /CIF -->
@@ -800,7 +976,31 @@
                                 <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
-                                        <input id="BusinessName" type="text" class="form-control blue_noborder2" value="<?php echo $ocr[0]['Ocr']['Investor_businessName'] ?>">
+                                        <?php
+                                        $errorClass = "";
+                                        if (array_key_exists('investor_businessName', $investorValidationErrors)) {
+                                            $errorClass = "redBorder";
+                                        }
+                                        $class = "form-control blue_noborder2 investorIban" . ' ' . $errorClass;
+                                        echo $this->Form->input('Ocr.investor_businessName', array(
+                                            'name' => 'iban',
+                                            'id' => 'ContentPlaceHolder_businessName',
+                                            'label' => false,
+                                            'placeholder' => __('IBAN'),
+                                            'class' => $class,
+                                            'value' => $Ocr[0]['Ocr']['investor_businessName'],
+                                        ));
+                                        $errorClassesText = "errorInputMessage ErrorBusinessName";
+                                        if (array_key_exists('investor_businessName',$investorValidationErrors)) {
+                                                $errorClassesText .= " ". "actived";
+                                        }
+                                        ?>
+                                        <div class="<?php echo $errorClassesText?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $investorValidationErrors['investor_businessName'][0] ?>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- /Business Name -->
@@ -920,7 +1120,7 @@
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="form-group">
                 <button type="submit" href="../Ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn-win5 btnRounded pull-left"><?php echo __('Back') ?></button>
-                <button type="submit" href="../Ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn-win5 btnRounded pull-right"><?php echo __('Activate One Click Registration') ?></button>
+                <button type="submit" href="../Ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn-win5 btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
             </div>
         </div>	
     </div>
