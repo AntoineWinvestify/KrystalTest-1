@@ -51,9 +51,7 @@ $(document).ready(function() {
 
 
 	<ul class="sidebar-menu">
-    <li class="header">
-        <strong>Investor Menu</strong>
-    </li>
+    <li class="header">MAIN NAVIGATION</li>
 	  <li class="treeview">
       <a href="/dashboards/getDashboardData">
         <i class="fa fa-dashboard"></i> <span><?php echo __('Dashboard')?></span>
@@ -150,32 +148,6 @@ $(document).ready(function() {
         <li class="treeview">
             <a href="/ocrs/ocrInvestorPlatformSelection">
               <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
-            </a>
-        </li>
-        <li class="header">
-            <strong>PFP Admin Menu</strong>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrPfpUsersPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('PFPAdmin - New Users')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrPfpBillingPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('PFPAdmin - Bills')?></span>
-            </a>
-        </li>
-        <li class="header">
-            <strong>WinAdmin Menu</strong>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminBillingPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Bills')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminInvestorChecking">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Investor Checking')?></span>
             </a>
         </li>
         
