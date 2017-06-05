@@ -298,7 +298,7 @@ $(document).on('click', '#tooltipLA', function() {
 ?>
 	<div class="box-body">
             <div class="overlay" style="display:none;">
-		<div class="fa fa-refresh fa-spin"></div>
+		<div class="fa fa-spinner fa-spin" style="color:green;"></div>
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">

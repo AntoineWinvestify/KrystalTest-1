@@ -32,7 +32,7 @@
   function collectCompanyMarketplaceData()								[OK, tested]
   function companyUserLogin()												[OK, tested]
   function collectUserInvestmentData()									[OK, tested]
-  function companyUserLogout()											[Not yet OK]
+  function companyUserLogout()										[OK, tested]
 
 
   2017-3-27
@@ -44,7 +44,12 @@
 
   2017-4-18
   Login error fixed always forcing login
- * They forced logout after a login
+ 
+  2017-06-01
+ * Added new urlSequences for Arboribus, it changed because we had some errors
+ * Fixed logout and login problem
+ 
+  They forced logout after a login
   PENDING:
   logout procedure
 
