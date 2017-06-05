@@ -226,7 +226,7 @@ foreach ($selected as $selected) {
                 </div>
             </div>
 
-            <?php /* DIV 2: Filters */ ?>
+            <?php /* DIV 2: Filters 
             <div id="investorFilters" class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <h4 class="header1CR"><?php echo __('Filter by:') ?></h4>
@@ -264,7 +264,7 @@ foreach ($selected as $selected) {
                     </div>
                 </div>
             </div>
-            <hr class="nomargin" width="100%"/>
+            <hr class="nomargin" width="100%"/>*/ ?>
             <?php /* Div 2: Platforms Selection */ ?>
             <h4 class="header1CR"><?php echo __('Select platforms to register') ?></h4>
             <div id="platformSelection" class="row">

@@ -808,14 +808,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="form-group">
-                                <button type="submit" href="/investors/editUserProfileData" id="editUserData" class="btn btn-win5 btnRounded pull-right"><?php echo __('Save') ?></button>
-                            </div>
-                        </div>	
-                    </div>
                 </div>
             </div>
         </div>
@@ -920,5 +912,16 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="btn1CR">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="form-group">
+                <button type="submit" href="../Ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn-win5 btnRounded pull-left"><?php echo __('Back') ?></button>
+                <button type="submit" href="../Ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn-win5 btnRounded pull-right"><?php echo __('Activate One Click Registration') ?></button>
+            </div>
+        </div>	
     </div>
 </div>

@@ -180,6 +180,7 @@ class ocrsController extends AppController {
     }
 
     function ocrInvestorPlatformSelection() {
+        $this->layout = 'azarus_private_layout';
         $this->set('company', $this->Company->companiesDataOCR());
         $this->set('selected', $this->Ocr->getSelectedCompanies($this->Session->read('Auth.User.id')));
         echo " ";
@@ -210,7 +211,7 @@ class ocrsController extends AppController {
 
     /*
      * 
-     * Talliman
+     * Tallyman
      * 
      */
 }

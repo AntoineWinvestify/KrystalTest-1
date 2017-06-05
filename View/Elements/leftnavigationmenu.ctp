@@ -146,7 +146,7 @@ $(document).ready(function() {
           </ul>
         </li>
         <li class="treeview">
-            <a href="/ocrs/ocrTabsPanel">
+            <a href="/ocrs/ocrInvestorPlatformSelection">
               <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
             </a>
         </li>
