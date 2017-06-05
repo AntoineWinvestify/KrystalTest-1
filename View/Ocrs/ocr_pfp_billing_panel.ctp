@@ -51,7 +51,7 @@
                             <div class="input-group input-group-sm blue_noborder">
                                 <input type="text" style="border:none; border-radius:7px;" class="form-control" placeholder="Search for...">
                                 <span class="input-group-btn">
-                                  <button class="btn btn-secondary" style="border-top-right-radius: 7px; border-bottom-right-radius: 7px;" type="button">Go!</button>
+                                  <button class="btn btn-secondary" type="button"><?php echo __('Go!')?></button>
                                 </span>
                             </div>
                         </div>
