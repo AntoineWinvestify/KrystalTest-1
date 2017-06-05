@@ -230,6 +230,11 @@ body {
     border-radius: 10px !important;
 }
 
+.blue_noborder {
+    border: none;
+    border-bottom: 1px solid #9f9a93 !important;
+}
+
 .green {
   border: 1px solid #222e2e !important;
   border-radius: 10px;
