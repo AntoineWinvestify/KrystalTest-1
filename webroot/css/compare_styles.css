@@ -235,6 +235,11 @@ body {
     border-bottom: 1px solid #9f9a93 !important;
 }
 
+.blue_noborder {
+    border: none;
+    border-bottom: 1px solid #9f9a93 !important;
+}
+
 .green {
   border: 1px solid #222e2e !important;
   border-radius: 10px;
@@ -1274,6 +1279,28 @@ hr.nomargin {
 }
 
 
+.btnRounded {
+    border-radius: 20px;
+    box-sizing: border-box;
+    border-width: 1px;
+    background-color: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 7px 18px;
+    -webkit-transition: all 150ms linear;
+    -moz-transition: all 150ms linear;
+    -o-transition: all 150ms linear;
+    -ms-transition: all 150ms linear;
+    transition: all 150ms linear;
+}
+/* Private Header customization*/
+.newHeader, .user-header {
+    background-color: #ecf0f5 !important;
+}
+#liLogin {
+    cursor: pointer;
+    padding-left: 15px;
+}
 
 
 
@@ -1306,7 +1333,6 @@ hr.nomargin {
                         }
                         #pDescription {
                             padding-top: 0px !important;
-                            color: white;
                         }
                         .featuresP {
                             padding-left: 0px;
@@ -1430,19 +1456,33 @@ hr.nomargin {
             #featuresButton {
                 margin-left: -10px;
             }
+            #pDescription {
+                margin-top: -50px;
+            }
+            #featuresPadding {
+                top: -350px !important;
+                background-color: white !important;
+            }
         }
         
-                    
+        /*MOBILE MEDIA QUERY <480px & Vertical */
+        @media (max-width: 480px) and (orientation: portrait) {
+            #registerButton {
+                margin-top: 0px;
+            }
+            #pDescription {
+                padding-bottom: 0px;
+                margin-top: 10px;
+            }
+            #featuresPadding {
+                margin-top: 0px !important;
+            }
+        }
+            
                     /*LARGE MOBILE MEDIA QUERY SWAP >480px & <768px*/
                     @media (max-width: 768px){
                         #popUp {
                             width: 75% !important;
-                        }
-                        #pDescription {
-                            color: white !important;
-                        }
-                        #featuresPadding {
-                            margin-top: 150px !important;
                         }
                         #registerButton {
                             left: 25% !important;
@@ -1520,16 +1560,20 @@ hr.nomargin {
             #pDescription {
                 padding-top: 0px;
                 color: #66615b !important;
+            }
+            #featuresPadding {
                 margin-top: 120px !important;
             }
             #registerButton {
                 left: 45% !important;
+                margin-bottom: 20px;
             }
             #features_right {
-                margin-top: -25px !important;
+                margin-top: 0px !important;
             }
             .featuresP {
                 padding-left: 50px;
+                margin-top: 50px;
             }
         }
                 @media (min-width: 1024px) and (max-width: 1200px) {

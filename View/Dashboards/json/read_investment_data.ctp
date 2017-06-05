@@ -29,7 +29,9 @@ foreach ($companyInvestmentDetails as $key => $companyInvestmentDetail) {
     // Filter out all finished investments
         $companyInvestmentDetails[$key]['interest'] = number_format((float) $companyInvestmentDetail['interest'] / 100, 2, ',', '') . " &#37;";
         $companyInvestmentDetails[$key]['invested'] = number_format((float) $companyInvestmentDetail['invested'] / 100, 2, ',', '') . " &euro;";
+
         $companyInvestmentDetails[$key]['commission'] = number_format((float) $companyInvestmentDetail['commission'] / 100, 2, ',', '') . " &euro;";
+
         $companyInvestmentDetails[$key]['amortized'] = number_format((float) $companyInvestmentDetail['amortized'] / 100, 2, ',', '') . " &euro;";
         $companyInvestmentDetails[$key]['profitGained'] = number_format((float) $companyInvestmentDetail['profitGained'] / 100, 2, ',', '') . " &euro;";
 
