@@ -113,7 +113,7 @@ foreach ($selected as $selected) {
         //Te pasa el seleccionado a su zona
         $(".btnSelect").click(function () {
             $(this).parentsUntil("#platformSelection").fadeOut();
-            $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + i + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+        $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + i + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             i++;
             $("#numberCompanies").val(i);
             if ($("#numberCompanies").val() > 0) {
@@ -234,7 +234,7 @@ foreach ($selected as $selected) {
                         <?php echo $this->Form->create(); ?>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <?php
-                            $class = "filter form-control blue investorCountry" . ' ' . $errorClass;
+                            $class = "filter form-control blue_noborder investorCountry" . ' ' . $errorClass;
                             echo $this->Form->input('Investor.investor_country', array(
                                 'name' => 'country',
                                 'id' => 'filterCountry',
@@ -247,32 +247,25 @@ foreach ($selected as $selected) {
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <?php
-                            $class = "filter form-control blue investorCountry" . ' ' . $errorClass;
+                            $class = "filter form-control blue_noborder investorModality" . ' ' . $errorClass;
                             $modalities = ["select modality", "P2P", "P2B", "Invoice Trading"];
                             echo $this->Form->input('Investor.investor_type', array(
                                 'name' => 'type',
                                 'id' => 'filterType',
                                 'label' => false,
                                 'options' => $filterCompanies2,
-                                'placeholder' => __('Country'),
+                                'placeholder' => __('Modality'),
                                 'class' => $class,
                             ));
                             ?>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                            <?php
-                            $class = "filter form-control blue investorCountry" . ' ' . $errorClass;
-                            $other = ["select another filter", "1", "2", "3"];
-                            echo $this->Form->input('Investor.investor_country', array(
-                                'name' => 'country',
-                                'id' => 'ContentPlaceHolder_country',
-                                'label' => false,
-                                'options' => $other,
-                                'placeholder' => __('Country'),
-                                'class' => $class,
-                                'value' => $resultUserData[0]['Investor']['investor_country'],
-                            ));
-                            ?>
+                            <div class="input-group input-group-sm blue_noborder">
+                                <input type="text" class="form-control" placeholder="<?php echo__('Search for...')?>">
+                                <span class="input-group-btn">
+                                  <button class="btn btn-secondary" type="button"><?php echo __('Go!')?></button>
+                                </span>
+                            </div>
                         </div>
                         <?php echo $this->Form->end(); ?>
                     </div>
