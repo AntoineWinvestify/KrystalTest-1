@@ -526,7 +526,7 @@ echo $this->Form->submit(__('Upload', true));
                                         if (array_key_exists('investor_name', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder investorName" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorName" . ' ' . $errorClass;
                                         echo $this->Form->input('Investor.investor_name', array(
                                             'name' => 'name',
                                             'id' => 'ContentPlaceHolder_name',
@@ -549,7 +549,7 @@ echo $this->Form->submit(__('Upload', true));
                                         if (array_key_exists('investor_surname', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder investorSurname" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorSurname" . ' ' . $errorClass;
                                         echo $this->Form->input('Investor.investor_surname', array(
                                             'name' => 'surname',
                                             'id' => 'ContentPlaceHolder_surname',
@@ -572,7 +572,7 @@ echo $this->Form->submit(__('Upload', true));
                                         if (array_key_exists('investor_DNI', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder investorDni" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorDni" . ' ' . $errorClass;
                                         echo $this->Form->input('Investor.investor_DNI', array(
                                             'name' => 'dni',
                                             'id' => 'dni',
@@ -591,7 +591,7 @@ echo $this->Form->submit(__('Upload', true));
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth') ?></label>
-                                        <div class="input-group input-group-sm blue_noborder date">
+                                        <div class="input-group input-group-sm blue_noborder2 date">
                                             <?php
                                             $errorClass = "";
                                             if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
@@ -617,7 +617,7 @@ echo $this->Form->submit(__('Upload', true));
                                         if (array_key_exists('investor_email', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder investorEmail" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorEmail" . ' ' . $errorClass;
                                         echo $this->Form->input('Investor.investor_email', array(
                                             'name' => 'dni',
                                             'id' => 'ContentPlaceHolder_email',
@@ -635,7 +635,7 @@ echo $this->Form->submit(__('Upload', true));
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
-                                        <div class="form-control blue_noborder">
+                                        <div class="form-control blue_noborder2">
                                             <?php
                                             $errorClass = "";
                                             if (array_key_exists('investor_telephone', $investorValidationErrors)) {
@@ -672,7 +672,7 @@ echo $this->Form->submit(__('Upload', true));
                                         if (array_key_exists('investor_postCode', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder investorPostCode" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorPostCode" . ' ' . $errorClass;
                                         echo $this->Form->input('Investor.investor_postCode', array(
                                             'name' => 'investor_postCode',
                                             'id' => 'ContentPlaceHolder_postCode',
@@ -694,7 +694,7 @@ echo $this->Form->submit(__('Upload', true));
                                         if (array_key_exists('investor_address1', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder investorSurname" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorSurname" . ' ' . $errorClass;
                                         echo $this->Form->input('Investor.investor_address1', array(
                                             'name' => 'address1',
                                             'id' => 'ContentPlaceHolder_address1',
@@ -719,7 +719,7 @@ echo $this->Form->submit(__('Upload', true));
                                         if (array_key_exists('investor_city', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder investorCity" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorCity" . ' ' . $errorClass;
                                         echo $this->Form->input('ContentPlaceHolder_city', array(
                                             'name' => 'city',
                                             'id' => 'ContentPlaceHolder_city',
@@ -742,7 +742,7 @@ echo $this->Form->submit(__('Upload', true));
                                         if (array_key_exists('investor_country', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder investorCountry" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorCountry" . ' ' . $errorClass;
                                         echo $this->Form->input('Investor.investor_country', array(
                                             'name' => 'country',
                                             'id' => 'ContentPlaceHolder_country',
@@ -759,7 +759,7 @@ echo $this->Form->submit(__('Upload', true));
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
-                                        <input id="Iban" type="text" class="form-control blue_noborder" value = <?php echo $ocr[0]['Ocr']['Investor_iban'] ?>>
+                                        <input id="Iban" type="text" class="form-control blue_noborder2" value = <?php echo $ocr[0]['Ocr']['Investor_iban'] ?>>
                                     </div>
                                 </div><!-- /Cif + Business Name -->
                             </div>
@@ -783,7 +783,7 @@ echo $this->Form->submit(__('Upload', true));
                                 <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
-                                        <input id="CIF" type="text" class="form-control blue_noborder" value = "<?php echo $ocr[0]['Ocr']['Investor_cif'] ?>">
+                                        <input id="CIF" type="text" class="form-control blue_noborder2" value = "<?php echo $ocr[0]['Ocr']['Investor_cif'] ?>">
                                     </div>
                                 </div>
                                 <!-- /CIF -->
@@ -792,7 +792,7 @@ echo $this->Form->submit(__('Upload', true));
                                 <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
-                                        <input id="BusinessName" type="text" class="form-control blue_noborder" value="<?php echo $ocr[0]['Ocr']['Investor_businessName'] ?>">
+                                        <input id="BusinessName" type="text" class="form-control blue_noborder2" value="<?php echo $ocr[0]['Ocr']['Investor_businessName'] ?>">
                                     </div>
                                 </div>
                                 <!-- /Business Name -->
