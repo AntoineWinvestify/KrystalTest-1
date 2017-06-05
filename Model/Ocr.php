@@ -25,12 +25,16 @@
   function ocrDataSave   Save ocr data in db                         [OK]
   function ocrGetData    Get info of ocr                             [OK]
  * 
-2017/5/30 version 0.2
-    ocrFileSave         Upload files                                 [OK]
+  2017/5/30 version 0.2
+  ocrFileSave         Upload files                                 [OK]
  * 
-  2017/6/1 version 0.3  
-    saveCompaniesOcr                                                 [OK]
-    getSelectedCompanies                                             [OK]
+  2017/6/1 version 0.3
+  saveCompaniesOcr                                                 [OK]
+  getSelectedCompanies                                              [OK]
+ * 
+ 2017/6/5  version 0.4
+ deleteCompanyOcr                                                     [OK]
+ *                                       
  */
 App::uses('CakeEvent', 'Event');
 
@@ -168,6 +172,21 @@ class ocr extends AppModel {
         }
     }
 
+    public function deleteCompanyOcr($data) {
+        $ocrId = $this->find('first', array(
+            'fields' => array(
+                'id',
+            ),
+            'conditions' => array(
+                'Investor_id' => $data['investorId']),
+            'recursive' => -1,));
+
+        $query = "DELETE FROM `search`.`companies_ocrs` WHERE `company_id`='" . $data['companyId'] . "' and`ocr_id`='" . $ocrId['Ocr']['id'] . "';";
+        $query = $this->query($query);
+        $this->set('data', $data);
+        return $result[0] = 1;
+    }
+
     public function getSelectedCompanies($id) {
         $ocrId = $this->find('first', array(
             'fields' => array(
@@ -179,7 +198,6 @@ class ocr extends AppModel {
 
         $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . ";";
         return $this->query($query);
-  
     }
 
     public function ocrFileSave($data, $id) {

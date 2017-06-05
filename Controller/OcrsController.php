@@ -28,7 +28,11 @@
   function OneClickAdmin                                     [Not implemented]
   function OneClickCompany                                   [Not implemented]
 
-
+2017/6/1  version 0.2
+ * upload                                                            [OK]
+2017/6/5  version 0.3
+ deleteCompanyOcr                                                     [OK]
+ *                                       
 
 
 
@@ -135,6 +139,26 @@ class ocrsController extends AppController {
                 $companies[$i] = $_REQUEST[$i];
             }
             $result = $this->Ocr->saveCompaniesOcr($companies);
+            $this->set('result', $result);
+        }
+    }
+
+    function deleteCompanyOcr() {
+        if (!$this->request->is('ajax')) {
+            $result = false;
+        } else {
+
+            $this->layout = 'ajax';
+            $this->disableCache();
+
+            $companyId = $_REQUEST['id_company'];
+
+            $delComp = array(
+                'investorId' => $this->Session->read('Auth.User.id'),
+                'companyId' => $companyId,
+            );
+
+            $result = $this->Ocr->deleteCompanyOcr($delComp);
             $this->set('result', $result);
         }
     }

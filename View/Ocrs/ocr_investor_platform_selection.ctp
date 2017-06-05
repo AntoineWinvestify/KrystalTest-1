@@ -14,6 +14,7 @@
     var i = 0;
     $(document).ready(function () {
         addEnvent();
+        extraEvent();
         //Flitrado por ajax
         /*$('.filter').change(function () {
          country = $('#filterCountry').val();
@@ -50,30 +51,39 @@
             var data = jQuery.param(params);
             getServerData(link, data, successSentCompanies, errorSentCompanies);
 
-
+            params = {};
+            link = "../Ocrs/ocrInvestorDataPanel";
+            var data = jQuery.param(params);
+            getServerData(link, data, successDataPanel, errorDataPanel);
         });
 
+        $('.btnSelectedPlatformDB').click(function () {
 
+            var params = {
+                id_company: $(this).parent().parent().parent().attr("value"),
+            };
+            link = "../Ocrs/deleteCompanyOcr";
+            var data = jQuery.param(params);
+            getServerData(link, data, successDelete, errorDelete);
+
+        });
     });
+
+
 
     function successFilter(result) {
         $("#platformSelection").html("<h5><?php echo __('Search results:'); ?></br></h5>" + result);
         addEnvent();
     }
-
     function errorFilter() {
         $("#platformSelection").html("<h5><?php echo __('Search error'); ?></h5>");
     }
 
 
-    function successSentCompanies(result) {
-        params = {};
-        link = "../Ocrs/ocrInvestorDataPanel";
-        var data = jQuery.param(params);
-        getServerData(link, data, successDataPanel, errorDataPanel);
-    }
-
+    function successSentCompanies(result) {}
     function errorSentCompanies(result) {}
+    
+    
 
     function successDataPanel(result) {
         $("#OCR_InvestorPanel").html(result);
@@ -81,7 +91,16 @@
     function errorDataPanel(result) {
         $("#OCR_InvestorPanel").html(result);
     }
-
+    
+    
+    
+    function successDelete(result){
+        $("#report").html("Compañia eliminada");
+    }
+    function errorDelete(result){
+    }
+  
+  
     function addEnvent() {
         //iCheck plugin
         $('input').iCheck({
@@ -93,10 +112,9 @@
 <?php
 foreach ($selected as $selected) {
     $idSel = $selected['companies_ocrs']['company_id'];
-
     ?>
             logo = $("#<?php echo $selected['companies_ocrs']['company_id']; ?>").find(".logo").attr("src");
-            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformDB' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
     <?php
 }
 ?>
@@ -112,7 +130,7 @@ foreach ($selected as $selected) {
             company = $(this).attr("value");
             $('#platformSelection').find(".companyDiv").each(function () {
                 if ($(this).attr("id") == company) {
-                    $(this).parent().remove();
+                    $(this).parent().css("display", "none");
                 }
             });
         });
@@ -123,12 +141,15 @@ foreach ($selected as $selected) {
             $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + i + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             i++;
             $("#numberCompanies").val(i);
+
             if ($("#numberCompanies").val() > 0) {
                 $("#sel").fadeIn();
             } else {
                 $("#sel").css("display", "none");
             }
+            extraEvent();
         });
+
         //Te comprueba los dos checkbox de la plataforma y te habilita o desabilita el select
         $(".iCheck-helper").click(function () {
             //Cada compañia tiene su propio array
@@ -142,15 +163,23 @@ foreach ($selected as $selected) {
             } else {
                 $(this).parentsUntil(".box-footer").find(".btnSelect").prop('disabled', true);
             }
-
         });
     }
-
+    function extraEvent() {
+        //Borra la plataforma cuando le das a l x
+        $('.btnSelectedPlatform').click(function () {
+            idDel = $(this).parent().parent().parent().attr("value");
+            $("#platformSelection").find("#" + idDel).parent().fadeIn();
+            $("#platformSelection").find("#" + idDel).parent().find('*').fadeIn();
+            $(this).parent().parent().parent().remove();
+        });
+    }
 
 </script>
 <div id="OCR_InvestorPanel">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div id="report"> </div>
             <?php
             /* DIV 1: Selected platforms */
             //print_r($selected);
