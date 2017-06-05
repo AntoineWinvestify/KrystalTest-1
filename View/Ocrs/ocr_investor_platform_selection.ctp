@@ -95,7 +95,7 @@ foreach ($selected as $selected) {
     $idSel = $selected['companies_ocrs']['company_id'];
     ?>
 
-            $('#selection').append("<div class='selected' value='<?php echo $idSel ?>'><input type='hidden' ></input></div>");
+            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + 'q' + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
     <?php
 }
 ?>
@@ -259,14 +259,7 @@ foreach ($selected as $selected) {
                             ));
                             ?>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                            <div class="input-group input-group-sm blue_noborder">
-                                <input type="text" class="form-control" placeholder="<?php echo__('Search for...')?>">
-                                <span class="input-group-btn">
-                                  <button class="btn btn-secondary" type="button"><?php echo __('Go!')?></button>
-                                </span>
-                            </div>
-                        </div>
+                      
                         <?php echo $this->Form->end(); ?>
                     </div>
                 </div>
