@@ -202,7 +202,7 @@ $this->assign('title',"MarketPlace");
 			
 			    <div class="box-body">
 					<div class="overlay" style="display:none;">
-						<div class="fa fa-refresh fa-spin">	
+						<div class="fa fa-spin fa-spinner" style="color:green">	
 						</div>
 					</div>
 					<div class="col-md-12">

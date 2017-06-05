@@ -120,7 +120,7 @@ console.log("Loading all the profile data of my Social network");
 		<div class="col-md-12">
 			<div class="box box-success">
 				<div class="overlay" style="display:none">
-					<div class="fa fa-refresh fa-spin">	
+					<div class="fa fa-spin fa-spinner" style="color:green">	
 					</div>
 				</div>
 				<div class="box-header with-border">

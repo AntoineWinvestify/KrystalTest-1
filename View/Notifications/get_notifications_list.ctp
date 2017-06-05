@@ -147,7 +147,7 @@ if ($error == true) {		// error
 	else {			// show the list contents
 ?>
 				<a id="bell" class="dropdown-toggle" data-toggle="dropdown">
-					<i class="fa fa-bell-o"></i>
+					<i class="fa fa-bell-o" style="color: black;"></i>
 					<span class="label label-warning"><?php echo count($resultNotifications)?></span>
 				</a>
 				<ul class="dropdown-menu" id="notifications-complete-list">

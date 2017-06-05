@@ -173,7 +173,7 @@ public function editUserProfileData() {
 /**
  *
  * 	Manage linked accounts, i.e. store new pair of userid/password for newly linked account 
- * 	Return list of currently linked accounts and a alert message about result of successfull linking of account
+ * 	Return list of currently linked accounts and an alert message about result of successfull linking of account
  * 	
  */
 function linkAccount() {
@@ -238,7 +238,7 @@ function linkAccount() {
                 
                 
  /* Provide information for a notification of this event */               
-                $this->Notification = ClassRegistry::init('Notification');   
+                /*$this->Notification = ClassRegistry::init('Notification');   
                 $companyName = $companyResults[$companyId]['company_name'];
  
                 $filterCondition = array("investor_id" => $investorId);
@@ -248,7 +248,7 @@ function linkAccount() {
                 $notificationDateTime = "";
                 $response = $this->render('newAccountLink');        // Generate the view html for the body of the notifications modal
                 $extendedInfo = $response->body();                
-                $this->Notification->addNotification($filterConditions, $text, $icon, $extendedInfo, $notificationDateTime); 
+                $this->Notification->addNotification($filterConditions, $text, $icon, $extendedInfo, $notificationDateTime); */
                 
   
                 
@@ -259,6 +259,7 @@ function linkAccount() {
                 
                 
                 
+                //$this->render('accountLinkingOk');
                 $this->render('linkedaccountsList');
             } else {
                 $this->set('error', true);
