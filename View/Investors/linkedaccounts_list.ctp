@@ -121,7 +121,7 @@ Pending:
 									<div class="form-group">
 										<label class= "invisible"></label>
 										<button type="button" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
-											class="btn btn-primary form submitButton deleteLinkedAccount line-btn btn-invest"><?php echo __('Delete')?>
+											class="btn btn-primary form submitButton deleteLinkedAccount line-btn btn-invest btnRounded"><?php echo __('Delete')?>
 										</button>	
 									</div>					
 								</div>

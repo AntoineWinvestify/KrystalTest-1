@@ -27,11 +27,11 @@
 
 2016-11-10	  version 2016_0.1
 Basic version
-function calculateLoanCost()											[not OK, not tested]
+function calculateLoanCost()									[not OK, not tested]
 function collectCompanyMarketplaceData()								[not OK, not tested]
-function companyUserLogin()												[not OK, not tested]
-function companyUserLogout												[not OK, not tested]
-function collectUserInvestmentData()									[not OK, not tested]
+function companyUserLogin()									[not OK, not tested]
+function companyUserLogout									[not OK, not tested]
+function collectUserInvestmentData()								[not OK, not tested]
 
 
 

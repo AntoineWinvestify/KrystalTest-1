@@ -80,7 +80,7 @@ Pending:
 		
 									
 		
-		$data['marketplace_action'] = '<a><button type="button"  onclick="' . $onClickFunction . ';"  target="_blank"  class="btn btn-primary btn-invest">' . __('Invest') . '</button></a>';
+		$data['marketplace_action'] = '<a><button type="button"  onclick="' . $onClickFunction . ';"  target="_blank"  class="btn btn-primary btn-invest btnRounded">' . __('Invest') . '</button></a>';
 
 		$rowsData[] = $data;
 	}

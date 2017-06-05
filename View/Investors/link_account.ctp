@@ -103,7 +103,7 @@ Re-use!!
 						</div>
 						<div class="col-xs-12 col-sm-6 col-md-3 text-center">
 						
-							<button type="button" value="<?php echo $index ?>" class="deleteLinkedAccount btn-invest" id ="linkedaccountDeleteBtn-<?php echo $index ?>" href="/investors/deleteLinkedAccount" class="form submitButton">Delete</button>
+							<button type="button" value="<?php echo $index ?>" class="deleteLinkedAccount btn-invest btnRounded" id ="linkedaccountDeleteBtn-<?php echo $index ?>" href="/investors/deleteLinkedAccount" class="form submitButton">Delete</button>
  						
 						</div>
 					</div>

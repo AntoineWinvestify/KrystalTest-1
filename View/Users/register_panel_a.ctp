@@ -311,7 +311,7 @@ ajax spinner
                 <div class="wizard-container">
                     <div class="card wizard-card" data-color="green" id="wizardProfile">
                         <div class="overlay">
-                            <div class="fa fa-spin fa-refresh">	
+                            <div class="fa fa-spin fa-spinner" style="color:green">	
                             </div>
                         </div>
 

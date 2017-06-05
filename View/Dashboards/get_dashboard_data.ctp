@@ -391,7 +391,7 @@ if ($noAccountsLinked == true) {
         <!--	Doughnout Charts  -->
         <div class="box box-success">
             <div class="overlay">
-                <div class="fa fa-spin fa-refresh">	
+                <div class="fa fa-spin fa-spinner" style="color:green">	
                 </div>
             </div>
             <div class="box-header with-border">
@@ -521,7 +521,7 @@ if ($noAccountsLinked == true) {
                 <div class="col-md-12">
                     <div class="box box-success collapsed-box">
                         <div class="overlay">
-                            <div class="fa fa-spin fa-refresh">	
+                            <div class="fa fa-spin fa-spinner" style="color:green">	
                             </div>
                         </div>
                         <div class="box-header with-border">
