@@ -19,7 +19,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <?php 
-                            $class = "form-control blue investorCountry". ' ' . $errorClass;
+                            $class = "form-control blue_noborder investorCountry". ' ' . $errorClass;
                             $countries = ["select country", "país1", "país2", "país3"];      
 										echo $this->Form->input('Investor.investor_country', array(
 											'name'			=> 'country',
@@ -34,7 +34,7 @@
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <?php 
-                            $class = "form-control blue investorCountry". ' ' . $errorClass;
+                            $class = "form-control blue_noborder investorCountry". ' ' . $errorClass;
                             $modalities = ["select modality", "P2P", "P2B", "Invoice Trading"];      
 										echo $this->Form->input('Investor.investor_country', array(
 											'name'			=> 'country',
@@ -48,7 +48,7 @@
                             ?>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                            <div class="input-group input-group-sm blue">
+                            <div class="input-group input-group-sm blue_noborder">
                                 <input type="text" style="border:none; border-radius:7px;" class="form-control" placeholder="Search for...">
                                 <span class="input-group-btn">
                                   <button class="btn btn-secondary" style="border-top-right-radius: 7px; border-bottom-right-radius: 7px;" type="button">Go!</button>
