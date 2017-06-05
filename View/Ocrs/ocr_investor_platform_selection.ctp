@@ -15,26 +15,26 @@
     $(document).ready(function () {
         addEnvent();
         //Flitrado por ajax
-        $('.filter').change(function () {
-            country = $('#filterCountry').val();
-            type = $('#filterType').val();
-
-
-            var params = {
-                country_filter: $('#filterCountry').val(),
-                type_filter: $('#filterType').val()
-            };
-            if ($('#filterCountry').val() === 0) {
-                params.country_filter = null;
-            }
-            if ($('#filterType').val() === 0) {
-                params.type_filter = null;
-            }
-
-            link = "../Ocrs/companyFilter";
-            var data = jQuery.param(params);
-            getServerData(link, data, successFilter, errorFilter);
-        });
+        /*$('.filter').change(function () {
+         country = $('#filterCountry').val();
+         type = $('#filterType').val();
+         
+         
+         var params = {
+         country_filter: $('#filterCountry').val(),
+         type_filter: $('#filterType').val()
+         };
+         if ($('#filterCountry').val() === 0) {
+         params.country_filter = null;
+         }
+         if ($('#filterType').val() === 0) {
+         params.type_filter = null;
+         }
+         
+         link = "../Ocrs/companyFilter";
+         var data = jQuery.param(params);
+         getServerData(link, data, successFilter, errorFilter);
+         });*/
         //Ajax sent companies
         $('#sentCompanies').click(function () {
             var numberCompanies = $('#numberCompanies').val();
@@ -87,18 +87,25 @@
         $('input').iCheck({
             checkboxClass: 'icheckbox_flat-blue'
         });
-        $("#sel").css("display", "none");
+
 
 
 <?php
 foreach ($selected as $selected) {
     $idSel = $selected['companies_ocrs']['company_id'];
-    ?>
 
-            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + 'q' + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+    ?>
+            logo = $("#<?php echo $selected['companies_ocrs']['company_id']; ?>").find(".logo").attr("src");
+            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
     <?php
 }
 ?>
+
+        if ($(".inDB").length) {
+
+        } else {
+            $("#sel").css("display", "none");
+        }
         $("#platformSelection").find(".btnSelect").prop('disabled', true);
         //Te elimina las compañias ya seleccionadas despues de un filtro
         $('#selection').children('.selected').each(function () {
@@ -113,7 +120,7 @@ foreach ($selected as $selected) {
         //Te pasa el seleccionado a su zona
         $(".btnSelect").click(function () {
             $(this).parentsUntil("#platformSelection").fadeOut();
-        $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + i + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+            $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + i + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             i++;
             $("#numberCompanies").val(i);
             if ($("#numberCompanies").val() > 0) {
@@ -227,44 +234,44 @@ foreach ($selected as $selected) {
             </div>
 
             <?php /* DIV 2: Filters 
-            <div id="investorFilters" class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <h4 class="header1CR"><?php echo __('Filter by:') ?></h4>
-                    <div class="row">
-                        <?php echo $this->Form->create(); ?>
-                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                            <?php
-                            $class = "filter form-control blue_noborder investorCountry" . ' ' . $errorClass;
-                            echo $this->Form->input('Investor.investor_country', array(
-                                'name' => 'country',
-                                'id' => 'filterCountry',
-                                'label' => false,
-                                'options' => $filterCompanies1,
-                                'placeholder' => __('Country'),
-                                'class' => $class,
-                            ));
-                            ?>
-                        </div>
-                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                            <?php
-                            $class = "filter form-control blue_noborder investorModality" . ' ' . $errorClass;
-                            $modalities = ["select modality", "P2P", "P2B", "Invoice Trading"];
-                            echo $this->Form->input('Investor.investor_type', array(
-                                'name' => 'type',
-                                'id' => 'filterType',
-                                'label' => false,
-                                'options' => $filterCompanies2,
-                                'placeholder' => __('Modality'),
-                                'class' => $class,
-                            ));
-                            ?>
-                        </div>
-                      
-                        <?php echo $this->Form->end(); ?>
-                    </div>
-                </div>
-            </div>
-            <hr class="nomargin" width="100%"/>*/ ?>
+              <div id="investorFilters" class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <h4 class="header1CR"><?php echo __('Filter by:') ?></h4>
+              <div class="row">
+              <?php echo $this->Form->create(); ?>
+              <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+              <?php
+              $class = "filter form-control blue_noborder investorCountry" . ' ' . $errorClass;
+              echo $this->Form->input('Investor.investor_country', array(
+              'name' => 'country',
+              'id' => 'filterCountry',
+              'label' => false,
+              'options' => $filterCompanies1,
+              'placeholder' => __('Country'),
+              'class' => $class,
+              ));
+              ?>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+              <?php
+              $class = "filter form-control blue_noborder investorModality" . ' ' . $errorClass;
+              $modalities = ["select modality", "P2P", "P2B", "Invoice Trading"];
+              echo $this->Form->input('Investor.investor_type', array(
+              'name' => 'type',
+              'id' => 'filterType',
+              'label' => false,
+              'options' => $filterCompanies2,
+              'placeholder' => __('Modality'),
+              'class' => $class,
+              ));
+              ?>
+              </div>
+
+              <?php echo $this->Form->end(); ?>
+              </div>
+              </div>
+              </div>
+              <hr class="nomargin" width="100%"/> */ ?>
             <?php /* Div 2: Platforms Selection */ ?>
             <h4 class="header1CR"><?php echo __('Select platforms to register') ?></h4>
             <div id="platformSelection" class="row">
