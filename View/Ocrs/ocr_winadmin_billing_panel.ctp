@@ -11,7 +11,7 @@
         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
             <h4 class="header1CR"><?php echo __('Filter PFD:') ?></h4>
                 <?php 
-                $class = "form-control blue investorCountry". ' ' . $errorClass;
+                $class = "form-control blue_noborder investorCountry". ' ' . $errorClass;
                 $filters = ["select PFD", "pfd1", "pfd2", "pfd3"];      
                                                                     echo $this->Form->input('Investor.investor_country', array(
                                                                             'name'			=> 'country',
