@@ -24,23 +24,29 @@
 * @date 2016-11-05
 * @package
 
-
-2016-11-05	  version 2016_0.1
-Basic version
 function calculateLoanCost()											[not OK, not tested]
-function collectCompanyMarketplaceData()								[OK, not tested]
+function collectCompanyMarketplaceData()								[OK, testing]
 function companyUserLogin()												[not OK, not tested]
 function collectUserInvestmentData()									[not OK, not tested]
 function isNewEntry()													[not OK, not tested]
 
+2016-11-05	  version 2016_0.1
+Basic version
+
+2017-04-10      version 0.3
+ * Added casperjs to make a login into colectual
+ * It has angularjs and because of that, we need to use casperjs
 
 
 
 
 PENDING:
+Install dependencies of casperjs and phantomjs
 
 */
 
+//require_once "../../vendors/autoload.php";
+//use Browser\Casper;
 
 class colectual extends p2pCompany{
 
@@ -96,129 +102,137 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
 function collectCompanyMarketplaceData() {
 
 
-	$this->config['appDebug'] = true;
+	$url = $this->urlSequence;
+        $username = $this->config['company_username'];
+        $password = $this->config['company_password'];
+        $totalArray = array();
+        echo __FUNCTION__ . __LINE__ . " MARKETPLACE<br>";
+        $casper = new Casper();
+        //First we must go to https://app.colectual.com/#/endSession to end session if previously is opened
+        $casper->setOptions([
+            'ignore-ssl-errors' => 'yes'
+        ]);
+        // navigate to login web page
+        $casper->start("$url[0]");
+        // or wait for selector
+        $casper->waitForSelector('form[name="loginForm"]', 5000);
+        $casper->fillForm(
+                'form[name="loginForm"]', array(
+            'UserName' => $username,
+            'Password' => $password
+                ), false);
+        $casper->click('.md-btn');
 
-	$resultColectual = $this->companyUserLogin($user, $password);
+        $casper->addToScript(<<<FRAGMENT
+casper.waitUntilVisible(".step-instructions", function() {
+			casper.thenOpen('$url[1]');
+		});
+FRAGMENT
+        );
+        //$casper->click('a[href*="proyectosLista"]');
+        $casper->wait(2000);
+        // run the casper script
+        $casper->run();
+        $str = $casper->getCurrentPageContent();
+        var_dump($casper->getOutput());
+        echo __FUNCTION__ . __LINE__ . " END MARKETPLACE<br>";
+        $casper_logout = new Casper();
+        $casper_logout->setOptions([
+            'ignore-ssl-errors' => 'yes'
+        ]);
+        // navigate to make logout
+        $casper_logout->start("$url[2]");
+        $casper_logout->wait(2000);
+        $casper_logout->run();
+        echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
+        var_dump($casper_logout->getOutput());
+        echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>";
+        $dom = new DOMDocument;
+        $classname = 'proyecto';
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $dom_xpath = new DOMXPath($dom);
+        $projects = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
+        $i = 0;
+        foreach ($projects as $project) {
+            $name = $project->getElementsByTagName('h2');
+            $tempArray['marketplace_name'] = $name[0]->nodeValue;
+            $purpose = $project->getElementsByTagName('h3');
+            $tempArray['marketplace_purpose'] = $purpose[0]->nodeValue;
+            $labels = $project->getElementsByTagName('label');
+            $tempArray["marketplace_durationUnit"] = 2;
+            $span_fund = $project->getElementsByTagName('span');
+            if ($span_fund->length == 0) {
+                echo "Colectual: % found, so store in marketplace<br>";
+                $class_subscription_progress = 'progress';
+                $dom_xpath_progress = new DOMXPath($dom);
+                $progress = $dom_xpath_progress->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class_subscription_progress ')]");
+                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($progress[$i]->nodeValue));
+                $tempArray["marketplace_status"] = 0;
+            }
+            else {
+                $tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
+                $tempArray["marketplace_status"] = 1;
+            }
+            foreach ($labels as $label) {
+                $value_per_attr = $label->getAttribute('class');
+                switch($value_per_attr){
+                    case "id":
+                        $tempArray["marketplace_loanReference"] = $label->nodeValue;
+                        break;
+                    case "importe":
+                        $amount = str_replace(".", "", $label->nodeValue);
+                        $amount = strstr($amount, ',', true);
+                        $tempArray["marketplace_amount"] = $amount;
+                        break;
+                    case "plazo":
+                        $tempArray["marketplace_duration"] = trim(str_replace("m ", "",$label->nodeValue ));
+                        break;
+                    //Regex to take the rating value, always come with a letter, b, or c, or d
+                    case (preg_match('/^rating.*/', $value_per_attr) ? true : false) :
+                        $tempArray["marketplace_rating"] = $label->nodeValue;
+                        break;
+                    case "interes":
+                        $tempArray["marketplace_interestRate"] = $this->getPercentage(trim($label->nodeValue));
+                        break;
+                    case "fecha":
+                        //have to fix
+                        $date_array = explode("/", $label->nodeValue);
+                        $date_marketplace=$date_array[2]."-".$date_array[1]."-".$date_array[0];
+                        $today = date("Y-m-d");
+                        //$diff=date_diff($date_marketplace,$today);
+                        //Bigger date
+                        $datetime1 = strtotime($date_marketplace);
+                        //It's suppose to be before ending marketplace
+                        $datetime2 = strtotime($today);
 
-	if (!$resultColectual) {			// Error while logging in
-		$tracings = "Tracing:\n";
-		$tracings .= __FILE__ . " " . __LINE__  . " \n";
-		$tracings .= "Colectual login: userName =  " . $this->config['company_username'] .  ", password = " . $this->config['company_password'] . " \n";
-		$tracings .= " \n";
-		$msg = "Error while logging in user's portal. Wrong userid/password \n";
-		$msg = $msg . $tracings . " \n";
-		$this->logToFile("Warning", $msg);
-		exit;
-	}
-echo "LOGIN COLECTUAL CONFIRMED<br>";
-	
-	$dom = new DOMDocument;
-	$dom->loadHTML($str);
-	$dom->preserveWhiteSpace = false; 
-
-	$divs = $this->getElements($dom, "div", "class", "collapse navbar-collapse");
-
-	$projectas = $this->getElements($divs[0], "a");
-	foreach ($prjectas as $key => $a) {
-		
-		$tempArray['marketplace_rating'] = trim($projectDivs[2]->nodeValue);
-		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage( $projectDivs[2]->nodeValue);		// WRONG INDEX CHECK WITH REAL PROJECT
-		$tempArray['marketplace_name'] = trim($projectDivs[12]->nodeValue);
-		$tempArray['marketplace_amount'] = $this->getMonetaryValue( $projectDivs[13]->nodeValue);
-		$tempArray['marketplace_interestRate'] = $this->getPercentage( $projectDivs[19]->nodeValue);
-		list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) =
-															$this->getDurationValue($projectDivs[26]->nodeValue);
-/*******************************************************/															
-/* HARD CODED AS PREVIOUS STATEMENT GENERATES AN ERROR */
-		$tempArray['marketplace_durationUnit'] = 2;
-/*******************************************************/
-		$tempArray['marketplace_requestorLocation'] = trim($projectDivs[31]->nodeValue);
-		$tempArray['marketplace_sector'] = trim($projectDivs[37]->nodeValue);
-
-		$as = $this->getElements($div, "a");
-		$loanId = explode(":", $as[0]->getAttribute("title"));
-		$tempArray['marketplace_loanReference'] = trim($loanId[1]);
-
-		$totalArray[] = $tempArray;			
-		$this->print_r2($tempArray);	
-		unset($tempArray);	
-	}
-	$this->print_r2($totalArray);
-	return $totalArray;	
-
-/*	$totalArray = array();
-	
-	$str = $this->getCompanyWebpage();		// load Webpage into a string variable so it can be parsed
-	
-	$dom = new DOMDocument;
-	$dom->loadHTML($str);
-	$dom->preserveWhiteSpace = false; 
-
-	$tables = $dom->getElementsByTagName('table');	
-	foreach ($tables as $table) {			// only deal with FIRST table in document
-		$trs = $table->getElementsByTagName('tr');
-			foreach ($trs as $tr) {
-//echo "<br>" .  __FILE__ . " " . __LINE__ . "<br>";
-//echo $tr->nodeValue;
-//echo "<br>" .  __FILE__ . " " . __LINE__ . "<br>";
-				$tds = $tr->getElementsByTagName('td');
-				$index = -1;
-				$tempArray = array();
-				foreach ($tds as $td) {
-					
-					$index = $index + 1;
-//echo "index = $index and value = " . $td->nodeValue . "<br>";
-					switch($index) {
-						case 1:
-							$tempArray['marketplace_loanReference'] = $td->nodeValue ;
-							break;
-						case 2:
-							$innerIndex = 0;
-							$as = $td->getElementsByTagName('a');
-							
-							foreach ($as as $a){		// only 1 will be found
-									$tempArray['marketplace_purpose'] = trim($a->nodeValue);
-							}
-							$tempArray['marketplace_requestorLocation'] = trim(str_replace( $tempArray['marketplace_purpose'],
-																			"",
-																			$td->nodeValue ));			   
-							break;
-						case 3:
-							$tempArray['marketplace_rating'] = $td->nodeValue;
-							break;
-						case 4:
-							$tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
-							break;						
-						case 6:
-							$tempArray['marketplace_interestRate'] = $this->getPercentage(trim($td->nodeValue));
-							break;	
-						case 7:
-							$divs = $td->getElementsByTagName('div');
-							$innerIndex = 0;
-							foreach ($divs as $div) {
-								
-								if ($innerIndex == 1) {
-									$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($div->nodeValue));
-								}								
-								$innerIndex = $innerIndex + 1;
-							}
-							break;											
-						case 8:
-							list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue( $td->nodeValue);
-							break;	
-					}
-				}
-
-				$this->print_r2($tempArray);
-				if ($tempArray['marketplace_subscriptionProgress'] <> 10000) {
-					$totalArray[] = $tempArray;
-				}
-				unset($tempArray);
-			}
-	break;
-	}
-echo __FILE__ . " " . __LINE__ . "<br>";
-	return $totalArray;*/
+                        $secs = $datetime1 - $datetime2;// == <seconds between the two times>
+                        $days = $secs / 86400;
+                        //$date2->diff($date1)->format("%a");
+                        $tempArray["marketplace_timeLeft"] = $days;
+                        $tempArray["marketplace_timeLeftUnit"] = 1;
+                        break;
+                    case "importe":
+                        $tempArray["marketplace_loandReference"] = $label->nodeValue;
+                        break;
+                    case "sector":
+                        $tempArray["marketplace_sector"] = $label->nodeValue;
+                        break;
+                    case "ubicacion":
+                        $tempArray["marketplace_requestorLocation"] = $label->nodeValue;
+                        break;
+                    case "inversores":
+                        $tempArray["marketplace_numberOfInvestors"] = $label->nodeValue;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            $totalArray[] = $tempArray;
+            unset($tempArray);
+            $i++;
+        }
+        return $totalArray;
 }
 
 
