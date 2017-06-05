@@ -487,7 +487,7 @@ class MarketPlacesController extends AppController {
      * 	as a JSON object in databasetable "datas"
      *
      */
-    function cronQueueEventParallel() {
+    function cronQueueEvent() {
 
         $this->autoRender = false;
         Configure::write('debug', 2);
@@ -704,7 +704,7 @@ class MarketPlacesController extends AppController {
      * 	as a SON object in databasetable "datas"
      *
      */
-    function cronQueueEvent($queueType) {
+    /*function cronQueueEvent($queueType) {
 
         $this->autoRender = false;
         Configure::write('debug', 2);
@@ -849,7 +849,7 @@ class MarketPlacesController extends AppController {
         $this->set(compact('files'));
         $this->layout = 'ajax';
         echo "cache eliminada";
-    }
+    }*/
     
     /**
      * Function to do logout of company
