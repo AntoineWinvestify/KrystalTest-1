@@ -187,25 +187,25 @@ class ocrsController extends AppController {
         return 1;
     }
 
-    function ocrInvestorDocuments() {
-        echo " ";
-    }
-
     //One Click Registration - Admin PFP Views
     function ocrPfpBillingPanel() {
+        $this->layout = 'azarus_private_layout';
         echo " ";
     }
 
     function ocrPfpUsersPanel() {
+        $this->layout = 'azarus_private_layout';
         echo " ";
     }
 
     //One Click Registration - Winvestify Admin Views
     function ocrWinadminInvestorChecking() {
+        $this->layout = 'azarus_private_layout';
         echo " ";
     }
 
     function ocrWinadminBillingPanel() {
+        $this->layout = 'azarus_private_layout';
         echo " ";
     }
 
