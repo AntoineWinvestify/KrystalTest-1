@@ -170,6 +170,7 @@ class ocrsController extends AppController {
 
     //One Click Registration - Investor Views
     function ocrInvestorDataPanel() {
+        echo "1";
         $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
         $data2 = $this->Ocr->ocrGetData($this->Session->read('Auth.User.id'));
         $this->set('investor', $data);

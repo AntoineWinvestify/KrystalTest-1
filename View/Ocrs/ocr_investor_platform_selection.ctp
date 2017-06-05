@@ -49,6 +49,8 @@
             link = "../Ocrs/oneClickInvestorI";
             var data = jQuery.param(params);
             getServerData(link, data, successSentCompanies, errorSentCompanies);
+
+
         });
 
 
@@ -65,17 +67,20 @@
 
 
     function successSentCompanies(result) {
-        $(".selected").each(function(){
-            selid =$(this).attr("value");
-            $('#selection').append("<div class='selected' value='" + selid + "'><input type='hidden' ></input></div>");      
-            $(this).remove();
-            $("#sel").css("display", "none");
-            
-        });
+        params = {};
+        link = "../Ocrs/ocrInvestorDataPanel";
+        var data = jQuery.param(params);
+        getServerData(link, data, successDataPanel, errorDataPanel);
     }
 
     function errorSentCompanies(result) {}
 
+    function successDataPanel(result) {
+        $("#OCR_InvestorPanel").html(result);
+    }
+    function errorDataPanel(result) {
+        $("#OCR_InvestorPanel").html(result);
+    }
 
     function addEnvent() {
         //iCheck plugin
@@ -136,7 +141,7 @@ foreach ($selected as $selected) {
 
 
 </script>
-<div id="OCR_InvestorPanelB">
+<div id="OCR_InvestorPanel">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <?php
