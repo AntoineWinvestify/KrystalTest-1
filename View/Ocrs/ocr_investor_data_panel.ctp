@@ -94,7 +94,7 @@
 
 
         $(".Files").children().on("change", function () {
-            
+
             var formdatas = new FormData($(this).parent()[0]);
             $.ajax({
                 url: '../Ocrs/upload',
@@ -104,6 +104,7 @@
                 contentType: false,
                 processData: false
             });
+            $(this).prop("disabled", true);
         });
 
 <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
@@ -509,7 +510,7 @@
                                             'label' => false,
                                             'placeholder' => __('IBAN'),
                                             'class' => $class,
-                                            'value' => $Ocr[0]['Ocr']['investor_iban'],
+                                            'value' => $ocr[0]['Ocr']['investor_iban'],
                                         ));
                                         $errorClassesText = "errorInputMessage ErrorIban";
                                         if (array_key_exists('investor_iban', $investorValidationErrors)) {
@@ -558,7 +559,7 @@
                                             'label' => false,
                                             'placeholder' => __('Your company CIF'),
                                             'class' => $class,
-                                            'value' => $Ocr[0]['Ocr']['investor_cif'],
+                                            'value' => $ocr[0]['Ocr']['investor_cif'],
                                         ));
                                         $errorClassesText = "errorInputMessage ErrorCif";
                                         if (array_key_exists('investor_cif', $investorValidationErrors)) {
@@ -591,7 +592,7 @@
                                             'label' => false,
                                             'placeholder' => __('IBAN'),
                                             'class' => $class,
-                                            'value' => $Ocr[0]['Ocr']['investor_businessName'],
+                                            'value' => $ocr[0]['Ocr']['investor_businessName'],
                                         ));
                                         $errorClassesText = "errorInputMessage ErrorBusinessName";
                                         if (array_key_exists('investor_businessName', $investorValidationErrors)) {

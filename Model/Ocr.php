@@ -201,9 +201,7 @@ class ocr extends AppModel {
     }
 
     public function ocrFileSave($data, $id) {
-        echo 'patata' . $id;
         print_r($data);
-
         foreach ($data as $data) {
             echo 'procesando archivo</br>';
             if ($data['size'] == 0 || $data['error'] !== 0) {
