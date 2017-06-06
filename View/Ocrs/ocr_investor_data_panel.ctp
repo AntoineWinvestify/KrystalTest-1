@@ -102,10 +102,16 @@
                 method: 'post',
                 data: formdatas,
                 contentType: false,
-                processData: false
+                processData: false,
+                success: successUpload($(this)),
             });
-            $(this).prop("disabled", true);
         });
+
+        /*$(".delete").on("click", function () {
+            alert("Borrando archivo");
+            $(this).prop("disabled", true);
+            $(this).parent().parent().find("file").prop("disabled", false);
+        });*/
 
 <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
             if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> == 1) {
@@ -125,6 +131,11 @@
     function success() {
 
     }
+    function successUpload(thisFile) {
+        thisFile.prop("disabled", true);
+        thisFile.parent().parent().parent().find(".delete").prop("disabled", false);
+    }
+
 
 </script>
 <div id="OCR_InvestorPanelA">
@@ -666,7 +677,7 @@
                                                 ?>
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
+                                                <button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
                                             </td>
                                         </tr>
                                         <tr>
