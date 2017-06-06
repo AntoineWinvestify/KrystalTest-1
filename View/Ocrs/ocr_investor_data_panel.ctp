@@ -352,10 +352,6 @@
                                                 'type' => 'tel',
                                                 'value' => $investor[0]['Investor']['investor_telephone']
                                             ));
-                                            $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
-                                            if (array_key_exists('investor_telephone', $validationResult)) {
-                                                $errorClassesForTexts .= " " . "actived";
-                                            }
                                             $errorClassesText = "errorInputMessage ErrorTelephone";
                                             if (array_key_exists('investor_telephone', $investorValidationErrors)) {
                                                 $errorClassesText .= " " . "actived";
@@ -548,7 +544,9 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="checkbox">
-                                        <input id="investmentVehicle" type="checkbox"> <label><?php echo __('I use my company as investment vehicle') ?></label>
+                                        <label>
+                                            <input id="investmentVehicle" type="checkbox">  <?php echo __('I use my company as investment vehicle') ?>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
