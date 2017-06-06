@@ -97,7 +97,7 @@
 
             var formdatas = new FormData($(this).parent()[0]);
             $.ajax({
-                url: '../Ocrs/upload',
+                url: '../Files/upload',
                 dataType: 'json',
                 method: 'post',
                 data: formdatas,
@@ -669,7 +669,7 @@
                                             <td>
                                                 <?php
                                                 /* <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button> */
-                                                echo $this->Form->create('Files', array('action' => '../Ocrs/upload', 'type' => 'file', 'class' => 'Files'));
+                                                echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
                                                 echo $this->Form->file('nifF');
                                                 echo $this->Form->end();
                                                 ?>
@@ -685,7 +685,7 @@
                                             <td>
                                                 <?php
                                                 /* <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button> */
-                                                echo $this->Form->create('Files', array('action' => '../Ocrs/upload', 'type' => 'file', 'class' => 'Files'));
+                                                echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
                                                 echo $this->Form->file('nifB');
                                                 echo $this->Form->end();
                                                 ?>

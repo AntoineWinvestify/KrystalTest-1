@@ -28,13 +28,16 @@
   2017/5/30 version 0.2
   ocrFileSave         Upload files                                 [OK]
  * 
-  2017/6/1 version 0.3
+  2017/6/01 version 0.3
   saveCompaniesOcr                                                 [OK]
   getSelectedCompanies                                              [OK]
  * 
- 2017/6/5  version 0.4
- deleteCompanyOcr                                                     [OK]
- *                                       
+  2017/6/05  version 0.4
+  deleteCompanyOcr                                                     [OK]
+ *             
+  2017/6/06  version 0.5
+  upload deleted
+  id problem fixed
  */
 App::uses('CakeEvent', 'Event');
 
@@ -198,42 +201,6 @@ class ocr extends AppModel {
 
         $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . ";";
         return $this->query($query);
-    }
-
-    public function ocrFileSave($data, $id) {
-        print_r($data);
-        foreach ($data as $data) {
-            echo 'procesando archivo</br>';
-            if ($data['size'] == 0 || $data['error'] !== 0) {
-                echo 'Error al subir archivo';
-                continue;
-            }
-            $filename = basename($data['name']);
-            echo 'Nombre base ' . $filename . '</br>';
-            $uploadFolder = 'files/investors/' . $id . '';
-            echo 'Dirctorio ' . $uploadFolder . '</br>';
-            $filename = time() . '_' . $filename;
-            echo 'nombre completo ' . $filename . '</br>';
-            $uploadPath = $uploadFolder . DS . $filename;
-            echo 'ruta ' . $uploadPath . '</br>';
-
-            if (!file_exists($uploadFolder)) {
-                echo 'carpeta no existe, creandola </br>';
-                mkdir($uploadFolder, 0755, true);
-            }
-
-            if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
-                echo 'fallo al mover';
-                continue;
-            }
-            echo 'terminado de guardar directorio</br>';
-            /* echo 'Insertando en base de datos</br>'
-              $dataDb = {
-
-
-
-              } */
-        }
     }
 
 }

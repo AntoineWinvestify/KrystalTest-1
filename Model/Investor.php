@@ -25,7 +25,9 @@
   2017-01-17	  version 0.2
   function investmentInformationUpdate added									[OK]
 
-
+  2017-06-06 version 0.3
+  getInvestorId									[OK]
+  getInvestorIdentity									[OK]
 
 
   Pending:
@@ -286,7 +288,7 @@ class Investor extends AppModel {
           } */
         $result[0] = 1;
         //Insert OK
-        return $result;
+        return $data['id'];
     }
 
     public function investorGetInfo($id) {
@@ -296,6 +298,18 @@ class Investor extends AppModel {
             'recursive' => -1,
         ));
         return $info;
+    }
+
+    public function getInvestorId($userid) {
+        $data = $this->investorGetInfo($userid);
+        $id = $data[0]['Investor']['id'];
+        return $id;
+    }
+
+    public function getInvestorIdentity($userid) {
+        $data = $this->investorGetInfo($userid);
+        $identity = $data[0]['Investor']['investor_identity'];
+        return $identity;
     }
 
     /*
