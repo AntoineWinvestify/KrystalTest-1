@@ -63,7 +63,7 @@ class ocr extends AppModel {
     public function ocrDataSave($datos) {
 
         echo '1';
-        print_r('id = ' . $datos['investor_id']);
+
         $id = $this->find('first', array(
             'fields' => array(
                 'id',
@@ -71,7 +71,7 @@ class ocr extends AppModel {
             'conditions' => array(
                 'investor_id' => $datos['investor_id']),
             'recursive' => -1,));
-        print_r($id);
+
         //Si ya existe, actualizo esa fila del ocr
         if (count($id) > 0) {
 
@@ -116,11 +116,6 @@ class ocr extends AppModel {
                 );
             }
         }
-
-
-
-        print_r($data);
-
 
         $this->save($data);
         $result[0] = 1;

@@ -679,8 +679,6 @@
                                                     <button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
                                                 </td>
                                             </tr>
-
-                                            ?>    
                                             <?php
                                         }
                                         /* <tr>

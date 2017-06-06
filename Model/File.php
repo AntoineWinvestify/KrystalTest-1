@@ -33,32 +33,22 @@ class file extends AppModel {
 
     public function ocrFileSave($data, $id) {
         print_r($data);
-        foreach ($data as $data) {
-            echo 'procesando archivo</br>';
+        foreach ($data as $data) {           
             if ($data['size'] == 0 || $data['error'] !== 0) {
-                echo 'Error al subir archivo';
                 continue;
             }
             $filename = basename($data['name']);
-            echo 'Nombre base ' . $filename . '</br>';
             $uploadFolder = 'files/investors/' . $id . '';
-            echo 'Directorio ' . $uploadFolder . '</br>';
             $filename = $filename;
-            echo 'nombre completo ' . $filename . '</br>';
             $uploadPath = $uploadFolder . DS . $filename;
-            echo 'ruta ' . $uploadPath . '</br>';
 
             if (!file_exists($uploadFolder)) {
-                echo 'carpeta no existe, creandola </br>';
                 mkdir($uploadFolder, 0755, true);
             }
 
             if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
-                echo 'fallo al mover';
                 continue;
             }
-            echo 'terminado de guardar directorio</br>';
-            echo 'Insertando en base de datos</br>';
 
             /* $query = "INSERT INTO `search`.`files_investor` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
               $query = $this->query($query); */
