@@ -53,7 +53,7 @@
             format: 'dd/mm/yyyy'
         });
 
-        $(document).on("change", "#vehicle", function () {
+        $(document).on("change", "#investmentVehicle", function () {
             if ($(this).is(":checked")) {
                 $("#investmentVehicle").show();
             } else {
@@ -76,14 +76,14 @@
                 investor_country: $("#ContentPlaceHolder_country").val()
             };
 
-            if ($("#vehicle").is(':checked')) {
-                params.vehicle = 1;
+            if ($("#investmentVehicle").is(':checked')) {
+                params.investmentVehicle = 1;
                 params.cif = $("#ContentPlaceHolder_cif").val();
                 params.businessName = $("#ContentPlaceHolder_businessName").val();
                 params.iban = $("#ContentPlaceHolder_iban").val();
 
             } else {
-                params.vehicle = 0;
+                params.investmentVehicle = 0;
                 params.iban = $("#ContentPlaceHolder_iban").val();
             }
             link = $("#activateOCR").attr('href');
@@ -101,9 +101,9 @@
             })
         });
 
-<?php if ($ocr[0]['Ocr']['Ocr_vehicle']) { ?>
-            if (<?php echo $ocr[0]['Ocr']['Ocr_vehicle'] ?> == 1) {
-                $("#vehicle").prop('checked', true);
+<?php if ($ocr[0]['Ocr']['Ocr_investmentVehicle']) { ?>
+            if (<?php echo $ocr[0]['Ocr']['Ocr_investmentVehicle'] ?> == 1) {
+                $("#investmentVehicle").prop('checked', true);
                 $("#investmentVehicle").show();
             }
 <?php } ?>
@@ -932,13 +932,13 @@
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="checkbox">
                                         <label>
-                                            <input id="vehicle" type="checkbox"> <?php echo __('I use my company as investment vehicle') ?>
+                                            <input id="investmentVehicle" type="checkbox"> <?php echo __('I use my company as investment vehicle') ?>
                                         </label>
                                     </div>
                                 </div>
                             </div>
                             <!-- /checkbox -->
-                            <div class="row" id="investmentVehicle">
+                            <div class="row" id="investmentVehicleContent">
                                 <!-- CIF -->
                                 <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
                                     <div class="form-group">
