@@ -94,7 +94,7 @@
 
 
         $(".Files").children().on("change", function () {
-            
+
             var formdatas = new FormData($(this).parent()[0]);
             $.ajax({
                 url: '../Ocrs/upload',
@@ -104,6 +104,7 @@
                 contentType: false,
                 processData: false
             });
+            $(this).prop("disabled", true);
         });
 
 <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
