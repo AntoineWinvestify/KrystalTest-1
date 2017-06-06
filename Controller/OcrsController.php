@@ -96,11 +96,11 @@ class ocrsController extends AppController {
 
 
             $datosOcr = array(
-                'Investor_id' => $this->Session->read('Auth.User.id'),
-                'Ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],
-                'Investor_cif' => $_REQUEST['cif'],
-                'Investor_businessName' => $_REQUEST['businessName'],
-                'Investor_iban' => $_REQUEST['iban']
+                'investor_id' => $this->Session->read('Auth.User.id'),
+                'ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],
+                'investor_cif' => $_REQUEST['cif'],
+                'investor_businessName' => $_REQUEST['businessName'],
+                'investor_iban' => $_REQUEST['iban']
             );
 
             $result1 = $this->Investor->investorDataSave($datosInvestor);

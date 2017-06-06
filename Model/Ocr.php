@@ -60,56 +60,56 @@ class ocr extends AppModel {
     public function ocrDataSave($datos) {
 
         echo '1';
-        print_r('id = ' . $datos['Investor_id']);
+        print_r('id = ' . $datos['investor_id']);
         $id = $this->find('first', array(
             'fields' => array(
                 'id',
             ),
             'conditions' => array(
-                'Investor_id' => $datos['Investor_id']),
+                'investor_id' => $datos['investor_id']),
             'recursive' => -1,));
         print_r($id);
         //Si ya existe, actualizo esa fila del ocr
         if (count($id) > 0) {
 
             echo 'existe';
-            if ($datos['Ocr_investmentVehicle'] == 1) {
+            if ($datos['ocr_investmentVehicle'] == 1) {
                 $data = array(
                     'id' => $id['Ocr']['id'],
-                    'Investor_id' => $datos['Investor_id'],
-                    'Ocr_investmentVehicle' => 1,
-                    'Investor_cif' => $datos['Investor_cif'],
-                    'Investor_businessName' => $datos['Investor_businessName'],
-                    'Investor_iban' => $datos['Investor_iban'],
+                    'investor_id' => $datos['investor_id'],
+                    'ocr_investmentVehicle' => 1,
+                    'investor_cif' => $datos['investor_cif'],
+                    'investor_businessName' => $datos['investor_businessName'],
+                    'investor_iban' => $datos['investor_iban'],
                 );
             } else {
                 $data = array(
                     'id' => $id['Ocr']['id'],
-                    'Investor_id' => $datos['Investor_id'],
-                    'Ocr_investmentVehicle' => 0,
-                    'Investor_cif' => null,
-                    'Investor_businessName' => null,
-                    'Investor_iban' => $datos['Investor_iban'],
+                    'investor_id' => $datos['investor_id'],
+                    'ocr_investmentVehicle' => 0,
+                    'investor_cif' => null,
+                    'investor_businessName' => null,
+                    'investor_iban' => $datos['investor_iban'],
                 );
             }
             //Si no existe, creo una nueva fila ocr    
         } else {
             echo 'no existe';
-            if ($datos['Ocr_investmentVehicle'] == 1) {
+            if ($datos['ocr_investmentVehicle'] == 1) {
                 $data = array(
-                    'Investor_id' => $datos['Investor_id'],
-                    'Ocr_investmentVehicle' => 1,
-                    'Investor_cif' => $datos['Investor_cif'],
-                    'Investor_businessName' => $datos['Investor_businessName'],
-                    'Investor_iban' => $datos['Investor_iban'],
+                    'investor_id' => $datos['investor_id'],
+                    'ocr_investmentVehicle' => 1,
+                    'investor_cif' => $datos['investor_cif'],
+                    'investor_businessName' => $datos['investor_businessName'],
+                    'investor_iban' => $datos['investor_iban'],
                 );
             } else {
                 $data = array(
-                    'Investor_id' => $datos['Investor_id'],
-                    'Ocr_investmentVehicle' => 0,
-                    'Investor_cif' => null,
-                    'Investor_businessName' => null,
-                    'Investor_iban' => $datos['Investor_iban'],
+                    'investor_id' => $datos['investor_id'],
+                    'ocr_investmentVehicle' => 0,
+                    'investor_cif' => null,
+                    'investor_businessName' => null,
+                    'investor_iban' => $datos['investor_iban'],
                 );
             }
         }
@@ -134,7 +134,7 @@ class ocr extends AppModel {
     public function ocrGetData($id) {
 
         $info = $this->find("all", array(
-            'conditions' => array('Investor_id' => $id),
+            'conditions' => array('investor_id' => $id),
             'recursive' => -1,
         ));
 
@@ -150,7 +150,7 @@ class ocr extends AppModel {
                     'id',
                 ),
                 'conditions' => array(
-                    'Investor_id' => $data['investorId']),
+                    'investor_id' => $data['investorId']),
                 'recursive' => -1,));
 
 
@@ -178,7 +178,7 @@ class ocr extends AppModel {
                 'id',
             ),
             'conditions' => array(
-                'Investor_id' => $data['investorId']),
+                'investor_id' => $data['investorId']),
             'recursive' => -1,));
 
         $query = "DELETE FROM `search`.`companies_ocrs` WHERE `company_id`='" . $data['companyId'] . "' and`ocr_id`='" . $ocrId['Ocr']['id'] . "';";
@@ -193,7 +193,7 @@ class ocr extends AppModel {
                 'id',
             ),
             'conditions' => array(
-                'Investor_id' => $id),
+                'investor_id' => $id),
             'recursive' => -1,));
 
         $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . ";";

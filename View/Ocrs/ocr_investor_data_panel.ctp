@@ -55,9 +55,9 @@
 
         $(document).on("change", "#investmentVehicle", function () {
             if ($(this).is(":checked")) {
-                $("#investmentVehicle").show();
+                $("#investmentVehicleContent").show();
             } else {
-                $("#investmentVehicle").hide();
+                $("#investmentVehicleContent").hide();
             }
         });
 
@@ -103,13 +103,13 @@
                 data: formdatas,
                 contentType: false,
                 processData: false
-            })
+            });
         });
 
-<?php if ($ocr[0]['Ocr']['Ocr_investmentVehicle']) { ?>
-            if (<?php echo $ocr[0]['Ocr']['Ocr_investmentVehicle'] ?> == 1) {
+<?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
+            if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> == 1) {
                 $("#investmentVehicle").prop('checked', true);
-                $("#investmentVehicle").show();
+                $("#investmentVehicleContent").show();
             }
 <?php } ?>
 
@@ -536,9 +536,7 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="checkbox">
-                                        <label>
-                                            <input id="investmentVehicle" type="checkbox"> <?php echo __('I use my company as investment vehicle') ?>
-                                        </label>
+                                        <input id="investmentVehicle" type="checkbox"> <label><?php echo __('I use my company as investment vehicle') ?></label>
                                     </div>
                                 </div>
                             </div>
