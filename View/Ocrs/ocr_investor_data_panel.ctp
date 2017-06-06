@@ -340,10 +340,6 @@
                                                 'type' => 'tel',
                                                 'value' => $investor[0]['Investor']['investor_telephone']
                                             ));
-                                            $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
-                                            if (array_key_exists('investor_telephone', $validationResult)) {
-                                                $errorClassesForTexts .= " " . "actived";
-                                            }
                                             $errorClassesText = "errorInputMessage ErrorTelephone";
                                             if (array_key_exists('investor_telephone', $investorValidationErrors)) {
                                                 $errorClassesText .= " " . "actived";
@@ -509,7 +505,7 @@
                                             'label' => false,
                                             'placeholder' => __('IBAN'),
                                             'class' => $class,
-                                            'value' => $Ocr[0]['Ocr']['investor_iban'],
+                                            'value' => $ocr[0]['Ocr']['investor_iban'],
                                         ));
                                         $errorClassesText = "errorInputMessage ErrorIban";
                                         if (array_key_exists('investor_iban', $investorValidationErrors)) {
@@ -536,7 +532,9 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="checkbox">
-                                        <input id="investmentVehicle" type="checkbox"> <label><?php echo __('I use my company as investment vehicle') ?></label>
+                                        <label>
+                                            <input id="investmentVehicle" type="checkbox">  <?php echo __('I use my company as investment vehicle') ?>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -558,7 +556,7 @@
                                             'label' => false,
                                             'placeholder' => __('Your company CIF'),
                                             'class' => $class,
-                                            'value' => $Ocr[0]['Ocr']['investor_cif'],
+                                            'value' => $ocr[0]['Ocr']['investor_cif'],
                                         ));
                                         $errorClassesText = "errorInputMessage ErrorCif";
                                         if (array_key_exists('investor_cif', $investorValidationErrors)) {
@@ -591,7 +589,7 @@
                                             'label' => false,
                                             'placeholder' => __('IBAN'),
                                             'class' => $class,
-                                            'value' => $Ocr[0]['Ocr']['investor_businessName'],
+                                            'value' => $ocr[0]['Ocr']['investor_businessName'],
                                         ));
                                         $errorClassesText = "errorInputMessage ErrorBusinessName";
                                         if (array_key_exists('investor_businessName', $investorValidationErrors)) {
