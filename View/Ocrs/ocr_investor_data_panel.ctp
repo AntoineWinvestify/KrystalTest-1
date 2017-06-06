@@ -78,13 +78,13 @@
 
             if ($("#vehicle").is(':checked')) {
                 params.vehicle = 1;
-                params.cif = $("#CIF").val();
-                params.businessName = $("#BusinessName").val();
-                params.iban = $("#Iban").val();
+                params.cif = $("#ContentPlaceHolder_cif").val();
+                params.businessName = $("#ContentPlaceHolder_businessName").val();
+                params.iban = $("#ContentPlaceHolder_iban").val();
 
             } else {
                 params.vehicle = 0;
-                params.iban = $("#Iban").val();
+                params.iban = $("#ContentPlaceHolder_iban").val();
             }
             link = $("#activateOCR").attr('href');
             var data = jQuery.param(params);

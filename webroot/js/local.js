@@ -550,7 +550,7 @@ app.visual = {
         $("#OCR_InvestorPanelA input").removeClass("errorBorder"); // remove ALL redborders
         var name = $("#ContentPlaceHolder_name").val();
         var surname = $("#ContentPlaceHolder_surname").val();
-        var identificationId = $("#Id").val();
+        var identificationId = $("#dni").val();
         var dateOfBirth = $("#ContentPlaceHolder_dateOfBirth").val();
         var email = $("#ContentPlaceHolder_email").val();
         var telephone = $("#ContentPlaceHolder_telephone").telIntlInput("getNumber");
@@ -559,7 +559,7 @@ app.visual = {
         var city = $("#ContentPlaceHolder_city").val();
         var country = $("#ContentPlaceHolder_country").val();
         var iban = $("#ContentPlaceHolder_iban").val();
-        var vehicle = $("#vehicle").val();
+        var vehicle = $("#vehicle");
         var cif = $("#ContentPlaceHolder_cif").val();
         var businessName = $("#ContentPlaceHolder_businessName").val();
         if (name === "") {
