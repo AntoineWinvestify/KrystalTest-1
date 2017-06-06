@@ -59,12 +59,37 @@ class file extends AppModel {
             }
             echo 'terminado de guardar directorio</br>';
             echo 'Insertando en base de datos</br>';
-            
-             $query = "INSERT INTO `search`.`files_investor` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
+
+            /* $query = "INSERT INTO `search`.`files_investor` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
+              $query = $this->query($query); */
         }
     }
+    //return requiered files of selected companies
+    public function readRequiredFiles($data) {
+        for ($i = 0; $i < count($data); $i++) {
+            if ($i == 0) {
+                $query = "Select * from `search`.`requieredfiles` where company_id =" . $data[$i]['companies_ocrs']['company_id'];
+            } else {
+                $query = $query . " OR company_id =" . $data[$i]['companies_ocrs']['company_id'];
+            }
+        }
+        $result = $this->query($query);
+        foreach ($result as $result) {
+            $files[] = $result['requieredfiles']['file_id'];
+        }
+        $files = array_unique($files);
+        return $files;
+    }
     
-    
-    
+    public function getFilesData($data){
+        foreach($data as $data){    
+            $files[] = $this->find('all', array(
+            'conditions' => array(
+                'id' => $data),
+            'recursive' => -1,));               
+        }
+        
+        return $files;
+    }
 
 }

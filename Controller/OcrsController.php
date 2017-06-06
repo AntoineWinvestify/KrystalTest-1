@@ -192,20 +192,33 @@ class ocrsController extends AppController {
     //One Click Registration - Investor Views
     function ocrInvestorDataPanel() {
         echo "1";
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+
         $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
+
+
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
         $data2 = $this->Ocr->ocrGetData($id);
+
+        $companies = $this->Ocr->getSelectedCompanies($id);
+        $requiredFiles = $this->File->readRequiredFiles($companies);  
+        
         $this->set('investor', $data);
         $this->set('ocr', $data2);
+        $this->set('requiredFiles', $this->File->getFilesData($requiredFiles));
         echo " ";
         return 1;
     }
 
     function ocrInvestorPlatformSelection() {
         $this->layout = 'azarus_private_layout';
+        
         $this->set('company', $this->Company->companiesDataOCR());
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));       
+     
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
+        $this->set('registered', $this->Ocr->getRegisteredCompanies($id));
+        
         echo " ";
         return 1;
     }

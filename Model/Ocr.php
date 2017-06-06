@@ -199,7 +199,21 @@ class ocr extends AppModel {
                 'investor_id' => $id),
             'recursive' => -1,));
 
-        $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . ";";
+        $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 0;";
+        return $this->query($query);
+    }
+    
+        public function getRegisteredCompanies($id) {
+            
+        $ocrId = $this->find('first', array(
+            'fields' => array(
+                'id',
+            ),
+            'conditions' => array(
+                'investor_id' => $id),
+            'recursive' => -1,));
+
+        $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 1;";
         return $this->query($query);
     }
 
