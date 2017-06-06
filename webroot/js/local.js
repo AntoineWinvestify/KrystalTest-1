@@ -550,7 +550,7 @@ app.visual = {
         $("#OCR_InvestorPanelA input").removeClass("errorBorder"); // remove ALL redborders
         var name = $("#ContentPlaceHolder_name").val();
         var surname = $("#ContentPlaceHolder_surname").val();
-        var identificationId = $("#Id").val();
+        var identificationId = $("#dni").val();
         var dateOfBirth = $("#ContentPlaceHolder_dateOfBirth").val();
         var email = $("#ContentPlaceHolder_email").val();
         var telephone = $("#ContentPlaceHolder_telephone").telIntlInput("getNumber");
@@ -559,7 +559,7 @@ app.visual = {
         var city = $("#ContentPlaceHolder_city").val();
         var country = $("#ContentPlaceHolder_country").val();
         var iban = $("#ContentPlaceHolder_iban").val();
-        var vehicle = $("#vehicle").val();
+        var investmentVehicle = $("#investmentVehicle");
         var cif = $("#ContentPlaceHolder_cif").val();
         var businessName = $("#ContentPlaceHolder_businessName").val();
         if (name === "") {
@@ -633,7 +633,7 @@ app.visual = {
             }
         }
         //If is selected 'I use my company as investment vehicle', validate CIF & Business Name
-        if (vehicle.is(":checked")) {
+        if (investmentVehicle.is(":checked")) {
             if (cif === "") {
                 console.log("empty CIF");
                 $(".investorCif").addClass("redBorder");

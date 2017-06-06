@@ -73,11 +73,11 @@ class ocr extends AppModel {
         if (count($id) > 0) {
 
             echo 'existe';
-            if ($datos['Ocr_vehicle'] == 1) {
+            if ($datos['Ocr_investmentVehicle'] == 1) {
                 $data = array(
                     'id' => $id['Ocr']['id'],
                     'Investor_id' => $datos['Investor_id'],
-                    'Ocr_vehicle' => 1,
+                    'Ocr_investmentVehicle' => 1,
                     'Investor_cif' => $datos['Investor_cif'],
                     'Investor_businessName' => $datos['Investor_businessName'],
                     'Investor_iban' => $datos['Investor_iban'],
@@ -86,7 +86,7 @@ class ocr extends AppModel {
                 $data = array(
                     'id' => $id['Ocr']['id'],
                     'Investor_id' => $datos['Investor_id'],
-                    'Ocr_vehicle' => 0,
+                    'Ocr_investmentVehicle' => 0,
                     'Investor_cif' => null,
                     'Investor_businessName' => null,
                     'Investor_iban' => $datos['Investor_iban'],
@@ -95,10 +95,10 @@ class ocr extends AppModel {
             //Si no existe, creo una nueva fila ocr    
         } else {
             echo 'no existe';
-            if ($datos['Ocr_vehicle'] == 1) {
+            if ($datos['Ocr_investmentVehicle'] == 1) {
                 $data = array(
                     'Investor_id' => $datos['Investor_id'],
-                    'Ocr_vehicle' => 1,
+                    'Ocr_investmentVehicle' => 1,
                     'Investor_cif' => $datos['Investor_cif'],
                     'Investor_businessName' => $datos['Investor_businessName'],
                     'Investor_iban' => $datos['Investor_iban'],
@@ -106,7 +106,7 @@ class ocr extends AppModel {
             } else {
                 $data = array(
                     'Investor_id' => $datos['Investor_id'],
-                    'Ocr_vehicle' => 0,
+                    'Ocr_investmentVehicle' => 0,
                     'Investor_cif' => null,
                     'Investor_businessName' => null,
                     'Investor_iban' => $datos['Investor_iban'],
