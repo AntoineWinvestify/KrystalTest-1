@@ -130,11 +130,9 @@ class ocrsController extends AppController {
             $companies = array(
                 'investorId' => $id,
                 'number' => $companyNumber,
+                'idCompanies' => $_REQUEST['idCompany']
             );
 
-            for ($i = 0; $i < $companyNumber; $i++) {
-                $companies[$i] = $_REQUEST[$i];
-            }
             $result = $this->Ocr->saveCompaniesOcr($companies);
             $this->set('result', $result);
         }

@@ -152,7 +152,7 @@ class ocr extends AppModel {
                 'recursive' => -1,));
 
 
-            $comp = array_slice($data, 2);
+            $comp = $data["idCompanies"];
 
             for ($i = 0; $i < count($comp); $i++) {
 

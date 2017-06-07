@@ -11,10 +11,14 @@
 ?>
 
 <script>
+    total = <?php echo count($selected) ?>;
+    var numberCompanies = 0;
     var i = 0;
+    var z = 0;
     $(document).ready(function () {
         addEnvent();
         extraEvent();
+        selEvent();
         //Flitrado por ajax
         /*$('.filter').change(function () {
          country = $('#filterCountry').val();
@@ -36,16 +40,21 @@
          var data = jQuery.param(params);
          getServerData(link, data, successFilter, errorFilter);
          });*/
+
         //Ajax sent companies
         $('#sentCompanies').click(function () {
-            var numberCompanies = $('#numberCompanies').val();
+            var idCompany = new Array();
             var params = {
-                numberCompanies: numberCompanies
+                numberCompanies: numberCompanies,
             };
-            for (var j = 0; j < numberCompanies; j++) {
-                params[j] = $("[name='company" + j + "']").attr("value");
-            }
 
+            for (var j = 1; j <= z; j++) {
+                if ($("[name='company" + j + "']").length) {
+                    idCompany.push($("[name='company" + j + "']").attr("value"));
+                }
+
+            }
+            params["idCompany"] = idCompany;
 
             link = "../Ocrs/oneClickInvestorI";
             var data = jQuery.param(params);
@@ -82,8 +91,8 @@
 
     function successSentCompanies(result) {}
     function errorSentCompanies(result) {}
-    
-    
+
+
 
     function successDataPanel(result) {
         $("#OCR_InvestorPanel").html(result);
@@ -91,16 +100,18 @@
     function errorDataPanel(result) {
         $("#OCR_InvestorPanel").html(result);
     }
-    
-    
-    
-    function successDelete(result){
+
+
+
+    function successDelete(result) {
         $("#report").html("Compañia eliminada");
+        total--;
+        recount();
     }
-    function errorDelete(result){
+    function errorDelete(result) {
     }
-  
-  
+
+
     function addEnvent() {
         //iCheck plugin
         $('input').iCheck({
@@ -119,11 +130,8 @@ foreach ($selected as $selected) {
 }
 ?>
 
-        if ($(".inDB").length) {
 
-        } else {
-            $("#sel").css("display", "none");
-        }
+
         $("#platformSelection").find(".btnSelect").prop('disabled', true);
         //Te elimina las compañias ya seleccionadas despues de un filtro
         $('#selection').children('.selected').each(function () {
@@ -137,18 +145,13 @@ foreach ($selected as $selected) {
 
         //Te pasa el seleccionado a su zona
         $(".btnSelect").click(function () {
+            z++;
             $(this).parentsUntil("#platformSelection").fadeOut();
-            $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + i + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
-            i++;
-            $("#numberCompanies").val(i);
-
-            if ($("#numberCompanies").val() > 0) {
-                $("#sel").fadeIn();
-            } else {
-                $("#sel").css("display", "none");
-            }
+            $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+            recount();
             extraEvent();
         });
+
 
         //Te comprueba los dos checkbox de la plataforma y te habilita o desabilita el select
         $(".iCheck-helper").click(function () {
@@ -172,9 +175,31 @@ foreach ($selected as $selected) {
             $("#platformSelection").find("#" + idDel).parent().fadeIn();
             $("#platformSelection").find("#" + idDel).parent().find('*').fadeIn();
             $(this).parent().parent().parent().remove();
+            recount();
         });
-    }
 
+    }
+    function recount() {
+        i = 0;
+        $(".btnSelectedPlatform").each(function () {
+            i++;
+            $("#numberCompanies").val(i - total);
+            numberCompanies = i - total;
+        });
+        selEvent();
+    }
+    function selEvent() {
+        if (total == 0 & numberCompanies == 0) {
+            $("#sel").fadeOut();
+        } else {
+            $("#sel").fadeIn();
+        }
+        if ($(".btnSelectedPlatformNoDB").length) {
+        } else {
+            $("#sel").fadeOut();
+        }
+
+    }
 </script>
 <div id="OCR_InvestorPanel">
     <div class="row">
@@ -183,7 +208,7 @@ foreach ($selected as $selected) {
             <?php
             /* DIV 1: Selected platforms */
             //print_r($selected);
-            // print_r($company);
+            //print_r($company);
             ?>
             <div id="sel">
                 <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
@@ -204,7 +229,7 @@ foreach ($selected as $selected) {
 
 
 
-                    //Automatic feedback
+//Automatic feedback
                     /* for ($i = 0; $i < count($selected); $i++) {
                       if ($selected['companies_ocrs']['statusOcr'] == 0) {
                       $idSel = $selected[$i]['companies_ocrs']['company_id'];
@@ -224,34 +249,35 @@ foreach ($selected as $selected) {
                       }
                       }
                       }
-                      } */
+                      }
+                      <!--<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                      <div class="box box-widget widget-user-2 selectedPlatform">
+                      <div class="widget-user-header">
+                      <img src="/img/logo/Finanzarel.png" style="max-height: 100px" alt="platform-logotype" class="responsiveImg center-block platformLogo"/>
+                      </div>
+                      </div>
+                      </div>
+                      <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                      <div class="box box-widget widget-user-2 pendingPlatform">
+                      <div class="widget-user-header">
+                      <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
+                      <img src="/img/logo/Zank.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
+                      </div>
+                      </div>
+                      </div>
+                      <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                      <div class="box box-widget widget-user-2 registeredPlatform">
+                      <div class="widget-user-header">
+                      <i class="fa fa-check-circle prueba" style="color: rgb(90, 204, 90)"></i>
+                      <img src="/img/logo/Comunitae.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
+                      </div>
+                      </div>
+                      </div>-->
+                     */
 
                     echo $this->Form->end();
                     ?> 
 
-                    <!--<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                        <div class="box box-widget widget-user-2 selectedPlatform">
-                            <div class="widget-user-header">
-                                <img src="/img/logo/Finanzarel.png" style="max-height: 100px" alt="platform-logotype" class="responsiveImg center-block platformLogo"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                        <div class="box box-widget widget-user-2 pendingPlatform">
-                            <div class="widget-user-header">
-                                <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
-                                <img src="/img/logo/Zank.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                        <div class="box box-widget widget-user-2 registeredPlatform">
-                            <div class="widget-user-header">
-                                <i class="fa fa-check-circle prueba" style="color: rgb(90, 204, 90)"></i>
-                                <img src="/img/logo/Comunitae.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
-                            </div>
-                        </div>
-                    </div>-->
 
                 </div>
                 <div class="row">
