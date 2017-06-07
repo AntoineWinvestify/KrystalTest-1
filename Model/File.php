@@ -31,15 +31,14 @@ class file extends AppModel {
 
     var $name = 'File';
 
-    public function ocrFileSave($data, $id) {
-        print_r($data);
-        foreach ($data as $data) {           
+    //upload file
+    public function ocrFileSave($data, $identity, $id, $type) {
+        foreach ($data as $data) {
             if ($data['size'] == 0 || $data['error'] !== 0) {
                 continue;
             }
             $filename = basename($data['name']);
-            $uploadFolder = 'files/investors/' . $id . '';
-            $filename = $filename;
+            $uploadFolder = 'files/investors/' . $identity . '';
             $uploadPath = $uploadFolder . DS . $filename;
 
             if (!file_exists($uploadFolder)) {
@@ -49,11 +48,24 @@ class file extends AppModel {
             if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
                 continue;
             }
-
-            /* $query = "INSERT INTO `search`.`files_investor` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
-              $query = $this->query($query); */
+            print_r($data);
+            $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $filename . "', '" . $uploadPath . "');";
+            echo "$query";
+            $query = $this->query($query);
         }
     }
+
+    //delete file
+    public function ocrFileDelete($data, $identity) {
+        print_r($data);
+        $filename = basename($data['name']);
+        $uploadFolder = 'files/investors/' . $identity . '';
+        $uploadPath = $uploadFolder . DS . $filename;
+        $file = new File($uploadFolder . DS . $itemId . DS . $filename);
+
+        return $file->delete();
+    }
+
     //return requiered files of selected companies
     public function readRequiredFiles($data) {
         for ($i = 0; $i < count($data); $i++) {
@@ -70,15 +82,15 @@ class file extends AppModel {
         $files = array_unique($files);
         return $files;
     }
-    
-    public function getFilesData($data){
-        foreach($data as $data){    
+
+    public function getFilesData($data) {
+        foreach ($data as $data) {
             $files[] = $this->find('all', array(
-            'conditions' => array(
-                'id' => $data),
-            'recursive' => -1,));               
+                'conditions' => array(
+                    'id' => $data),
+                'recursive' => -1,));
         }
-        
+
         return $files;
     }
 

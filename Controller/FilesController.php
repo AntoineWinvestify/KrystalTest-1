@@ -33,7 +33,7 @@
 
 
  */
-App::uses('CakeEvent', 'Event');
+App::uses('CakeEvent', 'Event', 'File', 'Utility');
 
 class filesController extends AppController {
 
@@ -51,12 +51,17 @@ class filesController extends AppController {
     function upload() {
         $this->autoRender = false;
         $data = $this->params['data']['Files'];
-        echo "1";
+        $type = $data['info'];
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
         $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-        echo "2";
-        echo "<h1>ID " . $identity . "</h1>";
-        $this->File->ocrFileSave($data, $identity);
-        echo "3";
+        $this->File->ocrFileSave($data, $identity, $id, $type);
+    }
+
+    function delete() {
+        $this->autoRender = false;
+        $data = $this->params['data']['Files'];
+        $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
+        $this->File->ocrFileDelete($data, $identity, $id, $type);
     }
 
 }

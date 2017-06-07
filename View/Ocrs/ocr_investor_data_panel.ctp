@@ -107,11 +107,19 @@
             });
         });
 
-        /*$(".delete").on("click", function () {
-         alert("Borrando archivo");
-         $(this).prop("disabled", true);
-         $(this).parent().parent().find("file").prop("disabled", false);
-         });*/
+        $(".delete").on("click", function () {
+
+            var formdatas = new FormData($(this).parent().parent().find(".Files")[0]);
+            $.ajax({
+                url: '../Files/delete',
+                dataType: 'json',
+                method: 'post',
+                data: formdatas,
+                contentType: false,
+                processData: false,
+                success: successDelete($(this)),
+            });
+        });
 
 <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
             if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> == 1) {
@@ -135,7 +143,10 @@
         thisFile.prop("disabled", true);
         thisFile.parent().parent().parent().find(".delete").prop("disabled", false);
     }
-
+    function successDelete(thisFile) {
+        $(this).parent().parent().find("file").prop("disabled", false);
+        $(this).prop("disabled", true);
+    }
 
 </script>
 <div id="OCR_InvestorPanelA">
@@ -665,19 +676,22 @@
                                         foreach ($requiredFiles as $requiredFiles) {
                                             ?>
                                             <tr>
-                                                <td><?php echo __($requiredFiles[0]['File']['file_type'])?></td>
+                                                <td><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
                                                 <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
-                                                <td>
-                                                    <?php
-                                                    echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
-                                                    echo $this->Form->file($requiredFiles[0]['File']['file_type']);
-                                                    echo $this->Form->hidden('info',array( 'class'=>'typeFile' ,'value'=>$requiredFiles[0]['File']['id']));
-                                                    echo $this->Form->end();
-                                                    ?>
-                                                </td>
-                                                <td>
-                                                    <button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                                </td>
+                                                <?php
+                                                echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
+
+                                                echo "<td>";
+                                                echo $this->Form->file($requiredFiles[0]['File']['file_type']);
+                                                echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $requiredFiles[0]['File']['id']));
+                                                
+                                                echo "</td>";
+                                                echo "<td>";
+                                                    echo '<button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i>' . __('Delete') . '</button>';
+                                                echo "</td>";
+                                                
+                                                echo $this->Form->end();
+                                                ?>
                                             </tr>
                                             <?php
                                         }
