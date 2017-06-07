@@ -14,7 +14,7 @@ A short description of the motivation behind the creation and maintenance of the
 
 Provide code examples and explanations of how to get the project.
 
-#External files
+# External files
 
 Some files are very special and we do not want that are on git "history", we deleted from the git tree so we can change from branch to branch without incidents. Although these files 
 are indispensable so we will have the files uploaded on google drive.
