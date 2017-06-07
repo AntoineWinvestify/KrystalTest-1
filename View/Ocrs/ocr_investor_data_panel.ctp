@@ -148,6 +148,15 @@
         $(this).prop("disabled", true);
     }
 
+    function addExistingDocuments(){
+        foreach ($existingFiles as $existingFiles) {
+            $("")
+            print_r($existingFiles);
+        
+        
+        }
+    }
+
 </script>
 <div id="OCR_InvestorPanelA">
     <div class="row">
@@ -673,25 +682,25 @@
                                             <th><?php echo __('Delete') ?></th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="body">
                                         <?php
                                         foreach ($requiredFiles as $requiredFiles) {
                                             ?>
                                             <tr>
                                                 <td><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
                                                 <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
+                                                <td>
+                                                    <?php
+                                                    echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
+                                                    echo $this->Form->file($requiredFiles[0]['File']['file_type']);
+                                                    echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $requiredFiles[0]['File']['id']));
+                                                    ?>
+
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
+                                                </td>
                                                 <?php
-                                                echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
-
-                                                echo "<td>";
-                                                echo $this->Form->file($requiredFiles[0]['File']['file_type']);
-                                                echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $requiredFiles[0]['File']['id']));
-
-                                                echo "</td>";
-                                                echo "<td>";
-                                                echo '<button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i>' . __('Delete') . '</button>';
-                                                echo "</td>";
-
                                                 echo $this->Form->end();
                                                 ?>
                                             </tr>

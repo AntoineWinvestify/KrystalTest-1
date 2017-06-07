@@ -200,6 +200,9 @@ class ocrsController extends AppController {
         $companies = $this->Ocr->getSelectedCompanies($id);
         $requiredFiles = $this->File->readRequiredFiles($companies);  
         
+        $existingFiles = $this->File->readExistingFiles($id);
+         
+        $this->set('existingFiles',$existingFiles);
         $this->set('investor', $data);
         $this->set('ocr', $data2);
         $this->set('requiredFiles', $this->File->getFilesData($requiredFiles));

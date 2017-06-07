@@ -61,7 +61,7 @@ class file extends AppModel {
         $filename = basename($data['name']);
         $uploadFolder = 'files/investors/' . $identity . '';
         $uploadPath = $uploadFolder . DS . $filename;
-        $file = new File($uploadFolder . DS . $itemId . DS . $filename);
+        $file = new File($uploadPath);
 
         return $file->delete();
     }
@@ -92,6 +92,12 @@ class file extends AppModel {
         }
 
         return $files;
+    }
+
+    public function readExistingFiles($id) {
+        $query = "Select * from `search`.`files_investors` where investor_id =" . $id;
+        $result = $this->query($query);
+        return $result;
     }
 
 }
