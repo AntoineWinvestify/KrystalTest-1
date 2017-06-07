@@ -28,6 +28,9 @@
  * [2017-06-05] Version 0.2
  * Added all error divs & classes to check form 
  * 
+ * [2017-06-07] Version 0.3
+ * Added javascript form validation [pending: country, telephone, dateOfBirth, IBAN).
+ * 
  * Pending:
  * Server validation
  */

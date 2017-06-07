@@ -3,10 +3,12 @@
  * One Click Registration - Investor Panel B
  * Select Platforms to Register
  * 
- * [2017-05-23] Completed view
- *              [pending] Click on selected platform to add it on 'investorSelection' div & delete on 'platformSelection'.
- *              [pending] Mechanism to generate all platform elements
- *              [pending] Mechanism to generate final modal
+ * [2017-05-23] Version 0.1
+ * Completed view
+ * [pending] Click on selected platform to add it on 'investorSelection' div & delete on 'platformSelection'.
+ * [pending] Mechanism to generate all platform elements
+ * [pending] Mechanism to generate final modal
+ * 
  */
 ?>
 
