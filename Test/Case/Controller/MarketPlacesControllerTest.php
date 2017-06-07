@@ -77,7 +77,7 @@ class MarketPlacesControllerTest extends ControllerTestCase {
               ]
       	];*/
 
-        $result_json = $this->testAction("/marketplaces/cronQueueEventParallel");
+        $result_json = $this->testAction("/marketplaces/cronQueueEvent");
         /*$result_array = json_decode($result_json, $assoc = true);
         $data_array = json_decode($data, $assoc = true);
         foreach ($result_array as $key => $item) {
