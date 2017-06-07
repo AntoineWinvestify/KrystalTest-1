@@ -28,12 +28,15 @@
   function OneClickAdmin                                     [Not implemented]
   function OneClickCompany                                   [Not implemented]
 
-2017/6/1  version 0.2
+  2017/6/01  version 0.2
  * upload                                                            [OK]
-2017/6/5  version 0.3
- deleteCompanyOcr                                                     [OK]
+  2017/6/05  version 0.3
+  deleteCompanyOcr                                                     [OK]
  *                                       
-
+  2017/6/06  version 0.4
+  upload deleted
+  id problem fixed
+ *                                                  [OK]
 
 
   Pending:
@@ -47,7 +50,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor');
+    var $uses = array('Ocr', 'Company', 'Investor', 'File');
     var $error;
 
     function beforeFilter() {
@@ -94,16 +97,17 @@ class ocrsController extends AppController {
                 'investor_country' => $investor_country,
             );
 
-
+            $result1 = $this->Investor->investorDataSave($datosInvestor);
+            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $datosOcr = array(
-                'investor_id' => $this->Session->read('Auth.User.id'),
+                'investor_id' => $id,
                 'ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],
                 'investor_cif' => $_REQUEST['cif'],
                 'investor_businessName' => $_REQUEST['businessName'],
                 'investor_iban' => $_REQUEST['iban']
             );
 
-            $result1 = $this->Investor->investorDataSave($datosInvestor);
+
             $result2 = $this->Ocr->ocrDataSave($datosOcr);
             //$this->Orc->saveDocuments($datos);
             $this->set('result1', $result1);
@@ -111,33 +115,24 @@ class ocrsController extends AppController {
         }
     }
 
-    function upload() {
-        $this->autoRender = false;
-        $data = $this->params['data']['Files'];
-        $id = $this->Session->read('Auth.User.id');
-        echo "<h1>ID " . $id . "</h1>";
-        $this->Ocr->ocrFileSave($data, $id);
-    }
-
 //Envia solicitud de las compañias seleccionadas al admin. Ademas te actualizaria la seccion de compañias seleccionadas
     function oneClickInvestorI() {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-
+            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $this->layout = 'ajax';
             $this->disableCache();
 
             $companyNumber = $_REQUEST['numberCompanies'];
 
+
             $companies = array(
-                'investorId' => $this->Session->read('Auth.User.id'),
+                'investorId' => $id,
                 'number' => $companyNumber,
+                'idCompanies' => $_REQUEST['idCompany']
             );
 
-            for ($i = 0; $i < $companyNumber; $i++) {
-                $companies[$i] = $_REQUEST[$i];
-            }
             $result = $this->Ocr->saveCompaniesOcr($companies);
             $this->set('result', $result);
         }
@@ -147,14 +142,14 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-
+            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $this->layout = 'ajax';
             $this->disableCache();
 
             $companyId = $_REQUEST['id_company'];
 
             $delComp = array(
-                'investorId' => $this->Session->read('Auth.User.id'),
+                'investorId' => $id,
                 'companyId' => $companyId,
             );
 
@@ -195,18 +190,33 @@ class ocrsController extends AppController {
     //One Click Registration - Investor Views
     function ocrInvestorDataPanel() {
         echo "1";
+
         $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
-        $data2 = $this->Ocr->ocrGetData($this->Session->read('Auth.User.id'));
+
+
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $data2 = $this->Ocr->ocrGetData($id);
+
+        $companies = $this->Ocr->getSelectedCompanies($id);
+        $requiredFiles = $this->File->readRequiredFiles($companies);  
+        
         $this->set('investor', $data);
         $this->set('ocr', $data2);
+        $this->set('requiredFiles', $this->File->getFilesData($requiredFiles));
         echo " ";
         return 1;
     }
 
     function ocrInvestorPlatformSelection() {
         $this->layout = 'azarus_private_layout';
+        
         $this->set('company', $this->Company->companiesDataOCR());
-        $this->set('selected', $this->Ocr->getSelectedCompanies($this->Session->read('Auth.User.id')));
+        
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));       
+     
+        $this->set('selected', $this->Ocr->getSelectedCompanies($id));
+        $this->set('registered', $this->Ocr->getRegisteredCompanies($id));
+        
         echo " ";
         return 1;
     }

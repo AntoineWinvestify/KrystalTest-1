@@ -103,14 +103,28 @@
 
             var formdatas = new FormData($(this).parent()[0]);
             $.ajax({
-                url: '../Ocrs/upload',
+                url: '../Files/upload',
                 dataType: 'json',
                 method: 'post',
                 data: formdatas,
                 contentType: false,
-                processData: false
+                processData: false,
+                success: successUpload($(this)),
             });
-            $(this).prop("disabled", true);
+        });
+
+        $(".delete").on("click", function () {
+
+            var formdatas = new FormData($(this).parent().parent().find(".Files")[0]);
+            $.ajax({
+                url: '../Files/delete',
+                dataType: 'json',
+                method: 'post',
+                data: formdatas,
+                contentType: false,
+                processData: false,
+                success: successDelete($(this)),
+            });
         });
 
 <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
@@ -130,6 +144,14 @@
 
     function success() {
 
+    }
+    function successUpload(thisFile) {
+        thisFile.prop("disabled", true);
+        thisFile.parent().parent().parent().find(".delete").prop("disabled", false);
+    }
+    function successDelete(thisFile) {
+        $(this).parent().parent().find("file").prop("disabled", false);
+        $(this).prop("disabled", true);
     }
 
 </script>
@@ -649,7 +671,6 @@
                                        data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <thead>
                                         <tr>
-                                            <th><?php echo __('Date') ?></th>
                                             <th><?php echo __('Name') ?></th>
                                             <th><?php echo __('Status') ?></th>
                                             <th><?php echo __('Upload') ?></th>
@@ -657,71 +678,93 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>01-01-2017</td>
-                                            <td>NIF_Front</td>
-                                            <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __('Incorrect') ?></span></td>
-                                            <td>
+                                        <?php
+                                        foreach ($requiredFiles as $requiredFiles) {
+                                            ?>
+                                            <tr>
+                                                <td><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
+                                                <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
                                                 <?php
-                                                /* <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button> */
-                                                echo $this->Form->create('Files', array('action' => '../Ocrs/upload', 'type' => 'file', 'class' => 'Files'));
-                                                echo $this->Form->file('nifF');
+                                                echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
+
+                                                echo "<td>";
+                                                echo $this->Form->file($requiredFiles[0]['File']['file_type']);
+                                                echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $requiredFiles[0]['File']['id']));
+                                                
+                                                echo "</td>";
+                                                echo "<td>";
+                                                    echo '<button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i>' . __('Delete') . '</button>';
+                                                echo "</td>";
+                                                
                                                 echo $this->Form->end();
                                                 ?>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>01-01-2017</td>
-                                            <td>NIF_Back</td>
-                                            <td><span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning') ?></span></td>
-                                            <td>
-                                                <?php
-                                                /* <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button> */
-                                                echo $this->Form->create('Files', array('action' => '../Ocrs/upload', 'type' => 'file', 'class' => 'Files'));
-                                                echo $this->Form->file('nifB');
-                                                echo $this->Form->end();
-                                                ?>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>01-01-2017</td>
-                                            <td>IBAN</td>
-                                            <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span></td>
-                                            <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>01-01-2017</td>
-                                            <td>Another one</td>
-                                            <td><span style="color:#3399ff"><i class="fa fa-thumb-tack"></i> <?php echo __('Validating') ?></span></td>
-                                            <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>01-01-2017</td>
-                                            <td>Another one</td>
-                                            <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
-                                            <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-default" style="background-color:#990000; color:white;" disabled><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                            </td>
-                                        </tr>
+                                            </tr>
+                                            <?php
+                                        }
+                                        /* <tr>
+                                          <td>01-01-2017</td>
+                                          <td>NIF_Front</td>
+                                          <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __('Incorrect') ?></span></td>
+                                          <td>
+                                          <?php
+                                          echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
+                                          echo $this->Form->file('nifF');
+                                          echo $this->Form->end();
+                                          ?>
+                                          </td>
+                                          <td>
+                                          <button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
+                                          </td>
+                                          </tr>
+                                          <tr>
+                                          <td>01-01-2017</td>
+                                          <td>NIF_Back</td>
+                                          <td><span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning') ?></span></td>
+                                          <td>
+                                          <?php
+                                          echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
+                                          echo $this->Form->file('nifB');
+                                          echo $this->Form->end();
+                                          ?>
+                                          </td>
+                                          <td>
+                                          <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
+                                          </td>
+                                          </tr>
+                                          <tr>
+                                          <td>01-01-2017</td>
+                                          <td>IBAN</td>
+                                          <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span></td>
+                                          <td>
+                                          <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
+                                          </td>
+                                          <td>
+                                          <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
+                                          </td>
+                                          </tr>
+                                          <tr>
+                                          <td>01-01-2017</td>
+                                          <td>Another one</td>
+                                          <td><span style="color:#3399ff"><i class="fa fa-thumb-tack"></i> <?php echo __('Validating') ?></span></td>
+                                          <td>
+                                          <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
+                                          </td>
+                                          <td>
+                                          <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
+                                          </td>
+                                          </tr>
+                                          <tr>
+                                          <td>01-01-2017</td>
+                                          <td>Another one</td>
+                                          <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
+                                          <td>
+                                          <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
+                                          </td>
+                                          <td>
+                                          <button type="button" class="btn btn-default" style="background-color:#990000; color:white;" disabled><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
+                                          </td>
+                                          </tr> */
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
