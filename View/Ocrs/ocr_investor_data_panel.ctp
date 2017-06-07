@@ -44,6 +44,7 @@
 
 <script>
     $(function () {
+        addExistingDocuments();
         //telephone
         $('#ContentPlaceHolder_telephone').intlTelInput();
 
@@ -68,8 +69,7 @@
                 event.stopPropagation();
                 event.preventDefault();
                 return false;
-            }
-            else {
+            } else {
                 var params = {
                     investor_name: $("#ContentPlaceHolder_name").val(),
                     investor_surname: $("#ContentPlaceHolder_surname").val(),
@@ -154,17 +154,27 @@
         $(this).prop("disabled", true);
     }
 
-    function addExistingDocuments(){
-        foreach ($existingFiles as $existingFiles) {
-            $("")
-            print_r($existingFiles);
-        
-        
-        }
+    function addExistingDocuments() {
+<?php
+foreach ($existingFiles as $existingFiles) {
+    ?>
+            id = <?php echo $existingFiles["files_investors"]["file_id"] ?>;
+            $(".documentRow").each(function () {
+                if ($(this).attr("id") == id) {
+                    $("#" + id).html("terminado");
+                }
+            });
+
+
+    <?php
+}
+?>
     }
 
 </script>
 <div id="OCR_InvestorPanelA">
+
+
     <div class="row">
         <div class="col-lg-9">
             <div class="card">
@@ -692,7 +702,7 @@
                                         <?php
                                         foreach ($requiredFiles as $requiredFiles) {
                                             ?>
-                                            <tr>
+                                            <tr id="<?php echo $requiredFiles[0]['File']['id'] ?>" class="documentRow">
                                                 <td><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
                                                 <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
                                                 <td>

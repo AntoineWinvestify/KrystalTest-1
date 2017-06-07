@@ -61,7 +61,7 @@ class filesController extends AppController {
         $this->autoRender = false;
         $data = $this->params['data']['Files'];
         $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-        $this->File->ocrFileDelete($data, $identity, $id, $type);
+        $this->File->ocrFileDelete($data, $identity);
     }
 
 }
