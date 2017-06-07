@@ -255,8 +255,8 @@ function collectCompanyMarketplaceData() {
                 $dom->preserveWhiteSpace = false;
 
                 $resultMiLoanbook = false; // Could not login, credential error
-                /*$uls = $dom->getElementsByTagName('ul');
-                if (!$this->hasElements) {
+                $uls = $dom->getElementsByTagName('ul');
+                /*if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }*/
                 foreach ($uls as $ul) {
