@@ -14,6 +14,14 @@ A short description of the motivation behind the creation and maintenance of the
 
 Provide code examples and explanations of how to get the project.
 
+#External files
+
+Some files are very special and we do not want that are on git "history", we deleted from the git tree so we can change from branch to branch without incidents. Although these files 
+are indispensable so we will have the files uploaded on google drive.
+
+Vendor folder, it will be on app folder.
+https://drive.google.com/file/d/0B7LAqFLPVPL7T09ZU3FQOW90TFE/view?usp=sharing
+
 ## API Reference
 
 Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
