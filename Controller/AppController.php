@@ -49,9 +49,9 @@ App::uses('Controller', 'Controller');
 
 define("NOT_ACTIVE", 0);
 define("ACTIVE", 1);
-define("HOUR", 4);
-define("DAY", 1);
-define('MONTH', 2);
+//define("HOUR", 4);
+//define("DAY", 1);
+//define('MONTH', 2);
 define('YEAR_CUARTER', 3);
 define('TRUE', 1);
 define('FALSE', 0);

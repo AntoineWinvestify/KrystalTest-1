@@ -64,7 +64,7 @@ public function implementedEvents() {
 	$configuredEvents = Configure::read('event');
 
 	foreach ($configuredEvents as $key => $value) {
-		if ($value == true) {
+		if ($value == true && !empty($allImplementedEvents[$key])) {
 			$selectedEvents[$key] = $allImplementedEvents[$key];
 		}
 	}	

@@ -354,7 +354,7 @@ public function afterFind($results, $primary = false) {
 *	
 */
 
-function beforeSave ($created, $options = array()) {
+function beforeSave ( $options = array()) {
 
 // Store telephone number without spaces
 	if (!empty($this->data['Investor']['investor_dateOfBirth']))  {

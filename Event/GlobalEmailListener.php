@@ -70,7 +70,7 @@ SendContacMessage                   Somebody contacted use via ContactForm
 	Configure::load('p2pGestor.php', 'default');
 	$configuredEvents = Configure::read('event');
 	foreach ($configuredEvents as $key => $value) {
-		if ($value == true) {   
+		if ($value == true && !empty($allImplementedEvents[$key])) {
 			$selectedEvents[$key] = $allImplementedEvents[$key];
 
 		}

@@ -43,6 +43,7 @@ Removed initLoad and replaced with $this->getGeoLocationData in function getGlob
 
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
+App::uses('AppController', 'Controller');
 require_once "../../vendors/autoload.php";	
 
 class MarketPlacesController extends AppController {
