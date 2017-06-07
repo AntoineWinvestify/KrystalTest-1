@@ -259,7 +259,7 @@ function collectCompanyMarketplaceData() {
                 foreach ($summaryData['investments'] as $key => $item) {
                     $this->data1[$key]['name'] = $item['project']['name'];
                     $this->data1[$key]['loanId'] = $item['project']['name'];
-                    $this->data1[$key]['date'] = "00-00-0000";
+                    $this->data1[$key]['date'] = $date;
                     $this->data1[$key]['duration'] = $item['investment']['monthsLeft'] . " Meses";
                     $this->data1[$key]['invested'] = (int) (preg_replace('/\D/', '', $item['investment']['total'])) * 100;
                     $this->data1[$key]['commission'] = 0;//(int) (preg_replace('/\D/', '', $item['investment']['taxes'])) * 100;
