@@ -64,32 +64,38 @@
 
 
         $("#activateOCR").click(function () {
-            var params = {
-                investor_name: $("#ContentPlaceHolder_name").val(),
-                investor_surname: $("#ContentPlaceHolder_surname").val(),
-                investor_DNI: $("#dni").val(),
-                investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
-                investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
-                investor_address1: $("#ContentPlaceHolder_address1").val(),
-                investor_postCode: $("#ContentPlaceHolder_postCode").val(),
-                investor_city: $("#ContentPlaceHolder_city").val(),
-                investor_country: $("#ContentPlaceHolder_country").val()
-            };
-
-            if ($("#investmentVehicle").is(':checked')) {
-                params.investmentVehicle = 1;
-                params.cif = $("#ContentPlaceHolder_cif").val();
-                params.businessName = $("#ContentPlaceHolder_businessName").val();
-                params.iban = $("#ContentPlaceHolder_iban").val();
-
-            } else {
-                params.investmentVehicle = 0;
-                params.iban = $("#ContentPlaceHolder_iban").val();
+            if ((result = app.visual.checkForm1CRInvestorData()) === false) {
+                event.stopPropagation();
+                event.preventDefault();
+                return false;
             }
-            link = $("#activateOCR").attr('href');
-            var data = jQuery.param(params);
-            getServerData(link, data, success, error);
+            else {
+                var params = {
+                    investor_name: $("#ContentPlaceHolder_name").val(),
+                    investor_surname: $("#ContentPlaceHolder_surname").val(),
+                    investor_DNI: $("#dni").val(),
+                    investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
+                    investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
+                    investor_address1: $("#ContentPlaceHolder_address1").val(),
+                    investor_postCode: $("#ContentPlaceHolder_postCode").val(),
+                    investor_city: $("#ContentPlaceHolder_city").val(),
+                    investor_country: $("#ContentPlaceHolder_country").val()
+                };
 
+                if ($("#investmentVehicle").is(':checked')) {
+                    params.investmentVehicle = 1;
+                    params.cif = $("#ContentPlaceHolder_cif").val();
+                    params.businessName = $("#ContentPlaceHolder_businessName").val();
+                    params.iban = $("#ContentPlaceHolder_iban").val();
+
+                } else {
+                    params.investmentVehicle = 0;
+                    params.iban = $("#ContentPlaceHolder_iban").val();
+                }
+                link = $("#activateOCR").attr('href');
+                var data = jQuery.param(params);
+                getServerData(link, data, success, error);
+            }
         });
 
 
