@@ -124,7 +124,7 @@
 foreach ($selected as $selected) {
     $idSel = $selected['companies_ocrs']['company_id'];
     ?>
-            logo = $("#<?php echo $selected['companies_ocrs']['company_id']; ?>").find(".logo").attr("src");
+            logo = $(".<?php echo $selected['companies_ocrs']['company_id']; ?>").find(".logo").attr("src");
             $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformDB' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
     <?php
 }
@@ -136,18 +136,14 @@ foreach ($selected as $selected) {
         //Te elimina las compañias ya seleccionadas despues de un filtro
         $('#selection').children('.selected').each(function () {
             company = $(this).attr("value");
-            $('#platformSelection').find(".companyDiv").each(function () {
-                if ($(this).attr("id") == company) {
-                    $(this).parent().css("display", "none");
-                }
-            });
+            $('#platformSelection').find("."+company).css("display", "none");    
         });
 
         //Te pasa el seleccionado a su zona
         $(".btnSelect").click(function () {
             z++;
             $(this).parentsUntil("#platformSelection").fadeOut();
-            $("#selection").append("<div value='" + $(this).parentsUntil($("#platformSelection")).find(".companyDiv").attr("id") + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+            $("#selection").append("<div value='" + $(this).attr("id") + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             recount();
             extraEvent();
         });
@@ -172,8 +168,8 @@ foreach ($selected as $selected) {
         //Borra la plataforma cuando le das a l x
         $('.btnSelectedPlatform').click(function () {
             idDel = $(this).parent().parent().parent().attr("value");
-            $("#platformSelection").find("#" + idDel).parent().fadeIn();
-            $("#platformSelection").find("#" + idDel).parent().find('*').fadeIn();
+            $("#platformSelection").find("." + idDel).fadeIn();
+            $("#platformSelection").find("." + idDel).find('*').fadeIn();
             $(this).parent().parent().parent().remove();
             recount();
         });
@@ -189,12 +185,8 @@ foreach ($selected as $selected) {
         selEvent();
     }
     function selEvent() {
-        if (total == 0 & numberCompanies == 0) {
-            $("#sel").fadeOut();
-        } else {
+        if (total != 0 || $(".btnSelectedPlatformNoDB").length) {
             $("#sel").fadeIn();
-        }
-        if ($(".btnSelectedPlatformNoDB").length) {
         } else {
             $("#sel").fadeOut();
         }
@@ -333,8 +325,8 @@ foreach ($selected as $selected) {
                 <?php
                 foreach ($company as $company) {
                     ?>
-                    <span class="company">
-                        <div id ="<?php echo $company['Company']['id'] ?>" class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                    
+                        <div class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $company['Company']['id'] ?>">
                             <div class="box box-widget widget-user-2">
                                 <div class="widget-user-header">
                                     <div class="row">
@@ -357,13 +349,13 @@ foreach ($selected as $selected) {
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                             <!-- by clicking this button it must charge a modal with terms & conditions + Yes/No buttons to CONFIRM the selection -->
-                                            <button class="btnSelect btn btn-default btn-win2 btnMargin center-block" href = "#"><?php echo __('Select') ?></button>
+                                            <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn-win2 btnMargin center-block" href = "#"><?php echo __('Select') ?></button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </span>
+
                     <?php
                 }
                 ?>
