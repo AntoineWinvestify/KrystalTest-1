@@ -104,7 +104,7 @@ $(document).ready(function() {
 					
 					echo "<td>";
 ?>
-					<p class="btn-light btn btn-default" href="<?php echo $companyResults[$companyId]['company_url']?>" target="_blank" id="btnPartners" ><?php echo __("Invest")?></p>
+					<p class="btn-light btn btn-default btnRounded" href="<?php echo $companyResults[$companyId]['company_url']?>" target="_blank" id="btnPartners" ><?php echo __("Invest")?></p>
 <?php							
 					echo "</td>";
 				echo "</tr>";			

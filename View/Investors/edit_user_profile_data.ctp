@@ -566,7 +566,7 @@ if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
 	<div class="row">
             <div class="col-xs-12 col-sm-6 col-md-5 col-lg-5">
 		<div class="form-group">
-                    <button type="submit" href="/investors/editUserProfileData" id="editUserData" class="btn btn-primary btn-invest"><?php echo __('Save')?></button>
+                    <button type="submit" href="/investors/editUserProfileData" id="editUserData" class="btn btn-primary btn-invest btnRounded"><?php echo __('Save')?></button>
 		</div>
             </div>	
 	</div>

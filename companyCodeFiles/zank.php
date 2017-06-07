@@ -50,9 +50,10 @@ Total invertido correcto, fecha
 
 * Added parallelization to collectUserInvestmentData
 * Added dom verification to collectUserInvestmentData
-
-
- * 
+ 
+2017/06/01
+* Added loop when we take json investments                                     [OK, STILL TO CHECK]
+ 
   Pending:
   Fecha en duda
 
@@ -479,7 +480,7 @@ class zank extends p2pCompany {
                     $this->data1[$key]['amortized'] = $this->getMonetaryValue($item['Amortizado']);
                     $this->data1[$key]['profitGained'] = $this->getPercentage($item['InteresesOrdinarios']);
                     $this->data1[$key]['duration'] = $item['Plazo'] . " Meses";
-                    $this->data1[$key]['commission'] = $item['Comission'];
+                    $this->data1[$key]['commission'] = $this->getMonetaryValue($item['Comision']);
                     $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
                 }
                 $this->data1 = array_values($this->data1);
@@ -531,7 +532,7 @@ class zank extends p2pCompany {
         $userId = trim(preg_replace('/\D/', ' ', $testArray[4]));
 
         if (!is_numeric($userId)) {
-            echo "<br>An eror has occured, could not find internal userId<br>";
+            echo "<br>An error has occured, could not find internal userId<br>";
         }
 
         $needle = "kpi_panel";
@@ -594,68 +595,84 @@ class zank extends p2pCompany {
 // build the Web URL for downloading the list of the individual investments of this user
         $url = array_shift($this->urlSequence);
         $url = $url . $userId . "/0";
+        //Start is the value from we get the investments
+        $start = 0;
+        $form = [
+            "length" => 100,
+            "start" => $start];
+        //This value is 100 to enter in the while but when we are inside we change to the real number of investments
+        $numberJsonInvestments = 100;
+        while ($numberJsonInvestments % 100 == 0) {
+            $str = $this->getCompanyWebpageJson($url, $form);
+            $temp = json_decode($str, $assoc = true);
+            //We take the real number of investments
+            $numberJsonInvestments = count($temp['data']);
 
-        $str = $this->getCompanyWebpage($url);
-        $temp = json_decode($str, $assoc = true);
-
-        $numberOfInvestments = 0;
-        foreach ($temp['data'] as $key => $item) {  // mapping of the data to a generic, own format.										// Keep all which don't have status == "amortizado"
-            //$data1[$key]['status'] = 10;  // dummy value											
-            if (strpos($item['Estado'], "Retrasado")) {
-                $data1[$key]['status'] = PAYMENT_DELAYED;
-            }
-            if (strpos($item['Estado'], "Amortizaci")) {
-                $data1[$key]['status'] = OK;
-            }
-            if (strpos($item['Estado'], "Amortizado")) {
-                $data1[$key]['status'] = TERMINATED_OK;
-            }
-
-//		if (!($data1[$key]['status'] <> OK OR $data1[$key]['status'] <> PAYMENT_DELAYED)) {
-//			continue;									// flush non required loans
-//		echo "FLUSH";
-//		}
-            if ($data1[$key]['status'] == TERMINATED_OK) {
-                unset($data1[$key]);
-                continue;
-            }
-            
-            $numberOfInvestments = $numberOfInvestments + 1;
-            $day = 1; //substr($item['Fecha'],0,2);
-            if ($item['Plazo'] <= 50) {
-                $month = substr($item['Fecha'], 3, 2) + 1;
-
-                $year = substr($item['Fecha'], 6, 4);
-                if ($month == 13) {
-                    $month = 1;
-                    $year++;
+            $numberOfInvestments = 0;
+            foreach ($temp['data'] as $key => $item) {  // mapping of the data to a generic, own format.										// Keep all which don't have status == "amortizado"
+                //$data1[$key]['status'] = 10;  // dummy value											
+                if (strpos($item['Estado'], "Retrasado")) {
+                    $data1[$key]['status'] = PAYMENT_DELAYED;
                 }
-            }
-            if ($item['Plazo'] >= 50) {
-                $month = substr($item['Fecha'], 3, 2) - 1;
-
-                $year = substr($item['Fecha'], 6, 4);
-                if ($month == 0) {
-                    $month = 1;
+                if (strpos($item['Estado'], "Amortizaci")) {
+                    $data1[$key]['status'] = OK;
                 }
+                if (strpos($item['Estado'], "Amortizado")) {
+                    $data1[$key]['status'] = TERMINATED_OK;
+                }
+
+    //		if (!($data1[$key]['status'] <> OK OR $data1[$key]['status'] <> PAYMENT_DELAYED)) {
+    //			continue;									// flush non required loans
+    //		echo "FLUSH";
+    //		}
+                if ($data1[$key]['status'] == TERMINATED_OK) {
+                    unset($data1[$key]);
+                    continue;
+                }
+
+                $numberOfInvestments = $numberOfInvestments + 1;
+                $day = 1; //substr($item['Fecha'],0,2);
+                if ($item['Plazo'] <= 50) {
+                    $month = substr($item['Fecha'], 3, 2) + 1;
+
+                    $year = substr($item['Fecha'], 6, 4);
+                    if ($month == 13) {
+                        $month = 1;
+                        $year++;
+                    }
+                }
+                if ($item['Plazo'] >= 50) {
+                    $month = substr($item['Fecha'], 3, 2) - 1;
+
+                    $year = substr($item['Fecha'], 6, 4);
+                    if ($month == 0) {
+                        $month = 1;
+                    }
+                }
+
+
+                //if($month==13){$month=1; $year = $year+1; } 
+                $date = $year . "/" . $month . "/" . $day;
+                $date = date('d/m/Y', strtotime("+" . $item['Plazo'] . "months", strtotime($date)));
+                //$date = date('d/m/Y', strtotime("+".$item['Plazo']." months", strtotime($date)));
+                $data1[$key]['loanId'] = $item['Prestamo'];
+                $data1[$key]['dateOriginal'] = $item['Fecha'];
+                $data1[$key]['date'] = $date;
+                $data1[$key]['interest'] = $this->getPercentage($item['Rentabilidad']);
+                $data1[$key]['invested'] = $this->getMonetaryValue($item['Inversion']);
+                $data1[$key]['amortized'] = $this->getMonetaryValue($item['Amortizado']);
+                $data1[$key]['profitGained'] = $this->getPercentage($item['InteresesOrdinarios']);
+                $data1[$key]['duration'] = $item['Plazo'] . " Meses";
+                $data1[$key]['commission'] = $this->getMonetaryValue($item['Comision']);
+                $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
             }
-            
-            
-            //if($month==13){$month=1; $year = $year+1; } 
-            $date = $year . "/" . $month . "/" . $day;
-            $date = date('d/m/Y', strtotime("+" . $item['Plazo'] . "months", strtotime($date)));
-            //$date = date('d/m/Y', strtotime("+".$item['Plazo']." months", strtotime($date)));
-            $data1[$key]['loanId'] = $item['Prestamo'];
-            $data1[$key]['dateOriginal'] = $item['Fecha'];
-            $data1[$key]['date'] = $date;
-            $data1[$key]['interest'] = $this->getPercentage($item['Rentabilidad']);
-            $data1[$key]['invested'] = $this->getMonetaryValue($item['Inversion']);
-            $data1[$key]['amortized'] = $this->getMonetaryValue($item['Amortizado']);
-            $data1[$key]['profitGained'] = $this->getPercentage($item['InteresesOrdinarios']);
-            $data1[$key]['duration'] = $item['Plazo'] . " Meses";
-            $data1[$key]['commission'] = $item['Comission'];
-            $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
+            //If the investments are 100, we repeat the process to take more investments
+            //And increasea start by 100
+            if ($numberJsonInvestments % 100 == 0) {
+                $start = $start + 100;
+            }
         }
+        
         $data1 = array_values($data1);
         $tempArray['global']['investments'] = count($data1);
         $tempArray['investments'] = $data1;
@@ -728,102 +745,107 @@ class zank extends p2pCompany {
         return true;
     }
 
-    /*function getCompanyWebpage($url) {
+    /**
+     * Function that is used to pick up inversions by 100 instead of 25 with a json
+     * The normal function of Zank is to give 25 but we change the petition with the posts item
+     * with curl
+     * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
+     * @return string $str It is the website resulted of the curl petition
+     */
+    function getCompanyWebpageJson($url, $form) {
 
-  if (empty($url)) {
-    $url = array_shift($this->urlSequence);
-  }
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
+        }
 
-  if (!empty($this->testConfig['active']) == true) {    // test system active, so read input from prepared files
-    if (!empty($this->testConfig['siteReadings'])) {
-      $currentScreen = array_shift($this->testConfig['siteReadings']);
-      echo "currentScreen = $currentScreen";
-      $str = file_get_contents($currentScreen);
-      
-      if ($str === false) {
-        echo "cannot find file<br>";
-        exit;
-      }
-      echo "TestSystem: file = $currentScreen<br>";
-      return $str;
-    }
-  }
+        if (!empty($this->testConfig['active']) == true) {    // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                echo "currentScreen = $currentScreen";
+                $str = file_get_contents($currentScreen);
 
-  $curl = curl_init(); 
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
+        }
 
-    if (!$curl) {
-    $msg = __FILE__ . " " . __LINE__  . "Could not initialize cURL handle for url: " . $url . " \n";
-    $msg = $msg . " \n";
-    $this->logToFile("Warning", $msg);
-    exit;   
-    }
+        $curl = curl_init();
 
-  if ($this->config['postMessage'] == true) {
-    curl_setopt($curl, CURLOPT_POST, true);
+        if (!$curl) {
+            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
+            $msg = $msg . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+        if ($this->config['postMessage'] == true) {
+            curl_setopt($curl, CURLOPT_POST, true);
 //    echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
-  }
+        }
 
 // check if extra headers have to be added to the http message  
-  if (!empty($this->headers)) {
-    echo "EXTRA HEADERS TO BE ADDED<br>";
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-    unset($this->headers);      // reset fields
-  } 
-
+        if (!empty($this->headers)) {
+            echo "EXTRA HEADERS TO BE ADDED<br>";
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+            unset($this->headers);      // reset fields
+        }
         
-        $form = ["length" => 100];
-        foreach ( $form as $key => $value) {
-      $postItems[] = $key . '=' . $value;
-  }
-        $postString = implode ('&', $postItems);
+        foreach ($form as $key => $value) {
+            $postItems[] = $key . '=' . $value;
+        }
+        $postString = implode('&', $postItems);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-        
-        
-    // Set the file URL to fetch through cURL
-  curl_setopt($curl, CURLOPT_URL, $url);
-  
-    // Set a different user agent string (Googlebot)
-    curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0'); 
- 
-    // Follow redirects, if any
-    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); 
- 
-    // Fail the cURL request if response code = 400 (like 404 errors) 
-    curl_setopt($curl, CURLOPT_FAILONERROR, true); 
 
-    // Return the actual result of the curl result instead of success code
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
- 
-    // Wait for 10 seconds to connect, set 0 to wait indefinitely
-    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
- 
-    // Execute the cURL request for a maximum of 50 seconds
-    curl_setopt($curl, CURLOPT_TIMEOUT, 100);
- 
-    // Do not check the SSL certificates
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
 
-    $result = curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');   // important
-    $result = curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');    // Important
+        // Set the file URL to fetch through cURL
+        curl_setopt($curl, CURLOPT_URL, $url);
 
-    // Fetch the URL and save the content
-    $str = curl_exec($curl);
-  if (!empty($this->testConfig['active']) == true) {  
-      print_r(curl_getinfo($curl));
-    echo "<br>";
-    print_r(curl_error($curl));
-    echo "<br>";
-  }
+        // Set a different user agent string (Googlebot)
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
 
-  if ($this->config['appDebug'] == true) {
-    echo "VISITED COMPANY URL = $url <br>";
-  }
-  if ($this->config['tracingActive'] == true) {
-    $this->doTracing($this->config['traceID'], "WEBPAGE" , $str);
-  }
-  return($str);
-}*/
+        // Follow redirects, if any
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        // Fail the cURL request if response code = 400 (like 404 errors) 
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+        // Return the actual result of the curl result instead of success code
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        // Wait for 10 seconds to connect, set 0 to wait indefinitely
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+
+        // Execute the cURL request for a maximum of 50 seconds
+        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+
+        // Do not check the SSL certificates
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');   // important
+        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');    // Important
+        // Fetch the URL and save the content
+        $str = curl_exec($curl);
+        if (!empty($this->testConfig['active']) == true) {
+            print_r(curl_getinfo($curl));
+            echo "<br>";
+            print_r(curl_error($curl));
+            echo "<br>";
+        }
+
+        if ($this->config['appDebug'] == true) {
+            echo "VISITED COMPANY URL = $url <br>";
+        }
+        if ($this->config['tracingActive'] == true) {
+            $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
+        }
+        return $str;
+    }
+
 }
 
 ?> 

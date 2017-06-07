@@ -113,7 +113,7 @@ public function beforeFilter() {
 */
 
 function blackHole()  {
-	$this->redirect('https://' . env('SERVER_NAME') . env('REQUEST_URI'));
+//	$this->redirect('https://' . env('SERVER_NAME') . env('REQUEST_URI'));
 }
 
 

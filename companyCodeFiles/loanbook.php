@@ -224,10 +224,10 @@ function collectCompanyMarketplaceData() {
                 $dom->preserveWhiteSpace = false;
 
                 $forms = $dom->getElementsByTagName('form');
-                $this->verifyNodeHasElements($forms);
+                /*$this->verifyNodeHasElements($forms);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
-                }
+                }*/
                 $index = 0;	
                 foreach ($forms as $form) {
                     $index = $index + 1;
@@ -256,9 +256,9 @@ function collectCompanyMarketplaceData() {
 
                 $resultMiLoanbook = false; // Could not login, credential error
                 $uls = $dom->getElementsByTagName('ul');
-                if (!$this->hasElements) {
+                /*if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
-                }
+                }*/
                 foreach ($uls as $ul) {
 
                     $as = $ul->getElementsByTagName('a');
