@@ -262,14 +262,14 @@ function collectCompanyMarketplaceData() {
                     $this->data1[$key]['date'] = "00-00-0000";
                     $this->data1[$key]['duration'] = $item['investment']['monthsLeft'] . " Meses";
                     $this->data1[$key]['invested'] = (int) (preg_replace('/\D/', '', $item['investment']['total'])) * 100;
-                    $this->data1[$key]['commission'] = (int) (preg_replace('/\D/', '', $item['investment']['taxes'])) * 100;
+                    $this->data1[$key]['commission'] = 0;//(int) (preg_replace('/\D/', '', $item['investment']['taxes'])) * 100;
                     $this->data1[$key]['interest'] = $this->getPercentage($item['project']['rate']);
-                    $this->data1[$key]['amortized'] = $item['investment']['total'] - $item['investment']['remaining'];
-                    $this->data1[$key]['profitGained'] = $item['investment']['interests'] - $item['investment']['taxes'];
+                    $this->data1[$key]['amortized'] = $item['investment']['received'] *100;
+                    $this->data1[$key]['profitGained'] = $item['investment']['interests']*100;
 
-                    $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] + $tis->data1[$key]['profitGained'];
+                    $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] + $this->data1[$key]['profitGained'];
                     $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
-                    $this->tempArray['global']['activeInInvestments'] = ($this->tempArray['global']['activeInInvestments'] + $item['investment']['remaining'])*100;
+                    $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] + ($this->data1[$key]['invested'] - $this->data1[$key]['amortized'] );
                     $this->tempArray['global']['totalInvestments'] = $this->tempArray['global']['totalInvestments'] + $this->data1[$key]['invested'];
 
                 }         
