@@ -169,11 +169,12 @@
                         </div>
                     </div>
                     <div class="row">
+                        <?php
+                        echo $this->Form->create('OCR', array('default' => false));
+                        ?>
                         <!-- Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <?php
-                            echo $this->Form->create('OCR', array('default' => false));
-                            ?>
+
                             <!-- User data -->
                             <div class="row">
                                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4"> <!-- Name -->
@@ -545,9 +546,6 @@
                                 </div><!-- /Cif + Business Name -->
                             </div>
                             <!-- /User data -->
-                            <?php
-                            echo $this->Form->end();
-                            ?>
                         </div>
                         <!-- /Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -631,7 +629,11 @@
                                 <!-- /Business Data -->
                             </div>
                         </div>
+                        <?php
+                        echo $this->Form->end();
+                        ?>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -684,12 +686,12 @@
                                                 echo "<td>";
                                                 echo $this->Form->file($requiredFiles[0]['File']['file_type']);
                                                 echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $requiredFiles[0]['File']['id']));
-                                                
+
                                                 echo "</td>";
                                                 echo "<td>";
-                                                    echo '<button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i>' . __('Delete') . '</button>';
+                                                echo '<button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i>' . __('Delete') . '</button>';
                                                 echo "</td>";
-                                                
+
                                                 echo $this->Form->end();
                                                 ?>
                                             </tr>
