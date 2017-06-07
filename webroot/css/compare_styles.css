@@ -1191,16 +1191,6 @@ textarea[name="error"] {
     vertical-align: middle !important;
 }
 
-#investorSelection {
-    max-height: 100px !important;
-    overflow: auto !important;
-    width: 100%;
-}
-#platformSelection{
-
-    width: 100%;
-}
-
 #investorFilters {
     padding-bottom: 10px;
 }
@@ -1260,7 +1250,7 @@ textarea[name="error"] {
     color: black !important;
 }
 .btnMargin {
-    margin: 10px 0;
+    margin: 10px 0 !important;
 }
 .header1CR {
     padding-left: 20px;
@@ -1273,9 +1263,9 @@ hr.nomargin {
     margin: 5px auto;
 }
 .btnSelectedPlatform {
-    position: absolute;
-    top: 2px;
-    right: 2px;
+    vertical-align: middle;
+    margin-bottom: 10px;
+    margin-left: 10px;
 }
 
 
