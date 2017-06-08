@@ -161,7 +161,8 @@ foreach ($existingFiles as $existingFiles) {
             id = <?php echo $existingFiles["files_investors"]["file_id"] ?>;
             $(".documentRow").each(function () {
                 if ($(this).attr("id") == id) {
-                    $("#" + id).html("terminado");
+                    $("#file" + id).html("<?php echo $existingFiles["files_investors"]["file_name"] ?> ya esta subido");
+                    $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
                 }
             });
 
@@ -701,11 +702,12 @@ foreach ($existingFiles as $existingFiles) {
                                     <tbody id="body">
                                         <?php
                                         foreach ($requiredFiles as $requiredFiles) {
+                                            $file = "file" . $requiredFiles[0]['File']['id'];
                                             ?>
                                             <tr id="<?php echo $requiredFiles[0]['File']['id'] ?>" class="documentRow">
                                                 <td><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
-                                                <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
-                                                <td>
+                                                <td id="status<?php echo $requiredFiles[0]['File']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
+                                                <td id="<?php echo $file; ?>" >
                                                     <?php
                                                     echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
                                                     echo $this->Form->file($requiredFiles[0]['File']['file_type']);
