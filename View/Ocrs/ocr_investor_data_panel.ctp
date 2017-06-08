@@ -67,7 +67,7 @@
 
 
 
-        $(document).on("click", "#activateOCR", function(){
+        $(document).on("click", "#activateOCR", function () {
             console.log("saving investor 1CR data");
             var result, link = $(this).attr("href");
             event.stopPropagation();
@@ -86,7 +86,8 @@
                     investor_address1: $("#ContentPlaceHolder_address1").val(),
                     investor_postCode: $("#ContentPlaceHolder_postCode").val(),
                     investor_city: $("#ContentPlaceHolder_city").val(),
-                    investor_country: $("#ContentPlaceHolder_country").val()
+                    investor_country: $("#ContentPlaceHolder_country").val(),
+                    investor_email: $("#ContentPlaceHolder_email").val()
                 };
 
                 if ($("#investmentVehicle").prop("checked")) {
@@ -105,10 +106,13 @@
             }
         });
 
-
-        $(".Files").children().on("change", function () {
-
-            var formdatas = new FormData($(this).parent()[0]);
+         $(document).on("click", "#activateOCR", function () {})
+        
+        $(document).on("change", ".upload", function () {
+            id = $(this).attr("value");
+            alert(id);
+            var formdatas = new FormData($("#FileForm" + id)[0]);
+            alert(formdatas);
             $.ajax({
                 url: '../Files/upload',
                 dataType: 'json',
@@ -116,21 +120,30 @@
                 data: formdatas,
                 contentType: false,
                 processData: false,
-                success: successUpload($(this)),
+                success: function (data) {
+                    alert("ddf");
+                    successUpload(data, id);
+                },
             });
         });
 
-        $(".delete").on("click", function () {
-
-            var formdatas = new FormData($(this).parent().parent().find(".Files")[0]);
+        $(document).on("click", ".delete", function () {
+            id = $(this).val();
+            alert(id);
+            url = $(".url" + id).attr("value");
+            name = $("#file" + id).attr("value");
+            alert(name);
+            params = {
+                url: url,
+                name: name,
+                id: id,
+            }
+            var data = jQuery.param(params);
             $.ajax({
                 url: '../Files/delete',
-                dataType: 'json',
                 method: 'post',
-                data: formdatas,
-                contentType: false,
-                processData: false,
-                success: successDelete($(this)),
+                data: data,
+                success: successDelete(id),
             });
         });
 
@@ -145,20 +158,30 @@
     });
 
 
-    function error() {
+    function error(result) {
 
     }
 
-    function success() {
+    function success(result) {
 
     }
-    function successUpload(thisFile) {
-        thisFile.prop("disabled", true);
-        thisFile.parent().parent().parent().find(".delete").prop("disabled", false);
+    
+    function successUpload(data, id) {
+        alert(data[0] + " " + data[1] + " " + data[2]);
+        $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
+        $("#file" + id).attr("value", data[0]);
+        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[1] + '" id="FilesInfo">');
+        $("#del" + id).prop("disabled", false);
+        $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
     }
-    function successDelete(thisFile) {
-        $(this).parent().parent().find("file").prop("disabled", false);
-        $(this).prop("disabled", true);
+    
+    function successDelete(id) {
+        $("#del" + id).prop("disabled", true);
+        $("#file" + id).html('<input type="file" name="data[Files][iban]" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+        $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>');
     }
 
     function addExistingDocuments() {
@@ -166,13 +189,15 @@
 foreach ($existingFiles as $existingFiles) {
     ?>
             id = <?php echo $existingFiles["files_investors"]["file_id"] ?>;
-            url ="<?php echo $existingFiles["files_investors"]["file_url"] ?>";
+            url = "<?php echo $existingFiles["files_investors"]["file_url"] ?>";
             $(".documentRow").each(function () {
                 if ($(this).attr("id") == id) {
-                    $("#file" + id).html("<?php echo $existingFiles["files_investors"]["file_name"] ?> ya esta subido");
+                    $("#file" + id).html('<?php echo $existingFiles["files_investors"]["file_name"] . __(" already exist")?>');
+                    $("#file" + id).attr("value", "<?php echo $existingFiles["files_investors"]["file_name"] ?>");
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
                     $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
+                    $("#del" + id).prop("disabled", false);
                 }
             });
 
@@ -721,20 +746,19 @@ foreach ($existingFiles as $existingFiles) {
                                             <tr id="<?php echo $requiredFiles[0]['File']['id'] ?>" class="documentRow">
                                                 <td><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
                                                 <td id="status<?php echo $requiredFiles[0]['File']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
-                                                <td id="<?php echo $file; ?>" >
+                                                <td>
                                                     <?php
-                                                    echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
-                                                    echo $this->Form->file($requiredFiles[0]['File']['file_type']);
+                                                    echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $requiredFiles[0]['File']['id'], 'class' => 'upload', 'value' => $requiredFiles[0]['File']['id']));
+                                                    echo "<span id='" . $file . "' >";
+                                                    echo $this->Form->file("fileId" . $requiredFiles[0]['File']['id']);
                                                     echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $requiredFiles[0]['File']['id']));
+                                                    echo "</span>";
+                                                    echo $this->Form->end();
                                                     ?>
-
                                                 </td>
                                                 <td>
-                                                    <button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
+                                                    <button type="button" id="del<?php echo $requiredFiles[0]['File']['id'] ?>" value="<?php echo $requiredFiles[0]['File']['id'] ?>" class="delete btn btn-default" style="background-color:#990000; color:white;" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
                                                 </td>
-                                                <?php
-                                                echo $this->Form->end();
-                                                ?>
                                             </tr>
                                             <?php
                                         }

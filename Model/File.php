@@ -22,10 +22,12 @@
  *
 
   2017/6/06 version 0.1
-  function upload                         [OK]
-
+  function upload                      [OK]
+  
+ 2017/6/08 version 0.2
+ function delete                      [OK]
  */
-App::uses('CakeEvent', 'Event');
+App::uses('CakeEvent', 'Event', 'File', 'Utility');
 
 class file extends AppModel {
 
@@ -46,24 +48,28 @@ class file extends AppModel {
             }
 
             if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
-                continue;
+                return 0;
             }
-            print_r($data);
-            $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $filename . "', '" . $uploadPath . "');";
-            echo "$query";
+
+            $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $filename . "', '" . $uploadFolder . "');";
             $query = $this->query($query);
+            $result = array($filename, $uploadFolder, $type);
+            return $result;
         }
     }
 
     //delete file
-    public function ocrFileDelete($data, $identity) {
-        print_r($data);
-        $filename = basename($data['name']);
-        $uploadFolder = 'files/investors/' . $identity . '';
-        $uploadPath = $uploadFolder . DS . $filename;
-        $file = new File($uploadPath);
+    public function ocrFileDelete($url, $name, $file_id, $investor_id) {
+        $url = WWW_ROOT . $url;
 
-        return $file->delete();
+        if (unlink($url . DS . $name)) {
+            $query = "DELETE FROM `search`.`files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
+            print_r($query);
+            $this->query($query);
+            echo "borrado correctamente";
+            return 1;
+        }
+        return 0;
     }
 
     //return requiered files of selected companies

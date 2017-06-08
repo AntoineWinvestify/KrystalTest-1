@@ -31,9 +31,10 @@
   2017/6/06 version 0.1
   function upload                         [OK]
 
-
+2017/6/08 version 0.2
+ function delete                [ok]
  */
-App::uses('CakeEvent', 'Event', 'File', 'Utility');
+App::uses('CakeEvent', 'Event');
 
 class filesController extends AppController {
 
@@ -49,19 +50,42 @@ class filesController extends AppController {
     }
 
     function upload() {
-        $this->autoRender = false;
-        $data = $this->params['data']['Files'];
-        $type = $data['info'];
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-        $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-        $this->File->ocrFileSave($data, $identity, $id, $type);
+        if (!$this->request->is('ajax')) {
+            $result = false;
+        } else {
+            $this->layout = 'ajax';
+            $this->disableCache();
+
+            $data = $this->params['data']['Files'];
+            $type = $data['info'];
+            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
+            $result = $this->File->ocrFileSave($data, $identity, $id, $type);
+            $this->set("fileInfo", $result);
+        }
     }
 
     function delete() {
-        $this->autoRender = false;
-        $data = $this->params['data']['Files'];
-        $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-        $this->File->ocrFileDelete($data, $identity);
+        if (!$this->request->is('ajax')) {
+            $result = false;
+        } else {
+            $this->layout = 'ajax';
+            $this->disableCache();
+
+            $url = $this->request->data('url');
+            $name = $this->request->data('name');
+            $file_id = $this->request->data('id');
+            $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+
+            print_r($url);
+            print_r($name);
+            print_r($file_id);
+            print_r($investor_id);
+
+            $result = $this->File->ocrFileDelete($url, $name, $file_id, $investor_id);
+
+            $this->set("result", $result);
+        }
     }
 
 }
