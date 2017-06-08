@@ -1,4 +1,4 @@
-<?php
+71<?php
 /**
  * +---------------------------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                                               |
@@ -29,7 +29,11 @@
  * Added all error divs & classes to check form 
  * 
  * [2017-06-07] Version 0.3
- * Added javascript form validation [pending: country, telephone, dateOfBirth, IBAN).
+ * Added javascript form validation [pending: country, telephone, dateOfBirth, IBAN].
+ * 
+ * [2017-06-08] Version 0.4
+ * Added spinner (not working at all, need fix z-index of card-header)
+ * Added div with user feedback after saving data on DB.
  * 
  * Pending:
  * Server validation
@@ -56,13 +60,17 @@
             autoclose: true,
             format: 'dd/mm/yyyy'
         });
-
+        //Show div with CIF & IBAN if its checked.
         $(document).on("change", "#investmentVehicle", function () {
             if ($(this).is(":checked")) {
                 $("#investmentVehicleContent").show();
             } else {
                 $("#investmentVehicleContent").hide();
             }
+        });
+        //Data successfully saved feedback to user FADEOUT.
+        $(document).bind('DOMSubtreeModified',function(){
+            fadeOutElement(".alert-to-fade", 5000);
         });
 
 
@@ -179,9 +187,17 @@ foreach ($existingFiles as $existingFiles) {
     }
 
 </script>
+<?php
+    if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
+?>	
+        <div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button>
+                <strong><?php echo __("You're data has been successfully modified")?></strong>	
+        </div>
+<?php
+    }
+?>
 <div id="OCR_InvestorPanelA">
-
-
     <div class="row">
         <div class="col-lg-9">
             <div class="card">
@@ -189,7 +205,11 @@ foreach ($existingFiles as $existingFiles) {
                     <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
                     <p class="category"><?php echo __('Investor One Click Registration Data') ?></p>
                 </div>
-                <div class="card-content table-responsive">
+                <div class="card-content table-responsive togetoverlay">
+                    <div class="overlay">
+                        <div class="fa fa-spin fa-spinner" style="color:green">	
+                        </div>
+                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -313,13 +333,13 @@ foreach ($existingFiles as $existingFiles) {
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth') ?></label>
-                                        <div class="input-group input-group-sm blue_noborder2 date">
+                                        <div class="input-group input-group-sm blue_noborder2 date investorDateOfBirth">
                                             <?php
                                             $errorClass = "";
                                             if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control pull-right investorDateOfBirth" . ' ' . $errorClass;
+                                            $class = "form-control pull-right" . ' ' . $errorClass;
                                             ?>
                                             <div class="input-group-addon" style="border-radius:8px; border: none;">
                                                 <i class="fa fa-calendar"></i>
@@ -379,13 +399,13 @@ foreach ($existingFiles as $existingFiles) {
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
-                                        <div class="form-control blue_noborder2">
+                                        <div class="form-control blue_noborder2 telephoneNumber">
                                             <?php
                                             $errorClass = "";
                                             if (array_key_exists('investor_telephone', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "telephoneNumber center-block" . ' ' . $errorClass;
+                                            $class = "center-block" . ' ' . $errorClass;
 
                                             echo $this->Form->input('Investor.investor_telephone', array(
                                                 'name' => 'telephone',
@@ -674,17 +694,17 @@ foreach ($existingFiles as $existingFiles) {
 
 <div id="OCR_InvestorPanelB">
     <div class="row">
-        <div class="overlay">
-            <div class="fa fa-spin fa-spinner" style="color:green">	
-            </div>
-        </div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
             <div class="card">
                 <div class="card-header" data-background-color="blue">
                     <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
                     <p class="category"><?php echo __('Document Uploading') ?></p>
                 </div>
-                <div class="card-content table-responsive">
+                <div class="card-content table-responsive togetoverlay">
+                    <div class="overlay">
+                        <div class="fa fa-spin fa-spinner" style="color:green">	
+                        </div>
+                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
