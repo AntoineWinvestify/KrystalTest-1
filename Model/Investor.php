@@ -61,7 +61,17 @@ class Investor extends AppModel {
      * 	have to map to a existing field in the database. Very useful for automatic checks
      * 	provided by framework
      */
-    var $validate = array();
+    var $validate = array(
+        'investor_name' => array(),
+        'investor_surname' => array(),
+        'investor_DNI' => array(),
+        'investor_dateOfBirth' => array(),
+        'investor_telephone' => array(),
+        'investor_address1' => array(),
+        'investor_postCode' => array(),
+        'investor_city' => array(),
+        'investor_country' => array(),
+    );
 
     /**
      *
@@ -271,24 +281,20 @@ class Investor extends AppModel {
             'investor_postCode' => $datos['investor_postCode'],
             'investor_city' => $datos['investor_city'],
             'investor_country' => $datos['investor_country'],
+            'investor_email' => $datos['investor_email'],
         );
         print_r($data);
-
-        // if ($this->validates()) {  //Validacion datos inversor?     
-        $this->save($data);
-        /* $data = array(
-          'investor_id' => $datos['id'],)
-          //$this->checkInvestor->save();  //NEcesita cambios base de datos
-
-          } else {                     // validation false
-          $result[0] = 0;
-          $errors = array('errors' => 'Form error', $this->validationErrors);
-          $result[1] = $errors;
-          return $result;
-          } */
-        $result[0] = 1;
-        //Insert OK
-        return $data['id'];
+        $this->set($data);
+        if ($this->validates()) {  //Validacion datos inversor?     
+            $this->save($data);
+            $result[0] = 1;
+            //Insert OK
+            return $data['id'];
+        } else {                     // validation false
+            $errors = array('errors' => 'Form error', $this->validationErrors);
+            print_r($errors);
+            return 0 . $errors;
+        }
     }
 
     public function investorGetInfo($id) {

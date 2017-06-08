@@ -83,7 +83,8 @@ class ocrsController extends AppController {
             $investor_postCode = $_REQUEST['investor_postCode'];
             $investor_city = $_REQUEST['investor_city'];
             $investor_country = $_REQUEST['investor_country'];
-
+            $investor_email = $_REQUEST['investor_email'];
+            
             $datosInvestor = array(
                 'id' => $this->Session->read('Auth.User.id'),
                 'investor_name' => $investor_name,
@@ -95,6 +96,7 @@ class ocrsController extends AppController {
                 'investor_postCode' => $investor_postCode,
                 'investor_city' => $investor_city,
                 'investor_country' => $investor_country,
+                'investor_email' => $investor_email,
             );
 
             $result1 = $this->Investor->investorDataSave($datosInvestor);
