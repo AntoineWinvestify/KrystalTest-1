@@ -28,6 +28,9 @@
  * [2017-06-05] Version 0.2
  * Added all error divs & classes to check form 
  * 
+ * [2017-06-07] Version 0.3
+ * Added javascript form validation [pending: country, telephone, dateOfBirth, IBAN).
+ * 
  * Pending:
  * Server validation
  */
@@ -64,7 +67,11 @@
 
 
 
-        $("#activateOCR").click(function () {
+        $(document).on("click", "#activateOCR", function(){
+            console.log("saving investor 1CR data");
+            var result, link = $(this).attr("href");
+            event.stopPropagation();
+            event.preventDefault();
             if ((result = app.visual.checkForm1CRInvestorData()) === false) {
                 event.stopPropagation();
                 event.preventDefault();
@@ -82,7 +89,7 @@
                     investor_country: $("#ContentPlaceHolder_country").val()
                 };
 
-                if ($("#investmentVehicle").is(':checked')) {
+                if ($("#investmentVehicle").prop("checked")) {
                     params.investmentVehicle = 1;
                     params.cif = $("#ContentPlaceHolder_cif").val();
                     params.businessName = $("#ContentPlaceHolder_businessName").val();
@@ -451,7 +458,7 @@ foreach ($existingFiles as $existingFiles) {
                                         if (array_key_exists('investor_address1', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder2 investorSurname" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorAddress" . ' ' . $errorClass;
                                         echo $this->Form->input('Investor.investor_address1', array(
                                             'name' => 'address1',
                                             'id' => 'ContentPlaceHolder_address1',
@@ -632,12 +639,12 @@ foreach ($existingFiles as $existingFiles) {
                                         if (array_key_exists('investor_businessName', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "form-control blue_noborder2 investorIban" . ' ' . $errorClass;
+                                        $class = "form-control blue_noborder2 investorBusinessName" . ' ' . $errorClass;
                                         echo $this->Form->input('Ocr.investor_businessName', array(
                                             'name' => 'iban',
                                             'id' => 'ContentPlaceHolder_businessName',
                                             'label' => false,
-                                            'placeholder' => __('IBAN'),
+                                            'placeholder' => __('Your company name'),
                                             'class' => $class,
                                             'value' => $ocr[0]['Ocr']['investor_businessName'],
                                         ));
@@ -671,7 +678,11 @@ foreach ($existingFiles as $existingFiles) {
 
 <div id="OCR_InvestorPanelB">
     <div class="row">
-        <div class="col-lg-9">
+        <div class="overlay">
+            <div class="fa fa-spin fa-spinner" style="color:green">	
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
             <div class="card">
                 <div class="card-header" data-background-color="blue">
                     <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
@@ -799,15 +810,10 @@ foreach ($existingFiles as $existingFiles) {
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-<div id="btn1CR">
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+        <div id="btn1CR" class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
             <div class="form-group">
-                <button type="submit" href="../Ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn-win5 btnRounded pull-left"><?php echo __('Back') ?></button>
-                <button type="submit" href="../Ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn-win5 btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
+                <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn-win5 btnRounded pull-left"><?php echo __('Back') ?></button>
+                <button type="submit" href="/ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn-win5 btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
             </div>
         </div>	
     </div>

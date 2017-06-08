@@ -3,10 +3,12 @@
  * One Click Registration - Investor Panel B
  * Select Platforms to Register
  * 
- * [2017-05-23] Completed view
- *              [pending] Click on selected platform to add it on 'investorSelection' div & delete on 'platformSelection'.
- *              [pending] Mechanism to generate all platform elements
- *              [pending] Mechanism to generate final modal
+ * [2017-05-23] Version 0.1
+ * Completed view
+ * [pending] Click on selected platform to add it on 'investorSelection' div & delete on 'platformSelection'.
+ * [pending] Mechanism to generate all platform elements
+ * [pending] Mechanism to generate final modal
+ * 
  */
 ?>
 
@@ -348,7 +350,7 @@ foreach ($selected as $selected) {
                                             <div class="input_platforms"><input type="checkbox" class="check"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
-                                            <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn-win2 btnMargin center-block btnSelectedPlatform" href = "#"><?php echo __('Select') ?></button>
+                                            <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn-win2 btnMargin center-block btnSelected" href = "#"><?php echo __('Select') ?></button>
                                         </div>
                                     </div>
                                 </div>

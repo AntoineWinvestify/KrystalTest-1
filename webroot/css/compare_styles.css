@@ -1263,11 +1263,13 @@ hr.nomargin {
     margin: 5px auto;
 }
 .btnSelectedPlatform {
-    vertical-align: middle;
-    margin-bottom: 10px;
-    margin-left: 10px;
+    top: 2px;
+    right: 2px;
+    position: absolute;
 }
-
+.btnSelected{
+    margin: 10px auto;
+}
 
 .btnRounded {
     border-radius: 20px;

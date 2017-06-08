@@ -547,19 +547,18 @@ app.visual = {
     checkForm1CRInvestorData: function (){
         var correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
-        $("#OCR_InvestorPanelA input").removeClass("errorBorder"); // remove ALL redborders
+        $("#OCR_InvestorPanelA input").removeClass("redBorder"); // remove ALL redborders
         var name = $("#ContentPlaceHolder_name").val();
         var surname = $("#ContentPlaceHolder_surname").val();
         var identificationId = $("#dni").val();
         var dateOfBirth = $("#ContentPlaceHolder_dateOfBirth").val();
         var email = $("#ContentPlaceHolder_email").val();
-        var telephone = $("#ContentPlaceHolder_telephone").telIntlInput("getNumber");
+        var telephone = $("#ContentPlaceHolder_telephone").val();
         var postCode = $("#ContentPlaceHolder_postCode").val();
         var address = $("#ContentPlaceHolder_address1").val();
         var city = $("#ContentPlaceHolder_city").val();
         var country = $("#ContentPlaceHolder_country").val();
         var iban = $("#ContentPlaceHolder_iban").val();
-        var investmentVehicle = $("#investmentVehicle");
         var cif = $("#ContentPlaceHolder_cif").val();
         var businessName = $("#ContentPlaceHolder_businessName").val();
         if (name === "") {
@@ -603,6 +602,34 @@ app.visual = {
                 correctForm = false;
             }
         }
+        if (postCode === "") {
+            console.log("empty post code");
+            $(".investorPostCode").addClass("redBorder");
+            $(".ErrorPostCode").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPostCode").fadeIn();
+            correctForm = false;
+        }
+        if (address === "") {
+            console.log("empty address");
+            $(".investorAddress").addClass("redBorder");
+            $(".ErrorAddress").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorAddress").fadeIn();
+            correctForm = false;
+        }
+        if (city === "") {
+            console.log("empty city");
+            $(".investorCity").addClass("redBorder");
+            $(".ErrorCity").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorCity").fadeIn();
+            correctForm = false;
+        }
+        if (country === "") {
+            console.log("empty country");
+            $(".investorCountry").addClass("redBorder");
+            $(".ErrorCountry").find(".errorMessage").html(TEXTOS.T15); // "you have to select an option" warning
+            $(".ErrorCountry").fadeIn();
+            correctForm = false;
+        }
         if (telephone === "") {
             $(".telephoneNumber").addClass("redBorder");
             $(".ErrorPhoneNumber").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
@@ -623,7 +650,7 @@ app.visual = {
             $(".ErrorIban").fadeIn();
             correctForm = false;
         }
-        else {
+        /*else {
             //Needed testing algorithm. (IBAN Format)
             if (!app.utils.checkIBAN(iban)) {
                 $(".investorIban").addClass("redBorder");
@@ -631,17 +658,16 @@ app.visual = {
                 $(".ErrorIban").fadeIn();
                 correctForm = false;
             }
-        }
+        }*/
         //If is selected 'I use my company as investment vehicle', validate CIF & Business Name
-        if (investmentVehicle.is(":checked")) {
-            if (cif === "") {
+            if ((cif === "") && ($("#investmentVehicle").prop("checked"))) { 
                 console.log("empty CIF");
                 $(".investorCif").addClass("redBorder");
                 $(".ErrorCif").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
                 $(".ErrorCif").fadeIn();
                 correctForm = false;
             }
-            else {
+            /*else {
                 //Needed testing algorithm. (CIF Format)
                 if (!app.utils.checkCif(cif)) {
                     $(".investorCif").addClass("redBorder");
@@ -649,15 +675,14 @@ app.visual = {
                     $(".ErrorCif").fadeIn();
                     correctForm = false;
                 }
-            }
-            if (businessName === "") {
+            }*/
+            if ((businessName === "") && ($("#investmentVehicle").prop("checked"))) {
                 console.log("empty business name");
                 $(".investorBusinessName").addClass("redBorder");
                 $(".ErrorBusinessName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
                 $(".ErrorBusinessName").fadeIn();
                 correctForm = false;
             }
-        }
         return correctForm;   
     }
 };
