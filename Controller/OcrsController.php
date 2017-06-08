@@ -74,14 +74,14 @@ class ocrsController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
 
-            $investor_name = $_REQUEST['investor_name'];
-            $investor_surname = $_REQUEST['investor_surname'];
-            $investor_DNI = $_REQUEST['investor_DNI'];
+            $investor_name = strip_tags(htmlspecialchars($_REQUEST['investor_name']));
+            $investor_surname = strip_tags(htmlspecialchars($_REQUEST['investor_surname']));
+            $investor_DNI = strip_tags(htmlspecialchars($_REQUEST['investor_DNI']));
             $investor_dateOfBirth = $_REQUEST['investor_dateOfBirth'];
             $investor_telephone = $_REQUEST['investor_telephone'];
-            $investor_address1 = $_REQUEST['investor_address1'];
-            $investor_postCode = $_REQUEST['investor_postCode'];
-            $investor_city = $_REQUEST['investor_city'];
+            $investor_address1 = strip_tags(htmlspecialchars($_REQUEST['investor_address1']));
+            $investor_postCode = strip_tags(htmlspecialchars($_REQUEST['investor_postCode']));
+            $investor_city = strip_tags(htmlspecialchars($_REQUEST['investor_city']));
             $investor_country = $_REQUEST['investor_country'];
             $investor_email = $_REQUEST['investor_email'];
             

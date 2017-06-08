@@ -527,7 +527,7 @@ body {
 .small-box > .loading-img,
 .overlay-wrapper > .loading-img,
 .box-body > .overlay, #wizardProfile .overlay,
-.g-margin-b-20--xs .overlay {
+.g-margin-b-20--xs .overlay, .togetoverlay .overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -536,7 +536,7 @@ body {
 }
 .modal-dialog .overlay, .small-box .overlay,
 .overlay-wrapper .overlay, #wizardProfile .overlay,
-.g-margin-b-20--xs .overlay  {
+.g-margin-b-20--xs .overlay, .togetoverlay .overlay  {
   z-index: 50;
   background: rgba(255, 255, 255, 0.7);
   border-radius: 3px;
@@ -544,7 +544,7 @@ body {
 
 .modal-dialog .overlay, .small-box .overlay > .fa,
 .overlay-wrapper .overlay > .fa, #wizardProfile .overlay > .fa,
-.g-margin-b-20--xs .overlay > .fa {
+.g-margin-b-20--xs .overlay > .fa, .togetoverlay .overlay > .fa {
   position: absolute;
   top: 50%;
   left: 50%;
