@@ -159,9 +159,12 @@
 foreach ($existingFiles as $existingFiles) {
     ?>
             id = <?php echo $existingFiles["files_investors"]["file_id"] ?>;
+            url ="<?php echo $existingFiles["files_investors"]["file_url"] ?>";
             $(".documentRow").each(function () {
                 if ($(this).attr("id") == id) {
                     $("#file" + id).html("<?php echo $existingFiles["files_investors"]["file_name"] ?> ya esta subido");
+                    $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+                    $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
                     $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
                 }
             });
