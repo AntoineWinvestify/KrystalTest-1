@@ -1,9 +1,36 @@
 <?php
+/**
+* +--------------------------------------------------------------------------------------------+
+* | Copyright (C) 2016, http://www.winvestify.com                                              |
+* +--------------------------------------------------------------------------------------------+
+* | This file is free software; you can redistribute it and/or modify                          |
+* | it under the terms of the GNU General Public License as published by                       |
+* | the Free Software Foundation; either version 2 of the License, or                          |
+* | (at your option) any later version.                                                        |
+* | This file is distributed in the hope that it will be useful                                |
+* | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+* | GNU General Public License for more details.                                               |
+* +--------------------------------------------------------------------------------------------+
+*
+*
+* @author
+* @version 0.2
+* @date 2017-05-29
+* @package
+ * 
+ * 
+ * Investor billing panel to generate & upload bills to PFP Admin.
+ * 
+ * [2017-05-29] Version 0.1
+ * First view.
+ * 
+ * [2017-06-09] Version 0.2
+ * Added top datatable to collect info about Bills to upload PDF & generate Email to PFP Admin.
+ * Added bottom datatable to save history of sent bills.
+ * Added datatables JS & CSS
+*/
 
-/* 
- * One Click Registration - WinAdmin Billing Panel
- * Billing Panel to upload billings on PFD's Panel
- */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
