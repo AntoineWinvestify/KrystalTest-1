@@ -84,7 +84,7 @@ class ocrsController extends AppController {
             $investor_city = strip_tags(htmlspecialchars($_REQUEST['investor_city']));
             $investor_country = $_REQUEST['investor_country'];
             $investor_email = $_REQUEST['investor_email'];
-            
+
             $datosInvestor = array(
                 'id' => $this->Session->read('Auth.User.id'),
                 'investor_name' => $investor_name,
@@ -200,11 +200,11 @@ class ocrsController extends AppController {
         $data2 = $this->Ocr->ocrGetData($id);
 
         $companies = $this->Ocr->getSelectedCompanies($id);
-        $requiredFiles = $this->File->readRequiredFiles($companies);  
-        
+        $requiredFiles = $this->File->readRequiredFiles($companies);
+
         $existingFiles = $this->File->readExistingFiles($id);
-        
-        $this->set('existingFiles',$existingFiles);
+
+        $this->set('existingFiles', $existingFiles);
         $this->set('investor', $data);
         $this->set('ocr', $data2);
         $this->set('requiredFiles', $this->File->getFilesData($requiredFiles));
@@ -214,14 +214,14 @@ class ocrsController extends AppController {
 
     function ocrInvestorPlatformSelection() {
         $this->layout = 'azarus_private_layout';
-        
+
         $this->set('company', $this->Company->companiesDataOCR());
-        
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));       
-     
+
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
         $this->set('registered', $this->Ocr->getRegisteredCompanies($id));
-        
+
         echo " ";
         return 1;
     }
