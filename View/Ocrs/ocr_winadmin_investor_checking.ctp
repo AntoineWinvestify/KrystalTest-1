@@ -38,22 +38,7 @@
 <script type="text/javascript" src="/plugins/iCheck/icheck.min.js"></script>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
-<script>
-$(document).ready(function(){
-  //iCheck plugin
-  $('input').iCheck({
-    checkboxClass: 'icheckbox_flat-blue'
-  });
-  //telephone
-  $('#ContentPlaceHolder_telephone').intlTelInput();
 
-  //Date picker
-  $('#ContentPlaceHolder_dateOfBirth').datepicker({
-      autoclose: true,
-      format: 'dd/mm/yyyy'
-  });
-});
-</script>
 <div id="OCR_WinAdminPanelA">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -82,7 +67,7 @@ $(document).ready(function(){
                                         <td><?php echo __('+34123456789')?></td>
                                         <td><?php echo __('example@example.com')?></td>
                                         <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __('Incorrect')?></span></td>
-                                        <td><button class="btn btn-default btn-invest"><?php echo __('View')?></button></td>
+                                        <td><button class="btn btn-default btn-invest btnRounded"><?php echo __('View')?></button></td>
                                     </tr>
                                     <tr>
                                         <td><?php echo __('2017-01-01')?></td>
@@ -91,7 +76,7 @@ $(document).ready(function(){
                                         <td><?php echo __('+34123456789')?></td>
                                         <td><?php echo __('example@example.com')?></td>
                                         <td><span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning')?></span></td>
-                                        <td><button class="btn btn-default btn-invest"><?php echo __('View')?></button></td>
+                                        <td><button class="btn btn-default btn-invest btnRounded"><?php echo __('View')?></button></td>
                                     </tr>
                                     <tr>
                                         <td><?php echo __('2017-01-01')?></td>
@@ -100,7 +85,7 @@ $(document).ready(function(){
                                         <td><?php echo __('+34123456789')?></td>
                                         <td><?php echo __('example@example.com')?></td>
                                         <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct')?></span></td>
-                                        <td><button class="btn btn-default btn-invest"><?php echo __('View')?></button></td>
+                                        <td><button class="btn btn-default btn-invest btnRounded"><?php echo __('View')?></button></td>
                                     </tr>
                                     <tr>
                                         <td><?php echo __('2017-01-01')?></td>
@@ -109,7 +94,7 @@ $(document).ready(function(){
                                         <td><?php echo __('+34123456789')?></td>
                                         <td><?php echo __('example@example.com')?></td>
                                         <td><span style="color:#3399ff"><i class="fa fa-thumb-tack"></i> <?php echo __('Validating')?></span></td>
-                                        <td><button class="btn btn-default btn-invest"><?php echo __('View')?></button></td>
+                                        <td><button class="btn btn-default btn-invest btnRounded"><?php echo __('View')?></button></td>
                                     </tr>
                                     <tr>
                                         <td><?php echo __('2017-01-01')?></td>
@@ -118,7 +103,13 @@ $(document).ready(function(){
                                         <td><?php echo __('+34123456789')?></td>
                                         <td><?php echo __('example@example.com')?></td>
                                         <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet')?></span></td>
-                                        <td><button class="btn btn-default btn-invest" href="" target="_blank"><?php echo __('View')?></button></td>
+                                        <td>
+                                            <a href="/ocrs/ocrWinadminInvestorModal"> 
+                                                <button class="btn btn-default btn-invest btnRounded btnRounded" type="button">
+                                                    <?php echo __('View') ?>
+                                                </button>
+                                            </a>
+                                        </td>
                                     </tr>
                                 </tbody>
                         </table>
