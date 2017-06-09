@@ -267,6 +267,11 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
+    
+    function ocrWinadminInvestorModal() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
 
     /*
      * 
