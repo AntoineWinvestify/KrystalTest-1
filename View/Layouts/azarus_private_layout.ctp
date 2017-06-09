@@ -50,6 +50,8 @@
 
 <div id="errorModalMain"></div>
 <div id="notificationContentModalMain"></div>
+<div id="1CR_modalCheckingInvestor"></div>
+<div id="1CR_modalConfirmationPlatforms"></div>
 <div class="wrapper">
 
   <header class="main-header">
