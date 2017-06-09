@@ -29,6 +29,29 @@
 */
 
 ?>
+<script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
+<script src="/plugins/intlTelInput/js/utils.js"></script>
+<link rel="stylesheet" type="text/css" href="/plugins/intlTelInput/css/intlTelInput.css">
+<script src="/plugins/datepicker/bootstrap-datepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="/plugins/datepicker/datepicker3.css">
+<link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
+<script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
+<script type="text/javascript" src="/modals/assets/js/paper-bootstrap-wizard.js"></script>
+<script>
+$(document).ready(function(){
+  //iCheck plugin
+  $('input').iCheck({
+    checkboxClass: 'icheckbox_flat-blue'
+  });
+  //telephone
+  $('#ContentPlaceHolder_telephone').intlTelInput();
+  //Date picker
+  $('#ContentPlaceHolder_dateOfBirth').datepicker({
+      autoclose: true,
+      format: 'dd/mm/yyyy'
+  });
+});
+</script>
 <div id="1CR_investorDataChecking" class="modal show" role="dialog">
     <!--   Big container   -->
     <div class="container">
@@ -338,7 +361,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
-                                            <button type="button" class="btn btn-default btn-lg btn-win1 center-block" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve')?></button>
+                                           <button type="button" class="btn btn-default btn-lg btn-win1 btnRounded center-block" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve')?></button>
                                     </div>
                                 </div>
                             </form>
