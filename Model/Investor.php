@@ -62,15 +62,62 @@ class Investor extends AppModel {
      * 	provided by framework
      */
     var $validate = array(
-        'investor_name' => array(),
-        'investor_surname' => array(),
-        'investor_DNI' => array(),
-        'investor_dateOfBirth' => array(),
-        'investor_telephone' => array(),
-        'investor_address1' => array(),
-        'investor_postCode' => array(),
-        'investor_city' => array(),
-        'investor_country' => array(),
+        'investor_name' => array(
+            'rule1' => array('rule' => array('minLength', 1),
+                'allowEmpty' => false,
+                'message' => 'Name validation error'),
+            /*'rule2' => array('rule' => 'alphaNumeric',
+                'allowEmpty' => false,
+                'message' => 'Name validation error'),*/
+        ),
+        'investor_surname' => array(
+            'rule1' => array('rule' => array('minLength', 1),
+                'allowEmpty' => false,
+                'message' => 'Surname validation error'),
+            'rule2' => array('rule' => 'alphaNumeric',
+                'allowEmpty' => false,
+                'message' => 'Surname validation error'),
+        ),
+        'investor_DNI' => array(
+            'rule' => array('minLength', 1),
+            'allowEmpty' => false,
+            'message' => 'Id validation error',
+        ),
+        'investor_dateOfBirth' => array(
+            'rule' => array('minLength', 1),
+            'allowEmpty' => false,
+            'message' => 'Date validation error',
+        ),
+        'investor_telephone' => array(
+            'rule' => array('minLength', 1),
+            'allowEmpty' => false,
+            'message' => 'Telephone validation error',
+        ),
+        'investor_address1' => array(
+            'rule' => array('minLength', 1),
+            'allowEmpty' => false,
+            'message' => 'Addres validation error',
+        ),
+        'investor_postCode' => array(
+            'rule' => array('minLength', 1),
+            'allowEmpty' => false,
+            'message' => 'Postcode validation error',
+        ),
+        'investor_city' => array(
+            'rule' => array(array('minLength', 1), 'alphaNumeric'),
+            'allowEmpty' => false,
+            'message' => 'City validation error',
+        ),
+        'investor_country' => array(
+            'rule' => array('minLength', 1),
+            'allowEmpty' => false,
+            'message' => 'Country validation error',
+        ),
+        'investor_email' => array(
+            'rule' => '/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/',
+            'allowEmpty' => false,
+            'message' => 'Email validation error',
+        ),
     );
 
     /**
@@ -260,7 +307,6 @@ class Investor extends AppModel {
     }
 
     public function investorDataSave($datos) {
-        echo '1';
         $id = $this->find('first', array(
             'fields' => array(
                 'Investor.id',
@@ -283,17 +329,15 @@ class Investor extends AppModel {
             'investor_country' => $datos['investor_country'],
             'investor_email' => $datos['investor_email'],
         );
-        print_r($data);
         $this->set($data);
-        if ($this->validates()) {  //Validacion datos inversor?     
+        if ($this->validates()) {  //validation ok     
             $this->save($data);
-            $result[0] = 1;
-            //Insert OK
-            return $data['id'];
+            json_encode($data);
+            return 1 . $data;
         } else {                     // validation false
             $errors = array('errors' => 'Form error', $this->validationErrors);
-            print_r($errors);
-            return 0 . $errors;
+            $errors = json_encode ($errors);
+            return 0 . "[" . $errors;
         }
     }
 

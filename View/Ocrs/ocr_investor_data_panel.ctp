@@ -1,4 +1,4 @@
-71<?php
+<?php
 /**
  * +---------------------------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                                               |
@@ -52,6 +52,7 @@
 <script>
     $(function () {
         addExistingDocuments();
+        validationerrors = false;
         //telephone
         $('#ContentPlaceHolder_telephone').intlTelInput();
 
@@ -69,7 +70,7 @@
             }
         });
         //Data successfully saved feedback to user FADEOUT.
-        $(document).bind('DOMSubtreeModified',function(){
+        $(document).bind('DOMSubtreeModified', function () {
             fadeOutElement(".alert-to-fade", 5000);
         });
 
@@ -83,6 +84,7 @@
             if ((result = app.visual.checkForm1CRInvestorData()) === false) {
                 event.stopPropagation();
                 event.preventDefault();
+                $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
                 return false;
             } else {
                 var params = {
@@ -114,8 +116,8 @@
             }
         });
 
-         $(document).on("click", "#activateOCR", function () {})
-        
+        $(document).on("click", "#activateOCR", function () {});
+
         $(document).on("change", ".upload", function () {
             id = $(this).attr("value");
             alert(id);
@@ -131,7 +133,7 @@
                 success: function (data) {
                     alert("ddf");
                     successUpload(data, id);
-                },
+                }
             });
         });
 
@@ -144,19 +146,19 @@
             params = {
                 url: url,
                 name: name,
-                id: id,
-            }
+                id: id
+            };
             var data = jQuery.param(params);
             $.ajax({
                 url: '../Files/delete',
                 method: 'post',
                 data: data,
-                success: successDelete(id),
+                success: successDelete(id)
             });
         });
 
 <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
-            if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> == 1) {
+            if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> === 1) {
                 $("#investmentVehicle").prop('checked', true);
                 $("#investmentVehicleContent").show();
             }
@@ -167,13 +169,35 @@
 
 
     function error(result) {
+        result = JSON.parse(result);
+        if (result[0][0]["investor_name"]) {
+            $(".investorName").addClass("redBorder");
+            $(".ErrorName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorName").fadeIn();
+            validationerrors = true;
+        } else {
+            validationerrors = false;
+        }
+
+        if (validationerrors === true || app.visual.checkForm1CRInvestorData() === false) {
+            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
+        } else {
+            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data has been successfully modified") ?></strong></div>');
+        }
 
     }
 
-    function success(result) {
+    function success() {
+        validationerrors = false;
+        alert(app.visual.checkForm1CRInvestorData());
+        if (validationerrors === true || app.visual.checkForm1CRInvestorData() === false) {
+            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
+        } else {
+            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data has been successfully modified") ?></strong></div>');
+        }
 
     }
-    
+
     function successUpload(data, id) {
         alert(data[0] + " " + data[1] + " " + data[2]);
         $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
@@ -183,7 +207,7 @@
         $("#del" + id).prop("disabled", false);
         $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
     }
-    
+
     function successDelete(id) {
         $("#del" + id).prop("disabled", true);
         $("#file" + id).html('<input type="file" name="data[Files][iban]" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
@@ -199,8 +223,8 @@ foreach ($existingFiles as $existingFiles) {
             id = <?php echo $existingFiles["files_investors"]["file_id"] ?>;
             url = "<?php echo $existingFiles["files_investors"]["file_url"] ?>";
             $(".documentRow").each(function () {
-                if ($(this).attr("id") == id) {
-                    $("#file" + id).html('<?php echo $existingFiles["files_investors"]["file_name"] . __(" already exist")?>');
+                if ($(this).attr("id") === id) {
+                    $("#file" + id).html('<?php echo $existingFiles["files_investors"]["file_name"] . __(" already exist") ?>');
                     $("#file" + id).attr("value", "<?php echo $existingFiles["files_investors"]["file_name"] ?>");
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
@@ -216,16 +240,7 @@ foreach ($existingFiles as $existingFiles) {
     }
 
 </script>
-<?php
-    if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
-?>	
-        <div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button>
-                <strong><?php echo __("You're data has been successfully modified")?></strong>	
-        </div>
-<?php
-    }
-?>
+<div id = "notification"></div>
 <div id="OCR_InvestorPanelA">
     <div class="row">
         <div class="col-lg-9">

@@ -62,8 +62,6 @@ class ocr extends AppModel {
 
     public function ocrDataSave($datos) {
 
-        echo '1';
-
         $id = $this->find('first', array(
             'fields' => array(
                 'id',
@@ -75,7 +73,6 @@ class ocr extends AppModel {
         //Si ya existe, actualizo esa fila del ocr
         if (count($id) > 0) {
 
-            echo 'existe';
             if ($datos['ocr_investmentVehicle'] == 1) {
                 $data = array(
                     'id' => $id['Ocr']['id'],
@@ -97,7 +94,7 @@ class ocr extends AppModel {
             }
             //Si no existe, creo una nueva fila ocr    
         } else {
-            echo 'no existe';
+
             if ($datos['ocr_investmentVehicle'] == 1) {
                 $data = array(
                     'investor_id' => $datos['investor_id'],
@@ -118,9 +115,11 @@ class ocr extends AppModel {
         }
 
         $this->save($data);
-        $result[0] = 1;
+        //$result[0] = 1;
+        $result = json_encode($data);
+       // $result = json_encode($result);
         //Insert OK
-        return $result;
+        return 1 . "," . $result . "]";
     }
 
     /*
