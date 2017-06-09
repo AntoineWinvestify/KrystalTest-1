@@ -50,7 +50,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'File');
+    var $uses = array('Ocr', 'Company', 'Investor', 'File', 'Linkedaccount');
     var $error;
 
     function beforeFilter() {
@@ -100,6 +100,7 @@ class ocrsController extends AppController {
             );
 
             $result1 = $this->Investor->investorDataSave($datosInvestor);
+
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $datosOcr = array(
                 'investor_id' => $id,
@@ -108,12 +109,16 @@ class ocrsController extends AppController {
                 'investor_businessName' => $_REQUEST['businessName'],
                 'investor_iban' => $_REQUEST['iban']
             );
-
-
             $result2 = $this->Ocr->ocrDataSave($datosOcr);
+            $ocrArray = json_decode("[" . $result2, true);
+            $idOcr = $ocrArray[1]["id"];
+            $result3 = $this->Ocr->updateCompaniesStatus($idOcr);
+
+
             //$this->Orc->saveDocuments($datos);
             $this->set('result1', $result1);
             $this->set('result2', $result2);
+            $this->set('result3', $result3);
         }
     }
 
@@ -220,7 +225,22 @@ class ocrsController extends AppController {
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
-        $this->set('registered', $this->Ocr->getRegisteredCompanies($id));
+
+
+        $registered = $this->Ocr->getRegisterSentCompanies($id);
+        $filter = array('investor_id' => $id);
+        $linked = $this->Linkedaccount->getLinkedaccountIdList($filter);
+        $notShow = array();
+
+        foreach ($registered as $registered) {
+            array_push($notShow, $registered["companies_ocrs"]["company_id"]);
+        }
+
+        foreach ($linked as $linked) {
+            array_push($notShow, $linked["Linkedaccount"]["company_id"]);
+        }
+        $notShowList = array_unique($notShow);
+        $this->set('notShowList', $notShowList);
 
         echo " ";
         return 1;

@@ -120,9 +120,7 @@
 
         $(document).on("change", ".upload", function () {
             id = $(this).attr("value");
-            alert(id);
             var formdatas = new FormData($("#FileForm" + id)[0]);
-            alert(formdatas);
             $.ajax({
                 url: '../Files/upload',
                 dataType: 'json',
@@ -131,7 +129,6 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    alert("ddf");
                     successUpload(data, id);
                 }
             });
@@ -139,10 +136,8 @@
 
         $(document).on("click", ".delete", function () {
             id = $(this).val();
-            alert(id);
             url = $(".url" + id).attr("value");
             name = $("#file" + id).attr("value");
-            alert(name);
             params = {
                 url: url,
                 name: name,
@@ -189,7 +184,6 @@
 
     function success() {
         validationerrors = false;
-        alert(app.visual.checkForm1CRInvestorData());
         if (validationerrors === true || app.visual.checkForm1CRInvestorData() === false) {
             $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
         } else {
@@ -199,7 +193,6 @@
     }
 
     function successUpload(data, id) {
-        alert(data[0] + " " + data[1] + " " + data[2]);
         $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
         $("#file" + id).attr("value", data[0]);
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');

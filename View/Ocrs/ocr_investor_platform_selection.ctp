@@ -119,7 +119,14 @@
         $('input').iCheck({
             checkboxClass: 'icheckbox_flat-blue'
         });
-
+        
+<?php
+foreach ($notShowList as $id) {
+    ?>           
+            $('#selection').append("<input type='hidden' value='" + <?php echo $id ?> + "' class='selected inDB'></input>");
+    <?php
+}
+?>
 
 
 <?php
