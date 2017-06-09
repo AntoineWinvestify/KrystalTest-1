@@ -53,21 +53,21 @@ class ocr extends AppModel {
         ),
     );
 
-     /*var $validate = array(
-        'investor_cif' => array(
-            'rule1' => array('rule' => array('minLength', 1),
-                'allowEmpty' => false,
-                'message' => 'Name validation error'),
-        ),
-         'investor_businessName' => array(
-            'rule1' => array('rule' => array('minLength', 1),
-                'allowEmpty' => false,
-                'message' => 'Name validation error'),
-        )
-    );*/
-         
-         
-         
+    /* var $validate = array(
+      'investor_cif' => array(
+      'rule1' => array('rule' => array('minLength', 1),
+      'allowEmpty' => false,
+      'message' => 'Name validation error'),
+      ),
+      'investor_businessName' => array(
+      'rule1' => array('rule' => array('minLength', 1),
+      'allowEmpty' => false,
+      'message' => 'Name validation error'),
+      )
+      ); */
+
+
+
     /*
      *
      * Saves data in ocr table
@@ -131,7 +131,7 @@ class ocr extends AppModel {
         $this->save($data);
         //$result[0] = 1;
         $result = json_encode($data);
-       // $result = json_encode($result);
+        // $result = json_encode($result);
         //Insert OK
         return 1 . "," . $result . "]";
     }
@@ -182,6 +182,13 @@ class ocr extends AppModel {
             return $result[0] = 0;
         }
     }
+    
+    public function updateCompaniesStatus($id){
+        
+        $query =  "UPDATE `search`.`companies_ocrs` SET `statusOcr`='1' WHERE `ocr_id`='" . $id . "' and `statusOcr`='0';";
+        $query = $this->query($query);
+    } 
+    
 
     public function deleteCompanyOcr($data) {
         $ocrId = $this->find('first', array(
@@ -211,8 +218,8 @@ class ocr extends AppModel {
         return $this->query($query);
     }
     
-        public function getRegisteredCompanies($id) {
-            
+    public function getRegisterSentCompanies($id) {
+
         $ocrId = $this->find('first', array(
             'fields' => array(
                 'id',
@@ -221,8 +228,16 @@ class ocr extends AppModel {
                 'investor_id' => $id),
             'recursive' => -1,));
 
-        $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 1;";
+        $query = "Select `company_id` from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 1;";
         return $this->query($query);
+    }
+
+    function afterSave($created, $options = array()) {
+        if ($created) {
+            $event = new CakeEvent("sendContactMessage", $this, array('name' => $this->data['name'], 'email' => $this->data['email'], 'subject' => $this->data['subjecttext'], 'text' => $this->data['text']));
+            $this->getEventManager()->dispatch($event);
+        }
+        return true;
     }
 
 }

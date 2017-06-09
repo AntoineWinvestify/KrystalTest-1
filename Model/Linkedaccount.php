@@ -111,7 +111,14 @@ public function getLinkedaccountDataList($filterConditions) {
 	return $linkedaccountResults;
 }
 
+public function getLinkedaccountIdList($filterConditions) {
 
+	$linkedaccountResults = $this->find("all", $params = array('recursive'	=> -1,
+            'fields' => array('company_id'),
+															  'conditions'  => $filterConditions
+														  ));
+	return $linkedaccountResults;
+}
 
 
 
