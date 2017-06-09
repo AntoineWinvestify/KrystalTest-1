@@ -52,6 +52,19 @@ $(document).ready(function(){
   });
 });
 </script>
+<style>
+    .modal-dialog{
+        overflow-y: initial !important
+    }
+    .modal-body{
+        height: 450px;
+        overflow-y: auto;
+    }
+    ul > li > a {
+        cursor:default;
+    }
+    .modal { overflow-y:scroll; }
+</style>
 <div id="1CR_investorDataChecking" class="modal show" role="dialog">
     <!--   Big container   -->
     <div class="container">
@@ -63,11 +76,16 @@ $(document).ready(function(){
                             <div class="fa fa-spin fa-spinner" style="color:green">	
                             </div>
                         </div>
+                        <div class="wizard-header text-center">
+                            <button type="button" class="close closeBtn" data-dismiss="modal" aria-hidden="true" style="margin-right: 15px;">&times;</button>
+                            <img src="/img/logo_winvestify/Logo.png" style="float:center; max-width:75px;"/>
+                            <img src="/img/logo_winvestify/Logo_texto.png" style="float:center; max-width:250px;"/>
+                        </div>
                         <div class="tab-content" style="padding-top: 15px;">
 							<?php 	echo $this->Form->create('User', array('url' => "registerPanelA",)); //ADD TO INVESTOR CHECKING CORRECT DATA	?>	
                             <form class="form">	
                                 <div class="row">
-                                    <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="row">
                                             <h4 class="header1CR"><?php echo __('Investor Data')?></h4>
                                             <!-- Investor complete data -->
@@ -343,18 +361,6 @@ $(document).ready(function(){
                                                     <!-- /Business Name -->
                                                     <!-- /Business Data -->
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <h4 class="header1CR"><?php echo __('Uploaded Documents')?></h4>
-                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <h4 class="header1CR"><?php echo __("Investor's selected platforms")?></h4>
-                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
                                             </div>
                                         </div>
                                     </div>
