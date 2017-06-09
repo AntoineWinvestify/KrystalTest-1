@@ -44,7 +44,6 @@ App::uses('CakeEvent', 'Event');
 class ocr extends AppModel {
 
     var $name = 'Ocr';
-    var $validate = array();
     public $hasAndBelongsToMany = array(
         'Comapany' => array(
             'className' => 'Comapany',
@@ -54,6 +53,21 @@ class ocr extends AppModel {
         ),
     );
 
+     /*var $validate = array(
+        'investor_cif' => array(
+            'rule1' => array('rule' => array('minLength', 1),
+                'allowEmpty' => false,
+                'message' => 'Name validation error'),
+        ),
+         'investor_businessName' => array(
+            'rule1' => array('rule' => array('minLength', 1),
+                'allowEmpty' => false,
+                'message' => 'Name validation error'),
+        )
+    );*/
+         
+         
+         
     /*
      *
      * Saves data in ocr table
