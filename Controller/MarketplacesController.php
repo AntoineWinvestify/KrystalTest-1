@@ -689,9 +689,8 @@ class MarketPlacesController extends AppController {
         if ($this->Data->save(array('data_investorReference' => $resultQueue['Queue']['queue_userReference'],
                     'data_JSONdata' => JSON_encode($dashboardGlobals),
                     $validate = true))) {
-            if (count($linkedaccountsResults) == $companyNumber) {
-                return true;
-            }
+            return $dashboardGlobals;
+            
         } else {
             // log error
             return false;
