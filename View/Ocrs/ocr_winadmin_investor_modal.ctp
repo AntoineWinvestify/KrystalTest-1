@@ -26,6 +26,11 @@
  * [2017-06-09] Version 0.1
  * First view. Insert info about investor
  * [pending] Add MODAL.
+ * 
+ * [2017-06-11] Version 0.2
+ * Added MODAL.
+ * Added Error MODAL & if (php error)
+ * Added JS to control closing btn on modal
 */
 
 ?>
@@ -50,28 +55,68 @@ $(document).ready(function(){
       autoclose: true,
       format: 'dd/mm/yyyy'
   });
+  $(document).on("click", '.close', function () {
+      console.log("close investor data checking modal");
+      $("#1CR_investorDataChecking").removeClass("show");
+      $("#1CR_investorDataChecking").hide();
+  });
+  $(document).on("click", '.closeError', function () {
+      console.log("close error modal");
+      $("#1CR_errorModal").removeClass("show");
+      $("#1CR_errorModal").hide();
+  });
 });
 </script>
 <style>
-    .modal-dialog{
-        overflow-y: initial !important
-    }
-    .modal-body{
+    .tab-content{
         height: 450px;
         overflow-y: auto;
+        padding-top: 0px !important;
     }
     ul > li > a {
         cursor:default;
     }
-    .modal { overflow-y:scroll; }
+    .wizard-container { padding-top: 10px; }
 </style>
+<?php
+//if ($error == true) {		// error 
+?>
+<div id="1CR_errorModal" class="modal show" role="dialog">
+    <!--   Big container   -->
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                <div class="wizard-container">
+                    <div class="card wizard-card togetoverlay" data-color="green">
+                        <div class="overlay">
+                            <div class="fa fa-spin fa-spinner" style="color:green">	
+                            </div>
+                        </div>
+                        <div class="wizard-header text-center">
+                            <button type="button" class="closeeError closeErrorBtn" data-dismiss="modal" aria-hidden="true" style="margin-right: 15px;">&times;</button>
+                            <img src="/img/logo_winvestify/Logo.png" style="float:center; max-width:75px;"/>
+                            <img src="/img/logo_winvestify/Logo_texto.png" style="float:center; max-width:250px;"/>
+                        </div>
+                        <div class="tab-content">
+                            <p align="justify"><?php echo __('Error text.')?></p>
+                        </div>
+                    </div> <!-- /tab-content -->
+                </div>  <!-- /wizard-card -->
+            </div> <!-- /wizard-container -->
+        </div> <!-- /modal -->
+    </div>
+</div>
+<?php
+	/*}
+		else {	*/		// show contents
+?>
 <div id="1CR_investorDataChecking" class="modal show" role="dialog">
     <!--   Big container   -->
     <div class="container">
         <div class="row">
             <div class="col-sm-8 col-sm-offset-2">
                 <div class="wizard-container">
-                    <div class="card wizard-card" data-color="green" id="wizardProfile">
+                    <div class="card wizard-card togetoverlay" data-color="green">
                         <div class="overlay">
                             <div class="fa fa-spin fa-spinner" style="color:green">	
                             </div>
@@ -81,292 +126,287 @@ $(document).ready(function(){
                             <img src="/img/logo_winvestify/Logo.png" style="float:center; max-width:75px;"/>
                             <img src="/img/logo_winvestify/Logo_texto.png" style="float:center; max-width:250px;"/>
                         </div>
-                        <div class="tab-content" style="padding-top: 15px;">
-							<?php 	echo $this->Form->create('User', array('url' => "registerPanelA",)); //ADD TO INVESTOR CHECKING CORRECT DATA	?>	
+                        <div class="tab-content">
                             <form class="form">	
                                 <div class="row">
+                                    <!-- Investor complete data -->
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <h4 class="header1CR"><?php echo __('Investor Data')?></h4>
+                                        <!-- User data -->
                                         <div class="row">
-                                            <h4 class="header1CR"><?php echo __('Investor Data')?></h4>
-                                            <!-- Investor complete data -->
-                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                <!-- User data -->
-                                                <div class="row">
-                                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4"> <!-- Name -->
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_name"><?php echo __('Name')?></label> <input type="checkbox" id="checkName">
-                                                                <?php
-                                                                        $errorClass = "";
-                                                                        if (array_key_exists('investor_name',$investorValidationErrors)) {
-                                                                                $errorClass = "redBorder";
-                                                                        }
-                                                                        $class = "form-control blue investorName". ' ' . $errorClass;
-                                                                         echo $this->Form->input('Investor.investor_name', array(
-                                                                                                                                'name'		=> 'name',
-                                                                                                                                'id' 		=> 'ContentPlaceHolder_name',
-                                                                                                                                'label' 		=> false,
-                                                                                                                                'placeholder' 	=>  __('Name'),
-                                                                                                                                'class' 		=> $class,
-                                                                                                                                'value'			=> $resultUserData[0]['Investor']['investor_name'],						
-                                                                                                                        ));
-                                                                ?>
-                                                        </div>					
-                                                    </div>
-                                                    <!-- /name -->
-
-                                                    <!-- Surname(s) -->
-                                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)')?></label> <input type="checkbox" id="checkSurname">
-                                                            <?php
-                                                                    $errorClass = "";
-                                                                    if (array_key_exists('investor_surname',$investorValidationErrors)) {
-                                                                            $errorClass = "redBorder";
-                                                                    }
-                                                                    $class = "form-control blue investorSurname". ' ' . $errorClass;
-                                                                    echo $this->Form->input('Investor.investor_surname', array(
-                                                                                                                               'name'		=> 'surname',
-                                                                                                                               'id' 		=> 'ContentPlaceHolder_surname',
-                                                                                                                               'label' 		=> false,
-                                                                                                                               'placeholder' 	=>  __('Surname'),
-                                                                                                                               'class' 		=> $class,
-                                                                                                                               'value'		=> $resultUserData[0]['Investor']['investor_surname'],						
-                                                                                                                    ));
-                                                            ?>
-                                                        </div>		
-                                                    </div>
-                                                    <!-- /Surname(s) -->
-
-                                                    <!-- NIF -->
-                                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_dni"><?php echo __('Id')?></label> <input type="checkbox" id="checkId">
-                                                                <?php
-                                                                    $errorClass = "";
-                                                                    if (array_key_exists('investor_DNI',$investorValidationErrors)) {
-                                                                        $errorClass = "redBorder";
-                                                                    }
-                                                                    $class = "form-control blue investorDni". ' ' . $errorClass;
-                                                                    echo $this->Form->input('Investor.investor_DNI', array(
-                                                                                                                           'name'			=> 'dni',
-                                                                                                                           'id' 			=> 'ContentPlaceHolder_dni',
-                                                                                                                           'label' 		=> false,
-                                                                                                                           'placeholder' 	=>  __('Id'),
-                                                                                                                           'class' 		=> $class,
-                                                                                                                           'value'			=> $resultUserData[0]['Investor']['investor_DNI'],						
-                                                                                                                        ));
-                                                                ?>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /NIF -->
-                                                </div>
-                                                <div class="row">
-                                                    <!-- Date of Birth -->
-                                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth')?></label> <input type="checkbox" id="checkDateOfBirth">
-                                                                <div class="input-group input-group-sm blue date">
-                                                                    <?php
-                                                                        $errorClass = "";
-                                                                        if (array_key_exists('investor_dateOfBirth',$investorValidationErrors)) {
-                                                                            $errorClass = "redBorder";
-                                                                        }
-                                                                        $class = "form-control pull-right investorDateOfBirth". ' ' . $errorClass;
-                                                                    ?>
-                                                                    <div class="input-group-addon" style="border-radius:8px; border: none;">
-                                                                        <i class="fa fa-calendar"></i>
-                                                                    </div>
-                                                                    <input type="text" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth')?>" id="ContentPlaceHolder_dateOfBirth" value="<?php $resultUserData[0]['Investor']['investor_dateOfBirth'] ?>">
-                                                                </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /Date of Birth -->
-
-                                                    <!-- email -->
-                                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_email"><?php echo __('Email')?></label> <input type="checkbox" id="checkEmail">
-                                                                <?php
-                                                                    $errorClass = "";
-                                                                    if (array_key_exists('investor_email',$investorValidationErrors)) {
-                                                                        $errorClass = "redBorder";
-                                                                    }
-                                                                    $class = "form-control blue investorEmail". ' ' . $errorClass;
-                                                                    echo $this->Form->input('Investor.investor_email', array(
-                                                                                                                           'name'			=> 'dni',
-                                                                                                                           'id' 			=> 'ContentPlaceHolder_email',
-                                                                                                                           'label' 		=> false,
-                                                                                                                           'placeholder' 	=>  __('Email'),
-                                                                                                                           'class' 		=> $class,
-                                                                                                                           'value'			=> $resultUserData[0]['Investor']['investor_email'],						
-                                                                                                                        ));
-                                                                ?>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /email -->
-
-                                                    <!-- Telephone -->
-                                                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone')?></label> <input type="checkbox" id="checkTelephone">
-                                                            <div class="form-control blue">
-                                                                <?php
-                                                                    $errorClass = "";
-                                                                    if (array_key_exists('investor_telephone', $investorValidationErrors)) {
-                                                                        $errorClass = "redBorder";
-                                                                    }
-                                                                    $class = "telephoneNumber center-block". ' ' . $errorClass;
-
-                                                                    echo $this->Form->input('Investor.investor_telephone', array(
-                                                                                                                                'name'			=> 'telephone',
-                                                                                                                                'id' 			=> 'ContentPlaceHolder_telephone',
-                                                                                                                                'label' 		=> false,
-                                                                                                                                'placeholder' 	=>  __('Telephone'),
-                                                                                                                                'class' 		=> $class,
-                                                                                                                                'type'			=> 'tel',
-                                                                                                                                'value'			=> $resultUserData[0]['Investor']['investor_telephone']
-                                                                                                                                ));
-                                                                    $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
-                                                                    if (array_key_exists('investor_telephone',$validationResult)) {
-                                                                        $errorClassesForTexts .= " ". "actived";
-                                                                    }
-                                                                ?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /telephone -->
-                                                </div>
-                                                <div class="row">
-                                                    <!-- Postal code -->
-                                                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode')?></label> <input type="checkbox" id="checkPostCode">
-                                                                <?php
-                                                                    $errorClass = "";
-                                                                    if (array_key_exists('investor_postCode',$investorValidationErrors)) {
-                                                                        $errorClass = "redBorder";
-                                                                    }
-                                                                    $class = "form-control blue investorPostCode". ' ' . $errorClass;
-                                                                    echo $this->Form->input('Investor.investor_postCode', array(
-                                                                                                                                'name'		=> 'investor_postCode',
-                                                                                                                                'id' 		=> 'ContentPlaceHolder_postCode',
-                                                                                                                                'label' 		=> false,
-                                                                                                                                'placeholder' 	=>  __('PostCode'),
-                                                                                                                                'class' 		=> $class,
-                                                                                                                                'value'		=> $resultUserData[0]['Investor']['investor_postCode'],						
-                                                                                                                        ));
-                                                                ?>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /postal code -->
-                                                    <!-- Address -->
-                                                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_address1"><?php echo __('Address')?></label> <input type="checkbox" id="checkAdress">
-                                                                <?php
-                                                                        $errorClass = "";
-                                                                        if (array_key_exists('investor_address1',$investorValidationErrors)) {
-                                                                                $errorClass = "redBorder";
-                                                                        }
-                                                                        $class = "form-control blue investorSurname". ' ' . $errorClass;
-                                                                        echo $this->Form->input('Investor.investor_address1', array(
-                                                                                                                                   'name'		=> 'address1',
-                                                                                                                                   'id' 		=> 'ContentPlaceHolder_address1',
-                                                                                                                                   'label' 		=> false,
-                                                                                                                                   'placeholder' 	=>  __('Address'),
-                                                                                                                                   'class' 		=> $class,
-                                                                                                                                   'value'		=> $resultUserData[0]['Investor']['investor_address1'],						
-                                                                                                                        ));
-                                                                ?>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /Address -->
-                                                </div>
-                                                <div class="row">
-
-                                                    <!-- city -->
-                                                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                                                        <div class="form-group">
-                                                            <label for="exampleInputPassword1"><?php echo __('City')?></label> <input type="checkbox" id="checkCity">
-                                                                <?php
-                                                                    $errorClass = "";
-                                                                    if (array_key_exists('investor_city',$investorValidationErrors)) {
-                                                                        $errorClass = "redBorder";
-                                                                    }
-                                                                    $class = "form-control blue investorCity". ' ' . $errorClass;
-                                                                    echo $this->Form->input('ContentPlaceHolder_city', array(
-                                                                                                                            'name'		=> 'city',
-                                                                                                                            'id' 		=> 'ContentPlaceHolder_city',
-                                                                                                                            'label' 	=> false,
-                                                                                                                            'placeholder' 	=>  __('City'),
-                                                                                                                            'class' 	=> $class,
-                                                                                                                            'value'		=> $resultUserData[0]['Investor']['investor_city'],						
-                                                                                                                        ));
-                                                                        ?>
-                                                        </div>	
-                                                    </div>
-                                                    <!-- /city -->
-
-                                                    <!-- Country -->
-                                                    <div class="col-xs-12 col-sm-4 col-md-8 col-lg-8">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_country"><?php echo __('Country')?></label> <input type="checkbox" id="checkCountry">
-                                                            <?php
+                                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4"> <!-- Name -->
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_name"><?php echo __('Name')?></label> <input type="checkbox" id="checkName">
+                                                        <?php
                                                                 $errorClass = "";
-                                                                if (array_key_exists('investor_country',$investorValidationErrors)) {
+                                                                if (array_key_exists('investor_name',$investorValidationErrors)) {
                                                                         $errorClass = "redBorder";
                                                                 }
-                                                                $class = "form-control blue investorCountry". ' ' . $errorClass;	
-                                                                echo $this->Form->input('Investor.investor_country', array(
-                                                                        'name'			=> 'country',
-                                                                        'id' 			=> 'ContentPlaceHolder_country',
-                                                                        'label' 		=> false,
-                                                                        'options'               => $countryData,
-                                                                        'placeholder' 	=>  __('Country'),
-                                                                        'class' 		=> $class,
-                                                                        'value'			=> $resultUserData[0]['Investor']['investor_country'],						
-                                                                ));
-                                                            ?>
-                                                        </div>	
-                                                    </div>
-                                                    <!-- /country -->
-                                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_iban"><?php echo __('IBAN')?></label> <input type="checkbox" id="checkIBAN">
-                                                            <input type="text" class="form-control blue">
-                                                        </div>
-                                                    </div><!-- /Cif + Business Name -->
-                                                </div>
-                                            <!-- /User data -->
+                                                                $class = "form-control blue_noborder investorName". ' ' . $errorClass;
+                                                                 echo $this->Form->input('Investor.investor_name', array(
+                                                                                                                        'name'		=> 'name',
+                                                                                                                        'id' 		=> 'ContentPlaceHolder_name',
+                                                                                                                        'label' 		=> false,
+                                                                                                                        'placeholder' 	=>  __('Name'),
+                                                                                                                        'class' 		=> $class,
+                                                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_name'],						
+                                                                                                                ));
+                                                        ?>
+                                                </div>					
                                             </div>
-                                            <!-- /Investor complete data -->
-                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                <div class="row">
-                                                    <!-- CIF -->
-                                                    <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_cif"><?php echo __('CIF')?></label> <input type="checkbox" id="checkCIF">
-                                                            <input type="text" class="form-control blue">
-                                                        </div>
-                                                    </div>
-                                                    <!-- /CIF -->
+                                            <!-- /name -->
 
-                                                    <!-- Business Name -->
-                                                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                                                        <div class="form-group">
-                                                            <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name')?></label> <input type="checkbox" id="checkBusinessName">
-                                                            <input type="text" class="form-control blue">
-                                                        </div>
-                                                    </div>
-                                                    <!-- /Business Name -->
-                                                    <!-- /Business Data -->
+                                            <!-- Surname(s) -->
+                                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)')?></label> <input type="checkbox" id="checkSurname">
+                                                    <?php
+                                                            $errorClass = "";
+                                                            if (array_key_exists('investor_surname',$investorValidationErrors)) {
+                                                                    $errorClass = "redBorder";
+                                                            }
+                                                            $class = "form-control blue_noborder investorSurname". ' ' . $errorClass;
+                                                            echo $this->Form->input('Investor.investor_surname', array(
+                                                                                                                       'name'		=> 'surname',
+                                                                                                                       'id' 		=> 'ContentPlaceHolder_surname',
+                                                                                                                       'label' 		=> false,
+                                                                                                                       'placeholder' 	=>  __('Surname'),
+                                                                                                                       'class' 		=> $class,
+                                                                                                                       'value'		=> $resultUserData[0]['Investor']['investor_surname'],						
+                                                                                                            ));
+                                                    ?>
+                                                </div>		
+                                            </div>
+                                            <!-- /Surname(s) -->
+
+                                            <!-- NIF -->
+                                            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_dni"><?php echo __('Id')?></label> <input type="checkbox" id="checkId">
+                                                        <?php
+                                                            $errorClass = "";
+                                                            if (array_key_exists('investor_DNI',$investorValidationErrors)) {
+                                                                $errorClass = "redBorder";
+                                                            }
+                                                            $class = "form-control blue_noborder investorDni". ' ' . $errorClass;
+                                                            echo $this->Form->input('Investor.investor_DNI', array(
+                                                                                                                   'name'			=> 'dni',
+                                                                                                                   'id' 			=> 'ContentPlaceHolder_dni',
+                                                                                                                   'label' 		=> false,
+                                                                                                                   'placeholder' 	=>  __('Id'),
+                                                                                                                   'class' 		=> $class,
+                                                                                                                   'value'			=> $resultUserData[0]['Investor']['investor_DNI'],						
+                                                                                                                ));
+                                                        ?>
                                                 </div>
                                             </div>
+                                            <!-- /NIF -->
+                                        </div>
+                                        <div class="row">
+                                            <!-- Date of Birth -->
+                                            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth')?></label> <input type="checkbox" id="checkDateOfBirth">
+                                                        <div class="input-group input-group-sm blue_noborder date">
+                                                            <?php
+                                                                $errorClass = "";
+                                                                if (array_key_exists('investor_dateOfBirth',$investorValidationErrors)) {
+                                                                    $errorClass = "redBorder";
+                                                                }
+                                                                $class = "form-control pull-right investorDateOfBirth". ' ' . $errorClass;
+                                                            ?>
+                                                            <div class="input-group-addon" style="border-radius:8px; border: none;">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+                                                            <input type="text" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth')?>" id="ContentPlaceHolder_dateOfBirth" value="<?php $resultUserData[0]['Investor']['investor_dateOfBirth'] ?>">
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <!-- /Date of Birth -->
+
+                                            <!-- email -->
+                                            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_email"><?php echo __('Email')?></label> <input type="checkbox" id="checkEmail">
+                                                        <?php
+                                                            $errorClass = "";
+                                                            if (array_key_exists('investor_email',$investorValidationErrors)) {
+                                                                $errorClass = "redBorder";
+                                                            }
+                                                            $class = "form-control blue_noborder investorEmail". ' ' . $errorClass;
+                                                            echo $this->Form->input('Investor.investor_email', array(
+                                                                                                                   'name'			=> 'dni',
+                                                                                                                   'id' 			=> 'ContentPlaceHolder_email',
+                                                                                                                   'label' 		=> false,
+                                                                                                                   'placeholder' 	=>  __('Email'),
+                                                                                                                   'class' 		=> $class,
+                                                                                                                   'value'			=> $resultUserData[0]['Investor']['investor_email'],						
+                                                                                                                ));
+                                                        ?>
+                                                </div>
+                                            </div>
+                                            <!-- /email -->
+
+                                            <!-- Telephone -->
+                                            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone')?></label> <input type="checkbox" id="checkTelephone">
+                                                    <div class="form-control blue_noborder">
+                                                        <?php
+                                                            $errorClass = "";
+                                                            if (array_key_exists('investor_telephone', $investorValidationErrors)) {
+                                                                $errorClass = "redBorder";
+                                                            }
+                                                            $class = "telephoneNumber center-block". ' ' . $errorClass;
+
+                                                            echo $this->Form->input('Investor.investor_telephone', array(
+                                                                                                                        'name'			=> 'telephone',
+                                                                                                                        'id' 			=> 'ContentPlaceHolder_telephone',
+                                                                                                                        'label' 		=> false,
+                                                                                                                        'placeholder' 	=>  __('Telephone'),
+                                                                                                                        'class' 		=> $class,
+                                                                                                                        'type'			=> 'tel',
+                                                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_telephone']
+                                                                                                                        ));
+                                                            $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
+                                                            if (array_key_exists('investor_telephone',$validationResult)) {
+                                                                $errorClassesForTexts .= " ". "actived";
+                                                            }
+                                                        ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- /telephone -->
+                                        </div>
+                                        <div class="row">
+                                            <!-- Postal code -->
+                                            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode')?></label> <input type="checkbox" id="checkPostCode">
+                                                        <?php
+                                                            $errorClass = "";
+                                                            if (array_key_exists('investor_postCode',$investorValidationErrors)) {
+                                                                $errorClass = "redBorder";
+                                                            }
+                                                            $class = "form-control blue_noborder investorPostCode". ' ' . $errorClass;
+                                                            echo $this->Form->input('Investor.investor_postCode', array(
+                                                                                                                        'name'		=> 'investor_postCode',
+                                                                                                                        'id' 		=> 'ContentPlaceHolder_postCode',
+                                                                                                                        'label' 		=> false,
+                                                                                                                        'placeholder' 	=>  __('PostCode'),
+                                                                                                                        'class' 		=> $class,
+                                                                                                                        'value'		=> $resultUserData[0]['Investor']['investor_postCode'],						
+                                                                                                                ));
+                                                        ?>
+                                                </div>
+                                            </div>
+                                            <!-- /postal code -->
+                                            <!-- Address -->
+                                            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_address1"><?php echo __('Address')?></label> <input type="checkbox" id="checkAdress">
+                                                        <?php
+                                                                $errorClass = "";
+                                                                if (array_key_exists('investor_address1',$investorValidationErrors)) {
+                                                                        $errorClass = "redBorder";
+                                                                }
+                                                                $class = "form-control blue_noborder investorSurname". ' ' . $errorClass;
+                                                                echo $this->Form->input('Investor.investor_address1', array(
+                                                                                                                           'name'		=> 'address1',
+                                                                                                                           'id' 		=> 'ContentPlaceHolder_address1',
+                                                                                                                           'label' 		=> false,
+                                                                                                                           'placeholder' 	=>  __('Address'),
+                                                                                                                           'class' 		=> $class,
+                                                                                                                           'value'		=> $resultUserData[0]['Investor']['investor_address1'],						
+                                                                                                                ));
+                                                        ?>
+                                                </div>
+                                            </div>
+                                            <!-- /Address -->
+                                        </div>
+                                        <div class="row">
+
+                                            <!-- city -->
+                                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1"><?php echo __('City')?></label> <input type="checkbox" id="checkCity">
+                                                        <?php
+                                                            $errorClass = "";
+                                                            if (array_key_exists('investor_city',$investorValidationErrors)) {
+                                                                $errorClass = "redBorder";
+                                                            }
+                                                            $class = "form-control blue_noborder investorCity". ' ' . $errorClass;
+                                                            echo $this->Form->input('ContentPlaceHolder_city', array(
+                                                                                                                    'name'		=> 'city',
+                                                                                                                    'id' 		=> 'ContentPlaceHolder_city',
+                                                                                                                    'label' 	=> false,
+                                                                                                                    'placeholder' 	=>  __('City'),
+                                                                                                                    'class' 	=> $class,
+                                                                                                                    'value'		=> $resultUserData[0]['Investor']['investor_city'],						
+                                                                                                                ));
+                                                                ?>
+                                                </div>	
+                                            </div>
+                                            <!-- /city -->
+
+                                            <!-- Country -->
+                                            <div class="col-xs-12 col-sm-4 col-md-8 col-lg-8">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_country"><?php echo __('Country')?></label> <input type="checkbox" id="checkCountry">
+                                                    <?php
+                                                        $errorClass = "";
+                                                        if (array_key_exists('investor_country',$investorValidationErrors)) {
+                                                                $errorClass = "redBorder";
+                                                        }
+                                                        $class = "form-control blue_noborder investorCountry". ' ' . $errorClass;	
+                                                        echo $this->Form->input('Investor.investor_country', array(
+                                                                'name'			=> 'country',
+                                                                'id' 			=> 'ContentPlaceHolder_country',
+                                                                'label' 		=> false,
+                                                                'options'               => $countryData,
+                                                                'placeholder' 	=>  __('Country'),
+                                                                'class' 		=> $class,
+                                                                'value'			=> $resultUserData[0]['Investor']['investor_country'],						
+                                                        ));
+                                                    ?>
+                                                </div>	
+                                            </div>
+                                            <!-- /country -->
+                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_iban"><?php echo __('IBAN')?></label> <input type="checkbox" id="checkIBAN">
+                                                    <input type="text" class="form-control blue_noborder">
+                                                </div>
+                                            </div><!-- /Cif + Business Name -->
+                                        </div>
+                                    <!-- /User data -->
+                                    </div>
+                                    <!-- /Investor complete data -->
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="row">
+                                            <!-- CIF -->
+                                            <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_cif"><?php echo __('CIF')?></label> <input type="checkbox" id="checkCIF">
+                                                    <input type="text" class="form-control blue_noborder">
+                                                </div>
+                                            </div>
+                                            <!-- /CIF -->
+
+                                            <!-- Business Name -->
+                                            <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name')?></label> <input type="checkbox" id="checkBusinessName">
+                                                    <input type="text" class="form-control blue_noborder">
+                                                </div>
+                                            </div>
+                                            <!-- /Business Name -->
+                                            <!-- /Business Data -->
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                            <button type="button" class="btn btn-default btn-lg btn-win1 btnRounded center-block" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve')?></button>
                                     </div>
                                 </div>
