@@ -49,7 +49,6 @@
                         <th with="10%"><?php echo __('Amount')?></th>
                         <th><?php echo __('Upload file')?></th>
                         <th><?php echo __('Send')?></th>
-                        <th><?php echo __('Edit/Delete')?></th>
                     </tr>
                     <tr>
                         <td>
@@ -156,11 +155,6 @@
                         <td>
                             <button type="button" class="btn btn-default btn-win1">
                                 <i class="fa fa-upload"></i> <?php echo __('Send') ?> 
-                            </button>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-default" style="background-color:#990000; color:white;">
-                                <i class="fa fa-times"></i> <?php echo __('Edit') ?> 
                             </button>
                         </td>
                     </tr>
