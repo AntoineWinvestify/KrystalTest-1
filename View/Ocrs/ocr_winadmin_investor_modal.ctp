@@ -35,6 +35,7 @@
  * [2017-06-12] Version 0.3
  * Deleted plugins JS & CSS (unnecessary)
  * Added disabled to all inputs
+ * Added list of Documents & Selected PFPs
 */
 
 ?>
@@ -46,13 +47,6 @@ $(document).ready(function(){
   //iCheck plugin
   $('input').iCheck({
     checkboxClass: 'icheckbox_flat-blue'
-  });
-  //telephone
-  $('#ContentPlaceHolder_telephone').intlTelInput();
-  //Date picker
-  $('#ContentPlaceHolder_dateOfBirth').datepicker({
-      autoclose: true,
-      format: 'dd/mm/yyyy'
   });
   $(document).on("click", '.close', function () {
       console.log("close investor data checking modal");
@@ -411,6 +405,25 @@ $(document).ready(function(){
                                             <!-- /Business Name -->
                                             <!-- /Business Data -->
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <!-- Investor complete data -->
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                        <h4 class="header1CR"><?php echo __('Investor Selected Platforms')?></h4>
+                                        <ul>
+                                            <li>PFP1 <input type="checkbox" id="checkPFP1"></li>
+                                            <li>PFP2 <input type="checkbox" id="checkPFP2"></li>
+                                            <li>PFP3 <input type="checkbox" id="checkPFP3"></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                        <h4 class="header1CR"><?php echo __('Investor Uploaded Documents')?></h4>
+                                        <ul>
+                                            <li>Doc1 <input type="checkbox" id="checkDoc1"></li>
+                                            <li>Doc2 <input type="checkbox" id="checkDoc2"></li>
+                                            <li>Doc3 <input type="checkbox" id="checkDoc3"></li>
+                                        </ul>
                                     </div>
                                 </div>
                                 <div class="row">
