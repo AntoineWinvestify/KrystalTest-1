@@ -277,6 +277,11 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
+    
+    function ocrWinadminUpdatePfpData() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
 
     /*
      * 
