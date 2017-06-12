@@ -273,8 +273,6 @@ class circulantis extends p2pCompany {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    //echo __FILE__ . " " . __LINE__ . "<br>";
-
 //Duration. The unit (=dÃ­as) is hardcoded
                     $data1[$key]['loanId'] = trim($tds[1]->nodeValue); //trim($tds[2]->nodeValue);
                     $data1[$key]['date'] = trim($tds[6]->nodeValue);
@@ -290,39 +288,8 @@ class circulantis extends p2pCompany {
                     $data1[$key]['invested'] = $this->getMonetaryValue($tds[4]->nodeValue);
                     $data1[$key]['commission'] = 0;
                     $data1[$key]['interest'] = $this->getPercentage($tds[5]->nodeValue);
-                    //echo __FILE__ . " " . __LINE__ . "<br>";
-// Get amortization table. first get base URL for amortization table
-//		$baseUrl = array_shift($this->urlSequence);
-//		$as = $tds[0]->getElementsByTagName('a');		 // only 1 will be found
-//		$dataId =  $as[0]->getAttribute("data-id");
-// Deal with the amortization table
-//		$strAmortizationTable = $this->getCompanyWebpage($baseUrl . "/" .$dataId);
-//		$domAmortizationTable = new DOMDocument;
-//	 	$domAmortizationTable->loadHTML($strAmortizationTable);	
-//		$domAmortizationTable->preserveWhiteSpace = false;		
-//		$amortizationData = $this->getElements($domAmortizationTable, "tr", "class", "detail");	// only 1 found
-// Convert into table
                     $mainIndex = -1;
-                    /*
-                      foreach ($amortizationData as $key1 => $trAmortizationTable ) {
-                      $mainIndex = $mainIndex + 1;
-                      $subIndex = -1;
-                      $tdsAmortizationTable  = $trAmortizationTable ->getElementsByTagName('td');
-                      foreach( $tdsAmortizationTable  as $tdAmortizationTable ) {
-                      $subIndex = $subIndex + 1;
-                      $amortizationTable[$mainIndex][$subIndex] = trim($tdAmortizationTable->nodeValue);
-                      }
-                      }
 
-                      $data1[$key]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable,
-                      date("Y-m-d"),
-                      "dd-mm-yyyy",
-                      1, 3);
-                      $data1[$key]['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable,
-                      date("Y-m-d"),
-                      "dd-mm-yyyy",
-                      1, 4);
-                     */
 // map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED			
                     $data1[$key]['status'] = OK;
                     $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + ($data1[$key]['invested'] /* - $data1[$key]['amortized'] */);
@@ -353,39 +320,7 @@ class circulantis extends p2pCompany {
                     $data1[$key]['invested'] = $this->getMonetaryValue($tds[4]->nodeValue);
                     $data1[$key]['commission'] = 0;
                     $data1[$key]['interest'] = $this->getPercentage($tds[5]->nodeValue);
-
-// Get amortization table. first get base URL for amortization table
-//		$baseUrl = array_shift($this->urlSequence);
-//		$as = $tds[0]->getElementsByTagName('a');		 // only 1 will be found
-//		$dataId =  $as[0]->getAttribute("data-id");
-// Deal with the amortization table
-//		$strAmortizationTable = $this->getCompanyWebpage($baseUrl . "/" .$dataId);
-//		$domAmortizationTable = new DOMDocument;
-//	 	$domAmortizationTable->loadHTML($strAmortizationTable);	
-//		$domAmortizationTable->preserveWhiteSpace = false;		
-//		$amortizationData = $this->getElements($domAmortizationTable, "tr", "class", "detail");	// only 1 found
-// Convert into table
                     $mainIndex = -1;
-                    /*
-                      foreach ($amortizationData as $key1 => $trAmortizationTable ) {
-                      $mainIndex = $mainIndex + 1;
-                      $subIndex = -1;
-                      $tdsAmortizationTable  = $trAmortizationTable ->getElementsByTagName('td');
-                      foreach( $tdsAmortizationTable  as $tdAmortizationTable ) {
-                      $subIndex = $subIndex + 1;
-                      $amortizationTable[$mainIndex][$subIndex] = trim($tdAmortizationTable->nodeValue);
-                      }
-                      }
-                      echo __FILE__ . " " . __LINE__ . "<br>";
-                      $data1[$key]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable,
-                      date("Y-m-d"),
-                      "dd-mm-yyyy",
-                      1, 3);
-                      $data1[$key]['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable,
-                      date("Y-m-d"),
-                      "dd-mm-yyyy",
-                      1, 4);
-                     */
 // map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED	
                     $data1[$key]['status'] = PAYMENT_DELAYED;
 
@@ -399,8 +334,6 @@ class circulantis extends p2pCompany {
                 $tables = $this->getElements($rows[2], "table");
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
-                }
-                foreach ($tables as $key => $table) {         // get mean profit value divs[0]->nodeValue
                 }
                 $tds = $this->getElements($tables[2], "td");
                 if (!$this->hasElements) {
