@@ -149,9 +149,11 @@ foreach ($selected as $selected) {
 
         //Te pasa el seleccionado a su zona
         $(".btnSelect").click(function () {
+            id = $(this).attr("id");
+            $(this).prop("disabled",true);
             z++;
-            $(this).parentsUntil("#platformSelection").fadeOut();
-            $("#selection").append("<div value='" + $(this).attr("id") + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $(this).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+            $("#" + id).parentsUntil("#platformSelection").fadeOut();
+            $("#selection").append("<div value='" + id + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $("#" + id).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             recount();
             extraEvent();
         });
@@ -174,8 +176,9 @@ foreach ($selected as $selected) {
     }
     function extraEvent() {
         //Borra la plataforma cuando le das a l x
-        $('.btnSelectedPlatform').click(function () {
+        $('.btnSelectedPlatform').click(function () {           
             idDel = $(this).parent().parent().parent().attr("value");
+            $("#" + idDel).prop("disabled",false);
             $("#platformSelection").find("." + idDel).fadeIn();
             $("#platformSelection").find("." + idDel).find('*').fadeIn();
             $(this).parent().parent().parent().remove();
@@ -352,8 +355,8 @@ foreach ($selected as $selected) {
                                 <div class="box-footer no-padding">
                                     <div class="row">
                                         <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-8">
-                                            <div class="input_platforms"><input type="checkbox" class="check"> <?php echo __('He leído la ') ?><a href="<?php echo $company['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
-                                            <div class="input_platforms"><input type="checkbox" class="check"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
+                                            <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a href="<?php echo $company['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
+                                            <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
                                             <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn-win2 btnMargin center-block btnSelected" href = "#"><?php echo __('Select') ?></button>

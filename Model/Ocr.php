@@ -132,7 +132,9 @@ class ocr extends AppModel {
         //$result[0] = 1;
         $result = json_encode($data);
         // $result = json_encode($result);
-        //Insert OK
+        $event = new CakeEvent("checkMessage", $this);
+        $this->getEventManager()->dispatch($event);
+        //Insert OK        
         return 1 . "," . $result . "]";
     }
 
@@ -182,13 +184,12 @@ class ocr extends AppModel {
             return $result[0] = 0;
         }
     }
-    
-    public function updateCompaniesStatus($id){
-        
-        $query =  "UPDATE `search`.`companies_ocrs` SET `statusOcr`='1' WHERE `ocr_id`='" . $id . "' and `statusOcr`='0';";
+
+    public function updateCompaniesStatus($id) {
+
+        $query = "UPDATE `search`.`companies_ocrs` SET `statusOcr`='1' WHERE `ocr_id`='" . $id . "' and `statusOcr`='0';";
         $query = $this->query($query);
-    } 
-    
+    }
 
     public function deleteCompanyOcr($data) {
         $ocrId = $this->find('first', array(
@@ -217,7 +218,7 @@ class ocr extends AppModel {
         $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 0;";
         return $this->query($query);
     }
-    
+
     public function getRegisterSentCompanies($id) {
 
         $ocrId = $this->find('first', array(
@@ -230,14 +231,6 @@ class ocr extends AppModel {
 
         $query = "Select `company_id` from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 1;";
         return $this->query($query);
-    }
-
-    function afterSave($created, $options = array()) {
-        if ($created) {
-            $event = new CakeEvent("sendContactMessage", $this, array('name' => $this->data['name'], 'email' => $this->data['email'], 'subject' => $this->data['subjecttext'], 'text' => $this->data['text']));
-            $this->getEventManager()->dispatch($event);
-        }
-        return true;
     }
 
 }
