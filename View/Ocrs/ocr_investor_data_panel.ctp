@@ -47,7 +47,16 @@
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/plugins/datepicker/bootstrap-datepicker.js"></script>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
-
+<style>
+    .togetoverlay .overlay  {
+        z-index: 50;
+        background: rgba(255, 255, 255, 0);
+        border-radius: 3px;
+    }
+    .togetoverlay .overlay > .fa {
+        font-size: 50px;
+    }
+</style>
 
 <script>
     $(function () {
