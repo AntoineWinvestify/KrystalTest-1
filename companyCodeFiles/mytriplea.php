@@ -356,6 +356,7 @@ class mytriplea extends p2pCompany {
                     $this->data1[$key]['interest'] = $this->getPercentage($tds[3]->nodeValue);
                     $this->data1[$key]['invested'] = $this->getMonetaryValue($tds[1]->nodeValue);
                     $this->data1[$key]['date'] = trim($tds[4]->nodeValue);
+                    $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] + $this->getMonetaryValue($tds[8]->nodeValue);
                     
                     $tempStatus = trim($tds[6]->nodeValue);
                     if (strncasecmp($tempStatus, "Vivo / Al", 9) == 0) {
@@ -430,8 +431,6 @@ class mytriplea extends p2pCompany {
                 $this->data1[$this->accountPosition]['duration'] = count($amortizationTable) . " " . __('Meses');
 
                 $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->accountPosition]['invested'];
-                $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] +
-                $this->getMonetaryValue($tds[8]->nodeValue);
                 $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
                 $this->data1[$this->accountPosition]['profitGained'];
                 $this->tempArray['global']['totalInvestments'] = $this->tempArray['global']['totalInvestments'] +
