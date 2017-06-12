@@ -31,14 +31,13 @@
  * Added MODAL.
  * Added Error MODAL & if (php error)
  * Added JS to control closing btn on modal
+ * 
+ * [2017-06-12] Version 0.3
+ * Deleted plugins JS & CSS (unnecessary)
+ * Added disabled to all inputs
 */
 
 ?>
-<script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
-<script src="/plugins/intlTelInput/js/utils.js"></script>
-<link rel="stylesheet" type="text/css" href="/plugins/intlTelInput/css/intlTelInput.css">
-<script src="/plugins/datepicker/bootstrap-datepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="/plugins/datepicker/datepicker3.css">
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
 <script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
 <script type="text/javascript" src="/modals/assets/js/paper-bootstrap-wizard.js"></script>
@@ -149,7 +148,8 @@ $(document).ready(function(){
                                                                                                                         'label' 		=> false,
                                                                                                                         'placeholder' 	=>  __('Name'),
                                                                                                                         'class' 		=> $class,
-                                                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_name'],						
+                                                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_name'],
+                                                                                                                        'disabled'      => 'disabled'
                                                                                                                 ));
                                                         ?>
                                                 </div>					
@@ -172,7 +172,8 @@ $(document).ready(function(){
                                                                                                                        'label' 		=> false,
                                                                                                                        'placeholder' 	=>  __('Surname'),
                                                                                                                        'class' 		=> $class,
-                                                                                                                       'value'		=> $resultUserData[0]['Investor']['investor_surname'],						
+                                                                                                                       'value'		=> $resultUserData[0]['Investor']['investor_surname'],
+                                                                                                                       'disabled'      => 'disabled'
                                                                                                             ));
                                                     ?>
                                                 </div>		
@@ -196,7 +197,8 @@ $(document).ready(function(){
                                                                                                                    'placeholder' 	=>  __('Id'),
                                                                                                                    'class' 		=> $class,
                                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_DNI'],						
-                                                                                                                ));
+                                                                                                                   'disabled'      => 'disabled'
+                                                                ));
                                                         ?>
                                                 </div>
                                             </div>
@@ -218,7 +220,7 @@ $(document).ready(function(){
                                                             <div class="input-group-addon" style="border-radius:8px; border: none;">
                                                                 <i class="fa fa-calendar"></i>
                                                             </div>
-                                                            <input type="text" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth')?>" id="ContentPlaceHolder_dateOfBirth" value="<?php $resultUserData[0]['Investor']['investor_dateOfBirth'] ?>">
+                                                            <input type="text" disabled="disabled" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth')?>" id="ContentPlaceHolder_dateOfBirth" value="<?php $resultUserData[0]['Investor']['investor_dateOfBirth'] ?>">
                                                         </div>
                                                 </div>
                                             </div>
@@ -241,7 +243,8 @@ $(document).ready(function(){
                                                                                                                    'placeholder' 	=>  __('Email'),
                                                                                                                    'class' 		=> $class,
                                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_email'],						
-                                                                                                                ));
+                                                                                                                   'disabled'      => 'disabled'
+                                                                ));
                                                         ?>
                                                 </div>
                                             </div>
@@ -266,8 +269,9 @@ $(document).ready(function(){
                                                                                                                         'placeholder' 	=>  __('Telephone'),
                                                                                                                         'class' 		=> $class,
                                                                                                                         'type'			=> 'tel',
-                                                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_telephone']
-                                                                                                                        ));
+                                                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_telephone'],
+                                                                                                                        'disabled'      => 'disabled'
+                                                                    ));
                                                             $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
                                                             if (array_key_exists('investor_telephone',$validationResult)) {
                                                                 $errorClassesForTexts .= " ". "actived";
@@ -295,7 +299,8 @@ $(document).ready(function(){
                                                                                                                         'label' 		=> false,
                                                                                                                         'placeholder' 	=>  __('PostCode'),
                                                                                                                         'class' 		=> $class,
-                                                                                                                        'value'		=> $resultUserData[0]['Investor']['investor_postCode'],						
+                                                                                                                        'value'		=> $resultUserData[0]['Investor']['investor_postCode'],	
+                                                                                                                        'disabled'      => 'disabled'
                                                                                                                 ));
                                                         ?>
                                                 </div>
@@ -318,6 +323,7 @@ $(document).ready(function(){
                                                                                                                            'placeholder' 	=>  __('Address'),
                                                                                                                            'class' 		=> $class,
                                                                                                                            'value'		=> $resultUserData[0]['Investor']['investor_address1'],						
+                                                                                                                           'disabled'      => 'disabled'
                                                                                                                 ));
                                                         ?>
                                                 </div>
@@ -343,6 +349,7 @@ $(document).ready(function(){
                                                                                                                     'placeholder' 	=>  __('City'),
                                                                                                                     'class' 	=> $class,
                                                                                                                     'value'		=> $resultUserData[0]['Investor']['investor_city'],						
+                                                                                                                    'disabled'      => 'disabled'
                                                                                                                 ));
                                                                 ?>
                                                 </div>	
@@ -366,7 +373,8 @@ $(document).ready(function(){
                                                                 'options'               => $countryData,
                                                                 'placeholder' 	=>  __('Country'),
                                                                 'class' 		=> $class,
-                                                                'value'			=> $resultUserData[0]['Investor']['investor_country'],						
+                                                                'value'			=> $resultUserData[0]['Investor']['investor_country'],		
+                                                                'disabled'      => 'disabled'
                                                         ));
                                                     ?>
                                                 </div>	
@@ -375,7 +383,7 @@ $(document).ready(function(){
                                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                 <div class="form-group">
                                                     <label for="ContentPlaceHolder_iban"><?php echo __('IBAN')?></label> <input type="checkbox" id="checkIBAN">
-                                                    <input type="text" class="form-control blue_noborder">
+                                                    <input type="text" disabled="disabled" class="form-control blue_noborder">
                                                 </div>
                                             </div><!-- /Cif + Business Name -->
                                         </div>
@@ -388,7 +396,7 @@ $(document).ready(function(){
                                             <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
                                                 <div class="form-group">
                                                     <label for="ContentPlaceHolder_cif"><?php echo __('CIF')?></label> <input type="checkbox" id="checkCIF">
-                                                    <input type="text" class="form-control blue_noborder">
+                                                    <input disabled="disabled" type="text" class="form-control blue_noborder">
                                                 </div>
                                             </div>
                                             <!-- /CIF -->
@@ -397,7 +405,7 @@ $(document).ready(function(){
                                             <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
                                                 <div class="form-group">
                                                     <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name')?></label> <input type="checkbox" id="checkBusinessName">
-                                                    <input type="text" class="form-control blue_noborder">
+                                                    <input disabled="disabled" type="text" class="form-control blue_noborder">
                                                 </div>
                                             </div>
                                             <!-- /Business Name -->
