@@ -36,11 +36,10 @@
   2017/6/06  version 0.4
   upload deleted
   id problem fixed
- *                                                  [OK]
+ *     
+  2017/6/13  version 0.5
+  Ocr status added
 
-
-  Pending:
-  OneClickInvestorI upload the needed document for register in the selected companies
 
 
  */
@@ -64,6 +63,11 @@ class ocrsController extends AppController {
      * Ciclo Principal
      * 
      */
+
+    function ocrInvestorView() {
+        $this->layout = 'azarus_private_layout';
+        echo $this->ocrInvestorPlatformSelection();
+    }
 
 //Envia datos personales a la bd.
     function oneClickInvestorII() {
@@ -208,26 +212,23 @@ class ocrsController extends AppController {
         $requiredFiles = $this->File->readRequiredFiles($companies);
 
         $existingFiles = $this->File->readExistingFiles($id);
-        
+        //$status = $this->Ocr->checkStatus($id);
+        //print_r($status);
+
         $this->set('investor', $data);
         $this->set('ocr', $data2);
         $this->set('requiredFiles', $this->File->getFilesData($requiredFiles));
         $this->set('existingFiles', $existingFiles);
-        
+
         echo " ";
         return 1;
     }
 
     function ocrInvestorPlatformSelection() {
-        $this->layout = 'azarus_private_layout';
 
         $this->set('company', $this->Company->companiesDataOCR());
-
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
-
-
         $registered = $this->Ocr->getRegisterSentCompanies($id);
         $filter = array('investor_id' => $id);
         $linked = $this->Linkedaccount->getLinkedaccountIdList($filter);
@@ -242,9 +243,7 @@ class ocrsController extends AppController {
         }
         $notShowList = array_unique($notShow);
         $this->set('notShowList', $notShowList);
-
         echo " ";
-        return 1;
     }
 
     //One Click Registration - Admin PFP Views
@@ -268,17 +267,17 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     function ocrWinadminInvestorModal() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     function ocrInvestorConfirmModal() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     function ocrWinadminUpdatePfpData() {
         $this->layout = 'azarus_private_layout';
         echo " ";
@@ -289,8 +288,10 @@ class ocrsController extends AppController {
      * Tallyman
      * 
      */
+
     function ocrPfpTallyman() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
+
 }

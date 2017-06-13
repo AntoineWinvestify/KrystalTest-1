@@ -157,7 +157,7 @@
                 url: url,
                 name: name,
                 id: id
-      };          
+            };
             var data = jQuery.param(params);
             $.ajax({
                 url: '../Files/delete',
@@ -166,6 +166,13 @@
                 success: successDelete(id)
             });
         });
+
+        $(document).on("click", "#backOCR", function () {
+            link = "../Ocrs/ocrInvestorPlatformSelection";
+            var data = null;
+            getServerData(link, data, successBack, errorBack);
+        });
+
 
 <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
             if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> === 1) {
@@ -213,7 +220,7 @@
             $("#file" + id).attr("value", data[0]);
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[1] + '" id="FilesInfo">');
-            $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded'+ id +'" class="uploaded" value="1">');
+            $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
             $("#del" + id).prop("disabled", false);
             $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
         } else {
@@ -226,8 +233,15 @@
         $("#file" + id).html('<input type="file" name="data[Files][iban]" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
-         $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded'+ id +'" class="uploaded" value="0">');
+        $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="0">');
         $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>')
+    }
+
+    function successBack(result) {
+        $("#content").html(result);
+    }
+    function errorBack(result) {
+        $("#content").html();
     }
 
     function addExistingDocuments() {
@@ -242,7 +256,7 @@ foreach ($existingFiles as $existingFiles) {
                     $("#file" + id).attr("value", "<?php echo $existingFiles["files_investors"]["file_name"] ?>");
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
-                    $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded'+ id +'" class="uploaded" value="1">');
+                    $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
                     $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
                     $("#del" + id).prop("disabled", false);
                 }

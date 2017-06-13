@@ -14,7 +14,7 @@
  * 
  */
 ?>
-
+1
 <script>
     total = <?php echo count($selected) ?>;
     var numberCompanies = 0;
@@ -47,7 +47,7 @@
          });*/
 
         //Ajax sent companies
-        $(document).on("click",'#sentCompanies',function () {
+        $(document).on("click","#sentCompanies",function () {
             var idCompany = new Array();
             var params = {
                 numberCompanies: numberCompanies,
@@ -71,7 +71,7 @@
             getServerData(link, data, successDataPanel, errorDataPanel);
         });
 
-         $(document).on("click","btnSelectedPlatformDB",function () {             
+         $(document).on("click",".btnSelectedPlatformDB",function () {             
             var params = {
                 id_company: $(this).parent().parent().parent().attr("value"),
             };
