@@ -220,7 +220,7 @@ foreach ($selected as $selected) {
         margin-top: -25px;
     }
 </style>
-<div id="OCR_InvestorPanel">
+<div id="1CR_investor_1_platformSelection">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div id="report"> </div>

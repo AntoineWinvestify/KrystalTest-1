@@ -55,7 +55,7 @@
         font-size: 50px;
     }
 </style>
-<div id="OCR_WinAdminPanelA">
+<div id="1CR_winAdmin_2_investorChecking">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="card">

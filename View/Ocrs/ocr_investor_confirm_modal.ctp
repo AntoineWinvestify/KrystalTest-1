@@ -43,7 +43,7 @@
     }
     .modal { overflow-y:scroll; }
 </style>
-<div id="1CR_investorDataChecking" class="modal show" role="dialog">
+<div id="1CR_investor_3_confirming" class="modal show" role="dialog">
     <!--   Big container   -->
     <div class="container">
         <div class="row">
