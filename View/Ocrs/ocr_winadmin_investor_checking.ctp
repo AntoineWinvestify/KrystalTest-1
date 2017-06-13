@@ -140,7 +140,7 @@
                                                 <td><?php echo __('example@example.com')?></td>
                                                 <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet')?></span></td>
                                                 <td>
-                                                    <a href="/ocrs/ocrWinadminInvestorModal"> 
+                                                    <a href="/ocrs/ocrWinadminInvestorData"> 
                                                         <button class="btn btn-default btnWinAdmin btnRounded btnRounded" type="button">
                                                             <?php echo __('View') ?>
                                                         </button>
