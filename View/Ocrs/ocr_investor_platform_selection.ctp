@@ -9,6 +9,9 @@
  * [pending] Mechanism to generate all platform elements
  * [pending] Mechanism to generate final modal
  * 
+ * [2017-06-13] Version 0.2
+ * Added spinner on Go button
+ * 
  */
 ?>
 
@@ -202,6 +205,19 @@ foreach ($selected as $selected) {
 
     }
 </script>
+<style>
+    .togetoverlay .overlay  {
+        z-index: 50;
+        background: rgba(255, 255, 255, 0);
+        border-radius: 3px;
+        position: absolute;
+    }
+    .togetoverlay .overlay > .fa {
+        font-size: 20px;
+        margin-left: -10px;
+        margin-top: -25px;
+    }
+</style>
 <div id="OCR_InvestorPanel">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -283,7 +299,13 @@ foreach ($selected as $selected) {
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <button id="sentCompanies" type="button" class="btn btn-default btn-lg btn-win1 center-block" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Go!') ?></button>
+                        <button id="sentCompanies" type="button" class="btn btn-default btn-lg btn-win1 center-block togetoverlay" style="padding: 10px 50px; margin-bottom: 25px">
+                            <div class="overlay">
+                                <div class="fa fa-spin fa-spinner" style="color:green">	
+                                </div>
+                            </div>
+                            <?php echo __('Go!') ?>
+                        </button>
                     </div>
                     <hr width="100%">
                 </div>
