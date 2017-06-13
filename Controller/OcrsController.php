@@ -289,4 +289,8 @@ class ocrsController extends AppController {
      * Tallyman
      * 
      */
+    function ocrPfpTallyman() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
 }
