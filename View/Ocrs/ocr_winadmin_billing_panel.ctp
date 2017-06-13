@@ -182,12 +182,12 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;">
+                                            <button type="button" class="btn btn-default btnRounded" style="background-color:#3399ff; color:white;">
                                                 <?php echo __('Upload file') ?> 
                                             </button>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btn-win1">
+                                            <button type="button" class="btn btn-default btn-win1 btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Send') ?> 
                                             </button>
                                         </td>

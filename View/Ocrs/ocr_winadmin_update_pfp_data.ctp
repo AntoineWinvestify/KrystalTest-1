@@ -232,7 +232,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btn-win1 form-control">
+                                            <button type="button" class="btn btn-default btn-win1 form-control btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Update') ?> 
                                             </button>
                                         </td>
