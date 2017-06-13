@@ -60,8 +60,8 @@
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - Update Bill') ?></strong></h4>
-                    <p class="category"><?php echo __('Update bill to selected PFP') ?></p>
+                    <h4 class="title"><strong><?php echo __('WinAdmin - Investor Checking') ?></strong></h4>
+                    <p class="category"><?php echo __('Show contents about Investors') ?></p>
                 </div>
                 <div class="card-content togetoverlay">
                     <div class="overlay">
