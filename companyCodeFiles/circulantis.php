@@ -236,6 +236,7 @@ class circulantis extends p2pCompany {
                 }
 
                 // Load page  panel-inversor
+                array_shift($this->urlSequence);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 //echo "INVERSOR_PANEL" . $str;	
