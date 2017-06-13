@@ -154,6 +154,17 @@ class ocr extends AppModel {
         return $info;
     }
 
+    public function checkStatus($id) {
+
+        $info = $this->find("all", array(
+            'fields' => 'ocr_status',
+            'conditions' => array('investor_id' => $id),
+            'recursive' => -1,
+        ));
+
+        return $info;
+    }
+
     public function saveCompaniesOcr($data) {
         if (count($data) > 2) {
 

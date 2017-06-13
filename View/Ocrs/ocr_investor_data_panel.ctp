@@ -193,12 +193,16 @@
     }
 
     function successUpload(data, id) {
-        $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
-        $("#file" + id).attr("value", data[0]);
-        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
-        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[1] + '" id="FilesInfo">');
-        $("#del" + id).prop("disabled", false);
-        $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
+        if (data != 0) {
+            $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
+            $("#file" + id).attr("value", data[0]);
+            $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+            $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[1] + '" id="FilesInfo">');
+            $("#del" + id).prop("disabled", false);
+            $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
+        }else{
+            alert("Error al subir, archivo demasido grande o tipo incorrecto")
+        }
     }
 
     function successDelete(id) {
