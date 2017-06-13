@@ -189,12 +189,9 @@ class ocrsController extends AppController {
         $this->Orc->ocrEnd($datos);
     }
 
-    //Tabs panel
-    function ocrTabsPanel() {
-        $this->layout = 'azarus_private_layout';
-    }
 
     //One Click Registration - Investor Views
+    //Investor View #2
     function ocrInvestorDataPanel() {
         echo "1";
 
@@ -217,7 +214,8 @@ class ocrsController extends AppController {
         echo " ";
         return 1;
     }
-
+    
+    //Investor View #1
     function ocrInvestorPlatformSelection() {
         $this->layout = 'azarus_private_layout';
 
@@ -246,50 +244,65 @@ class ocrsController extends AppController {
         echo " ";
         return 1;
     }
-
-    //One Click Registration - Admin PFP Views
-    function ocrPfpBillingPanel() {
-        $this->layout = 'azarus_private_layout';
-        echo " ";
-    }
-
-    function ocrPfpUsersPanel() {
-        $this->layout = 'azarus_private_layout';
-        echo " ";
-    }
-
-    //One Click Registration - Winvestify Admin Views
-    function ocrWinadminInvestorChecking() {
-        $this->layout = 'azarus_private_layout';
-        echo " ";
-    }
-
-    function ocrWinadminBillingPanel() {
-        $this->layout = 'azarus_private_layout';
-        echo " ";
-    }
     
-    function ocrWinadminInvestorModal() {
-        $this->layout = 'azarus_private_layout';
-        echo " ";
-    }
-    
+    //Investor View #3
     function ocrInvestorConfirmModal() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
     
+    //One Click Registration - PFPAdmin Views
+    //PFPAdmin View #2
+    function ocrPfpBillingPanel() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
+    
+    //PFPAdmin View #1
+    function ocrPfpUsersPanel() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
+    
+    //PFPAdmin View #3
+    function ocrPfpTallyman() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
+
+    //One Click Registration - Winvestify Admin Views
+    //WinAdmin View #2
+    function ocrWinadminInvestorChecking() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
+    
+    //WinAdmin View #1
+    function ocrWinadminBillingPanel() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
+    
+    //WinAdmin View #3
+    function ocrWinadminInvestorData() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
+
+    //WinAdmin View #4
     function ocrWinadminUpdatePfpData() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
 
-    /*
-     * 
-     * Tallyman
-     * 
-     */
-    function ocrPfpTallyman() {
+    //WinAdmin View #5
+    function ocrWinadminSoldUsers() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
+
+    //WinAdmin View #6
+    function ocrWinadminTallyman() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
