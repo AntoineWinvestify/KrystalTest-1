@@ -270,7 +270,7 @@ foreach ($existingFiles as $existingFiles) {
 
 </script>
 <div id = "notification"></div>
-<div id="OCR_InvestorPanelA">
+<div id="1CR_investor_2_investorDataPanel">
     <div class="row">
         <div class="col-lg-9">
             <div class="card">

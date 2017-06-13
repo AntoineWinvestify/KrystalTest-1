@@ -38,7 +38,7 @@
         font-size: 50px;
     }
 </style>
-<div id="OCR_PFDPanelB">
+<div id="1CR_pfpAdmin_3_tallyman">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="card">
@@ -61,10 +61,56 @@
                                 ?></p>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            asdfasdfasd
-                        </div> <!-- /.col 9 -->
+                            <div id="investorFilters" class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1">
+                                            <label class= "invisible"></label>
+                                            <h4 class="header1CR"><?php echo __('Search:') ?></h4>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                            <label><?php echo __('NIF')?></label>
+                                            <input type="text" class="form-control blue_noborder3" placeholder="Enter NIF here">
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                            <label><?php echo __('Email')?></label>
+                                            <input type="text" class="form-control blue_noborder3" placeholder="Enter email here">
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                            <label><?php echo __('Telephone')?></label>
+                                            <input type="text" class="form-control blue_noborder3" placeholder="Insert telephone here">
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                                            <label class= "invisible"> </label>
+                                            <button type="button" class="btn  btnPFPAdmin center-block btnRounded"><?php echo __('Search')?></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <h4 class="header1CR"><?php echo __('Investor Tallyman Profile') ?></h4>
+                                <div class="col-md-3 col-md-offset-2">dibujo</div>
+                                <div class="col-md-5">
+                                    <div class="progress" style="height:25px;">
+                                        <div class="progress-bar progress-bar-aqua" role="progress-bar" aria-value="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%;">
+                                            <span>50%</span>
+                                        </div>
+                                    </div>
+                                    <div class="progress" style="height:25px;">
+                                        <div class="progress-bar progress-bar-red" role="progress-bar" aria-value="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                                            <span>20%</span>
+                                        </div>
+                                    </div>
+                                    <div class="progress" style="height:25px;">
+                                        <div class="progress-bar progress-bar-yellow" role="progress-bar" aria-value="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                            <span>80%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
