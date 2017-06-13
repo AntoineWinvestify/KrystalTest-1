@@ -178,6 +178,11 @@ $(document).ready(function() {
               <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Investor Checking')?></span>
             </a>
         </li>
+        <li class="treeview">
+            <a href="/ocrs/ocrWinadminUpdatePfpData">
+              <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Update PFP data')?></span>
+            </a>
+        </li>
         
  
 <?php /*<li class="treeview">

@@ -27,6 +27,9 @@
  * 
  * [2017-06-09] Version 0.2
  * MOVED: Investors data to another view & insert it on a MODAL. (like register panel).
+ * 
+ * [2017-06-11] Version 0.3
+ * Deleted unnecessary info
 */
 ?>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
@@ -113,66 +116,6 @@
                                     </tr>
                                 </tbody>
                         </table>
-                    </div>
-                    <h4 class="header1CR"><?php echo __('Uploaded Documents')?></h4>
-                    <div class="table-responsive">  
-                        <table id="documentsTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                               data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
-                            <thead>
-                                <tr>
-                                    <th><?php echo __('Type of Document') ?></th>
-                                    <th><?php echo __('Name') ?></th>
-                                    <th><?php echo __('Status') ?></th>
-                                    <th><?php echo __('Download') ?></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><?php echo __('document type (IBAN, NIF...)')?></td>
-                                    <td><?php echo __('Name of document')?></td>
-                                    <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __('Incorrect') ?></span></td>
-                                    <td>
-                                        <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Download') ?></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('document type (IBAN, NIF...)')?></td>
-                                    <td><?php echo __('Name of document')?></td>
-                                    <td><span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning') ?></span></td>
-                                    <td>
-                                        <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Download') ?></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('document type (IBAN, NIF...)')?></td>
-                                    <td><?php echo __('Name of document')?></td>
-                                    <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span></td>
-                                    <td>
-                                        <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Download') ?></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('document type (IBAN, NIF...)')?></td>
-                                    <td><?php echo __('Name of document')?></td>
-                                    <td><span style="color:#3399ff"><i class="fa fa-thumb-tack"></i> <?php echo __('Validating') ?></span></td>
-                                    <td>
-                                        <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Download') ?></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('document type (IBAN, NIF...)')?></td>
-                                    <td><?php echo __('Name of document')?></td>
-                                    <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
-                                    <td>
-                                        <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Download') ?></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <h4 class="header1CR"><?php echo __('Selected Platforms')?></h4>
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        
                     </div>
                 </div>
             </div>
