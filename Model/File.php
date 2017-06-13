@@ -23,9 +23,9 @@
 
   2017/6/06 version 0.1
   function upload                      [OK]
-  
- 2017/6/08 version 0.2
- function delete                      [OK]
+
+  2017/6/08 version 0.2
+  function delete                      [OK]
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 
@@ -39,22 +39,26 @@ class file extends AppModel {
             if ($data['size'] == 0 || $data['error'] !== 0) {
                 continue;
             }
-            $filename = basename($data['name']);
-            $uploadFolder = 'files/investors/' . $identity . '';
-            $uploadPath = $uploadFolder . DS . $filename;
+            if (($data['type'] == "image/png" || $data['type'] == "image/gif" ||  $data['type'] == "application/pdf") && $data['size'] < 10000000 ) {
+                $filename = basename($data['name']);
+                $uploadFolder = 'files/investors/' . $identity . '';
+                $uploadPath = $uploadFolder . DS . $filename;
 
-            if (!file_exists($uploadFolder)) {
-                mkdir($uploadFolder, 0755, true);
-            }
+                if (!file_exists($uploadFolder)) {
+                    mkdir($uploadFolder, 0755, true);
+                }
 
-            if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
+                if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
+                    return 0;
+                }
+
+                $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $filename . "', '" . $uploadFolder . "');";
+                $query = $this->query($query);
+                $result = array($filename, $uploadFolder, $type);
+                return $result;
+            } else {
                 return 0;
             }
-
-            $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $filename . "', '" . $uploadFolder . "');";
-            $query = $this->query($query);
-            $result = array($filename, $uploadFolder, $type);
-            return $result;
         }
     }
 
