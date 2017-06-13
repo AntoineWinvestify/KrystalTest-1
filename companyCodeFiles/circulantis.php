@@ -167,7 +167,7 @@ class circulantis extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentData($str) {
+    function collectUserInvestmentDataParallel($str) {
 
         //CHANGE URLSEQUENCES ON DB
         switch ($this->idForSwitch) {
@@ -236,6 +236,7 @@ class circulantis extends p2pCompany {
                 }
 
                 // Load page  panel-inversor
+                array_shift($this->urlSequence);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 //echo "INVERSOR_PANEL" . $str;	
@@ -364,7 +365,7 @@ class circulantis extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentDataSequencial($user, $password) {
+    function collectUserInvestmentData($user, $password) {
         echo __FILE__ . " " . __LINE__ . "<br>";
         $resultMicirculantis = $this->companyUserLogin($user, $password);
         echo __FILE__ . " " . __LINE__ . "<br>";

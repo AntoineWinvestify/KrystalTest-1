@@ -206,7 +206,7 @@ function collectCompanyMarketplaceData() {
     * 	also do logout
     * 	
     */
-    function collectUserInvestmentData($str) {
+    function collectUserInvestmentDataParallel($str) {
         // user: inigo.iturburua@gmail.com
         // password: Ap_94!56
         // $this->config['appDebug'] = true;
@@ -289,7 +289,7 @@ function collectCompanyMarketplaceData() {
      * 	also do logout
      * 	
      */
-    function collectUserInvestmentDataSequencial($user, $password) {
+    function collectUserInvestmentData($user, $password) {
 // user: inigo.iturburua@gmail.com
 // password: Ap_94!56
 //	$this->config['appDebug'] = true;

@@ -173,7 +173,7 @@ class arboribus extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentData($str) {
+    function collectUserInvestmentDataParallel($str) {
         
         switch ($this->idForSwitch) {
             /////////////LOGIN
@@ -436,7 +436,7 @@ class arboribus extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentDataSequencial($user, $password) {
+    function collectUserInvestmentData($user, $password) {
 
         $resultMyArboribus = $this->companyUserLogin($user, $password);
         if (!$resultMyArboribus) {   // Error while logging in

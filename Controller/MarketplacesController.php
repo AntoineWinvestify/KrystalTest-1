@@ -483,11 +483,11 @@ class MarketPlacesController extends AppController {
     
     /**
      *
-     * 	Initiates the collection of the investment data of all linked accounts of the investor. The result is stored
+     * 	Initiates the collection of the investment data in parallel of all linked accounts of the investor. The result is stored
      * 	as a JSON object in databasetable "datas"
      *
      */
-    function cronQueueEvent() {
+    function cronQueueEventParallel() {
 
         $this->autoRender = false;
         Configure::write('debug', 2);
@@ -553,7 +553,7 @@ class MarketPlacesController extends AppController {
         echo "MICROTIME_START = " . microtime() . "<br>";
         //We start at the same time the queue on every company
         foreach ($linkedaccountsResults as $linkedaccount) {
-            $this->newComp[$companyNumber]->collectUserInvestmentData();
+            $this->newComp[$companyNumber]->collectUserInvestmentDataParallel();
             $companyNumber++;
         }
         
@@ -589,7 +589,7 @@ class MarketPlacesController extends AppController {
                 //}
                 if ($ids[2] != "LOGOUT") {
                     $this->newComp[$ids[0]]->setIdForSwitch($ids[1]);
-                    $this->tempArray[$ids[0]] = $this->newComp[$ids[0]]->collectUserInvestmentData($str);
+                    $this->tempArray[$ids[0]] = $this->newComp[$ids[0]]->collectUserInvestmentDataParallel($str);
                 }
             }
             
@@ -598,7 +598,7 @@ class MarketPlacesController extends AppController {
                 $this->newComp[$ids[0]]->setIdForSwitch(0); //Set the id for the switch of the function company
                 $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
                 $this->newComp[$ids[0]]->setTries(1);
-                $this->newComp[$ids[0]]->collectUserInvestmentData();
+                $this->newComp[$ids[0]]->collectUserInvestmentDataParallel();
             }
             else if ($ids[2] == "LOGOUT") {
                 echo "LOGOUT FINISHED <br>";
@@ -703,7 +703,7 @@ class MarketPlacesController extends AppController {
      * 	as a SON object in databasetable "datas"
      *
      */
-    /*function cronQueueEvent($queueType) {
+    function cronQueueEvent($queueType) {
 
         $this->autoRender = false;
         Configure::write('debug', 2);
@@ -762,7 +762,7 @@ class MarketPlacesController extends AppController {
 
 
             echo "MICROTIME_START = " . microtime() . "<br>";
-            $tempArray = $newComp->collectUserInvestmentDataSequencial($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
+            $tempArray = $newComp->collectUserInvestmentData($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
 
             $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
@@ -870,7 +870,7 @@ class MarketPlacesController extends AppController {
         $this->set(compact('files'));
         $this->layout = 'ajax';
         echo "cache eliminada";
-    }*/
+    }
     
     /**
      * Function to do logout of company

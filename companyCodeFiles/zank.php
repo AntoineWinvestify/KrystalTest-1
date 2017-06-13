@@ -238,7 +238,7 @@ class zank extends p2pCompany {
     * @param string $str   It is the web converted to string of the company
     * @return array	Data of each investment of the user as an element of an array
     */
-    function collectUserInvestmentData($str) {
+    function collectUserInvestmentDataParallel($str) {
     
     
         switch ($this->idForSwitch) {
@@ -498,7 +498,7 @@ class zank extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentDataSequencial($user, $password) {
+    function collectUserInvestmentData($user, $password) {
 // velascogestorpatrimonial@hotmail.com
 // D547336  wrong
         $resultMiZank = $this->companyUserLogin($user, $password);

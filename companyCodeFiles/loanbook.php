@@ -192,7 +192,7 @@ function collectCompanyMarketplaceData() {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentData($str) {
+    function collectUserInvestmentDataParallel($str) {
 
 
         switch ($this->idForSwitch) {
@@ -472,7 +472,7 @@ function collectCompanyMarketplaceData() {
 *	@return array	Data of each investment of the user as an element of an array
 *	
 */
-function collectUserInvestmentDataSequencial($user, $password) {
+function collectUserInvestmentData($user, $password) {
 
 	$resultMiLoanbook = $this->companyUserLogin($user, $password);
      
