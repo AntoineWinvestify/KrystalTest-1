@@ -864,39 +864,39 @@ textarea[name="error"] {
 	border: 1px solid #2082d6;
 	color: white;
 }
-.btn1CR {
-    background-color: #87e14b;
-    border: 1px solid #2082d6;
+.btnWinAdmin {
+    background-color: #00b33c !important;
+    border: 1px solid gray;
     color: white;
 }
-.btn1CR:hover{
+.btnWinAdmin:hover{
     border: 1px solid gray;
     color: black;
 }
-.btn1CR:active{
-    background-color: #58ae1e;
+.btnWinAdmin:active{
+    background-color: #1f7a1f !important;
     border: 1px solid gray;
     color: black;
 }
 
-.btnWinAdmin {
-    background-color: #47badf;
-    border: 1px solid #2082d6;
+.btn1CR {
+    background-color: #47badf  !important;
+    border: 1px solid gray;
     color: white;
 }
-.btnWinAdmin:hover{
+.btn1CR:hover{
 	border: 1px solid gray;
 	color: black;
 }
-.btnWinAdmin:active{
-	background-color: #1f8aad;
+.btn1CR:active{
+	background-color: #1f8aad  !important;
 	border: 1px solid gray;
 	color: black;
 }
 
 .btnPFPAdmin {
-    background-color: #ff9933;
-    border: 1px solid #2082d6;
+    background-color: #ff9933  !important;
+    border: 1px solid gray;
     color: white;
 }
 .btnPFPAdmin:hover{
@@ -904,7 +904,7 @@ textarea[name="error"] {
 	color: black;
 }
 .btnPFPAdmin:active{
-	background-color: #cc6600;
+	background-color: #cc6600  !important;
 	border: 1px solid gray;
 	color: black;
 }
