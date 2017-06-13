@@ -65,8 +65,17 @@ class ocrsController extends AppController {
      */
 
     function ocrInvestorView() {
+
         $this->layout = 'azarus_private_layout';
-        echo $this->ocrInvestorPlatformSelection();
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $status = $this->Ocr->checkStatus($id);
+        $status = $status[0]['Ocr']['ocr_status'];
+        if ($status == 0) {
+            $this->ocrInvestorPlatformSelection();
+        } else {
+            echo "Servicio en proceso, espere hasta que terminemos";
+            $this->autoRender = false;
+        }
     }
 
 //Envia datos personales a la bd.
@@ -212,8 +221,7 @@ class ocrsController extends AppController {
         $requiredFiles = $this->File->readRequiredFiles($companies);
 
         $existingFiles = $this->File->readExistingFiles($id);
-        //$status = $this->Ocr->checkStatus($id);
-        //print_r($status);
+
 
         $this->set('investor', $data);
         $this->set('ocr', $data2);
