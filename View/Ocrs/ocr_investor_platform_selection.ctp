@@ -47,7 +47,7 @@
          });*/
 
         //Ajax sent companies
-        $(document).on("click","#sentCompanies",function () {
+        $(document).on("click", "#sentCompanies", function () {
             var idCompany = new Array();
             var params = {
                 numberCompanies: numberCompanies,
@@ -71,7 +71,7 @@
             getServerData(link, data, successDataPanel, errorDataPanel);
         });
 
-         $(document).on("click",".btnSelectedPlatformDB",function () {             
+        $(document).on("click", ".btnSelectedPlatformDB", function () {
             var params = {
                 id_company: $(this).parent().parent().parent().attr("value"),
             };
@@ -99,10 +99,14 @@
 
 
     function successDataPanel(result) {
-        $("#OCR_InvestorPanel").html(result);
+        $(document).off('click');
+        $(document).off('change');
+        $("#content").html(result);
     }
     function errorDataPanel(result) {
-        $("#OCR_InvestorPanel").html(result);
+        $(document).off('click');
+        $(document).off('change');
+        $("#content").html(result);
     }
 
 
@@ -121,10 +125,10 @@
         $('input').iCheck({
             checkboxClass: 'icheckbox_flat-blue'
         });
-        
+
 <?php
 foreach ($notShowList as $id) {
-    ?>           
+    ?>
             $('#selection').append("<input type='hidden' value='" + <?php echo $id ?> + "' class='selected inDB'></input>");
     <?php
 }
@@ -147,13 +151,13 @@ foreach ($selected as $selected) {
         //Te elimina las compañias ya seleccionadas despues de un filtro
         $('#selection').children('.selected').each(function () {
             company = $(this).attr("value");
-            $('#platformSelection').find("."+company).css("display", "none");    
+            $('#platformSelection').find("." + company).css("display", "none");
         });
 
         //Te pasa el seleccionado a su zona
         $(".btnSelect").click(function () {
             id = $(this).attr("id");
-            $(this).prop("disabled",true);
+            $(this).prop("disabled", true);
             z++;
             $("#" + id).parentsUntil("#platformSelection").fadeOut();
             $("#selection").append("<div value='" + id + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $("#" + id).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
@@ -179,9 +183,9 @@ foreach ($selected as $selected) {
     }
     function extraEvent() {
         //Borra la plataforma cuando le das a l x
-        $('.btnSelectedPlatform').click(function () {           
+        $('.btnSelectedPlatform').click(function () {
             idDel = $(this).parent().parent().parent().attr("value");
-            $("#" + idDel).prop("disabled",false);
+            $("#" + idDel).prop("disabled", false);
             $("#platformSelection").find("." + idDel).fadeIn();
             $("#platformSelection").find("." + idDel).find('*').fadeIn();
             $(this).parent().parent().parent().remove();
@@ -358,35 +362,35 @@ foreach ($selected as $selected) {
                 <?php
                 foreach ($company as $company) {
                     ?>
-                    
-                        <div class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $company['Company']['id'] ?>">
-                            <div class="box box-widget widget-user-2">
-                                <div class="widget-user-header">
-                                    <div class="row">
-                                        <div id="companyLogo" class="col-xs-12 col-sm-12 col-md-12 col-lg-5">
-                                            <img src="/img/logo/<?php echo $company['Company']['company_logoGUID'] ?>" style="max-height: 100px" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
-                                            <ul class="nav nav-stacked">
-                                                <li class = 'country'><img src="/img/flags/<?php echo $company['Company']['company_country'] ?>.png" alt="Spain Flag"/> <?php echo __($company['Company']['company_countryName']) ?></li>
-                                                <li class = 'type'><?php echo __($company['Company']['Company_type']) ?></li>
-                                            </ul>
-                                        </div>
+
+                    <div class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $company['Company']['id'] ?>">
+                        <div class="box box-widget widget-user-2">
+                            <div class="widget-user-header">
+                                <div class="row">
+                                    <div id="companyLogo" class="col-xs-12 col-sm-12 col-md-12 col-lg-5">
+                                        <img src="/img/logo/<?php echo $company['Company']['company_logoGUID'] ?>" style="max-height: 100px" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
+                                        <ul class="nav nav-stacked">
+                                            <li class = 'country'><img src="/img/flags/<?php echo $company['Company']['company_country'] ?>.png" alt="Spain Flag"/> <?php echo __($company['Company']['company_countryName']) ?></li>
+                                            <li class = 'type'><?php echo __($company['Company']['Company_type']) ?></li>
+                                        </ul>
                                     </div>
                                 </div>
-                                <div class="box-footer no-padding">
-                                    <div class="row">
-                                        <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-8">
-                                            <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a href="<?php echo $company['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
-                                            <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
-                                            <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin center-block btnSelected btnRounded" href = "#"><?php echo __('Select') ?></button>
-                                        </div>
+                            </div>
+                            <div class="box-footer no-padding">
+                                <div class="row">
+                                    <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a href="<?php echo $company['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
+                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                                        <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin center-block btnSelected btnRounded" href = "#"><?php echo __('Select') ?></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
                     <?php
                 }

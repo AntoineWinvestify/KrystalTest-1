@@ -238,6 +238,8 @@
     }
 
     function successBack(result) {
+        $(document).off('click');
+        $(document).off('change');
         $("#content").html(result);
     }
     function errorBack(result) {
