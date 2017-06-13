@@ -38,6 +38,9 @@
   2017/6/06  version 0.5
   upload deleted
   id problem fixed
+ *
+  2017/6/13  version 0.6
+  checkStatus
  */
 App::uses('CakeEvent', 'Event');
 
@@ -218,6 +221,7 @@ class ocr extends AppModel {
     }
 
     public function getSelectedCompanies($id) {
+
         $ocrId = $this->find('first', array(
             'fields' => array(
                 'id',
@@ -227,7 +231,8 @@ class ocr extends AppModel {
             'recursive' => -1,));
 
         $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 0;";
-        return $this->query($query);
+        $companyList = $this->query($query);
+        return $companyList;
     }
 
     public function getRegisterSentCompanies($id) {

@@ -36,11 +36,10 @@
   2017/6/06  version 0.4
   upload deleted
   id problem fixed
- *                                                  [OK]
+ *     
+  2017/6/13  version 0.5
+  Ocr status added
 
-
-  Pending:
-  OneClickInvestorI upload the needed document for register in the selected companies
 
 
  */
@@ -64,6 +63,20 @@ class ocrsController extends AppController {
      * Ciclo Principal
      * 
      */
+
+    function ocrInvestorView() {
+
+        $this->layout = 'azarus_private_layout';
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $status = $this->Ocr->checkStatus($id);
+        $status = $status[0]['Ocr']['ocr_status'];
+        if ($status == 0) {
+            $this->ocrInvestorPlatformSelection();
+        } else {
+            echo "Servicio en proceso, espere hasta que terminemos";
+            $this->autoRender = false;
+        }
+    }
 
 //Envia datos personales a la bd.
     function oneClickInvestorII() {
@@ -205,27 +218,22 @@ class ocrsController extends AppController {
         $requiredFiles = $this->File->readRequiredFiles($companies);
 
         $existingFiles = $this->File->readExistingFiles($id);
-        
+
         $this->set('investor', $data);
         $this->set('ocr', $data2);
         $this->set('requiredFiles', $this->File->getFilesData($requiredFiles));
         $this->set('existingFiles', $existingFiles);
-        
+
         echo " ";
         return 1;
     }
     
     //Investor View #1
     function ocrInvestorPlatformSelection() {
-        $this->layout = 'azarus_private_layout';
 
         $this->set('company', $this->Company->companiesDataOCR());
-
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
-
-
         $registered = $this->Ocr->getRegisterSentCompanies($id);
         $filter = array('investor_id' => $id);
         $linked = $this->Linkedaccount->getLinkedaccountIdList($filter);
@@ -240,9 +248,7 @@ class ocrsController extends AppController {
         }
         $notShowList = array_unique($notShow);
         $this->set('notShowList', $notShowList);
-
         echo " ";
-        return 1;
     }
     
     //Investor View #3
