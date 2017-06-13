@@ -659,7 +659,7 @@ textarea[name="error"] {
 ********************************************************************************/
 /*     BUTTONS     */
 .btn-win1 {
-	background-color: #87e14b;
+	background-color: #87e14b !important;
 	border: 1px solid gray;
 	color: white;
 }
@@ -673,7 +673,7 @@ textarea[name="error"] {
 	color: black;
 }
 .btn-win1-inverted {
-	background-color: #e6e6e6;
+	background-color: #e6e6e6 !important;
 	border: 1px solid #87e14b;
 	color: black;
 }
@@ -689,7 +689,7 @@ textarea[name="error"] {
 }
 
 .btn-win2 {
-	background-color: #70d65b;
+	background-color: #70d65b !important;
 	border: 1px solid gray;
 	color: white;
 }
@@ -703,7 +703,7 @@ textarea[name="error"] {
 	color: black;
 }
 .btn-win2-inverted {
-	background-color: #e6e6e6;
+	background-color: #e6e6e6 !important;
 	border: 1px solid #70d65b;
 	color: black;
 }
@@ -720,7 +720,7 @@ textarea[name="error"] {
 
 
 .btn-win3 {
-	background-color: #23b18f;
+	background-color: #23b18f !important;
 	border: 1px solid gray;
 	color: white;
 }
@@ -734,7 +734,7 @@ textarea[name="error"] {
 	color: black;
 }
 .btn-win3-inverted {
-	background-color: #e6e6e6;
+	background-color: #e6e6e6 !important;
 	border: 1px solid #23b18f;
 	color: black;
 }
@@ -750,7 +750,7 @@ textarea[name="error"] {
 }
 
 .btn-win4 {
-	background-color: #3fb8cc;
+	background-color: #3fb8cc !important;
 	border: 1px solid gray;
 	color: white;
 }
@@ -764,7 +764,7 @@ textarea[name="error"] {
 	color: black;
 }
 .btn-win4-inverted {
-	background-color: #e6e6e6;
+	background-color: #e6e6e6 !important;
 	border: 1px solid #3fb8cc;
 	color: black;
 }
@@ -794,7 +794,7 @@ textarea[name="error"] {
 	color: black;
 }
 .btn-win5-inverted {
-	background-color: #e6e6e6;
+	background-color: #e6e6e6 !important;
 	border: 1px solid #47badf;
 	color: black;
 }
@@ -810,7 +810,7 @@ textarea[name="error"] {
 }
 
 .btn-win6 {
-	background-color: #3eaddd;
+	background-color: #3eaddd !important;
 	border: 1px solid gray;
 	color: white;
 }
@@ -824,7 +824,7 @@ textarea[name="error"] {
 	color: black;
 }
 .btn-win6-inverted {
-	background-color: #e6e6e6;
+	background-color: #e6e6e6 !important;
 	border: 1px solid #3eaddd;
 	color: black;
 }
@@ -840,7 +840,7 @@ textarea[name="error"] {
 }
 
 .btn-win7 {
-	background-color: #2082d6;
+	background-color: #2082d6 !important;
 	border: 1px solid gray;
 	color: white;
 }
@@ -854,7 +854,7 @@ textarea[name="error"] {
 	color: black;
 }
 .btn-win7-inverted {
-	background-color: #e6e6e6;
+	background-color: #e6e6e6 !important;
 	border: 1px solid #2082d6;
 	color: black;
 }
