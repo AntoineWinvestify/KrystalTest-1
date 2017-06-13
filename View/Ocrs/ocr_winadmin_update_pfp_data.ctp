@@ -46,7 +46,7 @@
 </style>
 <div id="1CR_winadminUpdatePFP">
     <div class="row">
-        <div class="col-lg-9">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - Update PFP data') ?></strong></h4>
