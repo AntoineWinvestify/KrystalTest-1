@@ -210,9 +210,20 @@ function linkAccount() {
         $userInvestment = $newComp->companyUserLogin($_REQUEST['userName'], $_REQUEST['password']);
 
         if (!$userInvestment) {                                                 // authentication error
-            $this->set('error', true);
-            $this->set('action', "add");                                        // add a new account
-            $this->render('accountLinkingError');
+            // load the list of all companies for display purposes
+            $companyFilterConditions = array('id >' => 0);  // Load ALL company data as array
+            $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
+
+            $linkedaccountFilterConditions = array('investor_id' => $investorId);
+            $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
+            
+            $this->set('linkedAccountResult', $linkedAccountResult);
+            $this->set('companyResults', $companyResults);
+            $this->set('action', "error");      // add a new account
+
+            $this->render('linkedaccountsList');
+            //$this->render('accountLinkingError');
+
         } else {
             if ($this->Linkedaccount->createNewLinkedAccount($_REQUEST['companyId'], $this->Auth->user('Investor.id'), $_REQUEST['userName'], $_REQUEST['password'])) {
                 $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
