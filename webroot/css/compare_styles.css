@@ -864,6 +864,50 @@ textarea[name="error"] {
 	border: 1px solid #2082d6;
 	color: white;
 }
+.btn1CR {
+    background-color: #87e14b;
+    border: 1px solid #2082d6;
+    color: white;
+}
+.btn1CR:hover{
+    border: 1px solid gray;
+    color: black;
+}
+.btn1CR:active{
+    background-color: #58ae1e;
+    border: 1px solid gray;
+    color: black;
+}
+
+.btnWinAdmin {
+    background-color: #47badf;
+    border: 1px solid #2082d6;
+    color: white;
+}
+.btnWinAdmin:hover{
+	border: 1px solid gray;
+	color: black;
+}
+.btnWinAdmin:active{
+	background-color: #1f8aad;
+	border: 1px solid gray;
+	color: black;
+}
+
+.btnPFPAdmin {
+    background-color: #ff9933;
+    border: 1px solid #2082d6;
+    color: white;
+}
+.btnPFPAdmin:hover{
+	border: 1px solid gray;
+	color: black;
+}
+.btnPFPAdmin:active{
+	background-color: #cc6600;
+	border: 1px solid gray;
+	color: black;
+}
 
 /*     CUADROS DE COLORES      */
 .bg-win1 {
