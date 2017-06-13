@@ -230,15 +230,11 @@ body {
     border-radius: 10px !important;
 }
 
-.blue_noborder, .blue_noborder2 {
+.blue_noborder, .blue_noborder2, .blue_noborder3 {
     border: none;
     border-bottom: 1px solid #9f9a93 !important;
 }
 
-.blue_noborder {
-    border: none;
-    border-bottom: 1px solid #9f9a93 !important;
-}
 
 .green {
   border: 1px solid #222e2e !important;
@@ -1940,4 +1936,9 @@ hr.nomargin {
 .blue_noborder2:focus {
     border: none;
     border-bottom:  2px solid #47badf !important;
+}
+/*Orange*/
+.blue_noborder3:focus {
+    border: none;
+    border-bottom:  2px solid #ff6600 !important;
 }
