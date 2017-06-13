@@ -64,16 +64,15 @@ class AdminAppController extends AppController {
 				'Cookie',
 	
 				'Auth' => array('authorize' => 'Controller',
-                                                            'loginRedirect'	=> array(
-											//	 'plugin' 		=> 'admin',
-										 'controller' 	=> 'investments',
-										 'action' 	=> 'readInvestmentsList'
-											 ),
-										'logoutRedirect' => array('controller' 	=> 'users',
-									 'action' 		=> 'login'
-												 ),
-												),								
-
+                                                'loginRedirect'	=> array(
+									'plugin' => 'admin',
+									'controller' 	=> 'investments',
+									'action' 	=> 'readInvestmentsList'
+									),
+						'logoutRedirect' => array('controller' 	=> 'users',
+									 'action' => 'login'
+										 ),
+									),								
 								);
 		
     var $uses = array('Administrators');	
