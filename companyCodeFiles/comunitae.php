@@ -212,7 +212,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentData($str) {
+    function collectUserInvestmentDataParallel($str) {
 // user = "antoine@winvestify.com"
 // pw = "Zastac2015"
 // manoloherrero@msn.com    Mecano1980E
@@ -508,7 +508,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
 *	@return array	Data of each investment of the user as an element of an array
 *	NOT READY
 */
-function collectUserInvestmentDataSequencial($user, $password) {
+function collectUserInvestmentData($user, $password) {
 // user = "antoine@winvestify.com"
 // pw = "Zastac2015"
 // manoloherrero@msn.com    Mecano1980E

@@ -207,7 +207,7 @@ function collectCompanyMarketplaceData() {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentData($str) {
+    function collectUserInvestmentDataParallel($str) {
 
         switch ($this->idForSwitch) {
             case 0:
@@ -394,7 +394,7 @@ function collectCompanyMarketplaceData() {
 *	@return array	Data of each investment of the user as an element of an array
 *	
 */
-function collectUserInvestmentDataSequencial($user, $password) {
+function collectUserInvestmentData($user, $password) {
 echo __FILE__ . " " . __LINE__ . "$user, $password<br>";
 	$resultMyGrowly = $this->companyUserLogin($user, $password);
 	
