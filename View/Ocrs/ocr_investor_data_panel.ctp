@@ -893,8 +893,8 @@ foreach ($existingFiles as $existingFiles) {
         </div>
         <div id="btn1CR" class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
             <div class="form-group">
-                <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn-win5 btnRounded pull-left"><?php echo __('Back') ?></button>
-                <button type="submit" href="/ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn-win5 btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
+                <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn1CR btnRounded pull-left"><?php echo __('Back') ?></button>
+                <button type="submit" href="/ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn1CR btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
             </div>
         </div>	
     </div>

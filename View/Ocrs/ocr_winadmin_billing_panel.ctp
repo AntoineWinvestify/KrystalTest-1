@@ -187,7 +187,7 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btn-win1 btnRounded">
+                                            <button type="button" class="btn btn-default btnWinAdmin btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Send') ?> 
                                             </button>
                                         </td>

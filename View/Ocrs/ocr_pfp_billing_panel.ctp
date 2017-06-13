@@ -88,7 +88,7 @@
                                             <div class="input-group input-group-sm blue_noborder3">
                                                 <input type="text" style="border:none; border-radius:7px;" class="form-control" placeholder="Search for...">
                                                 <span class="input-group-btn">
-                                                  <button class="btn btn-secondary" type="button"><?php echo __('Go!')?></button>
+                                                  <button class="btn btnPFPAdmin btnRounded" type="button"><?php echo __('Go!')?></button>
                                                 </span>
                                             </div>
                                         </div>
@@ -116,7 +116,7 @@
                                                         <td>conceptsgnbhgtttt</td>
                                                         <td align="right">0.0550 €</td>
                                                         <td>
-                                                            <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
+                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -125,7 +125,7 @@
                                                         <td>concefssdpttttt</td>
                                                         <td align="right">0.0567470 €</td>
                                                         <td>
-                                                            <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
+                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -134,7 +134,7 @@
                                                         <td>concesdfsfpttttt</td>
                                                         <td align="right">0.066660 €</td>
                                                         <td>
-                                                            <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
+                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -143,7 +143,7 @@
                                                         <td>concepgghgggttttt</td>
                                                         <td align="right">0.099990 €</td>
                                                         <td>
-                                                            <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
+                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -152,7 +152,7 @@
                                                         <td>conhhghhcepttttt</td>
                                                         <td align="right">22220.00 €</td>
                                                         <td>
-                                                            <button class="btn btn-default btn-win1"><?php echo __('Download')?></button>
+                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
                                                         </td>
                                                     </tr>
                                                 </tbody>

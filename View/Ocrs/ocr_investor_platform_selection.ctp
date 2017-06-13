@@ -301,7 +301,7 @@ foreach ($selected as $selected) {
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <button id="sentCompanies" type="button" class="btn btn-default btn-lg btn-win1 center-block togetoverlay" style="padding: 10px 50px; margin-bottom: 25px">
+                        <button id="sentCompanies" type="button" class="btn btn-default btn-lg btn1CR btnRounded center-block togetoverlay" style="padding: 10px 50px; margin-bottom: 25px">
                             <div class="overlay">
                                 <div class="fa fa-spin fa-spinner" style="color:green">	
                                 </div>
@@ -381,7 +381,7 @@ foreach ($selected as $selected) {
                                             <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
-                                            <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn-win2 btnMargin center-block btnSelected" href = "#"><?php echo __('Select') ?></button>
+                                            <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin center-block btnSelected btnRounded" href = "#"><?php echo __('Select') ?></button>
                                         </div>
                                     </div>
                                 </div>
