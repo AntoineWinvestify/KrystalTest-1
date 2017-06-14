@@ -683,6 +683,14 @@ app.visual = {
                 $(".ErrorBusinessName").fadeIn();
                 correctForm = false;
             }
+            $(".uploaded").each(function(){
+                if ($(this).val() == 0) {
+                    console.log("required files");
+                    $(".ErrorFiles").find(".errorMessage").html(TEXTOS.T96); // "update all required files" warning
+                    $(".ErrorFiles").fadeIn();
+                    correctForm = false;
+                }
+            });
         return correctForm;   
     }
 };
@@ -834,6 +842,7 @@ var TEXTOS = {
     T92: "Por favor, introduzca el nombre",
     T93: "Por favor, introduzca los apellidos",
     T94: "Por favor, introduzca su mensaje",
-    T95: "The IBAN is not valid"
+    T95: "The IBAN is not valid",
+    T96: "You must upload all the required files",
 };
 
