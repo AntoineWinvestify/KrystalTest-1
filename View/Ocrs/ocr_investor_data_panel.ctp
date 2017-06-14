@@ -159,11 +159,9 @@
         $(document).on("click", ".delete", function () {
 <?php //Delete File   ?>
             id = $(this).val();
-            url = $(".url" + id).attr("value");
-            name = $("#file" + id).attr("value");
+            url = $(".url" + id).attr("value");           
             params = {
                 url: url,
-                name: name,
                 id: id
             };
             var data = jQuery.param(params);

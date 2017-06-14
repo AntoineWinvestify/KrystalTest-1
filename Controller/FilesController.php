@@ -30,9 +30,12 @@
 
   2017/6/06 version 0.1
   function upload                         [OK]
-
+ * 
   2017/6/08 version 0.2
   function delete                [ok]
+ * 
+  2017/6/14 version 0.3
+  url and name fixed                      [OK]
  */
 App::uses('CakeEvent', 'Event');
 
@@ -54,7 +57,7 @@ class filesController extends AppController {
             $result = false;
         } else {
             $this->layout = 'ajax';
-            $this->disableCache();            
+            $this->disableCache();
             $data = $this->params['data']['Files'];
             $type = $data['info'];
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
@@ -72,16 +75,11 @@ class filesController extends AppController {
             $this->disableCache();
 
             $url = $this->request->data('url');
-            $name = $this->request->data('name');
             $file_id = $this->request->data('id');
             $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
-            print_r($url);
-            print_r($name);
-            print_r($file_id);
-            print_r($investor_id);
 
-            $result = $this->File->ocrFileDelete($url, $name, $file_id, $investor_id);
+            $result = $this->File->ocrFileDelete($url, $file_id, $investor_id);
 
             $this->set("result", $result);
         }
