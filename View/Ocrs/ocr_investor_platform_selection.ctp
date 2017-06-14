@@ -396,12 +396,12 @@ foreach ($selected as $selected) {
                             </div>
                             <div class="box-footer no-padding">
                                 <div class="row">
-                                    <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                                    <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a href="<?php echo $company['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
                                         <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                                     </div>
-                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
-                                        <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin center-block btnSelected btnRounded" href = "#"><?php echo __('Select') ?></button>
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin btnSelected btnRounded pull-right" style="margin-right: 10px !important;"><?php echo __('Select') ?></button>
                                     </div>
                                 </div>
                             </div>
