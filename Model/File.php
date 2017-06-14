@@ -40,7 +40,7 @@ class file extends AppModel {
                 continue;
             }
             if (($data['type'] == "image/png" || $data['type'] == "image/gif" ||  $data['type'] == "application/pdf") && $data['size'] < 10000000 ) {
-                $filename = basename($data['name']);
+                $filename = time() . basename($data['name']);
                 $uploadFolder = 'files/investors/' . $identity . '';
                 $uploadPath = $uploadFolder . DS . $filename;
 

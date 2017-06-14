@@ -31,8 +31,8 @@
   2017/6/06 version 0.1
   function upload                         [OK]
 
-2017/6/08 version 0.2
- function delete                [ok]
+  2017/6/08 version 0.2
+  function delete                [ok]
  */
 App::uses('CakeEvent', 'Event');
 
@@ -54,8 +54,7 @@ class filesController extends AppController {
             $result = false;
         } else {
             $this->layout = 'ajax';
-            $this->disableCache();
-
+            $this->disableCache();            
             $data = $this->params['data']['Files'];
             $type = $data['info'];
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
