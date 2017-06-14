@@ -74,7 +74,7 @@ class ocrsController extends AppController {
         if ($status == 0) {
             $this->ocrInvestorPlatformSelection();
         } else {
-            $this->activatedService();     
+            $this->activatedService();
         }
     }
 
@@ -255,9 +255,15 @@ class ocrsController extends AppController {
 
     //Investor View #3
     function ocrInvestorConfirmModal() {
-
-
-        //$this->layout = 'azarus_private_layout';
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $companyId = $this->Ocr->getSelectedCompanies($id);
+        $idFilter = array();
+        foreach ($companyId as $companyId) {
+            array_push($idFilter, $companyId["companies_ocrs"]["company_id"]);
+        }
+        $idFilter = array("Company.id" => $idFilter);
+        $companies = $this->Company->getCompanyDataList($idFilter);
+        $this->set("companies", $companies);
         echo " ";
     }
 
@@ -316,7 +322,7 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     //Activated Service VIEW
     function activatedService() {
         $this->layout = 'azarus_private_layout';
