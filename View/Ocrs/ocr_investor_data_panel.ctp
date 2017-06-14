@@ -94,7 +94,7 @@
 
 
         $(document).on("click", "#activateOCR", function () {
-            console.log("saving investor 1CR data");
+            console.log("validate 1CR data");
             var result; //link = $(this).attr("href");
 
 <?php //Javascript validation   ?>
@@ -105,36 +105,7 @@
                 $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
                 return false;
             } else { //Validation ok
-
                 $('#notification').load("/ocrs/ocrInvestorConfirmModal");
-<?php /* var params = {
-
-
-  investor_name: $("#ContentPlaceHolder_name").val(),
-  investor_surname: $("#ContentPlaceHolder_surname").val(),
-  investor_DNI: $("#dni").val(),
-  investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
-  investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
-  investor_address1: $("#ContentPlaceHolder_address1").val(),
-  investor_postCode: $("#ContentPlaceHolder_postCode").val(),
-  investor_city: $("#ContentPlaceHolder_city").val(),
-  investor_country: $("#ContentPlaceHolder_country").val(),
-  investor_email: $("#ContentPlaceHolder_email").val()
-  };
-
-  if ($("#investmentVehicle").prop("checked")) {
-  params.investmentVehicle = 1;
-  params.cif = $("#ContentPlaceHolder_cif").val();
-  params.businessName = $("#ContentPlaceHolder_businessName").val();
-  params.iban = $("#ContentPlaceHolder_iban").val();
-
-  } else {
-  params.investmentVehicle = 0;
-  params.iban = $("#ContentPlaceHolder_iban").val();
-  }
-  link = $("#activateOCR").attr('href');
-  var data = jQuery.param(params);
-  getServerData(link, data, success, error); */ ?>
             }
         });
 
