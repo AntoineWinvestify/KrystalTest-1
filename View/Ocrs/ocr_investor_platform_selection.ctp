@@ -93,8 +93,13 @@
     }
 
 
-    function successSentCompanies(result) {}
-    function errorSentCompanies(result) {}
+    function successSentCompanies(result) {
+         $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Companies saved") ?></strong></div>');
+        $("#report").html(<?php echo __() ?>);
+    }
+    function errorSentCompanies(result) {
+         $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Error saving companies") ?></strong></div>');
+    }
 
 
 
@@ -112,11 +117,12 @@
 
 
     function successDelete(result) {
-        $("#report").html("Compañia eliminada");
+        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Company deleted") ?></strong></div>');
         total--;
         recount();
     }
     function errorDelete(result) {
+        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant deleted company") ?></strong></div>');
     }
 
 
@@ -227,7 +233,7 @@ foreach ($selected as $selected) {
 <div id="1CR_investor_1_platformSelection">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div id="report"> </div>
+            <div id="notification"> </div>
             <?php
             /* DIV 1: Selected platforms */
             //print_r($selected);

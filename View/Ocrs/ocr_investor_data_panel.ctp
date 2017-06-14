@@ -88,8 +88,8 @@
         $(document).bind('DOMSubtreeModified', function () {
             fadeOutElement(".alert-to-fade", 5000);
         });
-
-
+        
+            
 
         $(document).on("click", "#activateOCR", function () {
             console.log("saving investor 1CR data");
@@ -102,32 +102,36 @@
                 $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
                 return false;
             } else {
-                var params = {
-                    investor_name: $("#ContentPlaceHolder_name").val(),
-                    investor_surname: $("#ContentPlaceHolder_surname").val(),
-                    investor_DNI: $("#dni").val(),
-                    investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
-                    investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
-                    investor_address1: $("#ContentPlaceHolder_address1").val(),
-                    investor_postCode: $("#ContentPlaceHolder_postCode").val(),
-                    investor_city: $("#ContentPlaceHolder_city").val(),
-                    investor_country: $("#ContentPlaceHolder_country").val(),
-                    investor_email: $("#ContentPlaceHolder_email").val()
-                };
 
-                if ($("#investmentVehicle").prop("checked")) {
-                    params.investmentVehicle = 1;
-                    params.cif = $("#ContentPlaceHolder_cif").val();
-                    params.businessName = $("#ContentPlaceHolder_businessName").val();
-                    params.iban = $("#ContentPlaceHolder_iban").val();
-
-                } else {
-                    params.investmentVehicle = 0;
-                    params.iban = $("#ContentPlaceHolder_iban").val();
-                }
-                link = $("#activateOCR").attr('href');
-                var data = jQuery.param(params);
-                getServerData(link, data, success, error);
+                $('#notification').load("/ocrs/ocrInvestorConfirmModal");
+                /*var params = {
+                 
+                 
+                 investor_name: $("#ContentPlaceHolder_name").val(),
+                 investor_surname: $("#ContentPlaceHolder_surname").val(),
+                 investor_DNI: $("#dni").val(),
+                 investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
+                 investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
+                 investor_address1: $("#ContentPlaceHolder_address1").val(),
+                 investor_postCode: $("#ContentPlaceHolder_postCode").val(),
+                 investor_city: $("#ContentPlaceHolder_city").val(),
+                 investor_country: $("#ContentPlaceHolder_country").val(),
+                 investor_email: $("#ContentPlaceHolder_email").val()
+                 };
+                 
+                 if ($("#investmentVehicle").prop("checked")) {
+                 params.investmentVehicle = 1;
+                 params.cif = $("#ContentPlaceHolder_cif").val();
+                 params.businessName = $("#ContentPlaceHolder_businessName").val();
+                 params.iban = $("#ContentPlaceHolder_iban").val();
+                 
+                 } else {
+                 params.investmentVehicle = 0;
+                 params.iban = $("#ContentPlaceHolder_iban").val();
+                 }
+                 link = $("#activateOCR").attr('href');
+                 var data = jQuery.param(params);
+                 getServerData(link, data, success, error);*/
             }
         });
 
@@ -243,8 +247,10 @@
         $("#content").html(result);
     }
     function errorBack(result) {
-        $("#content").html();
+        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
     }
+
+
 
     function addExistingDocuments() {
 <?php

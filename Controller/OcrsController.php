@@ -202,7 +202,6 @@ class ocrsController extends AppController {
         $this->Orc->ocrEnd($datos);
     }
 
-
     //One Click Registration - Investor Views
     //Investor View #2
     function ocrInvestorDataPanel() {
@@ -227,7 +226,7 @@ class ocrsController extends AppController {
         echo " ";
         return 1;
     }
-    
+
     //Investor View #1
     function ocrInvestorPlatformSelection() {
 
@@ -250,26 +249,30 @@ class ocrsController extends AppController {
         $this->set('notShowList', $notShowList);
         echo " ";
     }
-    
+
     //Investor View #3
     function ocrInvestorConfirmModal() {
-        $this->layout = 'azarus_private_layout';
+        if ($this->request->is('ajax')) {
+            $this->layout = 'ajax';
+        }
+
+        //$this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     //One Click Registration - PFPAdmin Views
     //PFPAdmin View #2
     function ocrPfpBillingPanel() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     //PFPAdmin View #1
     function ocrPfpUsersPanel() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     //PFPAdmin View #3
     function ocrPfpTallyman() {
         $this->layout = 'azarus_private_layout';
@@ -282,13 +285,13 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     //WinAdmin View #1
     function ocrWinadminBillingPanel() {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
-    
+
     //WinAdmin View #3
     function ocrWinadminInvestorData() {
         $this->layout = 'azarus_private_layout';
@@ -312,4 +315,5 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
+
 }
