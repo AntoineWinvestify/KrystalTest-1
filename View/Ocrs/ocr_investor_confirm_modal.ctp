@@ -70,16 +70,18 @@
                         </div>
                         <div class="wizard-header text-center">
                             <button type="button" class="close closeBtn" data-dismiss="modal" aria-hidden="true" style="margin-right: 15px;">&times;</button>
-                            <img src="/img/logo_winvestify/Logo.png" style="float:center; max-width:75px;"/>
-                            <img src="/img/logo_winvestify/Logo_texto.png" style="float:center; max-width:250px;"/>
+                            <img src="/img/logo_winvestify/Logo.png" style="max-width:75px;"/>
+                            <img src="/img/logo_winvestify/Logo_texto.png" class="center-block" style="max-width:250px;"/>
                         </div>
                         <div class="tab-content">
                             <div class="row">
-                                <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.')?></p>
-                                <ul>
-                                    <li>platform1</li>
-                                    <li>platform2</li>
-                                </ul>
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.')?></p>
+                                    <ul>
+                                        <li>platform1</li>
+                                        <li>platform2</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div> <!-- /tab-content -->
                         <div class="wizard-footer">
