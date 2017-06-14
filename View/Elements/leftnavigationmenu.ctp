@@ -152,7 +152,7 @@ $(document).ready(function() {
               <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
             </a>
         </li>
-        <li class="header">
+       <?php /* <li class="header">
             <strong>PFP Admin Menu</strong>
         </li>
         <li class="treeview">
@@ -200,7 +200,7 @@ $(document).ready(function() {
         </li>
         
  
-<?php /*<li class="treeview">
+<li class="treeview">
 			<a href="/invitations/recommend"><i class="fa fa-power-off"></i><span><?php //echo __('Recommend to a friend')?></a></span>
         </li>*/?>
         <li class="treeview">
