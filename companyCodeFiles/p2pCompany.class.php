@@ -1099,6 +1099,8 @@ return $m;
 *
 */
 function logToFile($filename, $msg)	{
+        //Like this function, change later tomorrow
+        //$fileName =  "/var/www/html/cake_branch/app/companyCodeFiles/log/" . $filename;
 	$fileName =  "log/" . $filename;
 	$fd = fopen($fileName, "a");
 	$msg = date("d-m-y H:i:s") . " " . $msg;  
