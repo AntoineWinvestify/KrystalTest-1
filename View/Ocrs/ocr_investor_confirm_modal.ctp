@@ -30,6 +30,9 @@
 */
 
 ?>
+<link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
+<script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
+<script type="text/javascript" src="/modals/assets/js/paper-bootstrap-wizard.js"></script>
 <style>
     .modal-dialog{
         overflow-y: initial !important
