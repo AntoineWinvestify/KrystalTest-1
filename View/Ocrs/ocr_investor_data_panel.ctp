@@ -800,7 +800,19 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                     </div>
                     <div class="row">
                         <!-- Investor complete data -->
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <?php
+                            $errorClassesText = "errorInputMessage ErrorFiles";
+                            if (array_key_exists('investor_files', $investorValidationErrors)) {
+                                $errorClassesText .= " " . "actived";
+                            }
+                            ?>
+                            <div class="<?php echo $errorClassesText ?> col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $investorValidationErrors['investor_files'][0] ?>
+                                </span>
+                            </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">	
                             <div class="table-responsive">  
                                 <table id="documentsTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
                                        data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
