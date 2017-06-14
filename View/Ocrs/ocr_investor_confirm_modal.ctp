@@ -15,7 +15,7 @@
 *
 *
 * @author
-* @version 0.1
+* @version 0.2
 * @date 2017-06-09
 * @package
  * 
@@ -27,25 +27,36 @@
  * First view.
  * Insert modal
  * Insert style rules.
+ * 
+ * [2017-06-14] Version 0.2
+ * Added buttons to modal
+ * Added js & css from paper bootstrap wizard
+ * Added js to buttons
 */
 
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
 <script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
 <script type="text/javascript" src="/modals/assets/js/paper-bootstrap-wizard.js"></script>
-<style>
-    .modal-dialog{
-        overflow-y: initial !important
-    }
-    .modal-body{
-        height: 450px;
-        overflow-y: auto;
-    }
-    ul > li > a {
-        cursor:default;
-    }
-    .modal { overflow-y:scroll; }
-</style>
+<script> 
+    $(function () {
+        $(document).on("click", ".closeBtn", function(){
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
+            //Data saved on form
+        });
+        $(document).on("click", "#btnConfirm", function(){
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
+            //server validation
+        });
+        $(document).on("click", "#btnCancel", function() {
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
+            //data saved on form
+        });
+    });
+</script>
 <div id="1CR_investor_3_confirming" class="modal show" role="dialog">
     <!--   Big container   -->
     <div class="container">
@@ -71,6 +82,16 @@
                                 </ul>
                             </div>
                         </div> <!-- /tab-content -->
+                        <div class="wizard-footer">
+                            <div class="pull-right">
+                                <input type='button' id="btnConfirm" class='btn btn-default btn-wd' name='confirm' value='Confirm' />
+                            </div>
+
+                            <div class="pull-left">
+                                <input type='button' id="btnCancel" class='btn btn-default btn-wd' name='cancel' value='Cancel' />
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
                     </div>  <!-- /wizard-card -->
                 </div> <!-- /wizard-container -->
             </div> <!-- /modal -->
