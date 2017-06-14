@@ -1,4 +1,5 @@
 <?php
+
 /*
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2016, http://beyond-language-skills.com                 |
@@ -38,8 +39,8 @@
 
   PENDING:
 
-2017-05-15  Version 0.3                                                                     [OK, tested]
-Removed unused methods              
+  2017-05-15  Version 0.3                                                                     [OK, tested]
+  Removed unused methods
 
  */
 
@@ -52,34 +53,29 @@ App::uses('CakeEventListener', 'Event');
 
 class GlobalEmailListener implements CakeEventListener {
 
-public function implementedEvents() {
-/*
-DEFINED EVENTS:
-newUserCreated			 			A new user has successfully registered
-SendContacMessage                   Somebody contacted use via ContactForm
-*/
+    public function implementedEvents() {
+        /*
+          DEFINED EVENTS:
+          newUserCreated			 			A new user has successfully registered
+          SendContacMessage                   Somebody contacted use via ContactForm
+         */
 
 // Determine which events have been selected in the config file
 
-	$allImplementedEvents  =  array(
-			'newUserCreated'			=> 'newUserCreatedEmail',
-			'sendContactMessage'         => 'contactEmail'
-	);
-
-	
-	Configure::load('p2pGestor.php', 'default');
-	$configuredEvents = Configure::read('event');
-	foreach ($configuredEvents as $key => $value) {
-		if ($value == true) {   
-			$selectedEvents[$key] = $allImplementedEvents[$key];
-
-		}
-	}
-	return ($selectedEvents);
-}
-
-
-
+        $allImplementedEvents = array(
+            'newUserCreated' => 'newUserCreatedEmail',
+            'sendContactMessage' => 'contactEmail',
+            'checkMessage' => 'checkData',
+        );
+        Configure::load('p2pGestor.php', 'default');
+        $configuredEvents = Configure::read('event');
+        foreach ($configuredEvents as $key => $value) {
+            if ($value == true) {
+                $selectedEvents[$key] = $allImplementedEvents[$key];
+            }
+        }
+        return ($selectedEvents);
+    }
 
     /**
      *
@@ -109,28 +105,24 @@ SendContacMessage                   Somebody contacted use via ContactForm
             $infoString = __FILE__ . " " . __LINE__ . " Event: 'newUserCreated'. Caught email exception: " . $e->getMessage() . "\n";
             CakeLog::error($infoString);
         }
-        
+
 // TEMPORARY FIX: SEND A EMAIL TO MANUEL EVERYTIME WHEN A NEW USER HAS SUCCESFULLY REGISTERED. THIS IS TO BE REMOVED
 // BY MAY 31 2017
-	try {
-		$Email = new CakeEmail('smtp_Winvestify');
-		$Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
-		$Email->to(array('manuelmillan@winvestify.com' => __("Admin Winvestify")));
-		$Email->subject( __("Registration of new user at Winvestify"));
-		$Email->template('admin', 'standard_email_layout');
-		$Email->viewVars(array(	'email'		=> $resultInvestor['Investor']['investor_email'],
-							   'telephone' 	=> $resultInvestor['Investor']['investor_telephone'],
-							   ));
-		$Email->emailFormat('html');
-		$Email->send();
-	}
-
-	catch (Exception $e )	{
-		$infoString =  __FILE__ . " " . __LINE__ . " Event: 'newUserCreated: admin email'. Caught email exception: " .  $e->getMessage().  "\n";
-		CakeLog::error($infoString);
-	}
-       
-        
+        try {
+            $Email = new CakeEmail('smtp_Winvestify');
+            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+            $Email->to(array('manuelmillan@winvestify.com' => __("Admin Winvestify")));
+            $Email->subject(__("Registration of new user at Winvestify"));
+            $Email->template('admin', 'standard_email_layout');
+            $Email->viewVars(array('email' => $resultInvestor['Investor']['investor_email'],
+                'telephone' => $resultInvestor['Investor']['investor_telephone'],
+            ));
+            $Email->emailFormat('html');
+            $Email->send();
+        } catch (Exception $e) {
+            $infoString = __FILE__ . " " . __LINE__ . " Event: 'newUserCreated: admin email'. Caught email exception: " . $e->getMessage() . "\n";
+            CakeLog::error($infoString);
+        }
     }
 
     public function contactEmail(CakeEvent $event) {
@@ -142,11 +134,11 @@ SendContacMessage                   Somebody contacted use via ContactForm
             $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($adminData['systemAdmin'] => __("Admin")));
             $Email->subject($event->data['subject']);
-            $Email->template('adminContactform', 'standard_email_layout');            
-            $Email->viewVars(array('name' => $event->data['name'], 
-                                    'text' => $event->data['text'], 
-                                    'subject' => $event->data['subject'] , 
-                                    'email' => $event->data['email']));
+            $Email->template('adminContactform', 'standard_email_layout');
+            $Email->viewVars(array('name' => $event->data['name'],
+                'text' => $event->data['text'],
+                'subject' => $event->data['subject'],
+                'email' => $event->data['email']));
             $Email->emailFormat('html');
             $Email->send();
         } catch (Exception $e) {
@@ -161,10 +153,29 @@ SendContacMessage                   Somebody contacted use via ContactForm
             $Email->to($event->data['email']);
             $Email->subject($event->data['subject']);
             $Email->template('contactEmail', 'standard_email_layout');
-            $Email->viewVars(array('name' => $event->data['name'], 
-                                    'text' => $event->data['text'], 
-                                    'subject' => $event->data['subject'] , 
-                                    'email' => $event->data['email']));
+            $Email->viewVars(array('name' => $event->data['name'],
+                'text' => $event->data['text'],
+                'subject' => $event->data['subject'],
+                'email' => $event->data['email']));
+            $Email->emailFormat('html');
+            $Email->send();
+        } catch (Exception $e) {
+            $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
+            CakeLog::error($infoString);
+            echo $infoString;
+        }
+    }
+
+    public function checkData(CakeEvent $event) {
+        Configure::load('p2pGestor.php', 'default');
+        $adminData = Configure::read('admin');
+        // Send contact text to server admin
+        try {
+            $Email = new CakeEmail('smtp_Winvestify');
+            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+            $Email->to(array($adminData['winAdminCheck'] => __("Admin")));
+            $Email->subject("Nuevo usuario ocr");
+            $Email->template('winadminNewUserOcr', 'standard_email_layout');
             $Email->emailFormat('html');
             $Email->send();
         } catch (Exception $e) {
