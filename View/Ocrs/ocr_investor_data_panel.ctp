@@ -43,6 +43,8 @@
  * [2017-06-12] Version 0.6
  * Added file upload status for validating
  * 
+ * [2017-06-12] Version 0.7
+ * Modal and user feedback
  */
 ?>
 
@@ -68,15 +70,15 @@
     $(function () {
         addExistingDocuments();
         validationerrors = false;
-        //telephone
+<?php //telephone   ?>
         $('#ContentPlaceHolder_telephone').intlTelInput();
 
-        //Date picker
+<?php //Date picker   ?>
         $('#ContentPlaceHolder_dateOfBirth').datepicker({
             autoclose: true,
             format: 'dd/mm/yyyy'
         });
-        //Show div with CIF & IBAN if its checked.
+<?php //Show div with CIF & IBAN if its checked.   ?>
         $(document).on("change", "#investmentVehicle", function () {
             if ($(this).is(":checked")) {
                 $("#investmentVehicleContent").show();
@@ -84,60 +86,61 @@
                 $("#investmentVehicleContent").hide();
             }
         });
-        //Data successfully saved feedback to user FADEOUT.
+<?php //Data successfully saved feedback to user FADEOUT.   ?>
         $(document).bind('DOMSubtreeModified', function () {
             fadeOutElement(".alert-to-fade", 5000);
         });
-        
-            
+
+
 
         $(document).on("click", "#activateOCR", function () {
             console.log("saving investor 1CR data");
             var result, link = $(this).attr("href");
             event.stopPropagation();
             event.preventDefault();
+<?php //Javascript validation   ?>
             if ((result = app.visual.checkForm1CRInvestorData()) === false) {
+<?php //Validation error   ?>
                 event.stopPropagation();
                 event.preventDefault();
                 $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
                 return false;
-            } else {
+            } else { //Validation ok
 
                 $('#notification').load("/ocrs/ocrInvestorConfirmModal");
-                /*var params = {
-                 
-                 
-                 investor_name: $("#ContentPlaceHolder_name").val(),
-                 investor_surname: $("#ContentPlaceHolder_surname").val(),
-                 investor_DNI: $("#dni").val(),
-                 investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
-                 investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
-                 investor_address1: $("#ContentPlaceHolder_address1").val(),
-                 investor_postCode: $("#ContentPlaceHolder_postCode").val(),
-                 investor_city: $("#ContentPlaceHolder_city").val(),
-                 investor_country: $("#ContentPlaceHolder_country").val(),
-                 investor_email: $("#ContentPlaceHolder_email").val()
-                 };
-                 
-                 if ($("#investmentVehicle").prop("checked")) {
-                 params.investmentVehicle = 1;
-                 params.cif = $("#ContentPlaceHolder_cif").val();
-                 params.businessName = $("#ContentPlaceHolder_businessName").val();
-                 params.iban = $("#ContentPlaceHolder_iban").val();
-                 
-                 } else {
-                 params.investmentVehicle = 0;
-                 params.iban = $("#ContentPlaceHolder_iban").val();
-                 }
-                 link = $("#activateOCR").attr('href');
-                 var data = jQuery.param(params);
-                 getServerData(link, data, success, error);*/
+<?php /* var params = {
+
+
+  investor_name: $("#ContentPlaceHolder_name").val(),
+  investor_surname: $("#ContentPlaceHolder_surname").val(),
+  investor_DNI: $("#dni").val(),
+  investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
+  investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
+  investor_address1: $("#ContentPlaceHolder_address1").val(),
+  investor_postCode: $("#ContentPlaceHolder_postCode").val(),
+  investor_city: $("#ContentPlaceHolder_city").val(),
+  investor_country: $("#ContentPlaceHolder_country").val(),
+  investor_email: $("#ContentPlaceHolder_email").val()
+  };
+
+  if ($("#investmentVehicle").prop("checked")) {
+  params.investmentVehicle = 1;
+  params.cif = $("#ContentPlaceHolder_cif").val();
+  params.businessName = $("#ContentPlaceHolder_businessName").val();
+  params.iban = $("#ContentPlaceHolder_iban").val();
+
+  } else {
+  params.investmentVehicle = 0;
+  params.iban = $("#ContentPlaceHolder_iban").val();
+  }
+  link = $("#activateOCR").attr('href');
+  var data = jQuery.param(params);
+  getServerData(link, data, success, error); */ ?>
             }
         });
 
-        $(document).on("click", "#activateOCR", function () {});
-
         $(document).on("change", ".upload", function () {
+<?php // Upload  file   ?>
             id = $(this).attr("value");
             var formdatas = new FormData($("#FileForm" + id)[0]);
             $.ajax({
@@ -154,6 +157,7 @@
         });
 
         $(document).on("click", ".delete", function () {
+<?php //Delete File   ?>
             id = $(this).val();
             url = $(".url" + id).attr("value");
             name = $("#file" + id).attr("value");
@@ -172,13 +176,14 @@
         });
 
         $(document).on("click", "#backOCR", function () {
+<?php //Go back   ?>
             link = "../Ocrs/ocrInvestorPlatformSelection";
             var data = null;
             getServerData(link, data, successBack, errorBack);
         });
 
 
-<?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { ?>
+<?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { //Invesment vehicle comprobation ?> 
             if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> === 1) {
                 $("#investmentVehicle").prop('checked', true);
                 $("#investmentVehicleContent").show();
@@ -219,7 +224,7 @@
     }
 
     function successUpload(data, id) {
-        if (data != 0) {
+        if (data != 0) { //Upload ok
             $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
             $("#file" + id).attr("value", data[0]);
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
@@ -227,12 +232,13 @@
             $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
             $("#del" + id).prop("disabled", false);
             $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
-        } else {
-
+        } else { //upload fail, incorrect file type or too big
+            $("#notification" + id).html('<td colspan="4"><div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Upload failed. Incorrect type or file too big.") ?></strong></div></td>');
+            $("#status" + id).html('<span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning') ?></span>');
         }
     }
 
-    function successDelete(id) {
+    function successDelete(id) { // Delete ok
         $("#del" + id).prop("disabled", true);
         $("#file" + id).html('<input type="file" name="data[Files][iban]" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
@@ -241,12 +247,12 @@
         $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>')
     }
 
-    function successBack(result) {
+    function successBack(result) { // Go back ok
         $(document).off('click');
         $(document).off('change');
         $("#content").html(result);
     }
-    function errorBack(result) {
+    function errorBack(result) { //Go back error
         $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
     }
 
@@ -294,11 +300,11 @@ foreach ($existingFiles as $existingFiles) {
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
-                                echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-                                        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
-                                        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
-                                        . ' PFP puedan validar y autenticar su identidad.')
-                                ?></p>
+echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
+        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
+        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
+        . ' PFP puedan validar y autenticar su identidad.')
+?></p>
                         </div>
                     </div>
                     <div class="row">
@@ -812,13 +818,8 @@ foreach ($existingFiles as $existingFiles) {
                                     foreach ($requiredFiles as $requiredFiles) {
                                         $file = "file" . $requiredFiles[0]['File']['id'];
                                         ?>
-                                        <tr>
-                                        <div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong><?php echo __("Your data is incorrect.") ?></strong>
-                                        </div>
+                                        <tr id = "notification<?php echo $requiredFiles[0]['File']['id'] ?>">
+
                                         </tr>
                                         <tr id="<?php echo $requiredFiles[0]['File']['id'] ?>" class="documentRow">
                                             <td><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>

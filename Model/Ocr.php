@@ -41,6 +41,9 @@
  *
   2017/6/13  version 0.6
   checkStatus
+ * 
+  2017/6/14 version 0.7
+  Confirm modal
  */
 App::uses('CakeEvent', 'Event');
 
