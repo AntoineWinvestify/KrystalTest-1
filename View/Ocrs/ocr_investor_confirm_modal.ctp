@@ -36,8 +36,6 @@
 
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
-<script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
-<script type="text/javascript" src="/modals/assets/js/paper-bootstrap-wizard.js"></script>
 <script> 
     $(function () {
         $(document).on("click", ".closeBtn", function(){
@@ -64,10 +62,6 @@
             <div class="col-sm-8 col-sm-offset-2">
                 <div class="wizard-container">
                     <div class="card wizard-card" data-color="green" id="wizardProfile">
-                        <div class="overlay">
-                            <div class="fa fa-spin fa-spinner" style="color:green">	
-                            </div>
-                        </div>
                         <div class="wizard-header text-center">
                             <button type="button" class="close closeBtn" data-dismiss="modal" aria-hidden="true" style="margin-right: 15px;">&times;</button>
                             <img src="/img/logo_winvestify/Logo.png" style="max-width:75px;"/>
