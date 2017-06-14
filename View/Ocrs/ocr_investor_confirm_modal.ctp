@@ -72,8 +72,9 @@
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.')?></p>
                                     <ul>
-                                        <li>platform1</li>
-                                        <li>platform2</li>
+                                        <?php foreach($companies as $companies){?>
+                                        <li><?php echo __($companies["company_name"]) ?></li>
+                                        <?php }?>
                                     </ul>
                                 </div>
                             </div>
