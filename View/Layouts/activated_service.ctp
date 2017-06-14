@@ -15,23 +15,18 @@
 *
 *
 * @author
-* @version 0.2
-* @date 2017-06-09
+* @version 0.1
+* @date 2017-06-14
 * @package
  * 
  * 
- * Modal to investor when he/she has to CONFIRM the data giving to Winvestify to register on the 
- * selected platforms shown on list
+ * Modal to feedback user about a activated service
  * 
- * [2017-06-09] Version 0.1
+ * [2017-06-14] Version 0.1
  * First view.
  * Insert modal
- * Insert style rules.
- * 
- * [2017-06-14] Version 0.2
- * Added buttons to modal
- * Added js & css from paper bootstrap wizard
- * Added js to buttons
+ * Insert JS & CSS from Paper Bootstrap Wizard
+ * Added JS to buttons
 */
 
 ?>
@@ -41,23 +36,18 @@
 <script> 
     $(function () {
         $(document).on("click", ".closeBtn", function(){
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            //Data saved on form
+            $("#activatedService").removeClass("show");
+            $("#activatedService").hide();
+            window.history.back();
         });
-        $(document).on("click", "#btnConfirm", function(){
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            //server validation
-        });
-        $(document).on("click", "#btnCancel", function() {
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            //data saved on form
+        $(document).on("click", "#btnBack", function(){
+            $("#activatedService").removeClass("show");
+            $("#activatedService").hide();
+            window.history.back();
         });
     });
 </script>
-<div id="1CR_investor_3_confirming" class="modal show" role="dialog">
+<div id="activatedService" class="modal show" role="dialog">
     <!--   Big container   -->
     <div class="container">
         <div class="row">
@@ -75,20 +65,12 @@
                         </div>
                         <div class="tab-content">
                             <div class="row">
-                                <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.')?></p>
-                                <ul>
-                                    <li>platform1</li>
-                                    <li>platform2</li>
-                                </ul>
+                                <p align="justify"><?php echo __("The service you're trying to activate is already actived.")?></p>
                             </div>
                         </div> <!-- /tab-content -->
                         <div class="wizard-footer">
                             <div class="pull-right">
-                                <input type='button' id="btnConfirm" class='btn btn-default btn-wd' name='confirm' value='Confirm' />
-                            </div>
-
-                            <div class="pull-left">
-                                <input type='button' id="btnCancel" class='btn btn-default btn-wd' name='cancel' value='Cancel' />
+                                <input type='button' id="btnBack" class='btn btn-default btn-wd' name='back' value='Back' />
                             </div>
                             <div class="clearfix"></div>
                         </div>
