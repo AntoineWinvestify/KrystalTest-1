@@ -264,6 +264,10 @@ class ocrsController extends AppController {
         $idFilter = array("Company.id" => $idFilter);
         $companies = $this->Company->getCompanyDataList($idFilter);
         $this->set("companies", $companies);
+        
+        //$this->Auth->redirectUrl();
+        
+        
         echo " ";
     }
 

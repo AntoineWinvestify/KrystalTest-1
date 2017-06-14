@@ -1,23 +1,23 @@
 <?php
 /**
-* +--------------------------------------------------------------------------------------------+
-* | Copyright (C) 2016, http://www.winvestify.com                                              |
-* +--------------------------------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify                          |
-* | it under the terms of the GNU General Public License as published by                       |
-* | the Free Software Foundation; either version 2 of the License, or                          |
-* | (at your option) any later version.                                                        |
-* | This file is distributed in the hope that it will be useful                                |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
-* | GNU General Public License for more details.                                               |
-* +--------------------------------------------------------------------------------------------+
-*
-*
-* @author
-* @version 0.2
-* @date 2017-06-09
-* @package
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                                              |
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify                          |
+ * | it under the terms of the GNU General Public License as published by                       |
+ * | the Free Software Foundation; either version 2 of the License, or                          |
+ * | (at your option) any later version.                                                        |
+ * | This file is distributed in the hope that it will be useful                                |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+ * | GNU General Public License for more details.                                               |
+ * +--------------------------------------------------------------------------------------------+
+ *
+ *
+ * @author
+ * @version 0.2
+ * @date 2017-06-09
+ * @package
  * 
  * 
  * Modal to investor when he/she has to CONFIRM the data giving to Winvestify to register on the 
@@ -32,35 +32,74 @@
  * Added buttons to modal
  * Added js & css from paper bootstrap wizard
  * Added js to buttons
-*/
-
+ */
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
-<script> 
+<script>
     $(function () {
-        $(document).on("click", ".closeBtn", function(){
+        $(document).on("click", ".closeBtn", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
             //Data saved on form
         });
-        $(document).on("click", "#btnConfirm", function(){
+        $(document).on("click", "#btnConfirm", function () {
             //server validation
             console.log("user feedback");
-            $(".successMsg").fadeIn();
             $(".closeBtn").prop("disabled", true);
             $("#btnCancel").prop("disabled", true);
             $("#btnConfirm").prop("disabled", true);
+
+            var params = {
+                investor_name: $("#ContentPlaceHolder_name").val(),
+                investor_surname: $("#ContentPlaceHolder_surname").val(),
+                investor_DNI: $("#dni").val(),
+                investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val(),
+                investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
+                investor_address1: $("#ContentPlaceHolder_address1").val(),
+                investor_postCode: $("#ContentPlaceHolder_postCode").val(),
+                investor_city: $("#ContentPlaceHolder_city").val(),
+                investor_country: $("#ContentPlaceHolder_country").val(),
+                investor_email: $("#ContentPlaceHolder_email").val()
+            };
+
+            if ($("#investmentVehicle").prop("checked")) {
+                params.investmentVehicle = 1;
+                params.cif = $("#ContentPlaceHolder_cif").val();
+                params.businessName = $("#ContentPlaceHolder_businessName").val();
+                params.iban = $("#ContentPlaceHolder_iban").val();
+
+            } else {
+                params.investmentVehicle = 0;
+                params.iban = $("#ContentPlaceHolder_iban").val();
+            }
+
+            link = $("#activateOCR").attr('href');
+            var data = jQuery.param(params);
+            getServerData(link, data, success, error);
         });
-        $(document).on("click", "#btnCancel", function() {
+        $(document).on("click", "#btnCancel", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
             //data saved on form
         });
-        $(document).on("click", "#btnOk", function(){
+        $(document).on("click", "#btnOk", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
+            window.location.replace('/investors/userProfileDataPanel');
         });
+
     });
+
+
+    function success() {
+<?php //Server validation Ok          ?>
+        $(".successMsg").fadeIn();
+    }
+
+    function error() {
+<?php //Server validation Error      ?>
+        $(".errorMsg").fadeIn();
+    }
 </script>
 <div id="1CR_investor_3_confirming" class="modal show" role="dialog">
     <!--   Big container   -->
@@ -77,18 +116,24 @@
                         <div class="tab-content">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.')?></p>
+                                    <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.') ?></p>
                                     <ul>
-                                        <?php foreach($companies as $companies){?>
-                                        <li><?php echo __($companies["company_name"]) ?></li>
-                                        <?php }?>
+                                        <?php foreach ($companies as $companies) { ?>
+                                            <li><?php echo __($companies["company_name"]) ?></li>
+                                        <?php } ?>
                                     </ul>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div  class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="feedback errorInputMessage successMsg col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                         <i class="fa fa-exclamation-circle"></i>
-                                        <span class="errorMessage" style="font-size:large"><?php echo __('The service has been activated.')?></span>
-                                        <button id="btnOk" class="btn btn1CR center-block" type="button"><?php echo __('Thank you')?></button>
+                                        <span class="errorMessage" style="font-size:large"><?php echo __('The service has been activated.') ?></span>
+                                        <button id="btnOk" class="btn btn1CR center-block" type="button"><?php echo __('Thank you') ?></button>
+                                    </div>
+                                </div>
+                                <div  class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="feedback errorInputMessage errorMsg col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        <span class="errorMessage" style="font-size:large"><?php echo __('Error.') ?></span>
                                     </div>
                                 </div>
                             </div>

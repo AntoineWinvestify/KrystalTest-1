@@ -162,35 +162,6 @@
     });
 
 
-    function error(result) { <?php //Server validation Error ?>
-        result = JSON.parse(result);
-        if (result[0][0]["investor_name"]) {
-            $(".investorName").addClass("redBorder");
-            $(".ErrorName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
-            $(".ErrorName").fadeIn();
-            validationerrors = true;
-        } else {
-            validationerrors = false;
-        }
-
-        if (validationerrors === true || app.visual.checkForm1CRInvestorData() === false) {
-            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
-        } else {
-            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data has been successfully modified") ?></strong></div>');
-        }
-
-    }
-
-    function success() { <?php //Server validation Ok ?>
-        validationerrors = false;
-        if (validationerrors === true || app.visual.checkForm1CRInvestorData() === false) {
-            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
-        } else {
-            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data has been successfully modified") ?></strong></div>');
-        }
-
-    }
-
     function successUpload(data, id) {
         if (data != 0) { <?php //Upload ok ?>
             $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
