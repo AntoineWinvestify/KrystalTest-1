@@ -68,13 +68,13 @@ class ocrsController extends AppController {
 
         $this->layout = 'azarus_private_layout';
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $this->Ocr->createOcr($id);
         $status = $this->Ocr->checkStatus($id);
         $status = $status[0]['Ocr']['ocr_status'];
         if ($status == 0) {
             $this->ocrInvestorPlatformSelection();
         } else {
-            $this->activatedService();
-            $this->autoRender = false;
+            $this->activatedService();     
         }
     }
 
@@ -120,7 +120,7 @@ class ocrsController extends AppController {
                 'ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],
                 'investor_cif' => $_REQUEST['cif'],
                 'investor_businessName' => $_REQUEST['businessName'],
-                'investor_iban' => $_REQUEST['iban']
+                'investor_iban' => $_REQUEST['iban'],
             );
             $result2 = $this->Ocr->ocrDataSave($datosOcr);
             $ocrArray = json_decode("[" . $result2, true);
@@ -318,7 +318,8 @@ class ocrsController extends AppController {
     
     //Activated Service VIEW
     function activatedService() {
-        $this->layout = 'activated_service'; //fix
+        $this->layout = 'azarus_private_layout';
+        $this->render("../Layouts/activated_service");
     }
 
 }

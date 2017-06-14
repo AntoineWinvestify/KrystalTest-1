@@ -80,6 +80,32 @@ class ocr extends AppModel {
      * 
      */
 
+    public function createOcr($id) {
+
+        $idFind = $this->find('first', array(
+            'fields' => array(
+                'id',
+            ),
+            'conditions' => array(
+                'investor_id' => $id),
+            'recursive' => -1,));
+
+        //Actualizo esa fila del ocr
+        if (count($idFind) == 0) {
+            $data = array(
+                'investor_id' => $id,
+                'ocr_investmentVehicle' => 0,
+                'investor_cif' => null,
+                'investor_businessName' => null,
+                'investor_iban' => null,
+                'ocr_status' => 0,
+            );
+            $this->save($data);
+            return 1;
+        }
+        return 0;
+    }
+
     public function ocrDataSave($datos) {
 
         $id = $this->find('first', array(
@@ -90,7 +116,7 @@ class ocr extends AppModel {
                 'investor_id' => $datos['investor_id']),
             'recursive' => -1,));
 
-        //Si ya existe, actualizo esa fila del ocr
+        //Actualizo esa fila del ocr
         if (count($id) > 0) {
 
             if ($datos['ocr_investmentVehicle'] == 1) {
@@ -101,6 +127,7 @@ class ocr extends AppModel {
                     'investor_cif' => $datos['investor_cif'],
                     'investor_businessName' => $datos['investor_businessName'],
                     'investor_iban' => $datos['investor_iban'],
+                    'ocr_status' => 1,
                 );
             } else {
                 $data = array(
@@ -110,30 +137,10 @@ class ocr extends AppModel {
                     'investor_cif' => null,
                     'investor_businessName' => null,
                     'investor_iban' => $datos['investor_iban'],
-                );
-            }
-            //Si no existe, creo una nueva fila ocr    
-        } else {
-
-            if ($datos['ocr_investmentVehicle'] == 1) {
-                $data = array(
-                    'investor_id' => $datos['investor_id'],
-                    'ocr_investmentVehicle' => 1,
-                    'investor_cif' => $datos['investor_cif'],
-                    'investor_businessName' => $datos['investor_businessName'],
-                    'investor_iban' => $datos['investor_iban'],
-                );
-            } else {
-                $data = array(
-                    'investor_id' => $datos['investor_id'],
-                    'ocr_investmentVehicle' => 0,
-                    'investor_cif' => null,
-                    'investor_businessName' => null,
-                    'investor_iban' => $datos['investor_iban'],
+                    'ocr_status' => 1,
                 );
             }
         }
-
         $this->save($data);
         //$result[0] = 1;
         $result = json_encode($data);
