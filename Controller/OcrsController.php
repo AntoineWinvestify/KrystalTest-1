@@ -255,9 +255,7 @@ class ocrsController extends AppController {
 
     //Investor View #3
     function ocrInvestorConfirmModal() {
-        if ($this->request->is('ajax')) {
-            $this->layout = 'ajax';
-        }
+
 
         //$this->layout = 'azarus_private_layout';
         echo " ";

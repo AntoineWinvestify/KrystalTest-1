@@ -95,9 +95,8 @@
 
         $(document).on("click", "#activateOCR", function () {
             console.log("saving investor 1CR data");
-            var result, link = $(this).attr("href");
-            event.stopPropagation();
-            event.preventDefault();
+            var result; //link = $(this).attr("href");
+
 <?php //Javascript validation   ?>
             if ((result = app.visual.checkForm1CRInvestorData()) === false) {
 <?php //Validation error   ?>
