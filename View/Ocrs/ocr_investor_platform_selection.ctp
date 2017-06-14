@@ -12,6 +12,8 @@
  * [2017-06-13] Version 0.2
  * Added spinner on Go button
  * 
+ * [2017-06-13] Version 0.3
+ * Added user feedback
  */
 ?>
 1
@@ -84,17 +86,24 @@
 
 
 
-    function successFilter(result) {
-        $("#platformSelection").html("<h5><?php echo __('Search results:'); ?></br></h5>" + result);
-        addEnvent();
-    }
-    function errorFilter() {
-        $("#platformSelection").html("<h5><?php echo __('Search error'); ?></h5>");
-    }
+    /*function successFilter(result) {
+     $("#platformSelection").html("<h5><?php echo __('Search results:'); ?></br></h5>" + result);
+     addEnvent();
+     }
+     function errorFilter() {
+     $("#platformSelection").html("<h5><?php echo __('Search error'); ?></h5>");
+     }*/
 
 
-    function successSentCompanies(result) {}
-    function errorSentCompanies(result) {}
+    function successSentCompanies(result) {
+        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Companies saved") ?></strong></div>');
+        fadeOutElement(".alert-to-fade", 5000);
+        $("#report").html(<?php echo __() ?>);
+    }
+    function errorSentCompanies(result) {
+        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Error saving companies") ?></strong></div>');
+        fadeOutElement(".alert-to-fade", 5000);
+    }
 
 
 
@@ -112,11 +121,14 @@
 
 
     function successDelete(result) {
-        $("#report").html("Compañia eliminada");
+        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Company deleted") ?></strong></div>');
+        fadeOutElement(".alert-to-fade", 5000);
         total--;
         recount();
     }
     function errorDelete(result) {
+        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant deleted company") ?></strong></div>');
+        fadeOutElement(".alert-to-fade", 5000);
     }
 
 
@@ -163,6 +175,8 @@ foreach ($selected as $selected) {
             $("#selection").append("<div value='" + id + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $("#" + id).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             recount();
             extraEvent();
+            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Company added.") ?></strong></div>');
+            fadeOutElement(".alert-to-fade", 5000);
         });
 
 
@@ -190,6 +204,8 @@ foreach ($selected as $selected) {
             $("#platformSelection").find("." + idDel).find('*').fadeIn();
             $(this).parent().parent().parent().remove();
             recount();
+            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Company deleted") ?></strong></div>');
+            fadeOutElement(".alert-to-fade", 5000);
         });
 
     }
@@ -227,7 +243,7 @@ foreach ($selected as $selected) {
 <div id="1CR_investor_1_platformSelection">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div id="report"> </div>
+            <div id="notification"> </div>
             <?php
             /* DIV 1: Selected platforms */
             //print_r($selected);
