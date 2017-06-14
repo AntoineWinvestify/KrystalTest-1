@@ -79,6 +79,7 @@ class p2pCompany{
         // MarketplacesController
         protected $marketplaces;
         //Data for the queue
+        protected $queueId;
         protected $idForQueue;
         protected $idForSwitch = 0;
         //User data
@@ -1098,7 +1099,7 @@ return $m;
 *
 */
 function logToFile($filename, $msg)	{
-	$fileName = $this->logDir . "/" . $filename;
+	$fileName =  "log/" . $filename;
 	$fd = fopen($fileName, "a");
 	$msg = date("d-m-y H:i:s") . " " . $msg;  
 	fwrite($fd, $msg . "\n");
@@ -1235,11 +1236,21 @@ function print_r2($val){
         $this->tries = $tries;
     }
     
+    public function getQueueId() {
+        return $this->tries;
+    }
+    
+    public function setQueueId($queueId) {
+        $this->queueId = $queueId;
+    }
+    
     public function getError($line, $file) {
-        $this->tempArray['global']['error'] = "ERROR START<br>"
-                . "An error has ocurred with the data <br> on the line " . $line . " and the file " . $file
-                . "<br> The error was caused in the urlsequence: " . $this->errorInfo . "<br>"
+        $this->tempArray['global']['error'] = "ERROR START"
+                . "An error has ocurred with the data on the line " . $line . " and the file " . $file
+                . "The queueId is" . $this->queueId
+                . "The error was caused in the urlsequence: " . $this->errorInfo 
                 . "ERROR FINISHED<br>";
+        $this->logToFile("errorCurl", $this->tempArray['global']['error']);
         return $this->tempArray;
     }
 
