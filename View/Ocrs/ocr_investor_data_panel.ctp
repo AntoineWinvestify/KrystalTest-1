@@ -103,7 +103,7 @@
 <?php //Validation error   ?>
                 event.stopPropagation();
                 event.preventDefault();
-                $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
+                $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
                 return false;
             } else { //Validation ok
 
@@ -621,7 +621,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                 <!-- /city -->
 
                                 <!-- Country -->
-                                <div class="col-xs-12 col-sm-4 col-md-8 col-lg-8">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_country"><?php echo __('Country') ?></label>
                                         <?php
@@ -653,7 +653,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                     </div>	
                                 </div>
                                 <!-- /country -->
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
                                         <?php
