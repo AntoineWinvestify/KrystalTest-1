@@ -65,7 +65,7 @@ $(document).on("click", ".closeNotificationBtn", function(event) {
 	// Close Modal and update the list (read it again using ajax and "close" the pull down list)
 	$("#notificationContentModalMain").empty();
 	$("#notificationContentModal").removeClass("show");
-	updateNotificationsLocal();
+	//updateNotificationsLocal();
 });
 
 function updateNotificationsLocal() {
