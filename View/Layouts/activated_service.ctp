@@ -31,10 +31,8 @@
 
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
-<script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
-<script type="text/javascript" src="/modals/assets/js/paper-bootstrap-wizard.js"></script>
 <script> 
-    $(function () {
+    $(document).ready(function() {
         $(document).on("click", ".closeBtn", function(){
             $("#activatedService").removeClass("show");
             $("#activatedService").hide();
@@ -43,7 +41,6 @@
         $(document).on("click", "#btnBack", function(){
             $("#activatedService").removeClass("show");
             $("#activatedService").hide();
-            window.history.back();
         });
     });
 </script>
@@ -54,10 +51,6 @@
             <div class="col-sm-8 col-sm-offset-2">
                 <div class="wizard-container">
                     <div class="card wizard-card" data-color="green" id="wizardProfile">
-                        <div class="overlay">
-                            <div class="fa fa-spin fa-spinner" style="color:green">	
-                            </div>
-                        </div>
                         <div class="wizard-header text-center">
                             <button type="button" class="close closeBtn" data-dismiss="modal" aria-hidden="true" style="margin-right: 15px;">&times;</button>
                             <img src="/img/logo_winvestify/Logo.png" style="float:center; max-width:75px;"/>
@@ -65,12 +58,14 @@
                         </div>
                         <div class="tab-content">
                             <div class="row">
-                                <p align="justify"><?php echo __("The service you're trying to activate is already actived.")?></p>
+                                <div class="cols-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <p align="justify"><?php echo __("The service you're trying to activate is already activated.")?></p>
+                                </div>
                             </div>
                         </div> <!-- /tab-content -->
                         <div class="wizard-footer">
                             <div class="pull-right">
-                                <input type='button' id="btnBack" class='btn btn-default btn-wd' name='back' value='Back' />
+                                <button type='button' id="btnBack" class='btn btn-default btn-wd' name='back' href="window.history.back();"><?php echo __('Back')?></button>
                             </div>
                             <div class="clearfix"></div>
                         </div>
