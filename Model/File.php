@@ -23,11 +23,16 @@
 
   2017/6/06 version 0.1
   function upload                      [OK]
-
+ *
   2017/6/08 version 0.2
-  function delete                      [OK]
+  function delete
+ *                  [OK]
+  2017/6/14 version 0.3
+  url and name fixed                      [OK]
+ *  
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
+Configure::load('p2pGestor.php', 'default');
 
 class file extends AppModel {
 
@@ -35,13 +40,14 @@ class file extends AppModel {
 
     //upload file
     public function ocrFileSave($data, $identity, $id, $type) {
+        $fileConfig = Configure::read('files');
         foreach ($data as $data) {
             if ($data['size'] == 0 || $data['error'] !== 0) {
                 continue;
             }
-            if (($data['type'] == "image/png" || $data['type'] == "image/gif" ||  $data['type'] == "application/pdf") && $data['size'] < 10000000 ) {
-                $filename = basename($data['name']);
-                $uploadFolder = 'files/investors/' . $identity . '';
+            if (($data['type'] == "image/png" || $data['type'] == "image/gif" || $data['type'] == "application/pdf") && $data['size'] < $fileConfig['maxSize']) {
+                $filename = time() . "_" . basename($data['name']);
+                $uploadFolder = $fileConfig['investorPath'] . $identity . '';
                 $uploadPath = $uploadFolder . DS . $filename;
 
                 if (!file_exists($uploadFolder)) {
@@ -52,9 +58,9 @@ class file extends AppModel {
                     return 0;
                 }
 
-                $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $filename . "', '" . $uploadFolder . "');";
+                $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . basename($data['name']) . "', '" . $identity . DS . $filename . "');";
                 $query = $this->query($query);
-                $result = array($filename, $uploadFolder, $type);
+                $result = array(basename($data['name']), $identity . DS . $filename, $type);
                 return $result;
             } else {
                 return 0;
@@ -63,10 +69,18 @@ class file extends AppModel {
     }
 
     //delete file
-    public function ocrFileDelete($url, $name, $file_id, $investor_id) {
-        $url = WWW_ROOT . $url;
+    public function ocrFileDelete($url, $file_id, $investor_id) {
+        $fileConfig = Configure::read('files');
+        $url = WWW_ROOT . $fileConfig['investorPath'] . $url;
 
-        if (unlink($url . DS . $name)) {
+        print_r($url);
+        echo "</br>";
+        print_r($file_id);
+        echo "</br>";
+        print_r($investor_id);
+
+
+        if (unlink($url)) {
             $query = "DELETE FROM `search`.`files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
             print_r($query);
             $this->query($query);

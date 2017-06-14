@@ -159,11 +159,9 @@
         $(document).on("click", ".delete", function () {
 <?php //Delete File   ?>
             id = $(this).val();
-            url = $(".url" + id).attr("value");
-            name = $("#file" + id).attr("value");
+            url = $(".url" + id).attr("value");           
             params = {
                 url: url,
-                name: name,
                 id: id
             };
             var data = jQuery.param(params);
@@ -240,8 +238,7 @@
 
     function successDelete(id) { <?php // Delete ok ?>
         $("#del" + id).prop("disabled", true);
-        $("#file" + id).html('<input type="file" name="data[Files][iban]" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
-        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+        $("#file" + id).html('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="0">');
         $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>')
@@ -842,7 +839,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                                 echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $requiredFiles[0]['File']['id'], 'class' => 'upload', 'value' => $requiredFiles[0]['File']['id']));
                                                 echo "<span id='" . $file . "' >";
                                                 echo $this->Form->file("fileId" . $requiredFiles[0]['File']['id']);
-                                                echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $requiredFiles[0]['File']['id']));
+                                                echo $this->Form->hidden('info', array('class' => 'typeFile','value' => $requiredFiles[0]['File']['id']));
                                                 echo $this->Form->hidden('upload', array('id' => $uploaded, 'class' => 'uploaded', 'value' => 0));
                                                 echo "</span>";
                                                 echo $this->Form->end();
