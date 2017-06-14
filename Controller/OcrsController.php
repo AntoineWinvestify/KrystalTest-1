@@ -68,7 +68,7 @@ class ocrsController extends AppController {
 
         $this->layout = 'azarus_private_layout';
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-        $this->Ocr->createOcr($id);
+        $this->Ocr->createOcr($id); //First time 
         $status = $this->Ocr->checkStatus($id);
         $status = $status[0]['Ocr']['ocr_status'];
         if ($status == 0) {
