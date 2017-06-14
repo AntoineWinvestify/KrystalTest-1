@@ -194,7 +194,7 @@
     });
 
 
-    function error(result) {
+    function error(result) { <?php //Server validation Error ?>
         result = JSON.parse(result);
         if (result[0][0]["investor_name"]) {
             $(".investorName").addClass("redBorder");
@@ -213,7 +213,7 @@
 
     }
 
-    function success() {
+    function success() { <?php //Server validation Ok ?>
         validationerrors = false;
         if (validationerrors === true || app.visual.checkForm1CRInvestorData() === false) {
             $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
@@ -224,7 +224,7 @@
     }
 
     function successUpload(data, id) {
-        if (data != 0) { //Upload ok
+        if (data != 0) { <?php //Upload ok ?>
             $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
             $("#file" + id).attr("value", data[0]);
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
@@ -238,7 +238,7 @@
         }
     }
 
-    function successDelete(id) { // Delete ok
+    function successDelete(id) { <?php // Delete ok ?>
         $("#del" + id).prop("disabled", true);
         $("#file" + id).html('<input type="file" name="data[Files][iban]" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
@@ -247,18 +247,18 @@
         $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>')
     }
 
-    function successBack(result) { // Go back ok
+    function successBack(result) { <?php // Go back ok ?> 
         $(document).off('click');
         $(document).off('change');
         $("#content").html(result);
     }
-    function errorBack(result) { //Go back error
+    function errorBack(result) { <?php //Go back error ?>
         $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
     }
 
 
 
-    function addExistingDocuments() {
+    function addExistingDocuments() { <?php //Show alreadey upladed files in the table ?>
 <?php
 foreach ($existingFiles as $existingFiles) {
     ?>
@@ -815,7 +815,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                     <tbody id="body">
                                     <input type="hidden" name="countFiles" value="<?php echo count($requiredFiles) ?>">
                                     <?php
-                                    foreach ($requiredFiles as $requiredFiles) {
+                                    foreach ($requiredFiles as $requiredFiles) { //Genearete the required files table
                                         $file = "file" . $requiredFiles[0]['File']['id'];
                                         ?>
                                         <tr id = "notification<?php echo $requiredFiles[0]['File']['id'] ?>">
