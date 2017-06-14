@@ -73,7 +73,7 @@ class ocrsController extends AppController {
         if ($status == 0) {
             $this->ocrInvestorPlatformSelection();
         } else {
-            echo "Servicio en proceso, espere hasta que terminemos";
+            $this->activatedService();
             $this->autoRender = false;
         }
     }
@@ -314,6 +314,11 @@ class ocrsController extends AppController {
     function ocrWinadminTallyman() {
         $this->layout = 'azarus_private_layout';
         echo " ";
+    }
+    
+    //Activated Service VIEW
+    function activatedService() {
+        $this->layout = 'activated_service'; //fix
     }
 
 }
