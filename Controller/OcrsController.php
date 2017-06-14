@@ -222,6 +222,9 @@ class ocrsController extends AppController {
         $this->set('ocr', $data2);
         $this->set('requiredFiles', $this->File->getFilesData($requiredFiles));
         $this->set('existingFiles', $existingFiles);
+        Configure::load('countryCodes.php', 'default');
+        $countryData = Configure::read('countrycodes');
+        $this->set('countryData', $countryData);
 
         echo " ";
         return 1;
