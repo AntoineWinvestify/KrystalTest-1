@@ -39,6 +39,12 @@
 Corrected test for language cookie 
 
 
+2017-06-14      version 0.21
+loginRedirect has changed to global market place 
+
+
+
+
  * 
  * 
  * 
@@ -179,9 +185,9 @@ class AppController extends Controller {
         'Session',
         'Auth' => array(
             /* 				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller */
-            'loginRedirect' => array('controller' => 'investors',
-                'action' => 'userProfileDataPanel'
-            ),
+             'loginRedirect' => array('controller' => 'marketplaces',
+                'action' => 'showMarketPlace'
+            ),           
             'logoutRedirect' => array('controller' => 'marketplaces',
                 'action' => 'getGlobalMarketPlaceData'
             ),
