@@ -124,13 +124,13 @@
                                     </ul>
                                 </div>
                                 <div  class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class="feedback errorInputMessage successMsg col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
+                                    <div style="display:none;" class="feedback errorInputMessage successMsg col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                         <i class="fa fa-exclamation-circle"></i>
                                         <span class="errorMessage" style="font-size:large"><?php echo __('The service has been activated.') ?></span>
                                         <button id="btnOk" class="btn btn1CR center-block" type="button"><?php echo __('Thank you') ?></button>
                                     </div>
                                 </div>
-                                <div  class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div style="display:none;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="feedback errorInputMessage errorMsg col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                         <i class="fa fa-exclamation-circle"></i>
                                         <span class="errorMessage" style="font-size:large"><?php echo __('Error.') ?></span>

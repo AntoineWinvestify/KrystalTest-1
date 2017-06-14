@@ -103,7 +103,6 @@
                 event.stopPropagation();
                 event.preventDefault();
                 $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
-                return false;
             } else { //Validation ok
                 $('#notification').load("/ocrs/ocrInvestorConfirmModal");
             }
