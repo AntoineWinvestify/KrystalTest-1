@@ -1098,10 +1098,11 @@ return $m;
 *	@param string	$msg			Content to be logged
 *
 */
-function logToFile($filename, $msg)	{
+function logToFile($filename, $msg, $dirFile = "")	{
         //Like this function, change later tomorrow
         //$fileName =  "/var/www/html/cake_branch/app/companyCodeFiles/log/" . $filename;
-	$fileName =  "log/" . $filename;
+        
+	$fileName =  $dirFile . "/log/" . $filename;
 	$fd = fopen($fileName, "a");
 	$msg = date("d-m-y H:i:s") . " " . $msg;  
 	fwrite($fd, $msg . "\n");
@@ -1252,7 +1253,8 @@ function print_r2($val){
                 . "The queueId is" . $this->queueId
                 . "The error was caused in the urlsequence: " . $this->errorInfo 
                 . "ERROR FINISHED<br>";
-        $this->logToFile("errorCurl", $this->tempArray['global']['error']);
+        $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
+        $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         return $this->tempArray;
     }
 
