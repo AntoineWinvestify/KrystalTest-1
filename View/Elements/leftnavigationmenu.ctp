@@ -157,17 +157,17 @@ $(document).ready(function() {
         </li>
         <li class="treeview">
             <a href="/ocrs/ocrPfpUsersPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('PFPAdmin - New Users')?></span>
+              <i class="fa fa-dashboard"></i> <span><?php echo __('New Users')?></span>
             </a>
         </li>
         <li class="treeview">
             <a href="/ocrs/ocrPfpBillingPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('PFPAdmin - Bills')?></span>
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
             </a>
         </li>
         <li class="treeview">
             <a href="/ocrs/ocrPfpTallyman">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('PFPAdmin - Tallyman')?></span>
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
             </a>
         </li>
         <li class="header">
@@ -175,27 +175,27 @@ $(document).ready(function() {
         </li>
         <li class="treeview">
             <a href="/ocrs/ocrWinadminBillingPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Bills')?></span>
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
             </a>
         </li>
         <li class="treeview">
             <a href="/ocrs/ocrWinadminInvestorChecking">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Investor Checking')?></span>
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Investor Checking')?></span>
             </a>
         </li>
         <li class="treeview">
             <a href="/ocrs/ocrWinadminUpdatePfpData">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Update PFP data')?></span>
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Update PFP data')?></span>
             </a>
         </li>
         <li class="treeview">
             <a href="/ocrs/ocrWinadminSoldUsers">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Sold Users')?></span>
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Sold Users')?></span>
             </a>
         </li>
         <li class="treeview">
             <a href="/ocrs/ocrWinadminTallyman">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Tallyman')?></span>
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
             </a>
         </li>
         

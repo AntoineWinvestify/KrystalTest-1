@@ -41,6 +41,7 @@
         $(document).on("click", "#btnBack", function(){
             $("#activatedService").removeClass("show");
             $("#activatedService").hide();
+            window.history.back();
         });
     });
 </script>
@@ -65,7 +66,7 @@
                         </div> <!-- /tab-content -->
                         <div class="wizard-footer">
                             <div class="pull-right">
-                                <button type='button' id="btnBack" class='btn btn-default btn-wd' name='back' href="window.history.back();"><?php echo __('Back')?></button>
+                                <button type='button' id="btnBack" class='btn btn-default btn-wd' name='back'><?php echo __('Back')?></button>
                             </div>
                             <div class="clearfix"></div>
                         </div>

@@ -65,7 +65,6 @@ class ocrsController extends AppController {
      *  Main ocr view for investor
      */
     function ocrInvestorView() {
-
         $this->layout = 'azarus_private_layout';
         
         //Investor id
