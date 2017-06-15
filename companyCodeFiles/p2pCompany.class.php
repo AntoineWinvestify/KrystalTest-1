@@ -1101,8 +1101,10 @@ return $m;
 function logToFile($filename, $msg, $dirFile = "")	{
         //Like this function, change later tomorrow
         //$fileName =  "/var/www/html/cake_branch/app/companyCodeFiles/log/" . $filename;
-        
-	$fileName =  $dirFile . "/log/" . $filename;
+        $fileName =  $this->logDir . $filename;
+        if (!$dirFile == "") {
+            $fileName =  $dirFile . "/log/" . $filename;
+        }
 	$fd = fopen($fileName, "a");
 	$msg = date("d-m-y H:i:s") . " " . $msg;  
 	fwrite($fd, $msg . "\n");
@@ -1248,11 +1250,12 @@ function print_r2($val){
     }
     
     public function getError($line, $file) {
-        $this->tempArray['global']['error'] = "ERROR START"
-                . "An error has ocurred with the data on the line " . $line . " and the file " . $file
-                . "The queueId is" . $this->queueId
-                . "The error was caused in the urlsequence: " . $this->errorInfo 
-                . "ERROR FINISHED<br>";
+        $newLine = "\n";
+        $this->tempArray['global']['error'] = "ERROR START $newLine"
+                . "An error has ocurred with the data on the line " . $line . $newLine." and the file " . $file
+                . "$newLine The queueId is" . $this->queueId
+                . "$newLine The error was caused in the urlsequence: " . $this->errorInfo 
+                . "$newLine ERROR FINISHED<br>";
         $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         return $this->tempArray;
