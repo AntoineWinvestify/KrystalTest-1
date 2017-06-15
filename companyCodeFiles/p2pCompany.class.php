@@ -1249,6 +1249,12 @@ function print_r2($val){
         $this->queueId = $queueId;
     }
     
+    /**
+     * Function to show and save error if there is any when taking data of userInvestmentData
+     * @param int $line It is the line where the error occurred
+     * @param string $file It is the reference of the file where the error occurred
+     * @return array It is the principal array with only the error variable
+     */
     public function getError($line, $file) {
         $newLine = "\n";
         $this->tempArray['global']['error'] = "ERROR START $newLine"
