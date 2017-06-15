@@ -523,7 +523,7 @@ body {
 .small-box > .loading-img,
 .overlay-wrapper > .loading-img,
 .box-body > .overlay, #wizardProfile .overlay,
-.g-margin-b-20--xs .overlay, .togetoverlay .overlay {
+.g-margin-b-20--xs .overlay, .togetoverlay > .overlay {
   position: absolute;
   top: 0;
   left: 0;

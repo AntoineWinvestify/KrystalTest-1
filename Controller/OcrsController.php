@@ -65,7 +65,6 @@ class ocrsController extends AppController {
      */
 
     function ocrInvestorView() {
-
         $this->layout = 'azarus_private_layout';
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
         $this->Ocr->createOcr($id); //First time 
@@ -232,7 +231,6 @@ class ocrsController extends AppController {
 
     //Investor View #1
     function ocrInvestorPlatformSelection() {
-
         $this->set('company', $this->Company->companiesDataOCR());
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
