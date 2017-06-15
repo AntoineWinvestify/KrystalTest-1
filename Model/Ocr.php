@@ -51,8 +51,8 @@ class ocr extends AppModel {
 
     var $name = 'Ocr';
     public $hasAndBelongsToMany = array(
-        'Comapany' => array(
-            'className' => 'Comapany',
+        'Company' => array(
+            'className' => 'Company',
             'joinTable' => 'companies_ocrs',
             'foreignKey' => 'ocr_id',
             'associationForeignKey' => 'company_id',
@@ -72,17 +72,15 @@ class ocr extends AppModel {
       )
       ); */
 
-
-
-    /*
-     *
-     * Saves data in ocr table
+    /**
      * 
+     * Saves data in ocr table for first time 
+     * @param type $id
+     * @return int
      */
-
-    //Create ocr info in db for first time
     public function createOcr($id) {
 
+        //Ocr id find
         $idFind = $this->find('first', array(
             'fields' => array(
                 'id',
@@ -91,7 +89,7 @@ class ocr extends AppModel {
                 'investor_id' => $id),
             'recursive' => -1,));
 
-        //Actualizo esa fila del ocr
+        //No ocr id = new ocr
         if (count($idFind) == 0) {
             $data = array(
                 'investor_id' => $id,
@@ -101,91 +99,114 @@ class ocr extends AppModel {
                 'investor_iban' => null,
                 'ocr_status' => 0,
             );
-            $this->save($data);
+
+            //Update
+            if ($this->save($data)) {
+                return 1;
+            } else {
+                return 0;
+            }
+        } else {
             return 1;
         }
-        return 0;
     }
 
-    //Save ocr information
-    public function ocrDataSave($dataP) {
+    /**
+     * Save or update ocr information
+     * @param type $dataParam
+     * @return boolean
+     */
+    public function ocrDataSave($dataParam) {
 
+        // Find Ocr id
         $id = $this->find('first', array(
             'fields' => array(
                 'id',
             ),
             'conditions' => array(
-                'investor_id' => $dataP['investor_id']),
+                'investor_id' => $dataParam['investor_id']),
             'recursive' => -1,));
 
-        //Update the data in OCR
+
+        //Ocr data
         if (count($id) > 0) {
 
-            if ($dataP['ocr_investmentVehicle'] == 1) {
+            if ($dataParam['ocr_investmentVehicle'] == 1) {
                 $data = array(
                     'id' => $id['Ocr']['id'],
-                    'investor_id' => $dataP['investor_id'],
+                    'investor_id' => $dataParam['investor_id'],
                     'ocr_investmentVehicle' => 1,
-                    'investor_cif' => $dataP['investor_cif'],
-                    'investor_businessName' => $dataP['investor_businessName'],
-                    'investor_iban' => $dataP['investor_iban'],
+                    'investor_cif' => $dataParam['investor_cif'],
+                    'investor_businessName' => $dataParam['investor_businessName'],
+                    'investor_iban' => $dataParam['investor_iban'],
                     'ocr_status' => 1,
                 );
             } else {
                 $data = array(
                     'id' => $id['Ocr']['id'],
-                    'investor_id' => $dataP['investor_id'],
+                    'investor_id' => $dataParam['investor_id'],
                     'ocr_investmentVehicle' => 0,
-                    'investor_cif' => null,
-                    'investor_businessName' => null,
-                    'investor_iban' => $dataP['investor_iban'],
+                    'investor_iban' => $dataParam['investor_iban'],
                     'ocr_status' => 1,
                 );
             }
         }
-        $this->save($data);
-        //$result[0] = 1;
-        $result = json_encode($data);
-        // $result = json_encode($result);
-        $event = new CakeEvent("checkMessage", $this);
-        $this->getEventManager()->dispatch($event);
-        //Insert OK        
-        return 1 . "," . $result . "]";
+
+//Save
+        if ($this->save($data)) {
+            $result = json_encode($data); //Save ok
+            $event = new CakeEvent("checkMessage", $this);
+            $this->getEventManager()->dispatch($event);
+//Insert OK        
+            return 1 . "," . $result . "]";  //Return for a json
+        } else {
+            return 0; //Save failed
+        }
     }
 
-    /*
-     * 
-     * Get data of ocr table
-     * 
+    /**
+     * Get and return ocr data
+     * @param type $id
+     * @return type
      */
-    //Get all ocr data
     public function ocrGetData($id) {
 
+// Find ocr data
         $info = $this->find("all", array(
             'conditions' => array('investor_id' => $id),
             'recursive' => -1,
         ));
-
-        return $info;
+        if ($info) {
+            return $info; //Return info
+        } else {
+            return 0; //No info
+        }
     }
-    //Get only the status
+
+    /**
+     * Get only the ocr status
+     * @param type $id
+     * @return type
+     */
     public function checkStatus($id) {
+        print_r($id);
 
         $info = $this->find("all", array(
             'fields' => 'ocr_status',
             'conditions' => array('investor_id' => $id),
             'recursive' => -1,
         ));
-
-        return $info;
+        return $info; //Return info
     }
 
-    
-    //Save the selected companies in company_ocr
+    /**
+     * Save the selected companies in company_ocr
+     * @param type $data
+     * @return boolean
+     */
     public function saveCompaniesOcr($data) {
-        if (count($data) > 2) {
 
-
+        if (count($data) > 2) {   // Data is array, $data > 2 are the id of selected companies $data<2 are number if companies and
             $ocrId = $this->find('first', array(
                 'fields' => array(
                     'id',
@@ -200,28 +221,35 @@ class ocr extends AppModel {
             for ($i = 0; $i < count($comp); $i++) {
 
                 if ($i == 0) {
-                    $query = "INSERT INTO `search`.`companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
+                    $query = "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
                 } else {
-                    $query = $query . "INSERT INTO `search`.`companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
+                    $query = $query . "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
                 }
             }
             $query = $this->query($query);
             $this->set('data', $data);
-            return $result[0] = 1;
+            return 1;
         } else {
-            return $result[0] = 0;
+            return 0;
         }
     }
 
-    //Update the sent companies status
+    /**
+     * Update the sent companies status
+     * @param type $id
+     */
     public function updateCompaniesStatus($id) {
-
-        $query = "UPDATE `search`.`companies_ocrs` SET `statusOcr`='1' WHERE `ocr_id`='" . $id . "' and `statusOcr`='0';";
+        $query = "UPDATE `companies_ocrs` SET `statusOcr`='1' WHERE `ocr_id`='" . $id . "' and `statusOcr`='0';";
         $query = $this->query($query);
     }
 
-    //Delete a selected company from ocr
+    /**
+     * Delete a selected company from ocr
+     * @param type $data
+     * @return type
+     */
     public function deleteCompanyOcr($data) {
+        //Find ocrId
         $ocrId = $this->find('first', array(
             'fields' => array(
                 'id',
@@ -229,16 +257,20 @@ class ocr extends AppModel {
             'conditions' => array(
                 'investor_id' => $data['investorId']),
             'recursive' => -1,));
-
-        $query = "DELETE FROM `search`.`companies_ocrs` WHERE `company_id`='" . $data['companyId'] . "' and`ocr_id`='" . $ocrId['Ocr']['id'] . "';";
-        $query = $this->query($query);
-        $this->set('data', $data);
-        return $result[0] = 1;
+        /* Delete company */
+        $query = "DELETE FROM `companies_ocrs` WHERE `company_id`='" . $data['companyId'] . "' and`ocr_id`='" . $ocrId['Ocr']['id'] . "';";
+        $this->query($query);
+        return 1;
     }
 
-    //Get all selected companies(no sent)
+    /**
+     * Get selected companies
+     * 
+     * @param type $id
+     * @return type
+     */
     public function getSelectedCompanies($id) {
-
+        //Ocr id
         $ocrId = $this->find('first', array(
             'fields' => array(
                 'id',
@@ -247,14 +279,19 @@ class ocr extends AppModel {
                 'investor_id' => $id),
             'recursive' => -1,));
 
-        $query = "Select * from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 0;";
+        // Select companies
+        $query = "Select * from `companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 0;";
         $companyList = $this->query($query);
         return $companyList;
     }
 
-    //Get sent compnies
+    /**
+     * //Get sent companies
+     * @param type $id
+     * @return type
+     */
     public function getRegisterSentCompanies($id) {
-
+        //Ocr id
         $ocrId = $this->find('first', array(
             'fields' => array(
                 'id',
@@ -263,7 +300,8 @@ class ocr extends AppModel {
                 'investor_id' => $id),
             'recursive' => -1,));
 
-        $query = "Select `company_id` from `search`.`companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 1;";
+        //Sent companies
+        $query = "Select `company_id` from `companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 1;";
         return $this->query($query);
     }
 
