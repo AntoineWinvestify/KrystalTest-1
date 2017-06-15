@@ -80,6 +80,7 @@ class ocr extends AppModel {
      * 
      */
 
+    //Create ocr info in db for first time
     public function createOcr($id) {
 
         $idFind = $this->find('first', array(
@@ -106,37 +107,38 @@ class ocr extends AppModel {
         return 0;
     }
 
-    public function ocrDataSave($datos) {
+    //Save ocr information
+    public function ocrDataSave($dataP) {
 
         $id = $this->find('first', array(
             'fields' => array(
                 'id',
             ),
             'conditions' => array(
-                'investor_id' => $datos['investor_id']),
+                'investor_id' => $dataP['investor_id']),
             'recursive' => -1,));
 
-        //Actualizo esa fila del ocr
+        //Update the data in OCR
         if (count($id) > 0) {
 
-            if ($datos['ocr_investmentVehicle'] == 1) {
+            if ($dataP['ocr_investmentVehicle'] == 1) {
                 $data = array(
                     'id' => $id['Ocr']['id'],
-                    'investor_id' => $datos['investor_id'],
+                    'investor_id' => $dataP['investor_id'],
                     'ocr_investmentVehicle' => 1,
-                    'investor_cif' => $datos['investor_cif'],
-                    'investor_businessName' => $datos['investor_businessName'],
-                    'investor_iban' => $datos['investor_iban'],
+                    'investor_cif' => $dataP['investor_cif'],
+                    'investor_businessName' => $dataP['investor_businessName'],
+                    'investor_iban' => $dataP['investor_iban'],
                     'ocr_status' => 1,
                 );
             } else {
                 $data = array(
                     'id' => $id['Ocr']['id'],
-                    'investor_id' => $datos['investor_id'],
+                    'investor_id' => $dataP['investor_id'],
                     'ocr_investmentVehicle' => 0,
                     'investor_cif' => null,
                     'investor_businessName' => null,
-                    'investor_iban' => $datos['investor_iban'],
+                    'investor_iban' => $dataP['investor_iban'],
                     'ocr_status' => 1,
                 );
             }
@@ -156,7 +158,7 @@ class ocr extends AppModel {
      * Get data of ocr table
      * 
      */
-
+    //Get all ocr data
     public function ocrGetData($id) {
 
         $info = $this->find("all", array(
@@ -166,7 +168,7 @@ class ocr extends AppModel {
 
         return $info;
     }
-
+    //Get only the status
     public function checkStatus($id) {
 
         $info = $this->find("all", array(
@@ -178,6 +180,8 @@ class ocr extends AppModel {
         return $info;
     }
 
+    
+    //Save the selected companies in company_ocr
     public function saveCompaniesOcr($data) {
         if (count($data) > 2) {
 
@@ -209,12 +213,14 @@ class ocr extends AppModel {
         }
     }
 
+    //Update the sent companies status
     public function updateCompaniesStatus($id) {
 
         $query = "UPDATE `search`.`companies_ocrs` SET `statusOcr`='1' WHERE `ocr_id`='" . $id . "' and `statusOcr`='0';";
         $query = $this->query($query);
     }
 
+    //Delete a selected company from ocr
     public function deleteCompanyOcr($data) {
         $ocrId = $this->find('first', array(
             'fields' => array(
@@ -230,6 +236,7 @@ class ocr extends AppModel {
         return $result[0] = 1;
     }
 
+    //Get all selected companies(no sent)
     public function getSelectedCompanies($id) {
 
         $ocrId = $this->find('first', array(
@@ -245,6 +252,7 @@ class ocr extends AppModel {
         return $companyList;
     }
 
+    //Get sent compnies
     public function getRegisterSentCompanies($id) {
 
         $ocrId = $this->find('first', array(

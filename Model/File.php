@@ -57,7 +57,7 @@ class file extends AppModel {
                 if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
                     return 0;
                 }
-
+                
                 $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . basename($data['name']) . "', '" . $identity . DS . $filename . "');";
                 $query = $this->query($query);
                 $result = array(basename($data['name']), $identity . DS . $filename, $type);
@@ -107,6 +107,8 @@ class file extends AppModel {
         return $files;
     }
 
+    
+    //Get files type data
     public function getFilesData($data) {
         foreach ($data as $data) {
             $files[] = $this->find('all', array(
@@ -118,6 +120,7 @@ class file extends AppModel {
         return $files;
     }
 
+    //Read existing file for a user
     public function readExistingFiles($id) {
         $query = "Select * from `search`.`files_investors` where investor_id =" . $id;
         $result = $this->query($query);

@@ -290,6 +290,13 @@ class ocrsController extends AppController {
         echo " ";
     }
 
+    
+    //One Click Registration - Winvestify functions
+    function addBill(){
+        
+    }
+    
+    
     //One Click Registration - Winvestify Admin Views
     //WinAdmin View #2
     function ocrWinadminInvestorChecking() {
