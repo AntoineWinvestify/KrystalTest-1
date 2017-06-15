@@ -72,7 +72,7 @@ class ocrsController extends AppController {
         
          //First time ocr
         $this->Ocr->createOcr($id);
-        /*$OcrData = $this->Ocr->checkStatus($id);
+        $OcrData = $this->Ocr->checkStatus($id);
         print_r($OcrData);
         
        //Check ocr status
@@ -83,7 +83,7 @@ class ocrsController extends AppController {
             $this->ocrInvestorPlatformSelection();
         } else {
             $this->activatedService();
-        }*/
+        }
     }
 
     /**
