@@ -120,14 +120,15 @@
 
 
 
-    function successDelete(result) {
+    function successDelete() {
         $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Company deleted") ?></strong></div>');
         fadeOutElement(".alert-to-fade", 5000);
         total--;
         recount();
     }
-    function errorDelete(result) {
-        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant deleted company") ?></strong></div>');
+    
+    function errorDelete() {
+        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant delete company") ?></strong></div>');
         fadeOutElement(".alert-to-fade", 5000);
     }
 
@@ -147,11 +148,12 @@ foreach ($notShowList as $id) {
 ?>
 
 
+
 <?php
-foreach ($selected as $selected) {
-    $idSel = $selected['companies_ocrs']['company_id'];
+foreach ($selected as $sel) {
+    $idSel = $sel['companies_ocrs']['company_id'];
     ?>
-            logo = $(".<?php echo $selected['companies_ocrs']['company_id']; ?>").find(".logo").attr("src");
+            logo = $(".<?php echo $sel['companies_ocrs']['company_id']; ?>").find(".logo").attr("src");
             $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformDB' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
     <?php
 }
@@ -160,7 +162,7 @@ foreach ($selected as $selected) {
 
 
         $("#platformSelection").find(".btnSelect").prop('disabled', true);
-        //Te elimina las compañias ya seleccionadas despues de un filtro
+        //Te elimina las compañias ya seleccionadas
         $('#selection').children('.selected').each(function () {
             company = $(this).attr("value");
             $('#platformSelection').find("." + company).css("display", "none");
@@ -376,20 +378,20 @@ foreach ($selected as $selected) {
             <h4 class="header1CR"><?php echo __('Select platforms to register') ?></h4>
             <div id="platformSelection" class="row">
                 <?php
-                foreach ($company as $company) {
+                foreach ($company as $comp) {
                     ?>
 
-                    <div class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $company['Company']['id'] ?>">
+                    <div class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $comp['Company']['id'] ?>">
                         <div class="box box-widget widget-user-2">
                             <div class="widget-user-header">
                                 <div class="row">
                                     <div id="companyLogo" class="col-xs-12 col-sm-12 col-md-12 col-lg-5">
-                                        <img src="/img/logo/<?php echo $company['Company']['company_logoGUID'] ?>" style="max-height: 100px" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
+                                        <img src="/img/logo/<?php echo $comp['Company']['company_logoGUID'] ?>" style="max-height: 100px" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
                                         <ul class="nav nav-stacked">
-                                            <li class = 'country'><img src="/img/flags/<?php echo $company['Company']['company_country'] ?>.png" alt="Spain Flag"/> <?php echo __($company['Company']['company_countryName']) ?></li>
-                                            <li class = 'type'><?php echo __($company['Company']['Company_type']) ?></li>
+                                            <li class = 'country'><img src="/img/flags/<?php echo $comp['Company']['company_country'] ?>.png" alt="Spain Flag"/> <?php echo __($comp['Company']['company_countryName']) ?></li>
+                                            <li class = 'type'><?php echo __($comp['Company']['Company_type']) ?></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -397,11 +399,11 @@ foreach ($selected as $selected) {
                             <div class="box-footer no-padding">
                                 <div class="row">
                                     <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a href="<?php echo $company['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
-                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
+                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a href="<?php echo $comp['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
+                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a href="<?php echo $comp['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin btnSelected btnRounded pull-right" style="margin-right: 10px !important;"><?php echo __('Select') ?></button>
+                                        <button id ="<?php echo $comp['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin btnSelected btnRounded pull-right" style="margin-right: 10px !important;"><?php echo __('Select') ?></button>
                                     </div>
                                 </div>
                             </div>

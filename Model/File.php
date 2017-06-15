@@ -38,29 +38,44 @@ class file extends AppModel {
 
     var $name = 'File';
 
-    //upload file
+    /**
+     * Upload investor file
+     * @param type $data
+     * @param type $identity
+     * @param type $id
+     * @param type $type
+     * @return string|int
+     */
     public function ocrFileSave($data, $identity, $id, $type) {
+        //Load files config
         $fileConfig = Configure::read('files');
-        foreach ($data as $data) {
-            if ($data['size'] == 0 || $data['error'] !== 0) {
+
+        foreach ($data as $file) {
+            //Error filter
+            if ($file['size'] == 0 || $file['error'] !== 0) {
                 continue;
             }
-            if (($data['type'] == "image/png" || $data['type'] == "image/gif" || $data['type'] == "application/pdf") && $data['size'] < $fileConfig['maxSize']) {
-                $filename = time() . "_" . basename($data['name']);
+
+            //Type and size filter
+            if (in_array($file['type'], $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
+                $filename = time() . "_" . basename($file['name']);
                 $uploadFolder = $fileConfig['investorPath'] . $identity . '';
                 $uploadPath = $uploadFolder . DS . $filename;
 
+                //Create the dir if not exist
                 if (!file_exists($uploadFolder)) {
                     mkdir($uploadFolder, 0755, true);
                 }
 
-                if (!move_uploaded_file($data['tmp_name'], $uploadPath)) {
+                //Move the uploaded file to the new dir
+                if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
                     return 0;
                 }
 
-                $query = "INSERT INTO `search`.`files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . basename($data['name']) . "', '" . $identity . DS . $filename . "');";
+                //Save in db
+                $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . basename($data['name']) . "', '" . $identity . DS . $filename . "');";
                 $query = $this->query($query);
-                $result = array(basename($data['name']), $identity . DS . $filename, $type);
+                $result = array(basename($file['name']), $identity . DS . $filename, $type);
                 return $result;
             } else {
                 return 0;
@@ -68,58 +83,68 @@ class file extends AppModel {
         }
     }
 
-    //delete file
+    /**
+     * Delete investor file
+     * @param string $url
+     * @param type $file_id
+     * @param type $investor_id
+     * @return int
+     */
     public function ocrFileDelete($url, $file_id, $investor_id) {
         $fileConfig = Configure::read('files');
         $url = WWW_ROOT . $fileConfig['investorPath'] . $url;
 
-        print_r($url);
-        echo "</br>";
-        print_r($file_id);
-        echo "</br>";
-        print_r($investor_id);
-
-
         if (unlink($url)) {
-            $query = "DELETE FROM `search`.`files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
-            print_r($query);
+            $query = "DELETE FROM `files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
             $this->query($query);
-            echo "borrado correctamente";
             return 1;
         }
         return 0;
     }
 
-    //return requiered files of selected companies
+    /**
+     * return required files of selected companies
+     * @param type $data
+     * @return type
+     */
     public function readRequiredFiles($data) {
         for ($i = 0; $i < count($data); $i++) {
             if ($i == 0) {
-                $query = "Select * from `search`.`requieredfiles` where company_id =" . $data[$i]['companies_ocrs']['company_id'];
+                $query = "Select * from `requieredfiles` where company_id =" . $data[$i]['companies_ocrs']['company_id'];
             } else {
                 $query = $query . " OR company_id =" . $data[$i]['companies_ocrs']['company_id'];
             }
         }
         $result = $this->query($query);
-        foreach ($result as $result) {
-            $files[] = $result['requieredfiles']['file_id'];
+        foreach ($result as $value) {
+            $files[] = $value['requieredfiles']['file_id'];
         }
         $files = array_unique($files);
         return $files;
     }
 
+    /**
+     * Get files type data
+     * @param type $data
+     * @return type
+     */
     public function getFilesData($data) {
-        foreach ($data as $data) {
+        foreach ($data as $value) {
             $files[] = $this->find('all', array(
                 'conditions' => array(
-                    'id' => $data),
+                    'id' => $value),
                 'recursive' => -1,));
         }
-
         return $files;
     }
 
+    /**
+     * Read existing file for a user
+     * @param type $id
+     * @return type
+     */
     public function readExistingFiles($id) {
-        $query = "Select * from `search`.`files_investors` where investor_id =" . $id;
+        $query = "Select * from `files_investors` where investor_id =" . $id;
         $result = $this->query($query);
         return $result;
     }

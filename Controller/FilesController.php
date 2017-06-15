@@ -52,6 +52,8 @@ class filesController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
+    
+    //Upload a document
     function upload() {
         if (!$this->request->is('ajax')) {
             $result = false;
@@ -67,6 +69,8 @@ class filesController extends AppController {
         }
     }
 
+    
+    //Delete a document
     function delete() {
         if (!$this->request->is('ajax')) {
             $result = false;
@@ -80,7 +84,6 @@ class filesController extends AppController {
 
 
             $result = $this->File->ocrFileDelete($url, $file_id, $investor_id);
-
             $this->set("result", $result);
         }
     }
