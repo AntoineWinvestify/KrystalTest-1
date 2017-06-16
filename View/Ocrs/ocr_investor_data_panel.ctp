@@ -169,10 +169,10 @@
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[1] + '" id="FilesInfo">');
             $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
             $("#del" + id).prop("disabled", false);
-            $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
+            $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon" />');
         } else { //upload fail, incorrect file type or too big
             $("#notification" + id).html('<td colspan="4"><div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Upload failed. Incorrect type or file too big.") ?></strong></div></td>');
-            $("#status" + id).html('<span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning') ?></span>');
+            $("#status" + id).html('<img src="/img/feedback_false.png" class="feedbackIcon" />');
         }
     }
 
@@ -786,7 +786,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                                 ?>
                                             </td>
                                             <td>
-                                                <button type="button" id="del<?php echo $requiredFiles[0]['File']['id'] ?>" value="<?php echo $requiredFiles[0]['File']['id'] ?>" class="delete btn btn-default" style="background-color:#990000; color:white;" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
+                                                <button type="button" id="del<?php echo $requiredFiles[0]['File']['id'] ?>" value="<?php echo $requiredFiles[0]['File']['id'] ?>" class="delete btn btn-default btnDeleteFile btnRounded" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
                                             </td>
                                         </tr>
                                         <?php

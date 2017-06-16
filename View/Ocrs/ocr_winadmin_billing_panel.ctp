@@ -242,13 +242,13 @@
                                         <th><?php echo __('Status')?></th>
                                     </tr>
                                     <tr>
-                                        <?php foreach(){?>
+                                        <?php //foreach(){?>
                                         <td><?php echo __('PFP name')?></td>
                                         <td><?php echo __('000000')?></td>
                                         <td><?php echo __('concept')?></td>
                                         <td align="left"><?php echo __('0.00000 €')?></td>
                                         <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Paid')?></span></td>
-                                        <?php } ?>
+                                        <?php //} ?>
                                     </tr>
                                 </table>
                             </div>
