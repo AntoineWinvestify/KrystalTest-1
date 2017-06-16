@@ -20,7 +20,7 @@
 	
 ?>
 
-<form method="post" action="admin/users/loginAction" id="ctl00">
+<form method="post" action="users/loginAction" id="ctl00">
 
     <div class="container">
         <div class="card card-container">
