@@ -51,6 +51,7 @@ class file extends AppModel {
         $fileConfig = Configure::read('files');
 
         foreach ($data as $file) {
+
             //Error filter
             if ($file['size'] == 0 || $file['error'] !== 0) {
                 continue;
@@ -58,7 +59,8 @@ class file extends AppModel {
 
             //Type and size filter
             if (in_array($file['type'], $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $filename = time() . "_" . basename($file['name']);
+                $name = basename($file['name']);
+                $filename = time() . "_" . $name;
                 $uploadFolder = $fileConfig['investorPath'] . $identity . '';
                 $uploadPath = $uploadFolder . DS . $filename;
 
@@ -73,7 +75,7 @@ class file extends AppModel {
                 }
 
                 //Save in db
-                $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . basename($data['name']) . "', '" . $identity . DS . $filename . "');";
+                $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $name . "', '" . $identity . DS . $filename . "');";
                 $query = $this->query($query);
                 $result = array(basename($file['name']), $identity . DS . $filename, $type);
                 return $result;

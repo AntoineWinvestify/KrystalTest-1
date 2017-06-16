@@ -32,6 +32,13 @@
  * Added buttons to modal
  * Added js & css from paper bootstrap wizard
  * Added js to buttons
+ * 
+ * 
+ * [2017-06-16] Version 0.3
+ * New feedback and flow
+ * 
+ *
+ * 
  */
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
@@ -40,9 +47,7 @@
         $(document).on("click", ".closeBtn", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
-            //Data saved on form
-        });
-        $(document).on("click", "#btnConfirm", function () {
+
             console.log("server validation");
             $(".closeBtn").prop("disabled", true);
             $("#btnCancel").prop("disabled", true);
@@ -75,12 +80,18 @@
             link = $("#activateOCR").attr('href');
             var data = jQuery.param(params);
             getServerData(link, data, success, error);
+
         });
+
+
+
         $(document).on("click", "#btnCancel", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
             //data saved on form
         });
+        
+        
         $(document).on("click", "#btnOk", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
@@ -91,12 +102,14 @@
 
 
     function success() {
-<?php //Server validation Ok          ?>
+<?php //Server validation Ok           ?>
+        
         $(".successMsg").fadeIn();
+        
     }
 
     function error() {
-<?php //Server validation Error      ?>
+<?php //Server validation Error       ?>
         $(".errorMsg").fadeIn();
     }
 </script>

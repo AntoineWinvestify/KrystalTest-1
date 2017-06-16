@@ -197,14 +197,14 @@
 
     function addExistingDocuments() { <?php //Show alreadey upladed files in the table ?>
 <?php
-foreach ($existingFiles as $existingFiles) {
+foreach ($existingFiles as $file) {
     ?>
-            id = <?php echo $existingFiles["files_investors"]["file_id"] ?>;
-            url = "<?php echo $existingFiles["files_investors"]["file_url"] ?>";
+            id = <?php echo $file["files_investors"]["file_id"] ?>;
+            url = "<?php echo $file["files_investors"]["file_url"] ?>";
             $(".documentRow").each(function () {
                 if ($(this).attr("id") == id) {
-                    $("#file" + id).html('<?php echo $existingFiles["files_investors"]["file_name"] . __(" already exist") ?>');
-                    $("#file" + id).attr("value", "<?php echo $existingFiles["files_investors"]["file_name"] ?>");
+                    $("#file" + id).html('<?php echo $file["files_investors"]["file_name"] . __(" already exist") ?>');
+                    $("#file" + id).attr("value", "<?php echo $file["files_investors"]["file_name"] ?>");
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
