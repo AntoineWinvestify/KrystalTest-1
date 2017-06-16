@@ -160,7 +160,14 @@ class ocr extends AppModel {
 //Insert OK        
             return 1 . "," . $result . "]";  //Return for a json
         } else {
+            
+            /*
+             * 
+             * SAVE ERROR
+            */
             return 0; //Save failed
+            
+            
         }
     }
 
@@ -189,8 +196,6 @@ class ocr extends AppModel {
      * @return type
      */
     public function checkStatus($id) {
-        print_r($id);
-
         $info = $this->find("all", array(
             'fields' => 'ocr_status',
             'conditions' => array('investor_id' => $id),
