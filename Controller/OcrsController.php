@@ -39,7 +39,11 @@
  *     
   2017/6/13  version 0.5
   Ocr status added
+ * 
+   2017/6/16  version 0.6
+  oneClickInvestorI error 500 fixed
  */
+
 App::uses('CakeEvent', 'Event');
 
 class ocrsController extends AppController {
@@ -66,18 +70,17 @@ class ocrsController extends AppController {
      */
     function ocrInvestorView() {
         $this->layout = 'azarus_private_layout';
-        
+
         //Investor id
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-        
-         //First time ocr
+
+        //First time ocr
         $this->Ocr->createOcr($id);
         $OcrData = $this->Ocr->checkStatus($id);
-        print_r($OcrData);
-        
-       //Check ocr status
+
+        //Check ocr status
         $status = $OcrData[0]['Ocr']['ocr_status'];
-        
+
         //Control status
         if ($status == 0) {
             $this->ocrInvestorPlatformSelection();
@@ -96,7 +99,7 @@ class ocrsController extends AppController {
 
             $this->layout = 'ajax';
             $this->disableCache();
-            
+
             //Investor data
             $investor_name = strip_tags(htmlspecialchars($_REQUEST['investor_name']));
             $investor_surname = strip_tags(htmlspecialchars($_REQUEST['investor_surname']));
@@ -124,9 +127,9 @@ class ocrsController extends AppController {
             );
 
             $result1 = $this->Investor->investorDataSave($datosInvestor);
-            
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));        
-            
+
+            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+
             //Ocr data
             $datosOcr = array(
                 'investor_id' => $id,
@@ -137,7 +140,7 @@ class ocrsController extends AppController {
             );
             $result2 = $this->Ocr->ocrDataSave($datosOcr);
             $ocrArray = json_decode("[" . $result2, true);
-            
+
             //Update the companies status
             $idOcr = $ocrArray[1]["id"];
             $result3 = $this->Ocr->updateCompaniesStatus($idOcr);
@@ -160,17 +163,20 @@ class ocrsController extends AppController {
             $this->disableCache();
 
             $companyNumber = $_REQUEST['numberCompanies'];
+          
+            if ($companyNumber != 0) {
+                $companies = array(
+                    'investorId' => $id,
+                    'number' => $companyNumber,
+                    'idCompanies' => $_REQUEST['idCompany']
+                );
 
-
-            $companies = array(
-                'investorId' => $id,
-                'number' => $companyNumber,
-                'idCompanies' => $_REQUEST['idCompany']
-            );
-
-            //Save the comapnies
-            $result = $this->Ocr->saveCompaniesOcr($companies);
-            $this->set('result', $result);
+                //Save the comapnies
+                $result = $this->Ocr->saveCompaniesOcr($companies);
+                $this->set('result', $result);
+            } else {
+                $this->set('result', 0);
+            }
         }
     }
 
@@ -198,7 +204,6 @@ class ocrsController extends AppController {
         }
     }
 
-    
     /**
      * Company filter
      * Send the filter conditions and return a companies list
@@ -210,16 +215,15 @@ class ocrsController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
             $filter = ['country_filter' => $_REQUEST['country_filter'], 'type_filter' => $_REQUEST['type_filter'],];
-            
+
             //Filter
             $result = $this->Company->companiesDataOCR($filter);
             $this->set('company', $result);
         }
     }
 
-
     //One Click Registration - Investor Views
-    
+
     /** Investor View #2
      * The panel contains all required data and files for ocr
      * 
@@ -227,22 +231,21 @@ class ocrsController extends AppController {
      */
     function ocrInvestorDataPanel() {
         echo "1"; // echo  for ajax
-
         //Investor info
         $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
 
         //Investor id
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-        
+
         //Ocr infe
         $data2 = $this->Ocr->ocrGetData($id);
 
         //Selected Companies info
         $companies = $this->Ocr->getSelectedCompanies($id);
-        
+
         //Required  files
         $requiredFiles = $this->File->readRequiredFiles($companies);
-        
+
         //Read existing files 
         $existingFiles = $this->File->readExistingFiles($id);
 
@@ -266,17 +269,17 @@ class ocrsController extends AppController {
 
         //Companies with ocr
         $this->set('company', $this->Company->companiesDataOCR());
-        
+
         //Investor id
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-        
+
         //Set selected companies(not sent)
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
-        
+
         //Selected companies(sent)(Not show)
         $registered = $this->Ocr->getRegisterSentCompanies($id);
         $filter = array('investor_id' => $id);
-        
+
         //Linked companies(Not show)
         $linked = $this->Linkedaccount->getLinkedaccountIdList($filter);
         $notShow = array();
@@ -290,7 +293,7 @@ class ocrsController extends AppController {
             array_push($notShow, $linked["Linkedaccount"]["company_id"]);
         }
         $notShowList = array_unique($notShow);
-        
+
         //Set companies filter
         $this->set('notShowList', $notShowList);
         echo " ";
@@ -302,11 +305,11 @@ class ocrsController extends AppController {
      */
     function ocrInvestorConfirmModal() {
         //Invesor od
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));       
-        
+        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+
         //Selected companies
         $companyId = $this->Ocr->getSelectedCompanies($id);
-        
+
         //Selected companies info
         $idArray = array();
         foreach ($companyId as $id) {
@@ -314,7 +317,7 @@ class ocrsController extends AppController {
         }
         $idFilter = array("Company.id" => $idFilter);
         $companies = $this->Company->getCompanyDataList($idFilter);
-        
+
         //Set info
         $this->set("companies", $companies);
 
