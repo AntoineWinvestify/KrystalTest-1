@@ -158,14 +158,14 @@ class ocr extends AppModel {
             $event = new CakeEvent("checkMessage", $this);
             $this->getEventManager()->dispatch($event);
 //Insert OK        
-            return 1 . "," . $result . "]";  //Return for a json
+            return 1 . "," . $result . ",";  //Return for a json
         } else {
             
             /*
              * 
              * SAVE ERROR
             */
-            return 0; //Save failed
+            return 0 . ","; //Save failed
             
             
         }
@@ -246,6 +246,7 @@ class ocr extends AppModel {
     public function updateCompaniesStatus($id) {
         $query = "UPDATE `companies_ocrs` SET `statusOcr`='1' WHERE `ocr_id`='" . $id . "' and `statusOcr`='0';";
         $query = $this->query($query);
+        return 1 . "]";
     }
 
     /**

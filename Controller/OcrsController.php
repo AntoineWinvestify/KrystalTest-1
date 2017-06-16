@@ -40,10 +40,9 @@
   2017/6/13  version 0.5
   Ocr status added
  * 
-   2017/6/16  version 0.6
+  2017/6/16  version 0.6
   oneClickInvestorI error 500 fixed
  */
-
 App::uses('CakeEvent', 'Event');
 
 class ocrsController extends AppController {
@@ -156,14 +155,14 @@ class ocrsController extends AppController {
      */
     function oneClickInvestorI() {
         if (!$this->request->is('ajax')) {
-            $result = false;
+            $this->set('result', 0);
         } else {
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $this->layout = 'ajax';
             $this->disableCache();
 
             $companyNumber = $_REQUEST['numberCompanies'];
-          
+
             if ($companyNumber != 0) {
                 $companies = array(
                     'investorId' => $id,

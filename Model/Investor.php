@@ -332,12 +332,12 @@ class Investor extends AppModel {
         $this->set($data);
         if ($this->validates()) {  //validation ok     
             $this->save($data);
-            json_encode($data);
-            return 1 . $data;
+            $data = JSON_encode($data);
+            return 1 . "[" . 1 . "," . $data . ",";
         } else {                     // validation false
             $errors = array('errors' => 'Form error', $this->validationErrors);
             $errors = json_encode ($errors);
-            return 0 . "[" . $errors;
+            return 0 . "[" . 0 . "," . $errors;
         }
     }
 
