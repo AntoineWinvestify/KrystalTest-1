@@ -1994,6 +1994,6 @@ hr.nomargin {
 
 .feedbackIcon {
     max-width: 25px;
-    position: absolute;
     margin: 0 auto;
+    margin-top: -5px;
 }

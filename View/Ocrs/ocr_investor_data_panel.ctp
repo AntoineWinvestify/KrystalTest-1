@@ -55,6 +55,7 @@
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/plugins/datepicker/bootstrap-datepicker.js"></script>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
+<script src="/js/iban.js"></script>
 <style>
     .togetoverlay .overlay  {
         z-index: 50;
@@ -169,10 +170,10 @@
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[1] + '" id="FilesInfo">');
             $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
             $("#del" + id).prop("disabled", false);
-            $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon" />');
+            $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon center-block" />');
         } else { //upload fail, incorrect file type or too big
             $("#notification" + id).html('<td colspan="4"><div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Upload failed. Incorrect type or file too big.") ?></strong></div></td>');
-            $("#status" + id).html('<img src="/img/feedback_false.png" class="feedbackIcon" />');
+            $("#status" + id).html('<img src="/img/feedback_false.png" class="feedbackIcon center-block" />');
         }
     }
 
@@ -208,7 +209,7 @@ foreach ($existingFiles as $file) {
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
-                    $("#status" + id).html('<span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span>');
+                    $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon center-block" />');
                     $("#del" + id).prop("disabled", false);
                 }
             });
