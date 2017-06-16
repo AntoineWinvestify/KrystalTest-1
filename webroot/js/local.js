@@ -650,15 +650,16 @@ app.visual = {
             $(".ErrorIban").fadeIn();
             correctForm = false;
         }
-        /*else {
+        else {
             //Needed testing algorithm. (IBAN Format)
-            if (!app.utils.checkIBAN(iban)) {
+            if (!exports.isValid(iban)) {
+                alert("adkjahsdjkhasdad");
                 $(".investorIban").addClass("redBorder");
                 $(".ErrorIban").find(".errorMessage").html(TEXTOS.T95); // "The IBAN is not valid" warning
                 $(".ErrorIban").fadeIn();
                 correctForm = false;
             }
-        }*/
+        }
         //If is selected 'I use my company as investment vehicle', validate CIF & Business Name
             if ((cif === "") && ($("#investmentVehicle").prop("checked"))) { 
                 console.log("empty CIF");
