@@ -240,6 +240,8 @@ class AppController extends Controller {
         //Use $this->params['controller'] to get the current controller.
         //Use $this->action to verify the current controller/action
         $action = $this->action;
+        $controller = $this->params['controller'];
+        $action2 = $this->params['action'];
         //Here we verify if this user has authorization to acces the page
         $resultAcl = $this->isAuthorized($action);
         /*if (!$resultAcl) {
@@ -562,7 +564,7 @@ class AppController extends Controller {
      */
     function isAuthorized($controller, $access = '*') {
 	//$userId = $this->Auth->user('id');
-	$aro = $this->Auth->user('role');
+	$aro = $this->Auth->user('role_id');
 	return $this->Acl->check($aro, $controller, $access);
     }
 
