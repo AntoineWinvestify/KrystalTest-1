@@ -168,6 +168,7 @@ class AppController extends Controller {
         'RequestHandler',
         'Security',
         'Session',
+        'Acl',
         'Auth' => array(
             /* 				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller */
             'loginRedirect' => array('controller' => 'investors',
@@ -235,6 +236,17 @@ class AppController extends Controller {
                                 'improvement' => __('Functional Improvement'), 
                                 'feature' => __('New Feature'));
         $this->set('subjectContactForm', $subjectContactForm);
+        
+        //Use $this->params['controller'] to get the current controller.
+        //Use $this->action to verify the current controller/action
+        $action = $this->action;
+        //Here we verify if this user has authorization to acces the page
+        $resultAcl = $this->isAuthorized($action);
+        /*if (!$resultAcl) {
+            //In contructions, we use this now before we create a error page
+            throw new
+			FatalErrorException(__('You cannot access this page directly'));
+        }*/
         
         
     }
@@ -540,6 +552,18 @@ class AppController extends Controller {
             $this->Session->write("locationData.". $key, $element);
         }
         return $geoData;
+    }
+    
+    /**
+     * Function to verify is an user has access to the controller or function
+     * @param string $controller It is the route to the controller
+     * @param string $access It is the access that the user has
+     * @return boolean It is the access, it can be true or false
+     */
+    function isAuthorized($controller, $access = '*') {
+	//$userId = $this->Auth->user('id');
+	$aro = $this->Auth->user('role');
+	return $this->Acl->check($aro, $controller, $access);
     }
 
 }
