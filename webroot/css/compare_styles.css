@@ -908,6 +908,11 @@ textarea[name="error"] {
 	border: 1px solid gray;
 	color: black;
 }
+.btnDeleteFile {
+    background-color:#990000 !important; 
+    border: 1px solid gray;
+    color:white;
+}
 
 /*     CUADROS DE COLORES      */
 .bg-win1 {
@@ -1985,4 +1990,10 @@ hr.nomargin {
 .blue_noborder3:focus {
     border: none;
     border-bottom:  2px solid #ff9933 !important;
+}
+
+.feedbackIcon {
+    max-width: 25px;
+    position: absolute;
+    margin: 0 auto;
 }
