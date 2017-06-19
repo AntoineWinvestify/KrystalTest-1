@@ -63,4 +63,19 @@ class Sector extends AppModel {
 				'order' => '',
 				),
 			);*/
+    
+    /**
+    *
+    *	Translates the unique userReference to the database reference
+    *	@param 		string	$role It is the role that user has in the website
+    * 	@return 	int	$investorId The database reference of the investor
+    * 					
+    */
+    function getSectorByRole($role) {
+        $resultInvestor = $this->find("all", array("fields"	=> array("id"),
+                                        "recursive" => -1,
+                                        "conditions" => array("investor_identity" => $investorReference),
+                                    ));
+        //return $resultInvestor['Investor']['id'];
+    }
 }
