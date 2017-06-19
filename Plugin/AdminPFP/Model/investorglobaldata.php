@@ -109,7 +109,7 @@ public function readInvestorData($filterConditions) {
  * @return 	 	
  *
  */
-public function cronMoveToML() {
+public function cronMoveToMLDatabase() {
     $currentDate = date("Y-m-d", time());     
    
     Configure::load('p2pGestor.php', 'default');
@@ -134,7 +134,7 @@ public function cronMoveToML() {
         $tempResult = $this->Userinvestmentdata->find("all", $params = array('conditions'  => array('investorglobaldata_internalRawDataReference' => $internalRawDataReference),
             ));
 
-        if (!empty($tempResult])) {     // Already dealt with this queueID
+        if (!empty($tempResult)) {     // Already dealt with this queueID
             $UserinvestmentdataResult = $this->Userinvestmentdata->read("first", $params = array('recursive' => 2,
                                                                 'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
@@ -157,39 +157,39 @@ public function cronMoveToML() {
         $this->MLqueue->save(array('id' => 1, 
                                     'MLqueue_actualId' => $nextRecord,
                                     'MLqueue_dateActualId' => $currentDate,
-                            ))
+                            ));
 
-        $userResult = $this->Userinvestmentdata->read("all", $params = array('recursive' => 2,
+        $userResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 2,
 							  'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
                                                               'investorglobaldata_internalRawDataReference' => $internalRawDataReference,
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED),
                         			));    
-        foreach ($Userinvestmentdata as data) {
+        foreach ($Userinvestmentdata as $data) {
           // mapping of data from "raw" format to MLData format    
             $companyResult = $this->read("first", $params = array('recursive' => -1,
 							  'conditions'  => array('id' => $companyId),
                                                           'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
 				));        
 
-            $platformData['id'] = $companyId,
+            $platformData['id'] = $companyId;
             $platformData['userplatformglobaldata_moneyInWallet'] = data['userinvestmentdata_myWallet']; 
-            $platformData['userplatformglobaldata_numberOfInvestments'] = sizeof(data['investments'];
+            $platformData['userplatformglobaldata_numberOfInvestments'] = sizeof(data['investments']);
             $platformData['userplatformglobaldata_activeInInvestments'] = data['userinvestmentdata_activeInInvestments'];    
             $platformData['userplatformglobaldata_reservedInvestments'] = 0;    
-            $platformData['userplatformglobaldata_finishedInvestments'] = data[''];
-            $platformData['companyId'] = $companyId,  
-            $platformData['userplatformglobaldata_companyName'] = $companyResult[0]['company_name'], 
-            $platformData['userplatformglobaldata_PFPType'] = $companyResult[0]['company_PFPType'], 
-            $platformData['userplatformglobaldata_PFPCountry'] = $companyResult[0]['company_country'], 
+            $platformData['userplatformglobaldata_finishedInvestments'] = data['']; // TO BE CALCULATED
+            $platformData['companyId'] = $companyId;
+            $platformData['userplatformglobaldata_companyName'] = $companyResult[0]['company_name'];
+            $platformData['userplatformglobaldata_PFPType'] = $companyResult[0]['company_PFPType'];
+            $platformData['userplatformglobaldata_PFPCountry'] = $companyResult[0]['company_country']; 
             $platformData['userplatformglobaldata_globalIndicator'] = 0;    
 
             $userData['investorglobaldata_totalPFPs'] = $userData['investorglobaldata_totalPFPs'] + 1;
-            if ([sizeof(data['investments'] > 0) {
+            if (sizeof(data['investments'] > 0)) {
                 $userData['investorglobaldata_activePFPs'] = $userData['investorglobaldata_activePFPs'] + 1;
             }      
             $userData['investorglobaldata_totalMoneyInWallets'] = $userData['investorglobaldata_totalMoneyInWallets'] + data['userinvestmentdata_myWallet'];
             $userData['investorglobaldata_totalActiveInInvestments'] = $userData['investorglobaldata_totalActiveInvestments'] + data['userinvestmentdata_activeInInvestments'];
-            if ($this->save->Userplatformglobaldata($platformData, $validate = true) {
+            if ($this->save->Userplatformglobaldata($platformData, $validate = true)) {
                 
             }
             else {
@@ -211,6 +211,7 @@ public function cronMoveToML() {
 
 /**DURING THE MIGRATION SOMETHING HAPPENED, AND THE MLDATA DATABASE MIGHT HAVE AN EXTRA RECORD WHICH
  * IS UNACCEPTABLE, DETECT IT AND REPAIR IT. this is normally a duplicate.
+ *  NOT YET FUNCTIONAL
  * do this for all which were added during this day
  * filter:
  * duplicate internal reference
@@ -229,7 +230,7 @@ public function checkIntegrityMLData() {
 }
 
 
-/** 
+/** NOT YET FUNCTIONAL
  * 
  * Returns a global indicator which represents the "value" of an investor for a PFP platform
  * 
