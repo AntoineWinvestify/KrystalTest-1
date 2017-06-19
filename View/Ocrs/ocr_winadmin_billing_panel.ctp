@@ -37,8 +37,8 @@
  * [2017-06-15] Version 0.4
  * Added bills table
  *
- * 
- * 
+ * [2017-06-19] Version 0.5
+ * Added bills table db info
  * 
 */
 
@@ -241,15 +241,28 @@
                                         <th with="10%"><?php echo __('Amount')?></th>
                                         <th><?php echo __('Status')?></th>
                                     </tr>
-                                    <tr>
-                                        <?php //foreach(){?>
-                                        <td><?php echo __('PFP name')?></td>
-                                        <td><?php echo __('000000')?></td>
-                                        <td><?php echo __('concept')?></td>
-                                        <td align="left"><?php echo __('0.00000 €')?></td>
+                                   
+                                        <?php foreach($bills as $billsTable){ print_r($billsTable); //Bills table creation?>
+                                         <tr>
+                                        <td><?php echo __($billsTable['name'])?></td>
+                                        <td><?php echo __($billsTable['info']['bill_number'])?></td>
+                                        <td><?php echo __($billsTable['info']['bill_concept'])?></td>
+                                        <td align="left"><?php echo __($billsTable['info']['bill_amount'])?></td>
+                                        <?php
+                                            if($billsTable['info']['bill_status'] == 1){
+                                        ?>
                                         <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Paid')?></span></td>
-                                        <?php //} ?>
-                                    </tr>
+                                        <?php
+                                            }else{
+                                                ?>
+                                        <td><span style="color: red"><i class="fa fa-warning"></i> <?php echo __('Unpaid')?></span></td>
+                                        <?php
+                                            }
+                                        ?>
+                                        
+                                         </tr>
+                                        <?php } ?>
+                                   
                                 </table>
                             </div>
                         </div>

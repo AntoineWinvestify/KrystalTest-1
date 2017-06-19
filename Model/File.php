@@ -21,15 +21,18 @@
  * @package
  *
 
-  2017/6/06 version 0.1
-  function upload                      [OK]
+ * 2017/6/06 version 0.1
+ * function upload                           [OK]
  *
-  2017/6/08 version 0.2
-  function delete
- *                  [OK]
-  2017/6/14 version 0.3
-  url and name fixed                      [OK]
- *  
+ * 2017/6/08 version 0.2                 
+ * function delete                           [OK]
+ * 
+ * 
+ * 2017/6/14 version 0.3
+ * url and name fixed                        [OK]
+ * 
+ * 2017/6/14 version 0.4
+ *  *function delete getAllBills            [OK]
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -37,6 +40,14 @@ Configure::load('p2pGestor.php', 'default');
 class file extends AppModel {
 
     var $name = 'File';
+    public $hasAndBelongsToMany = array(
+        'Company' => array(
+            'className' => 'Company',
+            'joinTable' => 'companies_files',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'company_id',
+        ),
+    );
 
     /**
      * Upload investor file
@@ -141,7 +152,7 @@ class file extends AppModel {
     }
 
     /**
-     * Read existing file for a user
+     * Read the existing file for a user
      * @param type $id
      * @return type
      */
@@ -149,6 +160,34 @@ class file extends AppModel {
         $query = "Select * from `files_investors` where investor_id =" . $id;
         $result = $this->query($query);
         return $result;
+    }
+
+    /**
+     * Read the existing bills for WinAdmin
+     * @return type
+     */
+    public function getAllBills() {
+
+        $allBills = $this->find('all', array(
+            'fields' => array(
+                'id',
+            ),
+            'conditions' => array(
+                'id' => 50), //50 is the bill id
+            'recursive' => 1,));
+
+        $allBillInfo = array();
+
+        //Info filter, we need only the company name and the bill info.
+        foreach ($allBills as $allInfo) {
+            foreach ($allInfo["Company"] as $info) {
+                $companyName = $info["company_name"];
+                $billInfo = $info["CompaniesFile"];
+                $tempArray = array('name' => $companyName, 'info' => $billInfo);
+                array_push($allBillInfo, $tempArray);
+            }
+        }
+        return $allBillInfo;
     }
 
 }

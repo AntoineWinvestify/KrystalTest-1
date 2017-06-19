@@ -42,6 +42,9 @@
  * 
   2017/6/16  version 0.6
   oneClickInvestorI error 500 fixed
+ * 
+  2017/6/19 version 0.7
+  ocrWinadminBillingPanel-> bill table added
  */
 App::uses('CakeEvent', 'Event');
 
@@ -58,13 +61,11 @@ class ocrsController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-     function pruebaOcr() {
-         $prueba = $this->Ocr->pruebaOcr();
-         print_r($prueba);
-         $this->autoRender=false;
-     }
-    
-    
+    function pruebaOcr() {
+        $prueba = $this->File->getAllBills(385);
+        $this->autoRender = false;
+    }
+
     /*
      * 
      * Ciclo Principal
@@ -278,13 +279,13 @@ class ocrsController extends AppController {
         //Investor id
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
-       //Set selected companies(not sent)
+        //Set selected companies(not sent)
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
 
         //Selected companies(sent)(Not show)
         $registered = $this->Ocr->getRegisterSentCompanies($id);
         $filter = array('investor_id' => $id);
-          
+
         //Linked companies(Not show)
         $linked = $this->Linkedaccount->getLinkedaccountIdList($filter);
         $notShow = array();
@@ -298,7 +299,7 @@ class ocrsController extends AppController {
             array_push($notShow, $linked["Linkedaccount"]["company_id"]);
         }
         $notShowList = array_unique($notShow);
-        
+
         //Set companies filter
         $this->set('notShowList', $notShowList);
         echo " ";
@@ -362,18 +363,17 @@ class ocrsController extends AppController {
         echo " ";
     }
 
-    
     /** WinAdmin View #1
      *  WinAdmin Bill panel
      */
     function ocrWinadminBillingPanel() {
         $this->layout = 'azarus_private_layout';
-        
+
         //get all bills and set them in the view
-        $billsResult = $this->File->getAllBills();
-        $this->set("bills",$billsResult);
-        
-        
+        $billsInfo = $this->File->getAllBills();
+        $this->set("bills", $billsInfo);
+
+
         echo " ";
     }
 
