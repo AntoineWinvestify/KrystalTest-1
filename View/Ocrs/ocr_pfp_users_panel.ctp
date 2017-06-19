@@ -88,6 +88,7 @@
                                                             <th><?php echo __('Email')?></th>
                                                             <th><?php echo __('Status')?></th>
                                                             <th><?php echo __('Action')?></th>
+                                                            <th><?php echo __('Tallyman')?></th>
                                                         </tr>
                                                 </thead>
                                                 <tbody>
@@ -100,6 +101,7 @@
                                                         <td><?php echo __('example@example.com')?></td>
                                                         <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __('Incorrect')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="details-control"></td>
@@ -110,6 +112,7 @@
                                                         <td><?php echo __('example@example.com')?></td>
                                                         <td><span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="details-control"></td>
@@ -120,6 +123,7 @@
                                                         <td><?php echo __('example@example.com')?></td>
                                                         <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="details-control"></td>
@@ -130,6 +134,7 @@
                                                         <td><?php echo __('example@example.com')?></td>
                                                         <td><span style="color:#3399ff"><i class="fa fa-thumb-tack"></i> <?php echo __('Validating')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="details-control"></td>
@@ -140,6 +145,7 @@
                                                         <td><?php echo __('example@example.com')?></td>
                                                         <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                 </tbody>
                                         </table>
