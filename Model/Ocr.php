@@ -160,14 +160,12 @@ class ocr extends AppModel {
 //Insert OK        
             return 1 . "," . $result . ",";  //Return for a json
         } else {
-            
+
             /*
              * 
              * SAVE ERROR
-            */
+             */
             return 0 . ","; //Save failed
-            
-            
         }
     }
 
@@ -309,6 +307,38 @@ class ocr extends AppModel {
         //Sent companies
         $query = "Select `company_id` from `companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 1;";
         return $this->query($query);
+    }
+
+    /**
+     *
+     * 	Callback Function
+     * 	Decrypt the sensitive data provided by the investor
+     *
+     */
+    public function afterFind($results, $primary = false) {
+
+        foreach ($results as $key => $val) {
+            if (isset($val['Ocr']['investor_iban'])) {
+                $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
+                        $val['Ocr']['investor_iban']);
+            }
+        }
+        return $results;
+    }
+
+    /**
+     *
+     * 	Callback Function
+     * 	Encrypt the sensitive fields of the information provided by the investor
+     *
+     */
+    public function beforeSave($options = array()) {
+
+        if (!empty($this->data['Ocr']['investor_iban'])) {
+            $this->data['Ocr']['investor_iban'] = $this->encryptDataBeforeSave($this->data['Ocr']['investor_iban']);
+        }
+
+        return true;
     }
 
 }
