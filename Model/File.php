@@ -41,9 +41,21 @@ class file extends AppModel {
 
     var $name = 'File';
     public $hasAndBelongsToMany = array(
-        'Company' => array(
+        'Bills' => array(
             'className' => 'Company',
             'joinTable' => 'companies_files',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'company_id',
+        ),
+        'Investor' => array(
+            'className' => 'Investor',
+            'joinTable' => 'files_investors',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'investor_id',
+        ),
+        'requiredFiles' => array(
+            'className' => 'Company',
+            'joinTable' => 'requiredfiles',
             'foreignKey' => 'file_id',
             'associationForeignKey' => 'company_id',
         ),
@@ -121,19 +133,46 @@ class file extends AppModel {
      * @return type
      */
     public function readRequiredFiles($data) {
-        for ($i = 0; $i < count($data); $i++) {
-            if ($i == 0) {
-                $query = "Select * from `requieredfiles` where company_id =" . $data[$i]['companies_ocrs']['company_id'];
-            } else {
-                $query = $query . " OR company_id =" . $data[$i]['companies_ocrs']['company_id'];
+        /* for ($i = 0; $i < count($data); $i++) {
+          if ($i == 0) {
+          $query = "Select * from `requiredfiles` where company_id =" . $data[$i]['companies_ocrs']['company_id'];
+          } else {
+          $query = $query . " OR company_id =" . $data[$i]['companies_ocrs']['company_id'];
+          }
+          }
+          $result = $this->query($query);
+          foreach ($result as $value) {
+          $files[] = $value['requiredfiles']['file_id'];
+          } */
+
+        //Id list of selected companies
+        $selectedList = array();
+        foreach ($data as $selectedId) {
+            array_push($selectedList, $selectedId['company_id']);
+        }
+
+        //All company files
+        $allCompanyFiles = $this->find('all', array(
+            'conditions' => array(
+                'id' => array(1, 2, 3)), //50 is the bill id
+            'recursive' => 1,));
+
+
+        //Filter required files
+        $requiredFileIdList = array();
+        foreach ($allCompanyFiles as $allFiles) {
+            foreach ($allFiles["requiredFiles"] as $requiredFiles) {
+                //Filter selected companies required files
+                if (in_array($requiredFiles["id"], $selectedList)) {
+                    print_r($requiredFiles);
+                    array_push($requiredFileIdList, $requiredFiles["Requiredfile"]["file_id"]);
+                }
             }
         }
-        $result = $this->query($query);
-        foreach ($result as $value) {
-            $files[] = $value['requieredfiles']['file_id'];
-        }
-        $files = array_unique($files);
-        return $files;
+
+        //Delete duplicates
+        $requiredFileResult = array_unique($requiredFileIdList);
+        return $requiredFileResult;
     }
 
     /**
@@ -169,18 +208,13 @@ class file extends AppModel {
     public function getAllBills() {
 
         $allBills = $this->find('all', array(
-            'fields' => array(
-                'id',
-            ),
-            'conditions' => array(
-                'id' => 50), //50 is the bill id
+            'conditions' => array('id' => 50), //50 is the bill id
             'recursive' => 1,));
-
         $allBillInfo = array();
 
         //Info filter, we need only the company name and the bill info.
         foreach ($allBills as $allInfo) {
-            foreach ($allInfo["Company"] as $info) {
+            foreach ($allInfo["Bills"] as $info) {
                 $companyName = $info["company_name"];
                 $billInfo = $info["CompaniesFile"];
                 $tempArray = array('name' => $companyName, 'info' => $billInfo);
@@ -189,5 +223,4 @@ class file extends AppModel {
         }
         return $allBillInfo;
     }
-
 }

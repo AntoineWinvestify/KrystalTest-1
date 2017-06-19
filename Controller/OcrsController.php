@@ -62,7 +62,7 @@ class ocrsController extends AppController {
     }
 
     function pruebaOcr() {
-        $prueba = $this->File->getAllBills(385);
+        $prueba = $this->File->prueba();
         $this->autoRender = false;
     }
 
