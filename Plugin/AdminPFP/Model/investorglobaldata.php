@@ -124,13 +124,16 @@ public function cronMoveToML() {
     
    
     read next record (record AFTER 507);
-        $result = $this->read("first", $params = array('recursive' => -1,
-							  'conditions'  => array('id' => $queueResult[0]['MLqueue_actualId'],
-                                                                                'updateType = WEEKLY'),
-                                                          'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
-				));     
+        $result = $this->Userinvestmentdata->read("first", $params = array('recursive' => -1,
+							  'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
+                                                                                'updateType = SYSTEM_GENERATED'),
+				)); 
+    $nextRecord = $result[0]['Userinvestmentdata'][0]['id'];
     store new number in queueResult 508)
-    
+    $this->MLqueue->save(array('id' => 1, 
+                                actualId =>
+                                dateActualId
+                        ))
     
     
     Configure::load('p2pGestor.php', 'default');
