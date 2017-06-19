@@ -51,9 +51,7 @@ class UsersController extends AdminAppController
 
 
 function beforeFilter() {
-//	Configure::write('debug', 2);
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
-
 
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club1 field from CSRF protection
 															// as it is "dynamic" and would fail the CSRF test

@@ -66,16 +66,15 @@ var $validate = array(
 /** 
  * 
  * Returns all the data of an investor, as defined by filterConditions,  as an array.
- * The system will return a maximum of  "historical data of 6 months
+ * The system will return a maximum of  "historical data of 6 months"
  * 
- * @param 	array 	$filterConditions
+ * 
+ * @param 	array 	$filterConditions [should contain a investorIdentity]
  * @return 	array 	Investor data with all relevant data	
  *
  */
 public function readInvestorData($filterConditions) {
     
-// Calculate earlier date
-//    $referenceDate = actualData - $historyLength "months";
     Configure::load('p2pGestor.php', 'default');
     $serviceData = Configure::read('Tallyman');
 
@@ -87,12 +86,12 @@ public function readInvestorData($filterConditions) {
                                           'recursive'   => 2,
 			));
     
-    return $data;   
     if (!$data) {
         return;             // Nothing found 
     }
+    
     foreach ($result['userplatformglobaldata'] as $key => $data ) {
-        $globalIndicator = $this->calculateGlobalIndicator()
+        $globalIndicator = $this->calculateGlobalIndicator();
         
     }
     return $result;
@@ -112,15 +111,14 @@ public function readInvestorData($filterConditions) {
  */
 public function cronMoveToML() {
     $currentDate = date("Y-m-d", time());     
-    $businessConditions = array('Company.created >' => $cutoffTime);
-    
+   
     Configure::load('p2pGestor.php', 'default');
     $serviceData = Configure::read('Tallyman');   
     
     $this->Company = ClassRegistry::init('Company');   
     $this->MLqueue = ClassRegistry::init('MLqueue'); 
     
-    $queueResult = $this->($this->read("first", $params = array('recursive' => -1,
+    $queueResult = $this->$this->read("first", $params = array('recursive' => -1,
 							  'conditions'  => array('id' => 1),
 				));  
 
@@ -133,11 +131,12 @@ public function cronMoveToML() {
 
     while (!empty($UserinvestmentdataResult)) {
         $internalRawDataReference = $result[0]['Userinvestmentdata']['investorglobaldata_internalRawDataReference'];
-        $tempResult = $this->Userinvestmentdata->find("all",$params = array('conditions'  => array('investorglobaldata_internalRawDataReference' => $internalRawDataReference )
+        $tempResult = $this->Userinvestmentdata->find("all", $params = array('conditions'  => array('investorglobaldata_internalRawDataReference' => $internalRawDataReference),
+            ));
 
         if (!empty($tempResult])) {     // Already dealt with this queueID
             $UserinvestmentdataResult = $this->Userinvestmentdata->read("first", $params = array('recursive' => 2,
-							  'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
+                                                                'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
                                                                            'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
                                                               ),
@@ -145,7 +144,7 @@ public function cronMoveToML() {
         }
         else {              // Deal with this database record,          here we have a new queue_id so we have to
             $userData['investorglobaldata_investorIdentity'] = $UserinvestmentdataResult[0]['investorglobaldata_investorIdentity'];
-            If ($this->Userinvestmentdata->save($userData, $validate = true)) {
+            if ($this->Userinvestmentdata->save($userData, $validate = true)) {
                 $userinvestmentpointer = $this->Userinvestmentdata->id;
             }
             else {
@@ -167,7 +166,6 @@ public function cronMoveToML() {
                         			));    
         foreach ($Userinvestmentdata as data) {
           // mapping of data from "raw" format to MLData format    
-
             $companyResult = $this->read("first", $params = array('recursive' => -1,
 							  'conditions'  => array('id' => $companyId),
                                                           'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
@@ -188,7 +186,7 @@ public function cronMoveToML() {
             $userData['investorglobaldata_totalPFPs'] = $userData['investorglobaldata_totalPFPs'] + 1;
             if ([sizeof(data['investments'] > 0) {
                 $userData['investorglobaldata_activePFPs'] = $userData['investorglobaldata_activePFPs'] + 1;
-            }            
+            }      
             $userData['investorglobaldata_totalMoneyInWallets'] = $userData['investorglobaldata_totalMoneyInWallets'] + data['userinvestmentdata_myWallet'];
             $userData['investorglobaldata_totalActiveInInvestments'] = $userData['investorglobaldata_totalActiveInvestments'] + data['userinvestmentdata_activeInInvestments'];
             if ($this->save->Userplatformglobaldata($platformData, $validate = true) {
