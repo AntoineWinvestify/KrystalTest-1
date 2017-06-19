@@ -259,14 +259,14 @@ public function readStartupKeyPeopleData(){
 public function readStartupList(){
 
 	$conditions = array("AND" => array(
-										array('Investment.id' => $startup),
-										array('Investment.investoption_startDateTime <' => $actualDateTime),
-										array('Investment.investoption_finalDateTime >' => $actualDateTime),
-											));
+					array('Investment.id' => $startup),
+					array('Investment.investoption_startDateTime <' => $actualDateTime),
+					array('Investment.investoption_finalDateTime >' => $actualDateTime),
+				));
 
 	$resultStartupList = $this->Startup->find("all", $params = array('recursive'	=> -1,
-															//		'conditions'	=> $conditions,
-																	)
+							//		'conditions'	=> $conditions,
+										)
 											);
 	$this->set('resultStartupList', $resultStartupList);
 }
@@ -303,9 +303,9 @@ public function writeStartupBasicCompanyData(){
 	
 	$conditions = array('Startup.id' => $startupId);										
 	$resultStartupList = $this->Startup->find("all", $params = array('recursive'	=>  -1,
-																	'conditions'	=> $conditions,
-																	)
-											);
+								'conditions'	=> $conditions,
+								)
+								);
 
 	$this->set('resultStartupData', $resultStartupData);	
 	$this->set("result", $result);
