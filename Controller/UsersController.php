@@ -213,6 +213,7 @@ public function logout() {
 	$this->getEventManager()->dispatch($event);
 	$this->Session->destroy();						// NOT NEEDED?
 	$this->Session->delete('Auth');
+        
 	return $this->redirect($this->Auth->logout());
 }
 

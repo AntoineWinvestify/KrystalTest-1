@@ -18,13 +18,13 @@
 
 
 
-Functions for the AdminWin role
+Functions for the AdminPFP role
 
 
 2017-06-14	  version 0.1
 Initial version. 
  * All methods are "protected" using the "isAuthorized" function
- *
+ * 
  * 
 
 
@@ -42,7 +42,7 @@ class UsersController extends AdminAppController
 
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Js');
-	var $uses = array('User');	
+	var $uses = array('User', 'Investorglobaldata');	
 	var $components = array('Security');
 
   	var $error;
@@ -83,8 +83,7 @@ function beforeFilter() {
  * 
  */
 public function showInvestorList() {
-    
-    
+  
 }
 
 /**
@@ -94,47 +93,11 @@ public function showInvestorList() {
  * 
  */
 public function showInvestorDataPanel() {
-    
-    
-}
-
-
-/**
- * 
- * Updates the (separate) database of investor data with the data obtained from data traffic
- * 
- */
-public function cronUpdateMLInvestorGlobalData() {
-/*
- * check if pending request in queue
- * 
- * 
- */ 
-    
-    
-    
-}
-
-
-
-/**
-*	must eventually be moved to the admin section. After action this user does no longer exist
-*	neither ANY of his data
-*/
-public function deleteUser($email) {
-	$this->autoRender = false;
-	$this->Investor = ClassRegistry::init('Investor');			// Load the "Operation" model
-
-	$conditions = array("AND" => array(array('investor_email' => $email),
-						));
-
-	$resultInvestor = $this->Investor->find("all", $params = array('recursive'  => -1,
-									'conditions'	=> $conditions,
-									)
-						);
-	if (!empty($resultInvestor)) {
-		$result = $this->Investor->delete($resultInvestor[0]['Investor']['id'],$cascade = true);
-	} 
+    $investorIdentification = $this->Auth('User.Investor.investor_identity'); // read user identification
+    $filterconditions = array('investor_identity', $investorIdentification);
+    $result = $this->Investorglobaldata->readInvestorData($filterConditions);
+    $this->set('result', $result);
+       
 }
 
 
@@ -142,19 +105,10 @@ public function deleteUser($email) {
 
 
 
-/**
-*	Define new administrator and its corresponding access rights
-*
-*/
-function addAdministrator() {
-
-
-}
 
 
 
-
-/**ajax call
+/** ajax call
  *
  *
 *	Reads the data from an Administrator 
@@ -204,26 +158,13 @@ public function changeAdminPw() {
 
 
 
-/**
- *THE RECORD IS NOT DELETED, JUST MARKED AS DELETED
- *
-*	Delete an administrator
-*
-*/
-function deleteAdministrator() {
-
-
-}
-
-
-
 
 
 /**ajax call
 *	Write (= modifies) some data of an existing Administrator
 *
 */
-function editAdministratorData() {
+function editAdministratorData($id) {
 
 
 }
@@ -231,19 +172,6 @@ function editAdministratorData() {
 
 
 
-
-/**
-*	Define a hashed password
-*
-*/
-function generatepassword($password) {
-
-	$pw = new SimplePasswordHasher;
-	$hashedPassword = $pw::hash($password);
-echo "Clear password = $password and hashed password = $hashedPassword";
-echo "<br/>";
-
-}
 
  
 
@@ -350,35 +278,6 @@ public function logout() {
 }
 
 
-
-
-
-/**READ THE DATA OF ALL ADMINISTRATORS. TYPICALLY THIS IS A SMALL LIST (<50?)
-*	
-*
-*/
-function readAdministratorList() {
-	$this->layout = 'zastac_admin_layout';
-	Configure::write('debug', 0);
-/*
-	$searchConditions = array(
-		'AND' => array('Loanrequest.id >' 			=> 0,
-						'Student.surname LIKE' 		=> "%". $_REQUEST['surname'] . "%", DATE_START
-						'Student.telephone LIKE' 	=> "%". $_REQUEST['telephone'] . "%", DATE_FIN
-      	  ),
-		'OR' => array('s '  => '122',			STATE_ADMISION
-					  's'  => '122222' )		STATE_ANALISIS
-		);
-*/						
-						
-	$AdministratorListResult = $this->Administrator->find("all", $params = array('recursive'		=>  0, 		
-																					'conditions' 	=> array('Loanrequest.id >' => 0),
-																					)
-															);
-	$this->set('AdministratorListResult', $AdministratorListResult);
-	
-	
-}
 
 
 

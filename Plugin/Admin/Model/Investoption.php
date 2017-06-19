@@ -62,118 +62,11 @@ var $validate = array(
 
 
 
-/**
-*
-*
-*
-*/
-public function addConfirmedPayment($amount, $investOption)  {
-	$this->Investoption = ClassRegistry::init('Investoption');
-	$result = $this->Investoption->find("all", $params = array('recursive'	=>  -1,
-															'conditions'	=> array ('id' => $investOption),
-																	)
-											);
-
-	$newAmount = $result[0]['Investoption']['investoption_totalSubscribedConfirmed'] + $amount;
-
-	$this->Investoption->create();
-	$requestData = array('id' 										=> $investOption,
-						 'investoption_totalSubscribedConfirmed' 	=> $newAmount
-						 );
-	if ($this->Investoption->save($requestData, $validate = TRUE)) {
-		$id = $this->Investoption->id;
-		return true;
-	}
-}
 
 
 
 
 
-/**
-*this should eventually always be 0
-*
-*/
-public function addUnConfirmedPayment($requestData) {
-	Configure::write('debug', 0);
-	$this->Investoption = ClassRegistry::init('Investoption');
-	$result = $this->Investoption->find("all", $params = array('recursive'	=>  -1,
-															'conditions'	=> array ('id' => $investOption),
-																	)
-											);
-
-	$newAmount = $result[0]['Investoption']['investoption_totalSubscribed'] + $amount;
-
-	$this->Investoption->create();
-	$requestData = array('id' 							=> $investOption,
-						 'investoption_totalSubscribed' => $newAmount
-						 );
-	if ($this->Investoption->save($requestData, $validate = TRUE)) {
-		$id = $this->Investoption->id;
-		return true;
-	}
-}
-
-
-
-
-
-/**
-*	Moves money from unconfirmed payment to confirmed payment
-*
-*
-*/
-public function convertToConfirmedPayment($amount, $investOption)  {
-	$this->Investoption = ClassRegistry::init('Investoption');
-	$result = $this->Investoption->find("all", $params = array('recursive'	=>  -1,
-															'conditions'	=> array ('id' => $investOption),
-																	)
-											);
-
-	$newTotalSubscribedConfirmedAmount = $result[0]['Investoption']['investoption_totalSubscribedConfirmed'] + $amount;
-	$newTotalSubscribedAmount = $result[0]['Investoption']['investoption_totalSubscribedConfirmed'] + $amount;
-
-	$this->Investoption->create();
-	$requestData = array('id' 										=> $investOption,
-						 'investoption_totalSubscribedUConfirmed' 	=> $newTotalSubscribedConfirmedAmount,
-						 'investoption_totalSubscribed'				=> $newTotalSubscribedAmount
-						 );
-	if ($this->Investoption->save($requestData, $validate = TRUE)) {
-		$id = $this->Investoption->id;
-		return true;
-	}
-}
-
-
-
-
-
-/** NOT TESTED
-*	User has not paid the investment, and eventually the investment is removed. This can/is also be done automatically via
-*	a cron job.
-*
-*
-*/
-public function deleteUnConfirmedPayment($amount, $investOption)  {
-	$this->Investoption = ClassRegistry::init('Investoption');
-	$result = $this->Investoption->find("all", $params = array('recursive'	=>  -1,
-															'conditions'	=> array ('id' => $investOption),
-																	)
-											);
-
-	$newTotalSubscribedConfirmedAmount = $result[0]['Investoption']['investoption_totalSubscribedConfirmed'] + $amount;
-	$newTotalSubscribedAmount = $result[0]['Investoption']['investoption_totalSubscribedConfirmed'] + $amount;
-
-	$this->Investoption->create();
-	$requestData = array('id' 										=> $investOption,
-						 'investoption_totalSubscribedUConfirmed' 	=> $newTotalSubscribedConfirmedAmount,
-						 'investoption_totalSubscribed'				=> $newTotalSubscribedAmount
-						 );
-	if ($this->Investoption->save($requestData, $validate = TRUE)) {
-		$id = $this->Investoption->id;
-		return true;
-	}
-}
 
 
 
@@ -194,18 +87,6 @@ public function beforeSave1($options = array()) {
     return true;
 }
 
-
-
-
-
-
-
-public function beforeDelete1($cascade = true) {
-		$infoString  =  "Student : ";
-		$infoString  .=  " and dob = " ;
-		CakeLog::write('beforeDelete', $infoString);
-	return true;
-}
 
 
 

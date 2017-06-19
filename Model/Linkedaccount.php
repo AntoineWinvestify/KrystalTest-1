@@ -52,7 +52,7 @@ class Linkedaccount extends AppModel
 *									false	delete only *first* record if more found [i.e the one with the lowest index]
 *
 *	@return 	true	record(s) deleted
-*				false	no record(s) fullfilled $filteringConditions
+*			false	no record(s) fullfilled $filteringConditions
 *
 */
 public function deleteLinkedaccount($filteringConditions, $multiple = false) {									  
@@ -106,8 +106,8 @@ public function deleteLinkedaccount($filteringConditions, $multiple = false) {
 public function getLinkedaccountDataList($filterConditions) {
 
 	$linkedaccountResults = $this->find("all", $params = array('recursive'	=> -1,
-															  'conditions'  => $filterConditions
-														  ));
+								 'conditions'  => $filterConditions
+							  ));
 	return $linkedaccountResults;
 }
 
@@ -125,16 +125,16 @@ public function getLinkedaccountDataList($filterConditions) {
 *	@param 		string 	$password		password
 *
 * 	@return 	boolean	true	Account linked
-*						false	Error happened, account not linked
+*				false	Error happened, account not linked
 *						
 */
 public function createNewLinkedAccount($companyId, $investorId, $username, $password) {
 	
-	$linkedAccountData['Linkedaccount'] = array('company_id' 			=> $companyId,
-											   'investor_id' 			=> $investorId,
-											   'linkedaccount_username' => $username,
-											   'linkedaccount_password' => $password
-											   );
+	$linkedAccountData['Linkedaccount'] = array('company_id' => $companyId,
+						 'investor_id' 	=> $investorId,
+						'linkedaccount_username' => $username,
+						'linkedaccount_password' => $password
+						);
 
 	if ($this->save($linkedAccountData,  $validation = true)) {
 		$this->Investor = ClassRegistry::init('Investor');

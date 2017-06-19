@@ -75,9 +75,9 @@ public function getCompanyList($filterConditions) {
 
 	$conditions = array_merge($businessConditions, $filterConditions);
 
-	$companyResult = $this->find("list", $params = array('recursive'		=> -1,
-														'conditions'		=> $conditions,
-														));
+	$companyResult = $this->find("list", $params = array('recursive'	=> -1,
+								'conditions'	=> $conditions,
+					));
 	
 	return($companyResult);
 }
