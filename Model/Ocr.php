@@ -44,6 +44,9 @@
  * 
   2017/6/14 version 0.7
   Confirm modal
+ * 
+  2017/6/19 version 0.8
+  Select query deleted
  */
 App::uses('CakeEvent', 'Event');
 
@@ -59,6 +62,8 @@ class ocr extends AppModel {
         ),
     );
 
+    
+    //METODO DE PRUEBA PARA DEBUG, BORRAR ANTES DE SUBIR
     public function pruebaOcr($id) {
         
         $companyListNotFilter = $this->getAllCompanies(385);
