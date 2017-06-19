@@ -151,9 +151,9 @@ foreach ($notShowList as $id) {
 
 <?php
 foreach ($selected as $sel) {
-    $idSel = $sel['companies_ocrs']['company_id'];
+    $idSel = $sel['company_id'];
     ?>
-            logo = $(".<?php echo $sel['companies_ocrs']['company_id']; ?>").find(".logo").attr("src");
+            logo = $(".<?php echo $idSel; ?>").find(".logo").attr("src");
             $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformDB' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
     <?php
 }

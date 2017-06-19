@@ -59,6 +59,20 @@ class ocr extends AppModel {
         ),
     );
 
+    public function pruebaOcr($id) {
+        
+        $companyListNotFilter = $this->getAllCompanies(385);
+        print_r($companyListNotFilter);
+        $companyList = array();
+        foreach ($companyListNotFilter as $filterStatus) {
+            if ($filterStatus["statusOcr"] == 1) {
+                array_push($companyList, $filterStatus);
+            }
+        }
+        print_r($companyList);
+        //return $prueba;
+    }
+
     /* var $validate = array(
       'investor_cif' => array(
       'rule1' => array('rule' => array('minLength', 1),
@@ -268,24 +282,40 @@ class ocr extends AppModel {
     }
 
     /**
+     * Get all companies info related to a investor
+     * 
+     * @param type $id
+     * @return array
+     */
+    public function getAllCompanies($id) {
+        $companiesArray = $this->find('all', array('recursive' => 1, 'conditions' => array('investor_id' => $id)));
+        $companies_ocrs = array();
+        foreach ($companiesArray as $company) {
+            foreach ($company["Company"] as $companyOcr) {
+                array_push($companies_ocrs, $companyOcr["CompaniesOcr"]);
+            }
+        }
+        return $companies_ocrs;
+    }
+
+    /**
      * Get selected companies
      * 
      * @param type $id
      * @return type
      */
     public function getSelectedCompanies($id) {
-        //Ocr id
-        $ocrId = $this->find('first', array(
-            'fields' => array(
-                'id',
-            ),
-            'conditions' => array(
-                'investor_id' => $id),
-            'recursive' => -1,));
-
-        // Select companies
-        $query = "Select * from `companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 0;";
-        $companyList = $this->query($query);
+        
+        // Read all the companies_ocrof the user
+        $companyListNotFilter = $this->getAllCompanies($id);
+        $companyList = array();
+        
+        //status filter
+        foreach ($companyListNotFilter as $filterStatus) {
+            if ($filterStatus["statusOcr"] == 0) {
+                array_push($companyList, $filterStatus);
+            }
+        }
         return $companyList;
     }
 
@@ -295,18 +325,18 @@ class ocr extends AppModel {
      * @return type
      */
     public function getRegisterSentCompanies($id) {
-        //Ocr id
-        $ocrId = $this->find('first', array(
-            'fields' => array(
-                'id',
-            ),
-            'conditions' => array(
-                'investor_id' => $id),
-            'recursive' => -1,));
 
-        //Sent companies
-        $query = "Select `company_id` from `companies_ocrs` where `ocr_id`=" . $ocrId['Ocr']['id'] . " and `statusOcr` = 1;";
-        return $this->query($query);
+        // Read all the companies_ocrof the user
+        $companyListNotFilter = $this->getAllCompanies($id);
+        $companyList = array();
+        
+        //status filter
+        foreach ($companyListNotFilter as $filterStatus) {
+            if ($filterStatus["statusOcr"] == 1) {
+                array_push($companyList, $filterStatus);
+            }
+        }
+        return $companyList;
     }
 
     /**
