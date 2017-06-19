@@ -63,4 +63,14 @@ class Role extends AppModel {
 				'order' => '',
 				),
 			);*/
+    function getRoleNameById($id = null){
+        if (empty($id)) {
+            return false;
+        }
+        $roleName = $this->find("first", array("fields"	=> array("role_name"),
+						"recursive" => -1,
+						"conditions" => array("id" => $id),
+				));
+        return $roleName;
+    }
 }

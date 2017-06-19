@@ -71,11 +71,23 @@ class Sector extends AppModel {
     * 	@return 	int	$investorId The database reference of the investor
     * 					
     */
-    function getSectorByRole($role) {
-        $resultInvestor = $this->find("all", array("fields"	=> array("id"),
-                                        "recursive" => -1,
-                                        "conditions" => array("investor_identity" => $investorReference),
-                                    ));
-        //return $resultInvestor['Investor']['id'];
+    function getSectorByRole($roleId = null){
+        if (empty($roleId)) {
+            return false;
+        }
+        $sectors = $this->find('all', array(
+            'joins' => array(
+                 array('table' => 'roles_sectors',
+                    //'alias' => 'KitchensRestaurant',
+                    'type' => 'INNER',
+                    'conditions' => array(
+                        'roles_sectors.role_id' => $roleId,
+                        'roles_sectors.sector_id = sectors.id'
+                    )
+                )
+            ),
+            'group' => 'sectors.id'
+        ));
+        return $sectors;
     }
 }

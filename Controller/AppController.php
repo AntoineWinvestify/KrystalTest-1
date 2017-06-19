@@ -591,7 +591,11 @@ class AppController extends Controller {
      */
     function isAuthorized($controller, $access = '*') {
 	//$userId = $this->Auth->user('id');
-	$aro = $this->Auth->user('role_id');
+	$roleId = $this->Auth->user('role_id');
+        // Get internal database reference of the investor
+        $this->Role = ClassRegistry::init('Role');
+        $aro = $this->Role->getRoleNameById($roleId);
+        
 	return $this->Acl->check($aro, $controller, $access);
     }
 
