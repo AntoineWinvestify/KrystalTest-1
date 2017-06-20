@@ -1,5 +1,4 @@
 <?php
-
 /*
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2016, http://winvestify.com                             |
@@ -16,8 +15,8 @@
  * | Author: Antoine de Poorter                                            |
  * +-----------------------------------------------------------------------+
  *
- * @version 0.1
- * @date 2016-08-02
+ * @version 0.2
+ * @date 2017-06-11
  * @package
  *
  *
@@ -34,7 +33,16 @@
  *  2016-08-02		version 0.1
  *  Simple first version
  *
- *
+
+
+2017-06-11      version 0.2
+Corrected test for language cookie 
+
+
+ * 
+ * 
+ * 
+ * 
  *
  *  PENDING:
  * -
@@ -218,23 +226,21 @@ class AppController extends Controller {
             INVOICE_TRADING => __('P2P Invoice Trading'),
             CROWD_REAL_ESTATE => __('Crowd Real Estate'),
         );
-
-        if (!$this->Session->check('Config.language')) {        // No language stored in the current session
-            if (!$this->Cookie->check('Config.language')) {        // first time user visits our Web
-                $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
-                $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
-                $this->Cookie->write('p2pManager', array('language' => $ourLanguage[0]));
-            } else {
-                $ourLanguage[0] = $this->Cookie->read('p2pManager.language');
-            }
-            $this->Session->write('Config.language', $ourLanguage[0]);
+ 
+        if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
+            $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
+            $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
+            $this->Cookie->write('p2pManager', array('language' => $ourLanguage[0]));
+        } else {
+            $ourLanguage[0] = $this->Cookie->read('p2pManager.language');
         }
-
-        $subjectContactForm = array('Choose one...',
-            'general' => __('General'),
-            'billing' => __('Billing Dept'),
-            'improvement' => __('Functional Improvement'),
-            'feature' => __('New Feature'));
+        $this->Session->write('Config.language', $ourLanguage[0]);        
+        
+        $subjectContactForm = array('Choose one...', 
+                                'general' => __('General'), 
+                                'billing' => __('Billing Dept'), 
+                                'improvement' => __('Functional Improvement'), 
+                                'feature' => __('New Feature'));
         $this->set('subjectContactForm', $subjectContactForm);
 
 
