@@ -42,6 +42,9 @@
  * 
   2017/6/16  version 0.6
   oneClickInvestorI error 500 fixed
+ * 
+  2017/6/19 version 0.7
+  ocrWinadminBillingPanel-> bill table added
  */
 App::uses('CakeEvent', 'Event');
 
@@ -56,6 +59,11 @@ class ocrsController extends AppController {
         parent::beforeFilter(); // only call if the generic code for all the classes is required.
         $this->Security->requireAuth();
         $this->Auth->allow(); //allow these actions without login
+    }
+
+    function pruebaOcr() {
+        $prueba = $this->File->prueba();
+        $this->autoRender = false;
     }
 
     /*
@@ -262,7 +270,6 @@ class ocrsController extends AppController {
 
     /** Investor View #1
      * Select the companies you want register
-     * 
      */
     function ocrInvestorPlatformSelection() {
 
@@ -285,7 +292,7 @@ class ocrsController extends AppController {
 
         //Filter
         foreach ($registered as $registered) {
-            array_push($notShow, $registered["companies_ocrs"]["company_id"]);
+            array_push($notShow, $registered["company_id"]);
         }
 
         foreach ($linked as $linked) {
@@ -300,7 +307,6 @@ class ocrsController extends AppController {
 
     /** Investor View #3
      * Modal to activate ocr
-     * 
      */
     function ocrInvestorConfirmModal() {
         //Invesor od
@@ -357,9 +363,17 @@ class ocrsController extends AppController {
         echo " ";
     }
 
-    //WinAdmin View #1
+    /** WinAdmin View #1
+     *  WinAdmin Bill panel
+     */
     function ocrWinadminBillingPanel() {
         $this->layout = 'azarus_private_layout';
+
+        //get all bills and set them in the view
+        $billsInfo = $this->File->getAllBills();
+        $this->set("bills", $billsInfo);
+
+
         echo " ";
     }
 

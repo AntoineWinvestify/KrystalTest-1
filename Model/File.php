@@ -21,15 +21,21 @@
  * @package
  *
 
-  2017/6/06 version 0.1
-  function upload                      [OK]
+ * 2017/6/06 version 0.1
+ * function upload                           [OK]
  *
-  2017/6/08 version 0.2
-  function delete
- *                  [OK]
-  2017/6/14 version 0.3
-  url and name fixed                      [OK]
- *  
+ * 2017/6/08 version 0.2                 
+ * function delete                           [OK]
+ * 
+ * 
+ * 2017/6/14 version 0.3
+ * url and name fixed                        [OK]
+ * 
+ * 2017/6/19 version 0.4
+ * function delete getAllBills            [OK]
+ * select rquired files deleted, now we use find
+ * 
+ *
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -37,6 +43,26 @@ Configure::load('p2pGestor.php', 'default');
 class file extends AppModel {
 
     var $name = 'File';
+    public $hasAndBelongsToMany = array(
+        'Bills' => array(
+            'className' => 'Company',
+            'joinTable' => 'companies_files',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'company_id',
+        ),
+        'Investor' => array(
+            'className' => 'Investor',
+            'joinTable' => 'files_investors',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'investor_id',
+        ),
+        'requiredFiles' => array(
+            'className' => 'Company',
+            'joinTable' => 'requiredfiles',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'company_id',
+        ),
+    );
 
     /**
      * Upload investor file
@@ -110,19 +136,33 @@ class file extends AppModel {
      * @return type
      */
     public function readRequiredFiles($data) {
-        for ($i = 0; $i < count($data); $i++) {
-            if ($i == 0) {
-                $query = "Select * from `requieredfiles` where company_id =" . $data[$i]['companies_ocrs']['company_id'];
-            } else {
-                $query = $query . " OR company_id =" . $data[$i]['companies_ocrs']['company_id'];
+        //Id list of selected companies
+        $selectedList = array();
+        foreach ($data as $selectedId) {
+            array_push($selectedList, $selectedId['company_id']);
+        }
+
+        //All company files
+        $allCompanyFiles = $this->find('all', array(
+            'conditions' => array(
+                'id' => array(1, 2, 3)), //50 is the bill id
+            'recursive' => 1,));
+
+
+        //Filter required files
+        $requiredFileIdList = array();
+        foreach ($allCompanyFiles as $allFiles) {
+            foreach ($allFiles["requiredFiles"] as $requiredFiles) {
+                //Filter selected companies required files
+                if (in_array($requiredFiles["id"], $selectedList)) {                  
+                    array_push($requiredFileIdList, $requiredFiles["Requiredfile"]["file_id"]);
+                }
             }
         }
-        $result = $this->query($query);
-        foreach ($result as $value) {
-            $files[] = $value['requieredfiles']['file_id'];
-        }
-        $files = array_unique($files);
-        return $files;
+
+        //Delete duplicates
+        $requiredFileResult = array_unique($requiredFileIdList);
+        return $requiredFileResult;
     }
 
     /**
@@ -141,7 +181,7 @@ class file extends AppModel {
     }
 
     /**
-     * Read existing file for a user
+     * Read the existing file for a user
      * @param type $id
      * @return type
      */
@@ -151,4 +191,26 @@ class file extends AppModel {
         return $result;
     }
 
+    /**
+     * Read the existing bills for WinAdmin
+     * @return type
+     */
+    public function getAllBills() {
+
+        $allBills = $this->find('all', array(
+            'conditions' => array('id' => 50), //50 is the bill id
+            'recursive' => 1,));
+        $allBillInfo = array();
+
+        //Info filter, we need only the company name and the bill info.
+        foreach ($allBills as $allInfo) {
+            foreach ($allInfo["Bills"] as $info) {
+                $companyName = $info["company_name"];
+                $billInfo = $info["CompaniesFile"];
+                $tempArray = array('name' => $companyName, 'info' => $billInfo);
+                array_push($allBillInfo, $tempArray);
+            }
+        }
+        return $allBillInfo;
+    }
 }
