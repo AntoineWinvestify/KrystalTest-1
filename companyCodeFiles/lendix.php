@@ -239,7 +239,7 @@ function collectCompanyMarketplaceData() {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    exit;
+                    return $this->getError(__LINE__, __FILE__);
                 }
                 $session = json_decode($this->mainPortalPage, $assoc = true);
         //$this->print_r2($session);
