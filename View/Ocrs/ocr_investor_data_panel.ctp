@@ -164,7 +164,7 @@
 
     function successUpload(data, id) {
         if (data != 0) { <?php //Upload ok ?>
-            $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
+            $("#file" + id).html(data[0]);
             $("#file" + id).attr("value", data[0]);
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[1] + '" id="FilesInfo">');

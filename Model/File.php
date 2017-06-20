@@ -72,9 +72,14 @@ class file extends AppModel {
      * @param type $type
      * @return string|int
      */
-    public function ocrFileSave($data, $identity, $id, $type) {
+    public function ocrFileSave($data, $identity, $id, $type, $path) {
         //Load files config
         $fileConfig = Configure::read('files');
+        if ($path == "file") {
+            $up = $fileConfig['investorPath'] . $identity;
+        } else if ($path == "bill") {
+            $up = $fileConfig['BillsPath'];
+        }
 
         foreach ($data as $file) {
 
@@ -86,7 +91,7 @@ class file extends AppModel {
             if (in_array($file['type'], $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
                 $name = basename($file['name']);
                 $filename = time() . "_" . $name;
-                $uploadFolder = $fileConfig['investorPath'] . $identity;
+                $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
                 //Create the dir if not exist
                 if (!file_exists($uploadFolder)) {
@@ -99,10 +104,14 @@ class file extends AppModel {
                 }
 
                 //Save in db
-                $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $name . "', '" . $identity . DS . $filename . "');";
-                $query = $this->query($query);
-                $result = array(basename($file['name']), $identity . DS . $filename, $type);
-                return $result;
+                if ($path == "file") {
+                    $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $name . "', '" . $identity . DS . $filename . "');";
+                    $query = $this->query($query);
+                    $result = array(basename($file['name']), $identity . DS . $filename, $type);
+                    return $result;
+                } else if ($path == "bill") {
+                    
+                }
             } else {
                 return 0;
             }
@@ -118,7 +127,7 @@ class file extends AppModel {
      */
     public function ocrFileDelete($url, $file_id, $investor_id) {
         $fileConfig = Configure::read('files');
-        $url = WWW_ROOT . $fileConfig['investorPath'] . $url;
+        $url = $fileConfig['investorPath'] . $url;
 
         if (unlink($url)) {
             $query = "DELETE FROM `files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
@@ -152,7 +161,7 @@ class file extends AppModel {
         foreach ($allCompanyFiles as $allFiles) {
             foreach ($allFiles["requiredFiles"] as $requiredFiles) {
                 //Filter selected companies required files
-                if (in_array($requiredFiles["id"], $selectedList)) {                  
+                if (in_array($requiredFiles["id"], $selectedList)) {
                     array_push($requiredFileIdList, $requiredFiles["Requiredfile"]["file_id"]);
                 }
             }
@@ -211,4 +220,5 @@ class file extends AppModel {
         }
         return $allBillInfo;
     }
+
 }

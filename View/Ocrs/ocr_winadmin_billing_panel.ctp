@@ -63,22 +63,28 @@ foreach ($companies as $companyInfo) {
 }
 ?>
 <script>
-    $(document).on("change", ".upload", function () {
-<?php // Upload  file     ?>
-        id = $(this).attr("value");
-        var formdatas = new FormData($("#bill")[0]);
-        $.ajax({
-            url: '../Files/upload',
-            dataType: 'json',
-            method: 'post',
-            data: formdatas,
-            contentType: false,
-            processData: false,
-            success: function (data) {
-                successUpload(data, id);
-            }
+    $(function () {
+        $(document).on("click", "#send", function () {
+<?php // Upload  file and send data     ?>
+
+
+            var formdatas = new FormData($("#bill")[0]);
+            params = {
+                pfp: $("#ContentPlaceHolder_pfp").val(),
+                number: $("#ContentPlaceHolder_number").val(),
+                concept: $("#ContentPlaceHolder_concept").val(),
+                amount: $("#ContentPlaceHolder_amount").val(),
+                bill: formdatas
+            };
+            link = '../Files/upload';
+            //var data = jQuery.param(params);
+            getServerData(link, params, success, error);
+
         });
     });
+
+    function success() {}
+    function error() {}
 </script>
 <div id="1CR_winAdmin_1_billingPanel">
     <div class="row">
@@ -116,8 +122,8 @@ foreach ($companies as $companyInfo) {
                                         <th><?php echo __('Upload file') ?></th>
                                         <th><?php echo __('Send') ?></th>
                                     </tr>
+                                    <?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
                                     <tr>
-                                        <?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
                                         <td>
                                             <?php
                                             $class = "form-control blue_noborder winadminPFP";
@@ -127,7 +133,6 @@ foreach ($companies as $companyInfo) {
                                                 'label' => false,
                                                 'options' => $companiesSelectList,
                                                 'class' => $class,
-                                                'value' => $resultUserData[0]['Investor']['investor_country'] /* this must be about PFP */
                                             ));
                                             ?>
                                         </td>
@@ -216,19 +221,17 @@ foreach ($companies as $companyInfo) {
                                         <td>
                                             <?php
                                             //<button type="button" class="btn btn-default btnRounded" style="background-color:#3399ff; color:white;">
-                                            echo $this->Form->file("bill",array('class'=>'upload'));
+                                            echo $this->Form->file("bill", array('class' => 'upload'));
                                             //</button> 
                                             ?>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btnWinAdmin btnRounded">
+                                            <button type="button" id="send" class="btn btn-default btnWinAdmin btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Send') ?> 
                                             </button>
                                         </td>
-                                        <?php
-                                        echo $this->Form->end();
-                                        ?>
                                     </tr>
+                                    <?php echo $this->Form->end(); ?>
                                 </table>
                             </div>
                         </div>
@@ -289,9 +292,8 @@ foreach ($companies as $companyInfo) {
                                                 <?php
                                             }
                                             ?>
-
                                         </tr>
-<?php } ?>
+                                    <?php } ?>
 
                                 </table>
                             </div>

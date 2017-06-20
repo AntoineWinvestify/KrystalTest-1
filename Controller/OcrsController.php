@@ -146,7 +146,7 @@ class ocrsController extends AppController {
                 'investor_iban' => $_REQUEST['iban'],
             );
             $result2 = $this->Ocr->ocrDataSave($datosOcr);
-            $ocrArray = json_decode("[" . $result2, true);
+            $ocrArray = json_decode( "[" . $result2 . "]",true) ;
 
             //Update the companies status
             $idOcr = $ocrArray[1]["id"];
@@ -382,7 +382,7 @@ class ocrsController extends AppController {
         $this->set("bills", $billsInfo);
 
         //Get companies info for the select
-        $companiesInfo = $this->Company->getCompanyDataList();
+        $companiesInfo = $this->Company->getCompanyDataList(null);
         $this->set("companies", $companiesInfo);
         echo " ";
     }
