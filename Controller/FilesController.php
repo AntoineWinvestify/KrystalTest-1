@@ -60,12 +60,21 @@ class filesController extends AppController {
         } else {
             $this->layout = 'ajax';
             $this->disableCache();
-            $data = $this->params['data']['Files'];
+
+            if( count($this->params['data']['Files']) > 0){
+                
+            $data = $this->params['data']['Files'];        
             $type = $data['info'];
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
             $result = $this->File->ocrFileSave($data, $identity, $id, $type);
             $this->set("fileInfo", $result);
+            
+            } else if($this->params['data']['bill'] != null){
+                print_r($this->params['data']['bill']);
+            }
+            
+            
         }
     }
 

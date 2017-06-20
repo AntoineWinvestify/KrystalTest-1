@@ -52,6 +52,7 @@ class Company extends AppModel {
         ),
     );
 
+    
     /**
      * 	Apparently can contain any type field which is used in a field. It does NOT necessarily
      * 	have to map to a existing field in the database. Very useful for automatic checks
@@ -92,10 +93,11 @@ class Company extends AppModel {
     public function getCompanyDataList($filterConditions) {
         $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
             'Company.company_state' => ACTIVE);
+        
+        array_push($businessConditions, $filterConditions);
 
-        $conditions = array_merge($businessConditions, $filterConditions);
         $companyResult = $this->find("all", $params = array('recursive' => -1,
-            'conditions' => $conditions,
+            'conditions' => $businessConditions,
         ));
 // 'Normalize' the total array, index XX points to company with id = XX
         foreach ($companyResult as $value) {
@@ -104,11 +106,16 @@ class Company extends AppModel {
         return $companyResults;
     }
 
+    /**
+     * Get info needed for ocr.
+     * @param type $filter
+     * @return type
+     */
     public function companiesDataOCR($filter = null) {
 
         $conditions = array('Company.company_OCRisActive' => 1);
 
-
+        //Platform selection filters
         if ($filter['country_filter']) {
             $filtro = array('Company.company_countryName' => $filter['country_filter']);
             $conditions = array_merge($conditions, $filtro);

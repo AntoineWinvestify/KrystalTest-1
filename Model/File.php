@@ -82,14 +82,12 @@ class file extends AppModel {
             if ($file['size'] == 0 || $file['error'] !== 0) {
                 continue;
             }
-
             //Type and size filter
             if (in_array($file['type'], $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
                 $name = basename($file['name']);
                 $filename = time() . "_" . $name;
-                $uploadFolder = $fileConfig['investorPath'] . $identity . '';
+                $uploadFolder = $fileConfig['investorPath'] . $identity;
                 $uploadPath = $uploadFolder . DS . $filename;
-
                 //Create the dir if not exist
                 if (!file_exists($uploadFolder)) {
                     mkdir($uploadFolder, 0755, true);

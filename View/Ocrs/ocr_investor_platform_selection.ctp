@@ -140,9 +140,9 @@
         });
 
 <?php
-foreach ($notShowList as $id) {
-    ?>
-            $('#selection').append("<input type='hidden' value='" + <?php echo $id ?> + "' class='selected inDB'></input>");
+foreach ($notShow as $notShowCompany) {
+    ?>        
+            $('#selection').append("<input type='hidden' value='" + <?php echo $notShowCompany['id'] ?> + "' class='selected inDB'></input>");
     <?php
 }
 ?>
