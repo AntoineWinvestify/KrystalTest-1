@@ -43,7 +43,7 @@
 
  */
 App::uses('CakeEvent', 'Event');
-
+App::uses("AppModel", "Model");
 class User extends AppModel {
 
     var $name = 'User';
@@ -54,6 +54,17 @@ class User extends AppModel {
             'fields' => '',
             'order' => '',
         ),
+        /*'Role' => array(
+            'className' => 'Role',
+            'foreignKey' =>  'role_id'
+        )*/
+    );
+    
+    public $belongsTo = array(
+        'Role' => array(
+            'className' => 'Role',
+            'foreignKey' =>  'role_id'
+        )
     );
  
     /**

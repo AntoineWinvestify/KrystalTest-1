@@ -24,7 +24,8 @@
 * 
 */
 
-
+App::uses('CakeEvent', 'Event');
+App::uses("AppModel", "Model");
 class Role extends AppModel {
     var $name= 'Role';
     
@@ -46,14 +47,12 @@ class Role extends AppModel {
             )
     );
     
-    /*public $hasMany = array(
-			'Linkedaccount' => array(
-				'className' => 'Linkedaccount',
-				'foreignKey' => 'investor_id',
-				'fields' => '',
-				'order' => '',
-				),
-			);*/
+    public $hasMany = array(
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'role_id',
+            ),
+    );
 
     /*public $hasOne = array (
 				'User' => array(
@@ -71,6 +70,7 @@ class Role extends AppModel {
 						"recursive" => -1,
 						"conditions" => array("id" => $id),
 				));
-        return $roleName;
+        
+        return $roleName["Role"]["role_name"];
     }
 }
