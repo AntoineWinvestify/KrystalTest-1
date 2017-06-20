@@ -652,7 +652,7 @@ textarea[name="error"] {
 ********************************************************************************/
 /*     BUTTONS     */
 .btn-win1 {
-	background-color: #87e14b;
+	background-color: #87e14b !important;
 	border: 1px solid gray;
 	color: white;
 }
@@ -1194,8 +1194,32 @@ textarea[name="error"] {
     padding-left: 15px;
 }
 
+/* Winvestify Login Styling*/
+.loginContainer {
+    margin: 0 auto;
+    background-image: url("/img/login.png");
+    background-repeat: no-repeat;
+    max-width: 1280px;
+    height: 787px;
+}
+.loginBox {
+    background-color: white;
+    border: 1px solid gray;
+    height: 250px;
+    width: 350px;
+    float: right;
+    border-radius: 5px;
+    margin: 250px 150px 0px 0px;
+    padding-top: 20px;
+}
+.paragraph {
+    margin: 300px 0 0 50px;
+    position: absolute;
+}
 
-
+.paragraph p {
+    color: white !important;
+}
 
 
 

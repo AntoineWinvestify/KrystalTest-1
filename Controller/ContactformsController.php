@@ -63,7 +63,7 @@ class ContactformsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter(); // only call if the generic code for all the classes is required.
         $this->Security->requireAuth();
-        $this->Auth->allow('ContactFormSend', 'form');
+        $this->Auth->allow('ContactFormSend', 'form', 'login');
         //allow these actions without logon
     }
 
@@ -96,7 +96,11 @@ class ContactformsController extends AppController {
                 $this->set('result', $result);
                
             }
-        };
+        }
+    }
+    
+    function login() {
+        $this->layout = 'winvestify_login';
     }
 
 }
