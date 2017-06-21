@@ -52,6 +52,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="/plugins/datepicker/datepicker3.css">
 <script src="/plugins/intlTelInput/js/utils.js"></script>
+<script src="/js/iban.js"></script>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/plugins/datepicker/bootstrap-datepicker.js"></script>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
