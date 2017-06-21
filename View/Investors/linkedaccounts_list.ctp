@@ -61,12 +61,14 @@ Pending:
 					</button>
 <?php
 					switch ($action) {
-						case "add":
-							echo '<strong>' .  __("The account has been successfully added") . '</strong>';
-							break;
-						case "delete":
-							echo '<strong>' . __("The account has been deleted") . '</strong>';
-							break;
+						case "error":
+                                                    echo '<strong>' . __("The combination of user/password is incorrect. Please check your data and try again") . '</strong>';
+                                                case "add":
+                                                    echo '<strong>' . __("The account has been successfully added") . '</strong>';
+                                                    break;
+                                                case "delete":
+                                                    echo '<strong>' . __("The account has been deleted") . '</strong>';
+                                                    break;
 					}
 ?>
 				</div>
