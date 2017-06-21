@@ -37,25 +37,23 @@ Pending
 
 App::uses('CakeEvent', 'Event');
 App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-class UsersController extends AdminAppController
+class UsersController extends AdminpfpAppController
 {
 
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Js');
 	var $uses = array('User', 'Investorglobaldata');	
 	var $components = array('Security');
-
   	var $error;
-	var $layout = 'zastac_admin_layout';		// use of "flan template" for intranet access
+	
 
 
 
 function beforeFilter() {
-	parent::beforeFilter(); // only call if the generic code for all the classes is required.
+    parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club1 field from CSRF protection
 															// as it is "dynamic" and would fail the CSRF test
-
 
 //	$this->Security->requireSecure(	'login'	);
 	$this->Security->csrfCheck = false;
@@ -64,11 +62,11 @@ function beforeFilter() {
 //	$this->Security->requireAuth();
 	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
-   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
+//   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
 //var_dump($_REQUEST);
 //var_dump($this->request);
-      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
+//      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
 }
 
@@ -100,8 +98,39 @@ public function showInvestorDataPanel() {
 
 
 
+/**
+ * 
+ * Shows the initial, basic screen of the Tallyman service
+ * 
+ */
+public function startTallyman() {
+    $this->layout = 'azarus_private_layout';
+    $investorIdentification = $this->Auth('User.Investor.investor_identity'); // read user identification
+    $filterconditions = array('investor_identity', $investorIdentification);
+    $result = $this->Investorglobaldata->readInvestorData($filterConditions);
+    $this->set('result', $result);
+       
+}
 
 
+
+/**
+ * 
+ * Shows the Tallyman data of a user
+ * 
+ */
+public function showTallyman($investorIdentity, $platformId) {
+    $this->layout = 'azarus_private_layout';	
+    $investorIdentification = $this->Auth('User.Investor.investor_identity'); // read user identification
+//    $resultTallyman = $this->xxxxx->find("all", maxíum 10 entries)
+            
+            
+    $filterconditions = array('investor_identity', $investorIdentification);
+    $result = $this->Investorglobaldata->readInvestorData($filterConditions);
+    
+    $this->set('result', $resultTallyman);
+       
+}
 
 
 
@@ -166,13 +195,6 @@ function editAdministratorData($id) {
 
 
 }
-
-
-
-
-
- 
-
 
 
 
@@ -257,7 +279,7 @@ public function login()
 		$this->disableCache();
 	}
 	else {
-		$this->layout = 'zastac_admin_login_layout';
+		$this->layout = 'Adminpfp.winvestify_adminpfp_login_layout';
 	}
 	$error = false;
 	$this->set("error", $error);

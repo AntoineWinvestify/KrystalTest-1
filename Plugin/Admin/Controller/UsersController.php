@@ -66,11 +66,11 @@ function beforeFilter() {
 //	$this->Security->requireAuth();
 	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
-   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
+//   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
 //var_dump($_REQUEST);
 //var_dump($this->request);
-      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
+//      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
 }
 

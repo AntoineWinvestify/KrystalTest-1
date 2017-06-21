@@ -1,7 +1,7 @@
 <?php
 /*
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2014, http://beyond-language-skills.com                 |
+// | Copyright (C) 2017, https://www.winvestify.com                        |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -55,7 +55,7 @@ APROBADO is missing in global constants
 
 */
  
-class AdminAppController extends AppController {
+class AdminpfpAppController extends AppController {
  
     public $components = array('DebugKit.Toolbar',
 				'RequestHandler',
@@ -89,7 +89,6 @@ class AdminAppController extends AppController {
 public function beforeFilter() {
 
     $this->Cookie->name = 'zastac_equity_admin';
-    $this->layout = "zastac_admin_layout";
 
     $this->Security->blackHoleCallback = 'blackhole';
  

@@ -89,7 +89,6 @@ class AdminAppController extends AppController {
 public function beforeFilter() {
 
     $this->Cookie->name = 'zastac_equity_admin';
-    $this->layout = "zastac_admin_layout";
 
     $this->Security->blackHoleCallback = 'blackhole';
  
