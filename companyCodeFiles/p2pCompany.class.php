@@ -79,6 +79,7 @@ class p2pCompany{
         // MarketplacesController
         protected $marketplaces;
         //Data for the queue
+        protected $queueId;
         protected $idForQueue;
         protected $idForSwitch = 0;
         //User data
@@ -1097,8 +1098,13 @@ return $m;
 *	@param string	$msg			Content to be logged
 *
 */
-function logToFile($filename, $msg)	{
-	$fileName = $this->logDir . "/" . $filename;
+function logToFile($filename, $msg, $dirFile = "")	{
+        //Like this function, change later tomorrow
+        //$fileName =  "/var/www/html/cake_branch/app/companyCodeFiles/log/" . $filename;
+        $fileName =  $this->logDir . $filename;
+        if (!$dirFile == "") {
+            $fileName =  $dirFile . "/log/" . $filename;
+        }
 	$fd = fopen($fileName, "a");
 	$msg = date("d-m-y H:i:s") . " " . $msg;  
 	fwrite($fd, $msg . "\n");
@@ -1235,11 +1241,29 @@ function print_r2($val){
         $this->tries = $tries;
     }
     
+    public function getQueueId() {
+        return $this->tries;
+    }
+    
+    public function setQueueId($queueId) {
+        $this->queueId = $queueId;
+    }
+    
+    /**
+     * Function to show and save error if there is any when taking data of userInvestmentData
+     * @param int $line It is the line where the error occurred
+     * @param string $file It is the reference of the file where the error occurred
+     * @return array It is the principal array with only the error variable
+     */
     public function getError($line, $file) {
-        $this->tempArray['global']['error'] = "ERROR START<br>"
-                . "An error has ocurred with the data <br> on the line " . $line . " and the file " . $file
-                . "<br> The error was caused in the urlsequence: " . $this->errorInfo . "<br>"
-                . "ERROR FINISHED<br>";
+        $newLine = "\n";
+        $this->tempArray['global']['error'] = "ERROR START $newLine"
+                . "An error has ocurred with the data on the line " . $line . $newLine." and the file " . $file
+                . "$newLine The queueId is" . $this->queueId
+                . "$newLine The error was caused in the urlsequence: " . $this->errorInfo 
+                . "$newLine ERROR FINISHED<br>";
+        $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
+        $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         return $this->tempArray;
     }
 

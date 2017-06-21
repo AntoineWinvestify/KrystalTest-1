@@ -282,7 +282,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    exit;
+                    return $this->getError(__LINE__, __FILE__);
                 }
                 echo __FILE__ . " " . __LINE__ . " LOGIN CONFIRMED<br>";
                 $dom = new DOMDocument;
