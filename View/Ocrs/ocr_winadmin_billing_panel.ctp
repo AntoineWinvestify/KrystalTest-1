@@ -68,7 +68,7 @@ foreach ($companies as $companyInfo) {
 <?php // Upload  file and send data          ?>
 
 
-            var formdatas = new FormData($("#bill")[0]);
+            var formdatas = new FormData($("#bill");
             params = {
                 pfp: $("#ContentPlaceHolder_pfp").val(),
                 number: $("#ContentPlaceHolder_number").val(),
@@ -82,7 +82,7 @@ foreach ($companies as $companyInfo) {
                 url: link,
                 dataType: 'json',
                 method: 'post',
-                data: data,
+                data: formdatas,
                 contentType: false,
                 processData: false,
             }).done(function (data) {
