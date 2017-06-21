@@ -652,8 +652,8 @@ app.visual = {
         }
         else {
             //Needed testing algorithm. (IBAN Format)
-            var IBAN = required('iban');
-            if (!IBAN.isValid(iban)) {
+            //var IBAN = required('iban');
+            if (!window.IBAN.isValid(iban)) {
                 $(".investorIban").addClass("redBorder");
                 $(".ErrorIban").find(".errorMessage").html(TEXTOS.T95); // "The IBAN is not valid" warning
                 $(".ErrorIban").fadeIn();
