@@ -24,9 +24,9 @@
 
     <div class="container">
         <div class="card card-container">
-			<div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
-            <img id="profile-img" class="profile-img-card" src="../img/logo-text-right.png" />
-				<p id="profile-name" class="profile-name-card"><?php echo __("ACCESS a la administración")?></p>
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
+                <img id="profile-img" class="profile-img-card" src="/img/logo/Viventor.png" />
+				<p id="profile-name" class="profile-name-card"><?php echo __("ACCESs a la administración")?></p>
      <!--       <form class="form-signin">         -->
                 <span id="reauth-email" class="reauth-email"></span>
                 <input name="data[User][username]" type="text" id="inputEmail" class="form-control" placeholder="<?php echo __("usuario");?>" required="" autofocus="" />

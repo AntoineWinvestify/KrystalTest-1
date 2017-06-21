@@ -46,7 +46,7 @@ class UsersController extends AdminAppController
 	var $components = array('Security');
 
   	var $error;
-	var $layout = 'zastac_admin_layout';		// use of "flan template" for intranet access
+	var $layout = 'winvestify_admin_login_layout';		// use of "flan template" for intranet access
 
 
 
@@ -331,7 +331,7 @@ public function login()
 		$this->disableCache();
 	}
 	else {
-		$this->layout = 'zastac_admin_login_layout';
+		$this->layout = 'winvestify_admin_login_layout';
 	}
 	$error = false;
 	$this->set("error", $error);

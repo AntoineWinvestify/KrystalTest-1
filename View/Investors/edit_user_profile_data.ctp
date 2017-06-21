@@ -116,7 +116,7 @@ console.log("saving personal data");
 
 	var result,
 		link = $(this).attr( "href" );
-	 
+
 	event.stopPropagation();
 	event.preventDefault();
 
