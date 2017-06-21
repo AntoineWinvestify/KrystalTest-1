@@ -52,6 +52,12 @@ Updated according to new structure of web of Lendix
   Date
  * 
  * 
+2017-06-13	  version 2017_0.4"
+Rectified double function "collectCompanyMarketplaceData". Deleted one of them
+ * 
+ * 
+ * 
+ * 
   TODO
   no real loanId exists in the public market place
   GET https://api.lendix.com/projects?limit=10&offset=0 in order to get the marketplace list including loanId
@@ -84,33 +90,6 @@ class lendix extends p2pCompany {
         $totalCost = $fixedCost + $interest + $amount;
         return $fixedCost + $interest + $amount;
     }
-
-    /**
-     *
-     * 	Collects the marketplace data
-     * 	@return array	Each open investment option as an element of an array
-     *
-     */
-    function collectCompanyMarketplaceData() {
-        $tempArray = array();
-        $totalArray = array();
-
-        $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
-
-        $dom = new DOMDocument;
-        $dom->loadHTML($str);
-        $dom->preserveWhiteSpace = false;
-        $divs = $this->getElements($dom, "div", "class", "card online");
-
-        foreach ($divs as $key2 => $div2) {
-            echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-        }
-
-
-
-        foreach ($divs as $key => $div) {
-            $projectDivs = $this->getElements($div, "div");
-
 
 /**
 *
@@ -171,33 +150,6 @@ function collectCompanyMarketplaceData() {
 	$this->print_r2($totalArray);
 	return $totalArray;	
 }
-
-	
-
-
-            $tempArray['marketplace_rating'] = trim($projectDivs[2]->nodeValue);
-            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[8]->nodeValue);
-            $tempArray['marketplace_name'] = trim($projectDivs[13]->nodeValue);
-            $tempArray['marketplace_purpose'] = trim($projectDivs[13]->nodeValue);
-            $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[14]->nodeValue);
-            $tempArray['marketplace_interestRate'] = $this->getPercentage($projectDivs[20]->nodeValue);
-            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($projectDivs[26]->nodeValue);
-            /*             * **************************************************** */
-            /* HARD CODED AS PREVIOUS STATEMENT GENERATES AN ERROR */
-            $tempArray['marketplace_durationUnit'] = 2;
-            /*             * **************************************************** */
-            $tempArray['marketplace_requestorLocation'] = trim($projectDivs[32]->nodeValue);
-            $tempArray['marketplace_sector'] = trim($projectDivs[38]->nodeValue);
-            $as = $this->getElements($div, "a");
-            $loanId = explode(":", $as[0]->getAttribute("title"));
-            $tempArray['marketplace_loanReference'] = trim($loanId[1]);
-            $totalArray[] = $tempArray;
-            $this->print_r2($tempArray);
-            unset($tempArray);
-        }
-        $this->print_r2($totalArray);
-        return $totalArray;
-    }
     
     /**
     *
@@ -323,7 +275,7 @@ function collectCompanyMarketplaceData() {
 
             $data1[$key]['name'] = $item['project']['name'];
             $data1[$key]['loanId'] = $item['project']['name'];         
-            $data1[$key]['date'] = $date;
+//            $data1[$key]['date'] = $date; So far we cannot deal with the date
             $data1[$key]['duration'] = $item['investment']['monthsLeft'] . " Meses";
             $data1[$key]['invested'] = (int) (preg_replace('/\D/', '', $item['investment']['total'])) * 100;
             $data1[$key]['commission'] = 0; //(int) (preg_replace('/\D/', '', $item['investment']['taxes']))*10;

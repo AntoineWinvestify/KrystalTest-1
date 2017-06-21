@@ -69,14 +69,14 @@ function sleep(milliseconds) {
 }	
 $(document).ready(function() {
 
-		$(document).on("click", ".li-notification", function(){
+		/*$(document).on("click", ".li-notification", function(){
 			var id = $(this).attr("id");
 			var link = $(this).attr("href");
 			var params = { id:id };
 			var data = jQuery.param( params );
 			getServerData(link, data, successReadNotificationContent, errorReadNotificationContent);
 			return false;
-		});
+		});*/
 		
 		$('.closeBtn').click(function(){
 			$("#errorModal").removeClass("show");
