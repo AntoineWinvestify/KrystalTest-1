@@ -70,7 +70,7 @@ class ocr extends AppModel {
         print_r($companyListNotFilter);
         $companyList = array();
         foreach ($companyListNotFilter as $filterStatus) {
-            if ($filterStatus["statusOcr"] == 1) {
+            if ($filterStatus["company_status"] == 1) {
                 array_push($companyList, $filterStatus);
             }
         }
@@ -177,7 +177,7 @@ class ocr extends AppModel {
             $event = new CakeEvent("checkMessage", $this);
             $this->getEventManager()->dispatch($event);
 //Insert OK        
-            return 1 . "," . $result . ",";  //Return for a json
+            return 1 . "," . $result;  //Return for a json
         } else {
 
             /*
@@ -243,9 +243,9 @@ class ocr extends AppModel {
             for ($i = 0; $i < count($comp); $i++) {
 
                 if ($i == 0) {
-                    $query = "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
+                    $query = "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `company_status`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
                 } else {
-                    $query = $query . "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `statusOcr`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
+                    $query = $query . "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `company_status`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
                 }
             }
             $query = $this->query($query);
@@ -261,9 +261,9 @@ class ocr extends AppModel {
      * @param type $id
      */
     public function updateCompaniesStatus($id) {
-        $query = "UPDATE `companies_ocrs` SET `statusOcr`='1' WHERE `ocr_id`='" . $id . "' and `statusOcr`='0';";
+        $query = "UPDATE `companies_ocrs` SET `company_status`='1' WHERE `ocr_id`='" . $id . "' and `company_status`='0';";
         $query = $this->query($query);
-        return 1 . "]";
+        return "," . 1 . "]";
     }
 
     /**
@@ -317,7 +317,7 @@ class ocr extends AppModel {
         
         //status filter
         foreach ($companyListNotFilter as $filterStatus) {
-            if ($filterStatus["statusOcr"] == 0) {
+            if ($filterStatus["company_status"] == 0) {
                 array_push($companyList, $filterStatus);
             }
         }
@@ -337,7 +337,7 @@ class ocr extends AppModel {
         
         //status filter
         foreach ($companyListNotFilter as $filterStatus) {
-            if ($filterStatus["statusOcr"] == 1) {
+            if ($filterStatus["company_status"] == 1) {
                 array_push($companyList, $filterStatus);
             }
         }
@@ -350,7 +350,7 @@ class ocr extends AppModel {
      * 	Decrypt the sensitive data provided by the investor
      *
      */
-    public function afterFind($results, $primary = false) {
+    /*public function afterFind($results, $primary = false) {
 
         foreach ($results as $key => $val) {
             if (isset($val['Ocr']['investor_iban'])) {
@@ -367,13 +367,13 @@ class ocr extends AppModel {
      * 	Encrypt the sensitive fields of the information provided by the investor
      *
      */
-    public function beforeSave($options = array()) {
+    /*public function beforeSave($options = array()) {
 
         if (!empty($this->data['Ocr']['investor_iban'])) {
             $this->data['Ocr']['investor_iban'] = $this->encryptDataBeforeSave($this->data['Ocr']['investor_iban']);
         }
 
         return true;
-    }
+    }*/
 
 }

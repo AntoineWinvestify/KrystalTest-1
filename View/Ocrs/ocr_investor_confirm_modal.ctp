@@ -116,9 +116,8 @@
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
             //User feedback
-        }
     }
-
+}
 
     function error(result) {
 <?php //Server validation Error        ?>

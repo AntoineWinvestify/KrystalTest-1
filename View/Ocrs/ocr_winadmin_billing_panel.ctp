@@ -1,23 +1,23 @@
 <?php
 /**
-* +--------------------------------------------------------------------------------------------+
-* | Copyright (C) 2016, http://www.winvestify.com                                              |
-* +--------------------------------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify                          |
-* | it under the terms of the GNU General Public License as published by                       |
-* | the Free Software Foundation; either version 2 of the License, or                          |
-* | (at your option) any later version.                                                        |
-* | This file is distributed in the hope that it will be useful                                |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
-* | GNU General Public License for more details.                                               |
-* +--------------------------------------------------------------------------------------------+
-*
-*
-* @author
-* @version 0.2
-* @date 2017-05-29
-* @package
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                                              |
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify                          |
+ * | it under the terms of the GNU General Public License as published by                       |
+ * | the Free Software Foundation; either version 2 of the License, or                          |
+ * | (at your option) any later version.                                                        |
+ * | This file is distributed in the hope that it will be useful                                |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+ * | GNU General Public License for more details.                                               |
+ * +--------------------------------------------------------------------------------------------+
+ *
+ *
+ * @author
+ * @version 0.2
+ * @date 2017-05-29
+ * @package
  * 
  * 
  * Investor billing panel to generate & upload bills to PFP Admin.
@@ -40,8 +40,7 @@
  * [2017-06-19] Version 0.5
  * Added bills table db info
  * 
-*/
-
+ */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
@@ -55,6 +54,45 @@
         font-size: 50px;
     }
 </style>
+
+<?php
+//Make a array for the select
+$companiesSelectList = array();
+foreach ($companies as $companyInfo) {
+    $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
+}
+?>
+<script>
+    $(function () {
+        $(document).on("click", "#send", function () {
+<?php // Upload  file and send data          ?>
+
+
+            var formdatas = new FormData($("#bill")[0]);
+            params = {
+                pfp: $("#ContentPlaceHolder_pfp").val(),
+                number: $("#ContentPlaceHolder_number").val(),
+                concept: $("#ContentPlaceHolder_concept").val(),
+                amount: $("#ContentPlaceHolder_amount").val(),
+                bill: formdatas
+            };
+            link = '../Files/upload';
+            var data = jQuery.param(params);
+            $.ajax({
+                url: link,
+                dataType: 'json',
+                method: 'post',
+                data: data,
+                contentType: false,
+                processData: false,
+            }).done(function (data) {
+
+            });
+        });
+    });
+
+    function success() {}
+</script>
 <div id="1CR_winAdmin_1_billingPanel">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -64,10 +102,10 @@
                     <p class="category"><?php echo __('Update bill to selected PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <div class="overlay">
+                    <!--<div class="overlay">
                         <div class="fa fa-spin fa-spinner" style="color:green">	
                         </div>
-                    </div>
+                    </div>-->
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -82,28 +120,27 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive">
                                 <table id="uploadedBills" class="table table-striped display dataTable"  width="100%" cellspacing="0"
-                                                       data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                       data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
-                                        <th width="15%"><?php echo __('PFP')?></th>
-                                        <th width="10%"><?php echo __('Number')?></th>
-                                        <th width="25%"><?php echo __('Concept')?></th>
-                                        <th with="10%"><?php echo __('Amount')?></th>
-                                        <th><?php echo __('Upload file')?></th>
-                                        <th><?php echo __('Send')?></th>
+                                        <th width="15%"><?php echo __('PFP') ?></th>
+                                        <th width="10%"><?php echo __('Number') ?></th>
+                                        <th width="25%"><?php echo __('Concept') ?></th>
+                                        <th with="10%"><?php echo __('Amount') ?></th>
+                                        <th><?php echo __('Upload file') ?></th>
+                                        <th><?php echo __('Send') ?></th>
                                     </tr>
+                                    <?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
                                     <tr>
                                         <td>
-                                            <?php 
-                                                $class = "form-control blue_noborder winadminPFP";
-                                                $filters = ["select PFP", "pfp1", "pfp2", "pfp3"];      
-                                                echo $this->Form->input('Investor.investor_country', array(
-                                                        'name'          => 'pfp',
-                                                        'id'            => 'ContentPlaceHolder_pfp',
-                                                        'label'         => false,
-                                                        'options'       => $filters,
-                                                        'class'         => $class,
-                                                        'value'         => $resultUserData[0]['Investor']['investor_country'] /*this must be about PFP*/						
-                                                ));
+                                            <?php
+                                            $class = "form-control blue_noborder winadminPFP";
+                                            echo $this->Form->input('Investor.investor_country', array(
+                                                'name' => 'pfp',
+                                                'id' => 'ContentPlaceHolder_pfp',
+                                                'label' => false,
+                                                'options' => $companiesSelectList,
+                                                'class' => $class,
+                                            ));
                                             ?>
                                         </td>
                                         <td>
@@ -189,16 +226,19 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btnRounded" style="background-color:#3399ff; color:white;">
-                                                <?php echo __('Upload file') ?> 
-                                            </button>
+                                            <?php
+                                            //<button type="button" class="btn btn-default btnRounded" style="background-color:#3399ff; color:white;">
+                                            echo $this->Form->file("bill", array('class' => 'upload'));
+                                            //</button> 
+                                            ?>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btnWinAdmin btnRounded">
+                                            <button type="button" id="send" class="btn btn-default btnWinAdmin btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Send') ?> 
                                             </button>
                                         </td>
                                     </tr>
+                                    <?php echo $this->Form->end(); ?>
                                 </table>
                             </div>
                         </div>
@@ -233,36 +273,35 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive">
                                 <table id="uploadedBills" class="table table-striped display dataTable"  width="100%" cellspacing="0"
-                                                       data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                       data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
-                                        <th width="15%"><?php echo __('PFP')?></th>
-                                        <th width="10%"><?php echo __('Number')?></th>
-                                        <th width="25%"><?php echo __('Concept')?></th>
-                                        <th with="10%"><?php echo __('Amount')?></th>
-                                        <th><?php echo __('Status')?></th>
+                                        <th width="15%"><?php echo __('PFP') ?></th>
+                                        <th width="10%"><?php echo __('Number') ?></th>
+                                        <th width="25%"><?php echo __('Concept') ?></th>
+                                        <th with="10%"><?php echo __('Amount') ?></th>
+                                        <th><?php echo __('Status') ?></th>
                                     </tr>
-                                   
-                                        <?php foreach($bills as $billsTable){ print_r($billsTable); //Bills table creation?>
-                                         <tr>
-                                        <td><?php echo __($billsTable['name'])?></td>
-                                        <td><?php echo __($billsTable['info']['bill_number'])?></td>
-                                        <td><?php echo __($billsTable['info']['bill_concept'])?></td>
-                                        <td align="left"><?php echo __($billsTable['info']['bill_amount'])?></td>
-                                        <?php
-                                            if($billsTable['info']['bill_status'] == 1){
-                                        ?>
-                                        <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Paid')?></span></td>
-                                        <?php
-                                            }else{
+
+                                    <?php foreach ($bills as $billsTable) { //Bills table creation ?>
+                                        <tr>
+                                            <td><?php echo __($billsTable['name']) ?></td>
+                                            <td><?php echo __($billsTable['info']['bill_number']) ?></td>
+                                            <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
+                                            <td align="left"><?php echo __($billsTable['info']['bill_amount']) ?></td>
+                                            <?php
+                                            if ($billsTable['info']['bill_status'] == 1) {
                                                 ?>
-                                        <td><span style="color: red"><i class="fa fa-warning"></i> <?php echo __('Unpaid')?></span></td>
-                                        <?php
+                                                <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Paid') ?></span></td>
+                                                <?php
+                                            } else {
+                                                ?>
+                                                <td><span style="color: red"><i class="fa fa-warning"></i> <?php echo __('Unpaid') ?></span></td>
+                                                <?php
                                             }
-                                        ?>
-                                        
-                                         </tr>
-                                        <?php } ?>
-                                   
+                                            ?>
+                                        </tr>
+                                    <?php } ?>
+
                                 </table>
                             </div>
                         </div>

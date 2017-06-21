@@ -114,8 +114,9 @@
 <?php // Upload  file   ?>
             id = $(this).attr("value");
             var formdatas = new FormData($("#FileForm" + id)[0]);
+            link = '../Files/upload';
             $.ajax({
-                url: '../Files/upload',
+                url: link,
                 dataType: 'json',
                 method: 'post',
                 data: formdatas,
@@ -136,8 +137,9 @@
                 id: id
             };
             var data = jQuery.param(params);
+            link = '../Files/delete';
             $.ajax({
-                url: '../Files/delete',
+                url: link,
                 method: 'post',
                 data: data,
                 success: successDelete(id)
@@ -165,7 +167,7 @@
 
     function successUpload(data, id) {
         if (data != 0) { <?php //Upload ok ?>
-            $("#file" + id).html(data[0] + " <?php echo __('upload ok') ?>");
+            $("#file" + id).html(data[0]);
             $("#file" + id).attr("value", data[0]);
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[1] + '" id="FilesInfo">');
