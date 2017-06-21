@@ -266,16 +266,20 @@ class AppController extends Controller {
         
         //Use $this->params['controller'] to get the current controller.
         //Use $this->action to verify the current controller/action
-        $action = $this->action;
-        $controller = $this->params['controller'];
-        $action2 = $this->params['action'];
-        //Here we verify if this user has authorization to acces the page
-        $resultAcl = $this->isAuthorized($controller . $action);
-        if (!$resultAcl) {
-            //In contructions, we use this now before we create a error page
-            throw new
-			FatalErrorException(__('You cannot access this page directly'));
+        if ($this->Auth->user()) {
+
+            $action = $this->action;
+            $controller = $this->params['controller'];
+            $action2 = $this->params['action'];
+            //Here we verify if this user has authorization to acces the page
+            $resultAcl = $this->isAuthorized("controllers/". ucfirst($controller) . "Controller/" . $action);
+            if (!$resultAcl) {
+                //In contructions, we use this now before we create a error page
+                throw new
+                            FatalErrorException(__('You cannot access this page directly'));
+            }
         }
+       
         
         
     }
