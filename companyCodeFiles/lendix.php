@@ -66,6 +66,8 @@ Rectified double function "collectCompanyMarketplaceData". Deleted one of them
  */
 
 class lendix extends p2pCompany {
+    
+    private $session;
 
     function __construct() {
         parent::__construct();
@@ -193,11 +195,11 @@ function collectCompanyMarketplaceData() {
                     $this->logToFile("Warning", $msg);
                     return $this->getError(__LINE__, __FILE__);
                 }
-                $session = json_decode($this->mainPortalPage, $assoc = true);
+                $this->session = json_decode($this->mainPortalPage, $assoc = true);
         //$this->print_r2($session);
-                $lendixSessionId = $session['session']['id'];
-                $lendixSessionToken = $session['session']['token'];
-                $userId = $session['session']['user']['id'];
+                $lendixSessionId = $this->session['session']['id'];
+                $lendixSessionToken = $this->session['session']['token'];
+                $userId = $this->session['session']['user']['id'];
                 $header1 = "sessionToken: $lendixSessionToken";
                 $header2 = "userId: $userId";
         // construct extra headers for next http message
@@ -228,7 +230,7 @@ function collectCompanyMarketplaceData() {
                 $this->tempArray['global']['profitibility'] = $this->getPercentage($summaryData['averageRate']);
                 $this->tempArray['global']['investments'] = count($summaryData['investments']);
                 $this->tempArray['investments'] = $this->data1;
-                $this->tempArray['global']['myWallet'] = $session['session']['user']['credit'];
+                $this->tempArray['global']['myWallet'] = $this->session['session']['user']['credit'];
                 $this->print_r2($this->tempArray);
                 return $this->tempArray;
         }

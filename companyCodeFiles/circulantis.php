@@ -351,7 +351,8 @@ class circulantis extends p2pCompany {
                     echo "key = $key and " . $div->nodeValue . "<br>";
                     echo __FILE__ . " " . __LINE__ . "<br>";
                 }
-                $tempArray['global']['profitibility'] = $this->getPercentage($div[0]->nodeValue);
+                $prof = $this->getElements($dom, "div", "class", "col-lg-2 total_fondos");
+                $tempArray['global']['profitibility'] = $this->getPercentage($prof[0]->nodeValue);
                 $tempArray['global']['investments'] = $numberOfInvestments;
                 $tempArray['investments'] = $data1;
                 $this->print_r2($tempArray);

@@ -366,7 +366,7 @@ class zank extends p2pCompany {
                             case 2:
                                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
-                            case 3:
+                            case 4:
                                 $this->tempArray['global']['profitibility'] = $this->getPercentage($p->nodeValue);
                                 break;
                         }
@@ -425,10 +425,10 @@ class zank extends p2pCompany {
                 foreach ($temp['data'] as $key => $item) {  // mapping of the data to a generic, own format.
                     // Keep all which don't have status == "amortizado"
                     //$this->data1[$key]['status'] = 10;    // dummy value											
-                    if (strncasecmp($item['Estado'], "Retrasado")) {
+                    if (strpos($item['Estado'], "Retrasado")) {
                         $this->data1[$key]['status'] = PAYMENT_DELAYED;
                     }
-                    if (strncasecmp($item['Estado'], "amortizaci")) {
+                    if (strpos($item['Estado'], "Amortizaci")) {
                         $this->data1[$key]['status'] = OK;
                     }
 
@@ -484,7 +484,7 @@ class zank extends p2pCompany {
                     $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
                 }
                 $this->data1 = array_values($this->data1);
-                $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                $this->tempArray['global']['investments'] = count($this->data1);
                 //echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->tempArray['investments'] = $this->data1;
                 $this->print_r2($this->tempArray);
