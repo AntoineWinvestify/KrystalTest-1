@@ -113,8 +113,9 @@
 <?php // Upload  file   ?>
             id = $(this).attr("value");
             var formdatas = new FormData($("#FileForm" + id)[0]);
+            link = '../Files/upload';
             $.ajax({
-                url: '../Files/upload',
+                url: link,
                 dataType: 'json',
                 method: 'post',
                 data: formdatas,
@@ -135,8 +136,9 @@
                 id: id
             };
             var data = jQuery.param(params);
+            link = '../Files/delete';
             $.ajax({
-                url: '../Files/delete',
+                url: link,
                 method: 'post',
                 data: data,
                 success: successDelete(id)

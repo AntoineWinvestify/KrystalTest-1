@@ -65,7 +65,7 @@ foreach ($companies as $companyInfo) {
 <script>
     $(function () {
         $(document).on("click", "#send", function () {
-<?php // Upload  file and send data     ?>
+<?php // Upload  file and send data          ?>
 
 
             var formdatas = new FormData($("#bill")[0]);
@@ -77,14 +77,21 @@ foreach ($companies as $companyInfo) {
                 bill: formdatas
             };
             link = '../Files/upload';
-            //var data = jQuery.param(params);
-            getServerData(link, params, success, error);
+            var data = jQuery.param(params);
+            $.ajax({
+                url: link,
+                dataType: 'json',
+                method: 'post',
+                data: data,
+                contentType: false,
+                processData: false,
+            }).done(function (data) {
 
+            });
         });
     });
 
     function success() {}
-    function error() {}
 </script>
 <div id="1CR_winAdmin_1_billingPanel">
     <div class="row">
