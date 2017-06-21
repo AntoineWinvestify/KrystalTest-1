@@ -342,9 +342,8 @@ public function login()
 
 public function logout() {
 	$user = $this->Auth->user();		// get all the data of the authenticated user
-	$event = new CakeEvent('Controller.User_logout', $this, array(
-										'data' => $user,
-										));
+	$event = new CakeEvent('Controller.User_logout', $this, array('data' => $user,
+				));
 	$this->getEventManager()->dispatch($event);
 	return $this->redirect($this->Auth->logout());
 }

@@ -1197,7 +1197,7 @@ textarea[name="error"] {
 /* Winvestify Login Styling*/
 .loginContainer {
     margin: 0 auto;
-    background-image: url("./../img/login.png");
+    background-image: url("/img/login.png");
     background-repeat: no-repeat;
     max-width: 1280px;
     height: 787px;
