@@ -547,7 +547,7 @@ app.visual = {
     checkForm1CRInvestorData: function (){
         var correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
-        $("#OCR_InvestorPanelA input").removeClass("redBorder"); // remove ALL redborders
+        $("#1CR_investor_2_investorDataPanel input").removeClass("redBorder"); // remove ALL redborders
         var name = $("#ContentPlaceHolder_name").val();
         var surname = $("#ContentPlaceHolder_surname").val();
         var identificationId = $("#dni").val();
