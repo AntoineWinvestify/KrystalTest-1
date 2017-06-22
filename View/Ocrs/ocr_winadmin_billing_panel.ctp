@@ -40,6 +40,12 @@
  * [2017-06-19] Version 0.5
  * Added bills table db info
  * 
+ * [2017-06-22] Version 0.6
+ * Added javascript validation
+ * Added file error div
+ * Added file btn to style the form
+ * Added Select PFP filter on History of Bills --> it's necessary? datatable can sort by columns.
+ * 
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -53,6 +59,9 @@
     .togetoverlay .overlay > .fa {
         font-size: 50px;
     }
+    input[type="file"] {
+        display: none;
+    }
 </style>
 
 <?php
@@ -64,34 +73,33 @@ foreach ($companies as $companyInfo) {
 ?>
 <script>
     $(function () {
-        $(document).on("click", "#send", function () {
-<?php // Upload  file and send data          ?>
+        $(document).on("click", "#sendBill", function () {
+            console.log("validate Winadmin billing data");
+            <?php //Javascript validation   ?>
+            if ((result = app.visual.checkFormWinadminBilling()) === true) {
+                var formdatas = new FormData($("#bill")[0]);
+                params = {
+                    pfp: $("#ContentPlaceHolder_pfp").val(),
+                    number: $("#ContentPlaceHolder_number").val(),
+                    concept: $("#ContentPlaceHolder_concept").val(),
+                    amount: $("#ContentPlaceHolder_amount").val(),
+                    bill: formdatas
+                };
+                link = '../Files/upload';
+                var data = jQuery.param(params);
+                    $.ajax({
+                        url: link,
+                        dataType: 'json',
+                        method: 'post',
+                        data: data,
+                        contentType: false,
+                        processData: false,
+                }).done(function (data) {
 
-
-            var formdatas = new FormData($("#bill")[0]);
-            params = {
-                pfp: $("#ContentPlaceHolder_pfp").val(),
-                number: $("#ContentPlaceHolder_number").val(),
-                concept: $("#ContentPlaceHolder_concept").val(),
-                amount: $("#ContentPlaceHolder_amount").val(),
-                bill: formdatas
-            };
-            link = '../Files/upload';
-            var data = jQuery.param(params);
-            $.ajax({
-                url: link,
-                dataType: 'json',
-                method: 'post',
-                data: data,
-                contentType: false,
-                processData: false,
-            }).done(function (data) {
-
-            });
+                });
+            }
         });
     });
-
-    function success() {}
 </script>
 <div id="1CR_winAdmin_1_billingPanel">
     <div class="row">
@@ -102,10 +110,10 @@ foreach ($companies as $companyInfo) {
                     <p class="category"><?php echo __('Update bill to selected PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <!--<div class="overlay">
+                    <div class="overlay">
                         <div class="fa fa-spin fa-spinner" style="color:green">	
                         </div>
-                    </div>-->
+                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -118,14 +126,16 @@ foreach ($companies as $companyInfo) {
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert">
+                                <strong><?php echo __("The file is too big or incorrect format.") ?></strong>
+                            </div>
                             <div class="table-responsive">
-                                <table id="uploadedBills" class="table table-striped display dataTable"  width="100%" cellspacing="0"
-                                       data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                <table id="uploadedBills" class="table table-striped display dataTable"  width="100%" cellspacing="0" data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
-                                        <th width="15%"><?php echo __('PFP') ?></th>
-                                        <th width="10%"><?php echo __('Number') ?></th>
-                                        <th width="25%"><?php echo __('Concept') ?></th>
-                                        <th with="10%"><?php echo __('Amount') ?></th>
+                                        <th><?php echo __('PFP') ?></th>
+                                        <th><?php echo __('Number') ?></th>
+                                        <th><?php echo __('Concept') ?></th>
+                                        <th><?php echo __('Amount') ?></th>
                                         <th><?php echo __('Upload file') ?></th>
                                         <th><?php echo __('Send') ?></th>
                                     </tr>
@@ -227,13 +237,12 @@ foreach ($companies as $companyInfo) {
                                         </td>
                                         <td>
                                             <?php
-                                            //<button type="button" class="btn btn-default btnRounded" style="background-color:#3399ff; color:white;">
-                                            echo $this->Form->file("bill", array('class' => 'upload'));
-                                            //</button> 
+                                            echo "<label class='btn labelFile btnRounded btnUploadFile' for='billUpload'><i class='fa fa-upload'></i> Upload bill</label>";
+                                            echo $this->Form->file("bill", array('class' => 'upload', 'id' => 'billUpload'));
                                             ?>
                                         </td>
                                         <td>
-                                            <button type="button" id="send" class="btn btn-default btnWinAdmin btnRounded">
+                                            <button type="button" id="sendBill" class="btn btn-default btnWinAdmin btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Send') ?> 
                                             </button>
                                         </td>
@@ -255,10 +264,6 @@ foreach ($companies as $companyInfo) {
                     <p class="category"><?php echo __('All uploaded bills') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -268,18 +273,32 @@ foreach ($companies as $companyInfo) {
                                         . ' PFP puedan validar y autenticar su identidad.')
                                 ?></p>
                         </div>
+                        <div id="investorFilters" class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                            <?php 
+                            $class = "form-control blue_noborder investorCountry". ' ' . $errorClass;
+                            $countries = ["select PFP", "pfp1", "pfp2", "pfp3"];      
+                                                                                echo $this->Form->input('Investor.investor_country', array(
+                                                                                        'name'			=> 'country',
+                                                                                        'id' 			=> 'ContentPlaceHolder_country',
+                                                                                        'label' 		=> false,
+                                                                                        'options'               => $countries,
+                                                                                        'placeholder' 	=>  __('Country'),
+                                                                                        'class' 		=> $class,
+                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_country'],						
+                                                        ));
+                            ?>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive">
                                 <table id="uploadedBills" class="table table-striped display dataTable"  width="100%" cellspacing="0"
-                                       data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                       data-order='[[ 3, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
                                         <th width="15%"><?php echo __('PFP') ?></th>
-                                        <th width="10%"><?php echo __('Number') ?></th>
-                                        <th width="25%"><?php echo __('Concept') ?></th>
-                                        <th with="10%"><?php echo __('Amount') ?></th>
-                                        <th><?php echo __('Status') ?></th>
+                                        <th><?php echo __('Number') ?></th>
+                                        <th><?php echo __('Concept') ?></th>
+                                        <th><?php echo __('Amount') ?></th>
                                     </tr>
 
                                     <?php foreach ($bills as $billsTable) { //Bills table creation ?>
@@ -288,17 +307,6 @@ foreach ($companies as $companyInfo) {
                                             <td><?php echo __($billsTable['info']['bill_number']) ?></td>
                                             <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
                                             <td align="left"><?php echo __($billsTable['info']['bill_amount']) ?></td>
-                                            <?php
-                                            if ($billsTable['info']['bill_status'] == 1) {
-                                                ?>
-                                                <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Paid') ?></span></td>
-                                                <?php
-                                            } else {
-                                                ?>
-                                                <td><span style="color: red"><i class="fa fa-warning"></i> <?php echo __('Unpaid') ?></span></td>
-                                                <?php
-                                            }
-                                            ?>
                                         </tr>
                                     <?php } ?>
 
