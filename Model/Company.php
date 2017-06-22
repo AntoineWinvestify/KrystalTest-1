@@ -132,7 +132,7 @@ class Company extends AppModel {
         }
 
         $data = $this->find("all", array(
-            'fields' => array('id', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
+            'fields' => array('id', 'Company.company_name', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
                 'Company.Company_privacityUrl', 'Company.Company_type'),
             'recursive' => -1,
             'conditions' => $conditions,

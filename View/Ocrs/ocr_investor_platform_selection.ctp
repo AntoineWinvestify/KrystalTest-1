@@ -146,8 +146,6 @@
 
 
     function successDelete() {
-        $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("NAME has been deleted") ?></strong></div>');
-        fadeOutElement(".alert-to-fade", 5000);
         total--;
         recount();
     }
@@ -176,10 +174,11 @@ foreach ($notShow as $notShowCompany) {
 
 <?php
 foreach ($selected as $sel) {
-    $idSel = $sel['company_id'];
+    $idSel = $sel['ocrInfo']['company_id'];
+    $nameSel = $sel['name'];
     ?>
             logo = $(".<?php echo $idSel; ?>").find(".logo").attr("src");
-            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'"AÑADE AQUÍ EL NOMBREEEEEEE"'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformDB' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' id='<?php echo $nameSel ?>' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformDB' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
     <?php
 }
 ?>
@@ -199,10 +198,11 @@ foreach ($selected as $sel) {
             $(this).prop("disabled", true);
             z++;
             $("#" + id).parentsUntil("#platformSelection").fadeOut();
+            name = $("." + id).attr("id");
             $("#selection").append("<div value='" + id + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $("#" + id).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             recount();
             extraEvent();
-            $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("Company NAME has been added.") ?></strong></div>');
+            $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong>' + name + ' <?php echo __("has been added.") ?></strong></div>');
             fadeOutElement(".alert-to-fade", 5000);
         });
 
@@ -222,6 +222,7 @@ foreach ($selected as $sel) {
             }
         });
     }
+    
     function extraEvent() {
         //Borra la plataforma cuando le das a l x
         $('.btnSelectedPlatform').click(function () {
@@ -231,11 +232,13 @@ foreach ($selected as $sel) {
             $("#platformSelection").find("." + idDel).find('*').fadeIn();
             $(this).parent().parent().parent().remove();
             recount();
-            $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("NAME has been deleted") ?></strong></div>');
+            name = $("." + idDel).attr("id");
+            $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong>' + name + ' <?php echo __("has been deleted") ?></strong></div>');
             fadeOutElement(".alert-to-fade", 5000);
         });
 
     }
+    
     function recount() {
         i = 0;
         $(".btnSelectedPlatform").each(function () {
@@ -245,14 +248,18 @@ foreach ($selected as $sel) {
         });
         selEvent();
     }
+    
     function selEvent() {
         if (total != 0 || $(".btnSelectedPlatformNoDB").length) {
+            $("#sentCompanies").prop("disabled",false);
             $("#sel").fadeIn();
         } else {
+            $("#sentCompanies").prop("disabled",true);
             $("#sel").fadeOut(5000);
         }
 
     }
+    
 </script>
 <style>
     .togetoverlay .overlay  {
@@ -368,8 +375,8 @@ foreach ($selected as $sel) {
                 <?php
                 foreach ($company as $comp) {
                     ?>
-
-                    <div class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $comp['Company']['id'] ?>">
+                    
+                    <div id = "<?php echo $comp['Company']['company_name'] ?>" class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $comp['Company']['id'] ?>">
                         <div class="box box-widget widget-user-2">
                             <div class="widget-user-header">
                                 <div class="row">

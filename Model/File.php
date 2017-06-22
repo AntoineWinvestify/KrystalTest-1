@@ -112,22 +112,17 @@ class file extends AppModel {
                 } else if ($path == "bill") {
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
 
-                    /*$bill = array(
-                        ['Company'] => Array(
-                            ['id'] => $id,
-                        ),
-                        ['File'] => Array(
-                            ['id'] => 50,
-                        ),
-                        ['CompaniesFile'] => Array(
-                            ['bill_number'] => $type['number'],
-                            ['bill_amount'] => $type['amount'],
-                            ['bill_concept'] => $type['concept']
-                        ),
+                    $bill = array(
+                        'CompaniesFile' => Array(
+                            'company_id' => $id,
+                            'file_id' => 50,
+                            'bill_number' => $type['number'],
+                            'bill_amount' => $type['amount'],
+                            'bill_concept' => $type['concept']
+                        )
                     );
 
-                    $this->CompaniesFile->saveAll($data,$bill);*/
-
+                    $this->CompaniesFile->save($bill);
 
                     return $result;
                 }

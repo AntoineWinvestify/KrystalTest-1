@@ -62,22 +62,6 @@ class ocr extends AppModel {
         ),
     );
 
-    
-    //METODO DE PRUEBA PARA DEBUG, BORRAR ANTES DE SUBIR
-    public function pruebaOcr($id) {
-        
-        $companyListNotFilter = $this->getAllCompanies(385);
-        print_r($companyListNotFilter);
-        $companyList = array();
-        foreach ($companyListNotFilter as $filterStatus) {
-            if ($filterStatus["company_status"] == 1) {
-                array_push($companyList, $filterStatus);
-            }
-        }
-        print_r($companyList);
-        //return $prueba;
-    }
-
     /* var $validate = array(
       'investor_cif' => array(
       'rule1' => array('rule' => array('minLength', 1),
@@ -297,7 +281,7 @@ class ocr extends AppModel {
         $companies_ocrs = array();
         foreach ($companiesArray as $company) {
             foreach ($company["Company"] as $companyOcr) {
-                array_push($companies_ocrs, $companyOcr["CompaniesOcr"]);
+                array_push($companies_ocrs, array( 'ocrInfo' => $companyOcr["CompaniesOcr"], 'name' => $companyOcr['company_name']));
             }
         }
         return $companies_ocrs;
@@ -314,7 +298,6 @@ class ocr extends AppModel {
         // Read all the companies_ocrof the user
         $companyListNotFilter = $this->getAllCompanies($id);
         $companyList = array();
-        
         //status filter
         foreach ($companyListNotFilter as $filterStatus) {
             if ($filterStatus["company_status"] == 0) {

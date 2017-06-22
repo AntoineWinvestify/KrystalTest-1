@@ -61,11 +61,6 @@ class ocrsController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-    function pruebaOcr() {
-        $prueba = $this->File->prueba();
-        $this->autoRender = false;
-    }
-
     /*
      * 
      * Ciclo Principal
