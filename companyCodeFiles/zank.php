@@ -53,6 +53,9 @@ Total invertido correcto, fecha
  
 2017/06/01
 * Added loop when we take json investments                                     [OK, STILL TO CHECK]
+
+2017/06/22
+ * Added mechanism to take more than 100 investments by Json
  
   Pending:
   Fecha en duda
@@ -65,6 +68,8 @@ class zank extends p2pCompany {
     private $credentials = array();
     private $userId;
     private $resultMiZank = false;
+    private $url;
+    private $start = 0;
 
     function __construct() {
         parent::__construct();
@@ -366,7 +371,7 @@ class zank extends p2pCompany {
                             case 2:
                                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
-                            case 3:
+                            case 4:
                                 $this->tempArray['global']['profitibility'] = $this->getPercentage($p->nodeValue);
                                 break;
                         }
@@ -414,21 +419,28 @@ class zank extends p2pCompany {
                 break;
             case 5:
                 $url = array_shift($this->urlSequence);
-                $url = $url . $this->userId . "/0";
+                $this->url = $url . $this->userId . "/0";
+                //We put a postitem into the curl call because initialy we don't take the first investment
+                //Nor more than 25 investment, so we alter those values
+                $form = [
+                    "length" => 100,
+                    "start" => $this->start];
+
                 $this->idForSwitch++;
-                //Add here the Edu's adaption to the url
-                $this->getCompanyWebpageMultiCurl($url);
+                //Add here the Edu's adaption to the url, we add the form into the call
+                $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
                 break;
             case 6:
                 $temp = json_decode($str, $assoc = true);
                 $this->numberOfInvestments = 0;
+                $numberJsonInvestments = count($temp['data']);
                 foreach ($temp['data'] as $key => $item) {  // mapping of the data to a generic, own format.
                     // Keep all which don't have status == "amortizado"
                     //$this->data1[$key]['status'] = 10;    // dummy value											
-                    if (strncasecmp($item['Estado'], "Retrasado")) {
+                    if (strpos($item['Estado'], "Retrasado")) {
                         $this->data1[$key]['status'] = PAYMENT_DELAYED;
                     }
-                    if (strncasecmp($item['Estado'], "amortizaci")) {
+                    if (strpos($item['Estado'], "Amortizaci")) {
                         $this->data1[$key]['status'] = OK;
                     }
 
@@ -482,13 +494,29 @@ class zank extends p2pCompany {
                     $this->data1[$key]['duration'] = $item['Plazo'] . " Meses";
                     $this->data1[$key]['commission'] = $this->getMonetaryValue($item['Comision']);
                     $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
-                }
+            }
+            if ($numberJsonInvestments % 100 == 0) {
+                //If investments are 100, we verify that there is no more, so we recall starting at 100 investments
+                $this->start = $this->start + 100;
+                $form = [
+                "length" => 100,
+                "start" => $this->start];
+
+                $this->idForSwitch = 6;
+                //Add here the Edu's adaption to the url
+                $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
+
+            }
+            else {
                 $this->data1 = array_values($this->data1);
-                $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                $this->tempArray['global']['investments'] = count($this->data1);
                 //echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->tempArray['investments'] = $this->data1;
                 $this->print_r2($this->tempArray);
-                return $this->tempArray;                    
+                return $this->tempArray; 
+            }
+                
+                                    
         }
     }
 
@@ -845,6 +873,92 @@ class zank extends p2pCompany {
         }
         return $str;
     }
+    
+     /**
+     * Function that is used to pick up inversions by 100 instead of 25 with a json
+     * The normal function of Zank is to give 25 but we change the petition with the posts item
+     * with curl
+     * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
+     * @return string $str It is the website resulted of the curl petition
+     */
+    function getCompanyWebpageJsonMultiCurl($url, $form) {
+
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
+        }
+        $this->errorInfo = $url;
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                echo "currentScreen = $currentScreen";
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
+        }
+
+        $request = new \cURL\Request();
+
+        if ($this->config['postMessage'] == true) {
+            $request->getOptions()
+                ->set(CURLOPT_POST, true);
+        //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
+        }
+
+        // check if extra headers have to be added to the http message  
+        if (!empty($this->headers)) {
+            echo "EXTRA HEADERS TO BE ADDED<br>";
+            $request->getOptions()
+                //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
+                ->set(CURLOPT_HTTPHEADER, $this->headers);
+            
+            unset($this->headers);   // reset fields
+        }
+        
+        foreach ($form as $key => $value) {
+            $postItems[] = $key . '=' . $value;
+        }
+        $postString = implode('&', $postItems);
+
+        $request->_page = $this->idForQueue . ";". $this->idForSwitch . ";WEBPAGE";
+        $request->getOptions()
+                // Set the file URL to fetch through cURL
+                ->set(CURLOPT_URL, $url)
+                // Set a different user agent string (Googlebot)
+                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                // Follow redirects, if any
+                ->set(CURLOPT_FOLLOWLOCATION, true)
+                ->set(CURLOPT_POSTFIELDS, $postString)
+                // Fail the cURL request if response code = 400 (like 404 errors) 
+                ->set(CURLOPT_FAILONERROR, true)
+                
+                ->set(CURLOPT_AUTOREFERER, true)
+                //->set(CURLOPT_VERBOSE, 1)
+                // Return the actual result of the curl result instead of success code
+                ->set(CURLOPT_RETURNTRANSFER, true)
+                // Wait for 10 seconds to connect, set 0 to wait indefinitely
+                ->set(CURLOPT_CONNECTTIMEOUT, 30)
+                // Execute the cURL request for a maximum of 50 seconds
+                ->set(CURLOPT_TIMEOUT, 100)
+                // Do not check the SSL certificates
+                ->set(CURLOPT_SSL_VERIFYHOST, false)
+                ->set(CURLOPT_SSL_VERIFYPEER, false)
+                ->set(CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt') // important
+                ->set(CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt'); // Important
+
+        //Add the request to the queue in the marketplaces controller
+        $this->marketplaces->addRequetsToQueueCurls($request);
+        
+        if ($this->config['appDebug'] == true) {
+            echo "VISITED COMPANY URL = $url <br>";
+        }
+    }
+
 
 }
 

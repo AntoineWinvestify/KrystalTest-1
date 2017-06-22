@@ -46,7 +46,8 @@ Adding generic tracing capability 											[OK, NOT tested]
 function "getCurrentAccumulativeRowValue" was updated with the capability	[NOT OK, not tested]
 of ONLY adding cuotas realmente pagados.
 
-
+PENDING
+ * fix method  getMonetaryValue()
 */
 
 require_once "../../vendors/autoload.php";
@@ -968,18 +969,23 @@ function getHighestDateValue($amortizationTable, $dateFormat, $dateRow) {
 
 
 /**
-*
+*   This requires a permanent solution. Some PFPs have as format 1,000,345€ and 1.000.345€ and 1 000 345 € (LENDIX) dpending
+ * on the selected language.
+ * The second parameter is a quick fix for arboribus
 *	Extracts the amount as an integer from n input string
-*
+*       
 *	@param 		string	$inputValue in string format like 1,23€ -> 123 and 10.400€ -> 1040000 and 12.235,66€ -> 1223566
 *	@return 	int		$outputValue in €cents
 *	
 */
-function getMonetaryValue($inputValue)  {
+function getMonetaryValue($inputValue, $separating = null)  {
 
+    if (empty($separating)) {
+        $separating = ',';
+    }
 	$tempValue = trim(preg_replace('/\D/', '', $inputValue));
 
-	if (stripos($inputValue, ',') === false) {
+	if (stripos($inputValue, $separating) === false) {
 		return $tempValue * 100;
 	}
 	return $tempValue * 1;
