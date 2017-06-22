@@ -759,7 +759,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php echo __('Maximun File Size: 10MB'); ?></p>
-                            <p><?php echo __('Permitted Formats: .png, .pdf, .png'); ?></p>
+                            <p><?php echo __('Permitted Formats:' . $filesType ); ?></p>
                         </div>
                     </div>
                     <div class="row">
@@ -791,30 +791,30 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                     <tbody id="body">
                                     <input type="hidden" name="countFiles" value="<?php echo count($requiredFiles) ?>">
                                     <?php
-                                    foreach ($requiredFiles as $requiredFiles) { //Genearete the required files table
-                                        $file = "file" . $requiredFiles[0]['File']['id'];
+                                    foreach ($requiredFiles as $filesTable) { //Generate the required files table
+                                        $file = "file" . $filesTable[0]['File']['id'];
                                         ?>
-                                        <tr id = "notification<?php echo $requiredFiles[0]['File']['id'] ?>">
+                                        <tr id = "notification<?php echo $filesTable[0]['File']['id'] ?>">
 
                                         </tr>
-                                        <tr id="<?php echo $requiredFiles[0]['File']['id'] ?>" class="documentRow">
-                                            <td title="<?php echo $requiredFiles[0]['File']['tooltip'] ?>"><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
-                                            <td id="status<?php echo $requiredFiles[0]['File']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
+                                        <tr id="<?php echo $filesTable[0]['File']['id'] ?>" class="documentRow">
+                                            <td title="<?php echo $filesTable[0]['File']['file_tooltip'] ?>"><?php echo __($filesTable[0]['File']['file_type']) ?></td>
+                                            <td id="status<?php echo $filesTable[0]['File']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
                                             <td>
                                                 <?php
-                                                $uploaded = "uploaded" . $requiredFiles[0]['File']['id'];
-                                                echo "<label class='btn labelFile btnRounded btnUploadFile' for='fileId" . $requiredFiles[0]['File']['id']. "'><i class='fa fa-upload'></i> Upload file</label>";
-                                                echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $requiredFiles[0]['File']['id'], 'class' => 'upload', 'value' => $requiredFiles[0]['File']['id']));
+                                                $uploaded = "uploaded" . $filesTable[0]['File']['id'];
+                                                echo "<label class='btn labelFile btnRounded btnUploadFile' for='fileId" . $filesTable[0]['File']['id']. "'><i class='fa fa-upload'></i> Upload file</label>";
+                                                echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['File']['id'], 'class' => 'upload', 'value' => $filesTable[0]['File']['id']));
                                                 echo "<span id='" . $file . "' >";
-                                                echo $this->Form->file("fileId" . $requiredFiles[0]['File']['id']);
-                                                echo $this->Form->hidden('info', array('class' => 'typeFile','value' => $requiredFiles[0]['File']['id']));
+                                                echo $this->Form->file("fileId" . $filesTable[0]['File']['id']);
+                                                echo $this->Form->hidden('info', array('class' => 'typeFile','value' => $filesTable[0]['File']['id']));
                                                 echo $this->Form->hidden('upload', array('id' => $uploaded, 'class' => 'uploaded', 'value' => 0));
                                                 echo "</span>";
                                                 echo $this->Form->end();
                                                 ?>
                                             </td>
                                             <td>
-                                                <button type="button" id="del<?php echo $requiredFiles[0]['File']['id'] ?>" value="<?php echo $requiredFiles[0]['File']['id'] ?>" class="delete btn btn-default btnDeleteFile btnRounded" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
+                                                <button type="button" id="del<?php echo $filesTable[0]['File']['id'] ?>" value="<?php echo $filesTable[0]['File']['id'] ?>" class="delete btn btn-default btnDeleteFile btnRounded" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
                                             </td>
                                         </tr>
                                         <?php

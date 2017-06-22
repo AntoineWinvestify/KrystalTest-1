@@ -50,7 +50,7 @@ class Company extends AppModel {
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'ocr_id',
         ),
-        'Bills' => array(
+        'File' => array(
             'className' => 'File',
             'joinTable' => 'companies_files',
             'foreignKey' => 'company_id',
