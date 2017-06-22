@@ -57,10 +57,10 @@
                     <p class="category"><?php echo __('New users from Winvestify added to your PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <div class="overlay">
+                    <!--<div class="overlay">
                         <div class="fa fa-spin fa-spinner" style="color:green">	
                         </div>
-                    </div>
+                    </div>-->
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -80,7 +80,6 @@
                                                                                         data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                                 <thead>
                                                         <tr>
-                                                            <th width="5%"></th>
                                                             <th><?php echo __('Date')?></th>
                                                             <th><?php echo __('Name')?></th>
                                                             <th><?php echo __('Surname')?></th>
