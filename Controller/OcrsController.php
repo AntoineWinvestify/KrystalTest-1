@@ -61,6 +61,7 @@ class ocrsController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
+
     /*
      * 
      * Ciclo Principal

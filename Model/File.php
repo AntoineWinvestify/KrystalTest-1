@@ -225,7 +225,7 @@ class file extends AppModel {
 
         //Info filter, we need only the company name and the bill info.
         foreach ($allBills as $allInfo) {
-            foreach ($allInfo["Bills"] as $info) {
+            foreach ($allInfo["Company"] as $info) {
                 $companyName = $info["company_name"];
                 $billInfo = $info["CompaniesFile"];
                 $tempArray = array('name' => $companyName, 'info' => $billInfo);
