@@ -61,7 +61,6 @@ class ocrsController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-
     /*
      * 
      * Ciclo Principal
@@ -260,16 +259,20 @@ class ocrsController extends AppController {
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');
         $this->set('countryData', $countryData);
-        
+
         //Type set
         $fileConfig = Configure::read('files');
         $typeString = null;
-        foreach(array_unique($fileConfig['permittedFiles']) as $files){
-            $file = substr($files, -3 , 3);
+        foreach (array_unique($fileConfig['permittedFiles']) as $files) {
+            $file = substr($files, -3, 3);
             $typeString = $typeString . " ." . $file;
         }
-        
         $this->set('filesType', $typeString);
+
+        //Check data set
+        $checkData = $this->Investor->readCheckData($id);
+        $this->set('checkData', $checkData);
+
         echo " ";
     }
 

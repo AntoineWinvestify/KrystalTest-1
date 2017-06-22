@@ -100,7 +100,7 @@ class Investor extends AppModel {
         'investor_address1' => array(
             'rule' => array('minLength', 1),
             'allowEmpty' => false,
-            'message' => 'Addres validation error',
+            'message' => 'Address validation error',
         ),
         'investor_postCode' => array(
             'rule' => array('minLength', 1),
@@ -417,8 +417,8 @@ class Investor extends AppModel {
      * @return type
      */
     public function readCheckData($investorId) {
-        $CheckData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
-        return $CheckData;
+        $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+        return $checkData;
     }
 
     /**
@@ -439,7 +439,7 @@ class Investor extends AppModel {
             'check_email' => $checks['email'],
             'check_telephone' => $checks['telephone'],
             'check_postCode' => $checks['postCode'],
-            'check_addres' => $checks['addres'],
+            'check_address' => $checks['address'],
             'check_city' => $checks['city'],
             'check_country' => $checks['country'],
             'check_iban' => $checks['iban'],
