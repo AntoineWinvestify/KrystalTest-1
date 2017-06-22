@@ -24,7 +24,7 @@
     <div class="loginBox">
         <div class="row">    
     <div class="col-sm-offset-1 col-sm-10 col-xs-12">
-        <form method="post" action="/admin/users/loginAction" id="ctl00">
+        <form method="post" action="/adminpfp/users/loginAction" id="ctl00">
         <div class="container">
             <div class="card card-container">
                 <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">

@@ -60,10 +60,9 @@ function beforeFilter() {
 	$this->Security->validatePost = false;	
 // Allow only the following actions.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
+	$this->Auth->allow('login','session', 'loginAction', 'showTallyman', 'startTallyman');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
 //   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
-
 //var_dump($_REQUEST);
 //var_dump($this->request);
 //      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
@@ -104,10 +103,14 @@ public function showInvestorDataPanel() {
  * 
  */
 public function startTallyman() {
-    $this->layout = 'azarus_private_layout';
-    $investorIdentification = $this->Auth('User.Investor.investor_identity'); // read user identification
+ //   	Configure::write('debug', 2); 
+
+    $this->layout = 'Adminpfp.azarus_private_layout';
+ 
+
+ //   $investorIdentification = $this->Auth('User.Investor.investor_identity'); // read user identification
     $filterconditions = array('investor_identity', $investorIdentification);
-    $result = $this->Investorglobaldata->readInvestorData($filterConditions);
+ //   $result = $this->Investorglobaldata->readInvestorData($filterConditions);
     $this->set('result', $result);
        
 }
@@ -119,17 +122,20 @@ public function startTallyman() {
  * Shows the Tallyman data of a user
  * 
  */
-public function showTallyman($investorIdentity, $platformId) {
-    $this->layout = 'azarus_private_layout';	
-    $investorIdentification = $this->Auth('User.Investor.investor_identity'); // read user identification
+public function showTallyman($investorIdentity = null, $platformId = null) {
+ //   $this->autoRender = false;
+  //  	Configure::write('debug', 2); 
+
+    $this->layout = 'Adminpfp.azarus_private_layout';	
+ ///   $investorIdentification = $this->Auth('User.Investor.investor_identity'); // read user identification
 //    $resultTallyman = $this->xxxxx->find("all", maxíum 10 entries)
+ 
             
-            
-    $filterconditions = array('investor_identity', $investorIdentification);
-    $result = $this->Investorglobaldata->readInvestorData($filterConditions);
+ //   $filterconditions = array('investor_identity', $investorIdentification);
+ //   $result = $this->Investorglobaldata->readInvestorData($filterConditions);
     
-    $this->set('result', $resultTallyman);
-       
+ //   $this->set('result', $resultTallyman);
+  
 }
 
 
@@ -199,18 +205,19 @@ function editAdministratorData($id) {
 
 
 
-
-
 public function loginAction() {
+Configure::write('debug', 0); 
     echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
 //$this->print_r2($this->request->data);
-$this->autoRender = false;
+//$this->autoRender = false;
 	 
         if ($this->Auth->login()) {
-            echo "SESSION1 <br>";
-            echo "We have logged in <br>";
-            print_r($this->Session->read()) ."<br>";
+            echo "SESSION155 <br>";
+            echo "We have succesfully logged in <br>";
+  //          print_r($this->Session->read()) ."<br>";
             echo "<br>" . $this->Auth->redirectUrl()."<br>"."<br>";
+         //   return $this->Auth->redirectUrl();
+            $this->redirect($this->Auth->redirectUrl());
   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";        
         }
         else {
@@ -220,49 +227,14 @@ $this->autoRender = false;
         
   exit;  
         if ($this->Auth->loggedIn()){
-		echo "user has logged on";	
+		echo "user has logged on";
+                return $this->redirect($this->Auth->redirectUrl());
 	}
 	else {
 		echo "User not logged on";
 	}
 
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";	
-//	echo $this->Auth->authError();
-exit;	
-	$this->layout = 'zastac_admin_login_layout';
-//echo $this->Session->flash();
-//echo $this->Session->flash('auth');	
-	
 
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-echo $this->Auth->user('id');
-debug($this->request->data);
-echo  $this->Auth->loggedIn();
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-//var_dump($this->request);	
-	if ($this->request->is('post')) {
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-	
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-
-		if ($this->Auth->login()) {
-		echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-		pr($this->request);
-			$user = $this->Auth->user();		// get all the data of the authenticated user
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-			exit;
-			return $this->redirect($this->Auth->redirectUrl());
-		}
-		else {
-		echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-			$this->Session->setFlash(__('Username or password is incorrect'),
-											'default',array(),	'auth');
-			echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-			exit;
-		}
-	}
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-	exit;
 }
 
 
@@ -290,9 +262,8 @@ public function login()
 
 public function logout() {
 	$user = $this->Auth->user();		// get all the data of the authenticated user
-	$event = new CakeEvent('Controller.User_logout', $this, array(
-										'data' => $user,
-										));
+	$event = new CakeEvent('Controller.User_logout', $this, array('data' => $user,
+                            ));
 	$this->getEventManager()->dispatch($event);
 	return $this->redirect($this->Auth->logout());
 }

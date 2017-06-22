@@ -69,7 +69,7 @@ function beforeFilter() {
 //   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
 //var_dump($_REQUEST);
-//var_dump($this->request);
+var_dump($this->request);
 //      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
 }
@@ -255,7 +255,7 @@ echo "<br/>";
 
 public function loginAction() {
     echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-//$this->print_r2($this->request->data);
+$this->print_r2($this->request->data);
 $this->autoRender = false;
 	 
         if ($this->Auth->login()) {

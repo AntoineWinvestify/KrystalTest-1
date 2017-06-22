@@ -65,9 +65,9 @@ class AdminpfpAppController extends AppController {
 	
 				'Auth' => array('authorize' => 'Controller',
                                                 'loginRedirect'	=> array(
-									'plugin' => 'admin',
+									'plugin' => 'adminpfp',
 									'controller' 	=> 'users',
-									'action' 	=> 'readInvestmentsList'
+									'action' 	=> 'showTallyman'
 									),
 						'logoutRedirect' => array('controller' 	=> 'users',
 									 'action' => 'login'
