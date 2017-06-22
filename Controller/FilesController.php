@@ -61,26 +61,21 @@ class filesController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
 
-            if( count($this->params['data']['Files']) > 0){
-                
+            if( count($this->params['data']['Files']) > 0){       
             $data = $this->params['data']['Files'];        
             $type = $data['info'];
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
             $result = $this->File->ocrFileSave($data, $identity, $id, $type,"file");
-            $this->set("fileInfo", $result);
+            $this->set("result", $result);
             
             } else if( count($this->params['data']['bill']) > 0){
-                print_r($this->params['data']);
                 $data = $this->params['data']['bill'];        
-                $type = null;             
-                $id = "";
-                $company = "";
-                $result = $this->File->ocrFileSave($data, $company, $id, $type,"file");
-                /*$id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-                $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-                $result = $this->File->ocrFileSave($data, $identity, $id, $type);
-                $this->set("fileInfo", $result);*/
+                $info = array( 'number' => $this->params['data']['number'] , 'concept' => $this->params['data']['concept'] , 'amount' => $this->params['data']['amount']) ;             
+                $id = $this->params['data']['pfp'];           
+                $company = $this->Company->getCompanyDataList(array('id'=> $id))[$id]['company_codeFile'] ;
+                $result = $this->File->ocrFileSave($data, $company, $id, $info,"bill");   
+                $this->set("result", $result);
             }
             
             

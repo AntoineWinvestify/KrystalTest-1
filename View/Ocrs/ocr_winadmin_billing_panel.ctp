@@ -65,19 +65,10 @@ foreach ($companies as $companyInfo) {
 <script>
     $(function () {
         $(document).on("click", "#send", function () {
-<?php // Upload  file and send data          ?>
+<?php // Upload  file and send data            ?>
 
-
-            var formdatas = new FormData($("#bill");
-            params = {
-                pfp: $("#ContentPlaceHolder_pfp").val(),
-                number: $("#ContentPlaceHolder_number").val(),
-                concept: $("#ContentPlaceHolder_concept").val(),
-                amount: $("#ContentPlaceHolder_amount").val(),
-                bill: formdatas
-            };
+            var formdatas = new FormData($("#bill")[0]);
             link = '../Files/upload';
-            var data = jQuery.param(params);
             $.ajax({
                 url: link,
                 dataType: 'json',
@@ -85,9 +76,11 @@ foreach ($companies as $companyInfo) {
                 data: formdatas,
                 contentType: false,
                 processData: false,
-            }).done(function (data) {
-
+                success: function (data) {
+                    successUpload(data, id);
+                }
             });
+
         });
     });
 
@@ -134,7 +127,7 @@ foreach ($companies as $companyInfo) {
                                         <td>
                                             <?php
                                             $class = "form-control blue_noborder winadminPFP";
-                                            echo $this->Form->input('Investor.investor_country', array(
+                                            echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
                                                 'id' => 'ContentPlaceHolder_pfp',
                                                 'label' => false,
@@ -205,7 +198,7 @@ foreach ($companies as $companyInfo) {
                                             }
                                             $class = "form-control blue_noborder billAmount" . ' ' . $errorClass;
                                             echo $this->Form->input('Bills.bill_amount', array(
-                                                'name' => 'concept',
+                                                'name' => 'amount',
                                                 'id' => 'ContentPlaceHolder_amount',
                                                 'label' => false,
                                                 'rule' => 'numeric',

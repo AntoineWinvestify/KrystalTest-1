@@ -252,7 +252,8 @@ class ocrsController extends AppController {
 
         //Required  files
         $requiredFiles = $this->File->readRequiredFiles($companies);
-
+        print_r($requiredFiles);
+        
         //Read existing files 
         $existingFiles = $this->File->readExistingFiles($id);
 
