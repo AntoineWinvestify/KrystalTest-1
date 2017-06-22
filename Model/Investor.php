@@ -54,6 +54,10 @@ class Investor extends AppModel {
             'fields' => '',
             'order' => '',
         ),
+        'Check' => array(
+            'joinTable' => 'checks',
+            'foreignKey' => 'investor_id',
+        ),
     );
 
     /**
@@ -66,9 +70,9 @@ class Investor extends AppModel {
             'rule1' => array('rule' => array('minLength', 1),
                 'allowEmpty' => false,
                 'message' => 'Name validation error'),
-            /*'rule2' => array('rule' => 'alphaNumeric',
-                'allowEmpty' => false,
-                'message' => 'Name validation error'),*/
+        /* 'rule2' => array('rule' => 'alphaNumeric',
+          'allowEmpty' => false,
+          'message' => 'Name validation error'), */
         ),
         'investor_surname' => array(
             'rule1' => array('rule' => array('minLength', 1),
@@ -119,6 +123,7 @@ class Investor extends AppModel {
             'message' => 'Email validation error',
         ),
     );
+
 
     /**
      *
@@ -336,7 +341,7 @@ class Investor extends AppModel {
             return 1 . "[" . 1 . "," . $data . ",";
         } else {                     // validation false
             $errors = array('errors' => 'Form error', $this->validationErrors);
-            $errors = json_encode ($errors);
+            $errors = json_encode($errors);
             return 0 . "[" . 0 . "," . $errors;
         }
     }
@@ -404,6 +409,49 @@ class Investor extends AppModel {
             }
         }
         return $results;
+    }
+
+    /**
+     * Read the cheack data
+     * @param type $investorId
+     * @return type
+     */
+    public function readCheckData($investorId) {
+        $CheckData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+        return $CheckData;
+    }
+
+    /**
+     * Update the check data
+     * @param type $checks
+     * @param type $invesorId
+     * @return int
+     */
+    public function updateCheckData($checks, $invesorId) {
+
+        $checksArray = Array(
+            'id' => $checks['id'],
+            'investor_id' => $invesorId,
+            'check_name' => $checks['name'],
+            'check_surname' => $checks['surname'],
+            'check_dni' => $checks['dni'],
+            'check_dateOfBirth' => $checks['dateOfBirth'],
+            'check_email' => $checks['email'],
+            'check_telephone' => $checks['telephone'],
+            'check_postCode' => $checks['postCode'],
+            'check_addres' => $checks['addres'],
+            'check_city' => $checks['city'],
+            'check_country' => $checks['country'],
+            'check_iban' => $checks['iban'],
+            'check_cif' => $checks['cif'],
+            'check_bussinesName' => $checks['bussinesName']
+        );
+
+        if ($this->Check->save($checksArray)) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /**

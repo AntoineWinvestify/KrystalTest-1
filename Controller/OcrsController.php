@@ -61,10 +61,6 @@ class ocrsController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-    function pruebaOcr() {
-        $prueba = $this->File->prueba();
-        $this->autoRender = false;
-    }
 
     /*
      * 
@@ -146,7 +142,7 @@ class ocrsController extends AppController {
                 'investor_iban' => $_REQUEST['iban'],
             );
             $result2 = $this->Ocr->ocrDataSave($datosOcr);
-            $ocrArray = json_decode( "[" . $result2 . "]",true) ;
+            $ocrArray = json_decode("[" . $result2 . "]", true);
 
             //Update the companies status
             $idOcr = $ocrArray[1]["id"];
@@ -264,7 +260,16 @@ class ocrsController extends AppController {
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');
         $this->set('countryData', $countryData);
-
+        
+        //Type set
+        $fileConfig = Configure::read('files');
+        $typeString = null;
+        foreach(array_unique($fileConfig['permittedFiles']) as $files){
+            $file = substr($files, -3 , 3);
+            $typeString = $typeString . " ." . $file;
+        }
+        
+        $this->set('filesType', $typeString);
         echo " ";
     }
 
@@ -290,7 +295,7 @@ class ocrsController extends AppController {
         $linked = $this->Linkedaccount->getLinkedaccountIdList($filter);
         $notShow = array();
 
-        
+
         //Filter
         foreach ($registered as $registered) {
             array_push($notShow, $registered["company_id"]);
@@ -301,13 +306,13 @@ class ocrsController extends AppController {
         }
         $notShowList = array_unique($notShow);
         $filterList = array('id' => $notShowList);
-        
+
         $companyInfo = $this->Company->getCompanyDataList($filterList);
         $result = array();
-        foreach($companyInfo as $info){
-            array_push($result,array('id' => $info['id'],'name' => $info["company_name"]));
+        foreach ($companyInfo as $info) {
+            array_push($result, array('id' => $info['id'], 'name' => $info["company_name"]));
         }
-        
+
         //Set companies filter
         $this->set('notShow', $result);
         echo " ";

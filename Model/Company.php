@@ -50,9 +50,14 @@ class Company extends AppModel {
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'ocr_id',
         ),
+        'File' => array(
+            'className' => 'File',
+            'joinTable' => 'companies_files',
+            'foreignKey' => 'company_id',
+            'associationForeignKey' => 'file_id',
+        ),
     );
 
-    
     /**
      * 	Apparently can contain any type field which is used in a field. It does NOT necessarily
      * 	have to map to a existing field in the database. Very useful for automatic checks
@@ -93,7 +98,7 @@ class Company extends AppModel {
     public function getCompanyDataList($filterConditions) {
         $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
             'Company.company_state' => ACTIVE);
-        
+
         array_push($businessConditions, $filterConditions);
 
         $companyResult = $this->find("all", $params = array('recursive' => -1,
@@ -127,7 +132,7 @@ class Company extends AppModel {
         }
 
         $data = $this->find("all", array(
-            'fields' => array('id', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
+            'fields' => array('id', 'Company.company_name', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
                 'Company.Company_privacityUrl', 'Company.Company_type'),
             'recursive' => -1,
             'conditions' => $conditions,

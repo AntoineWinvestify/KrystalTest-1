@@ -44,7 +44,7 @@ class file extends AppModel {
 
     var $name = 'File';
     public $hasAndBelongsToMany = array(
-        'Bills' => array(
+        'Company' => array(
             'className' => 'Company',
             'joinTable' => 'companies_files',
             'foreignKey' => 'file_id',
@@ -72,16 +72,16 @@ class file extends AppModel {
      * @param type $type
      * @return string|int
      */
-    public function ocrFileSave($data, $identity, $id, $type, $path) {
+    public function ocrFileSave($fileInfo, $folder, $id, $type, $path) {
         //Load files config
         $fileConfig = Configure::read('files');
         if ($path == "file") {
-            $up = $fileConfig['investorPath'] . $identity;
+            $up = $fileConfig['investorPath'] . $folder;
         } else if ($path == "bill") {
-            $up = $fileConfig['BillsPath'];
+            $up = $fileConfig['billsPath'] . $folder;
         }
 
-        foreach ($data as $file) {
+        foreach ($fileInfo as $file) {
 
             //Error filter
             if ($file['size'] == 0 || $file['error'] !== 0) {
@@ -105,12 +105,26 @@ class file extends AppModel {
 
                 //Save in db
                 if ($path == "file") {
-                    $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $name . "', '" . $identity . DS . $filename . "');";
+                    $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $name . "', '" . $folder . DS . $filename . "');";
                     $query = $this->query($query);
-                    $result = array(basename($file['name']), $identity . DS . $filename, $type);
+                    $result = array(basename($file['name']), $folder . DS . $filename, $type);
                     return $result;
                 } else if ($path == "bill") {
-                    
+                    $result = array(basename($file['name']), $folder . DS . $filename, $type);
+
+                    $bill = array(
+                        'CompaniesFile' => Array(
+                            'company_id' => $id,
+                            'file_id' => 50,
+                            'bill_number' => $type['number'],
+                            'bill_amount' => $type['amount'],
+                            'bill_concept' => $type['concept']
+                        )
+                    );
+
+                    $this->CompaniesFile->save($bill);
+
+                    return $result;
                 }
             } else {
                 return 0;
@@ -155,20 +169,20 @@ class file extends AppModel {
                 'id' => array(1, 2, 3)), //50 is the bill id
             'recursive' => 1,));
 
-
         //Filter required files
         $requiredFileIdList = array();
+
         foreach ($allCompanyFiles as $allFiles) {
             foreach ($allFiles["requiredFiles"] as $requiredFiles) {
                 //Filter selected companies required files
                 if (in_array($requiredFiles["id"], $selectedList)) {
-                    array_push($requiredFileIdList, $requiredFiles["Requiredfile"]["file_id"]);
+                    $info = array("id" => $requiredFiles["Requiredfile"]["file_id"], "tooltip" => $allFiles["File"]["file_tooltip"]);
+                    array_push($requiredFileIdList, $info);
                 }
             }
         }
-
         //Delete duplicates
-        $requiredFileResult = array_unique($requiredFileIdList);
+        $requiredFileResult = array_unique($requiredFileIdList, SORT_REGULAR);
         return $requiredFileResult;
     }
 
@@ -211,7 +225,7 @@ class file extends AppModel {
 
         //Info filter, we need only the company name and the bill info.
         foreach ($allBills as $allInfo) {
-            foreach ($allInfo["Bills"] as $info) {
+            foreach ($allInfo["Company"] as $info) {
                 $companyName = $info["company_name"];
                 $billInfo = $info["CompaniesFile"];
                 $tempArray = array('name' => $companyName, 'info' => $billInfo);

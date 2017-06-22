@@ -144,7 +144,7 @@ foreach ($companies as $companyInfo) {
                                         <td>
                                             <?php
                                             $class = "form-control blue_noborder winadminPFP";
-                                            echo $this->Form->input('Investor.investor_country', array(
+                                            echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
                                                 'id' => 'ContentPlaceHolder_pfp',
                                                 'label' => false,
@@ -215,7 +215,7 @@ foreach ($companies as $companyInfo) {
                                             }
                                             $class = "form-control blue_noborder billAmount" . ' ' . $errorClass;
                                             echo $this->Form->input('Bills.bill_amount', array(
-                                                'name' => 'concept',
+                                                'name' => 'amount',
                                                 'id' => 'ContentPlaceHolder_amount',
                                                 'label' => false,
                                                 'rule' => 'numeric',
