@@ -15,7 +15,7 @@
  *
  *
  * @author
- * @version 0.5
+ * @version 0.8
  * @date 2017-05-23
  * @package
 
@@ -45,6 +45,9 @@
  * 
  * [2017-06-12] Version 0.7
  * Modal and user feedback
+ * 
+ * [2017-06-22] Version 0.8
+ * Added upload file btn & file tooltip
  */
 ?>
 
@@ -56,7 +59,6 @@
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/plugins/datepicker/bootstrap-datepicker.js"></script>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
-<script src="/js/iban.js"></script>
 <style>
     .togetoverlay .overlay  {
         z-index: 50;
@@ -65,6 +67,12 @@
     }
     .togetoverlay .overlay > .fa {
         font-size: 50px;
+    }
+    .disabledPointer{
+        cursor: not-allowed !important;
+    }
+    input[type="file"] {
+        display: none;
     }
 </style>
 
@@ -88,11 +96,6 @@
                 $("#investmentVehicleContent").hide();
             }
         });
-<?php //Data successfully saved feedback to user FADEOUT.   ?>
-        $(document).bind('DOMSubtreeModified', function () {
-            fadeOutElement(".alert-to-fade", 5000);
-        });
-
 
 
         $(document).on("click", "#activateOCR", function () {
@@ -127,7 +130,11 @@
                 }
             });
         });
-
+        
+        $(document).on("click", ".upload", function(){
+            $(".alert-win-warning").hide();
+        });
+        
         $(document).on("click", ".delete", function () {
 <?php //Delete File   ?>
             id = $(this).val();
@@ -178,11 +185,15 @@
             $("#notification" + id).html('<td colspan="4"><div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Upload failed. Incorrect type or file too big.") ?></strong></div></td>');
             $("#status" + id).html('<img src="/img/feedback_false.png" class="feedbackIcon center-block" />');
         }
+        $(".labelFile").removeClass("btn");
+        $(".labelFile").removeClass("btnRounded");
+        $(".labelFile").removeClass("btnUploadFile");
+        $(".labelFile").html("");
     }
 
     function successDelete(id) { <?php // Delete ok ?>
         $("#del" + id).prop("disabled", true);
-        $("#file" + id).html('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+        $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile" for="fileId' + id + '><i class="fa fa-upload"></i> Upload file</label><input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="0">');
         $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>')
@@ -216,8 +227,19 @@ foreach ($existingFiles as $file) {
                     $("#del" + id).prop("disabled", false);
                 }
             });
-
-
+    // DISABLED FIELDS
+    //Telephone
+    if ($("#ContentPlaceHolder_telephone").is(':disabled')) {
+        $("#ContentPlaceHolder_telephone").addClass("disabledPointer");
+        $("#ContentPlaceHolder_telephone .selected-flag").addClass("disabledPointer");
+    }
+    //dateOfBirth
+    if ($("#ContentPlaceHolder_dateOfBirth").is(':disabled')) {
+        $('#ContentPlaceHolder_dateOfBirth').datepicker({
+            showOn: "off"
+        });
+        $("#ContentPlaceHolder_dateOfBirth").addClass("disabledPointer");
+    }
     <?php
 }
 ?>
@@ -361,7 +383,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth') ?></label>
-                                        <div class="input-group input-group-sm blue_noborder2 date investorDateOfBirth">
+                                        <div class="input-group input-group-sm blue_noborder2 date investorDateOfBirth disabledPointer">
                                             <?php
                                             $errorClass = "";
                                             if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
@@ -372,7 +394,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                             <div class="input-group-addon" style="border-radius:8px; border: none;">
                                                 <i class="fa fa-calendar"></i>
                                             </div>
-                                            <input type="text" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php echo $investor[0]['Investor']['investor_dateOfBirth']; ?>">
+                                            <input type="text" style="border-radius:8px; border:none;" disabled="disabled" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php echo $investor[0]['Investor']['investor_dateOfBirth']; ?>">
                                             <?php
                                             $errorClassesText = "errorInputMessage ErrorDateOfBirth";
                                             if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
@@ -427,7 +449,7 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
-                                        <div class="form-control blue_noborder2 telephoneNumber">
+                                        <div class="form-control blue_noborder2 telephoneNumber disabledPointer">
                                             <?php
                                             $errorClass = "";
                                             if (array_key_exists('investor_telephone', $investorValidationErrors)) {
@@ -442,7 +464,8 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                                 'placeholder' => __('Telephone'),
                                                 'class' => $class,
                                                 'type' => 'tel',
-                                                'value' => $investor[0]['Investor']['investor_telephone']
+                                                'value' => $investor[0]['Investor']['investor_telephone'],
+                                                'disabled' => 'disabled'
                                             ));
                                             $errorClassesText = "errorInputMessage ErrorTelephone";
                                             if (array_key_exists('investor_telephone', $investorValidationErrors)) {
@@ -775,11 +798,12 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
 
                                         </tr>
                                         <tr id="<?php echo $requiredFiles[0]['File']['id'] ?>" class="documentRow">
-                                            <td><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
+                                            <td title="<?php echo $requiredFiles[0]['File']['tooltip'] ?>"><?php echo __($requiredFiles[0]['File']['file_type']) ?></td>
                                             <td id="status<?php echo $requiredFiles[0]['File']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
                                             <td>
                                                 <?php
                                                 $uploaded = "uploaded" . $requiredFiles[0]['File']['id'];
+                                                echo "<label class='btn labelFile btnRounded btnUploadFile' for='fileId" . $requiredFiles[0]['File']['id']. "'><i class='fa fa-upload'></i> Upload file</label>";
                                                 echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $requiredFiles[0]['File']['id'], 'class' => 'upload', 'value' => $requiredFiles[0]['File']['id']));
                                                 echo "<span id='" . $file . "' >";
                                                 echo $this->Form->file("fileId" . $requiredFiles[0]['File']['id']);
@@ -795,69 +819,6 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         </tr>
                                         <?php
                                     }
-                                    /* <tr>
-                                      <td>01-01-2017</td>
-                                      <td>NIF_Front</td>
-                                      <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __('Incorrect') ?></span></td>
-                                      <td>
-                                      <?php
-                                      echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
-                                      echo $this->Form->file('nifF');
-                                      echo $this->Form->end();
-                                      ?>
-                                      </td>
-                                      <td>
-                                      <button type="button" class="delete btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                      </td>
-                                      </tr>
-                                      <tr>
-                                      <td>01-01-2017</td>
-                                      <td>NIF_Back</td>
-                                      <td><span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning') ?></span></td>
-                                      <td>
-                                      <?php
-                                      echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files'));
-                                      echo $this->Form->file('nifB');
-                                      echo $this->Form->end();
-                                      ?>
-                                      </td>
-                                      <td>
-                                      <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                      </td>
-                                      </tr>
-                                      <tr>
-                                      <td>01-01-2017</td>
-                                      <td>IBAN</td>
-                                      <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span></td>
-                                      <td>
-                                      <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
-                                      </td>
-                                      <td>
-                                      <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                      </td>
-                                      </tr>
-                                      <tr>
-                                      <td>01-01-2017</td>
-                                      <td>Another one</td>
-                                      <td><span style="color:#3399ff"><i class="fa fa-thumb-tack"></i> <?php echo __('Validating') ?></span></td>
-                                      <td>
-                                      <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
-                                      </td>
-                                      <td>
-                                      <button type="button" class="btn btn-default" style="background-color:#990000; color:white;"><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                      </td>
-                                      </tr>
-                                      <tr>
-                                      <td>01-01-2017</td>
-                                      <td>Another one</td>
-                                      <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
-                                      <td>
-                                      <button type="button" class="btn btn-default" style="background-color:#3399ff; color:white;"><i class="fa fa-upload"></i> <?php echo __('Upload') ?></button>
-                                      </td>
-                                      <td>
-                                      <button type="button" class="btn btn-default" style="background-color:#990000; color:white;" disabled><i class="fa fa-times"></i> <?php echo __('Delete') ?></button>
-                                      </td>
-                                      </tr> */
                                     ?>
                                     </tbody>
                                 </table>
