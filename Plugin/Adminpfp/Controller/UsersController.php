@@ -27,7 +27,7 @@ Initial version.
  * 
  * 
 
-
+added cronMoveToMLDatabase() method 
 
 Pending
 
@@ -282,6 +282,174 @@ function readAdministratorData($adminId) {
 	$this->layout = 'zastac_admin_layout';
 
 }
+
+
+
+
+
+
+
+/**DURING THE NIGHT WE WILL DOWNLOAD THE RELEVANT DATA FROM THE RAW DATABASE TO THIS MLDATA DATABASE  
+ * 
+ * Moves in 'semi-realtime' raw data to the database which is used by the Tallyman service
+ * 
+ * 
+ * @param 	
+ * @param      
+ * @return 	 	
+ *
+ */
+public function cronMoveToMLDatabase() {
+    $currentDate = date("Y-m-d", time());     
+   
+    Configure::load('p2pGestor.php', 'default');
+    $serviceData = Configure::read('Tallyman');   
+    
+    $this->Company = ClassRegistry::init('Company');   
+    $this->MLqueue = ClassRegistry::init('MLqueue'); 
+    
+    $queueResult = $this->$this->read("first", $params = array('recursive' => -1,
+							  'conditions'  => array('id' => 1),
+				));  
+
+    $UserinvestmentdataResult = $this->Userinvestmentdata->read("first", $params = array('recursive' => 2,
+							  'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
+                                                                           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                                           'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
+                                                              ),
+				)); 
+
+    while (!empty($UserinvestmentdataResult)) {
+        $internalRawDataReference = $result[0]['Userinvestmentdata']['investorglobaldata_internalRawDataReference'];
+        $tempResult = $this->Userinvestmentdata->find("all", $params = array('conditions'  => array('investorglobaldata_internalRawDataReference' => $internalRawDataReference),
+            ));
+
+        if (!empty($tempResult)) {     // Already dealt with this queueID
+            $UserinvestmentdataResult = $this->Userinvestmentdata->read("first", $params = array('recursive' => 2,
+                                                                'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
+                                                                           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                                           'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
+                                                              ),
+				));       
+        }
+        else {              // Deal with this database record,          here we have a new queue_id so we have to
+            $userData['investorglobaldata_investorIdentity'] = $UserinvestmentdataResult[0]['investorglobaldata_investorIdentity'];
+            if ($this->Userinvestmentdata->save($userData, $validate = true)) {
+                $userinvestmentpointer = $this->Userinvestmentdata->id;
+            }
+            else {
+                echo "ERROR OCCURED, TAKE ACTION";  
+                // add possible errors in interface errors table  
+                $userinvestmentpointer = 0;
+            }
+        }
+        $nextRecord = $result[0]['Userinvestmentdata'][0]['id'];
+        $this->MLqueue->save(array('id' => 1, 
+                                    'MLqueue_actualId' => $nextRecord,
+                                    'MLqueue_dateActualId' => $currentDate,
+                            ));
+
+        $userResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 2,
+							  'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
+                                                              'investorglobaldata_internalRawDataReference' => $internalRawDataReference,
+                                                                           'userinvestmentdata_updateType' => SYSTEM_GENERATED),
+                        			));    
+        foreach ($Userinvestmentdata as $data) {
+          // mapping of data from "raw" format to MLData format    
+            $companyResult = $this->read("first", $params = array('recursive' => -1,
+							  'conditions'  => array('id' => $companyId),
+                                                          'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
+				));        
+
+            $platformData['id'] = $companyId;
+            $platformData['userplatformglobaldata_moneyInWallet'] = data['userinvestmentdata_myWallet']; 
+            $platformData['userplatformglobaldata_numberOfInvestments'] = sizeof(data['investments']);
+            $platformData['userplatformglobaldata_activeInInvestments'] = data['userinvestmentdata_activeInInvestments'];    
+            $platformData['userplatformglobaldata_reservedInvestments'] = 0;    
+            $platformData['userplatformglobaldata_finishedInvestments'] = data['']; // TO BE CALCULATED
+            $platformData['companyId'] = $companyId;
+            $platformData['userplatformglobaldata_companyName'] = $companyResult[0]['company_name'];
+            $platformData['userplatformglobaldata_PFPType'] = $companyResult[0]['company_PFPType'];
+            $platformData['userplatformglobaldata_PFPCountry'] = $companyResult[0]['company_country']; 
+            $platformData['userplatformglobaldata_globalIndicator'] = 0;    
+
+            $userData['investorglobaldata_totalPFPs'] = $userData['investorglobaldata_totalPFPs'] + 1;
+            if (sizeof(data['investments'] > 0)) {
+                $userData['investorglobaldata_activePFPs'] = $userData['investorglobaldata_activePFPs'] + 1;
+            }      
+            $userData['investorglobaldata_totalMoneyInWallets'] = $userData['investorglobaldata_totalMoneyInWallets'] + data['userinvestmentdata_myWallet'];
+            $userData['investorglobaldata_totalActiveInInvestments'] = $userData['investorglobaldata_totalActiveInvestments'] + data['userinvestmentdata_activeInInvestments'];
+            if ($this->save->Userplatformglobaldata($platformData, $validate = true)) {
+                
+            }
+            else {
+                echo "ERROR OCCURED, TAKE ACTION";  
+                // add possible errors in interface errors table
+                // reset something ????
+            }
+        }
+    }    
+}
+
+
+
+
+
+
+
+
+
+/**DURING THE MIGRATION SOMETHING HAPPENED, AND THE MLDATA DATABASE MIGHT HAVE AN EXTRA RECORD WHICH
+ * IS UNACCEPTABLE, DETECT IT AND REPAIR IT. this is normally a duplicate.
+ *  NOT YET FUNCTIONAL
+ * do this for all which were added during this day
+ * filter:
+ * duplicate internal reference
+ * during today's DATE
+ * 
+ * duplicates will be delete without event notifying the system admin
+ * 
+ * 
+ * @param 	
+ * @param      
+ * @return 	 	
+ *
+ */
+public function checkIntegrityMLData() {
+    
+}
+
+
+/** NOT YET FUNCTIONAL
+ * 
+ * Returns a global indicator which represents the "value" of an investor for a PFP platform
+ * 
+ * 
+ * @param 	array 	$data
+ * @param       arrat   $id     $id of company for which 
+ * @return 	array 	Investor data 	
+ *
+ */
+public function calculateGlobalindicator($data) {
+    
+// Calculate earlier date
+//    $referenceDate = actualData - $historyLength "months";
+    Configure::load('p2pGestor.php', 'default');
+    $serviceData = Configure::read('Tallyman');
+
+    $cutoffTime = date("Y-m-d H:i:s", time() - $serviceData['maxHistoryLength'] * 3600);     
+    $businessConditions = array('Company.created >' => $cutoffTime);
+    $conditions = array_merge($businessConditions, $filterConditions);
+
+    $data = $this->find('all', array('conditions'       => $conditions,
+                                          'recursive'   => 2,
+			));
+    
+    return $data;   
+}
+
+
+
 
 
 

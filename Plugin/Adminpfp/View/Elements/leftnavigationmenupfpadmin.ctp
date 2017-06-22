@@ -135,11 +135,15 @@ $(document).ready(function() {
         </li>*/?>
         <li class="treeview">
           <a href="#">
-            <i class="fa fa-user-secret"></i> <span><?php echo __('Show Tallyman')?></span>
+            <i class="fa fa-user-secret"></i> <span><?php echo __('Tallyman')?></span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
           </a>
+          <ul class="treeview-menu">
+            <li><a href="/adminpfp/users/startTallyman""><i class="fa fa-circle-o"></i> <?php echo __('Start Tallyman')?></a></li>
+            <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>*/?>
+          </ul>
           <ul class="treeview-menu">
             <li><a href="/adminpfp/users/showTallyman""><i class="fa fa-circle-o"></i> <?php echo __('Show Tallyman')?></a></li>
             <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>*/?>
