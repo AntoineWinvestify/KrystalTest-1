@@ -123,19 +123,13 @@ public function startTallyman() {
  * 
  */
 public function showTallyman($investorIdentity = null, $platformId = null) {
- //   $this->autoRender = false;
-  //  	Configure::write('debug', 2); 
 
     $this->layout = 'Adminpfp.azarus_private_layout';	
- ///   $investorIdentification = $this->Auth('User.Investor.investor_identity'); // read user identification
-//    $resultTallyman = $this->xxxxx->find("all", maxíum 10 entries)
- 
-            
- //   $filterconditions = array('investor_identity', $investorIdentification);
- //   $result = $this->Investorglobaldata->readInvestorData($filterConditions);
+    $resultTallyman = $this->Investorglobaldata->loadInvestorData($investoridentity);
+    $resultCompany = $this->getCompanyDataList(array('id' => $platformId));
     
- //   $this->set('result', $resultTallyman);
-  
+    $this->set('resultCompany', $resultCompany);
+    $this->set('resultTallyman', $resultTallyman);
 }
 
 

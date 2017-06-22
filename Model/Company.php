@@ -102,8 +102,8 @@ public function getCompanyDataList($filterConditions) {
 	$conditions = array_merge($businessConditions, $filterConditions);
 
 	$companyResult = $this->find("all", $params = array('recursive'		=> -1,
-														'conditions'	=> $conditions,
-														));
+                                                                  'conditions'	=> $conditions,
+                                    ));
 // 'Normalize' the total array, index XX points to company with id = XX
 	foreach($companyResult as $value){
 		$companyResults[$value['Company']['id']] = $value['Company'];
