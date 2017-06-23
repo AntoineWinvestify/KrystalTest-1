@@ -20,22 +20,26 @@
  * @date 2016-10-25
  * @package
  *
-
-  2016/29/2017 version 0.1
-  function OneClickInvestorI, Save personal data in db                    [OK]
-  function OneClickInvestorII Save selected companies                     [OK]
-  function companyFilter      Company filter for platform selection panel [OK]
-  function OneClickAdmin                                     [Not implemented]
-  function OneClickCompany                                   [Not implemented]
-
-  2017/6/06 version 0.1
-  function upload                         [OK]
+ *
+ *  2016/29/2017 version 0.1
+ *  function OneClickInvestorI, Save personal data in db                    [OK]
+ *  function OneClickInvestorII Save selected companies                     [OK]
+ *  function companyFilter      Company filter for platform selection panel [OK]
+ *  function OneClickAdmin                                     [Not implemented]
+ *  function OneClickCompany                                   [Not implemented]
+ *
+ * 2017/6/06 version 0.1
+ * function upload                         [OK]
  * 
-  2017/6/08 version 0.2
-  function delete                [ok]
+ * 2017/6/08 version 0.2
+ * function delete                [ok]
  * 
-  2017/6/14 version 0.3
-  url and name fixed                      [OK]
+ * 2017/6/14 version 0.3
+ * url and name fixed                      [OK]
+ * 
+ * 2017/6/21 version 0.4
+ * upload bill         [OK]
+ * 
  */
 App::uses('CakeEvent', 'Event');
 
@@ -52,7 +56,6 @@ class filesController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-    
     //Upload a document
     function upload() {
         if (!$this->request->is('ajax')) {
@@ -61,28 +64,24 @@ class filesController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
 
-            if( count($this->params['data']['Files']) > 0){       
-            $data = $this->params['data']['Files'];        
-            $type = $data['info'];
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-            $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-            $result = $this->File->ocrFileSave($data, $identity, $id, $type,"file");
-            $this->set("result", $result);
-            
-            } else if( count($this->params['data']['bill']) > 0){
-                $data = $this->params['data']['bill'];        
-                $info = array( 'number' => $this->params['data']['number'] , 'concept' => $this->params['data']['concept'] , 'amount' => $this->params['data']['amount']) ;             
-                $id = $this->params['data']['pfp'];           
-                $company = $this->Company->getCompanyDataList(array('id'=> $id))[$id]['company_codeFile'] ;
-                $result = $this->File->ocrFileSave($data, $company, $id, $info,"bill");   
+            if (count($this->params['data']['Files']) > 0) {
+                $data = $this->params['data']['Files'];
+                $type = $data['info'];
+                $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+                $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
+                $result = $this->File->ocrFileSave($data, $identity, $id, $type, "file");
+                $this->set("result", $result);
+            } else if (count($this->params['data']['bill']) > 0) {
+                $data = $this->params['data']['bill'];
+                $info = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount']);
+                $id = $this->params['data']['pfp'];
+                $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile'];
+                $result = $this->File->ocrFileSave($data, $company, $id, $info, "bill");
                 $this->set("result", $result);
             }
-            
-            
         }
     }
 
-    
     //Delete a document
     function delete() {
         if (!$this->request->is('ajax')) {

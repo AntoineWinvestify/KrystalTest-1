@@ -35,7 +35,9 @@
  * function delete getAllBills            [OK]
  * select rquired files deleted, now we use find
  * 
- *
+ * 2017/6/21 version 0.5
+ * upload bill         [OK]
+ * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -118,7 +120,8 @@ class file extends AppModel {
                             'file_id' => 50,
                             'bill_number' => $type['number'],
                             'bill_amount' => $type['amount'],
-                            'bill_concept' => $type['concept']
+                            'bill_concept' => $type['concept'],
+                            'bill_url' => $folder . DS . $filename
                         )
                     );
 

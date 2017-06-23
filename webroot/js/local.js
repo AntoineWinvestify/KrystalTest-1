@@ -695,7 +695,7 @@ app.visual = {
         return correctForm;   
     },
     checkFormWinadminBilling: function () {
-        var correctForm = true;
+        correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
         $("#uploadedBills input").removeClass("redBorder"); // remove ALL redborders
         var number = $("#ContentPlaceHolder_number").val();
@@ -731,6 +731,7 @@ app.visual = {
             $(".ErrorAmount").fadeIn();
             correctForm = false;
         }
+        return correctForm;      
     }
 };
 app.utils = {
