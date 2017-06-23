@@ -374,6 +374,49 @@ class Investor extends AppModel {
         return $identity;
     }
 
+    /**
+     * Read the cheack data
+     * @param type $investorId
+     * @return type
+     */
+    public function readCheckData($investorId) {
+        $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+        return $checkData;
+    }
+
+    /**
+     * Update the check data
+     * @param type $checks
+     * @param type $invesorId
+     * @return int
+     */
+    public function updateCheckData($checks, $invesorId) {
+
+        $checksArray = Array(
+            'id' => $checks['id'],
+            'investor_id' => $invesorId,
+            'check_name' => $checks['name'],
+            'check_surname' => $checks['surname'],
+            'check_dni' => $checks['dni'],
+            'check_dateOfBirth' => $checks['dateOfBirth'],
+            'check_email' => $checks['email'],
+            'check_telephone' => $checks['telephone'],
+            'check_postCode' => $checks['postCode'],
+            'check_address' => $checks['address'],
+            'check_city' => $checks['city'],
+            'check_country' => $checks['country'],
+            'check_iban' => $checks['iban'],
+            'check_cif' => $checks['cif'],
+            'check_bussinesName' => $checks['bussinesName']
+        );
+
+        if ($this->Check->save($checksArray)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     /*
      * **** CALLBACK FUNCTIONS *****
      */
@@ -416,49 +459,6 @@ class Investor extends AppModel {
             }
         }
         return $results;
-    }
-
-    /**
-     * Read the cheack data
-     * @param type $investorId
-     * @return type
-     */
-    public function readCheckData($investorId) {
-        $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
-        return $checkData;
-    }
-
-    /**
-     * Update the check data
-     * @param type $checks
-     * @param type $invesorId
-     * @return int
-     */
-    public function updateCheckData($checks, $invesorId) {
-
-        $checksArray = Array(
-            'id' => $checks['id'],
-            'investor_id' => $invesorId,
-            'check_name' => $checks['name'],
-            'check_surname' => $checks['surname'],
-            'check_dni' => $checks['dni'],
-            'check_dateOfBirth' => $checks['dateOfBirth'],
-            'check_email' => $checks['email'],
-            'check_telephone' => $checks['telephone'],
-            'check_postCode' => $checks['postCode'],
-            'check_address' => $checks['address'],
-            'check_city' => $checks['city'],
-            'check_country' => $checks['country'],
-            'check_iban' => $checks['iban'],
-            'check_cif' => $checks['cif'],
-            'check_bussinesName' => $checks['bussinesName']
-        );
-
-        if ($this->Check->save($checksArray)) {
-            return 1;
-        } else {
-            return 0;
-        }
     }
 
     /**

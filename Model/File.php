@@ -38,6 +38,8 @@
  * 2017/6/21 version 0.5
  * upload bill         [OK]
  * 
+ * 2017/6/23 version 0.5
+ * change query for find         [OK]
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -211,7 +213,18 @@ class file extends AppModel {
      */
     public function readExistingFiles($id) {
         $query = "Select * from `files_investors` where investor_id =" . $id;
-        $result = $this->query($query);
+        $investorFiles = $this->FilesInvestor->find("all", array('conditions' => array('investor_id' => $id)));
+        $filesName = $this->find("all");
+        $result = array();
+        
+        //Get existing file and type file info
+        foreach ($investorFiles as $investorFile) {
+            foreach ($filesName as $fileName) {
+                if ($investorFile['FilesInvestor']['file_id'] == $fileName['File']['id']) {
+                    array_push($result, array("file" => $investorFile, "type" => $fileName['File']));
+                }
+            }
+        }
         return $result;
     }
 

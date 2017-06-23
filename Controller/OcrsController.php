@@ -382,7 +382,10 @@ class ocrsController extends AppController {
      */
     function ocrWinadminInvestorChecking() {
 
+        //Filter
         $filter = array('ocr_status' => SENT);
+
+        //Search  and set investor data 
         $ocrList = $this->Ocr->ocrGetData(null, $filter);
         $this->set('usersList', $ocrList);
         //Get user data
@@ -415,7 +418,18 @@ class ocrsController extends AppController {
      */
     function ocrWinadminInvestorData($id) {
 
-        $userData = $this->Ocr->ocrGetData($id, $filter);
+        //Search and set investor data
+        $userData = $this->Ocr->ocrGetData($id, null);
+        $this->set('userData', $userData);
+
+        //Search and set investor checking
+        $checking = $this->Investor->readCheckData($id);
+        $this->set('checking', $checking);
+
+        //Search and set investor files
+        $files = $this->File->readExistingFiles($id);
+        $this->set('files', $files);
+
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
