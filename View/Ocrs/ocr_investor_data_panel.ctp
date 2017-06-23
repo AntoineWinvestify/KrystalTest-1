@@ -81,15 +81,15 @@
         addExistingDocuments();
         disbleCheckedData();
         validationerrors = false;
-<?php //telephone     ?>
+<?php //telephone      ?>
         $('#ContentPlaceHolder_telephone').intlTelInput();
 
-<?php //Date picker     ?>
+<?php //Date picker      ?>
         $('#ContentPlaceHolder_dateOfBirth').datepicker({
             autoclose: true,
             format: 'dd/mm/yyyy'
         });
-<?php //Show div with CIF & IBAN if its checked.     ?>
+<?php //Show div with CIF & IBAN if its checked.      ?>
         $(document).on("change", "#investmentVehicle", function () {
             if ($(this).is(":checked")) {
                 $("#investmentVehicleContent").show();
@@ -103,9 +103,9 @@
             console.log("validate 1CR data");
             var result; //link = $(this).attr("href");
 
-<?php //Javascript validation     ?>
+<?php //Javascript validation      ?>
             if ((result = app.visual.checkForm1CRInvestorData()) === false) {
-<?php //Validation error     ?>
+<?php //Validation error      ?>
                 event.stopPropagation();
                 event.preventDefault();
                 $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
@@ -115,7 +115,7 @@
         });
 
         $(document).on("change", ".upload", function () {
-<?php // Upload  file     ?>
+<?php // Upload  file      ?>
             id = $(this).attr("value");
             var formdatas = new FormData($("#FileForm" + id)[0]);
             link = '../Files/upload';
@@ -137,7 +137,7 @@
         });
 
         $(document).on("click", ".delete", function () {
-<?php //Delete File     ?>
+<?php //Delete File      ?>
             id = $(this).val();
             url = $(".url" + id).attr("value");
             params = {
@@ -155,19 +155,17 @@
         });
 
         $(document).on("click", "#backOCR", function () {
-<?php //Go back     ?>
+<?php //Go back      ?>
             link = "../Ocrs/ocrInvestorPlatformSelection";
             var data = null;
             getServerData(link, data, successBack, errorBack);
         });
 
 
-<?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { //Invesment vehicle comprobation   ?>
-            if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> === 1) {
-                $("#investmentVehicle").prop('checked', true);
-                $("#investmentVehicleContent").show();
-            }
-<?php } ?>
+        if ( <?php echo $ocr[0]['Ocr']['ocr_invesmentVehicle'] ?> == 1) {
+            $("#investmentVehicle").prop('checked', true);
+            $("#investmentVehicleContent").show();
+        }
 
 
     });
@@ -175,7 +173,7 @@
 
     function successUpload(data, id) {
         if (data != 0) {
-<?php //Upload ok   ?>
+<?php //Upload ok    ?>
             $("#file" + id).html(data[0]);
             $("#file" + id).attr("value", data[0]);
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
@@ -194,7 +192,7 @@
     }
 
     function successDelete(id) {
-<?php // Delete ok   ?>
+<?php // Delete ok    ?>
         $("#del" + id).prop("disabled", true);
         $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile" for="fileId' + id + '><i class="fa fa-upload"></i> Upload file</label><input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
@@ -203,20 +201,20 @@
     }
 
     function successBack(result) {
-<?php // Go back ok   ?>
+<?php // Go back ok    ?>
         $(document).off('click');
         $(document).off('change');
         $("#content").html(result);
     }
     function errorBack(result) {
-<?php //Go back error   ?>
+<?php //Go back error    ?>
         $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
     }
 
 
 
     function addExistingDocuments() {
-<?php //Show alreadey upladed files in the table   ?>
+<?php //Show alreadey upladed files in the table    ?>
 <?php
 foreach ($existingFiles as $file) {
     ?>
@@ -253,37 +251,37 @@ foreach ($existingFiles as $file) {
 
     function disbleCheckedData() {
 
-        if (<?php echo $checkData[0]['Check']['check_name'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_name'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_name').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_surname'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_surname'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_surname').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_dni'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_dni'] ?> == <?php echo CHECKED ?>) {
             $('#dni').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_dateOfBirth'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_dateOfBirth'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_dateOfBirth').prop('disabled', true);
         }
         if (<?php echo $checkData[0]['Check']['check_email'] == 1 ?>) {
             $('#ContentPlaceHolder_email').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_telephone'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_telephone'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_telephone').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_postCode'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_postCode'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_postCode').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_address'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_address'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_address1').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_city'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_city'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_city').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_country'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_country'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_country').prop('disabled', true);
         }
-        if (<?php echo $checkData[0]['Check']['check_iban'] == 1 ?>) {
+        if (<?php echo $checkData[0]['Check']['check_iban'] ?> == <?php echo CHECKED ?>) {
             $('#ContentPlaceHolder_iban').prop('disabled', true);
         }
 

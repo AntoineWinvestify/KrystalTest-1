@@ -373,8 +373,20 @@ class ocrsController extends AppController {
     }
 
     //One Click Registration - Winvestify Admin Views
-    //WinAdmin View #2
+
+
+    /*     * WinAdmin View #2
+     * 
+     */
     function ocrWinadminInvestorChecking() {
+
+        $filter = array('ocr_status' => SENT);
+        $ocrList = $this->Ocr->ocrGetData(null,$filter);
+        $this->set('usersList',$ocrList);
+        //Get user data
+        //$userList = $this->Ocr->getRegisterSentCompanies(null);
+
+
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
@@ -395,8 +407,14 @@ class ocrsController extends AppController {
         echo " ";
     }
 
-    //WinAdmin View #3
-    function ocrWinadminInvestorData() {
+    
+    /** Check data
+     * WinAdmin View #3
+     * @param type $id
+     */
+    function ocrWinadminInvestorData($id) {
+        
+        $ocrList = $this->Ocr->ocrGetData($id,$filter);
         $this->layout = 'azarus_private_layout';
         echo " ";
     }

@@ -58,6 +58,11 @@ class Investor extends AppModel {
             'joinTable' => 'checks',
             'foreignKey' => 'investor_id',
         ),
+        'Ocr' => array(
+            'className' => 'Ocr',
+            'ForeignKey' => 'investor_id',
+            'associationForeignKey' => 'ocr_id',
+        )
     );
 
     /**
@@ -123,7 +128,6 @@ class Investor extends AppModel {
             'message' => 'Email validation error',
         ),
     );
-
 
     /**
      *

@@ -61,6 +61,13 @@ class ocr extends AppModel {
             'associationForeignKey' => 'company_id',
         ),
     );
+    public $hasOne = array(
+        'Investor' => array(
+            'className' => 'Investor',
+            'foreignKey' => 'ocr_id',
+            'associationForeignKey' => 'investor_id',
+        ),
+    );
 
     /* var $validate = array(
       'investor_cif' => array(
@@ -105,6 +112,7 @@ class ocr extends AppModel {
 
             //Update
             if ($this->save($data)) {
+                $this->Investor->save(array('id' => $id, 'ocr_id' => 6));
                 return 1;
             } else {
                 return 0;
@@ -133,6 +141,7 @@ class ocr extends AppModel {
 
         //Ocr data
         if (count($id) > 0) {
+            $time = date('Y-m-d H:i:s', time());
 
             if ($dataParam['ocr_investmentVehicle'] == 1) {
                 $data = array(
@@ -143,6 +152,7 @@ class ocr extends AppModel {
                     'investor_businessName' => $dataParam['investor_businessName'],
                     'investor_iban' => $dataParam['investor_iban'],
                     'ocr_status' => 1,
+                    'ocr_sent' => $time,
                 );
             } else {
                 $data = array(
@@ -151,10 +161,11 @@ class ocr extends AppModel {
                     'ocr_investmentVehicle' => 0,
                     'investor_iban' => $dataParam['investor_iban'],
                     'ocr_status' => 1,
+                    'ocr_sent' => $time,
                 );
             }
         }
-
+        print_r($time);
 //Save
         if ($this->save($data)) {
             $result = json_encode($data); //Save ok
@@ -177,12 +188,17 @@ class ocr extends AppModel {
      * @param type $id
      * @return type
      */
-    public function ocrGetData($id) {
+    public function ocrGetData($id, $filter = null) {
+        if ($id != null && $filter != null) {
+            array_push($filter, array('investor_id' => $id));
+        } else if ($filter == null && $id != null) {
+            $filter = array('investor_id' => $id);
+        }
 
-// Find ocr data
+        // Find ocr data
         $info = $this->find("all", array(
-            'conditions' => array('investor_id' => $id),
-            'recursive' => -1,
+            'conditions' => array($filter),
+            'recursive' => 1,
         ));
         if ($info) {
             return $info; //Return info
@@ -281,7 +297,7 @@ class ocr extends AppModel {
         $companies_ocrs = array();
         foreach ($companiesArray as $company) {
             foreach ($company["Company"] as $companyOcr) {
-                array_push($companies_ocrs, array( 'ocrInfo' => $companyOcr["CompaniesOcr"], 'name' => $companyOcr['company_name']));
+                array_push($companies_ocrs, array('ocrInfo' => $companyOcr["CompaniesOcr"], 'name' => $companyOcr['company_name']));
             }
         }
         return $companies_ocrs;
@@ -294,7 +310,7 @@ class ocr extends AppModel {
      * @return type
      */
     public function getSelectedCompanies($id) {
-        
+
         // Read all the companies_ocrof the user
         $companyListNotFilter = $this->getAllCompanies($id);
         $companyList = array();
@@ -317,7 +333,7 @@ class ocr extends AppModel {
         // Read all the companies_ocrof the user
         $companyListNotFilter = $this->getAllCompanies($id);
         $companyList = array();
-        
+
         //status filter
         foreach ($companyListNotFilter as $filterStatus) {
             if ($filterStatus["company_status"] == 1) {
@@ -333,30 +349,29 @@ class ocr extends AppModel {
      * 	Decrypt the sensitive data provided by the investor
      *
      */
-    /*public function afterFind($results, $primary = false) {
+    /* public function afterFind($results, $primary = false) {
 
-        foreach ($results as $key => $val) {
-            if (isset($val['Ocr']['investor_iban'])) {
-                $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
-                        $val['Ocr']['investor_iban']);
-            }
-        }
-        return $results;
-    }
+      foreach ($results as $key => $val) {
+      if (isset($val['Ocr']['investor_iban'])) {
+      $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
+      $val['Ocr']['investor_iban']);
+      }
+      }
+      return $results;
+      }
 
-    /**
+      /**
      *
      * 	Callback Function
      * 	Encrypt the sensitive fields of the information provided by the investor
      *
      */
-    /*public function beforeSave($options = array()) {
+    /* public function beforeSave($options = array()) {
 
-        if (!empty($this->data['Ocr']['investor_iban'])) {
-            $this->data['Ocr']['investor_iban'] = $this->encryptDataBeforeSave($this->data['Ocr']['investor_iban']);
-        }
+      if (!empty($this->data['Ocr']['investor_iban'])) {
+      $this->data['Ocr']['investor_iban'] = $this->encryptDataBeforeSave($this->data['Ocr']['investor_iban']);
+      }
 
-        return true;
-    }*/
-
+      return true;
+      } */
 }

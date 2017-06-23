@@ -1,4 +1,5 @@
 <?php
+
 /*
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2016, http://winvestify.com                             |
@@ -35,8 +36,8 @@
  *
 
 
-2017-06-11      version 0.2
-Corrected test for language cookie 
+  2017-06-11      version 0.2
+  Corrected test for language cookie
 
 
  * 
@@ -171,6 +172,19 @@ define('REGISTRATION_PROGRESS_3', 3);
 define('REGISTRATION_PROGRESS_4', 4);
 define('REGISTRATION_PROGRESS_5', 5);
 
+
+//OCR STATUS
+define('NOT_SENT', 0);
+define('SENT', 1);
+define('ERROR', 2);
+define('FINISHED', 3);
+
+
+//CHECK DATA STATUS
+define('UNCHECKED', 0);
+define('CHECKED', 1);
+define('ERROR', 2);
+        
 class AppController extends Controller {
 
     public $components = array('DebugKit.Toolbar',
@@ -226,7 +240,7 @@ class AppController extends Controller {
             INVOICE_TRADING => __('P2P Invoice Trading'),
             CROWD_REAL_ESTATE => __('Crowd Real Estate'),
         );
- 
+
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
@@ -234,13 +248,13 @@ class AppController extends Controller {
         } else {
             $ourLanguage[0] = $this->Cookie->read('p2pManager.language');
         }
-        $this->Session->write('Config.language', $ourLanguage[0]);        
-        
-        $subjectContactForm = array('Choose one...', 
-                                'general' => __('General'), 
-                                'billing' => __('Billing Dept'), 
-                                'improvement' => __('Functional Improvement'), 
-                                'feature' => __('New Feature'));
+        $this->Session->write('Config.language', $ourLanguage[0]);
+
+        $subjectContactForm = array('Choose one...',
+            'general' => __('General'),
+            'billing' => __('Billing Dept'),
+            'improvement' => __('Functional Improvement'),
+            'feature' => __('New Feature'));
         $this->set('subjectContactForm', $subjectContactForm);
 
 

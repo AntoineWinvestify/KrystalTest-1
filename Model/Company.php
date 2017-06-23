@@ -41,6 +41,12 @@ class Company extends AppModel {
         'Marketplace' => array(
             'className' => 'Marketplace',
             'foreignKey' => 'company_id',
+        ),
+        'requiredfiles' => array(
+            'className' => 'File',
+            'joinTable' => 'requiredfiles',
+            'foreignKey' => 'company_id',
+            'associationForeignKey' => 'file_id',
         )
     );
     public $hasAndBelongsToMany = array(
