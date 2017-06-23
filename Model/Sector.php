@@ -71,7 +71,7 @@ class Sector extends AppModel {
     * 	@return 	int	$investorId The database reference of the investor
     * 					
     */
-    function getSectorByRole($roleId = null){
+    function getSectorsByRole($roleId = null){
         if (empty($roleId)) {
             return false;
         }

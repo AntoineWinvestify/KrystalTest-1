@@ -279,6 +279,15 @@ class AppController extends Controller {
                             FatalErrorException(__('You cannot access this page directly'));
             }
         }
+        if ($this->Auth->user()) {
+            //if ($menuLeft) {
+                $roleId = $this->Auth->user('Role.id');
+                $this->Sector = ClassRegistry::init('Sector');
+                $sectors = $this->Sector->getSectorsByRole($roleId);
+                $this->set('sectorsMenu', $sectors);
+                echo "patata";
+            //}
+        }
        
         
         
@@ -595,10 +604,10 @@ class AppController extends Controller {
      */
     function isAuthorized($controller, $access = '*') {
 	//$userId = $this->Auth->user('id');
-	$roleId = $this->Auth->user('Role.id');
+	$aro = $this->Auth->user('Role.id');
         // Get internal database reference of the investor
-        $this->Role = ClassRegistry::init('Role');
-        $aro = $this->Role->getRoleNameById($roleId);
+        //$this->Role = ClassRegistry::init('Role');
+        //$aro = $this->Role->getRoleNameById($roleId);
         
 	return $this->Acl->check($aro, $controller, $access);
     }
