@@ -20,33 +20,38 @@
  * @date 2016-10-25
  * @package
  *
-
-  2017/5/29 version 0.1
-  function ocrDataSave   Save ocr data in db                         [OK]
-  function ocrGetData    Get info of ocr                             [OK]
- * 
-  2017/5/30 version 0.2
-  ocrFileSave         Upload files                                 [OK]
- * 
-  2017/6/01 version 0.3
-  saveCompaniesOcr                                                 [OK]
-  getSelectedCompanies                                              [OK]
- * 
-  2017/6/05  version 0.4
-  deleteCompanyOcr                                                     [OK]
- *             
-  2017/6/06  version 0.5
-  upload deleted
-  id problem fixed
  *
-  2017/6/13  version 0.6
-  checkStatus
+ * 2017/5/29 version 0.1
+ * function ocrDataSave   Save ocr data in db                         [OK]
+ * function ocrGetData    Get info of ocr                             [OK]
  * 
-  2017/6/14 version 0.7
-  Confirm modal
+ * 2017/5/30 version 0.2
+ * ocrFileSave         Upload files                                 [OK]
  * 
-  2017/6/19 version 0.8
-  Select query deleted
+ * 2017/6/01 version 0.3
+ * saveCompaniesOcr                                                 [OK]
+ * getSelectedCompanies                                              [OK]
+ * 
+ * 2017/6/05  version 0.4
+ * deleteCompanyOcr                                                     [OK]
+ *             
+ * 2017/6/06  version 0.5
+ * upload deleted
+ * id problem fixed
+ *
+ * 2017/6/13  version 0.6
+ * checkStatus
+ * 
+ * 2017/6/14 version 0.7
+ * Confirm modal
+ * 
+ * 2017/6/19 version 0.8
+ * Select query deleted
+ * 
+ * 2017/6/23 version 0.8
+ * ocr_sent(date)
+ * checking table completed
+ * 
  */
 App::uses('CakeEvent', 'Event');
 

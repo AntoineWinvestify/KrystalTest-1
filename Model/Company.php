@@ -23,7 +23,9 @@
   function getCompanyList()															[OK, tested]
   function readExtendedData()															[not OK, not tested]
 
-
+  [2017-06-23] Version 1.0 (for ocr)
+    companiesDataOCR                                    [OK, tested]
+    db relation
   Pending:
 
 

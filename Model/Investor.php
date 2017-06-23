@@ -29,6 +29,9 @@
   getInvestorId									[OK]
   getInvestorIdentity									[OK]
 
+  2017-06-23 version 0.4
+  db relation
+
 
   Pending:
   function generateGUIDs(). 													[not Ok, not tested]

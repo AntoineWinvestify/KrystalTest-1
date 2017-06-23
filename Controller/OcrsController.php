@@ -20,31 +20,33 @@
  * @date 2016-10-25
  * @package
  *
-
-  2016/29/2017 version 0.1
-  function OneClickInvestorI, Save personal data in db                    [OK]
-  function OneClickInvestorII Save selected companies                     [OK]
-  function companyFilter      Company filter for platform selection panel [OK]
-  function OneClickAdmin                                     [Not implemented]
-  function OneClickCompany                                   [Not implemented]
-
-  2017/6/01  version 0.2
+ *
+ * 2016/29/2017 version 0.1
+ * function OneClickInvestorI, Save personal data in db                    [OK]
+ * function OneClickInvestorII Save selected companies                     [OK]
+ * function companyFilter      Company filter for platform selection panel [OK]
+ *
+ * 2017/6/01  version 0.2
  * upload                                                            [OK]
-  2017/6/05  version 0.3
-  deleteCompanyOcr                                                     [OK]
+ * 2017/6/05  version 0.3
+ * deleteCompanyOcr                                                     [OK]
  *                                       
-  2017/6/06  version 0.4
-  upload deleted
-  id problem fixed
+ * 2017/6/06  version 0.4
+ * upload deleted
+ * id problem fixed
  *     
-  2017/6/13  version 0.5
-  Ocr status added
+ * 2017/6/13  version 0.5
+ * Ocr status added
  * 
-  2017/6/16  version 0.6
-  oneClickInvestorI error 500 fixed
+ * 2017/6/16  version 0.6
+ * oneClickInvestorI error 500 fixed
  * 
-  2017/6/19 version 0.7
-  ocrWinadminBillingPanel-> bill table added
+ * 2017/6/19 version 0.7
+ * ocrWinadminBillingPanel-> bill table added
+ * 
+ * 2017/6/23 version 0.8
+ * checking data table
+ * user checking data
  */
 App::uses('CakeEvent', 'Event');
 
@@ -381,8 +383,8 @@ class ocrsController extends AppController {
     function ocrWinadminInvestorChecking() {
 
         $filter = array('ocr_status' => SENT);
-        $ocrList = $this->Ocr->ocrGetData(null,$filter);
-        $this->set('usersList',$ocrList);
+        $ocrList = $this->Ocr->ocrGetData(null, $filter);
+        $this->set('usersList', $ocrList);
         //Get user data
         //$userList = $this->Ocr->getRegisterSentCompanies(null);
 
@@ -407,14 +409,13 @@ class ocrsController extends AppController {
         echo " ";
     }
 
-    
     /** Check data
      * WinAdmin View #3
      * @param type $id
      */
     function ocrWinadminInvestorData($id) {
-        
-        $ocrList = $this->Ocr->ocrGetData($id,$filter);
+
+        $userData = $this->Ocr->ocrGetData($id, $filter);
         $this->layout = 'azarus_private_layout';
         echo " ";
     }

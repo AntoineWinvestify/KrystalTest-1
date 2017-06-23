@@ -38,6 +38,8 @@
  * [2017-06-21] Version 0.5
  * User data table
  * 
+ * [2017-06-23] Version 0.6
+ * User data table from db
  * 
  */
 ?>
@@ -52,12 +54,12 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <script>
     $(function () {
-        
-          $(document).on("click", ".view", function () {
-              id = $(this).val();
-              
-          });
-          
+
+        $(document).on("click", ".view", function () {
+            id = $(this).val();
+
+        });
+
     });
 </script>
 <div id="1CR_winAdmin_2_investorChecking">

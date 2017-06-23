@@ -34,13 +34,11 @@
  *  2016-08-02		version 0.1
  *  Simple first version
  *
-
-
-  2017-06-11      version 0.2
-  Corrected test for language cookie
-
-
- * 
+ * 2017-06-11      version 0.2
+ * Corrected test for language cookie
+ *
+ * 2017-06-23     version 0.3
+ * OCr status defined
  * 
  * 
  * 
@@ -184,7 +182,7 @@ define('FINISHED', 3);
 define('UNCHECKED', 0);
 define('CHECKED', 1);
 define('ERROR', 2);
-        
+
 class AppController extends Controller {
 
     public $components = array('DebugKit.Toolbar',
