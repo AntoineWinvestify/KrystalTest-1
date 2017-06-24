@@ -18,17 +18,17 @@
 //
 
 2016-10-18	  version 0.1
-function updateAccountCreationStatus										[Not OK, Not tested]
+function updateAccountCreationStatus				[Not OK, Not tested]
 
 
 2017-01-17	  version 0.2
-function investmentInformationUpdate added									[OK]
+function investmentInformationUpdate added			[OK]
 
 
 
 
 Pending:
-function generateGUIDs(). 													[not Ok, not tested]
+function generateGUIDs(). 					[not Ok, not tested]
 
 
 

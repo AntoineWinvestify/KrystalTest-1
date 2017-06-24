@@ -23,9 +23,9 @@
 *
 
 2016-08-25	  version 2016_0.1
-function deleteLinkedaccount()												[Not yet OK, test new functionality]
-getLinkedaccountDataList()													[OK, tested]
-function linkNewAccount()													[not Ok, not tested]
+function deleteLinkedaccount()					[Not yet OK, test new functionality]
+getLinkedaccountDataList()					[OK, tested]
+function linkNewAccount()					[not Ok, not tested]
 
 
 

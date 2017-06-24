@@ -188,6 +188,12 @@ define('USER_GENERATED', 1);
 define('SYSTEM_GENERATED', 2);
 
 
+// DEFINED CURRENCIES
+define('EUR', 1);           // Euro
+define('GBP', 2);           // UK Pound Sterling
+define('USD', 3);           // US Dollar
+
+
 
 class AppController extends Controller {
 
@@ -245,9 +251,8 @@ class AppController extends Controller {
                                         CROWD_REAL_ESTATE => __('Crowd Real Estate'),
                                         SOCIAL => __('Social')
         );
-	$this->set('crowdlendingTypes', $$this->crowdlendingTypes);
-        
-
+	$this->set('crowdlendingTypes', $this->crowdlendingTypes);
+ 
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"

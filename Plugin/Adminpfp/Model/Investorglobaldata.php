@@ -61,25 +61,29 @@ var $validate = array();
 
 
 /**STILL TO BE DONE
-*
+*category of user is checked in order to know how many records need to be fetched (in number and time)
 *	Returns a *LIST* of companies that fullfil the filterConditions
 *	
 * 	@return array  array of all company Ids that fullfil filtering conditions
 *			
 */
 public function loadInvestorData($investoridentity) {
+    Configure::load('p2pGestor.php', 'default');
+    $serviceTallymanData = Configure::read('Tallyman');  
+    $cutoffDateTime = date("Y-m-d H:i:s", time() - $refreshFrecuency * 3600);
+        
+    $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
+                                                'created >' => $cutoffDateTime);
 
-	$businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
-								'Company.company_state' => ACTIVE);
+    $conditions = array_merge($businessConditions, $filterConditions);
+// only use link between investorglobal and investmentglobal
 
-	$conditions = array_merge($businessConditions, $filterConditions);
-// ony use link between investorglobal and investmentglobal
-//        add a timelimit and number limit
-	$investorglobalResult = $this->find("list", $params = array('recursive'	=> 2,
+    $investorglobalResult = $this->find("list", $params = array('recursive'	=> 2,
 								'conditions'	=> $conditions,
+                                                                'limit'         => $serviceTallymanData['maxHistoryLengthNumber'],
 					));
 	
-	return($investorglobalResult);
+    return($investorglobalResult);
 }
 
 

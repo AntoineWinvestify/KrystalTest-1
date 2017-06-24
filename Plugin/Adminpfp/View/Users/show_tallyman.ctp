@@ -63,6 +63,10 @@
         });
 });
 </script>
+
+
+
+
 <div id="1CR_pfpAdmin_3_tallyman">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -219,7 +223,8 @@
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
                                                         <div class="card-content">
-                                                            <h1 style="text-align: center;"><?php echo __('4')?></h1>
+                                                            <!-- Number of linked accounts -->
+                                                            <h1 style="text-align: center;"><?php echo count($resultTallyman[0]['Userplatformglobaldata'])?></h1>
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">
@@ -231,7 +236,8 @@
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
                                                         <div class="card-content">
-                                                            <h1 style="text-align: center;"><?php echo __('6')?></h1>
+                                                            <!-- total number of platforms -->
+                                                            <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">

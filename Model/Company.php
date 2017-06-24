@@ -127,8 +127,8 @@ public function getCompanyDataList($filterConditions) {
 public function readExtendedData($filterConditions) {
 
 	$companyResult = $this->find("all", $params = array('recursive'		=> -1,
-														'conditions'	=> $filterConditions,
-														));
+                                                            'conditions'	=> $filterConditions,
+				));
 	
 // 'Normalize' the total array
 	foreach($companyResult as $value){

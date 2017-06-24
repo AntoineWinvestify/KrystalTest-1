@@ -81,10 +81,9 @@ class AdminpfpAppController extends AppController {
 /**
 *	This code is common to all the classes that actively define a method for the beforeFilter
 *	callback.
-*	It includes:
-*		name of cookie
-*		determining the url of the last real external request
-*		identify if mobile of desktop layout is to be used.
+*	
+*		
+*		
 */
 public function beforeFilter() {
 
@@ -92,8 +91,14 @@ public function beforeFilter() {
 
     $this->Security->blackHoleCallback = 'blackhole';
  
-    $this->set('investmentStates', $investmentStates);
-    $this->investmentStates = $investmentStates;
+        $this->crowdlendingTypes = array(P2P => __('P2P Crowdlending'),
+                                        P2B => __('P2B Crowdlending'),
+                                        INVOICE_TRADING => __('P2P Invoice Trading'),
+                                        CROWD_REAL_ESTATE => __('Crowd Real Estate'),
+                                        SOCIAL => __('Social')
+        );
+	$this->set('crowdlendingTypes', $this->crowdlendingTypes);
+ 
 	
 /*	
 

@@ -51,7 +51,6 @@ class UsersController extends AdminAppController
 
 
 function beforeFilter() {
-//	Configure::write('debug', 2);
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 
@@ -65,12 +64,7 @@ function beforeFilter() {
 // Allow only the following actions.
 //	$this->Security->requireAuth();
 	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
-//$this->Security->unlockedActions('login');
-//   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
-
-//var_dump($_REQUEST);
-var_dump($this->request);
-//      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
+    
 
 }
 
@@ -98,24 +92,7 @@ public function showInvestorDataPanel() {
     
 }
 
-
-/**
- * 
- * Updates the (separate) database of investor data with the data obtained from data traffic
- * 
- */
-public function cronUpdateMLInvestorGlobalData() {
-/*
- * check if pending request in queue
- * 
- * 
- */ 
     
-    
-    
-}
-
-
 
 /**
 *	must eventually be moved to the admin section. After action this user does no longer exist
@@ -255,8 +232,6 @@ echo "<br/>";
 
 public function loginAction() {
     echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-$this->print_r2($this->request->data);
-$this->autoRender = false;
 	 
         if ($this->Auth->login()) {
             echo "SESSION1 <br>";
