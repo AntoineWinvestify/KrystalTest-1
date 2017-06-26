@@ -175,7 +175,7 @@ define('REGISTRATION_PROGRESS_5', 5);
 define('NOT_SENT', 0);
 define('SENT', 1);
 define('ERROR', 2);
-define('FINISHED', 3);
+define('OCR_FINISHED', 3);
 
 //OCR COMPANY STATUS
 define('SELECTED', 0);

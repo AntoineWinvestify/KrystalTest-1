@@ -24,7 +24,7 @@
 
 <script>
     $(document).ready(function () {
-        link = "../Ocrs/ocrInvestorPlatformSelection";
+        link = "<?php echo $link ?>";
         var data = null;
         getServerData(link, data, successInvestoPlatform, errorInvestoPlatform);
     });

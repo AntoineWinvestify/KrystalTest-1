@@ -75,7 +75,7 @@ foreach ($companies as $companyInfo) {
     $(function () {
         $(document).on("click", "#sendBill", function () {
             console.log("validate Winadmin billing data");
-            <?php //Javascript validation   ?>
+<?php //Javascript validation     ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
                 params = {
@@ -87,13 +87,13 @@ foreach ($companies as $companyInfo) {
                 };
                 link = '../Files/upload';
                 var data = jQuery.param(params);
-                    $.ajax({
-                        url: link,
-                        dataType: 'json',
-                        method: 'post',
-                        data: data,
-                        contentType: false,
-                        processData: false,
+                $.ajax({
+                    url: link,
+                    dataType: 'json',
+                    method: 'post',
+                    data: data,
+                    contentType: false,
+                    processData: false,
                 }).done(function (data) {
 
                 });
@@ -139,7 +139,7 @@ foreach ($companies as $companyInfo) {
                                         <th><?php echo __('Upload file') ?></th>
                                         <th><?php echo __('Send') ?></th>
                                     </tr>
-                                    <?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
+
                                     <tr>
                                         <td>
                                             <?php
@@ -237,17 +237,19 @@ foreach ($companies as $companyInfo) {
                                         </td>
                                         <td>
                                             <?php
+                                            echo $this->Form->create('bill', array('default' => false, 'id' => 'bill'));
                                             echo "<label class='btn labelFile btnRounded btnUploadFile' for='billUpload'><i class='fa fa-upload'></i> Upload bill</label>";
                                             echo $this->Form->file("bill", array('class' => 'upload', 'id' => 'billUpload'));
+                                            echo $this->Form->end();
                                             ?>
                                         </td>
                                         <td>
                                             <button type="button" id="sendBill" class="btn btn-default btnWinAdmin btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Send') ?> 
-                                            </button>
-                                        </td>
+                                            </button>                                        </td>
+
                                     </tr>
-                                    <?php echo $this->Form->end(); ?>
+
                                 </table>
                             </div>
                         </div>
@@ -274,18 +276,18 @@ foreach ($companies as $companyInfo) {
                                 ?></p>
                         </div>
                         <div id="investorFilters" class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                            <?php 
-                            $class = "form-control blue_noborder investorCountry". ' ' . $errorClass;
-                            $countries = ["select PFP", "pfp1", "pfp2", "pfp3"];      
-                                                                                echo $this->Form->input('Investor.investor_country', array(
-                                                                                        'name'			=> 'country',
-                                                                                        'id' 			=> 'ContentPlaceHolder_country',
-                                                                                        'label' 		=> false,
-                                                                                        'options'               => $countries,
-                                                                                        'placeholder' 	=>  __('Country'),
-                                                                                        'class' 		=> $class,
-                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_country'],						
-                                                        ));
+                            <?php
+                            $class = "form-control blue_noborder investorCountry" . ' ' . $errorClass;
+                            $countries = [__("Select PFP"), "pfp1", "pfp2", "pfp3"];
+                            echo $this->Form->input('Investor.investor_country', array(
+                                'name' => 'country',
+                                'id' => 'ContentPlaceHolder_country',
+                                'label' => false,
+                                'options' => $countries,
+                                'placeholder' => __('Country'),
+                                'class' => $class,
+                                'value' => $resultUserData[0]['Investor']['investor_country'],
+                            ));
                             ?>
                         </div>
                     </div>

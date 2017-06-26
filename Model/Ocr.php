@@ -145,7 +145,7 @@ class ocr extends AppModel {
         if (count($id) > 0) {
             $time = date('Y-m-d H:i:s', time());
 
-            if ($dataParam['ocr_investmentVehicle'] == 1) {
+            if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
                 $data = array(
                     'id' => $id['Ocr']['id'],
                     'investor_id' => $dataParam['investor_id'],
@@ -242,7 +242,6 @@ class ocr extends AppModel {
             $comp = $data["idCompanies"];
 
             for ($i = 0; $i < count($comp); $i++) {
-
                 if ($i == 0) {
                     $query = "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `company_status`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
                 } else {

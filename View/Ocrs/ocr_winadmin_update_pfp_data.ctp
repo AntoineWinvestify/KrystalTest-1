@@ -85,7 +85,7 @@
                                         <td>
                                             <?php 
                                                 $class = "form-control blue_noborder winadminPFP";
-                                                $filters = ["select PFP", "pfp1", "pfp2", "pfp3"];      
+                                                $filters = [__("Select PFP"), "pfp1", "pfp2", "pfp3"];      
                                                 echo $this->Form->input('Ocr.id', array(
                                                         'name'          => 'pfp',
                                                         'id'            => 'ContentPlaceHolder_pfp',

@@ -89,12 +89,14 @@ class ocrsController extends AppController {
         //Check ocr status
         $status = $OcrData[0]['Ocr']['ocr_status'];
         //Control status
-        if ($status == NOT_SENT) {
-            $this->ocrInvestorPlatformSelection();
+        if ($status == NOT_SENT && $status == OCR_FINISHED) {
+            //$this->ocrInvestorPlatformSelection();
+            $this->set('link', '/Ocrs/ocrInvestorPlatformSelection');
         } else if ($status == SENT) {
             $this->activatedService();
         } else if ($status == ERROR) {
-            $this->ocrInvestorDataPanel();
+            //$this->ocrInvestorDataPanel();
+            $this->set('link', '/Ocrs/ocrInvestorDataPanel');
         }
     }
 
@@ -291,7 +293,7 @@ class ocrsController extends AppController {
 
         //Companies with ocr
         $this->set('company', $this->Company->companiesDataOCR());
-        
+
         //Investor id
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
@@ -305,7 +307,7 @@ class ocrsController extends AppController {
         //Linked companies(Not show)
         $linkedList = $this->Linkedaccount->getLinkedaccountIdList($filter);
         $notShow = array();
-        
+
         //Filter
         foreach ($registeredList as $registered) {
             array_push($notShow, $registered["ocrInfo"]["company_id"]);
