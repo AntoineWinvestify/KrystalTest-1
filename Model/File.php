@@ -237,7 +237,7 @@ class file extends AppModel {
      */
     public function getAllBills() {
         $allBills = $this->find('all', array(
-            'conditions' => array ('file_id' => 50), //50 is the bill id
+            'conditions' => array ('id' => 50), //50 is the bill id
             'recursive' => 1,));
         $allBillInfo = array();
 

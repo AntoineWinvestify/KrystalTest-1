@@ -164,7 +164,7 @@
 
 <?php
 foreach ($notShow as $notShowCompany) {
-    ?>        
+    ?>             
             $('#selection').append("<input type='hidden' value='" + <?php echo $notShowCompany['id'] ?> + "' class='selected inDB'></input>");
     <?php
 }

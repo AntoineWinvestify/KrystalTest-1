@@ -182,8 +182,9 @@ define('SELECTED', 0);
 define('SENT', 1);
 define('ACCEPTED', 2);
 define('DENIED', 3);
+define('DOWLOADED', 4);
 
-//CHECK DATA STATUS
+//CHECK DATA & FILES STATUS
 define('UNCHECKED', 0);
 define('CHECKED', 1);
 define('ERROR', 2);

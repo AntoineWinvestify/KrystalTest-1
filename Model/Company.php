@@ -133,7 +133,7 @@ class Company extends AppModel {
             $filtro = array('Company.company_countryName' => $filter['country_filter']);
             $conditions = array_merge($conditions, $filtro);
         }
-
+        
         if ($filter['type_filter']) {
             $filtro = array('Company.Company_type' => $filter['type_filter']);
             $conditions = array_merge($conditions, $filtro);
@@ -141,11 +141,11 @@ class Company extends AppModel {
 
         $data = $this->find("all", array(
             'fields' => array('id', 'Company.company_name', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
-                'Company.Company_privacityUrl', 'Company.Company_type'),
+                'Company.Company_privacyUrl', 'Company.Company_type'),
             'recursive' => -1,
             'conditions' => $conditions,
         ));
-
+        
         return $data;
     }
 

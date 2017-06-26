@@ -321,7 +321,7 @@ class ocr extends AppModel {
         $companyList = array();
         //status filter
         foreach ($companyListNotFilter as $filterStatus) {
-            if ($filterStatus["company_status"] == 0) {
+            if ($filterStatus['ocrInfo']['company_status'] == SELECTED) {
                 array_push($companyList, $filterStatus);
             }
         }
@@ -341,7 +341,7 @@ class ocr extends AppModel {
 
         //status filter
         foreach ($companyListNotFilter as $filterStatus) {
-            if ($filterStatus["company_status"] == 1) {
+            if ($filterStatus['ocrInfo']["company_status"] == SENT || $filterStatus['ocrInfo']["company_status"] == ACCEPTED || $filterStatus['ocrInfo']["company_status"] == DENIED || $filterStatus['ocrInfo']["company_status"] == DOWLOADED) {
                 array_push($companyList, $filterStatus);
             }
         }
@@ -372,29 +372,30 @@ class ocr extends AppModel {
      * 	Decrypt the sensitive data provided by the investor
      *
      */
-    /* public function afterFind($results, $primary = false) {
+    public function afterFind($results, $primary = false) {
 
-      foreach ($results as $key => $val) {
-      if (isset($val['Ocr']['investor_iban'])) {
-      $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
-      $val['Ocr']['investor_iban']);
-      }
-      }
-      return $results;
-      }
+        foreach ($results as $key => $val) {
+            if (isset($val['Ocr']['investor_iban'])) {
+                $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
+                        $val['Ocr']['investor_iban']);
+            }
+        }
+        return $results;
+    }
 
-      /**
+    /**
      *
      * 	Callback Function
      * 	Encrypt the sensitive fields of the information provided by the investor
      *
      */
-    /* public function beforeSave($options = array()) {
+    public function beforeSave($options = array()) {
 
-      if (!empty($this->data['Ocr']['investor_iban'])) {
-      $this->data['Ocr']['investor_iban'] = $this->encryptDataBeforeSave($this->data['Ocr']['investor_iban']);
-      }
+        if (!empty($this->data['Ocr']['investor_iban'])) {
+            $this->data['Ocr']['investor_iban'] = $this->encryptDataBeforeSave($this->data['Ocr']['investor_iban']);
+        }
 
-      return true;
-      } */
+        return true;
+    }
+
 }

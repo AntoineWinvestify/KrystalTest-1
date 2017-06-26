@@ -291,7 +291,7 @@ class ocrsController extends AppController {
 
         //Companies with ocr
         $this->set('company', $this->Company->companiesDataOCR());
-
+        
         //Investor id
         $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
