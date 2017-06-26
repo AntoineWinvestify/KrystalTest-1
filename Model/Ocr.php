@@ -96,13 +96,7 @@ class ocr extends AppModel {
     public function createOcr($id) {
 
         //Ocr id find
-        $idFind = $this->find('first', array(
-            'fields' => array(
-                'id',
-            ),
-            'conditions' => array(
-                'investor_id' => $id),
-            'recursive' => -1,));
+        $idFind = $this->findOcrId($id);
 
         //No ocr id = new ocr
         if (count($idFind) == 0) {
@@ -117,8 +111,11 @@ class ocr extends AppModel {
 
             //Update
             if ($this->save($data)) {
+                $idOcr = $this->findOcrId($id);
+                print_r($idOcr);
                 //Insert ocr_id in investor data
-                //$this->Investor->save(array('id' => $id, 'ocr_id' => 6));
+                $data = array('id' => $id, 'ocr_id' => $idOcr);
+                $this->Investor->save($data);
                 return 1;
             } else {
                 return 0;
@@ -272,21 +269,33 @@ class ocr extends AppModel {
     }
 
     /**
-     * Delete a selected company from ocr
-     * @param type $data
+     * Find ocrId
+     * @param type $id
      * @return type
      */
-    public function deleteCompanyOcr($data) {
+    public function findOcrId($id) {
         //Find ocrId
         $ocrId = $this->find('first', array(
             'fields' => array(
                 'id',
             ),
             'conditions' => array(
-                'investor_id' => $data['investorId']),
+                'investor_id' => $id),
             'recursive' => -1,));
+        return $ocrId['Ocr']['id'];
+    }
+
+    /**
+     * Delete a selected company from ocr
+     * @param type $data
+     * @return type
+     */
+    public function deleteCompanyOcr($data) {
+        //Find ocrId
+        $ocrId = $this->findOcrId($data['investorId']);
+
         /* Delete company */
-        $query = "DELETE FROM `companies_ocrs` WHERE `company_id`='" . $data['companyId'] . "' and`ocr_id`='" . $ocrId['Ocr']['id'] . "';";
+        $query = "DELETE FROM `companies_ocrs` WHERE `company_id`='" . $data['companyId'] . "' and`ocr_id`='" . $ocrId . "';";
         $this->query($query);
         return 1;
     }
