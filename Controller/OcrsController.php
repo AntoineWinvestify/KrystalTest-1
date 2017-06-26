@@ -84,12 +84,13 @@ class ocrsController extends AppController {
 
         //Check ocr status
         $status = $OcrData[0]['Ocr']['ocr_status'];
-
         //Control status
-        if ($status == 0) {
+        if ($status == NOT_SENT) {
             $this->ocrInvestorPlatformSelection();
-        } else {
+        } else if($status == SENT) {
             $this->activatedService();
+        } else if ($status == ERROR){
+            $this->ocrInvestorDataPanel();
         }
     }
 
@@ -234,7 +235,7 @@ class ocrsController extends AppController {
      * @return int
      */
     function ocrInvestorDataPanel() {
-        echo "1"; // echo  for ajax
+        //echo "1"; // echo  for ajax
         //Investor info
         $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
 
@@ -249,14 +250,15 @@ class ocrsController extends AppController {
 
         //Required  files
         $requiredFiles = $this->File->readRequiredFiles($companies);
-
+        $filesData = $this->File->getFilesData($requiredFiles);
+        
         //Read existing files 
         $existingFiles = $this->File->readExistingFiles($id);
-
+        
         //Set all info
         $this->set('investor', $data);
         $this->set('ocr', $data2);
-        $this->set('requiredFiles', $this->File->getFilesData($requiredFiles));
+        $this->set('requiredFiles', $filesData);
         $this->set('existingFiles', $existingFiles);
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');

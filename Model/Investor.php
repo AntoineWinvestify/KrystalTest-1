@@ -197,7 +197,6 @@ class Investor extends AppModel {
         $data = array('id' => $investorReference,
             'investor_accountStatus' => $newStatus,
         );
-        print_r($data);
         $this->save($data, $validate = true);
         echo __FILE__ . " " . __LINE__ . "<br>";
         return true;

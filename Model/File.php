@@ -165,9 +165,8 @@ class file extends AppModel {
         //Id list of selected companies
         $selectedList = array();
         foreach ($data as $selectedId) {
-            array_push($selectedList, $selectedId['company_id']);
+            array_push($selectedList, $selectedId['ocrInfo']['company_id']);
         }
-
         //All company files
         $allCompanyFiles = $this->find('all', array(
             'conditions' => array(
@@ -211,8 +210,7 @@ class file extends AppModel {
      * @param type $id
      * @return type
      */
-    public function readExistingFiles($id) {
-        $query = "Select * from `files_investors` where investor_id =" . $id;
+    public function readExistingFiles($id) {     
         $investorFiles = $this->FilesInvestor->find("all", array('conditions' => array('investor_id' => $id)));
         $filesName = $this->find("all");
         $result = array();

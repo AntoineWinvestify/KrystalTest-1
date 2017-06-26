@@ -170,7 +170,6 @@ class ocr extends AppModel {
                 );
             }
         }
-        print_r($time);
 //Save
         if ($this->save($data)) {
             $result = json_encode($data); //Save ok

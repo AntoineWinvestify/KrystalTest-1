@@ -177,6 +177,11 @@ define('SENT', 1);
 define('ERROR', 2);
 define('FINISHED', 3);
 
+//OCR COMPANY STATUS
+define('SELECTED', 0);
+define('SENT', 1);
+define('ACCEPTED', 2);
+define('DENIED', 3);
 
 //CHECK DATA STATUS
 define('UNCHECKED', 0);

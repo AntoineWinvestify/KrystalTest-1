@@ -53,7 +53,7 @@
  * Bug fixing
  */
 ?>
-
+1
 <link rel="stylesheet" type="text/css" href="/plugins/intlTelInput/css/intlTelInput.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="/plugins/datepicker/datepicker3.css">
@@ -164,11 +164,11 @@
             getServerData(link, data, successBack, errorBack);
         });
 
-
-        if (<?php echo $ocr[0]['Ocr']['ocr_invesmentVehicle'] ?> == 1) {
+       
+        <?php if ($ocr[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED ) {   //Invesment vehicle check ?>
             $("#investmentVehicle").prop('checked', true);
             $("#investmentVehicleContent").show();
-        }
+        <?php  } ?>
 
 
     });
@@ -221,12 +221,12 @@
 <?php
 foreach ($existingFiles as $file) {
     ?>
-            id = <?php echo $file["files_investors"]["file_id"] ?>;
-            url = "<?php echo $file["files_investors"]["file_url"] ?>";
+            id = <?php echo $file["file"]["FilesInvestor"]["file_id"] ?>;
+            url = "<?php echo $file["file"]["FilesInvestor"]["file_url"] ?>";
             $(".documentRow").each(function () {
                 if ($(this).attr("id") == id) {
-                    $("#file" + id).html('<?php echo $file["files_investors"]["file_name"] . __(" already exist") ?>');
-                    $("#file" + id).attr("value", "<?php echo $file["files_investors"]["file_name"] ?>");
+                    $("#file" + id).html('<?php echo $file["file"]["FilesInvestor"]["file_name"] ?>');
+                    $("#file" + id).attr("value", "<?php echo $file["file"]["FilesInvestor"]["file_name"] ?>");
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
@@ -254,39 +254,51 @@ foreach ($existingFiles as $file) {
 
     function disbleCheckedData() {
 
-        if (<?php echo $checkData[0]['Check']['check_name'] ?> == <?php echo CHECKED ?>) {
+
+       <?php  if ( $checkData[0]['Check']['check_name'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_name').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_surname'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+             
+             
+       <?php  if ( $checkData[0]['Check']['check_surname'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_surname').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_dni'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_dni'] == CHECKED ) { //Data checking ?>
             $('#dni').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_dateOfBirth'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_dateOfBirth'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_dateOfBirth').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_email'] == 1 ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_email'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_email').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_telephone'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_telephone'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_telephone').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_postCode'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_postCode'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_postCode').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_address'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_address1'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_address1').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_city'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_city'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_city').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_country'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_country'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_country').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_iban'] ?> == <?php echo CHECKED ?>) {
+         <?php } ?>
+        
+       <?php  if ( $checkData[0]['Check']['check_iban'] == CHECKED ) { //Data checking ?>
             $('#ContentPlaceHolder_iban').prop('disabled', true);
-        }
+         <?php } ?>
 
 
 
@@ -853,9 +865,10 @@ foreach ($existingFiles as $file) {
                                             <td>
                                                 <?php
                                                 $uploaded = "uploaded" . $filesTable[0]['File']['id'];
-                                                echo "<label class='btn labelFile btnRounded btnUploadFile' for='fileId" . $filesTable[0]['File']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
+                                                
                                                 echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['File']['id'], 'class' => 'upload', 'value' => $filesTable[0]['File']['id']));
                                                 echo "<span id='" . $file . "' >";
+                                                echo "<label class='btn labelFile btnRounded btnUploadFile' for='fileId" . $filesTable[0]['File']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
                                                 echo $this->Form->file("fileId" . $filesTable[0]['File']['id']);
                                                 echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $filesTable[0]['File']['id']));
                                                 echo $this->Form->hidden('upload', array('id' => $uploaded, 'class' => 'uploaded', 'value' => 0));

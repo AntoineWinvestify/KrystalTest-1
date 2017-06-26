@@ -48,8 +48,6 @@
  * [2017-06-23] Version 0.6
  * Data from db
  */
-print_r($userData);
-print_r($checking);
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
 <script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
