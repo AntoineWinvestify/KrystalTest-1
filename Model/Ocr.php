@@ -117,7 +117,8 @@ class ocr extends AppModel {
 
             //Update
             if ($this->save($data)) {
-                $this->Investor->save(array('id' => $id, 'ocr_id' => 6));
+                //Insert ocr_id in investor data
+                //$this->Investor->save(array('id' => $id, 'ocr_id' => 6));
                 return 1;
             } else {
                 return 0;
@@ -345,6 +346,24 @@ class ocr extends AppModel {
             }
         }
         return $companyList;
+    }
+
+    /* Get all accepted ocr_compànies relations of a company
+     * 
+     * @param type $id
+     * @return array
+     */
+
+    public function getAllOcrRelations($id) {
+        //Search all ocr of the company
+        $OcrArray = $this->CompaniesOcr->find('all', array('recursive' => 1, 'conditions' => array('company_id' => $id, 'company_status' => ACCEPTED)));
+        $result = array();
+        //Search the investor info
+        foreach ($OcrArray as $ocr) {
+            $investorData = $this->find('first', array('recursive' => 1, 'conditions' => array('Ocr.id' => $ocr['CompaniesOcr']['ocr_id'])));
+            array_push($result, array(array('ocrInfo' => $ocr), array('invesotrInfo' => $investorData)));
+        }
+        return $result;
     }
 
     /**

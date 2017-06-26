@@ -36,10 +36,14 @@
  * select rquired files deleted, now we use find
  * 
  * 2017/6/21 version 0.5
- * upload bill         [OK]
+ * upload bill                            [OK]
  * 
  * 2017/6/23 version 0.5
- * change query for find         [OK]
+ * change query for find         
+ * 
+ * 2017/6/26 version 0.5
+ * billCompanyFilter                         [OK]
+ * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -210,11 +214,11 @@ class file extends AppModel {
      * @param type $id
      * @return type
      */
-    public function readExistingFiles($id) {     
+    public function readExistingFiles($id) {
         $investorFiles = $this->FilesInvestor->find("all", array('conditions' => array('investor_id' => $id)));
         $filesName = $this->find("all");
         $result = array();
-        
+
         //Get existing file and type file info
         foreach ($investorFiles as $investorFile) {
             foreach ($filesName as $fileName) {
@@ -228,12 +232,12 @@ class file extends AppModel {
 
     /**
      * Read the existing bills for WinAdmin
+     * Filter for pfpAdmin
      * @return type
      */
     public function getAllBills() {
-
         $allBills = $this->find('all', array(
-            'conditions' => array('id' => 50), //50 is the bill id
+            'conditions' => array ('file_id' => 50), //50 is the bill id
             'recursive' => 1,));
         $allBillInfo = array();
 
@@ -247,6 +251,11 @@ class file extends AppModel {
             }
         }
         return $allBillInfo;
+    }
+
+    public function billCompanyFilter($id) {
+        $bills = $this->CompaniesFile->find('all', array('conditions' => array('company_id' => $id)));
+        return $bills;
     }
 
 }

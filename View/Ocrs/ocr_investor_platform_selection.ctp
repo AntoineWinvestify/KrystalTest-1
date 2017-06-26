@@ -394,7 +394,7 @@ foreach ($selected as $sel) {
                             <div class="box-footer no-padding">
                                 <div class="row">
                                     <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a target="_blank" href="<?php echo $comp['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
+                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a target="_blank" href="<?php echo $comp['Company']['Company_privacyUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
                                         <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a target="_blank" href="<?php echo $comp['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">

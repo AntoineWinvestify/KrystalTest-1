@@ -1,23 +1,23 @@
 <?php
 /**
-* +--------------------------------------------------------------------------------------------+
-* | Copyright (C) 2016, http://www.winvestify.com                                              |
-* +--------------------------------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify                          |
-* | it under the terms of the GNU General Public License as published by                       |
-* | the Free Software Foundation; either version 2 of the License, or                          |
-* | (at your option) any later version.                                                        |
-* | This file is distributed in the hope that it will be useful                                |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
-* | GNU General Public License for more details.                                               |
-* +--------------------------------------------------------------------------------------------+
-*
-*
-* @author
-* @version 0.2
-* @date 2017-05-23
-* @package
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                                              |
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify                          |
+ * | it under the terms of the GNU General Public License as published by                       |
+ * | the Free Software Foundation; either version 2 of the License, or                          |
+ * | (at your option) any later version.                                                        |
+ * | This file is distributed in the hope that it will be useful                                |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+ * | GNU General Public License for more details.                                               |
+ * +--------------------------------------------------------------------------------------------+
+ *
+ *
+ * @author
+ * @version 0.2
+ * @date 2017-05-23
+ * @package
  * 
  * One Click Registration - PFD Admin Users Selection
  * Users registered by Winvestify or consulted by PFD Admin data panel
@@ -34,6 +34,11 @@
  * Added orange box
  * Added style to overlay
  * Deleted unnecessary script
+ * 
+ * 
+ * [2017-06-26] Version 0.2
+ * Table from db
+ * 
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -77,65 +82,33 @@
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
                                         <table id="usersTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                                                                        data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
-                                                <thead>
-                                                        <tr>
-                                                            <th><?php echo __('Date')?></th>
-                                                            <th><?php echo __('Name')?></th>
-                                                            <th><?php echo __('Surname')?></th>
-                                                            <th><?php echo __('Telephone')?></th>
-                                                            <th><?php echo __('Email')?></th>
-                                                            <th><?php echo __('Action')?></th>
-                                                            <th><?php echo __('Tallyman')?></th>
-                                                        </tr>
-                                                </thead>
-                                                <tbody>
+                                               data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                            <thead>
+                                                <tr>
+                                                    <th><?php echo __('Date') ?></th>
+                                                    <th><?php echo __('Name') ?></th>
+                                                    <th><?php echo __('Surname') ?></th>
+                                                    <th><?php echo __('Telephone') ?></th>
+                                                    <th><?php echo __('Email') ?></th>
+                                                    <th><?php echo __('Action') ?></th>
+                                                    <th><?php echo __('Tallyman') ?></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($ocrList as $ocr) {
+; ?>
                                                     <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
+                                                        <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Download') ?></button></td>
+                                                        <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
                                                     </tr>
-                                                    <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
-                                                    </tr>
-                                                </tbody>
+<?php } ?>
+
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>

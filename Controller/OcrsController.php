@@ -47,6 +47,10 @@
  * 2017/6/23 version 0.8
  * checking data table
  * user checking data
+ * 
+ * 2017/6/26 version 0.9
+ * pfp admin tables ok
+ * 
  */
 App::uses('CakeEvent', 'Event');
 
@@ -87,9 +91,9 @@ class ocrsController extends AppController {
         //Control status
         if ($status == NOT_SENT) {
             $this->ocrInvestorPlatformSelection();
-        } else if($status == SENT) {
+        } else if ($status == SENT) {
             $this->activatedService();
-        } else if ($status == ERROR){
+        } else if ($status == ERROR) {
             $this->ocrInvestorDataPanel();
         }
     }
@@ -251,10 +255,10 @@ class ocrsController extends AppController {
         //Required  files
         $requiredFiles = $this->File->readRequiredFiles($companies);
         $filesData = $this->File->getFilesData($requiredFiles);
-        
+
         //Read existing files 
         $existingFiles = $this->File->readExistingFiles($id);
-        
+
         //Set all info
         $this->set('investor', $data);
         $this->set('ocr', $data2);
@@ -355,12 +359,23 @@ class ocrsController extends AppController {
     //One Click Registration - PFPAdmin Views
     //PFPAdmin View #2
     function ocrPfpBillingPanel() {
+        //Read all company bills
+        $bills = $this->File->billCompanyFilter(6);
+        $this->set('bills', $bills);
+
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
 
-    //PFPAdmin View #1
+    /*     * PFPAdmin View #1
+     * New accepted user
+     */
+
     function ocrPfpUsersPanel() {
+        //Read and accepted relations
+        $ocrList = $this->Ocr->getAllOcrRelations(6);
+        $this->set('ocrList', $ocrList);
+
         $this->layout = 'azarus_private_layout';
         echo " ";
     }

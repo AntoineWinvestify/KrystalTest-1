@@ -29,6 +29,10 @@
  * Added green box
  * Added style to overlay
  * Updated .blue_noborder to .blue_noborder3 (green to orange focus)
+ * 
+ * 
+ *[2017-06-26] Version 0.3
+ * Table from db
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -94,52 +98,17 @@
                                                         </tr>
                                                 </thead>
                                                 <tbody>
-                                                    
+                                                    <?php foreach($bills as $bill){;?>
                                                     <tr>
-                                                        <td>01-01-2017</td>
-                                                        <td>number ofhgfg billing</td>
-                                                        <td>conceptsgnbhgtttt</td>
-                                                        <td align="right">0.0550 €</td>
+                                                        <td><?php echo __($bill['CompaniesFile']['created']); ?></td>
+                                                        <td><?php echo __($bill['CompaniesFile']['bill_number']); ?></td>
+                                                        <td><?php echo __($bill['CompaniesFile']['bill_concept']); ?></td>
+                                                        <td align="right"><?php echo __($bill['CompaniesFile']['bill_amount']); ?></td>
                                                         <td>
-                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
+                                                            <button href = "<?php echo __($bill['CompaniesFile']['bill_url']); ?>" class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
                                                         </td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>01-01-2017</td>
-                                                        <td>numberdsghh of billing</td>
-                                                        <td>concefssdpttttt</td>
-                                                        <td align="right">0.0567470 €</td>
-                                                        <td>
-                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>01-01-2017</td>
-                                                        <td>number ofhgfhf billing</td>
-                                                        <td>concesdfsfpttttt</td>
-                                                        <td align="right">0.066660 €</td>
-                                                        <td>
-                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>01-01-2017</td>
-                                                        <td>number sdfghgof billing</td>
-                                                        <td>concepgghgggttttt</td>
-                                                        <td align="right">0.099990 €</td>
-                                                        <td>
-                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>01-01-2017</td>
-                                                        <td>numbedfdffr of billing</td>
-                                                        <td>conhhghhcepttttt</td>
-                                                        <td align="right">22220.00 €</td>
-                                                        <td>
-                                                            <button class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
-                                                        </td>
-                                                    </tr>
+                                                    <?php } ?>                                        
                                                 </tbody>
                                         </table>
                                     </div>
