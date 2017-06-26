@@ -48,7 +48,7 @@ class Investorglobaldata extends AppModel
 
 
 /**
-*	Apparently can contain any type field which is used in a field. It does NOT necessarily
+*	Apparently it can contain any type field which is used in a field. It does NOT necessarily
 *	have to map to a existing field in the database. Very useful for automatic checks
 *	provided by framework
 */
@@ -59,14 +59,18 @@ var $validate = array();
 
 
 
+/**
+ *category of user is checked in order to know how many records need to be fetched (in number and time)
+ *	Get the investor data as seen from a PFP platform
+ *	
 
-/**STILL TO BE DONE
-*category of user is checked in order to know how many records need to be fetched (in number and time)
-*	Returns a *LIST* of companies that fullfil the filterConditions
-*	
-* 	@return array  array of all company Ids that fullfil filtering conditions
-*			
-*/
+    
+ * 
+ * 
+ * 
+ *  @return array  array of all company Ids that fullfil filtering conditions
+ *			
+ */
 public function loadInvestorData($investoridentity) {
     Configure::load('p2pGestor.php', 'default');
     $serviceTallymanData = Configure::read('Tallyman');  

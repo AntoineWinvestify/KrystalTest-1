@@ -86,20 +86,11 @@ class AdminpfpAppController extends AppController {
 *		
 */
 public function beforeFilter() {
-
+   parent::beforeFilter();
     $this->Cookie->name = 'zastac_equity_admin';
 
     $this->Security->blackHoleCallback = 'blackhole';
  
-        $this->crowdlendingTypes = array(P2P => __('P2P Crowdlending'),
-                                        P2B => __('P2B Crowdlending'),
-                                        INVOICE_TRADING => __('P2P Invoice Trading'),
-                                        CROWD_REAL_ESTATE => __('Crowd Real Estate'),
-                                        SOCIAL => __('Social')
-        );
-	$this->set('crowdlendingTypes', $this->crowdlendingTypes);
- 
-	
 /*	
 
 

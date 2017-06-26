@@ -109,7 +109,7 @@ public function startTallyman() {
  * 
  */
 public function showTallyman($investorIdentity = null, $platformId = 1) {
- //   Configure::write('debug', 2);
+    Configure::write('debug', 2);
 
     $this->layout = 'Adminpfp.azarus_private_layout';
    /** 	
@@ -117,14 +117,14 @@ public function showTallyman($investorIdentity = null, $platformId = 1) {
   */ 
     $resultCompany = $this->Company->getCompanyDataList(array('id' => $platformId));
 
-    $this->print_r2($resultCompany);
-    
+ //   $this->print_r2($resultCompany);
+ 
 $resultTallyman[0]['investorglobaldata_investorIdentity'] = '929094Akri445902';
 $resultTallyman[0]['investorglobaldata_activePFPs'] = 3;
 $resultTallyman[0]['investorglobaldata_totalPFPs'] = 3;
 $resultTallyman[0]['investorglobaldata_totalMoneyInWallets'] = 5032;
-$resultTallyman[0]['investorglobaldata_totalActiveInvestments'] = 18989079;
-$resultTallyman[0]['investorglobaldata_currency'] = 1;     // = Euro
+$resultTallyman[0]['investorglobaldata_totalActiveInvestments'] = 133235;
+$resultTallyman[0]['investorglobaldata_currency'] = 1;     // = Euro44412 + 
 $resultTallyman[0]['created'] = "2017-04-15 01:55:21";     
 
 
@@ -133,7 +133,7 @@ $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_activeIn
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_moneyInWallet'] = 1052;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_moneyInWallet'] = 152;
-$resultTallyman[0]['Userplatformglobaldata'][1]['reservedInvestments'] = 44412;
+$resultTallyman[0]['Userplatformglobaldata'][1]['reservedInvestments'] = 4442;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_finishedInvestments'] = 152;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_companyId'] = 2;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_companyName'] = 'Comunitae';
@@ -142,7 +142,7 @@ $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCount
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
 
 $resultTallyman[0]['Userplatformglobaldata'][2]['id'] = 12;
-$resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_activeInInvestments'] = 44412;
+$resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_activeInInvestments'] = 24411;
 $resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_moneyInWallet'] = 152;
 $resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_moneyInWallet'] = 152;
@@ -253,9 +253,6 @@ $resultTallyman[2]['Userplatformglobaldata'][2]['userplatformglobaldata_globalIn
 
 
 
-
-
-
 // Do some simple calculations to get extra "new" values so they can be displayed
 // enrich the information to be provided to the PFPAdmin user
 // index 0 is the most recent read-out of the user investment data
@@ -270,40 +267,97 @@ $resultTallyman[2]['Userplatformglobaldata'][2]['userplatformglobaldata_globalIn
             $platformsForeignCountries = $platformsForeignCountries + 1;
         }
     }
-    $resultTallyman[0]['homeCountry'] = $platformsHomeCountry;
-    $resultTallyman[0]['platformForeignCountries'] = $platformsForeignCountries;      
+    $resultTallyman[0]['platformsHomeCountry'] = $platformsHomeCountry;
+    $resultTallyman[0]['platformsForeignCountries'] = $platformsForeignCountries;    
+    
+
+// How many types of platforms do we have?
+    $platformTypes = count($this->crowdlendingTypesShort);
+    $platformInvestmentsPerType = array_fill(0,  $platformTypes, 0);
+    $platformInvestmentsPerAmount = array_fill(0,  $platformTypes, 0); 
+  
 
     foreach($resultTallyman[0]['Userplatformglobaldata'] as $platform) {
         $platformInvestmentsPerType[$platform['userplatformglobaldata_PFPType']] = 
                 $platformInvestmentsPerType[$platform['userplatformglobaldata_PFPType']] + 1;
-        $platformInvestmentsPerTypePerAmount[$platform['userplatformglobaldata_PFPType']]  = 
-                $platformInvestmentsPerTypePerAmount[$platform['userplatformglobaldata_PFPType']] + 
+        $platformInvestmentsPerAmount[$platform['userplatformglobaldata_PFPType']]  = 
+                $platformInvestmentsPerAmount[$platform['userplatformglobaldata_PFPType']] + 
                 $platform['userplatformglobaldata_activeInInvestments'];
     }
 
-    $resultTallyman[0]['userplatformglobaldata_PFPPerTYpe'] = $platformInvestmentsPerType;
-    $resultTallyman[0]['userplatformglobaldata_PFPPerAmount'] = $platformInvestmentsPerTypePerAmount;
+    $resultTallyman[0]['userplatformglobaldata_PFPPerType'] = $platformInvestmentsPerType;
+    $resultTallyman[0]['userplatformglobaldata_PFPPerAmount'] = $platformInvestmentsPerAmount;
+
+// Also provide "normalized" data, i.e. in %.
+// Total represents 100
+    $totalPerType = array_sum($platformInvestmentsPerType);
+    $totalPerAmount = array_sum($platformInvestmentsPerAmount);
+
+    echo $totalPerType;
+    echo $totalPerAmount;
+$i = 0;
+    foreach ($platformInvestmentsPerType as $value) {
+        $resultTallyman[0]['userplatformglobaldata_PFPPerTypeNorm'][$i] = (int) (100 * $value / $totalPerType); 
+        $i = $i + 1;
+    }
+$i = 0;
+    foreach ($platformInvestmentsPerAmount as $value) {
+        $resultTallyman[0]['userplatformglobaldata_PFPPerAmountNorm'][$i] = (int) (100 *$value / $totalPerAmount); 
+        $i = $i + 1;       
+    }
+
+
+
+
+
+
+
+
+
 
     
+    
+//$this->print_r2($resultTallyman[0]['userplatformglobaldata_PFPPerAmount']);    
 
     foreach($resultTallyman[0]['Userplatformglobaldata'] as $platform) {
-        echo "AAAB" . $platform['userplatformglobaldata_companyId'] . "<br>";
         if ($platform['userplatformglobaldata_companyId'] == $platformId) {
             $resultTallyman[0]['totalMyPlatform'] = $platform['userplatformglobaldata_activeInInvestments'];
             break;
         }
     }
+   
+    foreach($resultTallyman[0]['Userplatformglobaldata'] as $platform) {
+        if ($platform['userplatformglobaldata_PFPType'] ==  $resultCompany[$platformId]['company_typeOfCrowdlending']) {
+            $resultTallyman[0]['totalMyPlatform'] = $platform['userplatformglobaldata_activeInInvestments'];
+            break;
+        }
+    }    
+    
+    
+     $resultTallyman[0]['platformsHomeCountry'] = $platformsHomeCountry;
+    $resultTallyman[0]['platformsForeignCountries'] = $platformsForeignCountries;    
+    $labelsPieChart1 = array("Local", "Foreign");   
+    $dataPieChart1 = array($resultTallyman[0]['platformsHomeCountry'], $resultTallyman[0]['platformsForeignCountries']);
+$resultTallyman[0]['labelsPieChart1'] = $labelsPieChart1;
+$resultTallyman[0]['dataPieChart1'] = $dataPieChart1;
 
-$this->print_r2($this->crowdlendingTypes);
+    
+    
+    
+ // Calculate some values for this view
+
+    $totalPortfolio = $resultTallyman[0][totalMyPlatform] / $resultTallyman[0]['investorglobaldata_totalActiveInvestments'];
+    $this->set('totalPortfolio', $totalPortfolio);
+    $totalMyModality = $resultTallyman[0]['totalMyPlatform'] /
+    $resultTallyman[0]['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
+   
+    $this->set('totalMyModality', $totalMyModality);
+    
+ //   $dataPieChart[] = $value;
+ //   $labelsPieChart[] = $key;
+
+//$this->print_r2($this->crowdlendingTypes);
 $this->print_r2($resultTallyman);
-
-
-
-
-
-
-
-
 
     $this->set('resultCompany', $resultCompany);
     $this->set('resultTallyman', $resultTallyman);

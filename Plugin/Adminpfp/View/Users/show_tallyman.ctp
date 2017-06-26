@@ -46,24 +46,79 @@
 </style>
 <script>
     $(function () {
-        //chart doughnut
+        //chart bar
+        var ctx = document.getElementById("barChart1").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode(array_values($crowdlendingTypesShort))?>,
+                datasets: [{
+                    label: 'Number of Investments',
+                    data: <?php echo json_encode($resultTallyman[0]['userplatformglobaldata_PFPPerTypeNorm'])?>,
+                    backgroundColor: [
+                            "#5acc5a",
+                            "#24e0c5",
+                            "#08c4b2",
+                            "#0b8599",
+                            "#55acee"
+                        ],
+                    hoverBackgroundColor: [
+                            "#5acc5a",
+                            "#24e0c5",
+                            "#08c4b2",
+                            "#0b8599",
+                            "#55acee"
+                    ]
+                },
+                {
+                    label: 'Investment Amount',
+                    data: <?php echo json_encode($resultTallyman[0]['userplatformglobaldata_PFPPerAmountNorm'])?>,
+                    backgroundColor: [
+                            "#5acc5a",
+                            "#24e0c5",
+                            "#08c4b2",
+                            "#0b8599",
+                            "#55acee"
+                    ],
+                    hoverBackgroundColor: [
+                            "#5acc5a",
+                            "#24e0c5",
+                            "#08c4b2",
+                            "#0b8599",
+                            "#55acee"
+                    ]
+                }]  
+         }
+        });
+        
+
+        
+    //chart doughnut
         var ctx = document.getElementById("pieChart1").getContext('2d');
         var myChart = new Chart(ctx, {
-          type: 'doughnut',
+         type: 'doughnut',
           data: {
-            labels: ["M", "T"],
-            datasets: [{
-              backgroundColor: [
-                "#2ecc71",
-                "#3498db"
-              ],
-              data: [30, 70]
-            }]
+     labels: <?php echo json_encode($resultTallyman[0]['labelsPieChart1'])?>,
+  datasets: [{
+      label: 'Volume',
+        backgroundColor: [
+                            "#5acc5a",
+                            "#55acee"
+                        ],
+        hoverBackgroundColor: [
+                            "#1acc5a",
+                            "#15acee"
+                        ],
+      data: <?php echo json_encode($resultTallyman[0]['dataPieChart1'])?>
+    }]      
+ 
           }
         });
-});
-</script>
 
+
+});
+
+</script>
 
 
 
@@ -156,7 +211,7 @@
                                         <div class="col-lg-3">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;">
-                                                    <h1><?php echo __('30%')?></h1>
+                                                    <h1><?php echo (int) (100 * $totalPortfolio)?></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
@@ -182,7 +237,7 @@
                                         <div class="col-lg-3">
                                             <div class="card card-stats">
                                                 <div class="card-content">
-                                                    <h1 style="text-align: center;"><?php echo __('70%')?></h1>
+                                                    <h1 style="text-align: center;"><?php echo (int) (100 * $totalMyModality) ?></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
@@ -202,6 +257,7 @@
                                                         <?php echo __('A) Investments Volume')?>
                                                         <?php echo __('B) nº of investments')?>
                                                     </h4>
+                                                    <canvas id="barChart1" style="height: 100px;"></canvas>
                                                 </div>
                                             </div>
                                         </div>

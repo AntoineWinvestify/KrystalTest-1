@@ -245,13 +245,22 @@ class AppController extends Controller {
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
-        $this->crowdlendingTypes = array(P2P => __('P2P Crowdlending'),
+        $this->crowdlendingTypesLong = array(P2P => __('P2P Crowdlending'),
                                         P2B => __('P2B Crowdlending'),
                                         INVOICE_TRADING => __('P2P Invoice Trading'),
                                         CROWD_REAL_ESTATE => __('Crowd Real Estate'),
                                         SOCIAL => __('Social')
-        );
-	$this->set('crowdlendingTypes', $this->crowdlendingTypes);
+                                        );
+        $this->set('crowdlendingTypesLong', $this->crowdlendingTypesLong);
+        
+        
+        $this->crowdlendingTypesShort = array(P2P => __('P2P'),
+                                              P2B => __('P2B'),
+                                        INVOICE_TRADING => __('I.T.'),
+                                        CROWD_REAL_ESTATE => __('R.E.'),
+                                        SOCIAL => __('SOCIAL')
+                                        );
+	$this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
  
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
