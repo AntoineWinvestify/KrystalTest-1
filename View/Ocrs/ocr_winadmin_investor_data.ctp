@@ -44,6 +44,11 @@
  * [2017-06-22] Version 0.5
  * Added Radio Buttons on Documents Checking
  * Added Save btn (without functionality)
+ * 
+ * [2017-06-26] Version 0.6
+ * Added Radio buttons on ALL fields. (Initial Value: PENDING)
+ * (telephone & email are on YES because they are necessary to register/access Winvestify)
+ * [pending] Timestamp on YES clicking.
 */
 
 ?>
@@ -99,7 +104,12 @@
                             <div class="row">
                                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4"> <!-- Name -->
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_name"><?php echo __('Name')?></label> <input type="checkbox" id="checkName">
+                                        <label for="ContentPlaceHolder_name"><?php echo __('Name')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkName"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkName"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkName" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                             <?php
                                                     $errorClass = "";
                                                     if (array_key_exists('investor_name',$investorValidationErrors)) {
@@ -123,7 +133,12 @@
                                 <!-- Surname(s) -->
                                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)')?></label> <input type="checkbox" id="checkSurname">
+                                        <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkSurname"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkSurname"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkSurname" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                         <?php
                                                 $errorClass = "";
                                                 if (array_key_exists('investor_surname',$investorValidationErrors)) {
@@ -147,7 +162,12 @@
                                 <!-- NIF -->
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_dni"><?php echo __('Id')?></label> <input type="checkbox" id="checkId">
+                                        <label for="ContentPlaceHolder_dni"><?php echo __('Id')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkId"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkId"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkId" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                             <?php
                                                 $errorClass = "";
                                                 if (array_key_exists('investor_DNI',$investorValidationErrors)) {
@@ -172,7 +192,12 @@
                                 <!-- Date of Birth -->
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth')?></label> <input type="checkbox" id="checkDateOfBirth">
+                                        <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                             <div class="input-group input-group-sm blue_noborder date">
                                                 <?php
                                                     $errorClass = "";
@@ -193,7 +218,12 @@
                                 <!-- email -->
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_email"><?php echo __('Email')?></label> <input type="checkbox" id="checkEmail">
+                                        <label for="ContentPlaceHolder_email"><?php echo __('Email')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail" checked="checked"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail"><?php echo __('Pending')?></label>
+                                        </div>
                                             <?php
                                                 $errorClass = "";
                                                 if (array_key_exists('investor_email',$investorValidationErrors)) {
@@ -217,7 +247,12 @@
                                 <!-- Telephone -->
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone')?></label> <input type="checkbox" id="checkTelephone">
+                                        <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone" checked="checked"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone"><?php echo __('Pending')?></label>
+                                        </div>
                                         <div class="form-control blue_noborder">
                                             <?php
                                                 $errorClass = "";
@@ -250,7 +285,12 @@
                                 <!-- Postal code -->
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode')?></label> <input type="checkbox" id="checkPostCode">
+                                        <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                             <?php
                                                 $errorClass = "";
                                                 if (array_key_exists('investor_postCode',$investorValidationErrors)) {
@@ -273,7 +313,12 @@
                                 <!-- Address -->
                                 <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_address1"><?php echo __('Address')?></label> <input type="checkbox" id="checkAdress">
+                                        <label for="ContentPlaceHolder_address1"><?php echo __('Address')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                             <?php
                                                     $errorClass = "";
                                                     if (array_key_exists('investor_address1',$investorValidationErrors)) {
@@ -299,7 +344,12 @@
                                 <!-- city -->
                                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                                     <div class="form-group">
-                                        <label for="exampleInputPassword1"><?php echo __('City')?></label> <input type="checkbox" id="checkCity">
+                                        <label for="exampleInputPassword1"><?php echo __('City')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkCity"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCity"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCity" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                             <?php
                                                 $errorClass = "";
                                                 if (array_key_exists('investor_city',$investorValidationErrors)) {
@@ -323,7 +373,12 @@
                                 <!-- Country -->
                                 <div class="col-xs-12 col-sm-4 col-md-8 col-lg-8">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_country"><?php echo __('Country')?></label> <input type="checkbox" id="checkCountry">
+                                        <label for="ContentPlaceHolder_country"><?php echo __('Country')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                         <?php
                                             $errorClass = "";
                                             if (array_key_exists('investor_country',$investorValidationErrors)) {
@@ -346,7 +401,12 @@
                                 <!-- /country -->
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_iban"><?php echo __('IBAN')?></label> <input type="checkbox" id="checkIBAN">
+                                        <label for="ContentPlaceHolder_iban"><?php echo __('IBAN')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkIban"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkIban"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkIban" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                         <input type="text" disabled="disabled" class="form-control blue_noborder">
                                     </div>
                                 </div><!-- /Cif + Business Name -->
@@ -359,7 +419,12 @@
                                 <!-- CIF -->
                                 <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_cif"><?php echo __('CIF')?></label> <input type="checkbox" id="checkCIF">
+                                        <label for="ContentPlaceHolder_cif"><?php echo __('CIF')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCIF" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                         <input disabled="disabled" type="text" class="form-control blue_noborder">
                                     </div>
                                 </div>
@@ -368,7 +433,12 @@
                                 <!-- Business Name -->
                                 <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name')?></label> <input type="checkbox" id="checkBusinessName">
+                                        <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name')?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('Yes')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('No')?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkBusinessName" checked="checked"><?php echo __('Pending')?></label>
+                                        </div>
                                         <input disabled="disabled" type="text" class="form-control blue_noborder">
                                     </div>
                                 </div>
@@ -382,9 +452,30 @@
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                             <h4 class="header1CR"><?php echo __('Investor Selected Platforms')?></h4>
                             <ul>
-                                <li>PFP1 <input type="checkbox" id="checkPFP1"></li>
-                                <li>PFP2 <input type="checkbox" id="checkPFP2"></li>
-                                <li>PFP3 <input type="checkbox" id="checkPFP3"></li>
+                                <li>
+                                    PFP1
+                                    <div>
+                                        <label class="radio-inline"><input type="radio" name="pfp1"><?php echo __('Yes')?></label>
+                                        <label class="radio-inline"><input type="radio" name="pfp1"><?php echo __('No')?></label>
+                                        <label class="radio-inline"><input type="radio" name="pfp1" checked="checked"><?php echo __('Pending')?></label>
+                                    </div>
+                                </li>
+                                <li>
+                                    PFP2
+                                    <div>
+                                        <label class="radio-inline"><input type="radio" name="pfp2"><?php echo __('Yes')?></label>
+                                        <label class="radio-inline"><input type="radio" name="pfp2"><?php echo __('No')?></label>
+                                        <label class="radio-inline"><input type="radio" name="pfp2" checked="checked"><?php echo __('Pending')?></label>
+                                    </div>
+                                </li>
+                                <li>
+                                    PFP3
+                                    <div>
+                                        <label class="radio-inline"><input type="radio" name="pfp3"><?php echo __('Yes')?></label>
+                                        <label class="radio-inline"><input type="radio" name="pfp3"><?php echo __('No')?></label>
+                                        <label class="radio-inline"><input type="radio" name="pfp3" checked="checked"><?php echo __('Pending')?></label>
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -394,21 +485,21 @@
                                     <div>
                                         <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Yes')?></label>
                                         <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('No')?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Pending')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1" checked="checked"><?php echo __('Pending')?></label>
                                     </div>
                                 </li>
                                 <li><a href="#" target="_blank">Doc2</a> 
                                     <div>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Yes')?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('No')?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Pending')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc2"><?php echo __('Yes')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc2"><?php echo __('No')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc2" checked="checked"><?php echo __('Pending')?></label>
                                     </div>
                                 </li>
                                 <li><a href="#" target="_blank">Doc3</a> 
                                     <div>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Yes')?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('No')?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Pending')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc3"><?php echo __('Yes')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc3"><?php echo __('No')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc3" checked="checked"><?php echo __('Pending')?></label>
                                     </div>
                                 </li>
                             </ul>
