@@ -122,12 +122,10 @@
 
 
     function successSentCompanies(result) {
-        $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("Your selected companies has been saved.") ?></strong></div>');
-        fadeOutElement(".alert-to-fade", 5000);
+
     }
     function errorSentCompanies(result) {
-        $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("There is no new companies to save.") ?></strong></div>');
-        fadeOutElement(".alert-to-fade", 5000);
+
     }
 
 
@@ -151,8 +149,7 @@
     }
     
     function errorDelete() {
-        $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("You cannot delete this company") ?></strong></div>');
-        fadeOutElement(".alert-to-fade", 5000);
+
     }
 
 
@@ -202,8 +199,6 @@ foreach ($selected as $sel) {
             $("#selection").append("<div value='" + id + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $("#" + id).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             recount();
             extraEvent();
-            $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong>' + name + ' <?php echo __("has been added.") ?></strong></div>');
-            fadeOutElement(".alert-to-fade", 5000);
         });
 
 
@@ -233,8 +228,6 @@ foreach ($selected as $sel) {
             $(this).parent().parent().parent().remove();
             recount();
             name = $("." + idDel).attr("id");
-            $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong>' + name + ' <?php echo __("has been deleted") ?></strong></div>');
-            fadeOutElement(".alert-to-fade", 5000);
         });
 
     }
@@ -292,8 +285,6 @@ foreach ($selected as $sel) {
                 <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
 
                 <div id="investorSelection" class="row">
-                    
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4" id="notification"></div>
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <?php
                     echo $this->Form->create(array("id" => "selection"));
