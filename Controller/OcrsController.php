@@ -299,20 +299,19 @@ class ocrsController extends AppController {
         $this->set('selected', $this->Ocr->getSelectedCompanies($id));
 
         //Selected companies(sent)(Not show)
-        $registered = $this->Ocr->getRegisterSentCompanies($id);
+        $registeredList = $this->Ocr->getRegisterSentCompanies($id);
         $filter = array('investor_id' => $id);
 
         //Linked companies(Not show)
-        $linked = $this->Linkedaccount->getLinkedaccountIdList($filter);
+        $linkedList = $this->Linkedaccount->getLinkedaccountIdList($filter);
         $notShow = array();
-
-
+        
         //Filter
-        foreach ($registered as $registered) {
-            array_push($notShow, $registered["company_id"]);
+        foreach ($registeredList as $registered) {
+            array_push($notShow, $registered["ocrInfo"]["company_id"]);
         }
 
-        foreach ($linked as $linked) {
+        foreach ($linkedList as $linked) {
             array_push($notShow, $linked["Linkedaccount"]["company_id"]);
         }
         $notShowList = array_unique($notShow);

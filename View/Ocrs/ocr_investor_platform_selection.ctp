@@ -297,6 +297,7 @@ foreach ($selected as $sel) {
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <?php
                     echo $this->Form->create(array("id" => "selection"));
+                    
                     echo $this->Form->input('numberCompanies', array(
                         'name' => 'numberCompanies',
                         'id' => 'numberCompanies',
