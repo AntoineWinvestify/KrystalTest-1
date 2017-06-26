@@ -112,7 +112,6 @@ class ocr extends AppModel {
             //Update
             if ($this->save($data)) {
                 $idOcr = $this->findOcrId($id);
-                print_r($idOcr);
                 //Insert ocr_id in investor data
                 $data = array('id' => $id, 'ocr_id' => $idOcr);
                 $this->Investor->save($data);
