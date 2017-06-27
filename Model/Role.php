@@ -35,15 +35,7 @@ class Role extends AppModel {
                 'className' => 'Sector',
                 'joinTable' => 'roles_sectors',
                 'foreignKey' => 'role_id',
-                'associationForeignKey' => 'sector_id',
-                'unique' => true,
-                'conditions' => '',
-                'fields' => '',
-                'order' => '',
-                'limit' => '',
-                'offset' => '',
-                'finderQuery' => '',
-                'with' => ''
+                'associationForeignKey' => 'sector_id'
             )
     );
     
@@ -53,24 +45,4 @@ class Role extends AppModel {
             'foreignKey' => 'role_id',
             ),
     );
-
-    /*public $hasOne = array (
-				'User' => array(
-				'className' => 'User',
-				'foreignKey' => 'investor_id',
-				'fields' => '',
-				'order' => '',
-				),
-			);*/
-    function getRoleNameById($id = null){
-        if (empty($id)) {
-            return false;
-        }
-        $roleName = $this->find("first", array("fields"	=> array("role_name"),
-						"recursive" => -1,
-						"conditions" => array("id" => $id),
-				));
-        
-        return $roleName["Role"]["role_name"];
-    }
 }
