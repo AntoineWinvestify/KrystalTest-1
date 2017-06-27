@@ -52,10 +52,6 @@
                     <p class="category"><?php echo __('History of bills associated to your PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -71,39 +67,8 @@
                             <div id="investorFilters" class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <p align="justify"><?php echo __('Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas "Letraset", las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum.')?></p>
-                                    <h4 class="header1CR"><?php echo __('Filter by:') ?></h4>
                                     <div class="row">
-                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                            <?php 
-                                            $class = "form-control blue_noborder3 investorCountry". ' ' . $errorClass;
-                                            $countries = ["select country", "país1", "país2", "país3"];      
-                                                                                                echo $this->Form->input('Investor.investor_country', array(
-                                                                                                        'name'			=> 'country',
-                                                                                                        'id' 			=> 'ContentPlaceHolder_country',
-                                                                                                        'label' 		=> false,
-                                                                                                        'options'               => $countries,
-                                                                                                        'placeholder' 	=>  __('Country'),
-                                                                                                        'class' 		=> $class,
-                                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_country'],						
-                                                                        ));
-                                            ?>
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                            <?php 
-                                            $class = "form-control blue_noborder3 investorCountry". ' ' . $errorClass;
-                                            $modalities = ["select modality", "P2P", "P2B", "Invoice Trading"];      
-                                                                                                echo $this->Form->input('Investor.investor_country', array(
-                                                                                                        'name'			=> 'country',
-                                                                                                        'id' 			=> 'ContentPlaceHolder_country',
-                                                                                                        'label' 		=> false,
-                                                                                                        'options'               => $modalities,
-                                                                                                        'placeholder' 	=>  __('Country'),
-                                                                                                        'class' 		=> $class,
-                                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_country'],						
-                                                                        ));
-                                            ?>
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-md-offset-7 col-lg-offset-7">
                                             <div class="input-group input-group-sm blue_noborder3">
                                                 <input type="text" style="border:none; border-radius:7px;" class="form-control" placeholder="Search for...">
                                                 <span class="input-group-btn">
@@ -129,6 +94,7 @@
                                                         </tr>
                                                 </thead>
                                                 <tbody>
+                                                    
                                                     <tr>
                                                         <td>01-01-2017</td>
                                                         <td>number ofhgfg billing</td>

@@ -1,20 +1,45 @@
 <?php
-/*
- * One Click Registration - Investor Panel B
- * Select Platforms to Register
- * 
- * [2017-05-23] Version 0.1
- * Completed view
- * [pending] Click on selected platform to add it on 'investorSelection' div & delete on 'platformSelection'.
- * [pending] Mechanism to generate all platform elements
- * [pending] Mechanism to generate final modal
- * 
- * [2017-06-13] Version 0.2
- * Added spinner on Go button
- * 
- * [2017-06-13] Version 0.3
- * Added user feedback
- */
+/**
+* +--------------------------------------------------------------------------------------------+
+* | Copyright (C) 2016, http://www.winvestify.com                                              |
+* +--------------------------------------------------------------------------------------------+
+* | This file is free software; you can redistribute it and/or modify                          |
+* | it under the terms of the GNU General Public License as published by                       |
+* | the Free Software Foundation; either version 2 of the License, or                          |
+* | (at your option) any later version.                                                        |
+* | This file is distributed in the hope that it will be useful                                |
+* | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+* | GNU General Public License for more details.                                               |
+* +--------------------------------------------------------------------------------------------+
+*
+*
+* @author
+* @version 0.4
+* @date 2017-05-29
+* @package
+*
+* ONE CLICK REGISTRATION - INVESTOR VIEW #2: DATA PANEL
+* 
+* [2017-05-23] Version 0.1
+* Completed view
+* [pending] Click on selected platform to add it on 'investorSelection' div & delete on 'platformSelection'.
+* [pending] Mechanism to generate all platform elements
+* [pending] Mechanism to generate final modal
+* 
+* [2017-06-13] Version 0.2
+* Added spinner on Go button
+* 
+* [2017-06-13] Version 0.3
+* Added user feedback
+* 
+* [2017-06-22] Version 0.4
+* Added user feedback about terms&conditions & privacy policy
+* Added user feedback about applied filters to show platforms to select
+* Updated all notification boxes
+* Updated all bootstrap cols
+* Added target=_blank on platform links to privacy policy & terms
+*/
 ?>
 1
 <script>
@@ -97,11 +122,11 @@
 
 
     function successSentCompanies(result) {
-        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Companies saved") ?></strong></div>');
+        $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("Your selected companies has been saved.") ?></strong></div>');
         fadeOutElement(".alert-to-fade", 5000);
     }
     function errorSentCompanies(result) {
-        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Error saving companies") ?></strong></div>');
+        $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("There is no new companies to save.") ?></strong></div>');
         fadeOutElement(".alert-to-fade", 5000);
     }
 
@@ -121,14 +146,12 @@
 
 
     function successDelete() {
-        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Company deleted") ?></strong></div>');
-        fadeOutElement(".alert-to-fade", 5000);
         total--;
         recount();
     }
     
     function errorDelete() {
-        $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant delete company") ?></strong></div>');
+        $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong><?php echo __("You cannot delete this company") ?></strong></div>');
         fadeOutElement(".alert-to-fade", 5000);
     }
 
@@ -140,9 +163,9 @@
         });
 
 <?php
-foreach ($notShowList as $id) {
-    ?>
-            $('#selection').append("<input type='hidden' value='" + <?php echo $id ?> + "' class='selected inDB'></input>");
+foreach ($notShow as $notShowCompany) {
+    ?>        
+            $('#selection').append("<input type='hidden' value='" + <?php echo $notShowCompany['id'] ?> + "' class='selected inDB'></input>");
     <?php
 }
 ?>
@@ -151,10 +174,11 @@ foreach ($notShowList as $id) {
 
 <?php
 foreach ($selected as $sel) {
-    $idSel = $sel['companies_ocrs']['company_id'];
+    $idSel = $sel['ocrInfo']['company_id'];
+    $nameSel = $sel['name'];
     ?>
-            logo = $(".<?php echo $sel['companies_ocrs']['company_id']; ?>").find(".logo").attr("src");
-            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformDB' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
+            logo = $(".<?php echo $idSel; ?>").find(".logo").attr("src");
+            $('#selection').append("<div value='" + <?php echo $idSel ?> + "' id='<?php echo $nameSel ?>' class='selected inDB col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformDB' style='color: gray;'></i><img src='" + logo + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
     <?php
 }
 ?>
@@ -174,10 +198,11 @@ foreach ($selected as $sel) {
             $(this).prop("disabled", true);
             z++;
             $("#" + id).parentsUntil("#platformSelection").fadeOut();
+            name = $("." + id).attr("id");
             $("#selection").append("<div value='" + id + "' name ='company" + z + "' class='selected col-xs-12 col-sm-6 col-md-2 col-lg-2'><div class='box box-widget widget-user-2 selectedPlatform'> <div class='widget-user-header'><i class='ion ion-close-circled btnSelectedPlatform btnSelectedPlatformNoDB' style='color: gray;'></i><img src='" + $("#" + id).parentsUntil($("#platformSelection")).find(".logo").attr("src") + "' style='max-height: 100px' alt='platform-logotype' class='responsiveImg center-block platformLogo'/></div></div></div>");
             recount();
             extraEvent();
-            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Company added.") ?></strong></div>');
+            $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong>' + name + ' <?php echo __("has been added.") ?></strong></div>');
             fadeOutElement(".alert-to-fade", 5000);
         });
 
@@ -197,6 +222,7 @@ foreach ($selected as $sel) {
             }
         });
     }
+    
     function extraEvent() {
         //Borra la plataforma cuando le das a l x
         $('.btnSelectedPlatform').click(function () {
@@ -206,11 +232,13 @@ foreach ($selected as $sel) {
             $("#platformSelection").find("." + idDel).find('*').fadeIn();
             $(this).parent().parent().parent().remove();
             recount();
-            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Company deleted") ?></strong></div>');
+            name = $("." + idDel).attr("id");
+            $("#notification").html('<div class="box box-warning fade in alert-win-success alert-to-fade" role="alert"><button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i></button><strong>' + name + ' <?php echo __("has been deleted") ?></strong></div>');
             fadeOutElement(".alert-to-fade", 5000);
         });
 
     }
+    
     function recount() {
         i = 0;
         $(".btnSelectedPlatform").each(function () {
@@ -220,14 +248,18 @@ foreach ($selected as $sel) {
         });
         selEvent();
     }
+    
     function selEvent() {
         if (total != 0 || $(".btnSelectedPlatformNoDB").length) {
+            $("#sentCompanies").prop("disabled",false);
             $("#sel").fadeIn();
         } else {
-            $("#sel").fadeOut();
+            $("#sentCompanies").prop("disabled",true);
+            $("#sel").fadeOut(5000);
         }
 
     }
+    
 </script>
 <style>
     .togetoverlay .overlay  {
@@ -245,17 +277,24 @@ foreach ($selected as $sel) {
 <div id="1CR_investor_1_platformSelection">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div id="notification"> </div>
+            <div class="box box-warning fade in alert-win-success" style="padding: 10px; font-size:large">
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i>
+                </button>
+                <strong><?php echo __("One Click Registration");?></strong> <?php echo __("le permite registrarse en cualquiera de las siguientes plataformas.");?>
+                <small><?php echo __("Aquellas plataformas que se encuentren linkeadas en Winvestify no aparecerán en el proceso de selección");?></small>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <?php
             /* DIV 1: Selected platforms */
-            //print_r($selected);
-            //print_r($company);
             ?>
-            <div id="sel">
+            <div id="sel" style="display: none;">
                 <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
 
                 <div id="investorSelection" class="row">
-
+                    
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4" id="notification"></div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <?php
                     echo $this->Form->create(array("id" => "selection"));
                     echo $this->Form->input('numberCompanies', array(
@@ -265,61 +304,9 @@ foreach ($selected as $sel) {
                         'type' => 'hidden',
                         'value' => 0
                     ));
-
-
-
-
-
-//Automatic feedback
-                    /* for ($i = 0; $i < count($selected); $i++) {
-                      if ($selected['companies_ocrs']['statusOcr'] == 0) {
-                      $idSel = $selected[$i]['companies_ocrs']['company_id'];
-                      for ($j = 0; $j < count($company); $j++) {
-                      if ($idSel == $company[$j]['Company']['id']) {
-                      $logo = $company[$j]['Company']['company_logoGUID'];
-                      ?>
-                      <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                      <div class="box box-widget widget-user-2 pendingPlatform">
-                      <div class="widget-user-header">
-                      <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
-                      <img src="/img/logo/<?php echo $logo ?>" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
-                      </div>
-                      </div>
-                      </div>
-                      <?php
-                      }
-                      }
-                      }
-                      }
-                      <!--<div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                      <div class="box box-widget widget-user-2 selectedPlatform">
-                      <div class="widget-user-header">
-                      <img src="/img/logo/Finanzarel.png" style="max-height: 100px" alt="platform-logotype" class="responsiveImg center-block platformLogo"/>
-                      </div>
-                      </div>
-                      </div>
-                      <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                      <div class="box box-widget widget-user-2 pendingPlatform">
-                      <div class="widget-user-header">
-                      <i class="fa fa-circle-o prueba" style="color: #FF5886"></i>
-                      <img src="/img/logo/Zank.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
-                      </div>
-                      </div>
-                      </div>
-                      <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
-                      <div class="box box-widget widget-user-2 registeredPlatform">
-                      <div class="widget-user-header">
-                      <i class="fa fa-check-circle prueba" style="color: rgb(90, 204, 90)"></i>
-                      <img src="/img/logo/Comunitae.png" style="max-height: 100px" alt="platform-logotype" class="img-responsive center-block platformLogo"/>
-                      </div>
-                      </div>
-                      </div>-->
-                     */
-
                     echo $this->Form->end();
                     ?> 
-
-
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -374,14 +361,22 @@ foreach ($selected as $sel) {
               </div>
               </div>
               <hr class="nomargin" width="100%"/> */ ?>
-            <?php /* Div 2: Platforms Selection */ ?>
+            <?php /* Div 3: Platforms Selection */ ?>
             <h4 class="header1CR"><?php echo __('Select platforms to register') ?></h4>
             <div id="platformSelection" class="row">
+                <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+                    <div class="box box-warning fade in alert-win-success" style="padding: 10px;">
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i>
+                        </button>
+                        <?php echo __("Para poder seleccionar cualquiera de las plataformas, es necesario ");?>
+                        <strong><?php echo __("aceptar su política de privacidad y sus términos  y condiciones de uso ")?></strong>
+                    </div>
+                </div>
                 <?php
                 foreach ($company as $comp) {
                     ?>
-
-                    <div class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $comp['Company']['id'] ?>">
+                    
+                    <div id = "<?php echo $comp['Company']['company_name'] ?>" class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $comp['Company']['id'] ?>">
                         <div class="box box-widget widget-user-2">
                             <div class="widget-user-header">
                                 <div class="row">
@@ -399,8 +394,8 @@ foreach ($selected as $sel) {
                             <div class="box-footer no-padding">
                                 <div class="row">
                                     <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a href="<?php echo $comp['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
-                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a href="<?php echo $comp['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
+                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a target="_blank" href="<?php echo $comp['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
+                                        <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a target="_blank" href="<?php echo $comp['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <button id ="<?php echo $comp['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin btnSelected btnRounded pull-right" style="margin-right: 10px !important;"><?php echo __('Select') ?></button>

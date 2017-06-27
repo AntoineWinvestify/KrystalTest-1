@@ -908,6 +908,17 @@ textarea[name="error"] {
 	border: 1px solid gray;
 	color: black;
 }
+.btnDeleteFile {
+    background-color:#990000 !important; 
+    border: 1px solid gray;
+    color:white;
+}
+.btnUploadFile {
+    background-color:#3399ff !important; 
+    border: 1px solid gray;
+    color:white;
+    display: inline-block;
+}
 
 /*     CUADROS DE COLORES      */
 .bg-win1 {
@@ -1051,7 +1062,7 @@ textarea[name="error"] {
 /* Custom alerts */
 .alert-win-success {
   border: 1px solid #a6a6a6 !important;
-  background-color: transparent !important;
+  background-color: white !important;
   color: black !important;
   padding: 5px 5px;
   font-size: 12px;
@@ -1068,7 +1079,7 @@ textarea[name="error"] {
 
 .alert-win-warning {
   border: 1px solid #ff5886;
-  background-color: transparent !important;
+  background-color: white !important;
   color: #ff5886 !important;
   padding: 5px 5px;
   font-size: 12px;
@@ -1985,4 +1996,10 @@ hr.nomargin {
 .blue_noborder3:focus {
     border: none;
     border-bottom:  2px solid #ff9933 !important;
+}
+
+.feedbackIcon {
+    max-width: 25px;
+    margin: 0 auto;
+    margin-top: -5px;
 }

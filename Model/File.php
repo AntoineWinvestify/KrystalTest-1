@@ -21,15 +21,21 @@
  * @package
  *
 
-  2017/6/06 version 0.1
-  function upload                      [OK]
+ * 2017/6/06 version 0.1
+ * function upload                           [OK]
  *
-  2017/6/08 version 0.2
-  function delete
- *                  [OK]
-  2017/6/14 version 0.3
-  url and name fixed                      [OK]
- *  
+ * 2017/6/08 version 0.2                 
+ * function delete                           [OK]
+ * 
+ * 
+ * 2017/6/14 version 0.3
+ * url and name fixed                        [OK]
+ * 
+ * 2017/6/19 version 0.4
+ * function delete getAllBills            [OK]
+ * select rquired files deleted, now we use find
+ * 
+ *
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -37,6 +43,26 @@ Configure::load('p2pGestor.php', 'default');
 class file extends AppModel {
 
     var $name = 'File';
+    public $hasAndBelongsToMany = array(
+        'Company' => array(
+            'className' => 'Company',
+            'joinTable' => 'companies_files',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'company_id',
+        ),
+        'Investor' => array(
+            'className' => 'Investor',
+            'joinTable' => 'files_investors',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'investor_id',
+        ),
+        'requiredFiles' => array(
+            'className' => 'Company',
+            'joinTable' => 'requiredfiles',
+            'foreignKey' => 'file_id',
+            'associationForeignKey' => 'company_id',
+        ),
+    );
 
     /**
      * Upload investor file
@@ -46,22 +72,27 @@ class file extends AppModel {
      * @param type $type
      * @return string|int
      */
-    public function ocrFileSave($data, $identity, $id, $type) {
+    public function ocrFileSave($fileInfo, $folder, $id, $type, $path) {
         //Load files config
         $fileConfig = Configure::read('files');
+        if ($path == "file") {
+            $up = $fileConfig['investorPath'] . $folder;
+        } else if ($path == "bill") {
+            $up = $fileConfig['billsPath'] . $folder;
+        }
 
-        foreach ($data as $file) {
+        foreach ($fileInfo as $file) {
+
             //Error filter
             if ($file['size'] == 0 || $file['error'] !== 0) {
                 continue;
             }
-
             //Type and size filter
             if (in_array($file['type'], $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $filename = time() . "_" . basename($file['name']);
-                $uploadFolder = $fileConfig['investorPath'] . $identity . '';
+                $name = basename($file['name']);
+                $filename = time() . "_" . $name;
+                $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
-
                 //Create the dir if not exist
                 if (!file_exists($uploadFolder)) {
                     mkdir($uploadFolder, 0755, true);
@@ -73,10 +104,28 @@ class file extends AppModel {
                 }
 
                 //Save in db
-                $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . basename($data['name']) . "', '" . $identity . DS . $filename . "');";
-                $query = $this->query($query);
-                $result = array(basename($file['name']), $identity . DS . $filename, $type);
-                return $result;
+                if ($path == "file") {
+                    $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $name . "', '" . $folder . DS . $filename . "');";
+                    $query = $this->query($query);
+                    $result = array(basename($file['name']), $folder . DS . $filename, $type);
+                    return $result;
+                } else if ($path == "bill") {
+                    $result = array(basename($file['name']), $folder . DS . $filename, $type);
+
+                    $bill = array(
+                        'CompaniesFile' => Array(
+                            'company_id' => $id,
+                            'file_id' => 50,
+                            'bill_number' => $type['number'],
+                            'bill_amount' => $type['amount'],
+                            'bill_concept' => $type['concept']
+                        )
+                    );
+
+                    $this->CompaniesFile->save($bill);
+
+                    return $result;
+                }
             } else {
                 return 0;
             }
@@ -92,7 +141,7 @@ class file extends AppModel {
      */
     public function ocrFileDelete($url, $file_id, $investor_id) {
         $fileConfig = Configure::read('files');
-        $url = WWW_ROOT . $fileConfig['investorPath'] . $url;
+        $url = $fileConfig['investorPath'] . $url;
 
         if (unlink($url)) {
             $query = "DELETE FROM `files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
@@ -108,19 +157,33 @@ class file extends AppModel {
      * @return type
      */
     public function readRequiredFiles($data) {
-        for ($i = 0; $i < count($data); $i++) {
-            if ($i == 0) {
-                $query = "Select * from `requieredfiles` where company_id =" . $data[$i]['companies_ocrs']['company_id'];
-            } else {
-                $query = $query . " OR company_id =" . $data[$i]['companies_ocrs']['company_id'];
+        //Id list of selected companies
+        $selectedList = array();
+        foreach ($data as $selectedId) {
+            array_push($selectedList, $selectedId['company_id']);
+        }
+
+        //All company files
+        $allCompanyFiles = $this->find('all', array(
+            'conditions' => array(
+                'id' => array(1, 2, 3)), //50 is the bill id
+            'recursive' => 1,));
+
+        //Filter required files
+        $requiredFileIdList = array();
+
+        foreach ($allCompanyFiles as $allFiles) {
+            foreach ($allFiles["requiredFiles"] as $requiredFiles) {
+                //Filter selected companies required files
+                if (in_array($requiredFiles["id"], $selectedList)) {
+                    $info = array("id" => $requiredFiles["Requiredfile"]["file_id"], "tooltip" => $allFiles["File"]["file_tooltip"]);
+                    array_push($requiredFileIdList, $info);
+                }
             }
         }
-        $result = $this->query($query);
-        foreach ($result as $value) {
-            $files[] = $value['requieredfiles']['file_id'];
-        }
-        $files = array_unique($files);
-        return $files;
+        //Delete duplicates
+        $requiredFileResult = array_unique($requiredFileIdList, SORT_REGULAR);
+        return $requiredFileResult;
     }
 
     /**
@@ -139,7 +202,7 @@ class file extends AppModel {
     }
 
     /**
-     * Read existing file for a user
+     * Read the existing file for a user
      * @param type $id
      * @return type
      */
@@ -147,6 +210,29 @@ class file extends AppModel {
         $query = "Select * from `files_investors` where investor_id =" . $id;
         $result = $this->query($query);
         return $result;
+    }
+
+    /**
+     * Read the existing bills for WinAdmin
+     * @return type
+     */
+    public function getAllBills() {
+
+        $allBills = $this->find('all', array(
+            'conditions' => array('id' => 50), //50 is the bill id
+            'recursive' => 1,));
+        $allBillInfo = array();
+
+        //Info filter, we need only the company name and the bill info.
+        foreach ($allBills as $allInfo) {
+            foreach ($allInfo["Company"] as $info) {
+                $companyName = $info["company_name"];
+                $billInfo = $info["CompaniesFile"];
+                $tempArray = array('name' => $companyName, 'info' => $billInfo);
+                array_push($allBillInfo, $tempArray);
+            }
+        }
+        return $allBillInfo;
     }
 
 }

@@ -547,7 +547,7 @@ app.visual = {
     checkForm1CRInvestorData: function (){
         var correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
-        $("#OCR_InvestorPanelA input").removeClass("redBorder"); // remove ALL redborders
+        $("#1CR_investor_2_investorDataPanel input").removeClass("redBorder"); // remove ALL redborders
         var name = $("#ContentPlaceHolder_name").val();
         var surname = $("#ContentPlaceHolder_surname").val();
         var identificationId = $("#dni").val();
@@ -650,15 +650,16 @@ app.visual = {
             $(".ErrorIban").fadeIn();
             correctForm = false;
         }
-        /*else {
+        else {
             //Needed testing algorithm. (IBAN Format)
-            if (!app.utils.checkIBAN(iban)) {
+            //var IBAN = required('iban');
+            if (!window.IBAN.isValid(iban)) {
                 $(".investorIban").addClass("redBorder");
                 $(".ErrorIban").find(".errorMessage").html(TEXTOS.T95); // "The IBAN is not valid" warning
                 $(".ErrorIban").fadeIn();
                 correctForm = false;
             }
-        }*/
+        }
         //If is selected 'I use my company as investment vehicle', validate CIF & Business Name
             if ((cif === "") && ($("#investmentVehicle").prop("checked"))) { 
                 console.log("empty CIF");
@@ -692,6 +693,44 @@ app.visual = {
                 }
             });
         return correctForm;   
+    },
+    checkFormWinadminBilling: function () {
+        var correctForm = true;
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#uploadedBills input").removeClass("redBorder"); // remove ALL redborders
+        var number = $("#ContentPlaceHolder_number").val();
+        var concept = $("#ContentPlaceHolder_concept").val();
+        var amount = $("#ContentPlaceHolder_amount").val();
+        if (number === "") {
+            console.log("empty bill number");
+            $(".billNumber").addClass("redBorder");
+            $(".ErrorNumber").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorNumber").fadeIn();
+            correctForm = false;
+        }
+        if (concept === "") {
+            console.log("empty bill concept");
+            $(".billConcept").addClass("redBorder");
+            $(".ErrorConcept").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorConcept").fadeIn();
+            correctForm = false;
+        }
+        var regexp =  /^[1-9]\d*$/g;
+        result = regexp.test(amount);
+        if (amount === "") {
+            console.log("empty bill amount");
+            $(".billAmount").addClass("redBorder");
+            $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorAmount").fadeIn();
+            correctForm = false;
+        }
+        else if (!result) {
+            console.log("incorrect bill amount");
+            $(".billAmount").addClass("redBorder");
+            $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T72); // "empty field" warning
+            $(".ErrorAmount").fadeIn();
+            correctForm = false;
+        }
     }
 };
 app.utils = {
@@ -819,7 +858,7 @@ var TEXTOS = {
     //   T69: "Por favor, suba un documento con su DNI",
     //   T70: "Por favor, suba un documento con su titularidad bancaria",
     //   T71: "Por favor, suba un documento con sus tres últimas nominas",
-    T72: 'Por favor, introduzca una cantidad mayor que cero',
+    T72: 'Please, Introduce a quantity higher than 0',
     //   T73: "Por favor, introduzca su contraseña actual",
     //   T74: "Por favor, introduzca su nueva contraseña",
     //   T75: "El código postal introducido no es válido.",
