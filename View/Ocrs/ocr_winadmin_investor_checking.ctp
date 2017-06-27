@@ -45,16 +45,6 @@
 <script type="text/javascript" src="/plugins/iCheck/icheck.min.js"></script>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
-<style>
-    .togetoverlay .overlay  {
-        z-index: 50;
-        background: rgba(255, 255, 255, 0);
-        border-radius: 3px;
-    }
-    .togetoverlay .overlay > .fa {
-        font-size: 50px;
-    }
-</style>
 <div id="1CR_winAdmin_2_investorChecking">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -64,10 +54,6 @@
                     <p class="category"><?php echo __('Show contents about Investors') ?></p>
                 </div>
                 <div class="card-content togetoverlay">
-                    <div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php

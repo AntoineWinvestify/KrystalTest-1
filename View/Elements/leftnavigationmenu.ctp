@@ -152,7 +152,7 @@ $(document).ready(function() {
               <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
             </a>
         </li>
-       <?php /* <li class="header">
+    <li class="header">
             <strong>PFP Admin Menu</strong>
         </li>
         <li class="treeview">

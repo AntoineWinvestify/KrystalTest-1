@@ -32,6 +32,9 @@
  * Added buttons to modal
  * Added js & css from paper bootstrap wizard
  * Added js to buttons
+ * 
+ * [2017-06-16] Version 0.3
+ * New feedback and flow
  */
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
@@ -40,13 +43,15 @@
         $(document).on("click", ".closeBtn", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
-            //Data saved on form
         });
+
+
         $(document).on("click", "#btnConfirm", function () {
+
             console.log("server validation");
-            $(".closeBtn").prop("disabled", true);
-            $("#btnCancel").prop("disabled", true);
-            $("#btnConfirm").prop("disabled", true);
+             $(".closeBtn").prop("disabled", true);
+             $("#btnCancel").prop("disabled", true);
+             $("#btnConfirm").prop("disabled", true);
 
             var params = {
                 investor_name: $("#ContentPlaceHolder_name").val(),
@@ -75,31 +80,53 @@
             link = $("#activateOCR").attr('href');
             var data = jQuery.param(params);
             getServerData(link, data, success, error);
+
         });
+
+
         $(document).on("click", "#btnCancel", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
-            //data saved on form
+            //Delete uploaded files
+            window.location.replace('/ocrs/ocrInvestorView');
         });
+
+
         $(document).on("click", "#btnOk", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
             window.location.replace('/investors/userProfileDataPanel');
         });
 
+
     });
 
 
-    function success() {
-<?php //Server validation Ok          ?>
-        $(".successMsg").fadeIn();
+    function success(result) {
+<?php //Server validation Ok            ?>
+        resultJson = JSON.parse(result);
+        console.log(resultJson);
+        if (resultJson[0] == 1 && resultJson[0] == 1 && resultJson[0] == 1) {
+            //$(".successMsg").fadeIn();
+            window.location.replace('/ocrs/ocrInvestorView');
+            //User feedback(Status ocr control?)
+        } else {
+            console.log("db error");
+            //Save error
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
+            //User feedback
     }
+}
 
-    function error() {
-<?php //Server validation Error      ?>
+    function error(result) {
+<?php //Server validation Error        ?>
+        console.log("validation error");
         $(".errorMsg").fadeIn();
     }
+
 </script>
+
 <div id="1CR_investor_3_confirming" class="modal show" role="dialog">
     <!--   Big container   -->
     <div class="container">

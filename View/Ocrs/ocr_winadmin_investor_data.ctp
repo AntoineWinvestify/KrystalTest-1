@@ -15,7 +15,7 @@
 *
 *
 * @author
-* @version 0.1
+* @version 0.5
 * @date 2017-06-09
 * @package
  * 
@@ -40,6 +40,10 @@
  * [2017-06-13] Version 0.4
  * Deleted modal & added green box
  * Added style to overlay
+ * 
+ * [2017-06-22] Version 0.5
+ * Added Radio Buttons on Documents Checking
+ * Added Save btn (without functionality)
 */
 
 ?>
@@ -55,7 +59,15 @@
     .togetoverlay .overlay > .fa {
         font-size: 50px;
     }
+    .radio-inline {
+        margin-left: 15px !important;
+    }
 </style>
+<script>
+    if (Cosa.is(":checked")) {
+        $("#investmentVehicle").show();
+    }
+</script>
 <div id="1CR_winAdmin_2_investorData">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -65,10 +77,10 @@
                     <p class="category"><?php echo __('Show all investor data') ?></p>
                 </div>
                 <div class="card-content togetoverlay">
-                    <div class="overlay">
+                    <!--<div class="overlay">
                         <div class="fa fa-spin fa-spinner" style="color:green">	
                         </div>
-                    </div>
+                    </div>-->
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -342,7 +354,7 @@
                         <!-- /User data -->
                         </div>
                         <!-- /Investor complete data -->
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle" style="display: none;">
                             <div class="row">
                                 <!-- CIF -->
                                 <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
@@ -378,15 +390,34 @@
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                             <h4 class="header1CR"><?php echo __('Investor Uploaded Documents')?></h4>
                             <ul>
-                                <li>Doc1 <input type="checkbox" id="checkDoc1"></li>
-                                <li>Doc2 <input type="checkbox" id="checkDoc2"></li>
-                                <li>Doc3 <input type="checkbox" id="checkDoc3"></li>
+                                <li><a href="#" target="_blank">Doc1</a> 
+                                    <div>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Yes')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('No')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Pending')?></label>
+                                    </div>
+                                </li>
+                                <li><a href="#" target="_blank">Doc2</a> 
+                                    <div>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Yes')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('No')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Pending')?></label>
+                                    </div>
+                                </li>
+                                <li><a href="#" target="_blank">Doc3</a> 
+                                    <div>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Yes')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('No')?></label>
+                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Pending')?></label>
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                               <button type="button" class="btn btn-default btn-lg btn-win1 btnRounded center-block" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve')?></button>
+                                <button type="button" id="saveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save')?></button>
+                                <button type="button" id="approveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-right" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve')?></button>
                         </div>
                     </div>
                 </div>

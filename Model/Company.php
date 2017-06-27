@@ -50,6 +50,12 @@ class Company extends AppModel {
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'ocr_id',
         ),
+        'File' => array(
+            'className' => 'File',
+            'joinTable' => 'companies_files',
+            'foreignKey' => 'company_id',
+            'associationForeignKey' => 'file_id',
+        ),
     );
 
     /**
@@ -93,9 +99,10 @@ class Company extends AppModel {
         $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
             'Company.company_state' => ACTIVE);
 
-        $conditions = array_merge($businessConditions, $filterConditions);
+        array_push($businessConditions, $filterConditions);
+
         $companyResult = $this->find("all", $params = array('recursive' => -1,
-            'conditions' => $conditions,
+            'conditions' => $businessConditions,
         ));
 // 'Normalize' the total array, index XX points to company with id = XX
         foreach ($companyResult as $value) {
@@ -104,11 +111,16 @@ class Company extends AppModel {
         return $companyResults;
     }
 
+    /**
+     * Get info needed for ocr.
+     * @param type $filter
+     * @return type
+     */
     public function companiesDataOCR($filter = null) {
 
         $conditions = array('Company.company_OCRisActive' => 1);
 
-
+        //Platform selection filters
         if ($filter['country_filter']) {
             $filtro = array('Company.company_countryName' => $filter['country_filter']);
             $conditions = array_merge($conditions, $filtro);
@@ -120,7 +132,7 @@ class Company extends AppModel {
         }
 
         $data = $this->find("all", array(
-            'fields' => array('id', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
+            'fields' => array('id', 'Company.company_name', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
                 'Company.Company_privacityUrl', 'Company.Company_type'),
             'recursive' => -1,
             'conditions' => $conditions,

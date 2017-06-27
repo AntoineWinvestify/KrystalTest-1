@@ -57,10 +57,10 @@
                     <p class="category"><?php echo __('New users from Winvestify added to your PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <div class="overlay">
+                    <!--<div class="overlay">
                         <div class="fa fa-spin fa-spinner" style="color:green">	
                         </div>
-                    </div>
+                    </div>-->
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -80,66 +80,60 @@
                                                                                         data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                                 <thead>
                                                         <tr>
-                                                            <th width="5%"></th>
                                                             <th><?php echo __('Date')?></th>
                                                             <th><?php echo __('Name')?></th>
                                                             <th><?php echo __('Surname')?></th>
                                                             <th><?php echo __('Telephone')?></th>
                                                             <th><?php echo __('Email')?></th>
-                                                            <th><?php echo __('Status')?></th>
                                                             <th><?php echo __('Action')?></th>
+                                                            <th><?php echo __('Tallyman')?></th>
                                                         </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td class="details-control">prueba</td>
                                                         <td><?php echo __('2017-01-01')?></td>
                                                         <td><?php echo __('Nameeeeeee')?></td>
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
-                                                        <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __('Incorrect')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="details-control"></td>
                                                         <td><?php echo __('2017-01-01')?></td>
                                                         <td><?php echo __('Nameeeeeee')?></td>
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
-                                                        <td><span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="details-control"></td>
                                                         <td><?php echo __('2017-01-01')?></td>
                                                         <td><?php echo __('Nameeeeeee')?></td>
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
-                                                        <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="details-control"></td>
                                                         <td><?php echo __('2017-01-01')?></td>
                                                         <td><?php echo __('Nameeeeeee')?></td>
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
-                                                        <td><span style="color:#3399ff"><i class="fa fa-thumb-tack"></i> <?php echo __('Validating')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="details-control"></td>
                                                         <td><?php echo __('2017-01-01')?></td>
                                                         <td><?php echo __('Nameeeeeee')?></td>
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
-                                                        <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet')?></span></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
+                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
                                                 </tbody>
                                         </table>
