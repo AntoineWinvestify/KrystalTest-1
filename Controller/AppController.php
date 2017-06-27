@@ -46,6 +46,12 @@ loginRedirect has changed to global market place
 2017-06-19      version 0.22
 Added a new crowdlending type and defined its "string" values globally.
 Added type of dashboard record
+ 
+2017-06-22      version 0.23
+Added isAuthorized function to verify if a determinated role has access
+  
+2017-06-27      version 0.24  
+Added new function to get sectors of the leftnavigationmenu by role
 
 
 
@@ -207,7 +213,7 @@ class AppController extends Controller {
         ),
         'Cookie',
     );
-    var $uses = array('User');
+    var $uses = array('User', 'Role', 'Sector');
 
     /**
      * 	This code is common to all the classes that actively define a method for the beforeFilter
@@ -280,12 +286,35 @@ class AppController extends Controller {
             }
         }
         if ($this->Auth->user()) {
+            
             //if ($menuLeft) {
                 $roleId = $this->Auth->user('Role.id');
-                $this->Sector = ClassRegistry::init('Sector');
-                $sectors = $this->Sector->getSectorsByRole($roleId);
+                /*$this->Role = ClassRegistry::init('Role');
+                $sectors = $this->Role->getSectorsByRole($roleId);*/
+                $sectors = $this->getSectorsByRole($roleId);
+                //$this->Role = ClassRegistry::init('Role');
+                
+                //This query return all values of intermediate table roles_sectors with roleId = $roleId
+                /*$sectorsBVB = $this->Sector->RolesSector->find('all', 
+                        array(
+                            'conditions' => array('RolesSector.role_id' => $roleId),
+                            'contain' => array('Sector')
+                        ));*/
+                //This query return all values with role = $roleId connect to the table and te role
+                /*$sectors = $this->Sector->Role->find('all', array(
+                    //'fields' => array('Sector.*'),
+                    'conditions' => array(
+                        'Role.id' => $roleId
+                    )
+                ));*/
+                //$sectorC = $this->Sector->find('all', 
+                //array('conditions' => array('RolesSector.role_id' => $roleId), 'contain' => array('Role')));
+                /*$sectorsB = $this->Role->Sector->find('all', array(
+                    'conditions' => array(
+                        'RolesSector.role_id' => $roleId
+                    )
+                ));*/
                 $this->set('sectorsMenu', $sectors);
-                echo "patata";
             //}
         }
        
@@ -610,6 +639,48 @@ class AppController extends Controller {
         //$aro = $this->Role->getRoleNameById($roleId);
         
 	return $this->Acl->check($aro, $controller, $access);
+    }
+    
+    /**
+     * Function to get the sectors for the leftnavigationmenu by User's role
+     * We do a three table query using the joins option
+     * @param int $roleId It is the user's role id
+     * @return boolean|array Return false if there is not roleId or the array with the sectors
+     */
+    function getSectorsByRole($roleId = null){
+        if (empty($roleId)) {
+            return false;
+        }
+        $this->Sector = ClassRegistry::init('Sector');
+        $options['joins'] = array(
+            array('table' => 'roles_sectors',
+                'alias' => 'RolesSector',
+                'type' => 'inner',
+                'conditions' => array(
+                    'Sector.id = RolesSector.sector_id'
+                )
+            ),
+            array('table' => 'roles',
+                'alias' => 'Role',
+                'type' => 'inner',
+                'conditions' => array(
+                    'RolesSector.role_id = Role.id'
+                )
+            )
+        );
+
+        $options['conditions'] = array(
+            'Role.id' => $roleId
+        );
+        //$options['field'] = array('Sector.*');
+        $options['recursive'] = -1;
+        $options['order'] = array(
+            'Sector.sectors_father',
+            'Sector.sectors_subSectorSequence'
+        );
+
+        $sectors = $this->Sector->find('all', $options);
+        return $sectors;
     }
 
 }
