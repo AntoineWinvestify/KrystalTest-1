@@ -171,6 +171,9 @@ define('REGISTRATION_PROGRESS_3', 3);
 define('REGISTRATION_PROGRESS_4', 4);
 define('REGISTRATION_PROGRESS_5', 5);
 
+// CURL ERRORS
+define('CURL_ERROR_TIMEOUT', 28);
+
 class AppController extends Controller {
 
     public $components = array('DebugKit.Toolbar',
