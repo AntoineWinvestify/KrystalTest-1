@@ -47,10 +47,6 @@
                     <p class="category"><?php echo __('Sold users to the PFPs.') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -70,4 +66,66 @@
             </div>
         </div>
     </div> <!-- /.row general -->
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="card">
+                <div class="card-header" data-background-color="green">
+                    <h4 class="title"><strong><?php echo __('WinAdmin - History of Sold Users') ?></strong></h4>
+                    <p class="category"><?php echo __('All sold users to all PFP') ?></p>
+                </div>
+                <div class="card-content table-responsive togetoverlay">
+                    <div class="row firstParagraph">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <p><?php
+                                echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
+                                        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
+                                        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
+                                        . ' PFP puedan validar y autenticar su identidad.')
+                                ?></p>
+                        </div>
+                        <div id="investorFilters" class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                            <?php 
+                            $class = "form-control blue_noborder investorCountry". ' ' . $errorClass;
+                            $countries = ["select PFP", "pfp1", "pfp2", "pfp3"];      
+                                                                                echo $this->Form->input('Investor.investor_country', array(
+                                                                                        'name'			=> 'country',
+                                                                                        'id' 			=> 'ContentPlaceHolder_country',
+                                                                                        'label' 		=> false,
+                                                                                        'options'               => $countries,
+                                                                                        'placeholder' 	=>  __('Country'),
+                                                                                        'class' 		=> $class,
+                                                                                        'value'			=> $resultUserData[0]['Investor']['investor_country'],						
+                                                        ));
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="table-responsive">
+                                <table id="uploadedBills" class="table table-striped display dataTable"  width="100%" cellspacing="0"
+                                       data-order='[[ 3, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                    <tr>
+                                        <th width="15%"><?php echo __('PFP') ?></th>
+                                        <th><?php echo __('Number') ?></th>
+                                        <th><?php echo __('Concept') ?></th>
+                                        <th><?php echo __('Amount') ?></th>
+                                    </tr>
+
+                                    <?php foreach ($bills as $billsTable) { //Bills table creation ?>
+                                        <tr>
+                                            <td><?php echo __($billsTable['name']) ?></td>
+                                            <td><?php echo __($billsTable['info']['bill_number']) ?></td>
+                                            <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
+                                            <td align="left"><?php echo __($billsTable['info']['bill_amount']) ?></td>
+                                        </tr>
+                                    <?php } ?>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
