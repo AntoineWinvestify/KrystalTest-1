@@ -51,10 +51,60 @@ $(document).ready(function() {
 
 
 	<ul class="sidebar-menu">
+            <?php 
+            //This is the variable to get the sectors of the user
+            //It depends on the role that the user has
+            echo $sectorsMenu[0]['sectors_name'] ?>
     <li class="header">MAIN NAVIGATION</li>
+        <?php
+            $sectorActual = 0;
+            $sectorHasChildren = false;
+            foreach ($sectorsMenu as $sector) {
+                if ($sectorActual != $sector["Sector"]["sectors_father"]) {
+                    if ($sectorHasChildren) {
+                        echo "</ul>";
+                        $sectorHasChildren = false;
+                    }
+                    if ($sectorActual != 0) {
+                        echo "</li>";
+                    }
+                    echo "<li class='treeview'>";
+                    $sectorActual = $sector["Sector"]["sectors_father"];
+                }
+                if ($sector["Sector"]["sectors_subSectorSequence"] == 1) {
+                    echo "<a href='". __($sector["Sector"]["sectors_licontent"]) . "'>";
+                    echo "<i class='". __($sector["Sector"]["sectors_class"])  . "'></i>";
+                    echo "<span>". __($sector["Sector"]["sectors_name"]) ."</span>";
+                    if ($sector["Sector"]["sectors_licontent"] == "#") {
+                        $sectorHasChildren = true;
+                        ?>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                            </a>
+                            <ul class="treeview-menu">
+                        <?php
+                    }
+                }
+                else {
+                    echo "<li><a href='". $sector["Sector"]["sectors_licontent"] . "'>";
+                    echo "<i class=". $sector["Sector"]["sectors_class"]  . "></i>";
+                    echo __($sector["Sector"]["sectors_name"]);
+                    echo "</a></li>";
+                }
+            }
+            echo "</ul>";
+        /*
+        ?>
 	  <li class="treeview">
       <a href="/dashboards/getDashboardData">
-        <i class="fa fa-dashboard"></i> <span><?php echo __('Dashboard')?></span>
+        <i class="fa fa-dashboard"></i> <span>
+            <?php 
+            $i = 0;
+            
+            echo __('Dashboard');
+            ?>
+        </span>
       </a>
     </li>
         <?php  
@@ -71,7 +121,7 @@ $(document).ready(function() {
             <li class="disabled" style="opacity:0.5"><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Mi muro</a></li>
             <li class="disabled" style="opacity:0.5"><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Mis Notificaciones</a></li>
           </ul>
-        </li>*/
+        </li>
         ?>
        <li class="treeview">
           <a href="#">
@@ -132,7 +182,7 @@ $(document).ready(function() {
             <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> Advanced Elements</a></li>
             <li><a href="pages/forms/editors.html"><i class="fa fa-circle-o"></i> Editors</a></li>
           </ul>
-        </li>*/?>
+        </li>?>
         <li class="treeview">
           <a href="#">
             <i class="fa fa-user-secret"></i> <span><?php echo __('Link Account')?></span>
@@ -142,13 +192,13 @@ $(document).ready(function() {
           </a>
           <ul class="treeview-menu">
             <li><a href="/investors/userProfileDataPanel"><i class="fa fa-circle-o"></i> <?php echo __('Personal Data')?></a></li>
-            <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>*/?>
+            <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>?>
           </ul>
         </li>
  
 <?php /*<li class="treeview">
 			<a href="/invitations/recommend"><i class="fa fa-power-off"></i><span><?php //echo __('Recommend to a friend')?></a></span>
-        </li>*/?>
+        </li>?>
         <li class="treeview">
           <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
@@ -157,6 +207,6 @@ $(document).ready(function() {
 <button type="button" href="/usererrors/getErrorModal" class="btn btn-primary errorBtn">  
           <?php // echo __('Report Error')?>
         </button>
-      </a>*/ ?>
+      </a> ?>
         </li>
 	</ul>
