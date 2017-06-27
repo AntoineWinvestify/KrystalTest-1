@@ -107,7 +107,6 @@ foreach ($companies as $companyInfo) {
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - Update Bill') ?></strong></h4>
-                    <p class="category"><?php echo __('Update bill to selected PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!-- <div class="overlay">
@@ -261,7 +260,6 @@ foreach ($companies as $companyInfo) {
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - History of Bills') ?></strong></h4>
-                    <p class="category"><?php echo __('All uploaded bills') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">

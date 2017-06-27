@@ -44,7 +44,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - Sold Users') ?></strong></h4>
-                    <p class="category"><?php echo __('Sold users to the PFPs.') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">
@@ -71,7 +70,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - History of Sold Users') ?></strong></h4>
-                    <p class="category"><?php echo __('All sold users to all PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">

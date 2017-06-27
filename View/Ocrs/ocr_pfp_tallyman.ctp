@@ -69,7 +69,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('PFPAdmin - Tallyman') ?></strong></h4>
-                    <p class="category"><?php echo __('Tallyman service about Investor Profile') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">
@@ -127,7 +126,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('Tallyman') ?></strong></h4>
-                    <p class="category"><?php echo __('Tallyman service about @search_fields') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">

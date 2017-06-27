@@ -79,7 +79,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - Investor Data Checking') ?></strong></h4>
-                    <p class="category"><?php echo __('Show all investor data') ?></p>
                 </div>
                 <div class="card-content togetoverlay">
                     <!--<div class="overlay">

@@ -54,7 +54,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('PFPAdmin - New users Panel') ?></strong></h4>
-                    <p class="category"><?php echo __('New users from Winvestify added to your PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">

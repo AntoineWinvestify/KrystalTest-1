@@ -44,7 +44,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - Tallyman') ?></strong></h4>
-                    <p class="category"><?php echo __('Tallyman service about Investor Profile') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="overlay">

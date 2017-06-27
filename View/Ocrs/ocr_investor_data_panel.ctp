@@ -302,7 +302,6 @@ foreach ($existingFiles as $file) {
             <div class="card">
                 <div class="card-header" data-background-color="blue">
                     <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
-                    <p class="category"><?php echo __('Investor One Click Registration Data') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="overlay">

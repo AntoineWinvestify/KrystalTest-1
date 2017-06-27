@@ -50,7 +50,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - Update PFP data') ?></strong></h4>
-                    <p class="category"><?php echo __('Modify any PFP data') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="overlay">

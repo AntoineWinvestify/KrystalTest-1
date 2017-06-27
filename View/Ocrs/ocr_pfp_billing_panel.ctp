@@ -49,7 +49,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('PFPAdmin - Billing Panel') ?></strong></h4>
-                    <p class="category"><?php echo __('History of bills associated to your PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">
