@@ -286,36 +286,15 @@ class AppController extends Controller {
             }
         }
         if ($this->Auth->user()) {
-            
-            //if ($menuLeft) {
+            $sectorExist = $this->Session->read('sectorsMenu');
+            if (empty($sectorExist)) {
                 $roleId = $this->Auth->user('Role.id');
                 /*$this->Role = ClassRegistry::init('Role');
                 $sectors = $this->Role->getSectorsByRole($roleId);*/
                 $sectors = $this->getSectorsByRole($roleId);
-                //$this->Role = ClassRegistry::init('Role');
-                
-                //This query return all values of intermediate table roles_sectors with roleId = $roleId
-                /*$sectorsBVB = $this->Sector->RolesSector->find('all', 
-                        array(
-                            'conditions' => array('RolesSector.role_id' => $roleId),
-                            'contain' => array('Sector')
-                        ));*/
-                //This query return all values with role = $roleId connect to the table and te role
-                /*$sectors = $this->Sector->Role->find('all', array(
-                    //'fields' => array('Sector.*'),
-                    'conditions' => array(
-                        'Role.id' => $roleId
-                    )
-                ));*/
-                //$sectorC = $this->Sector->find('all', 
-                //array('conditions' => array('RolesSector.role_id' => $roleId), 'contain' => array('Role')));
-                /*$sectorsB = $this->Role->Sector->find('all', array(
-                    'conditions' => array(
-                        'RolesSector.role_id' => $roleId
-                    )
-                ));*/
-                $this->set('sectorsMenu', $sectors);
-            //}
+                $this->Session->write('sectorsMenu', $sectors);
+            }
+            $this->set('sectorsMenu', $this->Session->read('sectorsMenu'));
         }
        
         
