@@ -83,7 +83,7 @@
                             <h4 class="header1CR"><?php echo __('Investors registered on your platform') ?></h4>
                             <div class="table-responsive">  
                                 <table id="usersTable" class="table table-striped dataTable display" width="100%" cellspacing="0"
-                                                                                data-order='[[ 5, "asc" ]]' data-page-length='20'>
+                                                                                data-order='[[0, "asc"], [ 5, "asc" ]]' data-page-length='20'>
                                         <thead>
                                                 <tr>
                                                     <th width="10%"><?php echo __('Date')?></th>
@@ -94,17 +94,6 @@
                                                     <th width="15%"><?php echo __('Status')?></th>
                                                     <th width="5%"><?php echo __('Action')?></th>
                                                 </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <th width="10%"><?php echo __('Date') ?></th>
-                                            <th width="10%"><?php echo __('Name') ?></th>
-                                            <th width="10%"><?php echo __('Surname') ?></th>
-                                            <th width="10%"><?php echo __('Telephone') ?></th>
-                                            <th><?php echo __('Email') ?></th>
-                                            <th width="15%"><?php echo __('Status') ?></th>
-                                            <th width="5%"><?php echo __('Action') ?></th>
-                                        </tr>
                                     </thead>
                                     <tbody>
                                         <?php
