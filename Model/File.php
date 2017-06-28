@@ -91,7 +91,7 @@ class file extends AppModel {
         } else if ($path == "bill") {
             $up = $fileConfig['billsPath'] . $folder;
         }
-
+        
         foreach ($fileInfo as $file) {
 
             //Error filter
@@ -135,7 +135,7 @@ class file extends AppModel {
                     );
 
                     $this->CompaniesFile->save($bill);
-
+                    
                     return $result;
                 }
             } else {

@@ -78,15 +78,7 @@ foreach ($companies as $companyInfo) {
 <?php //Javascript validation     ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
-               /* params = {
-                    pfp: $("#ContentPlaceHolder_pfp").val(),
-                    number: $("#ContentPlaceHolder_number").val(),
-                    concept: $("#ContentPlaceHolder_concept").val(),
-                    amount: $("#ContentPlaceHolder_amount").val(),
-                    bill: formdatas
-                };*/
                 link = '../Files/upload';
-                //var data = jQuery.param(params);
                 $.ajax({
                     url: link,
                     dataType: 'json',
