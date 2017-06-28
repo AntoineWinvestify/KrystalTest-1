@@ -39,6 +39,10 @@
  * [2017-06-26] Version 0.2
  * Table from db
  * 
+ * 
+ * [2017-06-28] Version 0.2
+ * Zip download
+ * 
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>

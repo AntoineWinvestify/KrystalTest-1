@@ -51,7 +51,16 @@
  * 
  * [2017-06-22] Version 0.9
  * Bug fixing
+ * 
+ * [2017-06-23] Version 0.9
+ * Disabled checked data
+ * 
+ * [2017-06-27] Version 0.9
+ * Upload fixed
+ * Upload after deleted not fixed
+ * 
  */
+
 ?>
 1
 <link rel="stylesheet" type="text/css" href="/plugins/intlTelInput/css/intlTelInput.css">

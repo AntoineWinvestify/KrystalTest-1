@@ -40,6 +40,9 @@
  * 2017/6/21 version 0.4
  * upload bill         [OK]
  * 
+ * 2017/6/28 version 0.5
+ * zip download         [OK]
+ * 
  */
 App::uses('CakeEvent', 'Event');
 

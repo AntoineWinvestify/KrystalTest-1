@@ -44,6 +44,9 @@
  * 2017/6/26 version 0.5
  * billCompanyFilter                         [OK]
  * 
+ * 2017/6/28 version 0.5
+ * zip creation                         [OK]
+ * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
