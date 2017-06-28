@@ -41,6 +41,9 @@
  * [2017-06-23] Version 0.6
  * User data table from db
  * 
+ * [2017-06-28] Version 0.7
+ * Deleted overlay
+ * Added Datatable Javascript
  */
 ?>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
@@ -54,21 +57,15 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <script>
     $(function () {
-
-        $(document).on("click", ".view", function () {
-            id = $(this).val();
-
-        });
-
+        $("#usersTable").DataTable();
     });
 </script>
-<div id="1CR_winAdmin_2_investorChecking">
+<div id="1CR_winAdmin_1_investorChecking">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - Investor Checking') ?></strong></h4>
-                    <p class="category"><?php echo __('Show contents about Investors') ?></p>
                 </div>
                 <div class="card-content togetoverlay">
                     <div class="row firstParagraph">
@@ -86,17 +83,17 @@
                             <h4 class="header1CR"><?php echo __('Investors registered on your platform') ?></h4>
                             <div class="table-responsive">  
                                 <table id="usersTable" class="table table-striped dataTable display" width="100%" cellspacing="0"
-                                       data-order='[[ 2, "asc" ]]' data-page-length='25'>
-                                    <thead>
-                                        <tr>
-                                            <th width="10%"><?php echo __('Date') ?></th>
-                                            <th width="10%"><?php echo __('Name') ?></th>
-                                            <th width="10%"><?php echo __('Surname') ?></th>
-                                            <th width="10%"><?php echo __('Telephone') ?></th>
-                                            <th><?php echo __('Email') ?></th>
-                                            <th width="15%"><?php echo __('Status') ?></th>
-                                            <th width="5%"><?php echo __('Action') ?></th>
-                                        </tr>
+                                                                                data-order='[[0, "asc"], [ 5, "asc" ]]' data-page-length='20'>
+                                        <thead>
+                                                <tr>
+                                                    <th width="10%"><?php echo __('Date')?></th>
+                                                    <th width="10%"><?php echo __('Name')?></th>
+                                                    <th width="10%"><?php echo __('Surname')?></th>
+                                                    <th width="10%"><?php echo __('Telephone')?></th>
+                                                    <th><?php echo __('Email')?></th>
+                                                    <th width="15%"><?php echo __('Status')?></th>
+                                                    <th width="5%"><?php echo __('Action')?></th>
+                                                </tr>
                                     </thead>
                                     <tbody>
                                         <?php

@@ -41,9 +41,9 @@
  * 2017/6/16  version 0.6
  * oneClickInvestorI error 500 fixed
  * 
- * 2017/6/19 version 0.7
- * ocrWinadminBillingPanel-> bill table added
- * 
+  2017/6/19 version 0.7
+  ocrWinadminBillingPanel-> bill table added
+
  * 2017/6/23 version 0.8
  * checking data table
  * user checking data
@@ -51,7 +51,8 @@
  * 2017/6/26 version 0.9
  * pfp admin tables ok
  * 
- * 2017/6/28 version 1
+ * [2017-06-28] Version 0.10
+ * Added countryCodes to VinAdmin View #4  (Update PFP Data, to select country)
  * server validation
  * 
  */
@@ -160,7 +161,6 @@ class ocrsController extends AppController {
                 //Update the companies status
                 $idOcr = $ocrArray[1]["id"];
                 $result3 = $this->Ocr->updateCompaniesStatus($idOcr);
-
 
                 $this->set('result1', $result1);
                 $this->set('result2', $result2);
@@ -465,6 +465,11 @@ class ocrsController extends AppController {
     function ocrWinadminUpdatePfpData() {
         $this->layout = 'azarus_private_layout';
         echo " ";
+        
+        // Country Codes
+        Configure::load('countryCodes.php', 'default');
+        $countryData = Configure::read('countrycodes');
+        $this->set('countryData', $countryData);
     }
 
     //WinAdmin View #5

@@ -49,7 +49,11 @@
  * Added Radio buttons on ALL fields. (Initial Value: PENDING)
  * (telephone & email are on YES because they are necessary to register/access Winvestify)
  * [pending] Timestamp on YES clicking.
- */
+ * 
+ * [2017-06-28] Version 0.7
+ * Added Arrays to checking
+*/
+
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
 <script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
@@ -68,6 +72,8 @@
     }
 </style>
 <script>
+    var arrayChecking = ["checkName", "checkSurname", "checkId", "checkDateOfBirth", "checkEmail", "checkTelephone", "checkPostCode", "checkAddress", "checkCity", "checkCountry", "checkIBAN"];
+    var arrayCheckingOptional = ["checkCIF", "checkBusinessName"];
     $(function () {
 
         $(document).on('click', '#saveBtn', function () {
@@ -80,10 +86,7 @@
 
         });
 
-    })
-
-
-
+    });
 </script>
 <div id="1CR_winAdmin_2_investorData">
     <div class="row">
@@ -91,7 +94,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="green">
                     <h4 class="title"><strong><?php echo __('WinAdmin - Investor Data Checking') ?></strong></h4>
-                    <p class="category"><?php echo __('Show all investor data') ?></p>
                 </div>
                 <div class="card-content togetoverlay">
                     <!--<div class="overlay">
@@ -223,10 +225,8 @@
                                             </div>
                                             <input type="text" disabled="disabled" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php $resultUserData[0]['Investor']['investor_dateOfBirth'] ?>">
                                         </div>
-                                        <input type="text" disabled="disabled" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php $userData[0]['Investor']['investor_dateOfBirth'] ?>">
                                     </div>
                                 </div>
-                            </div>
                             <!-- /Date of Birth -->
 
                             <!-- email -->
@@ -494,8 +494,6 @@
                                 ?>
                             </ul>
                         </div>
-
-
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                             <h4 class="header1CR"><?php echo __('Investor Uploaded Documents') ?></h4>
                             <ul>

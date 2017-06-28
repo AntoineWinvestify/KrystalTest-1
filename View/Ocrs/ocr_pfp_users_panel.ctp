@@ -40,9 +40,9 @@
  * Table from db
  * 
  * 
- * [2017-06-28] Version 0.2
+ * [2017-06-28] Version 0.3
  * Zip download
- * 
+ * Added Datatable javascript
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -58,7 +58,9 @@
     }
 </style>
 <script>
-    $(function () {
+    $(function() {
+        $("#usersTable").DataTable();
+
 <?php //Download the zip ?>
         $(document).on('click', '.download', function () {
             link = "/files/generateZip/" + $(this).attr('href');
@@ -80,7 +82,6 @@
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('PFPAdmin - New users Panel') ?></strong></h4>
-                    <p class="category"><?php echo __('New users from Winvestify added to your PFP') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">
@@ -103,19 +104,20 @@
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
                                         <table id="usersTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                               data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
-                                            <thead>
-                                                <tr>
-                                                    <th><?php echo __('Date') ?></th>
-                                                    <th><?php echo __('Name') ?></th>
-                                                    <th><?php echo __('Surname') ?></th>
-                                                    <th><?php echo __('Telephone') ?></th>
-                                                    <th><?php echo __('Email') ?></th>
-                                                    <th><?php echo __('Action') ?></th>
-                                                    <th><?php echo __('Tallyman') ?></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
+                                                                                        data-order='[[ 0, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                                <thead>
+                                                        <tr>
+                                                            <th><?php echo __('Date')?></th>
+                                                            <th><?php echo __('Name')?></th>
+                                                            <th><?php echo __('Surname')?></th>
+                                                            <th><?php echo __('Telephone')?></th>
+                                                            <th><?php echo __('Email')?></th>
+                                                            <th><?php echo __('Status')?></th>
+                                                            <th><?php echo __('Action')?></th>
+                                                            <th><?php echo __('Tallyman')?></th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody>
                                                 <?php foreach ($ocrList as $ocr) {
                                                     ?>
                                                     <tr>
@@ -124,11 +126,11 @@
                                                         <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
                                                         <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
                                                         <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
+                                                        <td><?php echo __('cosa del estado del usuario')?></td>
                                                         <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download" href="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"   ><?php echo __('Download') ?></button></td>
                                                         <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
                                                     </tr>
                                                 <?php } ?>
-
                                             </tbody>
                                         </table>
                                     </div>
