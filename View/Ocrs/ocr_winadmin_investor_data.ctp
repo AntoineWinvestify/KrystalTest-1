@@ -68,9 +68,22 @@
     }
 </style>
 <script>
-    if (Cosa.is(":checked")) {
-        $("#investmentVehicle").show();
-    }
+    $(function () {
+
+        $(document).on('click', '#saveBtn', function () {
+
+
+        });
+
+        $(document).on('click', '#approveBtn', function () {
+
+
+        });
+
+    })
+
+
+
 </script>
 <div id="1CR_winAdmin_2_investorData">
     <div class="row">
@@ -88,11 +101,11 @@
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
-echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
-        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
-        . ' PFP puedan validar y autenticar su identidad.')
-?></p>
+                                echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
+                                        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
+                                        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
+                                        . ' PFP puedan validar y autenticar su identidad.')
+                                ?></p>
                         </div>
                     </div>
                     <div class="row">
@@ -461,56 +474,42 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                             <h4 class="header1CR"><?php echo __('Investor Selected Platforms') ?></h4>
                             <ul>
-                                <li>
-                                    PFP1
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="pfp1"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="pfp1"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="pfp1" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                </li>
-                                <li>
-                                    PFP2
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="pfp2"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="pfp2"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="pfp2" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                </li>
-                                <li>
-                                    PFP3
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="pfp3"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="pfp3"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="pfp3" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                </li>
+                                <?php
+                                foreach ($userData[0]['Company'] as $company) { //Company list 
+                                    ?>
+                                    <li>
+                                        <?php
+                                        if ($company['CompaniesOcr']['company_status'] == SENT) {
+                                            echo $company['company_name']
+                                            ?>
+                                            <div>
+                                                <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>"><?php echo __('Yes') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>"><?php echo __('No') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            </div>
+                                        </li>
+                                        <?php
+                                    }
+                                }
+                                ?>
                             </ul>
                         </div>
+
+
                         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                             <h4 class="header1CR"><?php echo __('Investor Uploaded Documents') ?></h4>
                             <ul>
-                                <li><a href="#" target="_blank">Doc1</a> 
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc1" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                </li>
-                                <li><a href="#" target="_blank">Doc2</a> 
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc2"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc2"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc2" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                </li>
-                                <li><a href="#" target="_blank">Doc3</a> 
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc3"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc3"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkDoc3" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                </li>
+                                <?php
+                                foreach ($files as $file) {//Company list 
+                                    ?>
+                                    <li><a href="#" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></a> 
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                        </div>
+                                    </li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </div>
