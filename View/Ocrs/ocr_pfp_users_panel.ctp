@@ -34,6 +34,9 @@
  * Added orange box
  * Added style to overlay
  * Deleted unnecessary script
+ * 
+ * [2017-06-28] Vesion 0.3
+ * Added Datatable javascript
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -48,6 +51,11 @@
         font-size: 50px;
     }
 </style>
+<script>
+    $(function() {
+        $("#usersTable").DataTable();
+    });
+</script>
 <div id="1CR_pfpAdmin_1_usersPanel">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -76,7 +84,7 @@
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
                                         <table id="usersTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                                                                        data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                                                                        data-order='[[ 0, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                                 <thead>
                                                         <tr>
                                                             <th><?php echo __('Date')?></th>
@@ -84,6 +92,7 @@
                                                             <th><?php echo __('Surname')?></th>
                                                             <th><?php echo __('Telephone')?></th>
                                                             <th><?php echo __('Email')?></th>
+                                                            <th><?php echo __('Status')?></th>
                                                             <th><?php echo __('Action')?></th>
                                                             <th><?php echo __('Tallyman')?></th>
                                                         </tr>
@@ -95,6 +104,7 @@
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
+                                                        <td></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
@@ -104,6 +114,7 @@
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
+                                                        <td></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
@@ -113,6 +124,7 @@
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
+                                                        <td></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
@@ -122,6 +134,7 @@
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
+                                                        <td></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
@@ -131,6 +144,7 @@
                                                         <td><?php echo __('Surnameeee')?></td>
                                                         <td><?php echo __('+34123456789')?></td>
                                                         <td><?php echo __('example@example.com')?></td>
+                                                        <td></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
                                                         <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
                                                     </tr>
