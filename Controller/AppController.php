@@ -182,7 +182,7 @@ define('SELECTED', 0);
 define('SENT', 1);
 define('ACCEPTED', 2);
 define('DENIED', 3);
-define('DOWLOADED', 4);
+define('DOWNLOADED', 4);
 
 //CHECK DATA & FILES STATUS
 define('UNCHECKED', 0);

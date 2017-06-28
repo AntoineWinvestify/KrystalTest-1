@@ -73,19 +73,18 @@ class ocr extends AppModel {
             'associationForeignKey' => 'investor_id',
         ),
     );
-
-    /* var $validate = array(
-      'investor_cif' => array(
-      'rule1' => array('rule' => array('minLength', 1),
-      'allowEmpty' => false,
-      'message' => 'Name validation error'),
-      ),
-      'investor_businessName' => array(
-      'rule1' => array('rule' => array('minLength', 1),
-      'allowEmpty' => false,
-      'message' => 'Name validation error'),
-      )
-      ); */
+    var $validate = array(
+        'investor_cif' => array(
+            'rule1' => array('rule' => array('minLength', 1),
+                'allowEmpty' => false,
+                'message' => 'Name validation error'),
+        ),
+        'investor_businessName' => array(
+            'rule1' => array('rule' => array('minLength', 1),
+                'allowEmpty' => false,
+                'message' => 'Name validation error'),
+        )
+    );
 
     /**
      * 
@@ -348,7 +347,7 @@ class ocr extends AppModel {
 
         //status filter
         foreach ($companyListNotFilter as $filterStatus) {
-            if ($filterStatus['ocrInfo']["company_status"] == SENT || $filterStatus['ocrInfo']["company_status"] == ACCEPTED || $filterStatus['ocrInfo']["company_status"] == DENIED || $filterStatus['ocrInfo']["company_status"] == DOWLOADED) {
+            if ($filterStatus['ocrInfo']["company_status"] == SENT || $filterStatus['ocrInfo']["company_status"] == ACCEPTED || $filterStatus['ocrInfo']["company_status"] == DENIED || $filterStatus['ocrInfo']["company_status"] == DOWNLOADED) {
                 array_push($companyList, $filterStatus);
             }
         }
