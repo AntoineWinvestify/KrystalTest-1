@@ -40,7 +40,9 @@
  * 2017-06-23     version 0.3
  * OCr status defined
  * 
- * 
+ * [2017-06-28] Version 0.4
+ * Defined currencyName
+ * Defined pfpStatus
  * 
  *
  *  PENDING:
@@ -235,7 +237,13 @@ class AppController extends Controller {
             3 => "Trimestre",
             4 => "Horas",
         );
-
+        
+        // TRANSLATE CURRENCY NAME
+        $this->currencyName = array(0=>"(select)", 1=>"€", 2=>"£", 3=>"$");
+        
+        //Investor Status to PFP Admin
+        $this->pfpStatus = array(2=>"New", 4=>"Viewed");
+        
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
