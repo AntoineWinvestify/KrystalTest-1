@@ -78,22 +78,23 @@ foreach ($companies as $companyInfo) {
 <?php //Javascript validation     ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
-                params = {
+               /* params = {
                     pfp: $("#ContentPlaceHolder_pfp").val(),
                     number: $("#ContentPlaceHolder_number").val(),
                     concept: $("#ContentPlaceHolder_concept").val(),
                     amount: $("#ContentPlaceHolder_amount").val(),
                     bill: formdatas
-                };
+                };*/
                 link = '../Files/upload';
-                var data = jQuery.param(params);
+                //var data = jQuery.param(params);
                 $.ajax({
                     url: link,
                     dataType: 'json',
                     method: 'post',
-                    data: data,
+                    data: formdatas,
                     contentType: false,
                     processData: false,
+                    traditional: true
                 }).done(function (data) {
 
                 });
@@ -139,10 +140,11 @@ foreach ($companies as $companyInfo) {
                                         <th><?php echo __('Upload file') ?></th>
                                         <th><?php echo __('Send') ?></th>
                                     </tr>
-
+                                    <?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
                                     <tr>
                                         <td>
                                             <?php
+                                            array_unshift ($companiesSelectList,__('Choose One'));
                                             $class = "form-control blue_noborder winadminPFP";
                                             echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
@@ -237,10 +239,10 @@ foreach ($companies as $companyInfo) {
                                         </td>
                                         <td>
                                             <?php
-                                            echo $this->Form->create('bill', array('default' => false, 'id' => 'bill'));
+                                           
                                             echo "<label class='btn labelFile btnRounded btnUploadFile' for='billUpload'><i class='fa fa-upload'></i> Upload bill</label>";
                                             echo $this->Form->file("bill", array('class' => 'upload', 'id' => 'billUpload'));
-                                            echo $this->Form->end();
+                                           
                                             ?>
                                         </td>
                                         <td>
@@ -249,7 +251,7 @@ foreach ($companies as $companyInfo) {
                                             </button>                                        </td>
 
                                     </tr>
-
+                                    <?php  echo $this->Form->end(); ?>
                                 </table>
                             </div>
                         </div>
