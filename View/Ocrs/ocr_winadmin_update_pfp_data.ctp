@@ -29,6 +29,9 @@
  * Added plugin dataTable
  * Added green box
  * Added initial form
+ * 
+ * [2017-06-28] Version 0.3
+ * Added selects to Modality, Country, Status
 */
 
 ?>
@@ -52,10 +55,6 @@
                     <h4 class="title"><strong><?php echo __('WinAdmin - Update PFP data') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -151,19 +150,15 @@
                                         </td>
                                         <td align="left">
                                             <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('pfp_modality', $pfpValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder pfpModality" . ' ' . $errorClass;
-                                            echo $this->Form->input('Company.company_type', array(
-                                                'name' => 'modality',
-                                                'id' => 'ContentPlaceHolder_modality',
-                                                'label' => false,
-                                                'placeholder' => __('Modality'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Company']['company_type'],
-                                            ));
+                                            $filters_mod = ["select modality", "mod1", "mod2", "mod3"];      
+                                                echo $this->Form->input('Ocr.id', array(
+                                                        'name'          => 'modality',
+                                                        'id'            => 'ContentPlaceHolder_modality',
+                                                        'label'         => false,
+                                                        'options'       => $filters_mod,
+                                                        'class'         => $class,
+                                                        'value'         => $resultUserData[0]['Company']['????'] /*this must be about PFP*/						
+                                                ));
                                             $errorClassesText = "errorInputMessage ErrorModality";
                                             if (array_key_exists('pfp_modality', $billValidationErrors)) {
                                                 $errorClassesText .= " " . "actived";
@@ -187,10 +182,12 @@
                                                 'name' => 'country',
                                                 'id' => 'ContentPlaceHolder_country',
                                                 'label' => false,
+                                                'options' => $countryData,
                                                 'placeholder' => __('Country'),
                                                 'class' => $class,
                                                 'value' => $investor[0]['Company']['company_countryName'],
                                             ));
+                                           
                                             $errorClassesText = "errorInputMessage ErrorModality";
                                             if (array_key_exists('pfp_country', $billValidationErrors)) {
                                                 $errorClassesText .= " " . "actived";
@@ -209,11 +206,13 @@
                                             if (array_key_exists('pfp_status', $pfpValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
+                                            $filters_status = ["select status", "0 not activated", "1 activated", "2 disabled"];
                                             $class = "form-control blue_noborder pfpStatus" . ' ' . $errorClass;
                                             echo $this->Form->input('Company.company_OCRisActive', array(
                                                 'name' => 'status',
                                                 'id' => 'ContentPlaceHolder_status',
                                                 'label' => false,
+                                                'options' => $filters_status,
                                                 'placeholder' => __('Status'),
                                                 'class' => $class,
                                                 'value' => $investor[0]['Company']['company_OCRisActive'],

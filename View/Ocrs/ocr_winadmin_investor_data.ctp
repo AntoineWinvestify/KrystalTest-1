@@ -49,6 +49,9 @@
  * Added Radio buttons on ALL fields. (Initial Value: PENDING)
  * (telephone & email are on YES because they are necessary to register/access Winvestify)
  * [pending] Timestamp on YES clicking.
+ * 
+ * [2017-06-28] Version 0.7
+ * Added Arrays to checking
 */
 
 ?>
@@ -69,9 +72,8 @@
     }
 </style>
 <script>
-    if (Cosa.is(":checked")) {
-        $("#investmentVehicle").show();
-    }
+    var arrayChecking = ["checkName", "checkSurname", "checkId", "checkDateOfBirth", "checkEmail", "checkTelephone", "checkPostCode", "checkAddress", "checkCity", "checkCountry", "checkIBAN"];
+    var arrayCheckingOptional = ["checkCIF", "checkBusinessName"];
 </script>
 <div id="1CR_winAdmin_2_investorData">
     <div class="row">

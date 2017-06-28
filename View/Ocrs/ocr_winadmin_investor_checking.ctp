@@ -34,6 +34,10 @@
  * [2017-06-13] Version 0.4
  * Added green boxes
  * Added style to overlay
+ * 
+ * [2017-06-28] Version 0.5
+ * Deleted overlay
+ * Added Datatable Javascript
 */
 ?>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
@@ -45,7 +49,12 @@
 <script type="text/javascript" src="/plugins/iCheck/icheck.min.js"></script>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
-<div id="1CR_winAdmin_2_investorChecking">
+<script>
+    $(function () {
+        $("#usersTable").DataTable();
+    });
+</script>
+<div id="1CR_winAdmin_1_investorChecking">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="card">
@@ -68,7 +77,7 @@
                             <h4 class="header1CR"><?php echo __('Investors registered on your platform')?></h4>
                             <div class="table-responsive">  
                                 <table id="usersTable" class="table table-striped dataTable display" width="100%" cellspacing="0"
-                                                                                data-order='[[ 2, "asc" ]]' data-page-length='25'>
+                                                                                data-order='[[ 5, "asc" ]]' data-page-length='20'>
                                         <thead>
                                                 <tr>
                                                     <th width="10%"><?php echo __('Date')?></th>
