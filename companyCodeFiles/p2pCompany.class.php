@@ -130,8 +130,6 @@ function __construct() {
      *
      * 	Logout of user from to company portal with MultiCurl.
      * 	
-     * 	@returnboolean	true: user has logged out 
-     * 	
      */
     function companyUserLogoutMultiCurl($str) {
         $this->doCompanyLogoutMultiCurl();
