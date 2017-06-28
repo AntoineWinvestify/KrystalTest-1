@@ -51,6 +51,9 @@
  * 2017/6/26 version 0.9
  * pfp admin tables ok
  * 
+ * 2017/6/28 version 1
+ * server validation
+ * 
  */
 App::uses('CakeEvent', 'Event');
 
@@ -60,7 +63,7 @@ class ocrsController extends AppController {
     var $helpers = array('Session');
     var $uses = array('Ocr', 'Company', 'Investor', 'File', 'Linkedaccount');
     var $error;
-
+    
     function beforeFilter() {
         parent::beforeFilter(); // only call if the generic code for all the classes is required.
         $this->Security->requireAuth();
@@ -89,7 +92,7 @@ class ocrsController extends AppController {
         //Check ocr status
         $status = $OcrData[0]['Ocr']['ocr_status'];
         //Control status
-        if ($status == NOT_SENT && $status == OCR_FINISHED) {
+        if ($status == NOT_SENT || $status == OCR_FINISHED) {
             //$this->ocrInvestorPlatformSelection();
             $this->set('link', '/Ocrs/ocrInvestorPlatformSelection');
         } else if ($status == SENT) {
@@ -104,61 +107,67 @@ class ocrsController extends AppController {
      * Send the investor data to investor model and ocr data to ocr model
      */
     function oneClickInvestorII() {
+
+        App::import("Vendor", "ibanhandler/oophp-iban"); 
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
+            if ($this->Verify($_REQUEST['iban'])) {
+                $this->layout = 'ajax';
+                $this->disableCache();
 
-            $this->layout = 'ajax';
-            $this->disableCache();
+                //Investor data
+                $investor_name = strip_tags(htmlspecialchars($_REQUEST['investor_name']));
+                $investor_surname = strip_tags(htmlspecialchars($_REQUEST['investor_surname']));
+                $investor_DNI = strip_tags(htmlspecialchars($_REQUEST['investor_DNI']));
+                $investor_dateOfBirth = $_REQUEST['investor_dateOfBirth'];
+                $investor_telephone = $_REQUEST['investor_telephone'];
+                $investor_address1 = strip_tags(htmlspecialchars($_REQUEST['investor_address1']));
+                $investor_postCode = strip_tags(htmlspecialchars($_REQUEST['investor_postCode']));
+                $investor_city = strip_tags(htmlspecialchars($_REQUEST['investor_city']));
+                $investor_country = $_REQUEST['investor_country'];
+                $investor_email = $_REQUEST['investor_email'];
 
-            //Investor data
-            $investor_name = strip_tags(htmlspecialchars($_REQUEST['investor_name']));
-            $investor_surname = strip_tags(htmlspecialchars($_REQUEST['investor_surname']));
-            $investor_DNI = strip_tags(htmlspecialchars($_REQUEST['investor_DNI']));
-            $investor_dateOfBirth = $_REQUEST['investor_dateOfBirth'];
-            $investor_telephone = $_REQUEST['investor_telephone'];
-            $investor_address1 = strip_tags(htmlspecialchars($_REQUEST['investor_address1']));
-            $investor_postCode = strip_tags(htmlspecialchars($_REQUEST['investor_postCode']));
-            $investor_city = strip_tags(htmlspecialchars($_REQUEST['investor_city']));
-            $investor_country = $_REQUEST['investor_country'];
-            $investor_email = $_REQUEST['investor_email'];
+                $datosInvestor = array(
+                    'id' => $this->Session->read('Auth.User.id'),
+                    'investor_name' => $investor_name,
+                    'investor_surname' => $investor_surname,
+                    'investor_DNI' => $investor_DNI,
+                    'investor_dateOfBirth' => $investor_dateOfBirth,
+                    'investor_telephone' => $investor_telephone,
+                    'investor_address1' => $investor_address1,
+                    'investor_postCode' => $investor_postCode,
+                    'investor_city' => $investor_city,
+                    'investor_country' => $investor_country,
+                    'investor_email' => $investor_email,
+                );
 
-            $datosInvestor = array(
-                'id' => $this->Session->read('Auth.User.id'),
-                'investor_name' => $investor_name,
-                'investor_surname' => $investor_surname,
-                'investor_DNI' => $investor_DNI,
-                'investor_dateOfBirth' => $investor_dateOfBirth,
-                'investor_telephone' => $investor_telephone,
-                'investor_address1' => $investor_address1,
-                'investor_postCode' => $investor_postCode,
-                'investor_city' => $investor_city,
-                'investor_country' => $investor_country,
-                'investor_email' => $investor_email,
-            );
+                $result1 = $this->Investor->investorDataSave($datosInvestor);
 
-            $result1 = $this->Investor->investorDataSave($datosInvestor);
+                $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+                //Ocr data
+                $datosOcr = array(
+                    'investor_id' => $id,
+                    'ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],
+                    'investor_cif' => $_REQUEST['cif'],
+                    'investor_businessName' => $_REQUEST['businessName'],
+                    'investor_iban' => $_REQUEST['iban'],
+                );
+                $result2 = $this->Ocr->ocrDataSave($datosOcr);
+                $ocrArray = json_decode("[" . $result2 . "]", true);
 
-            //Ocr data
-            $datosOcr = array(
-                'investor_id' => $id,
-                'ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],
-                'investor_cif' => $_REQUEST['cif'],
-                'investor_businessName' => $_REQUEST['businessName'],
-                'investor_iban' => $_REQUEST['iban'],
-            );
-            $result2 = $this->Ocr->ocrDataSave($datosOcr);
-            $ocrArray = json_decode("[" . $result2 . "]", true);
+                //Update the companies status
+                $idOcr = $ocrArray[1]["id"];
+                $result3 = $this->Ocr->updateCompaniesStatus($idOcr);
 
-            //Update the companies status
-            $idOcr = $ocrArray[1]["id"];
-            $result3 = $this->Ocr->updateCompaniesStatus($idOcr);
 
-            $this->set('result1', $result1);
-            $this->set('result2', $result2);
-            $this->set('result3', $result3);
+                $this->set('result1', $result1);
+                $this->set('result2', $result2);
+                $this->set('result3', $result3);
+            } else {
+                $this->set('result1', 0);
+            }
         }
     }
 
