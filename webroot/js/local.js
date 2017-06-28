@@ -753,8 +753,42 @@ app.visual = {
     checkFormPFPAdminTallyman: function () {
         var correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
-        $("# input").removeClass("redBorder"); // remove ALL redborders
+        $("#investorFilters input").removeClass("redBorder"); // remove ALL redborders
+        var nif = $("#tallyman_nif").val();
+        var email = $("#tallyman_email").val();
+        var telephone = $("#tallyman_telephone").val();
         
+        if ((nif === "") && (email === "") && (telephone === "")) {
+            console.log("all fields are empty");
+            $(".tallymanGeneral").addClass("redBorder");
+            $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T98); // "at least 2 fields" warning
+            $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
+        if ((nif !== "") && (email === "") && (telephone === "")) {
+            console.log("email & telephone empty");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
+            $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
+        if ((nif === "") && (email !== "") && (telephone === "")) {
+            console.log("nif & telephone empty");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".tallymanNIF").addClass("redBorder");
+            $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
+            $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
+        if ((nif === "") && (email === "") && (telephone !== "")) {
+            console.log("nif & email empty");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".tallymanNIF").addClass("redBorder");
+            $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
+            $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
         return correctForm;
     }
 };
@@ -908,6 +942,8 @@ var TEXTOS = {
     T94: "Por favor, introduzca su mensaje",
     T95: "The IBAN is not valid",
     T96: "You must upload all the required files",
-    T97: "Select the currency"
+    T97: "Select the currency",
+    T98: "To use this service you must provide at least 2 fields",
+    T99: "To use this service you must provide at least 1 field more"
 };
 
