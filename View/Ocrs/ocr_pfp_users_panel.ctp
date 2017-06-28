@@ -1,23 +1,23 @@
 <?php
 /**
-* +--------------------------------------------------------------------------------------------+
-* | Copyright (C) 2016, http://www.winvestify.com                                              |
-* +--------------------------------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify                          |
-* | it under the terms of the GNU General Public License as published by                       |
-* | the Free Software Foundation; either version 2 of the License, or                          |
-* | (at your option) any later version.                                                        |
-* | This file is distributed in the hope that it will be useful                                |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
-* | GNU General Public License for more details.                                               |
-* +--------------------------------------------------------------------------------------------+
-*
-*
-* @author
-* @version 0.2
-* @date 2017-05-23
-* @package
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                                              |
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify                          |
+ * | it under the terms of the GNU General Public License as published by                       |
+ * | the Free Software Foundation; either version 2 of the License, or                          |
+ * | (at your option) any later version.                                                        |
+ * | This file is distributed in the hope that it will be useful                                |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+ * | GNU General Public License for more details.                                               |
+ * +--------------------------------------------------------------------------------------------+
+ *
+ *
+ * @author
+ * @version 0.2
+ * @date 2017-05-23
+ * @package
  * 
  * One Click Registration - PFD Admin Users Selection
  * Users registered by Winvestify or consulted by PFD Admin data panel
@@ -35,7 +35,13 @@
  * Added style to overlay
  * Deleted unnecessary script
  * 
- * [2017-06-28] Vesion 0.3
+ * 
+ * [2017-06-26] Version 0.2
+ * Table from db
+ * 
+ * 
+ * [2017-06-28] Version 0.3
+ * Zip download
  * Added Datatable javascript
  */
 ?>
@@ -54,7 +60,21 @@
 <script>
     $(function() {
         $("#usersTable").DataTable();
+
+<?php //Download the zip ?>
+        $(document).on('click', '.download', function () {
+            link = "/files/generateZip/" + $(this).attr('href');
+            var data = null;
+            getServerData(link, data, successDownload, errorDownload);
+        });
     });
+
+    function successDownload() {
+
+    }
+    function errorDownload() {
+
+    }
 </script>
 <div id="1CR_pfpAdmin_1_usersPanel">
     <div class="row">
@@ -98,57 +118,20 @@
                                                         </tr>
                                                 </thead>
                                                 <tbody>
+                                                <?php foreach ($ocrList as $ocr) {
+                                                    ?>
                                                     <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
+                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
+                                                        <td><?php echo __('cosa del estado del usuario')?></td>
+                                                        <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download" href="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"   ><?php echo __('Download') ?></button></td>
+                                                        <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
                                                     </tr>
-                                                    <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><?php echo __('2017-01-01')?></td>
-                                                        <td><?php echo __('Nameeeeeee')?></td>
-                                                        <td><?php echo __('Surnameeee')?></td>
-                                                        <td><?php echo __('+34123456789')?></td>
-                                                        <td><?php echo __('example@example.com')?></td>
-                                                        <td></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Download')?></button></td>
-                                                        <td><button class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman')?></button></td>
-                                                    </tr>
-                                                </tbody>
+                                                <?php } ?>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>

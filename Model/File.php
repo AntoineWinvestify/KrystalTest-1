@@ -35,7 +35,18 @@
  * function delete getAllBills            [OK]
  * select rquired files deleted, now we use find
  * 
- *
+ * 2017/6/21 version 0.5
+ * upload bill                            [OK]
+ * 
+ * 2017/6/23 version 0.5
+ * change query for find         
+ * 
+ * 2017/6/26 version 0.5
+ * billCompanyFilter                         [OK]
+ * 
+ * 2017/6/28 version 0.5
+ * zip creation                         [OK]
+ * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -118,7 +129,8 @@ class file extends AppModel {
                             'file_id' => 50,
                             'bill_number' => $type['number'],
                             'bill_amount' => $type['amount'],
-                            'bill_concept' => $type['concept']
+                            'bill_concept' => $type['concept'],
+                            'bill_url' => $folder . DS . $filename
                         )
                     );
 
@@ -160,9 +172,8 @@ class file extends AppModel {
         //Id list of selected companies
         $selectedList = array();
         foreach ($data as $selectedId) {
-            array_push($selectedList, $selectedId['company_id']);
+            array_push($selectedList, $selectedId['ocrInfo']['company_id']);
         }
-
         //All company files
         $allCompanyFiles = $this->find('all', array(
             'conditions' => array(
@@ -207,17 +218,27 @@ class file extends AppModel {
      * @return type
      */
     public function readExistingFiles($id) {
-        $query = "Select * from `files_investors` where investor_id =" . $id;
-        $result = $this->query($query);
+        $investorFiles = $this->FilesInvestor->find("all", array('conditions' => array('investor_id' => $id)));
+        $filesName = $this->find("all");
+        $result = array();
+
+        //Get existing file and type file info
+        foreach ($investorFiles as $investorFile) {
+            foreach ($filesName as $fileName) {
+                if ($investorFile['FilesInvestor']['file_id'] == $fileName['File']['id']) {
+                    array_push($result, array("file" => $investorFile, "type" => $fileName['File']));
+                }
+            }
+        }
         return $result;
     }
 
     /**
      * Read the existing bills for WinAdmin
+     * Filter for pfpAdmin
      * @return type
      */
     public function getAllBills() {
-
         $allBills = $this->find('all', array(
             'conditions' => array('id' => 50), //50 is the bill id
             'recursive' => 1,));
@@ -233,6 +254,61 @@ class file extends AppModel {
             }
         }
         return $allBillInfo;
+    }
+
+    public function billCompanyFilter($id) {
+        $bills = $this->CompaniesFile->find('all', array('conditions' => array('company_id' => $id)));
+        return $bills;
+    }
+
+    function createZip($files = array(), $destination = '', $overwrite = false) {
+        //if the zip file already exists and overwrite is false, return false
+        if (file_exists($destination) && !$overwrite) {
+            return false;
+        }
+
+
+        //vars
+        $validFiles = array();
+        //if files were passed in...
+        if (is_array($files)) {
+            //cycle through each file
+            foreach ($files as $file) {
+                //make sure the file exists
+                if (file_exists($file)) {
+                    $validFiles[] = $file;
+                }
+            }
+        }
+
+        //if we have good files...
+        if (count($validFiles)) {
+            //create the archive
+            $zip = new ZipArchive();
+
+            if (!file_exists($destination)) {
+                if ($zip->open($destination, false ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+                    return false;
+                }
+            } else {
+                if ($zip->open($destination, $overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+                    return false;
+                }
+            }
+
+            //add the files
+            foreach ($validFiles as $file) {
+                $zip->addFromString(basename($file), file_get_contents($file));
+            }
+            //debug
+            //echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
+            //close the zip -- done!
+            $zip->close();
+            //check to make sure the file exists
+            return file_exists($destination);
+        } else {
+            return false;
+        }
     }
 
 }

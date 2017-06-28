@@ -48,9 +48,21 @@
  * 
  * [2017-06-22] Version 0.8
  * Added upload file btn & file tooltip
+ * 
+ * [2017-06-22] Version 0.9
+ * Bug fixing
+ * 
+ * [2017-06-23] Version 0.9
+ * Disabled checked data
+ * 
+ * [2017-06-27] Version 0.9
+ * Upload fixed
+ * Upload after deleted not fixed
+ * 
  */
-?>
 
+?>
+1
 <link rel="stylesheet" type="text/css" href="/plugins/intlTelInput/css/intlTelInput.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="/plugins/datepicker/datepicker3.css">
@@ -81,15 +93,15 @@
         addExistingDocuments();
         disbleCheckedData();
         validationerrors = false;
-<?php //telephone     ?>
+<?php //telephone          ?>
         $('#ContentPlaceHolder_telephone').intlTelInput();
 
-<?php //Date picker     ?>
+<?php //Date picker          ?>
         $('#ContentPlaceHolder_dateOfBirth').datepicker({
             autoclose: true,
             format: 'dd/mm/yyyy'
         });
-<?php //Show div with CIF & IBAN if its checked.     ?>
+<?php //Show div with CIF & IBAN if its checked.          ?>
         $(document).on("change", "#investmentVehicle", function () {
             if ($(this).is(":checked")) {
                 $("#investmentVehicleContent").show();
@@ -103,9 +115,9 @@
             console.log("validate 1CR data");
             var result; //link = $(this).attr("href");
 
-<?php //Javascript validation     ?>
+<?php //Javascript validation          ?>
             if ((result = app.visual.checkForm1CRInvestorData()) === false) {
-<?php //Validation error     ?>
+<?php //Validation error          ?>
                 event.stopPropagation();
                 event.preventDefault();
                 $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
@@ -115,7 +127,7 @@
         });
 
         $(document).on("change", ".upload", function () {
-<?php // Upload  file     ?>
+<?php // Upload  file          ?>
             id = $(this).attr("value");
             var formdatas = new FormData($("#FileForm" + id)[0]);
             link = '../Files/upload';
@@ -137,7 +149,7 @@
         });
 
         $(document).on("click", ".delete", function () {
-<?php //Delete File     ?>
+<?php //Delete File          ?>
             id = $(this).val();
             url = $(".url" + id).attr("value");
             params = {
@@ -155,18 +167,16 @@
         });
 
         $(document).on("click", "#backOCR", function () {
-<?php //Go back     ?>
+<?php //Go back          ?>
             link = "../Ocrs/ocrInvestorPlatformSelection";
             var data = null;
             getServerData(link, data, successBack, errorBack);
         });
 
 
-<?php if ($ocr[0]['Ocr']['ocr_investmentVehicle']) { //Invesment vehicle comprobation   ?>
-            if (<?php echo $ocr[0]['Ocr']['ocr_investmentVehicle'] ?> === 1) {
-                $("#investmentVehicle").prop('checked', true);
-                $("#investmentVehicleContent").show();
-            }
+<?php if ($ocr[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) {   //Invesment vehicle check   ?>
+            $("#investmentVehicle").prop('checked', true);
+            $("#investmentVehicleContent").show();
 <?php } ?>
 
 
@@ -175,7 +185,7 @@
 
     function successUpload(data, id) {
         if (data != 0) {
-<?php //Upload ok   ?>
+<?php //Upload ok        ?>
             $("#file" + id).html(data[0]);
             $("#file" + id).attr("value", data[0]);
             $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
@@ -194,38 +204,39 @@
     }
 
     function successDelete(id) {
-<?php // Delete ok   ?>
+<?php // Delete ok        ?>
         $("#del" + id).prop("disabled", true);
-        $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile" for="fileId' + id + '><i class="fa fa-upload"></i> Upload file</label><input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '"> <input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+        $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile" for="fileId1' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
+        $("#file" + id).append('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '">');
         $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
         $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="0">');
         $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>')
     }
 
     function successBack(result) {
-<?php // Go back ok   ?>
+<?php // Go back ok        ?>
         $(document).off('click');
         $(document).off('change');
         $("#content").html(result);
     }
     function errorBack(result) {
-<?php //Go back error   ?>
+<?php //Go back error        ?>
         $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
     }
 
 
 
     function addExistingDocuments() {
-<?php //Show alreadey upladed files in the table   ?>
+<?php //Show alreadey upladed files in the table        ?>
 <?php
 foreach ($existingFiles as $file) {
     ?>
-            id = <?php echo $file["files_investors"]["file_id"] ?>;
-            url = "<?php echo $file["files_investors"]["file_url"] ?>";
+            id = <?php echo $file["file"]["FilesInvestor"]["file_id"] ?>;
+            url = "<?php echo $file["file"]["FilesInvestor"]["file_url"] ?>";
             $(".documentRow").each(function () {
                 if ($(this).attr("id") == id) {
-                    $("#file" + id).html('<?php echo $file["files_investors"]["file_name"] . __(" already exist") ?>');
-                    $("#file" + id).attr("value", "<?php echo $file["files_investors"]["file_name"] ?>");
+                    $("#file" + id).html('<?php echo $file["file"]["FilesInvestor"]["file_name"] ?>');
+                    $("#file" + id).attr("value", "<?php echo $file["file"]["FilesInvestor"]["file_name"] ?>");
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
@@ -253,39 +264,51 @@ foreach ($existingFiles as $file) {
 
     function disbleCheckedData() {
 
-        if (<?php echo $checkData[0]['Check']['check_name'] == 1 ?>) {
+
+<?php if ($checkData[0]['Check']['check_name'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_name').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_surname'] == 1 ?>) {
+<?php } ?>
+
+
+<?php if ($checkData[0]['Check']['check_surname'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_surname').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_dni'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_dni'] == CHECKED) { //Data checking   ?>
             $('#dni').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_dateOfBirth'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_dateOfBirth'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_dateOfBirth').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_email'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_email'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_email').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_telephone'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_telephone'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_telephone').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_postCode'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_postCode'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_postCode').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_address'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_address1'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_address1').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_city'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_city'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_city').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_country'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_country'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_country').prop('disabled', true);
-        }
-        if (<?php echo $checkData[0]['Check']['check_iban'] == 1 ?>) {
+<?php } ?>
+
+<?php if ($checkData[0]['Check']['check_iban'] == CHECKED) { //Data checking   ?>
             $('#ContentPlaceHolder_iban').prop('disabled', true);
-        }
+<?php } ?>
 
 
 
@@ -851,10 +874,12 @@ foreach ($existingFiles as $file) {
                                             <td>
                                                 <?php
                                                 $uploaded = "uploaded" . $filesTable[0]['File']['id'];
-                                                echo "<label class='btn labelFile btnRounded btnUploadFile' for='fileId" . $filesTable[0]['File']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
+
                                                 echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['File']['id'], 'class' => 'upload', 'value' => $filesTable[0]['File']['id']));
                                                 echo "<span id='" . $file . "' >";
-                                                echo $this->Form->file("fileId" . $filesTable[0]['File']['id']);
+                                                echo "<label class='btn labelFile btnRounded btnUploadFile' for='fileId" . $filesTable[0]['File']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
+                                                echo "<input type='file' name='data[Files][fileId" . $filesTable[0]['File']['id'] . "]' id='fileId" . $filesTable[0]['File']['id'] . "' >";
+                                                //echo $this->Form->file("fileId" . $filesTable[0]['File']['id']);
                                                 echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $filesTable[0]['File']['id']));
                                                 echo $this->Form->hidden('upload', array('id' => $uploaded, 'class' => 'uploaded', 'value' => 0));
                                                 echo "</span>";

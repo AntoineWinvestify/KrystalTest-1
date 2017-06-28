@@ -23,7 +23,9 @@
   function getCompanyList()															[OK, tested]
   function readExtendedData()															[not OK, not tested]
 
-
+  [2017-06-23] Version 1.0 (for ocr)
+    companiesDataOCR                                    [OK, tested]
+    db relation
   Pending:
 
 
@@ -41,6 +43,12 @@ class Company extends AppModel {
         'Marketplace' => array(
             'className' => 'Marketplace',
             'foreignKey' => 'company_id',
+        ),
+        'requiredfiles' => array(
+            'className' => 'File',
+            'joinTable' => 'requiredfiles',
+            'foreignKey' => 'company_id',
+            'associationForeignKey' => 'file_id',
         )
     );
     public $hasAndBelongsToMany = array(
@@ -125,7 +133,7 @@ class Company extends AppModel {
             $filtro = array('Company.company_countryName' => $filter['country_filter']);
             $conditions = array_merge($conditions, $filtro);
         }
-
+        
         if ($filter['type_filter']) {
             $filtro = array('Company.Company_type' => $filter['type_filter']);
             $conditions = array_merge($conditions, $filtro);
@@ -133,11 +141,11 @@ class Company extends AppModel {
 
         $data = $this->find("all", array(
             'fields' => array('id', 'Company.company_name', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
-                'Company.Company_privacityUrl', 'Company.Company_type'),
+                'Company.Company_privacyUrl', 'Company.Company_type'),
             'recursive' => -1,
             'conditions' => $conditions,
         ));
-
+        
         return $data;
     }
 

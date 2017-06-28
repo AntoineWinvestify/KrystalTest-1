@@ -20,22 +20,29 @@
  * @date 2016-10-25
  * @package
  *
-
-  2016/29/2017 version 0.1
-  function OneClickInvestorI, Save personal data in db                    [OK]
-  function OneClickInvestorII Save selected companies                     [OK]
-  function companyFilter      Company filter for platform selection panel [OK]
-  function OneClickAdmin                                     [Not implemented]
-  function OneClickCompany                                   [Not implemented]
-
-  2017/6/06 version 0.1
-  function upload                         [OK]
+ *
+ *  2016/29/2017 version 0.1
+ *  function OneClickInvestorI, Save personal data in db                    [OK]
+ *  function OneClickInvestorII Save selected companies                     [OK]
+ *  function companyFilter      Company filter for platform selection panel [OK]
+ *  function OneClickAdmin                                     [Not implemented]
+ *  function OneClickCompany                                   [Not implemented]
+ *
+ * 2017/6/06 version 0.1
+ * function upload                         [OK]
  * 
-  2017/6/08 version 0.2
-  function delete                [ok]
+ * 2017/6/08 version 0.2
+ * function delete                [ok]
  * 
-  2017/6/14 version 0.3
-  url and name fixed                      [OK]
+ * 2017/6/14 version 0.3
+ * url and name fixed                      [OK]
+ * 
+ * 2017/6/21 version 0.4
+ * upload bill         [OK]
+ * 
+ * 2017/6/28 version 0.5
+ * zip download         [OK]
+ * 
  */
 App::uses('CakeEvent', 'Event');
 
@@ -52,8 +59,9 @@ class filesController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-    
-    //Upload a document
+    /**
+     * Upload a document
+     */
     function upload() {
         if (!$this->request->is('ajax')) {
             $result = false;
@@ -61,29 +69,27 @@ class filesController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
 
-            if( count($this->params['data']['Files']) > 0){       
-            $data = $this->params['data']['Files'];        
-            $type = $data['info'];
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-            $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-            $result = $this->File->ocrFileSave($data, $identity, $id, $type,"file");
-            $this->set("result", $result);
-            
-            } else if( count($this->params['data']['bill']) > 0){
-                $data = $this->params['data']['bill'];        
-                $info = array( 'number' => $this->params['data']['number'] , 'concept' => $this->params['data']['concept'] , 'amount' => $this->params['data']['amount']) ;             
-                $id = $this->params['data']['pfp'];           
-                $company = $this->Company->getCompanyDataList(array('id'=> $id))[$id]['company_codeFile'] ;
-                $result = $this->File->ocrFileSave($data, $company, $id, $info,"bill");   
+            if (count($this->params['data']['Files']) > 0) {
+                $data = $this->params['data']['Files'];
+                $type = $data['info'];
+                $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+                $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
+                $result = $this->File->ocrFileSave($data, $identity, $id, $type, "file");
+                $this->set("result", $result);
+            } else if (count($this->params['data']['bill']) > 0) {
+                $data = $this->params['data']['bill'];
+                $info = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount']);
+                $id = $this->params['data']['pfp'];
+                $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile'];
+                $result = $this->File->ocrFileSave($data, $company, $id, $info, "bill");
                 $this->set("result", $result);
             }
-            
-            
         }
     }
 
-    
-    //Delete a document
+    /**
+     * Delete a document
+     */
     function delete() {
         if (!$this->request->is('ajax')) {
             $result = false;
@@ -99,6 +105,45 @@ class filesController extends AppController {
             $result = $this->File->ocrFileDelete($url, $file_id, $investor_id);
             $this->set("result", $result);
         }
+    }
+
+    /* Generate and download the zip
+     * 
+     * @param type $id
+     */
+
+    function generateZip($id, $userId) {
+        //Zip path
+        $fileConfig = Configure::read('files');
+        $folder = $this->Investor->getInvestorIdentity(315);
+        $pathToZipFile = $fileConfig['investorPath'] . $folder . DS . 'investorData.Zip';
+
+        //Zip archives
+        $investorFiles = $this->File->readExistingFiles($id);
+        $urlList = array();
+
+        foreach ($investorFiles as $investorFile) {
+            $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
+            array_push($urlList, $url);
+        }
+
+        //Create the zip
+        if ($this->File->createZip($urlList, $pathToZipFile, true)) {
+            $this->download($pathToZipFile, 'userData.zip');
+            $this->set('result', 1);
+            $this->set('message', 'Zip downloaded');
+        } else {
+            $this->set('result', 0);
+            $this->set('message', 'Zip download failed');
+        }
+    }
+
+    function download($path, $name) {
+        $this->response->file($path, array(
+            'download' => true,
+            'name' => $name,
+        ));
+        return $this->response;
     }
 
 }
