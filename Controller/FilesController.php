@@ -56,7 +56,9 @@ class filesController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-    //Upload a document
+    /**
+     * Upload a document
+     */
     function upload() {
         if (!$this->request->is('ajax')) {
             $result = false;
@@ -82,7 +84,9 @@ class filesController extends AppController {
         }
     }
 
-    //Delete a document
+    /**
+     * Delete a document
+     */
     function delete() {
         if (!$this->request->is('ajax')) {
             $result = false;
@@ -98,6 +102,45 @@ class filesController extends AppController {
             $result = $this->File->ocrFileDelete($url, $file_id, $investor_id);
             $this->set("result", $result);
         }
+    }
+
+    /* Generate and download the zip
+     * 
+     * @param type $id
+     */
+
+    function generateZip($id, $userId) {
+        //Zip path
+        $fileConfig = Configure::read('files');
+        $folder = $this->Investor->getInvestorIdentity(315);
+        $pathToZipFile = $fileConfig['investorPath'] . $folder . DS . 'investorData.Zip';
+
+        //Zip archives
+        $investorFiles = $this->File->readExistingFiles($id);
+        $urlList = array();
+
+        foreach ($investorFiles as $investorFile) {
+            $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
+            array_push($urlList, $url);
+        }
+
+        //Create the zip
+        if ($this->File->createZip($urlList, $pathToZipFile, true)) {
+            $this->download($pathToZipFile, 'userData.zip');
+            $this->set('result', 1);
+            $this->set('message', 'Zip downloaded');
+        } else {
+            $this->set('result', 0);
+            $this->set('message', 'Zip download failed');
+        }
+    }
+
+    function download($path, $name) {
+        $this->response->file($path, array(
+            'download' => true,
+            'name' => $name,
+        ));
+        return $this->response;
     }
 
 }

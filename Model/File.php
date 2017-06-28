@@ -237,7 +237,7 @@ class file extends AppModel {
      */
     public function getAllBills() {
         $allBills = $this->find('all', array(
-            'conditions' => array ('id' => 50), //50 is the bill id
+            'conditions' => array('id' => 50), //50 is the bill id
             'recursive' => 1,));
         $allBillInfo = array();
 
@@ -256,6 +256,56 @@ class file extends AppModel {
     public function billCompanyFilter($id) {
         $bills = $this->CompaniesFile->find('all', array('conditions' => array('company_id' => $id)));
         return $bills;
+    }
+
+    function createZip($files = array(), $destination = '', $overwrite = false) {
+        //if the zip file already exists and overwrite is false, return false
+        if (file_exists($destination) && !$overwrite) {
+            return false;
+        }
+
+
+        //vars
+        $validFiles = array();
+        //if files were passed in...
+        if (is_array($files)) {
+            //cycle through each file
+            foreach ($files as $file) {
+                //make sure the file exists
+                if (file_exists($file)) {
+                    $validFiles[] = $file;
+                }
+            }
+        }
+
+        //if we have good files...
+        if (count($validFiles)) {
+            //create the archive
+            $zip = new ZipArchive();
+
+            if (!file_exists($destination)) {
+                if ($zip->open($destination, false ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+                    return false;
+                }
+            } else {
+                if ($zip->open($destination, $overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+                    return false;
+                }
+            }
+
+            //add the files
+            foreach ($validFiles as $file) {
+                $zip->addFromString(basename($file), file_get_contents($file));
+            }
+            //debug
+            //echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
+            //close the zip -- done!
+            $zip->close();
+            //check to make sure the file exists
+            return file_exists($destination);
+        } else {
+            return false;
+        }
     }
 
 }
