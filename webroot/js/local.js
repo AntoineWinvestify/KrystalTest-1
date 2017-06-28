@@ -697,11 +697,20 @@ app.visual = {
     checkFormWinadminBilling: function () {
         correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
-        $("#uploadedBills input").removeClass("redBorder"); // remove ALL redborders
+        $("#uploadBill input").removeClass("redBorder"); // remove ALL redborders
+        $("#uploadBill select").removeClass("redBorder"); // remove ALL redborders
+        var pfp = $("#ContentPlaceHolder_pfp").val();
         var number = $("#ContentPlaceHolder_number").val();
         var concept = $("#ContentPlaceHolder_concept").val();
         var amount = $("#ContentPlaceHolder_amount").val();
-        var currency = $("#myselect option:selected").val();
+        var currency = $("#ContentPlaceHolder_currency").val();
+        if (pfp == 0) {
+            console.log("pfp not selected");
+            $(".billPFP").addClass("redBorder");
+            $(".ErrorPFP").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPFP").fadeIn();
+            correctForm = false;
+        }
         if (number === "") {
             console.log("empty bill number");
             $(".billNumber").addClass("redBorder");
@@ -716,7 +725,7 @@ app.visual = {
             $(".ErrorConcept").fadeIn();
             correctForm = false;
         }
-        var regexp =  /^((?(?=\()(\())\d+(?:,\d+)?(?:\.\d+)?(?(2)\)))/g;
+        var regexp =  /^(?=.)(\d{1,3})?(\,\d+)?(\d{1,2})$/g;
         result = regexp.test(amount);
         if (amount === "") {
             console.log("empty bill amount");
