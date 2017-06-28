@@ -49,7 +49,7 @@
  * [2017-06-28] Version 0.7
  * Deleted PFP Select filter (datatable has it)
  * Added datatable select filter
- * Added Currency
+ * Added Currency + Tooltip
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -77,27 +77,9 @@ foreach ($companies as $companyInfo) {
 ?>
 <script>
     $(function () {
-        $("#billsHistory").DataTable({
-            initComplete: function () {
-                this.api().columns().every( function () {
-                    var column = this;
-                    var select = $('<select><option value=""></option></select>')
-                        .appendTo( $(column.footer()).empty() )
-                        .on( 'change', function () {
-                            var val = $.fn.dataTable.util.escapeRegex(
-                                $(this).val()
-                            );
-
-                            column
-                                .search( val ? '^'+val+'$' : '', true, false )
-                                .draw();
-                        } );
-
-                    column.data().unique().sort().each( function ( d, j ) {
-                        select.append( '<option value="'+d+'">'+d+'</option>' )
-                    } );
-                } );
-            }
+        //tooltip
+        $(document).on("click", "#tooltip", function() {
+                $("#amountTooltip").toggle();
         });
         $(document).on("click", "#sendBill", function () {
             console.log("validate Winadmin billing data");
@@ -114,7 +96,9 @@ foreach ($companies as $companyInfo) {
                     processData: false,
                     traditional: true
                 }).done(function (data) {
-
+                    if (data[0] == 0) {
+                        $(".alert-to-fade").show();
+                    }
                 });
             }
         });
@@ -144,8 +128,8 @@ foreach ($companies as $companyInfo) {
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert">
-                                <strong><?php echo __("The file is too big or incorrect format.") ?></strong>
+                            <div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert" style="display:none;">
+                                <strong></strong>
                             </div>
                             <div class="table-responsive">
                                 <table id="uploadBill" class="table table-striped display dataTable"  width="100%" cellspacing="0" data-page-length='25' rowspan='1' colspan='1'>
@@ -153,7 +137,7 @@ foreach ($companies as $companyInfo) {
                                         <th><?php echo __('PFP') ?></th>
                                         <th><?php echo __('Bill Number') ?></th>
                                         <th><?php echo __('Concept') ?></th>
-                                        <th><?php echo __('Amount') ?></th>
+                                        <th><?php echo __('Amount') ?> <i class="fa fa-exclamation-circle" id="tooltip"></i></th>
                                         <th><?php echo __('Currency') ?></th>
                                         <th><?php echo __('Upload file') ?></th>
                                         <th><?php echo __('Send') ?></th>
@@ -163,7 +147,7 @@ foreach ($companies as $companyInfo) {
                                         <td>
                                             <?php
                                             array_unshift ($companiesSelectList,__('Choose One'));
-                                            $class = "form-control blue_noborder winadminPFP";
+                                            $class = "form-control blue_noborder billPFP";
                                             echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
                                                 'id' => 'ContentPlaceHolder_pfp',
@@ -171,7 +155,17 @@ foreach ($companies as $companyInfo) {
                                                 'options' => $companiesSelectList,
                                                 'class' => $class,
                                             ));
+                                            $errorClassesText = "errorInputMessage ErrorPFP";
+                                            if (array_key_exists('bill_pfp', $billValidationErrors)) {
+                                                $errorClassesText .= " " . "actived";
+                                            }
                                             ?>
+                                            <div class="<?php echo $errorClassesText ?>">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                <span class="errorMessage">
+                                                    <?php echo $billValidationErrors['bill_pfp'][0] ?>
+                                                </span>
+                                            </div>
                                         </td>
                                         <td>
                                             <?php
@@ -253,16 +247,16 @@ foreach ($companies as $companyInfo) {
                                                     <?php echo $billValidationErrors['bill_amount'][0] ?>
                                                 </span>
                                             </div>
+                                            <div id="amountTooltip" style="display:none;"><small><?php echo __('The Amount value must be formatted with 2 decimal digits. (Ex: 1111,10)')?></small></div>
                                         </td>
                                         <td>
                                             <?php
                                             $class = "form-control blue_noborder billCurrency";
-                                            $filterCurrency = ["select", "€", "$"];
                                             echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
-                                                'id' => 'ContentPlaceHolder_pfp',
+                                                'id' => 'ContentPlaceHolder_currency',
                                                 'label' => false,
-                                                'options' => $filterCurrency,
+                                                'options' => $currencyName,
                                                 'class' => $class,
                                             ));
                                             $errorClassesText = "errorInputMessage ErrorCurrency";
@@ -316,26 +310,11 @@ foreach ($companies as $companyInfo) {
                                         . ' PFP puedan validar y autenticar su identidad.')
                                 ?></p>
                         </div>
-                        <div id="investorFilters" class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                            <?php
-                            $class = "form-control blue_noborder investorCountry" . ' ' . $errorClass;
-                            $countries = [__("Select PFP"), "pfp1", "pfp2", "pfp3"];
-                            echo $this->Form->input('Investor.investor_country', array(
-                                'name' => 'country',
-                                'id' => 'ContentPlaceHolder_country',
-                                'label' => false,
-                                'options' => $countries,
-                                'placeholder' => __('Country'),
-                                'class' => $class,
-                                'value' => $resultUserData[0]['Investor']['investor_country'],
-                            ));
-                            ?>
-                        </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive">
-                                <table id="billsHistory" class="table table-striped display dataTable"  width="100%" cellspacing="0"
+                                <table id="billsHistory" class="display dataTable"  width="100%" cellspacing="0"
                                        data-order='[[ 1, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
                                         <th width="15%"><?php echo __('PFP') ?></th>
@@ -344,8 +323,7 @@ foreach ($companies as $companyInfo) {
                                         <th><?php echo __('Concept') ?></th>
                                         <th><?php echo __('Amount') ?></th>
                                     </tr>
-
-                                    <?php foreach ($bills as $billsTable) { //Bills table creation ?>
+                                    <?php foreach ($bills as $billsTable) { //Bills table creation  ?>
                                         <tr>
                                             <td><?php echo __($billsTable['name']) ?></td>
                                             <td><?php echo __($billsTable['created']) ?></td>
