@@ -50,7 +50,7 @@ PENDING
  * fix method  getMonetaryValue()
 */
 
-require_once "../../vendors/autoload.php";
+require_once(ROOT . DS . 'app' .DS .  'Vendor' . DS  . 'autoload.php');
 
 class p2pCompany{
 	const DAY 		= 1;
