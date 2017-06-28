@@ -53,6 +53,8 @@
  * 
  * [2017-06-28] Version 0.10
  * Added countryCodes to VinAdmin View #4  (Update PFP Data, to select country)
+ * Added currencyName to WinAdmin View #3 (Billing Panel)
+ * Added 
  * server validation
  * 
  */
@@ -385,7 +387,9 @@ class ocrsController extends AppController {
         //Read and accepted relations
         $ocrList = $this->Ocr->getAllOcrRelations(6);
         $this->set('ocrList', $ocrList);
-
+        
+        //PFP Investor status
+        $this->set('pfpStatus', $pfpStatus);
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
@@ -436,6 +440,9 @@ class ocrsController extends AppController {
         //Get companies info for the select
         $companiesInfo = $this->Company->getCompanyDataList(null);
         $this->set("companies", $companiesInfo);
+        
+        // Currency names
+        $this->set('currencyName', $this->currencyName);        
         echo " ";
     }
 
