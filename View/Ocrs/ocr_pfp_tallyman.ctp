@@ -28,6 +28,11 @@
  * [2017-06-19] version 0.2
  * Added new table to insert Tallyman info about searched user.
  * Added plugins CSS & JS
+ * 
+ * [2017-06-28] Version 0.3
+ * Added JS validation
+ * Added All input error fields
+ * Added general input error
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -60,6 +65,14 @@
               data: [30, 70]
             }]
           }
+        });
+        
+        $(document).on("click", "#searchBtn", function() {
+            //Javascript Validation
+            if ((result = app.visual.checkFormPFPAdminTallyman()) === true) {
+                //server validation
+                alert("server validation!!!!");
+            }
         });
 });
 </script>
@@ -96,19 +109,90 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                                             <label><?php echo __('NIF')?></label>
-                                            <input type="text" class="form-control blue_noborder3" placeholder="Enter NIF here">
+                                            <?php
+                                            $class = "form-control blue_noborder3 tallymanNIF tallymanGeneral";
+                                            echo $this->Form->input('/*AQUÍ NO SÉ LO QUE TIENE QUE IR!!!!!*/', array(
+                                                'name' => 'nif',
+                                                'id' => 'tallyman_nif',
+                                                'placeholder' => 'Enter NIF here',
+                                                'label' => false,
+                                                'class' => $class,
+                                            ));
+                                            $errorClassesText = "errorInputMessage ErrorNIF";
+                                            if (array_key_exists('tallyman_nif', $billValidationErrors)) {
+                                                $errorClassesText .= " " . "actived";
+                                            }
+                                            ?>
+                                            <div class="<?php echo $errorClassesText ?>">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                <span class="errorMessage">
+                                                    <?php echo $billValidationErrors['tallyman_nif'][0] ?>
+                                                </span>
+                                            </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                                             <label><?php echo __('Email')?></label>
-                                            <input type="text" class="form-control blue_noborder3" placeholder="Enter email here">
+                                            <?php
+                                            $class = "form-control blue_noborder3 tallymanEmail tallymanGeneral";
+                                            echo $this->Form->input('/*AQUÍ NO SÉ LO QUE TIENE QUE IR!!!!!*/', array(
+                                                'name' => 'email',
+                                                'id' => 'tallyman_email',
+                                                'placeholder' => 'Enter email here',
+                                                'label' => false,
+                                                'class' => $class,
+                                            ));
+                                            $errorClassesText = "errorInputMessage ErrorEmail";
+                                            if (array_key_exists('tallyman_email', $billValidationErrors)) {
+                                                $errorClassesText .= " " . "actived";
+                                            }
+                                            ?>
+                                            <div class="<?php echo $errorClassesText ?>">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                <span class="errorMessage">
+                                                    <?php echo $billValidationErrors['tallyman_email'][0] ?>
+                                                </span>
+                                            </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                                             <label><?php echo __('Telephone')?></label>
-                                            <input type="text" class="form-control blue_noborder3" placeholder="Insert telephone here">
+                                            <?php
+                                            $class = "form-control blue_noborder3 tallymanTelephone tallymanGeneral";
+                                            echo $this->Form->input('/*AQUÍ NO SÉ LO QUE TIENE QUE IR!!!!!*/', array(
+                                                'name' => 'email',
+                                                'id' => 'tallyman_telephone',
+                                                'placeholder' => 'Enter telephone here',
+                                                'label' => false,
+                                                'class' => $class,
+                                            ));
+                                            $errorClassesText = "errorInputMessage ErrorTelephone";
+                                            if (array_key_exists('tallyman_telephone', $billValidationErrors)) {
+                                                $errorClassesText .= " " . "actived";
+                                            }
+                                            ?>
+                                            <div class="<?php echo $errorClassesText ?>">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                <span class="errorMessage">
+                                                    <?php echo $billValidationErrors['tallyman_telephone'][0] ?>
+                                                </span>
+                                            </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
                                             <label class= "invisible"> </label>
-                                            <button type="button" class="btn  btnPFPAdmin center-block btnRounded"><?php echo __('Search')?></button>
+                                            <button type="button" id="searchBtn" class="btn btnPFPAdmin center-block btnRounded"><?php echo __('Search')?></button>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <?php 
+                                            $errorClassesText = "errorInputMessage ErrorTallyman";
+                                            if (array_key_exists('tallyman_general', $billValidationErrors)) {
+                                                $errorClassesText .= " " . "actived";
+                                            }
+                                            ?>
+                                            <div class="<?php echo $errorClassesText ?>">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                <span class="errorMessage">
+                                                    <?php echo $billValidationErrors['tallyman_general'][0] ?>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
