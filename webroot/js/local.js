@@ -701,6 +701,7 @@ app.visual = {
         var number = $("#ContentPlaceHolder_number").val();
         var concept = $("#ContentPlaceHolder_concept").val();
         var amount = $("#ContentPlaceHolder_amount").val();
+        var currency = $("#myselect option:selected").val();
         if (number === "") {
             console.log("empty bill number");
             $(".billNumber").addClass("redBorder");
@@ -715,7 +716,7 @@ app.visual = {
             $(".ErrorConcept").fadeIn();
             correctForm = false;
         }
-        var regexp =  /^[1-9]\d*$/g;
+        var regexp =  /^((?(?=\()(\())\d+(?:,\d+)?(?:\.\d+)?(?(2)\)))/g;
         result = regexp.test(amount);
         if (amount === "") {
             console.log("empty bill amount");
@@ -727,10 +728,25 @@ app.visual = {
         else if (!result) {
             console.log("incorrect bill amount");
             $(".billAmount").addClass("redBorder");
-            $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T72); // "empty field" warning
+            $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T72); // "introduce quantity > 0" warning
             $(".ErrorAmount").fadeIn();
             correctForm = false;
         }
+        if (currency == 0) {
+            console.log("not selected currency");
+            $(".billCurrency").addClass("redBorder");
+            $(".ErrorCurrency").find(".errorMessage").html(TEXTOS.T97); // "select currency" warning
+            $(".ErrorCurrency").fadeIn();
+            correctForm = false;
+        }
+        return correctForm;
+    },
+    checkFormPFPAdminTallyman: function () {
+        var correctForm = true;
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("# input").removeClass("redBorder"); // remove ALL redborders
+        
+        return correctForm;
     }
 };
 app.utils = {
@@ -883,5 +899,6 @@ var TEXTOS = {
     T94: "Por favor, introduzca su mensaje",
     T95: "The IBAN is not valid",
     T96: "You must upload all the required files",
+    T97: "Select the currency"
 };
 
