@@ -107,11 +107,12 @@ class filesController extends AppController {
         }
     }
 
-    /* Generate and download the zip
-     * 
+    /**
+     * Generate and download the zip
      * @param type $id
+     * @param type $userId
+     * @return type
      */
-
     function generateZip($id, $userId) {
         //Zip path
         $fileConfig = Configure::read('files');
@@ -129,13 +130,38 @@ class filesController extends AppController {
 
         //Create the zip
         if ($this->File->createZip($urlList, $pathToZipFile, true)) {
-            $this->download($pathToZipFile, 'userData.zip');
             $this->set('result', 1);
             $this->set('message', 'Zip downloaded');
+            $this->download($pathToZipFile,'investorData.Zip');
         } else {
             $this->set('result', 0);
             $this->set('message', 'Zip download failed');
         }
+    }
+
+    /**
+     * Download documents and bills
+     */
+    function downloadDocument($type, $id) {
+        //Request data
+        $data = $this->request['data'];
+        //Load files config
+        $fileConfig = Configure::read('files');
+        //Path and file name
+
+
+        if ($type == 'file') {
+            $data = $this->File->readSimpleDocument($id);
+            $pathToFile = $fileConfig['investorPath'] . $data['FilesInvestor']['file_url'];
+            $name = $data['FilesInvestor']['file_name'];
+        } else if ($type == 'bill') {
+            $data = $this->File->readSimpleBill($id);
+           /* $pathToFile = $fileConfig['billsPath'] . $url;
+            $name = $number;*/
+        }
+
+        //Download
+        $this->download($pathToFile, $name);
     }
 
     function download($path, $name) {

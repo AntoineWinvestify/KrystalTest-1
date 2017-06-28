@@ -91,7 +91,7 @@ class file extends AppModel {
         } else if ($path == "bill") {
             $up = $fileConfig['billsPath'] . $folder;
         }
-        
+
         foreach ($fileInfo as $file) {
 
             //Error filter
@@ -135,7 +135,7 @@ class file extends AppModel {
                     );
 
                     $this->CompaniesFile->save($bill);
-                    
+
                     return $result;
                 }
             } else {
@@ -234,6 +234,27 @@ class file extends AppModel {
     }
 
     /**
+     * 
+     * @param type $id
+     * @return type
+     */
+    public function readSimpleDocument($id) {
+        $file = $this->FilesInvestor->find("first", array('conditions' => array('id' => $id)));
+        return $file;
+    }
+
+    /**
+     * 
+     * @param type $id
+     * @return type
+     */
+    public function readSimpleBill($id) {
+        $file = $this->CompaniesFile->find("first", array('conditions' => array('id' => $id)));
+        return $file;
+    }
+
+    /**
+     * 
      * Read the existing bills for WinAdmin
      * Filter for pfpAdmin
      * @return type

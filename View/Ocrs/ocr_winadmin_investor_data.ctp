@@ -52,12 +52,9 @@
  * 
  * [2017-06-28] Version 0.7
  * Added Arrays to checking
-*/
-
+ */
 ?>
-<link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
-<script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
-<script type="text/javascript" src="/modals/assets/js/paper-bootstrap-wizard.js"></script>
+
 <style>
     .togetoverlay .overlay  {
         z-index: 50;
@@ -76,15 +73,15 @@
     var arrayCheckingOptional = ["checkCIF", "checkBusinessName"];
     $(function () {
 
-        $(document).on('click', '#saveBtn', function () {
-
-
-        });
-
-        $(document).on('click', '#approveBtn', function () {
-
-
-        });
+        /* $(document).on('click', '#saveBtn', function () {
+         
+         
+         });
+         
+         $(document).on('click', '#approveBtn', function () {
+         
+         
+         });*/
 
     });
 </script>
@@ -227,298 +224,299 @@
                                         </div>
                                     </div>
                                 </div>
-                            <!-- /Date of Birth -->
+                                <!-- /Date of Birth -->
 
-                            <!-- email -->
-                            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-                                <div class="form-group">
-                                    <label for="ContentPlaceHolder_email"><?php echo __('Email') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkEmail" checked="checked"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkEmail"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkEmail"><?php echo __('Pending') ?></label>
-                                    </div>
-                                    <?php
-                                    $errorClass = "";
-                                    if (array_key_exists('investor_email', $investorValidationErrors)) {
-                                        $errorClass = "redBorder";
-                                    }
-                                    $class = "form-control blue_noborder investorEmail" . ' ' . $errorClass;
-                                    echo $this->Form->input('Investor.investor_email', array(
-                                        'name' => 'dni',
-                                        'id' => 'ContentPlaceHolder_email',
-                                        'label' => false,
-                                        'placeholder' => __('Email'),
-                                        'class' => $class,
-                                        'value' => $resultUserData[0]['Investor']['investor_email'],
-                                        'disabled' => 'disabled'
-                                    ));
-                                    ?>
-                                </div>
-                            </div>
-                            <!-- /email -->
-
-                            <!-- Telephone -->
-                            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                <div class="form-group">
-                                    <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkTelephone" checked="checked"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkTelephone"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkTelephone"><?php echo __('Pending') ?></label>
-                                    </div>
-                                    <div class="form-control blue_noborder">
+                                <!-- email -->
+                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_email"><?php echo __('Email') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail" checked="checked"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail"><?php echo __('Pending') ?></label>
+                                        </div>
                                         <?php
                                         $errorClass = "";
-                                        if (array_key_exists('investor_telephone', $investorValidationErrors)) {
+                                        if (array_key_exists('investor_email', $investorValidationErrors)) {
                                             $errorClass = "redBorder";
                                         }
-                                        $class = "telephoneNumber center-block" . ' ' . $errorClass;
-
-                                        echo $this->Form->input('Investor.investor_telephone', array(
-                                            'name' => 'telephone',
-                                            'id' => 'ContentPlaceHolder_telephone',
+                                        $class = "form-control blue_noborder investorEmail" . ' ' . $errorClass;
+                                        echo $this->Form->input('Investor.investor_email', array(
+                                            'name' => 'dni',
+                                            'id' => 'ContentPlaceHolder_email',
                                             'label' => false,
-                                            'placeholder' => __('Telephone'),
+                                            'placeholder' => __('Email'),
                                             'class' => $class,
-                                            'type' => 'tel',
-                                            'value' => $userData[0]['Investor']['investor_telephone'],
+                                            'value' => $resultUserData[0]['Investor']['investor_email'],
                                             'disabled' => 'disabled'
                                         ));
-                                        $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
-                                        if (array_key_exists('investor_telephone', $validationResult)) {
-                                            $errorClassesForTexts .= " " . "actived";
-                                        }
                                         ?>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- /telephone -->
-                        </div>
-                        <div class="row">
-                            <!-- Postal code -->
-                            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                <div class="form-group">
-                                    <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkPostCode"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkPostCode"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkPostCode" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                    <?php
-                                    $errorClass = "";
-                                    if (array_key_exists('investor_postCode', $investorValidationErrors)) {
-                                        $errorClass = "redBorder";
-                                    }
-                                    $class = "form-control blue_noborder investorPostCode" . ' ' . $errorClass;
-                                    echo $this->Form->input('Investor.investor_postCode', array(
-                                        'name' => 'investor_postCode',
-                                        'id' => 'ContentPlaceHolder_postCode',
-                                        'label' => false,
-                                        'placeholder' => __('PostCode'),
-                                        'class' => $class,
-                                        'value' => $resultUserData[0]['Investor']['investor_postCode'],
-                                        'disabled' => 'disabled'
-                                    ));
-                                    ?>
-                                </div>
-                            </div>
-                            <!-- /postal code -->
-                            <!-- Address -->
-                            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                                <div class="form-group">
-                                    <label for="ContentPlaceHolder_address1"><?php echo __('Address') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkAddress"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkAddress"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkAddress" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                    <?php
-                                    $errorClass = "";
-                                    if (array_key_exists('investor_address1', $investorValidationErrors)) {
-                                        $errorClass = "redBorder";
-                                    }
-                                    $class = "form-control blue_noborder investorSurname" . ' ' . $errorClass;
-                                    echo $this->Form->input('Investor.investor_address1', array(
-                                        'name' => 'address1',
-                                        'id' => 'ContentPlaceHolder_address1',
-                                        'label' => false,
-                                        'placeholder' => __('Address'),
-                                        'class' => $class,
-                                        'value' => $resultUserData[0]['Investor']['investor_address1'],
-                                        'disabled' => 'disabled'
-                                    ));
-                                    ?>
-                                </div>
-                            </div>
-                            <!-- /Address -->
-                        </div>
-                        <div class="row">
+                                <!-- /email -->
 
-                            <!-- city -->
-                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                                <div class="form-group">
-                                    <label for="exampleInputPassword1"><?php echo __('City') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkCity"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkCity"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkCity" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                    <?php
-                                    $errorClass = "";
-                                    if (array_key_exists('investor_city', $investorValidationErrors)) {
-                                        $errorClass = "redBorder";
-                                    }
-                                    $class = "form-control blue_noborder investorCity" . ' ' . $errorClass;
-                                    echo $this->Form->input('ContentPlaceHolder_city', array(
-                                        'name' => 'city',
-                                        'id' => 'ContentPlaceHolder_city',
-                                        'label' => false,
-                                        'placeholder' => __('City'),
-                                        'class' => $class,
-                                        'value' => $resultUserData[0]['Investor']['investor_city'],
-                                        'disabled' => 'disabled'
-                                    ));
-                                    ?>
-                                </div>	
-                            </div>
-                            <!-- /city -->
+                                <!-- Telephone -->
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone" checked="checked"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone"><?php echo __('Pending') ?></label>
+                                        </div>
+                                        <div class="form-control blue_noborder">
+                                            <?php
+                                            $errorClass = "";
+                                            if (array_key_exists('investor_telephone', $investorValidationErrors)) {
+                                                $errorClass = "redBorder";
+                                            }
+                                            $class = "telephoneNumber center-block" . ' ' . $errorClass;
 
-                            <!-- Country -->
-                            <div class="col-xs-12 col-sm-4 col-md-8 col-lg-8">
-                                <div class="form-group">
-                                    <label for="ContentPlaceHolder_country"><?php echo __('Country') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkCountry"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkCountry"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkCountry" checked="checked"><?php echo __('Pending') ?></label>
+                                            echo $this->Form->input('Investor.investor_telephone', array(
+                                                'name' => 'telephone',
+                                                'id' => 'ContentPlaceHolder_telephone',
+                                                'label' => false,
+                                                'placeholder' => __('Telephone'),
+                                                'class' => $class,
+                                                'type' => 'tel',
+                                                'value' => $userData[0]['Investor']['investor_telephone'],
+                                                'disabled' => 'disabled'
+                                            ));
+                                            $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
+                                            if (array_key_exists('investor_telephone', $validationResult)) {
+                                                $errorClassesForTexts .= " " . "actived";
+                                            }
+                                            ?>
+                                        </div>
                                     </div>
-                                    <?php
-                                    $errorClass = "";
-                                    if (array_key_exists('investor_country', $investorValidationErrors)) {
-                                        $errorClass = "redBorder";
-                                    }
-                                    $class = "form-control blue_noborder investorCountry" . ' ' . $errorClass;
-                                    echo $this->Form->input('Investor.investor_country', array(
-                                        'name' => 'country',
-                                        'id' => 'ContentPlaceHolder_country',
-                                        'label' => false,
-                                        'options' => $countryData,
-                                        'placeholder' => __('Country'),
-                                        'class' => $class,
-                                        'value' => $userData[0]['Investor']['investor_country'],
-                                        'disabled' => 'disabled'
-                                    ));
-                                    ?>
-                                </div>	
-                            </div>
-                            <!-- /country -->
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <div class="form-group">
-                                    <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkIban"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkIban"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkIban" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                    <input type="text" disabled="disabled" class="form-control blue_noborder">
                                 </div>
-                            </div><!-- /Cif + Business Name -->
+                                <!-- /telephone -->
+                            </div>
+                            <div class="row">
+                                <!-- Postal code -->
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode" checked="checked"><?php echo __('Pending') ?></label>
+                                        </div>
+                                        <?php
+                                        $errorClass = "";
+                                        if (array_key_exists('investor_postCode', $investorValidationErrors)) {
+                                            $errorClass = "redBorder";
+                                        }
+                                        $class = "form-control blue_noborder investorPostCode" . ' ' . $errorClass;
+                                        echo $this->Form->input('Investor.investor_postCode', array(
+                                            'name' => 'investor_postCode',
+                                            'id' => 'ContentPlaceHolder_postCode',
+                                            'label' => false,
+                                            'placeholder' => __('PostCode'),
+                                            'class' => $class,
+                                            'value' => $resultUserData[0]['Investor']['investor_postCode'],
+                                            'disabled' => 'disabled'
+                                        ));
+                                        ?>
+                                    </div>
+                                </div>
+                                <!-- /postal code -->
+                                <!-- Address -->
+                                <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_address1"><?php echo __('Address') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress" checked="checked"><?php echo __('Pending') ?></label>
+                                        </div>
+                                        <?php
+                                        $errorClass = "";
+                                        if (array_key_exists('investor_address1', $investorValidationErrors)) {
+                                            $errorClass = "redBorder";
+                                        }
+                                        $class = "form-control blue_noborder investorSurname" . ' ' . $errorClass;
+                                        echo $this->Form->input('Investor.investor_address1', array(
+                                            'name' => 'address1',
+                                            'id' => 'ContentPlaceHolder_address1',
+                                            'label' => false,
+                                            'placeholder' => __('Address'),
+                                            'class' => $class,
+                                            'value' => $resultUserData[0]['Investor']['investor_address1'],
+                                            'disabled' => 'disabled'
+                                        ));
+                                        ?>
+                                    </div>
+                                </div>
+                                <!-- /Address -->
+                            </div>
+                            <div class="row">
+
+                                <!-- city -->
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1"><?php echo __('City') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkCity"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCity"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCity" checked="checked"><?php echo __('Pending') ?></label>
+                                        </div>
+                                        <?php
+                                        $errorClass = "";
+                                        if (array_key_exists('investor_city', $investorValidationErrors)) {
+                                            $errorClass = "redBorder";
+                                        }
+                                        $class = "form-control blue_noborder investorCity" . ' ' . $errorClass;
+                                        echo $this->Form->input('ContentPlaceHolder_city', array(
+                                            'name' => 'city',
+                                            'id' => 'ContentPlaceHolder_city',
+                                            'label' => false,
+                                            'placeholder' => __('City'),
+                                            'class' => $class,
+                                            'value' => $resultUserData[0]['Investor']['investor_city'],
+                                            'disabled' => 'disabled'
+                                        ));
+                                        ?>
+                                    </div>	
+                                </div>
+                                <!-- /city -->
+
+                                <!-- Country -->
+                                <div class="col-xs-12 col-sm-4 col-md-8 col-lg-8">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_country"><?php echo __('Country') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry" checked="checked"><?php echo __('Pending') ?></label>
+                                        </div>
+                                        <?php
+                                        $errorClass = "";
+                                        if (array_key_exists('investor_country', $investorValidationErrors)) {
+                                            $errorClass = "redBorder";
+                                        }
+                                        $class = "form-control blue_noborder investorCountry" . ' ' . $errorClass;
+                                        echo $this->Form->input('Investor.investor_country', array(
+                                            'name' => 'country',
+                                            'id' => 'ContentPlaceHolder_country',
+                                            'label' => false,
+                                            'options' => $countryData,
+                                            'placeholder' => __('Country'),
+                                            'class' => $class,
+                                            'value' => $userData[0]['Investor']['investor_country'],
+                                            'disabled' => 'disabled'
+                                        ));
+                                        ?>
+                                    </div>	
+                                </div>
+                                <!-- /country -->
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkIban"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkIban"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkIban" checked="checked"><?php echo __('Pending') ?></label>
+                                        </div>
+                                        <input type="text" disabled="disabled" class="form-control blue_noborder">
+                                    </div>
+                                </div><!-- /Cif + Business Name -->
+                            </div>
+                            <!-- /User data -->
                         </div>
-                        <!-- /User data -->
-                    </div>
-                    <!-- /Investor complete data -->
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle" style="display: none;">
-                        <div class="row">
-                            <!-- CIF -->
-                            <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
-                                <div class="form-group">
-                                    <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkCIF" checked="checked"><?php echo __('Pending') ?></label>
+                        <!-- /Investor complete data -->
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle" style="display: none;">
+                            <div class="row">
+                                <!-- CIF -->
+                                <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCIF" checked="checked"><?php echo __('Pending') ?></label>
+                                        </div>
+                                        <input disabled="disabled" type="text" class="form-control blue_noborder">
                                     </div>
-                                    <input disabled="disabled" type="text" class="form-control blue_noborder">
-                                </div>
-                            </div>
-                            <!-- /CIF -->
-
-                            <!-- Business Name -->
-                            <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                                <div class="form-group">
-                                    <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
-                                    <div>
-                                        <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('Yes') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('No') ?></label>
-                                        <label class="radio-inline"><input type="radio" name="checkBusinessName" checked="checked"><?php echo __('Pending') ?></label>
-                                    </div>
-                                    <input disabled="disabled" type="text" class="form-control blue_noborder">
                                 </div>
                                 <!-- /CIF -->
 
                                 <!-- Business Name -->
                                 <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
                                     <div class="form-group">
-                                        <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label> <input type="checkbox" id="checkBusinessName">
-                                        <input disabled="disabled" type="text" class="form-control blue_noborder" value="<?php echo $userData[0]['Ocr']['investor_businessName'] ?>" >
+                                        <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
+                                        <div>
+                                            <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkBusinessName" checked="checked"><?php echo __('Pending') ?></label>
+                                        </div>
+                                        <input disabled="disabled" type="text" class="form-control blue_noborder">
                                     </div>
+                                    <!-- /CIF -->
+
+                                    <!-- Business Name -->
+                                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                                        <div class="form-group">
+                                            <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label> <input type="checkbox" id="checkBusinessName">
+                                            <input disabled="disabled" type="text" class="form-control blue_noborder" value="<?php echo $userData[0]['Ocr']['investor_businessName'] ?>" >
+                                        </div>
+                                    </div>
+                                    <!-- /Business Name -->
+                                    <!-- /Business Data -->
                                 </div>
-                                <!-- /Business Name -->
-                                <!-- /Business Data -->
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- Investor complete data -->
+                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <h4 class="header1CR"><?php echo __('Investor Selected Platforms') ?></h4>
+                                <ul>
+                                    <?php
+                                    foreach ($userData[0]['Company'] as $company) {//Company list 
+                                        if ($company['CompaniesOcr']['company_status'] == SENT) {
+                                            ?>
+                                            <li>
+                                                <?php
+                                                echo $company['company_name']
+                                                ?>
+                                                <div>
+                                                    <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>"><?php echo __('Yes') ?></label>
+                                                    <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>"><?php echo __('No') ?></label>
+                                                    <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                                </div>
+                                            </li>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <h4 class="header1CR"><?php echo __('Investor Uploaded Documents') ?></h4>
+                                <ul>
+                                    <?php
+                                    $fileConfig = Configure::read('files');
+                                    foreach ($files as $file) {//Company list 
+                                        ?>
+                                        <li><a href="/files/downloadDocument/file/<?php echo $file['file']['FilesInvestor']['investor_id'] ?>" class="download" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></a> 
+                                            <div>
+                                                <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>"><?php echo __('Yes') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>"><?php echo __('No') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            </div>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <button type="button" id="saveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save') ?></button>
+                                <button type="button" id="approveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-right" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve') ?></button>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <!-- Investor complete data -->
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                            <h4 class="header1CR"><?php echo __('Investor Selected Platforms') ?></h4>
-                            <ul>
-                                <?php
-                                foreach ($userData[0]['Company'] as $company) { //Company list 
-                                    ?>
-                                    <li>
-                                        <?php
-                                        if ($company['CompaniesOcr']['company_status'] == SENT) {
-                                            echo $company['company_name']
-                                            ?>
-                                            <div>
-                                                <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>"><?php echo __('Yes') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>"><?php echo __('No') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>" checked="checked"><?php echo __('Pending') ?></label>
-                                            </div>
-                                        </li>
-                                        <?php
-                                    }
-                                }
-                                ?>
-                            </ul>
-                        </div>
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                            <h4 class="header1CR"><?php echo __('Investor Uploaded Documents') ?></h4>
-                            <ul>
-                                <?php
-                                foreach ($files as $file) {//Company list 
-                                    ?>
-                                    <li><a href="#" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></a> 
-                                        <div>
-                                            <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" checked="checked"><?php echo __('Pending') ?></label>
-                                        </div>
-                                    </li>
-                                <?php } ?>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <button type="button" id="saveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save') ?></button>
-                            <button type="button" id="approveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-right" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve') ?></button>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- /card -->
+                </div> <!-- /card -->
+            </div>
         </div>
     </div>
-</div>

@@ -61,20 +61,8 @@
     $(function() {
         $("#usersTable").DataTable();
 
-<?php //Download the zip ?>
-        $(document).on('click', '.download', function () {
-            link = "/files/generateZip/" + $(this).attr('href');
-            var data = null;
-            getServerData(link, data, successDownload, errorDownload);
-        });
     });
 
-    function successDownload() {
-
-    }
-    function errorDownload() {
-
-    }
 </script>
 <div id="1CR_pfpAdmin_1_usersPanel">
     <div class="row">
@@ -127,7 +115,10 @@
                                                         <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
                                                         <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
                                                         <td><?php echo __('cosa del estado del usuario')?></td>
-                                                        <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download" href="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"   ><?php echo __('Download') ?></button></td>
+                                                        <td>
+                                                            <a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">Descargar</a>
+                                                            <?php /*<button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button>*/ ?>
+                                                        </td>
                                                         <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
                                                     </tr>
                                                 <?php } ?>
