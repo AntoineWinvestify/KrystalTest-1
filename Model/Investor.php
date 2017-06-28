@@ -294,7 +294,19 @@ function investorReference2Id($investorReference) {
 
 
 
-
+/**
+*
+*	Get data of the investor
+*	@param 		string	$filterConditions  conditions to be applied
+* 	@return 	int	$investorId The database reference of the investor
+* 					
+*/
+function getInvestorData($filterConditions) {
+	$resultInvestor = $this->find("all", array( "recursive" => -1,
+						"conditions" => $filterConditions,
+                                    ));
+	return $resultInvestor;
+}
 
 
 /*
