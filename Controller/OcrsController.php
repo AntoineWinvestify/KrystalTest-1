@@ -45,6 +45,9 @@
  * 
   2017/6/19 version 0.7
   ocrWinadminBillingPanel-> bill table added
+ * 
+ * [2017-06-28] Version 0.8
+ * Added countryCodes to VinAdmin View #4  (Update PFP Data, to select country)
  */
 App::uses('CakeEvent', 'Event');
 
@@ -405,6 +408,11 @@ class ocrsController extends AppController {
     function ocrWinadminUpdatePfpData() {
         $this->layout = 'azarus_private_layout';
         echo " ";
+        
+        // Country Codes
+        Configure::load('countryCodes.php', 'default');
+        $countryData = Configure::read('countrycodes');
+        $this->set('countryData', $countryData);
     }
 
     //WinAdmin View #5
