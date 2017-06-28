@@ -173,6 +173,11 @@ define('REGISTRATION_PROGRESS_4', 4);
 define('REGISTRATION_PROGRESS_5', 5);
 
 
+//COMPANY SERVICE STATUS
+define('SER_INACTIVE', 0);
+define('SER_ACTIVE', 1);
+define('SER_SUSPENDED', 2);
+
 //OCR STATUS
 define('NOT_SENT', 0);
 define('SENT', 1);

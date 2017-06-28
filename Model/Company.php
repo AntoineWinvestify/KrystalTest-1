@@ -24,8 +24,8 @@
   function readExtendedData()															[not OK, not tested]
 
   [2017-06-23] Version 1.0 (for ocr)
-    companiesDataOCR                                    [OK, tested]
-    db relation
+  companiesDataOCR                                    [OK, tested]
+  db relation
   Pending:
 
 
@@ -34,11 +34,12 @@
 class Company extends AppModel {
 
     var $name = 'Company';
-
-    /*
-      public $hasOne = array(	);
-
-     */
+    public $hasOne = array(
+        'Serviceocr' => array(
+            'joinTable' => 'Serviceocrs',
+            'foreignKey' => 'company_id',
+        ),
+    );
     var $hasMany = array(
         'Marketplace' => array(
             'className' => 'Marketplace',
@@ -104,6 +105,7 @@ class Company extends AppModel {
      * 			
      */
     public function getCompanyDataList($filterConditions) {
+
         $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
             'Company.company_state' => ACTIVE);
 
@@ -126,14 +128,21 @@ class Company extends AppModel {
      */
     public function companiesDataOCR($filter = null) {
 
-        $conditions = array('Company.company_OCRisActive' => 1);
+        $ocrServices = $this->Serviceocr->find('all', array('conditions' => array('serviceocr_status' => SER_ACTIVE)));
+        $idList = array();
+        foreach ($ocrServices as $ocrService) {
+            array_push($idList, $ocrService['Serviceocr']['company_id']);
+        }
+
+        
+        $conditions = array('Company.id' => $idList);
 
         //Platform selection filters
         if ($filter['country_filter']) {
             $filtro = array('Company.company_countryName' => $filter['country_filter']);
             $conditions = array_merge($conditions, $filtro);
         }
-        
+
         if ($filter['type_filter']) {
             $filtro = array('Company.Company_type' => $filter['type_filter']);
             $conditions = array_merge($conditions, $filtro);
@@ -145,7 +154,7 @@ class Company extends AppModel {
             'recursive' => -1,
             'conditions' => $conditions,
         ));
-        
+
         return $data;
     }
 
