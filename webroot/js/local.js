@@ -695,7 +695,7 @@ app.visual = {
         return correctForm;   
     },
     checkFormWinadminBilling: function () {
-        correctForm = true;
+        var correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
         $("#uploadBill input").removeClass("redBorder"); // remove ALL redborders
         $("#uploadBill select").removeClass("redBorder"); // remove ALL redborders
@@ -752,20 +752,49 @@ app.visual = {
     },
     checkFormPFPAdminTallyman: function () {
         var correctForm = true;
+        var correctNIF = true;
+        var correctEmail = true;
+        var correctTelephone = true;
+        var correctFormatEmail = true;
+        var correctFormatTelephone = true;
         $(".errorInputMessage").hide(); // remove all error texts
         $("#investorFilters input").removeClass("redBorder"); // remove ALL redborders
         var nif = $("#tallyman_nif").val();
         var email = $("#tallyman_email").val();
         var telephone = $("#tallyman_telephone").val();
         
-        if ((nif === "") && (email === "") && (telephone === "")) {
+        //NIF validation
+        if (nif === "") { 
+            correctNIF = false; 
+        }
+        
+        //Email validation
+        if (email === "") {
+            correctEmail = false;
+        } else {
+            if (!app.utils.validEmail(email)) {
+                correctFormatEmail = false;
+            }
+        }
+        
+        //Telephone validation
+        if (telephone === "") {
+            correctTelephone = false;
+        } else {
+            if (!app.utils.checkPhoneNumber(telephone)) {
+                correctFormatTelephone = false;
+            }
+        }
+
+        //ERROR SHOWING
+        if (!correctNIF && !correctEmail && !correctTelephone) {
             console.log("all fields are empty");
             $(".tallymanGeneral").addClass("redBorder");
             $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T98); // "at least 2 fields" warning
             $(".ErrorTallyman").fadeIn();
             correctForm = false;
         }
-        if ((nif !== "") && (email === "") && (telephone === "")) {
+        if (correctNIF && !correctEmail && !correctTelephone) {
             console.log("email & telephone empty");
             $(".tallymanTelephone").addClass("redBorder");
             $(".tallymanEmail").addClass("redBorder");
@@ -773,7 +802,7 @@ app.visual = {
             $(".ErrorTallyman").fadeIn();
             correctForm = false;
         }
-        if ((nif === "") && (email !== "") && (telephone === "")) {
+        if (!correctNIF && correctEmail && !correctTelephone) {
             console.log("nif & telephone empty");
             $(".tallymanTelephone").addClass("redBorder");
             $(".tallymanNIF").addClass("redBorder");
@@ -781,12 +810,64 @@ app.visual = {
             $(".ErrorTallyman").fadeIn();
             correctForm = false;
         }
-        if ((nif === "") && (email === "") && (telephone !== "")) {
+        if (!correctNIF && !correctEmail && correctTelephone) {
             console.log("nif & email empty");
             $(".tallymanEmail").addClass("redBorder");
             $(".tallymanNIF").addClass("redBorder");
             $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
             $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
+        if (correctNIF && !correctFormatEmail && !correctTelephone) {
+            console.log("name correct, email incorrect format, telephone empty");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        }
+        if (correctNIF && !correctEmail && !correctFormatTelephone) {
+            console.log("name correct, email empty, telephone incorrect format");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
+            $(".ErrorTelephone").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctEmail && !correctFormatTelephone) {
+            console.log("name empty, email empty, telephone empty");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctFormatEmail && !correctTelephone) {
+            console.log("name correct, email empty, telephone incorrect format");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
+            $(".ErrorTelephone").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctFormatEmail && !correctFormatTelephone) {
+            console.log("name empty, email incorrect format, telephone incorrect format");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
+            $(".ErrorTelephone").fadeIn();
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && correctFormatEmail && !correctFormatTelephone) {
+            console.log("name empty, email correct format, telephone incorrect format");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
+            $(".ErrorTelephone").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctFormatEmail && correctFormatTelephone) {
+            console.log("name empty, email incorrect format, telephone correct format");    
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
+            $(".ErrorEmail").fadeIn();
             correctForm = false;
         }
         return correctForm;
