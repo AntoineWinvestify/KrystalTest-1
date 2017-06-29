@@ -37,6 +37,9 @@
 
  */
 ?>
+<?php 
+echo 1;
+?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
@@ -144,67 +147,7 @@ var myChart = new Chart(ctx, {
 
 
 
-<div id="1CR_pfpAdmin_3_tallyman">
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
-            <div class="card">
-                <div class="card-header" data-background-color="orange">
-                    <h4 class="title"><strong><?php echo __('PFPAdmin - Tallyman') ?></strong></h4>
-                    <p class="category"><?php echo __('Tallyman service about Investor Profile') ?></p>
-                </div>
-                <div class="card-content table-responsive togetoverlay">
-                    <!--<div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>-->
-                    <div class="row firstParagraph">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <p><?php
-                                echo __('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut' 
-                                        . 'labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc'
-                                        . 'laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in' 
-                                        . 'voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat' 
-                                        . 'non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-                                        );
-                                ?>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row firstParagraph">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div id="investorFilters" class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class="row">
-                                        <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1">
-                                            <label class= "invisible"></label>
-                                            <h4 class="header1CR"><?php echo __('Search:') ?></h4>
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                                            <label><?php echo __('ID')?></label>
-                                            <input type="text" id ="tallymanInputId" class="form-control blue_noborder3" placeholder="<?php echo __('ID')?>">
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                                            <label><?php echo __('Email')?></label>
-                                            <input type="text" id ="tallymanInputEmail" class="form-control blue_noborder3" placeholder="<?php echo __('Email')?>">
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                                            <label><?php echo __('Telephone')?></label>
-                                            <input type="text" id ="tallymanInputTelephone" class="form-control blue_noborder3" placeholder="<?php echo __('Telephone')?>">
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
-                                            <label class= "invisible"> </label>
-                                            <button type="button" id="tallymanBtnSearch" class="btn btnPFPAdmin center-block btnRounded"><?php echo __('Search')?></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> <!-- /.row general -->
-</div>
+
 <div id="1CR_pfpAdmin_3_searchResult">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">

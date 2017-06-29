@@ -34,7 +34,7 @@ Pending
 
 
 */
-
+App::uses('ClassRegistry', 'Utility');
 App::uses('CakeEvent', 'Event');
 App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class UsersController extends AdminpfpAppController
@@ -42,7 +42,7 @@ class UsersController extends AdminpfpAppController
 
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Js');
-	var $uses = array('User', 'Investorglobaldata', 'Company');
+	var $uses = array('User', 'Company', );
 	var $components = array('Security');
   	var $error;
 	
@@ -60,7 +60,7 @@ function beforeFilter() {
 	$this->Security->validatePost = false;	
 // Allow only the following actions.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login','session', 'loginAction', 'showTallyman', 'startTallyman', 'readtallymandata');    // allow the actions without logon
+	$this->Auth->allow('login','session', 'loginAction', 'showTallymanPanel', 'startTallyman', 'readtallymandata');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
 //   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 //var_dump($_REQUEST);
@@ -108,49 +108,47 @@ public function startTallyman() {
  * Shows the Tallyman data of a user in a graphical manner
  * 
  */
-public function readtallymandata($investorIdentity = null) {
- Configure::write('debug', 2); 
-    $this->autorender = false;
- /*
+public function readtallymandata() {
+
+ 
     if (!$this->request->is('ajax')) {
         throw new
         FatalErrorException(__('You cannot access this page directly'));
         }
     $this->layout = 'ajax';
     $this->disableCache();
-*/
+
 //    $platformId = $this->Auth->user('AdminPFP.company_id');
     $platformId = 1;
-    $userId = $_REQUEST['userid'];
-    $userEmail = $_REQUEST['useremail'];
-    $userTelephone = $_REQUEST['usertelephone'];
+    $inputId = $_REQUEST['inputId'];
+    $userEmail = $_REQUEST['userEmail'];
+    $userTelephone = $_REQUEST['userTelephone'];
   
-    $this->Company = ClassRegistry::init('Company');
-    $companyFilterConditions = array('id' => $platformId);
-    $resultCompany = $this->Company->getCompanyDataList($companyFilterConditions);
-  //  $this->layout = 'Adminpfp.azarus_private_layout';
-
 // Get the unique user identification
-    if (!empty($userId)) { 
-        $filterConditions = array('Investor.investor_DNI' => $userId);
-    }    
+    if (!empty($inputId)) { 
+        $key[] = "Investor.investor_DNI";
+        $value[] = $inputId;
+    } 
+
     if (!empty($userEmail)) { 
-        $filterConditions1 = array_merge(array($filterConditions, 'Investor.investor_email' => $userEmail));
-    }   
-    if (!empty($userTelephone)) { 
-        $filterConditions2 = array_merge($filterConditions1, array('Investor.investor_telephone' => $userTelephone));
+        $key[] = 'Investor.investor_email';
+        $value[] = $userEmail;
     }  
 
+    if (!empty($userTelephone)) { 
+        $key[] = 'Investor.investor_telephone';
+        $value[] = $userTelephone;
+    }  
+    $filterConditions = array_combine($key, $value);
+
     $this->Investor = ClassRegistry::init('Investor');   
-    $resultInvestor = $this->Investor->getInvestorData($filterConditions2);
+    $resultInvestor = $this->Investor->getInvestorData($filterConditions);
+
     $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
 
-    $this->Investorglobaldata = ClassRegistry::init('Investorglobaldata');
-    $resultTallymanData = $this->Investorglobaldata->loadinvestorData($userIdentification, $platformId);
-   
-$this->print_r2($this->crowdlendingTypes);
-$this->print_r2($resultTallymanData);
-$this->print_r2($resultCompany);
+    $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
+    $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
+  
     $this->set('resultCompany', $resultCompany);
     $this->set('resultTallyman', $resultTallymanData);
     $this->set('crowdlendingTypes', $this->crowdlendingTypes);
@@ -159,6 +157,17 @@ $this->print_r2($resultCompany);
 
 
 
+  
+/**
+*	
+*/
+public function showTallymanPanel() {
+ // Configure::write('debug', 2); 
+  $this->layout = 'Adminpfp.azarus_private_layout';
+  
+}  
+  
+  
 
 
 /** ajax call

@@ -22,63 +22,26 @@
 
 
 
-Pending:
-Hi Klaus,
-
-I created an email account for you.
-
-It is "klaus@winvestify.com".
-
-You can access it at "http://www.winvestify.com:2095"
-
-The important settings are:
-
-incoming email server:
-
-     POP3 server = srv59.hosting24.com
-     security = SSL/TLS
-     port = 995
-     username: klaus@winvestify.com
-     authentication: normal password
-
-outgoing email server:
-
-     SMTP server = srv59.hosting24.com
-     security: SSL/TLS
-     port = 465
-     username: klaus@winvestify.com
-     authentication: normal password
-
-If you have any problem, just contact me.
-
-Regards,
-
- Antoine
-
-
-
-
-
 
 */
 
-
+App::uses('AppModel', 'Model');
 class Investorglobaldata extends AppModel
 {
-	var $name= 'Investorglobaldata';
-        var $useDbConfig = 'mldata';
-
+        var $useDbConfig = 'mldata';    
+	public $name = 'Investorglobaldata';
+        var $useTable = "investorglobaldata";
 /*
 	public $hasOne = array(	);
 
-*/
+
 	var $hasMany = array(
 		'Marketplace' => array(
 			'className' => 'Marketplace',
 			'foreignKey' => 'company_id',
 		)
 	);
-
+*/
 
 
 
@@ -140,17 +103,16 @@ public function loadInvestorDataOld($investoridentity) {
      *
      * @return array  array    All data of the user
      */
-public function loadInvestorData ($investorIdentity, $platformId) {
-
-    
-$resultTallyman[0]['investorglobaldata_investorIdentity'] = '929094Akri445902';
+public function readinvestorData($investorIdentity, $platformId) {
+ 
+$resultTallyman[0]['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[0]['investorglobaldata_activePFPs'] = 3;
 $resultTallyman[0]['investorglobaldata_totalPFPs'] = 3;
-$resultTallyman[0]['investorglobaldata_totalMoneyInWallets'] = 5032;
+$resultTallyman[0]['investorglobaldata_totalMoneyInWallets'] = 11737;
 $resultTallyman[0]['investorglobaldata_totalActiveInvestments'] = 113233;
 $resultTallyman[0]['investorglobaldata_currency'] = 1;     // = Euro44412 + 
 $resultTallyman[0]['created'] = "2017-04-15 01:55:21";     
-
+$resultTallyman[0]['createdDate'] = "2017-04-15";
 
 $resultTallyman[0]['Userplatformglobaldata'][1]['id'] = 11;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_activeInInvestments'] = 44412;
@@ -166,7 +128,7 @@ $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
 
 $resultTallyman[0]['Userplatformglobaldata'][2]['id'] = 12;
 $resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_activeInInvestments'] = 24411;
-$resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_moneyInWallet'] = 152;
+$resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_moneyInWallet'] = 9952;
 $resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_reservedInvestments'] = 11;
 $resultTallyman[0]['Userplatformglobaldata'][2]['userplatformglobaldata_finishedInvestments'] = 18952;
@@ -178,7 +140,7 @@ $resultTallyman[0]['Userplatformglobaldata'][2]['globalIndicator'] = 112;
 
 $resultTallyman[0]['Userplatformglobaldata'][3]['id'] = 19;
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_activeInInvestments'] = 44410;
-$resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_moneyInWallet'] = 152;
+$resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_moneyInWallet'] = 733;
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_reservedInvestments'] = 0;
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_finishedInvestments'] = 15992;
@@ -189,17 +151,18 @@ $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_PFPCount
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_globalIndicator'] = 112;
 
 
-$resultTallyman[1]['investorglobaldata_investorIdentity'] = '929094Akri445902';
+$resultTallyman[1]['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[1]['investorglobaldata_activePFPs'] = 3;
 $resultTallyman[1]['investorglobaldata_totalPFPs'] = 3;
-$resultTallyman[1]['investorglobaldata_totalMoneyInWallets'] = 20035;
+$resultTallyman[1]['investorglobaldata_totalMoneyInWallets'] = 2472;
 $resultTallyman[1]['investorglobaldata_totalActiveInvestments'] = 113633;
 $resultTallyman[1]['investorglobaldata_currency'] = 1;     // = Euro
 $resultTallyman[1]['created'] = "2017-04-08 01:51:21";     
+$resultTallyman[1]['createdDate'] = "2017-04-08";
 
 $resultTallyman[1]['Userplatformglobaldata'][1]['id'] = 11;
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_activeInInvestments'] = 45812;
-$resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_moneyInWallet'] = 1052;
+$resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_moneyInWallet'] = 1305;
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_reservedInvestments'] = 4442;
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_finishedInvestments'] = 21352;
@@ -211,7 +174,7 @@ $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
 
 $resultTallyman[1]['Userplatformglobaldata'][2]['id'] = 12;
 $resultTallyman[1]['Userplatformglobaldata'][2]['userplatformglobaldata_activeInInvestments'] = 23411;
-$resultTallyman[1]['Userplatformglobaldata'][2]['userplatformglobaldata_moneyInWallet'] = 152;
+$resultTallyman[1]['Userplatformglobaldata'][2]['userplatformglobaldata_moneyInWallet'] = 15;
 $resultTallyman[1]['Userplatformglobaldata'][2]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[1]['Userplatformglobaldata'][2]['userplatformglobaldata_reservedInvestments'] = 11;
 $resultTallyman[1]['Userplatformglobaldata'][2]['userplatformglobaldata_finishedInvestments'] = 14952;
@@ -223,7 +186,7 @@ $resultTallyman[1]['Userplatformglobaldata'][2]['globalIndicator'] = 112;
 
 $resultTallyman[1]['Userplatformglobaldata'][3]['id'] = 19;
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_activeInInvestments'] = 44410;
-$resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_moneyInWallet'] = 152;
+$resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_moneyInWallet'] = 1152;
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_reservedInvestments'] = 0;
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_finishedInvestments'] = 14992;
@@ -235,17 +198,18 @@ $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_globalIn
 
 
 
-$resultTallyman[2]['investorglobaldata_investorIdentity'] = '929094Akri445902';
+$resultTallyman[2]['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[2]['investorglobaldata_activePFPs'] = 2;
 $resultTallyman[2]['investorglobaldata_totalPFPs'] = 2;
-$resultTallyman[2]['investorglobaldata_totalMoneyInWallets'] = 24333;
+$resultTallyman[2]['investorglobaldata_totalMoneyInWallets'] = 3514;
 $resultTallyman[2]['investorglobaldata_totalActiveInvestments'] = 65821;
 $resultTallyman[2]['investorglobaldata_currency'] = 1;     // = Euro
 $resultTallyman[2]['created'] = "2017-04-01 01:51:21"; 
+$resultTallyman[2]['createdDate'] = "2017-04-01";
 
 $resultTallyman[2]['Userplatformglobaldata'][0]['id'] = 12;
 $resultTallyman[2]['Userplatformglobaldata'][0]['userplatformglobaldata_activeInInvestments'] = 21411;
-$resultTallyman[2]['Userplatformglobaldata'][0]['userplatformglobaldata_moneyInWallet'] = 152;
+$resultTallyman[2]['Userplatformglobaldata'][0]['userplatformglobaldata_moneyInWallet'] = 1952;
 $resultTallyman[2]['Userplatformglobaldata'][0]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[2]['Userplatformglobaldata'][0]['userplatformglobaldata_reservedInvestments'] = 11;
 $resultTallyman[2]['Userplatformglobaldata'][0]['userplatformglobaldata_finishedInvestments'] = 12952;
@@ -257,7 +221,7 @@ $resultTallyman[2]['Userplatformglobaldata'][0]['globalIndicator'] = 112;
 
 $resultTallyman[2]['Userplatformglobaldata'][1]['id'] = 19;
 $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_activeInInvestments'] = 44410;
-$resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_moneyInWallet'] = 152;
+$resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_moneyInWallet'] = 1562;
 $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_reservedInvestments'] = 0;
 $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_finishedInvestments'] = 14392;
@@ -272,7 +236,11 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
 // Do some simple calculations to get extra "new" values so they can be displayed
 // enrich the information to be provided to the PFPAdmin user
 // index 0 is the most recent read-out of the user investment data
-   
+  
+    $this->Company = ClassRegistry::init('Company');
+    $companyFilterConditions = array('id' => $platformId);
+    $resultCompany = $this->Company->getCompanyDataList($companyFilterConditions);
+
     $homeCountryPFP = $resultCompany[$platformId][company_country];
 
     foreach ($resultTallyman[0]['Userplatformglobaldata'] as $platform) {
@@ -321,8 +289,6 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
     }
 
 
-
-    
     
 //$this->print_r2($resultTallyman[0]['userplatformglobaldata_PFPPerAmount']);    
 
@@ -383,19 +349,13 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
         
    foreach ($resultTallyman as $value) {
        $totalPortfolioHistorical[] = $value['totalPortfolio'];
-       
-       $totalPortfolioHistoricalDate[] = $value['created'];
+       $totalPortfolioHistoricalDate[] = $value['createdDate'];
    }     
         
-    $resultTallyman[0]['totalPortfolioHistorical'] = array_merge($totalPortfolioHistorical);
-    $resultTallyman[0]['totalPortfolioHistoricalDate'] = array_merge($totalPortfolioHistoricalDate);
-        
-   
-//$this->print_r2($this->crowdlendingTypes);
-//$this->print_r2($resultTallyman);
+    $resultTallyman[0]['totalPortfolioHistorical'] = array_reverse($totalPortfolioHistorical);
+    $resultTallyman[0]['totalPortfolioHistoricalDate'] = array_reverse($totalPortfolioHistoricalDate);      
 
-    
-    
+    return $resultTallyman;
 }
 
 

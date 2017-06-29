@@ -25,6 +25,10 @@ function updateAccountCreationStatus				[Not OK, Not tested]
 function investmentInformationUpdate added			[OK]
 
 
+2017-06-24         version 0.3                                  [OK]
+ Added method "getInvestorData2
+
+
 
 
 Pending:
@@ -298,7 +302,7 @@ function investorReference2Id($investorReference) {
 *
 *	Get data of the investor
 *	@param 		string	$filterConditions  conditions to be applied
-* 	@return 	int	$investorId The database reference of the investor
+* 	@return 	array
 * 					
 */
 function getInvestorData($filterConditions) {
@@ -307,6 +311,8 @@ function getInvestorData($filterConditions) {
                                     ));
 	return $resultInvestor;
 }
+
+
 
 
 /*

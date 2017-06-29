@@ -374,7 +374,6 @@ class AppController extends Controller {
     }
 
     public function session() {
-        Configure::write('debug', 2);
         $this->autoRender = FALSE;
 
         $test1 = "apple " . "peer";

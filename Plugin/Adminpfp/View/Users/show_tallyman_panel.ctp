@@ -45,8 +45,8 @@
 <script type="text/javascript">
  
 function successTallymanData(data) {
-
-	console.log("edit_user_profile_data: LINE 70");
+    $("#TallymanResult").replaceWith(data);
+    console.log("edit_user_profile_data: LINE 70");
 
 }
  
@@ -146,7 +146,7 @@ console.log ("link = " + link);
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
                                             <label class= "invisible"> </label>
-                                            <button type="submit" id="tallymanBtnSearch" href="/readtallymandata" class="btn btnPFPAdmin center-block btnRounded"><?php echo __('Search')?></button>
+                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/users/readtallymandata" class="btn btnPFPAdmin center-block btnRounded"><?php echo __('Search')?></button>
                                         </div>
                                     </div>
                                 </div>
@@ -157,4 +157,7 @@ console.log ("link = " + link);
             </div>
         </div>
     </div> <!-- /.row general -->
+</div>
+
+<div id="TallymanResult">
 </div>
