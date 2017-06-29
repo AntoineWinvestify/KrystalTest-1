@@ -60,7 +60,7 @@
  * 
  * [2017-06-28] Version 0.11
  * Set status name
- * 
+ * Bills table refesh
  */
 App::uses('CakeEvent', 'Event');
 
@@ -463,6 +463,23 @@ class ocrsController extends AppController {
         // Currency names
         $this->set('currencyName', $this->currencyName);
         echo " ";
+    }
+
+    function billsTable() {
+        if (!$this->request->is('ajax')) {
+            $this->set("result", false);
+            $this->set("message", __('Error at refreshing the bills table.'));
+
+        } else {
+            $this->layout = 'ajax';
+            $this->disableCache();
+         
+            //get all bills and set them in the view
+            $billsInfo = $this->File->getAllBills();
+            
+            $this->set("result", true);
+            $this->set("bills", $billsInfo);
+        }
     }
 
     /** Check data

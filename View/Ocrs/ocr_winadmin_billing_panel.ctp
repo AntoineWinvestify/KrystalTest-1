@@ -50,6 +50,10 @@
  * Deleted PFP Select filter (datatable has it)
  * Added datatable select filter
  * Added Currency + Tooltip
+ * 
+ * [2017-06-29] Version 0.8
+ * Table refresh
+ * Select company bug fix
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -71,6 +75,7 @@
 <?php
 //Make a array for the select
 $companiesSelectList = array();
+$companiesSelectList[0] = __('Choose One');
 foreach ($companies as $companyInfo) {
     $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
 }
@@ -83,7 +88,7 @@ foreach ($companies as $companyInfo) {
         });
         $(document).on("click", "#sendBill", function () {
             console.log("validate Winadmin billing data");
-<?php //Javascript validation       ?>
+<?php //Javascript validation               ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
                 link = '../Files/upload';
@@ -101,6 +106,7 @@ foreach ($companies as $companyInfo) {
                         $(".alert-to-fade").html("<strong>" + data[1] + "</strong>");
                         $('#selected').html("");
                         $("#bill").trigger("reset");
+                        refreshTable();
                     } else {
                         $(".alert-to-fade").show();
                         $(".alert-to-fade").html("<strong>" + data[1] + "</strong>");
@@ -116,6 +122,22 @@ foreach ($companies as $companyInfo) {
         });
 
     });
+
+    function refreshTable() {
+        link = "../Ocrs/billsTable";
+        var data = null;
+        getServerData(link, data, successRefesh, errorRefesh);
+    }
+
+    function successRefesh(result) {
+        $("#billsTable").html(result);
+
+    }
+
+    function errorRefesh() {
+        $("#billsTable").html(result);
+    }
+
 </script>
 <div id="1CR_winAdmin_3_billingPanel">
     <div class="row">
@@ -155,11 +177,10 @@ foreach ($companies as $companyInfo) {
                                         <th><?php echo __('Upload file') ?></th>
                                         <th><?php echo __('Send') ?></th>
                                     </tr>
-                                    <?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
+<?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
                                     <tr>
                                         <td>
                                             <?php
-                                            array_unshift($companiesSelectList, __('Choose One'));
                                             $class = "form-control blue_noborder billPFP";
                                             echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
@@ -176,7 +197,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $billValidationErrors['bill_pfp'][0] ?>
+<?php echo $billValidationErrors['bill_pfp'][0] ?>
                                                 </span>
                                             </div>
                                         </td>
@@ -203,7 +224,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $billValidationErrors['bill_number'][0] ?>
+<?php echo $billValidationErrors['bill_number'][0] ?>
                                                 </span>
                                             </div>									
                                         </td>
@@ -230,7 +251,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $billValidationErrors['bill_number'][0] ?>
+<?php echo $billValidationErrors['bill_number'][0] ?>
                                                 </span>
                                             </div>
                                         </td>
@@ -257,7 +278,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $billValidationErrors['bill_amount'][0] ?>
+<?php echo $billValidationErrors['bill_amount'][0] ?>
                                                 </span>
                                             </div>
                                             <div id="amountTooltip" style="display:none;"><small><?php echo __('The Amount value must be formatted with 2 decimal digits. (Ex: 1111,10)') ?></small></div>
@@ -280,7 +301,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $billValidationErrors['bill_currency'][0] ?>
+<?php echo $billValidationErrors['bill_currency'][0] ?>
                                                 </span>
                                             </div>
                                         </td>
@@ -297,7 +318,7 @@ foreach ($companies as $companyInfo) {
                                             </button>                                        </td>
 
                                     </tr>
-                                    <?php echo $this->Form->end(); ?>
+<?php echo $this->Form->end(); ?>
                                 </table>
                             </div>
                         </div>
@@ -323,11 +344,10 @@ foreach ($companies as $companyInfo) {
                                 ?></p>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" >
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="table-responsive">
-                                <table id="billsHistory" class="display dataTable"  width="100%" cellspacing="0"
-                                       data-order='[[ 1, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                            <div class="table-responsive" id="billsTable">
+                                <table id="billsHistory" class="display dataTable"  width="100%" cellspacing="0" data-order='[[ 1, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
                                         <th width="15%"><?php echo __('PFP') ?></th>
                                         <th><?php echo __('Date') ?></th>
@@ -335,7 +355,7 @@ foreach ($companies as $companyInfo) {
                                         <th><?php echo __('Concept') ?></th>
                                         <th><?php echo __('Amount') ?></th>
                                     </tr>
-                                    <?php foreach ($bills as $billsTable) {//Bills table creation   ?>
+<?php foreach ($bills as $billsTable) {//Bills table creation    ?>
                                         <tr>
                                             <td><?php echo __($billsTable['Pfpname']) ?></td>
                                             <td><?php echo __($billsTable['info']['created']) ?></td>
@@ -343,8 +363,7 @@ foreach ($companies as $companyInfo) {
                                             <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
                                             <td align="left"><?php echo __($billsTable['info']['bill_amount']) ?></td>
                                         </tr>
-                                    <?php } ?>
-
+<?php } ?>
                                 </table>
                             </div>
                         </div>
