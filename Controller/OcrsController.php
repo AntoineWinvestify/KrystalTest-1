@@ -66,7 +66,7 @@ class ocrsController extends AppController {
     var $helpers = array('Session');
     var $uses = array('Ocr', 'Company', 'Investor', 'File', 'Linkedaccount');
     var $error;
-    
+
     function beforeFilter() {
         parent::beforeFilter(); // only call if the generic code for all the classes is required.
         $this->Security->requireAuth();
@@ -111,7 +111,7 @@ class ocrsController extends AppController {
      */
     function oneClickInvestorII() {
 
-        App::import("Vendor", "ibanhandler/oophp-iban"); 
+        App::import("Vendor", "ibanhandler/oophp-iban");
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
@@ -384,12 +384,22 @@ class ocrsController extends AppController {
      */
 
     function ocrPfpUsersPanel() {
-        //Read and accepted relations
-        $ocrList = $this->Ocr->getAllOcrRelations(6);
-        $this->set('ocrList', $ocrList);
-        
-        //PFP Investor status
-        $this->set('pfpStatus', $pfpStatus);
+
+
+        $status = $this->Company->checkOcrServiceStatus(6);
+
+        if ($status[0]) {
+            if ($status[0]) {
+                //Read and accepted relations
+                $ocrList = $this->Ocr->getAllOcrRelations(6);
+                $this->set('ocrList', $ocrList);
+
+                //PFP  status
+                $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
+            }
+        } else {
+            //You can't access to this page
+        }
         $this->layout = 'azarus_private_layout';
         echo " ";
     }
@@ -440,9 +450,9 @@ class ocrsController extends AppController {
         //Get companies info for the select
         $companiesInfo = $this->Company->getCompanyDataList(null);
         $this->set("companies", $companiesInfo);
-        
+
         // Currency names
-        $this->set('currencyName', $this->currencyName);        
+        $this->set('currencyName', $this->currencyName);
         echo " ";
     }
 
@@ -472,7 +482,7 @@ class ocrsController extends AppController {
     function ocrWinadminUpdatePfpData() {
         $this->layout = 'azarus_private_layout';
         echo " ";
-        
+
         // Country Codes
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');

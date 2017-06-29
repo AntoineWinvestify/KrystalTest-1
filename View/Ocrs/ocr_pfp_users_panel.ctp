@@ -58,7 +58,7 @@
     }
 </style>
 <script>
-    $(function() {
+    $(function () {
         $("#usersTable").DataTable();
 
     });
@@ -92,34 +92,51 @@
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
                                         <table id="usersTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                                                                        data-order='[[ 0, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
-                                                <thead>
-                                                        <tr>
-                                                            <th><?php echo __('Date')?></th>
-                                                            <th><?php echo __('Name')?></th>
-                                                            <th><?php echo __('Surname')?></th>
-                                                            <th><?php echo __('Telephone')?></th>
-                                                            <th><?php echo __('Email')?></th>
-                                                            <th><?php echo __('Status')?></th>
-                                                            <th><?php echo __('Action')?></th>
-                                                            <th><?php echo __('Tallyman')?></th>
-                                                        </tr>
-                                                </thead>
-                                                <tbody>
+                                               data-order='[[ 0, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                            <thead>
+                                                <tr>
+                                                    <th><?php echo __('Date') ?></th>
+                                                    <th><?php echo __('Name') ?></th>
+                                                    <th><?php echo __('Surname') ?></th>
+                                                    <th><?php echo __('Telephone') ?></th>
+                                                    <th><?php echo __('Email') ?></th>
+                                                    <th><?php echo __('Status') ?></th>
+                                                    <th><?php echo __('Action') ?></th>
+                                                    <th><?php echo __('Tallyman') ?></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
                                                 <?php foreach ($ocrList as $ocr) {
                                                     ?>
                                                     <tr>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
-                                                        <td><?php echo __('cosa del estado del usuario')?></td>
-                                                        <td>
-                                                            <a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">Descargar</a>
-                                                            <?php /*<button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button>*/ ?>
-                                                        </td>
-                                                        <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                        
+                                                        <?php if ($pfpStatus == SER_ACTIVE) { //If service is active, show the data?>
+                                                        
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
+                                                            <td><?php echo __('cosa del estado del usuario') ?></td>
+                                                            <td>
+                                                                <a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">Descargar</a>
+                                                                <?php /* <button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button> */ ?>
+                                                            </td>
+                                                            <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                            
+                                                        <?php } else if ($pfpStatus == SER_SUSPENDED) { // If servoce is active, hide the full data?>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
+                                                            <td><?php echo __(substr_replace($ocr[1]['invesotrInfo']['Investor']['investor_telephone'],'*******',5)) ?></td>
+                                                            <td><?php echo __(substr_replace($ocr[1]['invesotrInfo']['Investor']['investor_email'],'********',5) ) ?></td>
+                                                            <td><?php echo __('cosa del estado del usuario') ?></td>
+                                                            <td>
+                                                                <a disabled href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">Descargar</a>
+                                                                <?php /* <button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button> */ ?>
+                                                            </td>
+                                                            <td><button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                        <?php } ?>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>

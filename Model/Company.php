@@ -26,7 +26,9 @@
   [2017-06-23] Version 1.0 (for ocr)
   companiesDataOCR                                    [OK, tested]
   db relation
-  Pending:
+
+  [2017-06-28] Version 1.1 (for ocr)
+  Check status
 
 
 
@@ -158,6 +160,27 @@ class Company extends AppModel {
         return $data;
     }
 
+    
+    /**Check the service status for the company
+     * 
+     * @param type $id
+     * @return type
+     */
+    public function checkOcrServiceStatus($id) {
+        
+        //Search the company only if ocr service is active or suspended
+        $status = $this->Serviceocr->find("first", array(
+            'fields' => 'serviceocr_status',
+            'conditions' => array('company_id' => $id, 'serviceocr_status' => array(SER_ACTIVE, SER_SUSPENDED)),
+        ));
+        //If found, return true and the status
+        if(count($status) > 0){
+            return [true, $status];
+        }else {
+            return false;
+        }
+    }
+    
     /**
      *
      * 	Returns the extended data an array of the company and their data that fullfil the filterConditions.
