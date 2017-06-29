@@ -102,7 +102,7 @@ class ocrsController extends AppController {
         if ($status == NOT_SENT || $status == OCR_FINISHED) {
             //$this->ocrInvestorPlatformSelection();
             $this->set('link', '/Ocrs/ocrInvestorPlatformSelection');
-        } else if ($status == SENT) {
+        } else if ($status == SENT || $status == ORC_PENDING) {
             $this->activatedService();
         } else if ($status == ERROR) {
             //$this->ocrInvestorDataPanel();
