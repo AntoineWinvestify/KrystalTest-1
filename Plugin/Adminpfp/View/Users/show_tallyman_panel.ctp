@@ -32,7 +32,8 @@
 
  
  
- 
+ Pending
+ * form validation
  
 
  */
@@ -68,7 +69,7 @@ console.log("btn clicked");
      
     var link = $(this).attr( "href" );
 console.log ("link = " + link); 
-    
+  // validar los parametros  
     var inputid = $("#tallymanInputId").val();
     var useremail = $("#tallymanInputEmail").val();
     var usertelephone = $("#tallymanInputTelephone").val();   
