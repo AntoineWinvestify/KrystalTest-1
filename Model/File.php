@@ -111,15 +111,17 @@ class file extends AppModel {
 
                 //Move the uploaded file to the new dir
                 if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
-                    return 0;
+                    return [false, __("Upload failed. Incorrect type or file too big.")];
                 }
 
                 //Save in db
                 if ($path == "file") {
+
                     $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $name . "', '" . $folder . DS . $filename . "');";
                     $query = $this->query($query);
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
-                    return $result;
+                    return [true, __('Upload ok'), $result];
+                    
                 } else if ($path == "bill") {
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
 
@@ -128,18 +130,21 @@ class file extends AppModel {
                             'company_id' => $id,
                             'file_id' => 50,
                             'bill_number' => $type['number'],
-                            'bill_amount' => $type['amount'],
+                            'bill_amount' => $type['amount'] * 100,
                             'bill_concept' => $type['concept'],
+                            'bill_currency' => $type['currency'],
                             'bill_url' => $folder . DS . $filename
                         )
                     );
 
-                    $this->CompaniesFile->save($bill);
-
-                    return $result;
+                    if ($this->CompaniesFile->save($bill)) {
+                        return [true, __('Upload ok')];
+                    } else {
+                        return [false, __("Upload failed. Incorrect type or file too big.")];
+                    }
                 }
             } else {
-                return 0;
+                return [false, __("Upload failed. Incorrect type or file too big.")];
             }
         }
     }
@@ -270,7 +275,7 @@ class file extends AppModel {
             foreach ($allInfo["Company"] as $info) {
                 $companyName = $info["company_name"];
                 $billInfo = $info["CompaniesFile"];
-                $tempArray = array('name' => $companyName, 'info' => $billInfo);
+                $tempArray = array('Pfpname' => $companyName, 'info' => $billInfo);
                 array_push($allBillInfo, $tempArray);
             }
         }

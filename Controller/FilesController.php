@@ -78,11 +78,11 @@ class filesController extends AppController {
                 $this->set("result", $result);
             } else if (count($this->params['data']['bill']) > 0) {
                 $data = $this->params['data']['bill'];
-                $info = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount']);
+                $info = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency'] );
                 $id = $this->params['data']['pfp'];
                 $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile'];
                 $result = $this->File->ocrFileSave($data, $company, $id, $info, "bill");
-                $this->set("result", $result);
+                $this->set("result",$result);
             }
         }
     }

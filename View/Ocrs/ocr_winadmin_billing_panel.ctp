@@ -78,12 +78,12 @@ foreach ($companies as $companyInfo) {
 <script>
     $(function () {
         //tooltip
-        $(document).on("click", "#tooltip", function() {
-                $("#amountTooltip").toggle();
+        $(document).on("click", "#tooltip", function () {
+            $("#amountTooltip").toggle();
         });
         $(document).on("click", "#sendBill", function () {
             console.log("validate Winadmin billing data");
-<?php //Javascript validation     ?>
+<?php //Javascript validation       ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
                 link = '../Files/upload';
@@ -96,12 +96,25 @@ foreach ($companies as $companyInfo) {
                     processData: false,
                     traditional: true
                 }).done(function (data) {
-                    if (data[0] == 0) {
+                    if (data[0]) {
                         $(".alert-to-fade").show();
+                        $(".alert-to-fade").html("<strong>" + data[1] + "</strong>");
+                        $('#selected').html("");
+                        $("#bill").trigger("reset");
+                    } else {
+                        $(".alert-to-fade").show();
+                        $(".alert-to-fade").html("<strong>" + data[1] + "</strong>");
+                        $('#selected').html("");
+                        $("#bill").trigger("reset");
                     }
                 });
             }
         });
+
+        $(document).on("change", "#billUpload", function () {
+            $("#selected").html("<?php echo __('Document selected') ?>");
+        });
+
     });
 </script>
 <div id="1CR_winAdmin_3_billingPanel">
@@ -146,7 +159,7 @@ foreach ($companies as $companyInfo) {
                                     <tr>
                                         <td>
                                             <?php
-                                            array_unshift ($companiesSelectList,__('Choose One'));
+                                            array_unshift($companiesSelectList, __('Choose One'));
                                             $class = "form-control blue_noborder billPFP";
                                             echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
@@ -247,13 +260,13 @@ foreach ($companies as $companyInfo) {
                                                     <?php echo $billValidationErrors['bill_amount'][0] ?>
                                                 </span>
                                             </div>
-                                            <div id="amountTooltip" style="display:none;"><small><?php echo __('The Amount value must be formatted with 2 decimal digits. (Ex: 1111,10)')?></small></div>
+                                            <div id="amountTooltip" style="display:none;"><small><?php echo __('The Amount value must be formatted with 2 decimal digits. (Ex: 1111,10)') ?></small></div>
                                         </td>
                                         <td>
                                             <?php
                                             $class = "form-control blue_noborder billCurrency";
                                             echo $this->Form->input('Companies.company_id', array(
-                                                'name' => 'pfp',
+                                                'name' => 'currency',
                                                 'id' => 'ContentPlaceHolder_currency',
                                                 'label' => false,
                                                 'options' => $currencyName,
@@ -273,11 +286,10 @@ foreach ($companies as $companyInfo) {
                                         </td>
                                         <td>
                                             <?php
-                                           
                                             echo "<label class='btn labelFile btnRounded btnUploadFile' for='billUpload'><i class='fa fa-upload'></i> Upload bill</label>";
                                             echo $this->Form->file("bill", array('class' => 'upload', 'id' => 'billUpload'));
-                                           
                                             ?>
+                                            <strong id = 'selected' ></strong>
                                         </td>
                                         <td>
                                             <button type="button" id="sendBill" class="btn btn-default btnWinAdmin btnRounded">
@@ -285,7 +297,7 @@ foreach ($companies as $companyInfo) {
                                             </button>                                        </td>
 
                                     </tr>
-                                    <?php  echo $this->Form->end(); ?>
+                                    <?php echo $this->Form->end(); ?>
                                 </table>
                             </div>
                         </div>
@@ -318,15 +330,15 @@ foreach ($companies as $companyInfo) {
                                        data-order='[[ 1, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
                                         <th width="15%"><?php echo __('PFP') ?></th>
-                                        <th><?php echo __('Date')?></th>
+                                        <th><?php echo __('Date') ?></th>
                                         <th><?php echo __('Bill Number') ?></th>
                                         <th><?php echo __('Concept') ?></th>
                                         <th><?php echo __('Amount') ?></th>
                                     </tr>
-                                    <?php foreach ($bills as $billsTable) { //Bills table creation  ?>
+                                    <?php foreach ($bills as $billsTable) {//Bills table creation   ?>
                                         <tr>
-                                            <td><?php echo __($billsTable['name']) ?></td>
-                                            <td><?php echo __($billsTable['created']) ?></td>
+                                            <td><?php echo __($billsTable['Pfpname']) ?></td>
+                                            <td><?php echo __($billsTable['info']['created']) ?></td>
                                             <td><?php echo __($billsTable['info']['bill_number']) ?></td>
                                             <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
                                             <td align="left"><?php echo __($billsTable['info']['bill_amount']) ?></td>
