@@ -197,6 +197,9 @@ define('UNCHECKED', 0);
 define('CHECKED', 1);
 define('ERROR', 2);
 
+// CURL ERRORS
+define('CURL_ERROR_TIMEOUT', 28);
+
 class AppController extends Controller {
 
     public $components = array('DebugKit.Toolbar',
