@@ -1,47 +1,49 @@
 <?php
 /**
-* +--------------------------------------------------------------------------------------------+
-* | Copyright (C) 2016, http://www.winvestify.com                                              |
-* +--------------------------------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify                          |
-* | it under the terms of the GNU General Public License as published by                       |
-* | the Free Software Foundation; either version 2 of the License, or                          |
-* | (at your option) any later version.                                                        |
-* | This file is distributed in the hope that it will be useful                                |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
-* | GNU General Public License for more details.                                               |
-* +--------------------------------------------------------------------------------------------+
-*
-*
-* @author
-* @version 0.4
-* @date 2017-05-29
-* @package
-*
-* ONE CLICK REGISTRATION - INVESTOR VIEW #2: DATA PANEL
-* 
-* [2017-05-23] Version 0.1
-* Completed view
-* [pending] Click on selected platform to add it on 'investorSelection' div & delete on 'platformSelection'.
-* [pending] Mechanism to generate all platform elements
-* [pending] Mechanism to generate final modal
-* 
-* [2017-06-13] Version 0.2
-* Added spinner on Go button
-* 
-* [2017-06-13] Version 0.3
-* Added user feedback
-* 
-* [2017-06-22] Version 0.4
-* Added user feedback about terms&conditions & privacy policy
-* Added user feedback about applied filters to show platforms to select
-* Updated all notification boxes
-* Updated all bootstrap cols
-* Added target=_blank on platform links to privacy policy & terms
-*/
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                                              |
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify                          |
+ * | it under the terms of the GNU General Public License as published by                       |
+ * | the Free Software Foundation; either version 2 of the License, or                          |
+ * | (at your option) any later version.                                                        |
+ * | This file is distributed in the hope that it will be useful                                |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+ * | GNU General Public License for more details.                                               |
+ * +--------------------------------------------------------------------------------------------+
+ *
+ *
+ * @author
+ * @version 0.4
+ * @date 2017-05-29
+ * @package
+ *
+ * ONE CLICK REGISTRATION - INVESTOR VIEW #2: DATA PANEL
+ * 
+ * [2017-05-23] Version 0.1
+ * Completed view
+ * [pending] Click on selected platform to add it on 'investorSelection' div & delete on 'platformSelection'.
+ * [pending] Mechanism to generate all platform elements
+ * [pending] Mechanism to generate final modal
+ * 
+ * [2017-06-13] Version 0.2
+ * Added spinner on Go button
+ * 
+ * [2017-06-13] Version 0.3
+ * Added user feedback
+ * 
+ * [2017-06-22] Version 0.4
+ * Added user feedback about terms&conditions & privacy policy
+ * Added user feedback about applied filters to show platforms to select
+ * Updated all notification boxes
+ * Updated all bootstrap cols
+ * Added target=_blank on platform links to privacy policy & terms
+ */
+echo $result;
+if ($result) {
 ?>
-1
+
 <script>
     total = <?php echo count($selected) ?>;
     var numberCompanies = 0;
@@ -147,7 +149,7 @@
         total--;
         recount();
     }
-    
+
     function errorDelete() {
 
     }
@@ -161,7 +163,7 @@
 
 <?php
 foreach ($notShow as $notShowCompany) {
-    ?>             
+    ?>
             $('#selection').append("<input type='hidden' value='" + <?php echo $notShowCompany['id'] ?> + "' class='selected inDB'></input>");
     <?php
 }
@@ -217,7 +219,7 @@ foreach ($selected as $sel) {
             }
         });
     }
-    
+
     function extraEvent() {
         //Borra la plataforma cuando le das a l x
         $('.btnSelectedPlatform').click(function () {
@@ -231,7 +233,7 @@ foreach ($selected as $sel) {
         });
 
     }
-    
+
     function recount() {
         i = 0;
         $(".btnSelectedPlatform").each(function () {
@@ -241,18 +243,18 @@ foreach ($selected as $sel) {
         });
         selEvent();
     }
-    
+
     function selEvent() {
         if (total != 0 || $(".btnSelectedPlatformNoDB").length) {
-            $("#sentCompanies").prop("disabled",false);
+            $("#sentCompanies").prop("disabled", false);
             $("#sel").fadeIn();
         } else {
-            $("#sentCompanies").prop("disabled",true);
+            $("#sentCompanies").prop("disabled", true);
             $("#sel").fadeOut(5000);
         }
 
     }
-    
+
 </script>
 <style>
     .togetoverlay .overlay  {
@@ -273,8 +275,8 @@ foreach ($selected as $sel) {
             <div class="box box-warning fade in alert-win-success" style="padding: 10px; font-size:large">
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i>
                 </button>
-                <strong><?php echo __("One Click Registration");?></strong> <?php echo __("le permite registrarse en cualquiera de las siguientes plataformas.");?>
-                <small><?php echo __("Aquellas plataformas que se encuentren linkeadas en Winvestify no aparecerán en el proceso de selección");?></small>
+                <strong><?php echo __("One Click Registration"); ?></strong> <?php echo __("le permite registrarse en cualquiera de las siguientes plataformas."); ?>
+                <small><?php echo __("Aquellas plataformas que se encuentren linkeadas en Winvestify no aparecerán en el proceso de selección"); ?></small>
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -286,18 +288,18 @@ foreach ($selected as $sel) {
 
                 <div id="investorSelection" class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <?php
-                    echo $this->Form->create(array("id" => "selection"));
-                    
-                    echo $this->Form->input('numberCompanies', array(
-                        'name' => 'numberCompanies',
-                        'id' => 'numberCompanies',
-                        'label' => false,
-                        'type' => 'hidden',
-                        'value' => 0
-                    ));
-                    echo $this->Form->end();
-                    ?> 
+                        <?php
+                        echo $this->Form->create(array("id" => "selection"));
+
+                        echo $this->Form->input('numberCompanies', array(
+                            'name' => 'numberCompanies',
+                            'id' => 'numberCompanies',
+                            'label' => false,
+                            'type' => 'hidden',
+                            'value' => 0
+                        ));
+                        echo $this->Form->end();
+                        ?> 
                     </div>
                 </div>
                 <div class="row">
@@ -360,14 +362,14 @@ foreach ($selected as $sel) {
                     <div class="box box-warning fade in alert-win-success" style="padding: 10px;">
                         <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i>
                         </button>
-                        <?php echo __("Para poder seleccionar cualquiera de las plataformas, es necesario ");?>
-                        <strong><?php echo __("aceptar su política de privacidad y sus términos  y condiciones de uso ")?></strong>
+                        <?php echo __("Para poder seleccionar cualquiera de las plataformas, es necesario "); ?>
+                        <strong><?php echo __("aceptar su política de privacidad y sus términos  y condiciones de uso ") ?></strong>
                     </div>
                 </div>
                 <?php
                 foreach ($company as $comp) {
                     ?>
-                    
+
                     <div id = "<?php echo $comp['Company']['company_name'] ?>" class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $comp['Company']['id'] ?>">
                         <div class="box box-widget widget-user-2">
                             <div class="widget-user-header">
@@ -404,3 +406,4 @@ foreach ($selected as $sel) {
         </div> <!-- /.col 9 -->
     </div> <!-- /.row general -->
 </div>
+<?php }

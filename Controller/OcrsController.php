@@ -119,7 +119,7 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            if ($this->Verify($_REQUEST['iban'])) {
+            //if ($this->Verify($_REQUEST['iban'])) {
                 $this->layout = 'ajax';
                 $this->disableCache();
 
@@ -171,9 +171,9 @@ class ocrsController extends AppController {
                 $this->set('result1', $result1);
                 $this->set('result2', $result2);
                 $this->set('result3', $result3);
-            } else {
-                $this->set('result1', 0);
-            }
+            /*} else {
+                $this->set('result1', false);
+            }*/
         }
     }
 
@@ -182,7 +182,7 @@ class ocrsController extends AppController {
      */
     function oneClickInvestorI() {
         if (!$this->request->is('ajax')) {
-            $this->set('result', 0);
+            $this->set('result', false);
         } else {
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $this->layout = 'ajax';
@@ -201,7 +201,7 @@ class ocrsController extends AppController {
                 $result = $this->Ocr->saveCompaniesOcr($companies);
                 $this->set('result', $result);
             } else {
-                $this->set('result', 0);
+                $this->set('result', false);
             }
         }
     }
@@ -256,48 +256,54 @@ class ocrsController extends AppController {
      * @return int
      */
     function ocrInvestorDataPanel() {
-        //echo "1"; // echo  for ajax
-        //Investor info
-        $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
+        if (!$this->request->is('ajax')) {
+            //Ajax result
+            $this->set('result', false);
+        } else {
+            //Investor info
+            $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
 
-        //Investor id
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            //Investor id
+            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
-        //Ocr infe
-        $data2 = $this->Ocr->ocrGetData($id);
+            //Ocr infe
+            $data2 = $this->Ocr->ocrGetData($id);
 
-        //Selected Companies info
-        $companies = $this->Ocr->getSelectedCompanies($id);
+            //Selected Companies info
+            $companies = $this->Ocr->getSelectedCompanies($id);
 
-        //Required  files
-        $requiredFiles = $this->File->readRequiredFiles($companies);
-        $filesData = $this->File->getFilesData($requiredFiles);
+            //Required  files
+            $requiredFiles = $this->File->readRequiredFiles($companies);
+            $filesData = $this->File->getFilesData($requiredFiles);
 
-        //Read existing files 
-        $existingFiles = $this->File->readExistingFiles($id);
+            //Read existing files 
+            $existingFiles = $this->File->readExistingFiles($id);
 
-        //Set all info
-        $this->set('investor', $data);
-        $this->set('ocr', $data2);
-        $this->set('requiredFiles', $filesData);
-        $this->set('existingFiles', $existingFiles);
-        Configure::load('countryCodes.php', 'default');
-        $countryData = Configure::read('countrycodes');
-        $this->set('countryData', $countryData);
+            //Set all info
+            $this->set('investor', $data);
+            $this->set('ocr', $data2);
+            $this->set('requiredFiles', $filesData);
+            $this->set('existingFiles', $existingFiles);
+            Configure::load('countryCodes.php', 'default');
+            $countryData = Configure::read('countrycodes');
+            $this->set('countryData', $countryData);
 
-        //Type set
-        $fileConfig = Configure::read('files');
-        $typeString = null;
-        foreach (array_unique($fileConfig['permittedFiles']) as $files) {
-            $file = substr($files, -3, 3);
-            $typeString = $typeString . " ." . $file;
+            //Type set
+            $fileConfig = Configure::read('files');
+            $typeString = null;
+            foreach (array_unique($fileConfig['permittedFiles']) as $files) {
+                $file = substr($files, -3, 3);
+                $typeString = $typeString . " ." . $file;
+            }
+            $this->set('filesType', $typeString);
+
+            //Check data set
+            $checkData = $this->Investor->readCheckData($id);
+            $this->set('checkData', $checkData);
+
+            //Ajax result
+            $this->set('result', true);
         }
-        $this->set('filesType', $typeString);
-
-        //Check data set
-        $checkData = $this->Investor->readCheckData($id);
-        $this->set('checkData', $checkData);
-
         echo " ";
     }
 
@@ -305,43 +311,50 @@ class ocrsController extends AppController {
      * Select the companies you want register
      */
     function ocrInvestorPlatformSelection() {
+        if (!$this->request->is('ajax')) {
+            //Ajax result
+            $this->set('result', false);
+        } else {
+            //Companies with ocr
+            $this->set('company', $this->Company->companiesDataOCR());
 
-        //Companies with ocr
-        $this->set('company', $this->Company->companiesDataOCR());
+            //Investor id
+            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
-        //Investor id
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            //Set selected companies(not sent)
+            $this->set('selected', $this->Ocr->getSelectedCompanies($id));
 
-        //Set selected companies(not sent)
-        $this->set('selected', $this->Ocr->getSelectedCompanies($id));
+            //Selected companies(sent)(Not show)
+            $registeredList = $this->Ocr->getRegisterSentCompanies($id);
+            $filter = array('investor_id' => $id);
 
-        //Selected companies(sent)(Not show)
-        $registeredList = $this->Ocr->getRegisterSentCompanies($id);
-        $filter = array('investor_id' => $id);
+            //Linked companies(Not show)
+            $linkedList = $this->Linkedaccount->getLinkedaccountIdList($filter);
+            $notShow = array();
 
-        //Linked companies(Not show)
-        $linkedList = $this->Linkedaccount->getLinkedaccountIdList($filter);
-        $notShow = array();
+            //Filter
+            foreach ($registeredList as $registered) {
+                array_push($notShow, $registered["ocrInfo"]["company_id"]);
+            }
 
-        //Filter
-        foreach ($registeredList as $registered) {
-            array_push($notShow, $registered["ocrInfo"]["company_id"]);
+            foreach ($linkedList as $linked) {
+                array_push($notShow, $linked["Linkedaccount"]["company_id"]);
+            }
+            $notShowList = array_unique($notShow);
+            $filterList = array('id' => $notShowList);
+
+            $companyInfo = $this->Company->getCompanyDataList($filterList);
+            $result = array();
+            foreach ($companyInfo as $info) {
+                array_push($result, array('id' => $info['id'], 'name' => $info["company_name"]));
+            }
+
+            //Set companies filter
+            $this->set('notShow', $result);
+
+            //Ajax result
+            $this->set('result', true);
         }
-
-        foreach ($linkedList as $linked) {
-            array_push($notShow, $linked["Linkedaccount"]["company_id"]);
-        }
-        $notShowList = array_unique($notShow);
-        $filterList = array('id' => $notShowList);
-
-        $companyInfo = $this->Company->getCompanyDataList($filterList);
-        $result = array();
-        foreach ($companyInfo as $info) {
-            array_push($result, array('id' => $info['id'], 'name' => $info["company_name"]));
-        }
-
-        //Set companies filter
-        $this->set('notShow', $result);
         echo " ";
     }
 
@@ -469,14 +482,13 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $this->set("result", false);
             $this->set("message", __('Error at refreshing the bills table.'));
-
         } else {
             $this->layout = 'ajax';
             $this->disableCache();
-         
+
             //get all bills and set them in the view
             $billsInfo = $this->File->getAllBills();
-            
+
             $this->set("result", true);
             $this->set("bills", $billsInfo);
         }
