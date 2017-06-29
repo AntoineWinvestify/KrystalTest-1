@@ -182,7 +182,7 @@ define('SER_SUSPENDED', 2);
 define('NOT_SENT', 0);
 define('SENT', 1);
 define('ERROR', 2);
-define('PENDING', 3);
+define('OCR_PENDING', 3);
 define('OCR_FINISHED', 4);
 
 //OCR COMPANY STATUS
@@ -251,7 +251,7 @@ class AppController extends Controller {
         $this->pfpStatus = array(2=>"New" , 4=>"Viewed");
         
          //Investor Ocr Status
-        $this->ocrStatus = array(1=>"Uncheked", 2=>"Error", 3=>"Finished");
+        $this->ocrStatus = array(1=>"Uncheked", 2=>"Error", 3=>"Pending", 4=>"Finished");
         
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;

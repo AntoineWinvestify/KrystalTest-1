@@ -444,7 +444,7 @@ class ocrsController extends AppController {
     function ocrWinadminInvestorChecking() {
 
         //Filter
-        $filter = array('ocr_status' => SENT);
+        $filter = array('ocr_status' => array(SENT, ERROR, OCR_PENDING, OCR_FINISHED));
 
         //Search  and set investor data 
         $ocrList = $this->Ocr->ocrGetData(null, $filter);
@@ -503,7 +503,8 @@ class ocrsController extends AppController {
         //Search and set investor data
         $userData = $this->Ocr->ocrGetData($id, null);
         $this->set('userData', $userData);
-
+       
+        
         //Search and set investor checking
         $checking = $this->Investor->readCheckData($id);
         $this->set('checking', $checking);

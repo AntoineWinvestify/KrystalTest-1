@@ -133,7 +133,7 @@
                                             'label' => false,
                                             'placeholder' => __('Name'),
                                             'class' => $class,
-                                            'value' => $resultUserData[0]['Investor']['investor_name'],
+                                            'value' => $userData[0]['Investor']['investor_name'],
                                             'disabled' => 'disabled'
                                         ));
                                         ?>
@@ -191,7 +191,7 @@
                                             'label' => false,
                                             'placeholder' => __('Id'),
                                             'class' => $class,
-                                            'value' => $resultUserData[0]['Investor']['investor_DNI'],
+                                            'value' => $userData[0]['Investor']['investor_DNI'],
                                             'disabled' => 'disabled'
                                         ));
                                         ?>
@@ -220,7 +220,7 @@
                                             <div class="input-group-addon" style="border-radius:8px; border: none;">
                                                 <i class="fa fa-calendar"></i>
                                             </div>
-                                            <input type="text" disabled="disabled" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php $resultUserData[0]['Investor']['investor_dateOfBirth'] ?>">
+                                            <input type="text" disabled="disabled" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php echo $userData[0]['Investor']['investor_dateOfBirth'] ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -247,7 +247,7 @@
                                             'label' => false,
                                             'placeholder' => __('Email'),
                                             'class' => $class,
-                                            'value' => $resultUserData[0]['Investor']['investor_email'],
+                                            'value' => $userData[0]['Investor']['investor_email'],
                                             'disabled' => 'disabled'
                                         ));
                                         ?>
@@ -314,7 +314,7 @@
                                             'label' => false,
                                             'placeholder' => __('PostCode'),
                                             'class' => $class,
-                                            'value' => $resultUserData[0]['Investor']['investor_postCode'],
+                                            'value' => $userData[0]['Investor']['investor_postCode'],
                                             'disabled' => 'disabled'
                                         ));
                                         ?>
@@ -342,7 +342,7 @@
                                             'label' => false,
                                             'placeholder' => __('Address'),
                                             'class' => $class,
-                                            'value' => $resultUserData[0]['Investor']['investor_address1'],
+                                            'value' => $userData[0]['Investor']['investor_address1'],
                                             'disabled' => 'disabled'
                                         ));
                                         ?>
@@ -373,7 +373,7 @@
                                             'label' => false,
                                             'placeholder' => __('City'),
                                             'class' => $class,
-                                            'value' => $resultUserData[0]['Investor']['investor_city'],
+                                            'value' => $userData[0]['Investor']['investor_city'],
                                             'disabled' => 'disabled'
                                         ));
                                         ?>
@@ -418,14 +418,16 @@
                                             <label class="radio-inline"><input type="radio" name="checkIban"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkIban" checked="checked"><?php echo __('Pending') ?></label>
                                         </div>
-                                        <input type="text" disabled="disabled" class="form-control blue_noborder">
+                                        <input type="text" disabled="disabled" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_iban'] ?>">
                                     </div>
                                 </div><!-- /Cif + Business Name -->
                             </div>
                             <!-- /User data -->
                         </div>
                         <!-- /Investor complete data -->
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle" style="display: none;">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle">
+                           
+                            <?php if ($userData[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) { ?>
                             <div class="row">
                                 <!-- CIF -->
                                 <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
@@ -436,7 +438,7 @@
                                             <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkCIF" checked="checked"><?php echo __('Pending') ?></label>
                                         </div>
-                                        <input disabled="disabled" type="text" class="form-control blue_noborder">
+                                        <input disabled="disabled" type="text" class="form-control blue_noborder"value ="<?php echo $userData[0]['Ocr']['investor_iban'] ?>" >
                                     </div>
                                 </div>
                                 <!-- /CIF -->
@@ -450,21 +452,13 @@
                                             <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkBusinessName" checked="checked"><?php echo __('Pending') ?></label>
                                         </div>
-                                        <input disabled="disabled" type="text" class="form-control blue_noborder">
-                                    </div>
-                                    <!-- /CIF -->
-
-                                    <!-- Business Name -->
-                                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label> <input type="checkbox" id="checkBusinessName">
-                                            <input disabled="disabled" type="text" class="form-control blue_noborder" value="<?php echo $userData[0]['Ocr']['investor_businessName'] ?>" >
-                                        </div>
+                                        <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_cif'] ?>">
                                     </div>
                                     <!-- /Business Name -->
                                     <!-- /Business Data -->
                                 </div>
                             </div>
+                            <?php } ?>
                         </div>
                         <div class="row">
                             <!-- Investor complete data -->
