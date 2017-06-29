@@ -33,12 +33,18 @@
  * Added JS validation
  * Added All input error fields
  * Added general input error
+ * 
+ * [2017-06-29] Version 0.4
+ * Added scripts
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <script src="/plugins/chartjs/Chartist.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/plugins/intlTelInput/css/intlTelInput.css">
+<script src="/plugins/intlTelInput/js/utils.js"></script>
+<script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
 <style>
     .togetoverlay .overlay  {
         z-index: 50;
@@ -74,6 +80,7 @@
                 alert("server validation!!!!");
             }
         });
+        $('#tallyman_telephone').intlTelInput();
 });
 </script>
 <div id="1CR_pfpAdmin_3_tallyman">
@@ -154,26 +161,29 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                                            <label><?php echo __('Telephone')?></label>
-                                            <?php
-                                            $class = "form-control blue_noborder3 tallymanTelephone tallymanGeneral";
-                                            echo $this->Form->input('/*AQUÍ NO SÉ LO QUE TIENE QUE IR!!!!!*/', array(
-                                                'name' => 'email',
-                                                'id' => 'tallyman_telephone',
-                                                'placeholder' => 'Enter telephone here',
-                                                'label' => false,
-                                                'class' => $class,
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorTelephone";
-                                            if (array_key_exists('tallyman_telephone', $billValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $billValidationErrors['tallyman_telephone'][0] ?>
-                                                </span>
+                                            <div class="form-control blue_noborder2 tallymanTelephone tallymanGeneral">
+                                                <label><?php echo __('Telephone')?></label>
+                                                <?php
+                                                $class = "form-control blue_noborder3";
+                                                echo $this->Form->input('/*AQUÍ NO SÉ LO QUE TIENE QUE IR!!!!!*/', array(
+                                                    'name' => 'telephone',
+                                                    'id' => 'tallyman_telephone',
+                                                    'placeholder' => __('Enter telephone here'),
+                                                    'label' => false,
+                                                    'class' => $class,
+                                                    'type' => 'tel'
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorTelephone";
+                                                if (array_key_exists('tallyman_telephone', $billValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $billValidationErrors['tallyman_telephone'][0] ?>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
