@@ -53,7 +53,8 @@ function successTallymanData(data) {
  
  function errorTallymanData(data) {
 
-	console.log("edit_user_profile_data: LINE 90");
+    $("#TallymanResult").replaceWith(data);
+	console.log("profile_data: LINE 99990");
 
 }
  
@@ -159,5 +160,4 @@ console.log ("link = " + link);
     </div> <!-- /.row general -->
 </div>
 
-<div id="TallymanResult">
-</div>
+<div id="TallymanResult"></div>

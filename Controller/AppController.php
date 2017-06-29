@@ -193,6 +193,7 @@ define('EUR', 1);           // Euro
 define('GBP', 2);           // UK Pound Sterling
 define('USD', 3);           // US Dollar
 
+   
 
 
 class AppController extends Controller {

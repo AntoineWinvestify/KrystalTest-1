@@ -20,7 +20,7 @@
 * @package
  * 
  * One Click Registration - PFD Admin Tallyman
- * PFP admin Tallyman service about investor profiles.
+ * PFP admin Tallyman service and investor profiles.
  * 
  * [2017-06-13] version 0.1
  * First view.
@@ -185,6 +185,9 @@ var myChart = new Chart(ctx, {
                                                     <div class="stats" style="text-align: center;">
                                                         <?php echo __('% Total cartera')?>
                                                         <strong><?php echo __('invertida')?></strong>
+                                                        <div class="card-content">
+                                                            <p class="category"><span class="text-success"><i class="fa fa-long-arrow-up"></i> o%  </span></p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -211,6 +214,9 @@ var myChart = new Chart(ctx, {
                                                     <div class="stats" style="text-align: center;">
                                                         <?php echo __('% Total cartera')?>
                                                         <strong><?php echo __('por modalidad')?></strong>
+                                                    </div>
+                                                    <div class="card-content">
+                                                            <p class="category"><span class="text-success"><i class="fa fa-long-arrow-down"></i> i%  </span></p>
                                                     </div>
                                                 </div>
                                             </div>

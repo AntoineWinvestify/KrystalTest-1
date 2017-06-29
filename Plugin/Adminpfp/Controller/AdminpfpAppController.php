@@ -15,22 +15,15 @@
 // | Author: Antoine de Poorter                                            |
 // +-----------------------------------------------------------------------+
 //
- */
-//App::uses('Controller', 'Controller');
-//App::uses('AppController', 'Controller');
-
-/**
- * Application Controller
+ * 
+ * Application Controller for Adminpfp plugin
  *
  * Add your application-wide methods in the class below, your controllers
  * will inherit them.
  *
- */
-
-/*
-		  App Controller
+	  Adminpfp AppController
 		  
-2014-05-14		version 2014_0.1
+2017-06-14		version 0.1
 Simple first version 
 
 
@@ -38,23 +31,16 @@ Simple first version
 
 
 
-PENDING:
-Put authorization table in the acl.php config file
-isAuthorised: Does not seem to work for AJAX actions
-APROBADO is missing in global constants
-
-// used in investmentState
-	define("UNDEFINED", 1);
-	define("CANCELED", 3);
-	define("PAID_IMMEDIATELY", 32);	
-	define("WAITING_FOR_PAYMENT", 31);
-	define("DELAYED_PAYMENT", 33);					
-	define("WAITING_FOR_PAYMENT_AFTER_WARNING", 34);	
-	define("DELAYED_PAYMENT_AFTER_WARNING", 35);
-
 
 */
  
+
+// Errors that can be detected in this function
+    define('USER_DOES_NOT_EXIST', 1);           
+    define('NO_DATA_AVAILABLE', 2);   
+    
+    
+    
 class AdminpfpAppController extends AppController {
  
     public $components = array('DebugKit.Toolbar',
@@ -87,72 +73,9 @@ class AdminpfpAppController extends AppController {
 */
 public function beforeFilter() {
    parent::beforeFilter();
-    $this->Cookie->name = 'zastac_equity_admin';
-
-    $this->Security->blackHoleCallback = 'blackhole';
- 
-/*	
+    $this->Cookie->name = 'Winvestify_pfpadmin';
 
 
-*/
-}
-
-
-
-
-
-/**
-*	Redirect an action to using https
-*
-*/
-
-function blackHole()  {
-//	$this->redirect('https://' . env('SERVER_NAME') . env('REQUEST_URI'));
-}
-
-
-
-
-
-/**
-*	Redirect an action to using http
-*
-*/
-
-function _notblackHole()  {
-	$this->redirect('http://' . env('SERVER_NAME') . env('REQUEST_URI'));
-}
-
-
-
-
-
-/**
- *
- *	Normalize the values of an array to at least 2 characters, 6-> 06
- *
-*/
-public function norm_array_values(&$myArray, $key, $prefixdata) {
-	if ($myArray < 10) {
-		$myArray = str_pad($myArray, 2, "0", STR_PAD_LEFT);
-	}
-}
-
-
-
-
-
-function deleteDir($dir) {
-   $iterator = new RecursiveDirectoryIterator($dir);
-   foreach (new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::CHILD_FIRST) as $file) 
-   {
-      if ($file->isDir()) {
-         rmdir($file->getPathname());
-      } else {
-         unlink($file->getPathname());
-      }
-   }
-   rmdir($dir);
 }
 
 

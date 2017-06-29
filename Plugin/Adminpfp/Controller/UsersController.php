@@ -42,7 +42,7 @@ class UsersController extends AdminpfpAppController
 
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Js');
-	var $uses = array('User', 'Company', );
+	var $uses = array('User', 'Company');
 	var $components = array('Security');
   	var $error;
 	
@@ -110,7 +110,6 @@ public function startTallyman() {
  */
 public function readtallymandata() {
 
- 
     if (!$this->request->is('ajax')) {
         throw new
         FatalErrorException(__('You cannot access this page directly'));
@@ -119,41 +118,60 @@ public function readtallymandata() {
     $this->disableCache();
 
 //    $platformId = $this->Auth->user('AdminPFP.company_id');
+    $error = null;
     $platformId = 1;
     $inputId = $_REQUEST['inputId'];
     $userEmail = $_REQUEST['userEmail'];
     $userTelephone = $_REQUEST['userTelephone'];
   
 // Get the unique user identification
-    if (!empty($inputId)) { 
+    if (!empty($inputId)) {     
+//        $error = USER_DOES_NOT_EXIST;
         $key[] = "Investor.investor_DNI";
         $value[] = $inputId;
     } 
-
     if (!empty($userEmail)) { 
+        $error = NO_DATA_AVAILABLE;
         $key[] = 'Investor.investor_email';
         $value[] = $userEmail;
     }  
-
     if (!empty($userTelephone)) { 
         $key[] = 'Investor.investor_telephone';
         $value[] = $userTelephone;
     }  
     $filterConditions = array_combine($key, $value);
-
+    
     $this->Investor = ClassRegistry::init('Investor');   
     $resultInvestor = $this->Investor->getInvestorData($filterConditions);
-
     $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
-
+    
+    if (!$userIdentification) {
+ //       $error = USER_DOES_NOT_EXIST;
+    }
+ 
     $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
     $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
-  
-    $this->set('resultCompany', $resultCompany);
+    if (!$resultTallymanData) {
+//        $error = NO_DATA_AVAILABLE;
+    }   
+
     $this->set('resultTallyman', $resultTallymanData);
-    $this->set('crowdlendingTypes', $this->crowdlendingTypes);
-   
-  }
+    if (!$error) {                              // No error encountered, use default view
+        return;
+    }    
+
+    switch ($error) { 
+        case 1:                         // NO_DATA_AVAILABLE
+            $this->render('noDataAvailable');
+            break;
+        case 2:                         // USER_DOES_NOT_EXIST
+            $this->render('userDoesNotExist');
+            break;
+        default:
+     //       $this->render('GeneralError');
+            
+    }
+}
 
 
 
@@ -162,7 +180,6 @@ public function readtallymandata() {
 *	
 */
 public function showTallymanPanel() {
- // Configure::write('debug', 2); 
   $this->layout = 'Adminpfp.azarus_private_layout';
   
 }  
