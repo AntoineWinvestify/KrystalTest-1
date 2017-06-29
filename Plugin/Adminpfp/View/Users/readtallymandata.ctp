@@ -33,7 +33,11 @@
  
  
  
- 
+ PENDING:
+ * class="fa fa-long-arrow-down" for the % of invested money
+ * colors of the graphs (line chart and bar chart)
+ * vertical axis of line chart (multiply by 100 and name the axis)
+ * vertical axis of bar chart (name of the axis)
 
  */
 ?>

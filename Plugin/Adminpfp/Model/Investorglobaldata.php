@@ -30,7 +30,7 @@ class Investorglobaldata extends AppModel
 {
         var $useDbConfig = 'mldata';    
 	public $name = 'Investorglobaldata';
-        var $useTable = "investorglobaldata";
+//        var $useTable = "investorglobaldata";
 /*
 	public $hasOne = array(	);
 
