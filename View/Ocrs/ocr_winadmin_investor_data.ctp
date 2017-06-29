@@ -438,7 +438,7 @@
                                             <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkCIF" checked="checked"><?php echo __('Pending') ?></label>
                                         </div>
-                                        <input disabled="disabled" type="text" class="form-control blue_noborder"value ="<?php echo $userData[0]['Ocr']['investor_iban'] ?>" >
+                                        <input disabled="disabled" type="text" class="form-control blue_noborder"value ="<?php echo $userData[0]['Ocr']['investor_cif'] ?>" >
                                     </div>
                                 </div>
                                 <!-- /CIF -->
@@ -452,7 +452,7 @@
                                             <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkBusinessName" checked="checked"><?php echo __('Pending') ?></label>
                                         </div>
-                                        <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_cif'] ?>">
+                                        <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_ businessName'] ?>">
                                     </div>
                                     <!-- /Business Name -->
                                     <!-- /Business Data -->

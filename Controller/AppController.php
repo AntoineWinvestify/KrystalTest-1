@@ -196,6 +196,7 @@ define('SENT', 1);
 define('ERROR', 2);
 define('OCR_PENDING', 3);
 define('OCR_FINISHED', 4);
+define('FIXED', 5);
 
 //OCR COMPANY STATUS
 define('SELECTED', 0);
@@ -277,10 +278,10 @@ class AppController extends Controller {
         $this->currencyName = array(0=>"(select)", 1=>"€", 2=>"£", 3=>"$");
         
         //Investor Status to PFP Admin
-        $this->pfpStatus = array(2=>"New" , 4=>"Viewed");
+        $this->pfpStatus = array(2=>__("New") , 4=>__("Viewed"));
         
          //Investor Ocr Status
-        $this->ocrStatus = array(1=>"Uncheked", 2=>"Error", 3=>"Pending", 4=>"Finished");
+        $this->ocrStatus = array(1=>__("Uncheked"), 2=>__("Error"), 3=>__("Pending"), 4=>__("Finished") , 5=>__("Fixed"));
         
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;

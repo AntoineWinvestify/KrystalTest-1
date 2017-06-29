@@ -182,7 +182,7 @@ class file extends AppModel {
         //All company files
         $allCompanyFiles = $this->find('all', array(
             'conditions' => array(
-                'id' => array(1, 2, 3)), //50 is the bill id
+                'id' => array(1, 2, 3, 4)), //1,2,3,4 are the documents
             'recursive' => 1,));
 
         //Filter required files
