@@ -52,8 +52,8 @@
 			var data = jQuery.param( params );
 			getServerData(link, data, successUpdateNotifications, errorUpdateNotifications);
 		}
-		updateNotifications();
-		setTimeout(updateNotifications, 60000);
+		//updateNotifications();
+		//setTimeout(updateNotifications, 60000);
 	});
 
 	function successUpdateNotifications(data){
