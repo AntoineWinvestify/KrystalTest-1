@@ -28,7 +28,10 @@
 
   Pending:
   Generate a miniview for the extended notification of the event "newAccountLinked"     [OK, not yet tested]
-
+  User cannot modify his mobile phone number.
+ * A more consistent andpermanent solution will be implemented with 1CR for all "confirmed" data items,
+ * like name, surname, telephone, dni, ....
+ * 
  */
 
 

@@ -49,7 +49,7 @@ class CompanysController extends AppController
 
 function beforeFilter() {
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
-Configure::write('debug', 2);
+//Configure::write('debug', 2);
 //	$this->Security->requireAuth();
 
 //	$this->Security->blackHoleCallback = '_blackHole';

@@ -86,9 +86,9 @@ class Company extends AppModel {
 
     public function getCompanyList($filterConditions) {
 
-        $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
+	$businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
             'Company.company_state' => ACTIVE);
-
+        
         $conditions = array_merge($businessConditions, $filterConditions);
 
         $companyResult = $this->find("list", $params = array('recursive' => -1,
