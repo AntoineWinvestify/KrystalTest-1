@@ -341,7 +341,7 @@ class ocr extends AppModel {
      */
     public function getRegisterSentCompanies($id) {
 
-        // Read all the companies_ocrof the user
+        // Read all the companies_ocr of the user
         $companyListNotFilter = $this->getAllCompanies($id);
         $companyList = array();
 
@@ -362,7 +362,7 @@ class ocr extends AppModel {
 
     public function getAllOcrRelations($id) {
         //Search all ocr of the company
-        $OcrArray = $this->CompaniesOcr->find('all', array('recursive' => 1, 'conditions' => array('company_id' => $id, 'company_status' => ACCEPTED)));
+        $OcrArray = $this->CompaniesOcr->find('all', array('recursive' => 1, 'conditions' => array('company_id' => $id, 'company_status' => array(ACCEPTED, DOWNLOADED ))));
         $result = array();
         //Search the investor info
         foreach ($OcrArray as $ocr) {

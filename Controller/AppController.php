@@ -247,7 +247,10 @@ class AppController extends Controller {
         $this->currencyName = array(0=>"(select)", 1=>"€", 2=>"£", 3=>"$");
         
         //Investor Status to PFP Admin
-        $this->pfpStatus = array(2=>"New", 4=>"Viewed");
+        $this->pfpStatus = array(2=>"New" , 4=>"Viewed");
+        
+         //Investor Ocr Status
+        $this->ocrStatus = array(1=>"Uncheked", 2=>"Error", 3=>"Finished");
         
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;

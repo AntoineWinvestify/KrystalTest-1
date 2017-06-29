@@ -44,6 +44,10 @@
  * [2017-06-28] Version 0.7
  * Deleted overlay
  * Added Datatable Javascript
+ * 
+ * [2017-06-29] Version 0.8
+ * Status Name
+ * 
  */
 ?>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
@@ -105,7 +109,7 @@
                                                 <td><?php echo __($usersTable['Investor']['investor_surname']) ?></td>
                                                 <td><?php echo __($usersTable['Investor']['investor_telephone']) ?></td>
                                                 <td><?php echo __($usersTable['Investor']['investor_email']) ?></td>
-                                                <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __($usersTable['Ocr']['ocr_status']) ?></span></td>
+                                                <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __($status[$usersTable['Ocr']['ocr_status']]) ?></span></td>
                                                 <td><a href="/ocrs/ocrWinadminInvestorData/<?php echo __($usersTable['Investor']['id']) ?>"><button class="btn btn-default btnWinAdmin btnRounded view"><?php echo __('View') ?></button></a></td>
                                             </tr>
                                         <?php } ?>

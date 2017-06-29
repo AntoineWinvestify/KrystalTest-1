@@ -57,6 +57,10 @@
  * Added 
  * server validation
  * 
+ * 
+ * [2017-06-28] Version 0.11
+ * Set status name
+ * 
  */
 App::uses('CakeEvent', 'Event');
 
@@ -396,6 +400,9 @@ class ocrsController extends AppController {
 
                 //PFP  status
                 $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
+
+                //Status name
+                $this->set('statusName', $this->pfpStatus);
             }
         } else {
             //You can't access to this page
@@ -429,9 +436,11 @@ class ocrsController extends AppController {
         //Search  and set investor data 
         $ocrList = $this->Ocr->ocrGetData(null, $filter);
         $this->set('usersList', $ocrList);
+
         //Get user data
         //$userList = $this->Ocr->getRegisterSentCompanies(null);
-
+        //Set Status name
+        $this->set('status', $this->ocrStatus);
 
         $this->layout = 'azarus_private_layout';
         echo " ";
