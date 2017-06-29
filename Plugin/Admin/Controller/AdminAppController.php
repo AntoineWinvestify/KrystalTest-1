@@ -54,7 +54,7 @@ APROBADO is missing in global constants
 
 
 */
-
+ 
 class AdminAppController extends AppController {
  
     public $components = array('DebugKit.Toolbar',
@@ -66,7 +66,7 @@ class AdminAppController extends AppController {
 				'Auth' => array('authorize' => 'Controller',
                                                 'loginRedirect'	=> array(
 									'plugin' => 'admin',
-									'controller' 	=> 'investments',
+									'controller' 	=> 'users',
 									'action' 	=> 'readInvestmentsList'
 									),
 						'logoutRedirect' => array('controller' 	=> 'users',
@@ -88,14 +88,10 @@ class AdminAppController extends AppController {
 */
 public function beforeFilter() {
 
-    $this->Cookie->name = 'zastac_equity_admin';
-    $this->layout = "zastac_admin_layout";
+    $this->Cookie->name = 'equity';
 
     $this->Security->blackHoleCallback = 'blackhole';
  
-    $this->set('investmentStates', $investmentStates);
-    $this->investmentStates = $investmentStates;
-	
 /*	
 
 
@@ -159,18 +155,6 @@ function deleteDir($dir) {
    }
    rmdir($dir);
 }
-
-
-
-
-
-public function session()  {
-	$this->autoRender = FALSE;
-	$this->print_r2($this->Session->read());
-}
-
-
-
 
 
 
