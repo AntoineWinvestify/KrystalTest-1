@@ -115,13 +115,20 @@
                                     <tr>
                                         <td>
                                             <?php
+                                            //Make a array for the select
+                                            $companiesSelectList = array();
+                                            $companiesSelectList[0] = __('Choose One');
+                                            foreach ($companies as $companyInfo) {
+                                                $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
+                                            }
+
                                             $class = "form-control blue_noborder winadminPFP";
-                                            $filters = [__("Select PFP"), "pfp1", "pfp2", "pfp3"];
+
                                             echo $this->Form->input('Ocr.id', array(
                                                 'name' => 'pfp',
                                                 'id' => 'ContentPlaceHolder_pfp',
                                                 'label' => false,
-                                                'options' => $filters,
+                                                'options' => $companiesSelectList,
                                                 'class' => $class,
                                                 'value' => $resultUserData[0]['Ocr']['id'] /* this must be about PFP */
                                             ));
@@ -183,12 +190,11 @@
                                         </td>
                                         <td align="left">
                                             <?php
-                                            $filters_mod = ["select modality", "mod1", "mod2", "mod3"];
                                             echo $this->Form->input('Ocr.id', array(
                                                 'name' => 'modality',
                                                 'id' => 'ContentPlaceHolder_modality',
                                                 'label' => false,
-                                                'options' => $filters_mod,
+                                                'options' => $type,
                                                 'class' => $class,
                                                 'value' => $resultUserData[0]['Company']['????'] /* this must be about PFP */
                                             ));
@@ -239,13 +245,12 @@
                                             if (array_key_exists('pfp_status', $pfpValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $filters_status = ["select status", "0 not activated", "1 activated", "2 disabled"];
                                             $class = "form-control blue_noborder pfpStatus" . ' ' . $errorClass;
                                             echo $this->Form->input('Company.company_OCRisActive', array(
                                                 'name' => 'status',
                                                 'id' => 'ContentPlaceHolder_status',
                                                 'label' => false,
-                                                'options' => $filters_status,
+                                                'options' => $serviceStatus,
                                                 'placeholder' => __('Status'),
                                                 'class' => $class,
                                                 'value' => $investor[0]['Company']['company_OCRisActive'],

@@ -542,6 +542,16 @@ class ocrsController extends AppController {
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');
         $this->set('countryData', $countryData);
+
+        //Status selector
+        $this->set('serviceStatus', $this->serviceStatus);
+
+        //Modality selector
+        $this->set('type', $this->crowdlendingTypesLong);
+
+        //Get companies info for the selector
+        $companiesInfo = $this->Company->getCompanyDataList(null);
+        $this->set("companies", $companiesInfo);
     }
 
     /**
@@ -560,11 +570,29 @@ class ocrsController extends AppController {
             'company_privacyUrl' => $this->request['data']['privacy'],
             'company_type' => $this->request['data']['modality'],
             'company_country' => $this->request['data']['country'],
-            'company_countryName' => $countryData[$this->request['data']['country']],
+            'company_countryName' => $countryData[$this->request['data']['country']]
         );
 
+        //Check actual statuos
+        $id = $this->Company->checkOcrServiceStatus($data['id'])[1]['Serviceocr']['id'];
+
+        //If have a status, update it. If not, create it.
+        if ($id != null || $id != 0) {
+            $status = array(
+                'id' => $id,
+                'company_id' => $this->request['data']['pfp'],
+                'serviceocr_status' => $this->request['data']['ocr']
+            );
+        } else {
+            $status = array(
+                'company_id' => $this->request['data']['pfp'],
+                'serviceocr_status' => $this->request['data']['ocr']
+            );
+        }
+
         //Set result
-        $result = $this->Company->UpdateCompany($data);
+        $result = $this->Company->UpdateCompany($data, $status);
+
         $this->set('result', $result);
     }
 

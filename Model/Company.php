@@ -75,7 +75,24 @@ class Company extends AppModel {
      * 	have to map to a existing field in the database. Very useful for automatic checks
      * 	provided by framework
      */
-    var $validate = array();
+    var $validate = array(
+        'company_termsUrl' => array(
+            'rule' => array('minLength', 1),
+            'message' => 'Too short.'
+        ),
+        'company_privacyUrl' => array(
+            'rule' => array('minLength', 1),
+            'message' => 'Too short.'
+        ),
+        'company_type' => array(
+            'rule' => array('notBlank'),
+            'message' => 'Select one type.'
+        ),
+        'company_country' => array(
+            'rule' => array('notBlank'),
+            'message' => 'Select one country.'
+        ),
+    );
 
     /*     * STILL TO BE DONE
      *
@@ -171,8 +188,7 @@ class Company extends AppModel {
 
         //Search the company only if ocr service is active or suspended
         $status = $this->Serviceocr->find("first", array(
-            'fields' => 'serviceocr_status',
-            'conditions' => array('company_id' => $id, 'serviceocr_status' => array(SER_ACTIVE, SER_SUSPENDED)),
+            'conditions' => array('company_id' => $id, 'serviceocr_status' => array(SER_INACTIVE, SER_ACTIVE, SER_SUSPENDED)),
         ));
         //If found, return true and the status
         if (count($status) > 0) {
@@ -204,9 +220,14 @@ class Company extends AppModel {
         return $companyResults;
     }
 
-    public function UpdateCompany($data) {
-        if ($this->save($data)) {
-            return [true, __("Company updated correctly")];
+    public function UpdateCompany($data, $status) {
+        if ($this->validates($this->save($data))) {
+
+            if ($this->Serviceocr->save($status)) {
+                return [true, __("Company updated correctly")];
+            } else {
+                return [false, __("Failed saving status")];
+            }
         } else {
             return [false, __("Failed update")];
         }

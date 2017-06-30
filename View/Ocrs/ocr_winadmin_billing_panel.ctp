@@ -77,60 +77,52 @@
     }
 </style>
 
-<?php
-//Make a array for the select
-$companiesSelectList = array();
-$companiesSelectList[0] = __('Choose One');
-foreach ($companies as $companyInfo) {
-    $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
-}
-?>
 <script>
     function formatMoney(id, amount) {
-        amount = amount/100;
+        amount = amount / 100;
         var optionsAccounting = {
-            symbol : " &euro;",
-            decimal : ",",
+            symbol: " &euro;",
+            decimal: ",",
             thousand: ".",
-            precision : 0,
+            precision: 0,
             format: "%v%s"
-            };
+        };
 
-            var bill_value = accounting.formatMoney(amount, optionsAccounting);
-            $("#"+id).html(bill_value);
+        var bill_value = accounting.formatMoney(amount, optionsAccounting);
+        $("#" + id).html(bill_value);
     }
     $(function () {
         //Datatables
         $("#billsHistory").DataTable({
             initComplete: function () {
-                this.api().columns().every( function () {
+                this.api().columns().every(function () {
                     var column = this;
                     var select = $('<select><option value=""></option></select>')
-                        .appendTo( $(column.footer()).empty() )
-                        .on( 'change', function () {
-                            var val = $.fn.dataTable.util.escapeRegex(
-                                $(this).val()
-                            );
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                        $(this).val()
+                                        );
 
-                            column
-                                .search( val ? '^'+val+'$' : '', true, false )
-                                .draw();
-                        } );
+                                column
+                                        .search(val ? '^' + val + '$' : '', true, false)
+                                        .draw();
+                            });
 
-                    column.data().unique().sort().each( function ( d, j ) {
-                        select.append( '<option value="'+d+'">'+d+'</option>' )
-                    } );
-                } );
+                    column.data().unique().sort().each(function (d, j) {
+                        select.append('<option value="' + d + '">' + d + '</option>')
+                    });
+                });
             }
         });
-        
+
         //tooltip
         $(document).on("click", "#tooltip", function () {
             $("#amountTooltip").toggle();
         });
         $(document).on("click", "#sendBill", function () {
             console.log("validate Winadmin billing data");
-<?php //Javascript validation               ?>
+<?php //Javascript validation                ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
                 link = '../Files/upload';
@@ -218,10 +210,17 @@ foreach ($companies as $companyInfo) {
                                         <th><?php echo __('Upload file') ?></th>
                                         <th><?php echo __('Send') ?></th>
                                     </tr>
-<?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
+                                    <?php echo $this->Form->create('bill', array('default' => false, 'id' => 'bill')); ?>
                                     <tr>
                                         <td>
                                             <?php
+                                            //Make a array for the select
+                                            $companiesSelectList = array();
+                                            $companiesSelectList[0] = __('Choose One');
+                                            foreach ($companies as $companyInfo) {
+                                                $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
+                                            }
+                                            
                                             $class = "form-control blue_noborder billPFP";
                                             echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
@@ -238,7 +237,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-<?php echo $billValidationErrors['bill_pfp'][0] ?>
+                                                    <?php echo $billValidationErrors['bill_pfp'][0] ?>
                                                 </span>
                                             </div>
                                         </td>
@@ -265,7 +264,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-<?php echo $billValidationErrors['bill_number'][0] ?>
+                                                    <?php echo $billValidationErrors['bill_number'][0] ?>
                                                 </span>
                                             </div>									
                                         </td>
@@ -292,7 +291,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-<?php echo $billValidationErrors['bill_number'][0] ?>
+                                                    <?php echo $billValidationErrors['bill_number'][0] ?>
                                                 </span>
                                             </div>
                                         </td>
@@ -319,7 +318,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-<?php echo $billValidationErrors['bill_amount'][0] ?>
+                                                    <?php echo $billValidationErrors['bill_amount'][0] ?>
                                                 </span>
                                             </div>
                                             <div id="amountTooltip" style="display:none;"><small><?php echo __('The Amount value must be formatted with 2 decimal digits. (Ex: 1111,10)') ?></small></div>
@@ -342,7 +341,7 @@ foreach ($companies as $companyInfo) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-<?php echo $billValidationErrors['bill_currency'][0] ?>
+                                                    <?php echo $billValidationErrors['bill_currency'][0] ?>
                                                 </span>
                                             </div>
                                         </td>
@@ -359,7 +358,7 @@ foreach ($companies as $companyInfo) {
                                             </button>                                        </td>
 
                                     </tr>
-<?php echo $this->Form->end(); ?>
+                                    <?php echo $this->Form->end(); ?>
                                 </table>
                             </div>
                         </div>
@@ -389,7 +388,7 @@ foreach ($companies as $companyInfo) {
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive" id="billsTable">
                                 <table id="billsHistory" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                               data-order='[[ 1, "asc" ]]' data-page-length='10' rowspan='1' colspan='1'>
+                                       data-order='[[ 1, "asc" ]]' data-page-length='10' rowspan='1' colspan='1'>
                                     <thead>
                                         <tr>
                                             <th><?php echo __('PFP') ?></th>
@@ -409,15 +408,15 @@ foreach ($companies as $companyInfo) {
                                         </tr>
                                     </tfoot>
                                     <tbody>
-<?php foreach ($bills as $billsTable) {//Bills table creation    ?>                                      
-                                        <tr>
-                                            <td><?php echo __($billsTable['Pfpname']) ?></td>
-                                            <td><?php echo __($billsTable['info']['created']) ?></td>
-                                            <td><?php echo __($billsTable['info']['bill_number']) ?></td>
-                                            <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
-                                            <td id="<?php echo __($billsTable['info']['id']) ?>" align="right"><script>formatMoney(<?php echo __($billsTable['info']['id']) ?>, <?php echo __($billsTable['info']['bill_amount']) ?>);</script></td>
-                                        </tr>
-<?php } ?>
+                                        <?php foreach ($bills as $billsTable) {//Bills table creation    ?>                                      
+                                            <tr>
+                                                <td><?php echo __($billsTable['Pfpname']) ?></td>
+                                                <td><?php echo __($billsTable['info']['created']) ?></td>
+                                                <td><?php echo __($billsTable['info']['bill_number']) ?></td>
+                                                <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
+                                                <td id="<?php echo __($billsTable['info']['id']) ?>" align="right"><script>formatMoney(<?php echo __($billsTable['info']['id']) ?>, <?php echo __($billsTable['info']['bill_amount']) ?>);</script></td>
+                                            </tr>
+                                        <?php } ?>
                                     </tbody>
                                 </table>
                             </div>
