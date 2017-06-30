@@ -921,6 +921,81 @@ app.visual = {
             correctForm = false;
         }
         return correctForm;
+    },
+    checkFormWinadminInvestorData: function () {
+        var correctForm = true;
+        //MINIMUM FIELDS
+        var name = $("input[name=checkName]:checked").val();
+        var surname = $("input[name=checkSurname]:checked").val();
+        var id = $("input[name=checkId]:checked").val();
+        var dateOfBirth = $("input[name=checkDateOfBirth]:checked").val();
+        var postCode = $("input[name=checkPostCode]:checked").val();
+        var address = $("input[name=checkAddress]:checked").val();
+        var city = $("input[name=checkCity]:checked").val();
+        var country = $("input[name=checkCountry]:checked").val();
+        var iban = $("input[name=checkIban]:checked").val();
+        var arrayChecking = [name, surname, id, dateOfBirth, postCode, address, city, country, iban];
+        var countChecking = 0;
+        var correctChecking = false;
+
+        //Checking Minimum
+        for (var i=0; i<arrayChecking.length; i++) {
+            if (arrayChecking[i].val() == "yes") {
+                countChecking++;
+            }
+        }
+        var limitChecking = arrayChecking.length;
+        if (countChecking == limitChecking) { correctChecking = true; }
+
+        //OPTIONAL FIELDS
+        if (($("#checkCIF").length) && ($("#checkBusinessName").length)) {
+            var cif = $("input[name=checkCIF]:checked").val();
+            var businessName = $("input[name=checkBusinessName]:checked").val();
+            var arrayCheckingOptional = [cif, businessName];
+            var countCheckingOptional = 0;
+            var correctCheckingOptional = false;
+            
+            //Checking Optionals
+            for (var i=0; i<arrayCheckingOptional.length; i++) {
+                if (arrayCheckingOptional[i].val() == "yes") {
+                    countCheckingOptional++;
+                }
+            }
+            var limitCheckingOptional = arrayCheckingOptional.length;
+            if (countCheckingOptional == limitCheckingOptional) { correctCheckingOptional = true; }
+        }
+        
+        //DOCUMENTS
+        //Checking Docs
+        var arrayCheckingDocs = [/*rellenarrrrr*/];
+        var countCheckingDocs = 0;
+        var correctCheckingDocs = false;
+        for (var i=0; i<arrayCheckingDocs.length; i++) {
+            if (arrayCheckingDocs[i].val() == "yes") {
+                countCheckingDocs++;
+            }
+        }
+        var limitCheckingDocs = arrayCheckingDocs.length;
+        if (countCheckingDocs == limitCheckingDocs) { correctCheckingDocs = true; }
+        
+        //PFPs
+        //Checking PFPs
+        var arrayCheckingPFPs = [/*rellenarrrrr*/];
+        var countCheckingPFPs = 0;
+        var correctCheckingPFPs = false;
+        for (var i=0; i<arrayCheckingPFPs.length; i++) {
+            if (arrayCheckingPFPs[i].val() == "yes") {
+                countCheckingPFPs++;
+            }
+        }
+        var limitCheckingPFPs = arrayCheckingPFPs.length;
+        if (countCheckingPFPs == limitCheckingPFPs) { correctCheckingPFPs = true; }
+
+        //FINAL TESTING!!!
+        if (!correctChecking || correctCheckingDocs || correctCheckingPFPs) {
+            correctForm = false;
+        }
+        return correctForm;
     }
 };
 app.utils = {
