@@ -37,11 +37,28 @@
  * [2017-06-28] version 0.4
  * Added datatable javascript
  * Deleted searchfor filter (unnecessary) -> included on DataTable
+ * 
+ * [2017-06-30] Version 0.5
+ * Added Accounting Plugin to format Money
  */
 ?>
+<script type="text/javascript" src="/js/accounting.min.js"></script>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <script>
+    function formatMoney(id, amount) {
+        amount = amount/100;
+        var optionsAccounting = {
+            symbol : " &euro;",
+            decimal : ",",
+            thousand: ".",
+            precision : 0,
+            format: "%v%s"
+            };
+
+            var bill_value = accounting.formatMoney(amount, optionsAccounting);
+            $("#"+id).html(bill_value);
+    }
     $(function() {
         $("#billingTable").DataTable();
     });
@@ -91,12 +108,12 @@
                                                         </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php foreach($bills as $bill){;?>
+                                                    <?php foreach($bills as $bill){?>
                                                     <tr>
                                                         <td><?php echo __($bill['CompaniesFile']['created']); ?></td>
                                                         <td><?php echo __($bill['CompaniesFile']['bill_number']); ?></td>
                                                         <td><?php echo __($bill['CompaniesFile']['bill_concept']); ?></td>
-                                                        <td align="right"><?php echo __($bill['CompaniesFile']['bill_amount']); ?></td>
+                                                        <td id="<?php echo __($billsTable['CompaniesFile']['id']) ?>" align="right"><script>formatMoney(<?php echo __($billsTable['info']['id']) ?>, <?php echo __($billsTable['CompaniesFile']['bill_amount']) ?>);</script></td>
                                                         <td>
                                                             <button href = "<?php echo __($bill['CompaniesFile']['bill_url']); ?>" class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
                                                         </td>
