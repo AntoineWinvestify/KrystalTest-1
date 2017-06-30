@@ -57,6 +57,8 @@
 </style>
 <script>
     $(function () {
+        //telephone
+        $('#tallymanTelephone').intlTelInput();
         //chart doughnut
         var ctx = document.getElementById("pieChart1").getContext('2d');
         var myChart = new Chart(ctx, {
@@ -80,7 +82,6 @@
                 alert("server validation!!!!");
             }
         });
-        $('#tallyman_telephone').intlTelInput();
 });
 </script>
 <div id="1CR_pfpAdmin_3_tallyman">
@@ -167,8 +168,7 @@
                                                 $class = "form-control blue_noborder3";
                                                 echo $this->Form->input('/*AQUÍ NO SÉ LO QUE TIENE QUE IR!!!!!*/', array(
                                                     'name' => 'telephone',
-                                                    'id' => 'tallyman_telephone',
-                                                    'placeholder' => __('Enter telephone here'),
+                                                    'id' => 'tallymanTelephone',
                                                     'label' => false,
                                                     'class' => $class,
                                                     'type' => 'tel'

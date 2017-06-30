@@ -871,6 +871,131 @@ app.visual = {
             correctForm = false;
         }
         return correctForm;
+    },
+    checkFormWinadminUpdatePFP: function () {
+        var correctForm = true;
+        var selectedPFP = $("#ContentPlaceHolder_pfp").val();
+        var termsOfService = $("#ContentPlaceHolder_terms").val();
+        var privacyPolicy = $("#ContentPlaceHolder_privacyPolicy").val();
+        var modality = $("#ContentPlaceHolder_modality").val();
+        var status = $("#ContentPlaceHolder_status").val();
+        
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#modifyPFPData input").removeClass("redBorder"); // remove ALL redborders on input
+        $("#modifyPFPData select").removeClass("redBorder"); // remove ALL redborders on select
+        
+        //Error showing
+        if (selectedPFP == 0) {
+            console.log("pfp not selected");
+            $(".selectedPFP").addClass("redBorder");
+            $(".ErrorPFP").find(".errorMessage").html(TEXTOS.T100); // "select PFP" warning
+            $(".ErrorPFP").fadeIn();
+            correctForm = false;
+        }
+        if (termsOfService === "") {
+            console.log("empty terms of service");
+            $(".pfpTermsOfService").addClass("redBorder");
+            $(".ErrorTermsOfService").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorTermsOfService").fadeIn();
+            correctForm = false;
+        }
+        if (privacyPolicy === "") {
+            console.log("empty privacy policy");
+            $(".pfpPrivacyPolicy").addClass("redBorder");
+            $(".ErrorPrivacyPolicy").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPrivacyPolicy").fadeIn();
+            correctForm = false;
+        }        
+        if (modality == 0) {
+            console.log("modality not selected");
+            $(".pfpModality").addClass("redBorder");
+            $(".ErrorModality").find(".errorMessage").html(TEXTOS.T101); // "select modality" warning
+            $(".ErrorModality").fadeIn();
+            correctForm = false;
+        }
+        if (status == 0) {
+            console.log("status not selected");
+            $(".pfpStatus").addClass("redBorder");
+            $(".ErrorStatus").find(".errorMessage").html(TEXTOS.T101); // "select modality" warning
+            $(".ErrorStatus").fadeIn();
+            correctForm = false;
+        }
+        return correctForm;
+    },
+    checkFormWinadminInvestorData: function () {
+        var correctForm = true;
+        //MINIMUM FIELDS
+        var name = $("input[name=checkName]:checked").val();
+        var surname = $("input[name=checkSurname]:checked").val();
+        var id = $("input[name=checkId]:checked").val();
+        var dateOfBirth = $("input[name=checkDateOfBirth]:checked").val();
+        var postCode = $("input[name=checkPostCode]:checked").val();
+        var address = $("input[name=checkAddress]:checked").val();
+        var city = $("input[name=checkCity]:checked").val();
+        var country = $("input[name=checkCountry]:checked").val();
+        var iban = $("input[name=checkIban]:checked").val();
+        var arrayChecking = [name, surname, id, dateOfBirth, postCode, address, city, country, iban];
+        var countChecking = 0;
+        var correctChecking = false;
+
+        //Checking Minimum
+        for (var i=0; i<arrayChecking.length; i++) {
+            if (arrayChecking[i].val() == "yes") {
+                countChecking++;
+            }
+        }
+        var limitChecking = arrayChecking.length;
+        if (countChecking == limitChecking) { correctChecking = true; }
+
+        //OPTIONAL FIELDS
+        if (($("#checkCIF").length) && ($("#checkBusinessName").length)) {
+            var cif = $("input[name=checkCIF]:checked").val();
+            var businessName = $("input[name=checkBusinessName]:checked").val();
+            var arrayCheckingOptional = [cif, businessName];
+            var countCheckingOptional = 0;
+            var correctCheckingOptional = false;
+            
+            //Checking Optionals
+            for (var i=0; i<arrayCheckingOptional.length; i++) {
+                if (arrayCheckingOptional[i].val() == "yes") {
+                    countCheckingOptional++;
+                }
+            }
+            var limitCheckingOptional = arrayCheckingOptional.length;
+            if (countCheckingOptional == limitCheckingOptional) { correctCheckingOptional = true; }
+        }
+        
+        //DOCUMENTS
+        //Checking Docs
+        var arrayCheckingDocs = [/*rellenarrrrr*/];
+        var countCheckingDocs = 0;
+        var correctCheckingDocs = false;
+        for (var i=0; i<arrayCheckingDocs.length; i++) {
+            if (arrayCheckingDocs[i].val() == "yes") {
+                countCheckingDocs++;
+            }
+        }
+        var limitCheckingDocs = arrayCheckingDocs.length;
+        if (countCheckingDocs == limitCheckingDocs) { correctCheckingDocs = true; }
+        
+        //PFPs
+        //Checking PFPs
+        var arrayCheckingPFPs = [/*rellenarrrrr*/];
+        var countCheckingPFPs = 0;
+        var correctCheckingPFPs = false;
+        for (var i=0; i<arrayCheckingPFPs.length; i++) {
+            if (arrayCheckingPFPs[i].val() == "yes") {
+                countCheckingPFPs++;
+            }
+        }
+        var limitCheckingPFPs = arrayCheckingPFPs.length;
+        if (countCheckingPFPs == limitCheckingPFPs) { correctCheckingPFPs = true; }
+
+        //FINAL TESTING!!!
+        if (!correctChecking || correctCheckingDocs || correctCheckingPFPs) {
+            correctForm = false;
+        }
+        return correctForm;
     }
 };
 app.utils = {
@@ -1023,7 +1148,10 @@ var TEXTOS = {
     T94: "Por favor, introduzca su mensaje",
     T95: "The IBAN is not valid",
     T96: "You must upload all the required files",
-    T97: "Select the currency",
+    T97: "You must select the currency",
     T98: "To use this service you must provide at least 2 fields",
-    T99: "To use this service you must provide at least 1 field more"
+    T99: "To use this service you must provide at least 1 field more",
+    T100: "Select PFP",
+    T101: "Select modality",
+    T102: "Select service status"
 };
