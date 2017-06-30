@@ -38,7 +38,7 @@
  * 
  * [2017-06-30] Version 0.5
  * Update completed
- * 
+ * Added server feedback
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -73,11 +73,15 @@
         });
     });
     function success(data) {
-
+        $(".fbtext").html(data);
+        $("#feedbackServer").addClass("alert-win-success");
+        $("#feedbackServer").show();
     }
 
     function error(data) {
-
+        $(".fbtext").html(data);
+        $("#feedbackServer").addClass("alert-win-warning");
+        $("#feedbackServer").show();
     }
 </script>
 <div id="1CR_winadmin_4_updatePFP">
@@ -100,6 +104,10 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div style="display:none;" id="feedbackServer" class="alert bg-success alert-dismissible alert-win-success fade in" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button>
+                                <strong class="fbtext"></strong>	
+                            </div>
                             <div class="table-responsive">
                                 <table id="modifyPFPData" class="table table-striped display dataTable"  width="100%" cellspacing="0"
                                        data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
