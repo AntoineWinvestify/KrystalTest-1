@@ -37,8 +37,11 @@ Simple first version
 
 // Errors that can be detected in this function
     define('USER_DOES_NOT_EXIST', 1);           
-    define('NO_DATA_AVAILABLE', 2);   
+    define('NO_DATA_AVAILABLE', 2);  
+    define('NOT_ENOUGH_PARAMETERS', 3);
     
+    define('UPWARDS', 1);
+    define('DOWNWARDS', 2);   
     
     
 class AdminpfpAppController extends AppController {
@@ -53,7 +56,8 @@ class AdminpfpAppController extends AppController {
                                                 'loginRedirect'	=> array(
 									'plugin' => 'adminpfp',
 									'controller' 	=> 'users',
-									'action' 	=> 'showTallyman'
+								//	'action' 	=> 'showTallyman'
+                                                                        'action' 	=> 'readtallymandata'
 									),
 						'logoutRedirect' => array('controller' 	=> 'users',
 									 'action' => 'login'

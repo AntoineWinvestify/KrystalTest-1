@@ -42,7 +42,11 @@
  */
 ?>
 <?php 
-echo 1;
+echo 1;                                     // positive result
+
+$arrowClass[UPWARDS] = "fa fa-long-arrow-up";
+$arrowClass[DOWNWARDS] = "fa fa-long-arrow-down";
+
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
@@ -189,8 +193,9 @@ var myChart = new Chart(ctx, {
                                                     <div class="stats" style="text-align: center;">
                                                         <?php echo __('% Total cartera')?>
                                                         <strong><?php echo __('invertida')?></strong>
-                                                        <div class="card-content">
-                                                            <p class="category"><span class="text-success"><i class="fa fa-long-arrow-up"></i> o%  </span></p>
+                                                        <div class="card-content"> 
+                                                            <p class="category"><span class="text-success"><i 
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['AtotalPortfolioTendency']] ?>"></i></span></p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -202,8 +207,8 @@ var myChart = new Chart(ctx, {
                                                         <div class="ct-chart" id="dailySalesChart"></div>
                                                 </div>
                                                 <div class="card-content">
-                                                        <h4 class="title"></h4>
-                                                        <canvas id="lineChart1" style="height: 100px;"></canvas>
+                                                    <h4 class="title"></h4>
+                                                    <canvas id="lineChart1" style="height: 100px;"></canvas>
                                                 </div>
                                             </div>
                                         </div>
@@ -220,7 +225,8 @@ var myChart = new Chart(ctx, {
                                                         <strong><?php echo __('por modalidad')?></strong>
                                                     </div>
                                                     <div class="card-content">
-                                                            <p class="category"><span class="text-success"><i class="fa fa-long-arrow-down"></i> i%  </span></p>
+                                                            <p class="category"><span class="text-success"><i 
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['AtotalMyModalityTendency']] ?>"><?php echo $arrowClass[$resultTallyman[0]['AtotalMyModalityTendency']] ?></i></span></p>
                                                     </div>
                                                 </div>
                                             </div>

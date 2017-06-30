@@ -20,6 +20,7 @@
 * @package
  * 
  * PFD Admin Tallyman
+ *  Generic Error message handling
  * 
  * 2017-06-29 version 0.1
  * First view.
@@ -34,7 +35,19 @@
 
 ?>
 <?php 
-echo "0";             
-echo "User does not exist error";
+echo "0";                               // Mark application error
+    switch ($error) { 
+        case 1:                         
+            $errorText = __('No data is available for this user');   
+            break;
+        case 2:                         
+            $errorText = __('The user does not exist in our database');
+            break;
+        case 3:
+            $errorText = __("You must provide at least 2 parameters");
+            break;
+    }
+             
+echo $errorText;
 ?>
 

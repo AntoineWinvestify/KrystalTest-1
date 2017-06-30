@@ -54,6 +54,12 @@ class User extends AppModel {
             'fields' => '',
             'order' => '',
         ),
+        'Adminpfp' => array(
+            'className' => 'Adminpfp.Adminpfp',
+            'foreignKey' => 'user_id',
+            'fields' => '',
+            'order' => '',
+        ),
     );
  
     /**
