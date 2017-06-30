@@ -352,6 +352,11 @@ class Investor extends AppModel {
         }
     }
 
+    /**
+     * Get all data of a investor
+     * @param type $id
+     * @return type
+     */
     public function investorGetInfo($id) {
 
         $info = $this->find("all", array(
@@ -361,12 +366,22 @@ class Investor extends AppModel {
         return $info;
     }
 
+    /**
+     * Get investor id
+     * @param type $userid
+     * @return type
+     */
     public function getInvestorId($userid) {
         $data = $this->investorGetInfo($userid);
         $id = $data[0]['Investor']['id'];
         return $id;
     }
 
+    /**
+     * Get investor identification code
+     * @param type $userid
+     * @return type
+     */
     public function getInvestorIdentity($userid) {
         $data = $this->investorGetInfo($userid);
         $identity = $data[0]['Investor']['investor_identity'];

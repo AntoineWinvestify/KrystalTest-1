@@ -38,14 +38,17 @@
  * 2017/6/21 version 0.5
  * upload bill                            [OK]
  * 
- * 2017/6/23 version 0.5
+ * 2017/6/23 version 0.6
  * change query for find         
  * 
- * 2017/6/26 version 0.5
+ * 2017/6/26 version 0.7
  * billCompanyFilter                         [OK]
  * 
- * 2017/6/28 version 0.5
+ * 2017/6/28 version 0.8
  * zip creation                         [OK]
+ * 
+ * 2017/6/30 version 0.9
+ *Event 
  * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
@@ -121,7 +124,6 @@ class file extends AppModel {
                     $query = $this->query($query);
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
                     return [true, __('Upload ok'), $result];
-                    
                 } else if ($path == "bill") {
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
 
@@ -334,6 +336,22 @@ class file extends AppModel {
             return file_exists($destination);
         } else {
             return false;
+        }
+    }
+
+    /**
+     *
+     * 	Callback Function Create mail event
+     * 
+     * @param type $created
+     * @param type $options
+     * 
+     */
+    function afterSave($created, $options = array()) {
+
+        if (!empty($this->data['CompaniesFile']['id'])) {
+            $event = new CakeEvent("billMailEvent", $this);
+            $this->getEventManager()->dispatch($event);
         }
     }
 

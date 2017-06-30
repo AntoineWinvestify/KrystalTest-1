@@ -48,9 +48,12 @@
  * 2017/6/19 version 0.8
  * Select query deleted
  * 
- * 2017/6/23 version 0.8
+ * 2017/6/23 version 0.9
  * ocr_sent(date)
  * checking table completed
+ * 
+ * 2017/6/30 version 0.10
+ * Event after save 
  * 
  */
 App::uses('CakeEvent', 'Event');
@@ -144,13 +147,13 @@ class ocr extends AppModel {
         if (count($id) > 0) {
             $time = date('Y-m-d H:i:s', time());
 
-            
-             if ($dataParam['ocr_status'][0]['Ocr']['ocr_status']    == ERROR){
-                 $status = FIXED;
-             }else if($dataParam['ocr_status'][0]['Ocr']['ocr_status']   == NOT_SENT){
-                 $status = SENT;
-             }
-            
+
+            if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
+                $status = FIXED;
+            } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT) {
+                $status = SENT;
+            }
+
             if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
                 $data = array(
                     'id' => $id['Ocr']['id'],
@@ -173,10 +176,10 @@ class ocr extends AppModel {
                 );
             }
             $result = json_encode($data);
-            if ($this->save($data) && $dataParam['ocr_status'] != ERROR) { //Save ok
-                $event = new CakeEvent("checkMessage", $this);
-                $this->getEventManager()->dispatch($event);
-            }
+            /* if ($this->save($data) && $dataParam['ocr_status'] != ERROR) { //Save ok
+              $event = new CakeEvent("checkMessage", $this);
+              $this->getEventManager()->dispatch($event);
+              } */
             return true . "," . $result;  //Return for a json
         } else {
 
@@ -381,7 +384,10 @@ class ocr extends AppModel {
      *
      * 	Callback Function
      * 	Decrypt the sensitive data provided by the investor
-     *
+     * 
+     * @param type $results
+     * @param type $primary
+     * @return type     
      */
     public function afterFind($results, $primary = false) {
 
@@ -398,7 +404,10 @@ class ocr extends AppModel {
      *
      * 	Callback Function
      * 	Encrypt the sensitive fields of the information provided by the investor
-     *
+     * 
+     * @param type $options
+     * @return boolean
+     * 
      */
     public function beforeSave($options = array()) {
 
@@ -407,6 +416,22 @@ class ocr extends AppModel {
         }
 
         return true;
+    }
+
+    /**
+     *
+     * 	Callback Function Create mail event
+     * 
+     * @param type $created
+     * @param type $options
+     * 
+     */
+    function afterSave($created, $options = array()) {
+
+        if (!empty($this->data['Ocr']['ocr_status']) && $this->data['Ocr']['ocr_status'] != ERROR) {
+            $event = new CakeEvent("checkMessage", $this);
+            $this->getEventManager()->dispatch($event);
+        }
     }
 
 }
