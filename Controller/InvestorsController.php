@@ -227,6 +227,7 @@ function linkAccount() {
         } else {
             if ($this->Linkedaccount->createNewLinkedAccount($_REQUEST['companyId'], $this->Auth->user('Investor.id'), $_REQUEST['userName'], $_REQUEST['password'])) {
                 $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
+                $newComp->setUrlSequence($urlSequenceList);
                 $newComp->companyUserLogout();
 
 // load the list of all companies for display purposes

@@ -50,7 +50,7 @@ PENDING
  * fix method  getMonetaryValue()
 */
 
-require_once(ROOT . DS . 'app' .DS .  'Vendor' . DS  . 'autoload.php');
+require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
 
 class p2pCompany{
 	const DAY 		= 1;
@@ -382,6 +382,9 @@ function doCompanyLogout() {
     // Do not check the SSL certificates
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
+    
+    curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');		// important
+    curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');		// Important
  
     // Fetch the URL and save the content
     // cURL executed successfully
