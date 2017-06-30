@@ -54,6 +54,9 @@
  * [2017-06-29] Version 0.8
  * Table refresh
  * Select company bug fix
+ * 
+ * [2017-06-30] Version 0.9
+ * Added select to datatable on all columns to filter by column.
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -82,6 +85,30 @@ foreach ($companies as $companyInfo) {
 ?>
 <script>
     $(function () {
+        //Datatables
+        $("#billsHistory").DataTable({
+            initComplete: function () {
+                this.api().columns().every( function () {
+                    var column = this;
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo( $(column.footer()).empty() )
+                        .on( 'change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        } );
+
+                    column.data().unique().sort().each( function ( d, j ) {
+                        select.append( '<option value="'+d+'">'+d+'</option>' )
+                    } );
+                } );
+            }
+        });
+        
         //tooltip
         $(document).on("click", "#tooltip", function () {
             $("#amountTooltip").toggle();
@@ -120,7 +147,6 @@ foreach ($companies as $companyInfo) {
         $(document).on("change", "#billUpload", function () {
             $("#selected").html("<?php echo __('Document selected') ?>");
         });
-
     });
 
     function refreshTable() {
@@ -347,14 +373,27 @@ foreach ($companies as $companyInfo) {
                     <div class="row" >
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive" id="billsTable">
-                                <table id="billsHistory" class="display dataTable"  width="100%" cellspacing="0" data-order='[[ 1, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
-                                    <tr>
-                                        <th width="15%"><?php echo __('PFP') ?></th>
-                                        <th><?php echo __('Date') ?></th>
-                                        <th><?php echo __('Bill Number') ?></th>
-                                        <th><?php echo __('Concept') ?></th>
-                                        <th><?php echo __('Amount') ?></th>
-                                    </tr>
+                                <table id="billsHistory" class="table table-striped display dataTable" width="100%" cellspacing="0"
+                                               data-order='[[ 0, "asc" ]]' data-page-length='10' rowspan='1' colspan='1'>
+                                    <thead>
+                                        <tr>
+                                            <th><?php echo __('PFP') ?></th>
+                                            <th><?php echo __('Date') ?></th>
+                                            <th><?php echo __('Bill Number') ?></th>
+                                            <th><?php echo __('Concept') ?></th>
+                                            <th><?php echo __('Amount') ?></th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th><?php echo __('PFP') ?></th>
+                                            <th><?php echo __('Date') ?></th>
+                                            <th><?php echo __('Bill Number') ?></th>
+                                            <th><?php echo __('Concept') ?></th>
+                                            <th><?php echo __('Amount') ?></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
 <?php foreach ($bills as $billsTable) {//Bills table creation    ?>
                                         <tr>
                                             <td><?php echo __($billsTable['Pfpname']) ?></td>
@@ -364,6 +403,7 @@ foreach ($companies as $companyInfo) {
                                             <td align="left"><?php echo __($billsTable['info']['bill_amount']) ?></td>
                                         </tr>
 <?php } ?>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
