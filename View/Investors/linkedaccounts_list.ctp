@@ -54,23 +54,26 @@ Pending:
 
 <?php
 	echo '<div id="accountList">';
-?>            
-				<div class="box box-warning fade in alert-win-success">
-					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-						<i class="fa fa-times"></i>
-					</button>
-<?php
+        $message = "";
+        $class_message = "alert-win-success";
 					switch ($action) {
 						case "error":
-                                                    echo '<strong>' . __("The combination of user/password is incorrect. Please check your data and try again") . '</strong>';
+                                                    $message = '<strong>' . __("The combination of user/password is incorrect. Please check your data and try again") . '</strong>';
+                                                    $class_message = "alert-win-warning";
+                                                    break;
                                                 case "add":
-                                                    echo '<strong>' . __("The account has been successfully added") . '</strong>';
+                                                    $message = '<strong>' . __("The account has been successfully added") . '</strong>';
                                                     break;
                                                 case "delete":
-                                                    echo '<strong>' . __("The account has been deleted") . '</strong>';
+                                                    $message = '<strong>' . __("The account has been deleted") . '</strong>';
                                                     break;
 					}
 ?>
+                                <div class="box box-warning fade in <?php echo $class_message ?>">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<i class="fa fa-times"></i>
+					</button>
+                                    <?php echo $message ?>
 				</div>
 <?php	
 	if (!empty($linkedAccountResult)) {	
