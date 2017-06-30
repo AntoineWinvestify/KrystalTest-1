@@ -112,37 +112,39 @@
                                             </thead>
                                             <tbody>
                                                 <?php foreach ($ocrList as $ocr) {
-                                                ?>
-                                                <tr>
+                                                    ?>
+                                                    <tr>
 
-                                                    <?php if ($pfpStatus == SER_ACTIVE) {//If service is active, show the data?>
-                                                        
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
-                                                        <td><?php echo __($statusName[$ocr[1]['invesotrInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?></td>
-                                                        <td>
-                                                            <a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">Descargar</a>
-                                                            <?php /* <button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button> */ ?>
-                                                        </td>
-                                                        <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                        <?php if ($pfpStatus == SER_ACTIVE) {//If service is active, show the data?>
 
-                                                    <?php } else if ($pfpStatus == SER_SUSPENDED) { // If servoce is active, hide the full data?>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
-                                                        <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
-                                                        <td><?php echo __(substr_replace($ocr[1]['invesotrInfo']['Investor']['investor_telephone'], '*******', 5)) ?></td>
-                                                        <td><?php echo __(substr_replace($ocr[1]['invesotrInfo']['Investor']['investor_email'], '********', 5)) ?></td>
-                                                        <td><?php echo __($statusName[$ocr[1]['invesotrInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?></td>
-                                                        <td>
-                                                            <a disabled href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">Descargar</a>
-                                                            <?php /* <button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button> */ ?>
-                                                        </td>
-                                                        <td><button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
-                                                        <?php } ?>
-                                                </tr>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
+                                                            <td><?php echo __($statusName[$ocr[1]['invesotrInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?></td>
+                                                            <td>
+                                                                <form  action="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">
+                                                                    <button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button>
+                                                                </form>
+                                                            </td>
+                                                            <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+
+                                                        <?php } else if ($pfpStatus == SER_SUSPENDED) { // If servoce is active, hide the full data?>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
+                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
+                                                            <td><?php echo __(substr_replace($ocr[1]['invesotrInfo']['Investor']['investor_telephone'], '*******', 5)) ?></td>
+                                                            <td><?php echo __(substr_replace($ocr[1]['invesotrInfo']['Investor']['investor_email'], '********', 5)) ?></td>
+                                                            <td><?php echo __($statusName[$ocr[1]['invesotrInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?></td>
+                                                            <td>
+                                                                <form  action="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">
+                                                                    <button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button>
+                                                                </form>
+                                                            </td>
+                                                            <td><button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                            <?php } ?>
+                                                    </tr>
                                                 <?php } ?>
                                             </tbody>
                                         </table>

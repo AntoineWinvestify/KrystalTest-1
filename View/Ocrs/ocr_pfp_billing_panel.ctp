@@ -115,7 +115,9 @@
                                                         <td><?php echo __($bill['CompaniesFile']['bill_concept']); ?></td>
                                                         <td id="<?php echo __($bill['CompaniesFile']['id']) ?>" align="right"><script>formatMoney(<?php echo __($bill['CompaniesFile']['id']) ?>, <?php echo __($bill['CompaniesFile']['bill_amount']) ?>);</script></td>
                                                         <td>
-                                                            <button href = "<?php echo __($bill['CompaniesFile']['bill_url']); ?>" class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
+                                                            <form action = "../files/downloadDocument/bill/<?php echo __($bill['CompaniesFile']['id']) ?>">
+                                                            <button type="submit"  class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
+                                                            </form>
                                                         </td>
                                                     </tr>
                                                     <?php } ?>                                        

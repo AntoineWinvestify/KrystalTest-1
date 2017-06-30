@@ -49,7 +49,7 @@ class Company extends AppModel {
             'foreignKey' => 'company_id',
         ),
         'requiredfiles' => array(
-            'className' => 'File',
+            'className' => 'Ocrfile',
             'joinTable' => 'requiredfiles',
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'file_id',
@@ -62,8 +62,8 @@ class Company extends AppModel {
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'ocr_id',
         ),
-        'File' => array(
-            'className' => 'File',
+        'Ocrfile' => array(
+            'className' => 'Ocrfile',
             'joinTable' => 'companies_files',
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'file_id',

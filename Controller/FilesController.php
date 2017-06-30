@@ -43,6 +43,9 @@
  * 2017/6/28 version 0.5
  * zip download         [OK]
  * 
+ * 2017/6/30 version 0.6
+ * zip download  
+ * 
  */
 App::uses('CakeEvent', 'Event');
 
@@ -50,7 +53,7 @@ class filesController extends AppController {
 
     var $name = 'Files';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'File');
+    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile');
     var $error;
 
     function beforeFilter() {
@@ -74,15 +77,15 @@ class filesController extends AppController {
                 $type = $data['info'];
                 $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
                 $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-                $result = $this->File->ocrFileSave($data, $identity, $id, $type, "file");
+                $result = $this->Ocrfile->ocrFileSave($data, $identity, $id, $type, "file");
                 $this->set("result", $result);
             } else if (count($this->params['data']['bill']) > 0) {
                 $data = $this->params['data']['bill'];
-                $info = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency'] );
+                $info = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency']);
                 $id = $this->params['data']['pfp'];
                 $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile'];
-                $result = $this->File->ocrFileSave($data, $company, $id, $info, "bill");
-                $this->set("result",$result);
+                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $info, "bill");
+                $this->set("result", $result);
             }
         }
     }
@@ -102,7 +105,7 @@ class filesController extends AppController {
             $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
 
-            $result = $this->File->ocrFileDelete($url, $file_id, $investor_id);
+            $result = $this->Ocrfile->ocrFileDelete($url, $file_id, $investor_id);
             $this->set("result", $result);
         }
     }
@@ -114,27 +117,31 @@ class filesController extends AppController {
      * @return type
      */
     function generateZip($id, $userId) {
+
         //Zip path
         $fileConfig = Configure::read('files');
-        $folder = $this->Investor->getInvestorIdentity(315);
+        $folder = $this->Investor->getInvestorIdentity($userId);
         $pathToZipFile = $fileConfig['investorPath'] . $folder . DS . 'investorData.Zip';
 
-        //Zip archives
-        $investorFiles = $this->File->readExistingFiles($id);
-        $urlList = array();
 
+        //Zip archives
+        $investorFiles = $this->Ocrfile->readExistingFiles($id);
+        $urlList = array();
+        print_r($investorFiles);
         foreach ($investorFiles as $investorFile) {
+           
             $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
             array_push($urlList, $url);
         }
 
         //Create the zip
-        if ($this->File->createZip($urlList, $pathToZipFile, true)) {
-            $this->set('result', 1);
+        if ($this->Ocrfile->createZip($urlList, $pathToZipFile, true)) {
+
+            $this->set('result', true);
             $this->set('message', 'Zip downloaded');
-            $this->download($pathToZipFile,'investorData.Zip');
+            $this->download($pathToZipFile, 'investorData.Zip');
         } else {
-            $this->set('result', 0);
+            $this->set('result', false);
             $this->set('message', 'Zip download failed');
         }
     }
@@ -150,14 +157,15 @@ class filesController extends AppController {
         //Path and file name
 
 
-        if ($type == 'file') {
-            $data = $this->File->readSimpleDocument($id);
+        if ($type == 'ocrfile') {
+            $data = $this->Ocrfile->readSimpleDocument($id);
+            print_r($data);
             $pathToFile = $fileConfig['investorPath'] . $data['FilesInvestor']['file_url'];
             $name = $data['FilesInvestor']['file_name'];
         } else if ($type == 'bill') {
-            $data = $this->File->readSimpleBill($id);
-           /* $pathToFile = $fileConfig['billsPath'] . $url;
-            $name = $number;*/
+            $data = $this->Ocrfile->readSimpleBill($id);
+            $pathToFile = $fileConfig['billsPath'] . $data['CompaniesFile']['bill_url'];
+            $name = $data['CompaniesFile']['bill_number'];
         }
 
         //Download
@@ -165,6 +173,9 @@ class filesController extends AppController {
     }
 
     function download($path, $name) {
+
+        $this->autoLayout = false;
+
         $this->response->file($path, array(
             'download' => true,
             'name' => $name,

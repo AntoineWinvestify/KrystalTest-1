@@ -175,12 +175,13 @@ class ocr extends AppModel {
                     'ocr_sent' => $time,
                 );
             }
+
             $result = json_encode($data);
-            /* if ($this->save($data) && $dataParam['ocr_status'] != ERROR) { //Save ok
-              $event = new CakeEvent("checkMessage", $this);
-              $this->getEventManager()->dispatch($event);
-              } */
-            return true . "," . $result;  //Return for a json
+            print_r($result);
+
+            if ($this->save($data)) { //Save ok
+                return true . "," . $result;  //Return for a json
+            }
         } else {
 
             /*
@@ -197,6 +198,7 @@ class ocr extends AppModel {
      * @return type
      */
     public function ocrGetData($id, $filter = null) {
+
         if ($id != null && $filter != null) {
             array_push($filter, array('investor_id' => $id));
         } else if ($filter == null && $id != null) {

@@ -426,38 +426,38 @@
                         </div>
                         <!-- /Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle">
-                           
-                            <?php if ($userData[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) { ?>
-                            <div class="row">
-                                <!-- CIF -->
-                                <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
-                                    <div class="form-group">
-                                        <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
-                                        <div>
-                                            <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkCIF" checked="checked"><?php echo __('Pending') ?></label>
-                                        </div>
-                                        <input disabled="disabled" type="text" class="form-control blue_noborder"value ="<?php echo $userData[0]['Ocr']['investor_cif'] ?>" >
-                                    </div>
-                                </div>
-                                <!-- /CIF -->
 
-                                <!-- Business Name -->
-                                <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                                    <div class="form-group">
-                                        <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
-                                        <div>
-                                            <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkBusinessName" checked="checked"><?php echo __('Pending') ?></label>
+                            <?php if ($userData[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) { ?>
+                                <div class="row">
+                                    <!-- CIF -->
+                                    <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
+                                        <div class="form-group">
+                                            <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
+                                            <div>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('Yes') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF"><?php echo __('No') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF" checked="checked"><?php echo __('Pending') ?></label>
+                                            </div>
+                                            <input disabled="disabled" type="text" class="form-control blue_noborder"value ="<?php echo $userData[0]['Ocr']['investor_cif'] ?>" >
                                         </div>
-                                        <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_ businessName'] ?>">
                                     </div>
-                                    <!-- /Business Name -->
-                                    <!-- /Business Data -->
+                                    <!-- /CIF -->
+
+                                    <!-- Business Name -->
+                                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                                        <div class="form-group">
+                                            <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
+                                            <div>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('Yes') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('No') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" checked="checked"><?php echo __('Pending') ?></label>
+                                            </div>
+                                            <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_ businessName'] ?>">
+                                        </div>
+                                        <!-- /Business Name -->
+                                        <!-- /Business Data -->
+                                    </div>
                                 </div>
-                            </div>
                             <?php } ?>
                         </div>
                         <div class="row">
@@ -492,7 +492,10 @@
                                     $fileConfig = Configure::read('files');
                                     foreach ($files as $file) {//Company list 
                                         ?>
-                                        <li><a href="/files/downloadDocument/file/<?php echo $file['file']['FilesInvestor']['investor_id'] ?>" class="download" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></a> 
+                                        <li>
+                                            <form action="/files/downloadDocument/ocrfile/<?php echo $file['file']['FilesInvestor']['id'] ?>">
+                                                <button  type="submit" class="download" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></button> 
+                                            </form>
                                             <div>
                                                 <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>"><?php echo __('Yes') ?></label>
                                                 <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>"><?php echo __('No') ?></label>

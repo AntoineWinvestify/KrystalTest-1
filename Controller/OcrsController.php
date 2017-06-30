@@ -75,7 +75,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'File', 'Linkedaccount');
+    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile', 'Linkedaccount');
     var $error;
 
     function beforeFilter() {
@@ -105,6 +105,7 @@ class ocrsController extends AppController {
 
         //Check ocr status
         $status = $OcrData[0]['Ocr']['ocr_status'];
+
         //Control status
         if ($status == NOT_SENT || $status == OCR_FINISHED) {
             //$this->ocrInvestorPlatformSelection();
@@ -285,11 +286,11 @@ class ocrsController extends AppController {
             $companies = array_merge($this->Ocr->getSelectedCompanies($id), $this->Ocr->getRegisterSentCompanies($id));
 
             //Required  files
-            $requiredFiles = $this->File->readRequiredFiles($companies);
-            $filesData = $this->File->getFilesData($requiredFiles);
+            $requiredFiles = $this->Ocrfile->readRequiredFiles($companies);
+            $filesData = $this->Ocrfile->getFilesData($requiredFiles);
 
             //Read existing files 
-            $existingFiles = $this->File->readExistingFiles($id);
+            $existingFiles = $this->Ocrfile->readExistingFiles($id);
 
 
             //Set all info
@@ -402,7 +403,7 @@ class ocrsController extends AppController {
     //PFPAdmin View #2
     function ocrPfpBillingPanel() {
         //Read all company bills
-        $bills = $this->File->billCompanyFilter(6);
+        $bills = $this->Ocrfile->billCompanyFilter(6);
         $this->set('bills', $bills);
 
         $this->layout = 'azarus_private_layout';
@@ -479,7 +480,7 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
 
         //get all bills and set them in the view
-        $billsInfo = $this->File->getAllBills();
+        $billsInfo = $this->Ocrfile->getAllBills();
         $this->set("bills", $billsInfo);
 
         //Get companies info for the select
@@ -500,7 +501,7 @@ class ocrsController extends AppController {
             $this->disableCache();
 
             //get all bills and set them in the view
-            $billsInfo = $this->File->getAllBills();
+            $billsInfo = $this->Ocrfile->getAllBills();
 
             $this->set("result", true);
             $this->set("bills", $billsInfo);
@@ -523,7 +524,7 @@ class ocrsController extends AppController {
         $this->set('checking', $checking);
 
         //Search and set investor files
-        $files = $this->File->readExistingFiles($id);
+        $files = $this->Ocrfile->readExistingFiles($id);
         $this->set('files', $files);
 
         $this->layout = 'azarus_private_layout';

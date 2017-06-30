@@ -864,31 +864,31 @@ if ($result) {
                                         <input type="hidden" name="countFiles" value="<?php echo count($requiredFiles) ?>">
                                         <?php
                                             foreach ($requiredFiles as $filesTable) { //Generate the required files table
-                                                $file = "file" . $filesTable[0]['File']['id'];
+                                                $file = "file" . $filesTable[0]['Ocrfile']['id'];
                                                 ?>
-                                                <tr id = "notification<?php echo $filesTable[0]['File']['id'] ?>">
+                                                <tr id = "notification<?php echo $filesTable[0]['Ocrfile']['id'] ?>">
 
                                                 </tr>
-                                                <tr id="<?php echo $filesTable[0]['File']['id'] ?>" class="documentRow">
-                                                    <td title="<?php echo $filesTable[0]['File']['file_tooltip'] ?>"><?php echo __($filesTable[0]['File']['file_type']) ?></td>
-                                                    <td id="status<?php echo $filesTable[0]['File']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
+                                                <tr id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="documentRow">
+                                                    <td title="<?php echo $filesTable[0]['Ocrfile']['file_tooltip'] ?>"><?php echo __($filesTable[0]['Ocrfile']['file_type']) ?></td>
+                                                    <td id="status<?php echo $filesTable[0]['Ocrfile']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
                                                     <td>
                                                         <?php
-                                                        $uploaded = "uploaded" . $filesTable[0]['File']['id'];
+                                                        $uploaded = "uploaded" . $filesTable[0]['Ocrfile']['id'];
 
-                                                        echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['File']['id'], 'class' => 'upload', 'value' => $filesTable[0]['File']['id']));
+                                                        echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['Ocrfile']['id'], 'class' => 'upload', 'value' => $filesTable[0]['Ocrfile']['id']));
                                                         echo "<span id='" . $file . "' >";
-                                                        echo "<label class='btn labelFile btnRounded btnUploadFile label" . $filesTable[0]['File']['id'] . "' for='fileId" . $filesTable[0]['File']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
-                                                        echo "<input type='file' name='data[Files][fileId" . $filesTable[0]['File']['id'] . "]' id='fileId" . $filesTable[0]['File']['id'] . "' >";
-                                                        //echo $this->Form->file("fileId" . $filesTable[0]['File']['id']);
-                                                        echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $filesTable[0]['File']['id']));
+                                                        echo "<label class='btn labelFile btnRounded btnUploadFile label" . $filesTable[0]['Ocrfile']['id'] . "' for='fileId" . $filesTable[0]['Ocrfile']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
+                                                        echo "<input type='file' name='data[Files][fileId" . $filesTable[0]['Ocrfile']['id'] . "]' id='fileId" . $filesTable[0]['Ocrfile']['id'] . "' >";
+                                                        //echo $this->Form->file("fileId" . $filesTable[0]['Ocrfile']['id']);
+                                                        echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $filesTable[0]['Ocrfile']['id']));
                                                         echo $this->Form->hidden('upload', array('id' => $uploaded, 'class' => 'uploaded', 'value' => 0));
                                                         echo "</span>";
                                                         echo $this->Form->end();
                                                         ?>
                                                     </td>
                                                     <td>
-                                                        <button type="button" id="del<?php echo $filesTable[0]['File']['id'] ?>" value="<?php echo $filesTable[0]['File']['id'] ?>" class="delete btn btn-default btnDeleteFile btnRounded" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
+                                                        <button type="button" id="del<?php echo $filesTable[0]['Ocrfile']['id'] ?>" value="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="delete btn btn-default btnDeleteFile btnRounded" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
                                                     </td>
                                                 </tr>
                                                 <?php

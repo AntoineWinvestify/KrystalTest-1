@@ -48,15 +48,16 @@
  * zip creation                         [OK]
  * 
  * 2017/6/30 version 0.9
- *Event 
+ * Event 
  * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
 
-class file extends AppModel {
+class ocrfile extends AppModel {
 
-    var $name = 'File';
+    var $useTable = 'files';
+    var $name = 'Ocrfile';
     public $hasAndBelongsToMany = array(
         'Company' => array(
             'className' => 'Company',
@@ -225,15 +226,19 @@ class file extends AppModel {
      * @return type
      */
     public function readExistingFiles($id) {
+
         $investorFiles = $this->FilesInvestor->find("all", array('conditions' => array('investor_id' => $id)));
         $filesName = $this->find("all");
         $result = array();
 
         //Get existing file and type file info
         foreach ($investorFiles as $investorFile) {
+
             foreach ($filesName as $fileName) {
-                if ($investorFile['FilesInvestor']['file_id'] == $fileName['File']['id']) {
-                    array_push($result, array("file" => $investorFile, "type" => $fileName['File']));
+
+                if ($investorFile['FilesInvestor']['file_id'] == $fileName['Ocrfile']['id']) {
+
+                    array_push($result, array("file" => $investorFile, "type" => $fileName['Ocrfile']));
                 }
             }
         }
