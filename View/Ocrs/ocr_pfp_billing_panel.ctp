@@ -113,7 +113,7 @@
                                                         <td><?php echo __($bill['CompaniesFile']['created']); ?></td>
                                                         <td><?php echo __($bill['CompaniesFile']['bill_number']); ?></td>
                                                         <td><?php echo __($bill['CompaniesFile']['bill_concept']); ?></td>
-                                                        <td id="<?php echo __($billsTable['CompaniesFile']['id']) ?>" align="right"><script>formatMoney(<?php echo __($billsTable['info']['id']) ?>, <?php echo __($billsTable['CompaniesFile']['bill_amount']) ?>);</script></td>
+                                                        <td id="<?php echo __($bill['CompaniesFile']['id']) ?>" align="right"><script>formatMoney(<?php echo __($bill['CompaniesFile']['id']) ?>, <?php echo __($bill['CompaniesFile']['bill_amount']) ?>);</script></td>
                                                         <td>
                                                             <button href = "<?php echo __($bill['CompaniesFile']['bill_url']); ?>" class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
                                                         </td>
