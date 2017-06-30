@@ -45,6 +45,14 @@ Adding generic tracing capability 											[OK, NOT tested]
 2017-02-14		version 0.4
 function "getCurrentAccumulativeRowValue" was updated with the capability	[NOT OK, not tested]
 of ONLY adding cuotas realmente pagados.
+ 
+
+2017-05-31
+function to save into DB
+
+2017-06-30
+Added function to create an individual cookies file for company when a request and delete after logout
+
 
 PENDING
  * fix method  getMonetaryValue()
@@ -97,11 +105,14 @@ class p2pCompany{
         protected $tracingDir;
         protected $logDir;
         protected $testConfig;
+        protected $cookiesDir;
         protected $config;
         protected $errorInfo;
         //Backup variables
         protected $urlSequenceBackup = array();
         protected $tries = 0;
+        //Cookies
+        protected $cookies_name = 'cookies.txt';
 	
 /**
 *
@@ -116,7 +127,7 @@ function __construct() {
 	$this->logDir = __DIR__ . "/log";			// Directory where the log files are stored
 	$this->testConfig['active'] = false;		// test system activated	
 //	$this->testConfig['siteReadings'] = array('/var/www/compare_local/app/companyCodeFiles/tempTestFiles/lendix_marketplace');
-
+        $this->cookiesDir = dirname(__FILE__). "/cookies"; 
 	$this->config['tracingActive'] = false;
 	$this->headers = array();
 
@@ -221,6 +232,7 @@ public function getTestConfig() {
 */
 function doCompanyLogin(array $loginCredentials) {
 
+        $this->generateCookiesFile();
 	$url = array_shift($this->urlSequence);	
 	if (!empty($this->testConfig['active']) == true) {		// test system active, so read input from prepared files
 		if (!empty($this->testConfig['siteReadings'])) {
@@ -285,9 +297,8 @@ function doCompanyLogin(array $loginCredentials) {
     // Do not check the SSL certificates
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
- 
-	curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');		// important
-    curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');		// Important
+    curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir. '/' . $this->cookies_name);		// important
+    curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);		// Important
 
     // Fetch the URL and save the content
     $str = curl_exec($curl);
@@ -383,8 +394,8 @@ function doCompanyLogout() {
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
     
-    curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');		// important
-    curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');		// Important
+    curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);		// important
+    curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);		// Important
  
     // Fetch the URL and save the content
     // cURL executed successfully
@@ -398,7 +409,7 @@ function doCompanyLogout() {
 
 // close cURL resource to free up system resources		
     curl_close($curl);
-
+    $this->deleteCookiesFile();
 	if ($this->config['appDebug'] == true) {
 		echo "LOGOUT URL = $url <br>";
 	}
@@ -501,8 +512,8 @@ function getCompanyWebpage($url) {
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); 
 
-    $result = curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');		// important
-    $result = curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');		// Important
+    $result = curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);		// important
+    $result = curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);		// Important
 
     // Fetch the URL and save the content
     $str = curl_exec($curl);
@@ -532,7 +543,8 @@ function getCompanyWebpage($url) {
     */
 
     function doCompanyLoginMultiCurl(array $loginCredentials) {
-
+        
+        //$this->generateCookiesFile();
         $url = array_shift($this->urlSequence);
         echo $url;
         $this->errorInfo = $url;
@@ -578,8 +590,8 @@ function getCompanyWebpage($url) {
                 ->set(CURLOPT_TIMEOUT, 100)
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
-                ->set(CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt')
-                ->set(CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');
+                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir. '/' . $this->cookies_name)
+                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir. '/' . $this->cookies_name);
 
         $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
         // Add the url to the queue
@@ -651,10 +663,11 @@ function getCompanyWebpage($url) {
                 ->set(CURLOPT_TIMEOUT, 100)
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
-                ->set(CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt')
-                ->set(CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');
+                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir. '/' . $this->cookies_name)
+                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir. '/' . $this->cookies_name);
 
         $this->marketplaces->addRequetsToQueueCurls($request);
+        //$this->deleteCookiesFile();
     }
     
     
@@ -1240,6 +1253,41 @@ function print_r2($val){
         $this->password = $password;
     }
     
+    public function generateCookiesFile() {
+        $randomName = $this->getGUID();
+        $randomName = str_replace(array('{', '}', '-'), array(''), $randomName);
+        //$randomName = str_replace("{", "", $randomName);
+        $nameFileCookies = 'cookies' . $randomName . '.txt';
+        $this->createCookiesFile($nameFileCookies);
+        return $nameFileCookies;
+    }
+    
+    public function createCookiesFile($nameFile) {
+        if (!file_exists($this->cookiesDir . '/' . $nameFile)) {
+            //Be careful with this function because maybe cannot work on Windows
+            $fh = fopen($this->cookiesDir . '/' .  $nameFile, 'w');
+            fclose($fh);
+            chmod($this->cookiesDir . '/' . $nameFile, 0770); 
+            if ($fh) {
+                $this->cookies_name = $nameFile;
+            }
+        }
+        else {
+            $this->cookies_name = $nameFile;
+        }
+        
+        //$nameFile = $this->generatedNameForCookies();
+         //or die("Can't create file");
+    }
+    
+    public function deleteCookiesFile() {
+        if (file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
+            unlink($this->cookiesDir . '/' . $this->cookies_name);
+        }
+        
+    }
+    
+    
     public function getTries() {
         return $this->tries;
     }
@@ -1272,6 +1320,31 @@ function print_r2($val){
         $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         return $this->tempArray;
+    }
+    
+    /**
+     *
+     * 	borrowed from "http://guid.us/"
+     * 	Generates a GUID
+     *
+     *
+     */
+    public function getGUID() {
+        if (function_exists('com_create_guid')) {
+            return com_create_guid();
+        } else {
+            mt_srand((double) microtime() * 10000);    //optional for php 4.2.0 and up.
+            $charid = strtoupper(md5(uniqid(rand(), true)));
+            $hyphen = chr(45);       // "-"
+            $uuid = chr(123)       // "{"
+                    . substr($charid, 0, 8) . $hyphen
+                    . substr($charid, 8, 4) . $hyphen
+                    . substr($charid, 12, 4) . $hyphen
+                    . substr($charid, 16, 4) . $hyphen
+                    . substr($charid, 20, 12)
+                    . chr(125); // "}"
+            return $uuid;
+        }
     }
 
 
