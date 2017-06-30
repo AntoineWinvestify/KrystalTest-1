@@ -30,7 +30,8 @@
   [2017-06-28] Version 1.1 (for ocr)
   Check status
 
-
+  [2017-06-29] Version 1.1 (for ocr)
+  Update pfp added
 
  */
 class Company extends AppModel {
@@ -86,9 +87,9 @@ class Company extends AppModel {
 
     public function getCompanyList($filterConditions) {
 
-	$businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
+        $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
             'Company.company_state' => ACTIVE);
-        
+
         $conditions = array_merge($businessConditions, $filterConditions);
 
         $companyResult = $this->find("list", $params = array('recursive' => -1,
@@ -136,7 +137,7 @@ class Company extends AppModel {
             array_push($idList, $ocrService['Serviceocr']['company_id']);
         }
 
-        
+
         $conditions = array('Company.id' => $idList);
 
         //Platform selection filters
@@ -160,27 +161,27 @@ class Company extends AppModel {
         return $data;
     }
 
-    
-    /**Check the service status for the company
+    /*     * Check the service status for the company
      * 
      * @param type $id
      * @return type
      */
+
     public function checkOcrServiceStatus($id) {
-        
+
         //Search the company only if ocr service is active or suspended
         $status = $this->Serviceocr->find("first", array(
             'fields' => 'serviceocr_status',
             'conditions' => array('company_id' => $id, 'serviceocr_status' => array(SER_ACTIVE, SER_SUSPENDED)),
         ));
         //If found, return true and the status
-        if(count($status) > 0){
+        if (count($status) > 0) {
             return [true, $status];
-        }else {
+        } else {
             return false;
         }
     }
-    
+
     /**
      *
      * 	Returns the extended data an array of the company and their data that fullfil the filterConditions.
@@ -201,6 +202,14 @@ class Company extends AppModel {
             $companyResults[$value['Company']['id']] = $value['Company'];
         }
         return $companyResults;
+    }
+
+    public function UpdateCompany($data) {
+        if ($this->save($data)) {
+            return [true, __("Company updated correctly")];
+        } else {
+            return [false, __("Failed update")];
+        }
     }
 
 }

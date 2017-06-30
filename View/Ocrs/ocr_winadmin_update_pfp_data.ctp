@@ -1,23 +1,23 @@
 <?php
 /**
-* +--------------------------------------------------------------------------------------------+
-* | Copyright (C) 2016, http://www.winvestify.com                                              |
-* +--------------------------------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify                          |
-* | it under the terms of the GNU General Public License as published by                       |
-* | the Free Software Foundation; either version 2 of the License, or                          |
-* | (at your option) any later version.                                                        |
-* | This file is distributed in the hope that it will be useful                                |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
-* | GNU General Public License for more details.                                               |
-* +--------------------------------------------------------------------------------------------+
-*
-*
-* @author
-* @version 0.2
-* @date 2017-06-12
-* @package
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                                              |
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify                          |
+ * | it under the terms of the GNU General Public License as published by                       |
+ * | the Free Software Foundation; either version 2 of the License, or                          |
+ * | (at your option) any later version.                                                        |
+ * | This file is distributed in the hope that it will be useful                                |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+ * | GNU General Public License for more details.                                               |
+ * +--------------------------------------------------------------------------------------------+
+ *
+ *
+ * @author
+ * @version 0.2
+ * @date 2017-06-12
+ * @package
  * 
  * 
  * View to edit & update info about PFPs on DB (links of terms of service, privacy policy...)
@@ -32,8 +32,14 @@
  * 
  * [2017-06-28] Version 0.3
  * Added selects to Modality, Country, Status
-*/
-
+ * 
+ * [2017-06-29] Version 0.4
+ * Ajax function added
+ * 
+ * [2017-06-30] Version 0.5
+ * Update completed
+ * 
+ */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
@@ -47,6 +53,33 @@
         font-size: 50px;
     }
 </style>
+<script>
+
+    $(function () {
+        //update ajax
+        $(document).on("click", "#update", function () {
+            params = {
+                pfp: $("#ContentPlaceHolder_pfp").val(),
+                temrs: $("#ContentPlaceHolder_terms").val(),
+                privacy: $("#ContentPlaceHolder_privacyPolicy").val(),
+                modality: $("#ContentPlaceHolder_modality").val(),
+                country: $("#ContentPlaceHolder_country").val(),
+                ocr: $("#ContentPlaceHolder_status").val()
+            }
+
+            link = $("#update").attr('href');
+            var data = jQuery.param(params);
+            getServerData(link, data, success, error);
+        });
+    });
+    function success(data) {
+
+    }
+
+    function error(data) {
+
+    }
+</script>
 <div id="1CR_winadmin_4_updatePFP">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -69,29 +102,29 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive">
                                 <table id="modifyPFPData" class="table table-striped display dataTable"  width="100%" cellspacing="0"
-                                                       data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                       data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
-                                        <th width="10%"><?php echo __('PFP')?></th>
-                                        <th width="15%"><?php echo __('Terms of Service')?></th>
-                                        <th width="15%"><?php echo __('Privacy Policy')?></th>
-                                        <th with="10%"><?php echo __('Modality')?></th>
-                                        <th><?php echo __('Country')?></th>
-                                        <th with="5%"><?php echo __('Status')?></th>
-                                        <th><?php echo __('Send')?></th>
+                                        <th width="10%"><?php echo __('PFP') ?></th>
+                                        <th width="15%"><?php echo __('Terms of Service') ?></th>
+                                        <th width="15%"><?php echo __('Privacy Policy') ?></th>
+                                        <th with="10%"><?php echo __('Modality') ?></th>
+                                        <th><?php echo __('Country') ?></th>
+                                        <th with="5%"><?php echo __('Status') ?></th>
+                                        <th><?php echo __('Send') ?></th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <?php 
-                                                $class = "form-control blue_noborder winadminPFP";
-                                                $filters = [__("Select PFP"), "pfp1", "pfp2", "pfp3"];      
-                                                echo $this->Form->input('Ocr.id', array(
-                                                        'name'          => 'pfp',
-                                                        'id'            => 'ContentPlaceHolder_pfp',
-                                                        'label'         => false,
-                                                        'options'       => $filters,
-                                                        'class'         => $class,
-                                                        'value'         => $resultUserData[0]['Ocr']['id'] /*this must be about PFP*/						
-                                                ));
+                                            <?php
+                                            $class = "form-control blue_noborder winadminPFP";
+                                            $filters = [__("Select PFP"), "pfp1", "pfp2", "pfp3"];
+                                            echo $this->Form->input('Ocr.id', array(
+                                                'name' => 'pfp',
+                                                'id' => 'ContentPlaceHolder_pfp',
+                                                'label' => false,
+                                                'options' => $filters,
+                                                'class' => $class,
+                                                'value' => $resultUserData[0]['Ocr']['id'] /* this must be about PFP */
+                                            ));
                                             ?>
                                         </td>
                                         <td>
@@ -103,7 +136,7 @@
                                             $class = "form-control blue_noborder pfpTermsOfService" . ' ' . $errorClass;
                                             echo $this->Form->input('Companies.company_termsUrl', array(
                                                 'name' => 'termsOfService',
-                                                'id' => 'ContentPlaceHolder_number',
+                                                'id' => 'ContentPlaceHolder_terms',
                                                 'label' => false,
                                                 'placeholder' => __('Terms Of Service URL'),
                                                 'class' => $class,
@@ -150,15 +183,15 @@
                                         </td>
                                         <td align="left">
                                             <?php
-                                            $filters_mod = ["select modality", "mod1", "mod2", "mod3"];      
-                                                echo $this->Form->input('Ocr.id', array(
-                                                        'name'          => 'modality',
-                                                        'id'            => 'ContentPlaceHolder_modality',
-                                                        'label'         => false,
-                                                        'options'       => $filters_mod,
-                                                        'class'         => $class,
-                                                        'value'         => $resultUserData[0]['Company']['????'] /*this must be about PFP*/						
-                                                ));
+                                            $filters_mod = ["select modality", "mod1", "mod2", "mod3"];
+                                            echo $this->Form->input('Ocr.id', array(
+                                                'name' => 'modality',
+                                                'id' => 'ContentPlaceHolder_modality',
+                                                'label' => false,
+                                                'options' => $filters_mod,
+                                                'class' => $class,
+                                                'value' => $resultUserData[0]['Company']['????'] /* this must be about PFP */
+                                            ));
                                             $errorClassesText = "errorInputMessage ErrorModality";
                                             if (array_key_exists('pfp_modality', $billValidationErrors)) {
                                                 $errorClassesText .= " " . "actived";
@@ -187,7 +220,7 @@
                                                 'class' => $class,
                                                 'value' => $investor[0]['Company']['company_countryName'],
                                             ));
-                                           
+
                                             $errorClassesText = "errorInputMessage ErrorModality";
                                             if (array_key_exists('pfp_country', $billValidationErrors)) {
                                                 $errorClassesText .= " " . "actived";
@@ -230,7 +263,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btnWinAdmin form-control btnRounded">
+                                            <button id ="update" href="updateCompanyOcrData" type="button" class="btn btn-default btnWinAdmin form-control btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Update') ?> 
                                             </button>
                                         </td>

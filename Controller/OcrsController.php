@@ -61,6 +61,13 @@
  * [2017-06-28] Version 0.11
  * Set status name
  * Bills table refesh
+ * 
+ * [2017-06-29] Version 0.12
+ *   Update pfp added
+ * 
+ * [2017-06-30] Version 0.13
+ * Update pfp completed
+ *
  */
 App::uses('CakeEvent', 'Event');
 
@@ -111,7 +118,7 @@ class ocrsController extends AppController {
     }
 
     /**
-     * Send the investor data to investor model and ocr data to ocr model
+     * Data panel actions
      */
     function oneClickInvestorII() {
 
@@ -155,7 +162,7 @@ class ocrsController extends AppController {
 
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $status = $this->Ocr->checkStatus($id);
-            
+
             //Ocr data
             $datosOcr = array(
                 'investor_id' => $id,
@@ -182,7 +189,7 @@ class ocrsController extends AppController {
     }
 
     /**
-     * Send the selected companies to ocr model
+     * Select platform actions
      */
     function oneClickInvestorI() {
         if (!$this->request->is('ajax')) {
@@ -523,7 +530,9 @@ class ocrsController extends AppController {
         echo " ";
     }
 
-    //WinAdmin View #4
+    /**
+     * WinAdmin View #4
+     */
     function ocrWinadminUpdatePfpData() {
         $this->layout = 'azarus_private_layout';
         echo " ";
@@ -532,6 +541,30 @@ class ocrsController extends AppController {
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');
         $this->set('countryData', $countryData);
+    }
+
+    /**
+     * Update a company
+     */
+    function updateCompanyOcrData() {
+
+        // Country Codes
+        Configure::load('countryCodes.php', 'default');
+        $countryData = Configure::read('countrycodes');
+
+        //Request data
+        $data = array(
+            'id' => $this->request['data']['pfp'],
+            'company_termsUrl' => $this->request['data']['temrs'],
+            'company_privacyUrl' => $this->request['data']['privacy'],
+            'company_type' => $this->request['data']['modality'],
+            'company_country' => $this->request['data']['country'],
+            'company_countryName' => $countryData[$this->request['data']['country']],
+        );
+
+        //Set result
+        $result = $this->Company->UpdateCompany($data);
+        $this->set('result', $result);
     }
 
     //WinAdmin View #5
