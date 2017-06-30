@@ -57,8 +57,10 @@
  * 
  * [2017-06-30] Version 0.9
  * Added select to datatable on all columns to filter by column.
+ * Added Accounting Plugin to format Money
  */
 ?>
+<script type="text/javascript" src="/js/accounting.min.js"></script>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <style>
@@ -84,6 +86,19 @@ foreach ($companies as $companyInfo) {
 }
 ?>
 <script>
+    function formatMoney(id, amount) {
+        amount = amount/100;
+        var optionsAccounting = {
+            symbol : " &euro;",
+            decimal : ",",
+            thousand: ".",
+            precision : 0,
+            format: "%v%s"
+            };
+
+            var bill_value = accounting.formatMoney(amount, optionsAccounting);
+            $("#"+id).html(bill_value);
+    }
     $(function () {
         //Datatables
         $("#billsHistory").DataTable({
@@ -374,7 +389,7 @@ foreach ($companies as $companyInfo) {
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive" id="billsTable">
                                 <table id="billsHistory" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                               data-order='[[ 0, "asc" ]]' data-page-length='10' rowspan='1' colspan='1'>
+                                               data-order='[[ 1, "asc" ]]' data-page-length='10' rowspan='1' colspan='1'>
                                     <thead>
                                         <tr>
                                             <th><?php echo __('PFP') ?></th>
@@ -394,13 +409,13 @@ foreach ($companies as $companyInfo) {
                                         </tr>
                                     </tfoot>
                                     <tbody>
-<?php foreach ($bills as $billsTable) {//Bills table creation    ?>
+<?php foreach ($bills as $billsTable) {//Bills table creation    ?>                                      
                                         <tr>
                                             <td><?php echo __($billsTable['Pfpname']) ?></td>
                                             <td><?php echo __($billsTable['info']['created']) ?></td>
                                             <td><?php echo __($billsTable['info']['bill_number']) ?></td>
                                             <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
-                                            <td align="left"><?php echo __($billsTable['info']['bill_amount']) ?></td>
+                                            <td id="<?php echo __($billsTable['info']['id']) ?>" align="right"><script>formatMoney(<?php echo __($billsTable['info']['id']) ?>, <?php echo __($billsTable['info']['bill_amount']) ?>);</script></td>
                                         </tr>
 <?php } ?>
                                     </tbody>
