@@ -39,6 +39,7 @@
  * [2017-06-30] Version 0.5
  * Update completed
  * Added server feedback
+ * Added javascript validation
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -57,22 +58,23 @@
 
     $(function () {
         //update ajax
-        $(document).on("click", "#update", function () {
-            params = {
-                pfp: $("#ContentPlaceHolder_pfp").val(),
-                temrs: $("#ContentPlaceHolder_terms").val(),
-                privacy: $("#ContentPlaceHolder_privacyPolicy").val(),
-                modality: $("#ContentPlaceHolder_modality").val(),
-                country: $("#ContentPlaceHolder_country").val(),
-                ocr: $("#ContentPlaceHolder_status").val()
+        $(document).on("click", "#updateBtn", function () {
+            if ((result = app.visual.checkFormWinadminUpdatePFP()) === true) {
+                params = {
+                    pfp: $("#ContentPlaceHolder_pfp").val(),
+                    temrs: $("#ContentPlaceHolder_terms").val(),
+                    privacy: $("#ContentPlaceHolder_privacyPolicy").val(),
+                    modality: $("#ContentPlaceHolder_modality").val(),
+                    country: $("#ContentPlaceHolder_country").val(),
+                    ocr: $("#ContentPlaceHolder_status").val()
+                };
+                link = $("#updateBtn").attr('href');
+                var data = jQuery.param(params);
+                getServerData(link, data, success, error);
             }
-
-            link = $("#update").attr('href');
-            var data = jQuery.param(params);
-            getServerData(link, data, success, error);
         });
     });
-    function success(data) {
+        function success(data) {
         $(".fbtext").html(data);
         $("#feedbackServer").addClass("alert-win-success");
         $("#feedbackServer").show();
@@ -123,7 +125,7 @@
                                     <tr>
                                         <td>
                                             <?php
-                                            $class = "form-control blue_noborder winadminPFP";
+                                            $class = "form-control blue_noborder selectedPFP";
                                             $filters = [__("Select PFP"), "pfp1", "pfp2", "pfp3"];
                                             echo $this->Form->input('Ocr.id', array(
                                                 'name' => 'pfp',
@@ -133,7 +135,17 @@
                                                 'class' => $class,
                                                 'value' => $resultUserData[0]['Ocr']['id'] /* this must be about PFP */
                                             ));
+                                            $errorClassesText = "errorInputMessage ErrorPFP";
+                                            if (array_key_exists('company_pfp', $investorValidationErrors)) {
+                                                $errorClassesText .= " " . "actived";
+                                            }
                                             ?>
+                                            <div class="<?php echo $errorClassesText ?>">
+                                                <i class="fa fa-exclamation-circle"></i>
+                                                <span class="errorMessage">
+                                                    <?php echo $pfpValidationErrors['company_pfp'][0] ?>
+                                                </span>
+                                            </div>	
                                         </td>
                                         <td>
                                             <?php
@@ -189,8 +201,13 @@
                                                 </span>
                                             </div>
                                         </td>
-                                        <td align="left">
+                                        <td>
                                             <?php
+                                            $errorClass = "";
+                                            if (array_key_exists('pfp_modality', $pfpValidationErrors)) {
+                                                $errorClass = "redBorder";
+                                            }
+                                            $class = "form-control blue_noborder pfpModality" . ' ' . $errorClass;
                                             $filters_mod = ["select modality", "mod1", "mod2", "mod3"];
                                             echo $this->Form->input('Ocr.id', array(
                                                 'name' => 'modality',
@@ -214,10 +231,6 @@
                                         </td>
                                         <td>
                                             <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('pfp_country', $pfpValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
                                             $class = "form-control blue_noborder pfpCountry" . ' ' . $errorClass;
                                             echo $this->Form->input('Company.company_countryName', array(
                                                 'name' => 'country',
@@ -228,18 +241,7 @@
                                                 'class' => $class,
                                                 'value' => $investor[0]['Company']['company_countryName'],
                                             ));
-
-                                            $errorClassesText = "errorInputMessage ErrorModality";
-                                            if (array_key_exists('pfp_country', $billValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
                                             ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $pfpValidationErrors['pfp_country'][0] ?>
-                                                </span>
-                                            </div>
                                         </td>
                                         <td>
                                             <?php
@@ -271,7 +273,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <button id ="update" href="updateCompanyOcrData" type="button" class="btn btn-default btnWinAdmin form-control btnRounded">
+                                            <button id ="updateBtn" href="updateCompanyOcrData" type="button" class="btn btn-default btnWinAdmin form-control btnRounded">
                                                 <i class="fa fa-upload"></i> <?php echo __('Update') ?> 
                                             </button>
                                         </td>
