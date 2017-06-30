@@ -48,9 +48,12 @@
  * 2017/6/19 version 0.8
  * Select query deleted
  * 
- * 2017/6/23 version 0.8
+ * 2017/6/23 version 0.9
  * ocr_sent(date)
  * checking table completed
+ * 
+ * 2017/6/30 version 0.10
+ * Event after save 
  * 
  */
 App::uses('CakeEvent', 'Event');
@@ -144,6 +147,13 @@ class ocr extends AppModel {
         if (count($id) > 0) {
             $time = date('Y-m-d H:i:s', time());
 
+
+            if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
+                $status = FIXED;
+            } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT) {
+                $status = SENT;
+            }
+
             if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
                 $data = array(
                     'id' => $id['Ocr']['id'],
@@ -152,7 +162,7 @@ class ocr extends AppModel {
                     'investor_cif' => $dataParam['investor_cif'],
                     'investor_businessName' => $dataParam['investor_businessName'],
                     'investor_iban' => $dataParam['investor_iban'],
-                    'ocr_status' => 1,
+                    'ocr_status' => $status,
                     'ocr_sent' => $time,
                 );
             } else {
@@ -161,25 +171,23 @@ class ocr extends AppModel {
                     'investor_id' => $dataParam['investor_id'],
                     'ocr_investmentVehicle' => 0,
                     'investor_iban' => $dataParam['investor_iban'],
-                    'ocr_status' => 1,
+                    'ocr_status' => $status,
                     'ocr_sent' => $time,
                 );
             }
-        }
-//Save
-        if ($this->save($data)) {
-            $result = json_encode($data); //Save ok
-            $event = new CakeEvent("checkMessage", $this);
-            $this->getEventManager()->dispatch($event);
-//Insert OK        
-            return 1 . "," . $result;  //Return for a json
+            $result = json_encode($data);
+            /* if ($this->save($data) && $dataParam['ocr_status'] != ERROR) { //Save ok
+              $event = new CakeEvent("checkMessage", $this);
+              $this->getEventManager()->dispatch($event);
+              } */
+            return true . "," . $result;  //Return for a json
         } else {
 
             /*
              * 
              * SAVE ERROR
              */
-            return 0 . ","; //Save failed
+            return false . ","; //Save failed
         }
     }
 
@@ -362,7 +370,7 @@ class ocr extends AppModel {
 
     public function getAllOcrRelations($id) {
         //Search all ocr of the company
-        $OcrArray = $this->CompaniesOcr->find('all', array('recursive' => 1, 'conditions' => array('company_id' => $id, 'company_status' => array(ACCEPTED, DOWNLOADED ))));
+        $OcrArray = $this->CompaniesOcr->find('all', array('recursive' => 1, 'conditions' => array('company_id' => $id, 'company_status' => array(ACCEPTED, DOWNLOADED))));
         $result = array();
         //Search the investor info
         foreach ($OcrArray as $ocr) {
@@ -376,7 +384,10 @@ class ocr extends AppModel {
      *
      * 	Callback Function
      * 	Decrypt the sensitive data provided by the investor
-     *
+     * 
+     * @param type $results
+     * @param type $primary
+     * @return type     
      */
     public function afterFind($results, $primary = false) {
 
@@ -393,7 +404,10 @@ class ocr extends AppModel {
      *
      * 	Callback Function
      * 	Encrypt the sensitive fields of the information provided by the investor
-     *
+     * 
+     * @param type $options
+     * @return boolean
+     * 
      */
     public function beforeSave($options = array()) {
 
@@ -402,6 +416,22 @@ class ocr extends AppModel {
         }
 
         return true;
+    }
+
+    /**
+     *
+     * 	Callback Function Create mail event
+     * 
+     * @param type $created
+     * @param type $options
+     * 
+     */
+    function afterSave($created, $options = array()) {
+
+        if (!empty($this->data['Ocr']['ocr_status']) && $this->data['Ocr']['ocr_status'] != ERROR) {
+            $event = new CakeEvent("checkMessage", $this);
+            $this->getEventManager()->dispatch($event);
+        }
     }
 
 }

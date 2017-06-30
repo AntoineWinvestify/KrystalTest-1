@@ -38,6 +38,9 @@
   Added new routine uncomfirmedUserExists()
 
 
+2017-06-30      version 0.4                                                         [Not OK, not tested]
+  get pfp admin info
+
   PENDING
   -
 
@@ -55,7 +58,7 @@ class User extends AppModel {
             'order' => '',
         ),
     );
- 
+
     /**
      * 	Apparently can contain any type field which is used in a field. It does NOT necessarily 
      * 	have to map to a existing field in the database. Very useful for automatic checks 
@@ -336,6 +339,35 @@ class User extends AppModel {
             'newRandomPassword' => $newRandomPassword
                 )
         );
+    }
+
+    /**
+     * Get the pfp admins of a company
+     * @param type $id
+     * @return type
+     */
+    public function getAdminPfpId($id) {
+        $info = $this->Adminpfp->find("all", array(
+            'fields' => array('company_id'),
+            'conditions' => array('user_id' => $id),
+            'recursive' => -1,
+        ));
+        return $info;
+    }
+
+    /**
+     * Get pfp admins's mails
+     * @param type $id
+     */
+    public function getMailAdminPfpId($data) {
+        foreach ($data['id'] as $id) {
+            $info = $this->find("all", array(
+                'fields' => array('email'),
+                'conditions' => array('adminpfp_id' => $id),
+                'recursive' => -1,
+            ));
+        }
+        return $info;
     }
 
     /**
