@@ -55,7 +55,9 @@
  * Defined currencyName
  * Defined pfpStatus
  * 
- *
+ * [2017-06-29] Version 0.5
+ * Defined new status for ocr and files 
+ * 
  *  PENDING:
  * -
  *
@@ -222,6 +224,10 @@ define('SYSTEM_GENERATED', 2);
 define('EUR', 1);           // Euro
 define('GBP', 2);           // UK Pound Sterling
 define('USD', 3);           // US Dollar
+
+//DEFINE REQUIRED FILES
+define('OPTIONAL',1);
+define('NOT_OPTIONAL',0);
 
 class AppController extends Controller {
 

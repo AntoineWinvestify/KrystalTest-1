@@ -154,7 +154,6 @@ class Company extends AppModel {
             array_push($idList, $ocrService['Serviceocr']['company_id']);
         }
 
-
         $conditions = array('Company.id' => $idList);
 
         //Platform selection filters
@@ -174,7 +173,7 @@ class Company extends AppModel {
             'recursive' => -1,
             'conditions' => $conditions,
         ));
-
+        
         return $data;
     }
 

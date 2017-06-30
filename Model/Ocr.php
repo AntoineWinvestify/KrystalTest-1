@@ -54,6 +54,7 @@
  * 
  * 2017/6/30 version 0.10
  * Event after save 
+ * Validate iban
  * 
  */
 App::uses('CakeEvent', 'Event');
@@ -141,54 +142,58 @@ class ocr extends AppModel {
             'conditions' => array(
                 'investor_id' => $dataParam['investor_id']),
             'recursive' => -1,));
+        $iban = $dataParam['investor_iban'];
+        $ibanValidation = new IBAN($iban);
+        if ($ibanValidation) {
+            //Ocr data
+            if (count($id) > 0) {
+                $time = date('Y-m-d H:i:s', time());
 
 
-        //Ocr data
-        if (count($id) > 0) {
-            $time = date('Y-m-d H:i:s', time());
+                if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
+                    $status = FIXED;
+                } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT) {
+                    $status = SENT;
+                }
+                
 
+                if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
+                    $data = array(
+                        'id' => $id['Ocr']['id'],
+                        'investor_id' => $dataParam['investor_id'],
+                        'ocr_investmentVehicle' => 1,
+                        'investor_cif' => $dataParam['investor_cif'],
+                        'investor_businessName' => $dataParam['investor_businessName'],
+                        'investor_iban' => $dataParam['investor_iban'],
+                        'ocr_status' => $status,
+                        'ocr_sent' => $time,
+                    );
+                } else {
+                    $data = array(
+                        'id' => $id['Ocr']['id'],
+                        'investor_id' => $dataParam['investor_id'],
+                        'ocr_investmentVehicle' => 0,
+                        'investor_iban' => $dataParam['investor_iban'],
+                        'ocr_status' => $status,
+                        'ocr_sent' => $time,
+                    );
+                }
 
-            if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
-                $status = FIXED;
-            } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT) {
-                $status = SENT;
-            }
+                $result = json_encode($data);
 
-            if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
-                $data = array(
-                    'id' => $id['Ocr']['id'],
-                    'investor_id' => $dataParam['investor_id'],
-                    'ocr_investmentVehicle' => 1,
-                    'investor_cif' => $dataParam['investor_cif'],
-                    'investor_businessName' => $dataParam['investor_businessName'],
-                    'investor_iban' => $dataParam['investor_iban'],
-                    'ocr_status' => $status,
-                    'ocr_sent' => $time,
-                );
+                if ($this->save($data)) { //Save ok
+                    return true . "," . $result;  //Return for a json
+                }
             } else {
-                $data = array(
-                    'id' => $id['Ocr']['id'],
-                    'investor_id' => $dataParam['investor_id'],
-                    'ocr_investmentVehicle' => 0,
-                    'investor_iban' => $dataParam['investor_iban'],
-                    'ocr_status' => $status,
-                    'ocr_sent' => $time,
-                );
-            }
 
-            $result = json_encode($data);
-            print_r($result);
-
-            if ($this->save($data)) { //Save ok
-                return true . "," . $result;  //Return for a json
+                /*
+                 * 
+                 * SAVE ERROR
+                 */
+                return false . ","; //Save failed
             }
         } else {
-
-            /*
-             * 
-             * SAVE ERROR
-             */
-            return false . ","; //Save failed
+            return false;
         }
     }
 

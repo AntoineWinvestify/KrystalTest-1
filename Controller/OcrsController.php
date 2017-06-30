@@ -67,7 +67,7 @@
  * 
  * [2017-06-30] Version 0.13
  * Update pfp completed
- *
+ * Upload cif
  */
 App::uses('CakeEvent', 'Event');
 
@@ -332,6 +332,9 @@ class ocrsController extends AppController {
             //Companies with ocr
             $this->set('company', $this->Company->companiesDataOCR());
 
+            //Types
+            $this->set('CompanyType', $this->crowdlendingTypesLong);
+
             //Investor id
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
@@ -345,6 +348,7 @@ class ocrsController extends AppController {
             //Linked companies(Not show)
             $linkedList = $this->Linkedaccount->getLinkedaccountIdList($filter);
             $notShow = array();
+
 
             //Filter
             foreach ($registeredList as $registered) {
