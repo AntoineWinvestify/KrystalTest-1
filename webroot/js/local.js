@@ -51,10 +51,10 @@ function getServerData(methodWS, data, success, error) {
 
 
 /**Elements to Fade Out
-*
-* @param {String} element - element to fadeout (class/id)
-* @param {Number} time - time to fadeout (milliseconds)
-*/
+ *
+ * @param {String} element - element to fadeout (class/id)
+ * @param {Number} time - time to fadeout (milliseconds)
+ */
 function fadeOutElement($element, $time) {
     setTimeout(function () {
         $($element).each(function (index) {
@@ -170,19 +170,19 @@ function contactForm() {
         $(".errorCaptcha").css('display', 'none');
         $("#ContactFormCaptcha").removeClass('redBorder');
         var data = jQuery.param(params);
-        getServerData(link, data, contactFormSuccess,contactFormError);
+        getServerData(link, data, contactFormSuccess, contactFormError);
     }
 
 
 }
 
 function contactFormSuccess(data) {
-     $("#overlay").removeClass("overlay");
-     $("#spinner").removeClass("fa fa-spin fa-refresh");
+    $("#overlay").removeClass("overlay");
+    $("#spinner").removeClass("fa fa-spin fa-refresh");
     if (data.includes('error envio') || data.includes('rror envio')) {
         alert('error al enviar email');
         $("#send").prop('disabled', false);
-        
+
     } else {
         data = JSON.parse(data);
         //Captcha Error
@@ -201,7 +201,7 @@ function contactFormSuccess(data) {
             console.log("antoine" + data[1]);
             $("#reporting").html(data[1]);
             console.log("OK");
-        } 
+        }
         //Fields errors
         else if (data[0] == 0) {
             $("#send").prop('disabled', false);
@@ -544,7 +544,7 @@ app.visual = {
         }
         return correctForm;
     },
-    checkForm1CRInvestorData: function (){
+    checkForm1CRInvestorData: function () {
         var correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
         $("#1CR_investor_2_investorDataPanel input").removeClass("redBorder"); // remove ALL redborders
@@ -649,8 +649,7 @@ app.visual = {
             $(".ErrorIban").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorIban").fadeIn();
             correctForm = false;
-        }
-        else {
+        } else {
             //Needed testing algorithm. (IBAN Format)
             //var IBAN = required('iban');
             if (!window.IBAN.isValid(iban)) {
@@ -661,38 +660,38 @@ app.visual = {
             }
         }
         //If is selected 'I use my company as investment vehicle', validate CIF & Business Name
-            if ((cif === "") && ($("#investmentVehicle").prop("checked"))) { 
-                console.log("empty CIF");
-                $(".investorCif").addClass("redBorder");
-                $(".ErrorCif").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
-                $(".ErrorCif").fadeIn();
+        if ((cif === "") && ($("#investmentVehicle").prop("checked"))) {
+            console.log("empty CIF");
+            $(".investorCif").addClass("redBorder");
+            $(".ErrorCif").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorCif").fadeIn();
+            correctForm = false;
+        }
+        /*else {
+         //Needed testing algorithm. (CIF Format)
+         if (!app.utils.checkCif(cif)) {
+         $(".investorCif").addClass("redBorder");
+         $(".ErrorCif").find(".errorMessage").html(TEXTOS.T24); // "The cif is not valid" warning
+         $(".ErrorCif").fadeIn();
+         correctForm = false;
+         }
+         }*/
+        if ((businessName === "") && ($("#investmentVehicle").prop("checked"))) {
+            console.log("empty business name");
+            $(".investorBusinessName").addClass("redBorder");
+            $(".ErrorBusinessName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorBusinessName").fadeIn();
+            correctForm = false;
+        }
+        $(".uploaded").each(function () {
+            if ($(this).val() == 0) {
+                console.log("required files");
+                $(".ErrorFiles").find(".errorMessage").html(TEXTOS.T96); // "update all required files" warning
+                $(".ErrorFiles").fadeIn();
                 correctForm = false;
             }
-            /*else {
-                //Needed testing algorithm. (CIF Format)
-                if (!app.utils.checkCif(cif)) {
-                    $(".investorCif").addClass("redBorder");
-                    $(".ErrorCif").find(".errorMessage").html(TEXTOS.T24); // "The cif is not valid" warning
-                    $(".ErrorCif").fadeIn();
-                    correctForm = false;
-                }
-            }*/
-            if ((businessName === "") && ($("#investmentVehicle").prop("checked"))) {
-                console.log("empty business name");
-                $(".investorBusinessName").addClass("redBorder");
-                $(".ErrorBusinessName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
-                $(".ErrorBusinessName").fadeIn();
-                correctForm = false;
-            }
-            $(".uploaded").each(function(){
-                if ($(this).val() == 0) {
-                    console.log("required files");
-                    $(".ErrorFiles").find(".errorMessage").html(TEXTOS.T96); // "update all required files" warning
-                    $(".ErrorFiles").fadeIn();
-                    correctForm = false;
-                }
-            });
-        return correctForm;   
+        });
+        return correctForm;
     },
     checkFormWinadminBilling: function () {
         var correctForm = true;
@@ -725,7 +724,7 @@ app.visual = {
             $(".ErrorConcept").fadeIn();
             correctForm = false;
         }
-        var regexp =  /^(?=.)(\d{1,3})?(\,\d+)?(\d{1,2})$/g;
+        var regexp = /^(?=.)(\d{1,3})?(\,\d+)?(\d{1,2})$/g;
         result = regexp.test(amount);
         if (amount === "") {
             console.log("empty bill amount");
@@ -733,8 +732,7 @@ app.visual = {
             $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorAmount").fadeIn();
             correctForm = false;
-        }
-        else if (!result) {
+        } else if (!result) {
             console.log("incorrect bill amount");
             $(".billAmount").addClass("redBorder");
             $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T72); // "introduce quantity > 0" warning
@@ -762,12 +760,12 @@ app.visual = {
         var nif = $("#tallyman_nif").val();
         var email = $("#tallyman_email").val();
         var telephone = $("#tallyman_telephone").val();
-        
+
         //NIF validation
-        if (nif === "") { 
-            correctNIF = false; 
+        if (nif === "") {
+            correctNIF = false;
         }
-        
+
         //Email validation
         if (email === "") {
             correctEmail = false;
@@ -776,7 +774,7 @@ app.visual = {
                 correctFormatEmail = false;
             }
         }
-        
+
         //Telephone validation
         if (telephone === "") {
             correctTelephone = false;
@@ -864,7 +862,7 @@ app.visual = {
             correctForm = false;
         }
         if (!correctNIF && !correctFormatEmail && correctFormatTelephone) {
-            console.log("name empty, email incorrect format, telephone correct format");    
+            console.log("name empty, email incorrect format, telephone correct format");
             $(".tallymanEmail").addClass("redBorder");
             $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
             $(".ErrorEmail").fadeIn();
@@ -879,11 +877,11 @@ app.visual = {
         var privacyPolicy = $("#ContentPlaceHolder_privacyPolicy").val();
         var modality = $("#ContentPlaceHolder_modality").val();
         var status = $("#ContentPlaceHolder_status").val();
-        
+
         $(".errorInputMessage").hide(); // remove all error texts
         $("#modifyPFPData input").removeClass("redBorder"); // remove ALL redborders on input
         $("#modifyPFPData select").removeClass("redBorder"); // remove ALL redborders on select
-        
+
         //Error showing
         if (selectedPFP == 0) {
             console.log("pfp not selected");
@@ -905,7 +903,7 @@ app.visual = {
             $(".ErrorPrivacyPolicy").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorPrivacyPolicy").fadeIn();
             correctForm = false;
-        }        
+        }
         if (modality == 0) {
             console.log("modality not selected");
             $(".pfpModality").addClass("redBorder");
@@ -939,60 +937,74 @@ app.visual = {
         var correctChecking = false;
 
         //Checking Minimum
-        for (var i=0; i<arrayChecking.length; i++) {
-            if (arrayChecking[i].val() == "yes") {
+        for (var i = 0; i < arrayChecking.length; i++) {
+            if (arrayChecking[i] == "yes") {
                 countChecking++;
             }
         }
         var limitChecking = arrayChecking.length;
-        if (countChecking == limitChecking) { correctChecking = true; }
+        if (countChecking == limitChecking) {
+            correctChecking = true;
+        }
 
         //OPTIONAL FIELDS
-        if (($("#checkCIF").length) && ($("#checkBusinessName").length)) {
+        if ($("#cifOptional").length) {
             var cif = $("input[name=checkCIF]:checked").val();
             var businessName = $("input[name=checkBusinessName]:checked").val();
             var arrayCheckingOptional = [cif, businessName];
             var countCheckingOptional = 0;
             var correctCheckingOptional = false;
-            
+
             //Checking Optionals
-            for (var i=0; i<arrayCheckingOptional.length; i++) {
-                if (arrayCheckingOptional[i].val() == "yes") {
+            for (var i = 0; i < arrayCheckingOptional.length; i++) {
+                if (arrayCheckingOptional[i] == "yes") {
                     countCheckingOptional++;
                 }
             }
             var limitCheckingOptional = arrayCheckingOptional.length;
-            if (countCheckingOptional == limitCheckingOptional) { correctCheckingOptional = true; }
+            if (countCheckingOptional == limitCheckingOptional) {
+                correctCheckingOptional = true;
+            }
         }
-        
+
         //DOCUMENTS
         //Checking Docs
-        var arrayCheckingDocs = [/*rellenarrrrr*/];
+        var countDocs = 0;
         var countCheckingDocs = 0;
         var correctCheckingDocs = false;
-        for (var i=0; i<arrayCheckingDocs.length; i++) {
-            if (arrayCheckingDocs[i].val() == "yes") {
+
+        $(".file :checked").each(function () {
+            if ($(this).val() == "yes") {            
                 countCheckingDocs++;
             }
+            countDocs++;
+        });
+
+        var limitCheckingDocs = countDocs;
+        if (countCheckingDocs == limitCheckingDocs) {
+            correctCheckingDocs = true;
         }
-        var limitCheckingDocs = arrayCheckingDocs.length;
-        if (countCheckingDocs == limitCheckingDocs) { correctCheckingDocs = true; }
-        
+
         //PFPs
         //Checking PFPs
-        var arrayCheckingPFPs = [/*rellenarrrrr*/];
+        var countPFPs = 0;
         var countCheckingPFPs = 0;
         var correctCheckingPFPs = false;
-        for (var i=0; i<arrayCheckingPFPs.length; i++) {
-            if (arrayCheckingPFPs[i].val() == "yes") {
+
+        $(".company:checked").each(function () {
+            if ($(this).val() == "yes") {
                 countCheckingPFPs++;
             }
+            countPFPs++;
+        });
+
+        var limitCheckingPFPs = countPFPs;
+        if (countCheckingPFPs == limitCheckingPFPs) {
+            correctCheckingPFPs = true;
         }
-        var limitCheckingPFPs = arrayCheckingPFPs.length;
-        if (countCheckingPFPs == limitCheckingPFPs) { correctCheckingPFPs = true; }
 
         //FINAL TESTING!!!
-        if (!correctChecking || correctCheckingDocs || correctCheckingPFPs) {
+        if (!correctChecking || !correctCheckingDocs || !correctCheckingPFPs) {
             correctForm = false;
         }
         return correctForm;

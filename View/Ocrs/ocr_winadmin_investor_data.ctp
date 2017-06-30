@@ -75,8 +75,8 @@
             //DATABASE SAVING!!!!!!!!!
             //save all radio button status (yes/no/pending) & charge them on next visit at this investor data
         });
-        $(document).on('click', '#approveBtn', function () {
-            if((result = app.visual.checkFormWinadminInvestorData()) === true){
+        $(document).on('click', '#approveBtn', function () 
+            if ((app.visual.checkFormWinadminInvestorData()) === true) {
                 alert("chachi");
             }
         });
@@ -424,31 +424,19 @@
                         </div>
                         <!-- /Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle">
-                           
-                            <?php if ($userData[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) { ?>
-                            <div class="row">
-                                <!-- CIF -->
-                                <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
-                                    <div class="form-group">
-                                        <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
-                                        <div>
-                                            <label class="radio-inline"><input type="radio" name="checkCIF" value="yes"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkCIF" value="no"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkCIF" value="pending" checked="checked"><?php echo __('Pending') ?></label>
-                                        </div>
-                                        <input disabled="disabled" type="text" class="form-control blue_noborder"value ="<?php echo $userData[0]['Ocr']['investor_cif'] ?>" >
-                                    </div>
-                                </div>
-                                <!-- /CIF -->
 
-                                <!-- Business Name -->
-                                <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                                    <div class="form-group">
-                                        <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
-                                        <div>
-                                            <label class="radio-inline"><input type="radio" name="checkBusinessName" value="yes"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkBusinessName" value="no"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkBusinessName" value="pending" checked="checked"><?php echo __('Pending') ?></label>
+                            <?php if ($userData[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) { ?>
+                                <div id="cifOptional" class="row">
+                                    <!-- CIF -->
+                                    <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
+                                        <div class="form-group">
+                                            <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
+                                            <div>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF" value="yes"><?php echo __('Yes') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF" value="no"><?php echo __('No') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF" value="pending" checked="checked"><?php echo __('Pending') ?></label>
+                                            </div>
+                                            <input disabled="disabled" type="text" class="form-control blue_noborder"value ="<?php echo $userData[0]['Ocr']['investor_cif'] ?>" >
                                         </div>
                                     </div>
                                     <!-- /CIF -->
@@ -458,72 +446,72 @@
                                         <div class="form-group">
                                             <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
                                             <div>
-                                                <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('Yes') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="checkBusinessName"><?php echo __('No') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" checked="checked"><?php echo __('Pending') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" value="yes"><?php echo __('Yes') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" value="no"><?php echo __('No') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" value="pending" checked="checked"><?php echo __('Pending') ?></label>
                                             </div>
                                             <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_ businessName'] ?>">
                                         </div>
-                                        <!-- /Business Name -->
-                                        <!-- /Business Data -->
+                                        <!-- /CIF -->
+
                                     </div>
                                 </div>
                             <?php } ?>
-                        </div>
-                        <div class="row">
-                            <!-- Investor complete data -->
-                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                <h4 class="header1CR"><?php echo __('Investor Selected Platforms') ?></h4>
-                                <ul>
-                                    <?php
-                                    foreach ($userData[0]['Company'] as $company) {//Company list 
-                                        if ($company['CompaniesOcr']['company_status'] == SENT) {
+
+                            <div class="row">
+                                <!-- Investor complete data -->
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <h4 class="header1CR"><?php echo __('Investor Selected Platforms') ?></h4>
+                                    <ul>
+                                        <?php
+                                        foreach ($userData[0]['Company'] as $company) {//Company list 
+                                            if ($company['CompaniesOcr']['company_status'] == SENT) {
+                                                ?>
+                                                <li>
+                                                    <?php
+                                                    echo $company['company_name']
+                                                    ?>
+                                                    <div>
+                                                        <label class="radio-inlinev company"><input type="radio" name="<?php echo $company['id'] ?>" value="yes"><?php echo __('Yes') ?></label>
+                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>" value="no"><?php echo __('No') ?></label>
+                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>" value="pending" checked="checked"><?php echo __('Pending') ?></label>
+                                                    </div>
+                                                </li>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                    </ul>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <h4 class="header1CR"><?php echo __('Investor Uploaded Documents') ?></h4>
+                                    <ul>
+                                        <?php
+                                        $fileConfig = Configure::read('files');
+                                        foreach ($files as $file) {//Company list 
                                             ?>
                                             <li>
-                                                <?php
-                                                echo $company['company_name']
-                                                ?>
+                                                <form action="/files/downloadDocument/ocrfile/<?php echo $file['file']['FilesInvestor']['id'] ?>">
+                                                    <button  type="submit" class="download" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></button> 
+                                                </form>
                                                 <div>
-                                                    <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>" value="yes"><?php echo __('Yes') ?></label>
-                                                    <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>" value="no"><?php echo __('No') ?></label>
-                                                    <label class="radio-inline"><input type="radio" name="<?php echo $company['id'] ?>" value="pending" checked="checked"><?php echo __('Pending') ?></label>
+                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="yes"><?php echo __('Yes') ?></label>
+                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="no"><?php echo __('No') ?></label>
+                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="pending" checked="checked"><?php echo __('Pending') ?></label>
                                                 </div>
                                             </li>
-                                            <?php
-                                        }
-                                    }
-                                    ?>
-                                </ul>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                <h4 class="header1CR"><?php echo __('Investor Uploaded Documents') ?></h4>
-                                <ul>
-                                    <?php
-                                    $fileConfig = Configure::read('files');
-                                    foreach ($files as $file) {//Company list 
-                                        ?>
-                                        <li>
-                                            <form action="/files/downloadDocument/ocrfile/<?php echo $file['file']['FilesInvestor']['id'] ?>">
-                                                <button  type="submit" class="download" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></button> 
-                                            </form>
-                                            <div>
-                                                <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="yes"><?php echo __('Yes') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="no"><?php echo __('No') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="pending" checked="checked"><?php echo __('Pending') ?></label>
-                                            </div>
-                                        </li>
-                                    <?php } ?>
-                                </ul>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <button type="button" id="saveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save') ?></button>
+                                    <button type="button" id="approveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-right" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve') ?></button>
+                                </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <button type="button" id="saveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save') ?></button>
-                                <button type="button" id="approveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-right" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve') ?></button>
-                            </div>
-                        </div>
-                    </div>
-                </div> <!-- /card -->
+                    </div> <!-- /card -->
+                </div>
             </div>
         </div>
-    </div>

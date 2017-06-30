@@ -181,7 +181,7 @@ class ocr extends AppModel {
 
                 $result = json_encode($data);
 
-                if ($this->save($data)) { //Save ok
+                if ($this->validates($this->save($data))) { //Save ok
                     return true . "," . $result;  //Return for a json
                 }
             } else {

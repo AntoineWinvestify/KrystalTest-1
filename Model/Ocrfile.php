@@ -78,6 +78,28 @@ class ocrfile extends AppModel {
             'associationForeignKey' => 'company_id',
         ),
     );
+    var $validate = array(
+        'bill_number' => array(
+            'rule1' => array('rule' => array('minLength', 1),
+                'allowEmpty' => false,
+                'message' => 'Number validation error'),
+        ),
+        'bill_amount' => array(
+            'rule1' => array('rule' => array('number'),
+                'allowEmpty' => false,
+                'message' => 'Amount validation error'),
+        ),
+        'bill_concept' => array(
+            'rule1' => array('rule' => array('minLength', 1),
+                'allowEmpty' => false,
+                'message' => 'Amount validation error'),
+        ),
+        'bill_currency' => array(
+            'rule1' => array('rule' => array('notBlank'),
+                'allowEmpty' => false,
+                'message' => 'Amount validation error'),
+        )
+    );
 
     /**
      * Upload investor file
@@ -140,7 +162,7 @@ class ocrfile extends AppModel {
                         )
                     );
 
-                    if ($this->CompaniesFile->save($bill)) {
+                    if ($this->validates($this->CompaniesFile->save($bill))) {
                         return [true, __('Upload ok')];
                     } else {
                         return [false, __("Upload failed. Incorrect type or file too big.")];

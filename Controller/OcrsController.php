@@ -110,11 +110,11 @@ class ocrsController extends AppController {
         if ($status == NOT_SENT || $status == OCR_FINISHED) {
             //$this->ocrInvestorPlatformSelection();
             $this->set('link', '/Ocrs/ocrInvestorPlatformSelection');
-        } else if ($status == SENT || $status == ORC_PENDING || $status = FIXED) {
-            $this->activatedService();
         } else if ($status == ERROR) {
             //$this->ocrInvestorDataPanel();
             $this->set('link', '/Ocrs/ocrInvestorDataPanel');
+        } else if ($status == SENT || $status == OCR_PENDING || $status = FIXED) {
+            $this->activatedService();
         }
     }
 
@@ -462,7 +462,7 @@ class ocrsController extends AppController {
     function ocrWinadminInvestorChecking() {
 
         //Filter
-        $filter = array('ocr_status' => array(SENT, ERROR, OCR_PENDING, OCR_FINISHED));
+        $filter = array('ocr_status' => array(SENT, ERROR, OCR_PENDING, OCR_FINISHED,FIXED));
 
         //Search  and set investor data 
         $ocrList = $this->Ocr->ocrGetData(null, $filter);
