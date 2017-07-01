@@ -39,7 +39,8 @@ Simple first version
     define('USER_DOES_NOT_EXIST', 1);           
     define('NO_DATA_AVAILABLE', 2);  
     define('NOT_ENOUGH_PARAMETERS', 3);
-    
+
+// Tendency indicators    
     define('UPWARDS', 1);
     define('DOWNWARDS', 2);   
     

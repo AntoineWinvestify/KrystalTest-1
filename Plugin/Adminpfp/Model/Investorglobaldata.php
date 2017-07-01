@@ -293,10 +293,10 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
         $resultTallyman[0]['userplatformglobaldata_PFPPerTypeNorm'][$i] = (int) (100 * $value / $totalPerType); 
         $i = $i + 1;
     }
-    $i = 0;
+    $j = 0;
     foreach ($platformInvestmentsPerAmount as $value) {
-        $resultTallyman[0]['userplatformglobaldata_PFPPerAmountNorm'][$i] = (int) (100 *$value / $totalPerAmount); 
-        $i = $i + 1;       
+        $resultTallyman[0]['userplatformglobaldata_PFPPerAmountNorm'][$j] = (int) (100 *$value / $totalPerAmount); 
+        $j = $j + 1;       
     }
 
 
@@ -329,17 +329,16 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
         $totalMyModality = $resultTallyman[0]['totalMyPlatform'] /
                 $resultTallyman[0]['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
         $resultTallyman[0]['totalMyModality'] = $totalMyModality;  
-     */   
-    foreach ($resultTallyman as $key => $value) {
+     */      
         $resultTallyman[$key]['AtotalPortfolio'] = $value['totalMyPlatform'] / 
                 $value['investorglobaldata_totalActiveInvestments'];
         $totalMyModality = $value['totalMyPlatform'] /
                 $value['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
-       echo "DDD"  . $value['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
+       echo "DED"  . $value['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
  
         $resultTallyman[$key]['AtotalMyModality'] = $totalMyModality;
-    }
-    
+   
+   
     // create tendency arrows
     if ($resultTallyman[0]['AtotalPortfolio'] < $resultTallyman[1]['AtotalPortfolio']){
         $resultTallyman[0]['AtotalPortfolioTendency'] = DOWNWARDS;
@@ -385,7 +384,12 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
    }     
         
     $resultTallyman[0]['totalPortfolioHistorical'] = array_reverse($totalPortfolioHistorical);
-    $resultTallyman[0]['totalPortfolioHistoricalDate'] = array_reverse($totalPortfolioHistoricalDate);      
+    $resultTallyman[0]['totalPortfolioHistoricalDate'] = array_reverse($totalPortfolioHistoricalDate);  
+
+
+
+// echo round($resultTallyman[0]['totalPortfolio'], 1) . "<br>";  used tyo show 1 or more decimals 
+
 
     return $resultTallyman;
 }

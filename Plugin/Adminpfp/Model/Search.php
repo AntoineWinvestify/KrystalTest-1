@@ -17,7 +17,7 @@
 //
 
 
- The model that stores all the searches for Tallyman data
+ The model that stores all the searches doen by the adminpfp's for Tallyman data
 
 2016-06-29	  version 0.1
 First version
@@ -31,18 +31,6 @@ App::uses('AppModel', 'Model');
 class Search extends AppModel
 {
 	public $name = 'Search';
-//        var $useTable = "investorglobaldata";
-/*
-	public $hasOne = array(	);
-
-
-	var $hasMany = array(
-		'Marketplace' => array(
-			'className' => 'Marketplace',
-			'foreignKey' => 'company_id',
-		)
-	);
-*/
 
 
 

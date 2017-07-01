@@ -73,7 +73,7 @@ function beforeFilter() {
 
 /**
  * 
- * Shows a list of investors, using dataTable, in order to select/view/modifiy the data of 1 
+ * Shows a list of investors, using dataTable, in order to select/view/modify the data of 1 
  * investor
  * 
  */
@@ -119,7 +119,7 @@ public function readtallymandata() {
 //    $platformId = $this->Auth->user('AdminPFP.company_id');
 //   Configure::write('debug', 2); 
       $this->layout = 'Adminpfp.azarus_private_layout';
-//    $this->print_r2($this->Session->read());
+
     $error = null;
     $platformId = 1;
     $inputId = $_REQUEST['inputId'];
@@ -177,7 +177,7 @@ public function readtallymandata() {
                  $data['parm1'] = $userIdentification;
                  $data['parm2'] = $userIdentification;
                  $data['parm3'] =  null;       
-                 $this->Billingparm->writeChargingData($data,  "tallyman");
+                 $this->Billingparm->writeChargingData($data, "tallyman");
             }
         }
     }
@@ -194,8 +194,10 @@ public function readtallymandata() {
 
   
 /**
-*	
-*/
+ * 
+ * Shows the initial, basic screen of the Tallyman service with the three input fields
+ * 
+ */
 public function showTallymanPanel() {
   $this->layout = 'Adminpfp.azarus_private_layout';
   
@@ -207,94 +209,14 @@ public function showTallymanPanel() {
 
 
 
-
-
-
-
-/** ajax call
- *
- *
-*	Reads the data from an Administrator 
-*
-*/
-public function adminHome() {
-echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";	
-
-
-echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";		
-}
-
- 
-
-
-
-
-
-
-/**
-*	password change function
-*/
-public function changeAdminPw() {
-
-	if ($this->Auth->user('id')) {   // Just to  make sure User is logged
-		$this->User->id = $this->Auth->user('id');  // Set User Id
-		if (!$this->User->exists()) {
-			throw new NotFoundException(__('Invalid user'));
-		}
-		if ($this->request->is('post')) {
-			if ($this->User->save($this->request->data)) {
-				$this->Session->setFlash(__("Password has been changed"), 'default', array('class' => 'intranet_flash_msg'));
-				$this->redirect(array('controller' => 'startpanels', 'action' => 'index' ));
-			}
-			else {
-				$this->Session->setFlash(__("Password could not be changed."), 'default', array('class' => 'flash_msg_error'));
-			}
-		}
-		else
-			{
-				
-		}
-	}
-}
-
-
-
-
-
-
-
-/**ajax call
-*	Write (= modifies) some data of an existing Administrator
-*
-*/
-function editAdministratorData($id) {
-
-
-}
-
-
-
-
 public function loginAction() {
         if ($this->Auth->login()) {
-            echo "<br>" . $this->Auth->redirectUrl()."<br>"."<br>";
             $this->redirect($this->Auth->redirectUrl());
         }
         else {
             echo "User is not logged on<br>";
         }
-        
-   
-        if ($this->Auth->loggedIn()){
-		echo "user has logged on";
-                return $this->redirect($this->Auth->redirectUrl());
-	}
-	else {
-		echo "User not logged on";
-	}
-
-
-}
+ }
 
 
 
@@ -333,8 +255,8 @@ public function logout() {
 
 
 
-/**ajax call
-*	Reads the data from an Administrator 
+/**
+*	Reads the data of an Administrator 
 *
 */
 function readAdministratorData($adminId) {
@@ -506,13 +428,6 @@ public function calculateGlobalindicator($data) {
     
     return $data;   
 }
-
-
-
-
-
-
-
 
 
 }
