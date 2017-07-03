@@ -419,7 +419,7 @@
                     <?php echo __('Register for FREE and get ALL the advantages of a unified marketplace and single dashboard') ?>
                     <br/>
                     <a class="center-block" style="text-align: center; margin-top:5px;" href="/users/registerPanel">
-                        <button class="btn btn-win3" style="margin-top:5px;" type="button">
+                        <button class="btn" style="margin-top:5px;" type="button">
                             <?php echo __('Register NOW') ?>
                         </button>
                     </a>
