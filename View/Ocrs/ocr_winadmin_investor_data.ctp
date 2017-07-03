@@ -57,6 +57,7 @@
  * Save ajax
  * Check values defined in appController
  * Time stamp implemented
+ * Added feedback box to user.
  */
 ?>
 
@@ -114,6 +115,9 @@
         $(document).on('click', '#approveBtn', function () {
             if ((app.visual.checkFormWinadminInvestorData()) === true) {
                 alert("chachi");
+                //Here redirect to Winadmin New Users Table & change investor Status.
+            } else {
+                $(".feedbackText").html("<?php echo __('You must select on "Yes" all radio buttons')?>");
             }
         });
 
@@ -126,10 +130,12 @@
         });
     });
     function successSave(data) {
-    
+        $(".feedbackText").html(data);
+        $(".alert-to-fade").addClass("alert-win-success");
     }
     function errorSave(data) {
-        
+        $(".feedbackText").html(data);
+        $(".alert-to-fade").addClass("alert-win-warning");
     }
 </script>
 <div id="1CR_winAdmin_2_investorData">
@@ -157,6 +163,9 @@
                     <div class="row">
                         <!-- Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="alert bg-success alert-dismissible fade in alert-to-fade <?php echo $class?>" role="alert" style="display:none;">
+                                <strong class="feedbackText"></strong>
+                            </div>
                             <h4 class="header1CR"><?php echo __('Investor Data') ?></h4>
                             <!-- User data -->
                             <div class="row">
