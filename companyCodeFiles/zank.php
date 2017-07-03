@@ -696,7 +696,7 @@ class zank extends p2pCompany {
             }
             //If the investments are 100, we repeat the process to take more investments
             //And increasea start by 100
-            if ($numberJsonInvestments % 100 == 0) {
+            if ($numberJsonInvestments != 0 && $numberJsonInvestments % 100 == 0) {
                 $start = $start + 100;
             }
         }
