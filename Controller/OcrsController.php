@@ -68,6 +68,9 @@
  * [2017-06-30] Version 0.13
  * Update pfp completed
  * Upload cif
+ * 
+* [2017-07-03] Version 0.14
+ * Update Checks
  */
 App::uses('CakeEvent', 'Event');
 
@@ -462,7 +465,7 @@ class ocrsController extends AppController {
     function ocrWinadminInvestorChecking() {
 
         //Filter
-        $filter = array('ocr_status' => array(SENT, ERROR, OCR_PENDING, OCR_FINISHED,FIXED));
+        $filter = array('ocr_status' => array(SENT, ERROR, OCR_PENDING, OCR_FINISHED, FIXED));
 
         //Search  and set investor data 
         $ocrList = $this->Ocr->ocrGetData(null, $filter);
@@ -533,6 +536,26 @@ class ocrsController extends AppController {
 
         $this->layout = 'azarus_private_layout';
         echo " ";
+    }
+
+    /**
+     * Update checks
+     */
+    function updateChecks() {
+        if (!$this->request->is('ajax')) {
+            $result = array (false, __('Error updating data check.'));
+            $this->set("result", $result);
+        } else {
+            $this->layout = 'ajax';
+            $this->disableCache();
+            //Request the data
+           $data = $this->request['data'];
+           $result = $this->Investor->updateCheckData($data);
+           
+           //set result
+           $this->set("result", $result);
+           
+        }
     }
 
     /**

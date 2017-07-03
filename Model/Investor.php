@@ -32,6 +32,8 @@
   2017-06-23 version 0.4
   db relation
 
+* [2017-07-03] Version 0.5
+ * Update check data
 
   Pending:
   function generateGUIDs(). 													[not Ok, not tested]
@@ -404,30 +406,43 @@ class Investor extends AppModel {
      * @param type $invesorId
      * @return int
      */
-    public function updateCheckData($checks, $invesorId) {
+    public function updateCheckData($checks) {
 
         $checksArray = Array(
-            'id' => $checks['id'],
-            'investor_id' => $invesorId,
-            'check_name' => $checks['name'],
-            'check_surname' => $checks['surname'],
-            'check_dni' => $checks['dni'],
-            'check_dateOfBirth' => $checks['dateOfBirth'],
-            'check_email' => $checks['email'],
-            'check_telephone' => $checks['telephone'],
-            'check_postCode' => $checks['postCode'],
-            'check_address' => $checks['address'],
-            'check_city' => $checks['city'],
-            'check_country' => $checks['country'],
-            'check_iban' => $checks['iban'],
-            'check_cif' => $checks['cif'],
-            'check_bussinesName' => $checks['bussinesName']
+        'id' => $checks['id'],
+        'investor_id' => $checks['investorId'],
+        'check_name' => ($checks['name']),
+        'check_nameTime' => $checks['nameCheck'],
+        'check_surname' => ($checks['surname']),
+        'check_surnameTime' => $checks['surnameCheck'],
+        'check_dni' => ($checks['dni']),
+        'check_dniTime' => $checks['dniCheck'],
+        'check_dateOfBirth' => ($checks['dateOfBirth']),
+        'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
+        'check_email' => ($checks['email']),
+        'check_emailTime' => $checks['emailCheck'],
+        'check_telephone' => ($checks['telephone']),
+        'check_telephoneTime' => $checks['telephoneCheck'],
+        'check_postCode' => ($checks['postCode']),
+        'check_postCodeTime' => $checks['postCodeCheck'],
+        'check_address' => ($checks['address']),
+        'check_addressTime' => $checks['addressCheck'],
+        'check_city' => ($checks['city']),
+        'check_cityTime' => $checks['cityCheck'],
+        'check_country' => ($checks['country']),
+        'check_countryTime' => $checks['countryCheck'],
+        'check_iban' => ($checks['iban']),
+        'check_ibanTime' => $checks['ibanCheck'],
+        'check_cif' => ($checks['cif']),
+        'check_cifTime' => $checks['cifCheck'],
+        'check_bussinesName' => ($checks['bussinesName']),
+        'check_bussinesNameTime' => $checks['bussinesNameCheck'],
         );
 
         if ($this->Check->save($checksArray)) {
-            return 1;
+            return [1,__("Saved correctly.")];
         } else {
-            return 0;
+            return  [0,__("Error saving.")];
         }
     }
 

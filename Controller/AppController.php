@@ -58,6 +58,9 @@
  * [2017-06-29] Version 0.5
  * Defined new status for ocr and files 
  * 
+ * [2017-07-03] Version 0.6
+ * Defined checks
+ * 
  *  PENDING:
  * -
  *
@@ -228,6 +231,12 @@ define('USD', 3);           // US Dollar
 //DEFINE REQUIRED FILES
 define('OPTIONAL',1);
 define('NOT_OPTIONAL',0);
+
+//DEFINE CHECKS 
+define('PENDING',0);
+define('YES',1);
+define('NO',2);
+
 
 class AppController extends Controller {
 
