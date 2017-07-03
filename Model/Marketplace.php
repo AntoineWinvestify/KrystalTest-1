@@ -85,7 +85,7 @@ var $validate = array(
 *			
 */
 public function getGlobalMarketData($filterConditions = NULL) {
-	$globalData = array();
+	//$globalData = array();
 	$tempGlobalData = array();
 	
 	$marketPlaceResults = $this->getMarketplaceDataList($filterConditions);
