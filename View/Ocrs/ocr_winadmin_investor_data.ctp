@@ -58,8 +58,8 @@
  * Approve Ajax
  * Check values defined in appController
  * Time stamp implemented
+ * Added feedback box to user.
  */
-
 ?>
 
 <style>
@@ -80,7 +80,7 @@
 
         $(document).on('click', '#saveBtn', function () {
 
-<?php //Create files info array        ?>
+<?php //Create files info array         ?>
             fileArray = [];
             i = 0
             $(".file :checked").each(function () {
@@ -90,7 +90,7 @@
                 i++;
             });
 
-<?php //save all radio button status (yes/no/pending) & charge them on next visit at this investor data       ?>
+<?php //save all radio button status (yes/no/pending) & charge them on next visit at this investor data        ?>
             var params = {
 
                 //Investor Info
@@ -139,7 +139,7 @@
         $(document).on('click', '#approveBtn', function () {
             if ((app.visual.checkFormWinadminInvestorData()) === true) {
 
-<?php //Create companies info array        ?>
+<?php //Create companies info array         ?>
                 companyArray = [];
                 i = 0;
                 $(".company :checked").each(function () {
@@ -150,7 +150,7 @@
                 });
 
 
-<?php //Create files info array        ?>
+<?php //Create files info array         ?>
                 fileArray = [];
                 i = 0;
                 $(".file :checked").each(function () {
@@ -205,6 +205,8 @@
                 link = '/ocrs/updateChecks';
                 var data = jQuery.param(params);
                 getServerData(link, data, successApprove, error);
+            } else {
+                $(".feedbackText").html("<?php echo __('You must select on "Yes" all radio buttons') ?>");
             }
         });
 
@@ -215,14 +217,16 @@
             $("#" + id).html(timeStamp);
         });
     });
-    function success(data) {
-
+    function successSave(data) {
+        $(".feedbackText").html(data);
+        $(".alert-to-fade").addClass("alert-win-success");
     }
-    function successApprove(data) {
-
+    function successApprove(){
+        
     }
-    function error(data) {
-
+    function errorSave(data) {
+        $(".feedbackText").html(data);
+        $(".alert-to-fade").addClass("alert-win-warning");
     }
 </script>
 <div id="1CR_winAdmin_2_investorData">
@@ -240,16 +244,19 @@
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
-                                echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-                                        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
-                                        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
-                                        . ' PFP puedan validar y autenticar su identidad.')
-                                ?></p>
+echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
+        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
+        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
+        . ' PFP puedan validar y autenticar su identidad.')
+?></p>
                         </div>
                     </div>
                     <div class="row">
                         <!-- Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="alert bg-success alert-dismissible fade in alert-to-fade <?php echo $class ?>" role="alert" style="display:none;">
+                                <strong class="feedbackText"></strong>
+                            </div>
                             <h4 class="header1CR"><?php echo __('Investor Data') ?></h4>
                             <!-- User data -->
                             <div class="row">
