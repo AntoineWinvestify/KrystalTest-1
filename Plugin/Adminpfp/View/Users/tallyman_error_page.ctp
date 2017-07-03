@@ -37,13 +37,13 @@
 <?php 
 echo "0";                               // Mark application error
     switch ($error) { 
-        case 1:                         
-            $errorText = __('No data is available for this user');   
+        case USER_DOES_NOT_EXIST:                         
+            $errorText = __('The user does not exist in our database');   
             break;
-        case 2:                         
-            $errorText = __('The user does not exist in our database');
+        case NO_DATA_AVAILABLE:                         
+            $errorText = __('No data is available for this user');
             break;
-        case 3:
+        case NOT_ENOUGH_PARAMETERS:
             $errorText = __("You must provide at least 2 parameters");
             break;
     }

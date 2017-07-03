@@ -277,7 +277,7 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
                     $platform['userplatformglobaldata_activeInInvestments'];
         }
         $resultTallyman[$key]['userplatformglobaldata_PFPPerType'] = $platformInvestmentsPerType;
-        $resultTallyman[$key]['userplatformglobaldata_PFPPerAmount'] = $platformInvestmentsPerAmount;         
+        $resultTallyman[$key]['userplatformglobaldata_PFPPerAmount'] = $platformInvestmentsPerAmount;     
     }
 
 
@@ -288,14 +288,19 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
     $totalPerAmount = array_sum($platformInvestmentsPerAmount);
 
 
-    $i = 0;
-    foreach ($platformInvestmentsPerType as $value) {
-        $resultTallyman[0]['userplatformglobaldata_PFPPerTypeNorm'][$i] = (int) (100 * $value / $totalPerType); 
-        $i = $i + 1;
+/*
+    foreach ($resultTallyman as $key => $value) {
+        $i = 0;        
+        foreach ($value['userplatformglobaldata_PFPPerType'] as $type) {
+     //       CHECK THIS
+     //       $resultTallyman[$key]['userplatformglobaldata_PFPPerTypeNorm'][$i] = (int) (100 * $value / $totalPerType); 
+            $i = $i + 1;
+        }
     }
+*/
     $j = 0;
-    foreach ($platformInvestmentsPerAmount as $value) {
-        $resultTallyman[0]['userplatformglobaldata_PFPPerAmountNorm'][$j] = (int) (100 *$value / $totalPerAmount); 
+    foreach ($platformInvestmentsPerAmount as $key => $value) {
+        $resultTallyman[$key]['userplatformglobaldata_PFPPerAmountNorm'][$j] = (int) (100 *$value / $totalPerAmount); 
         $j = $j + 1;       
     }
 
@@ -323,18 +328,11 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
     
     
  // Calculate some values for this view
-    /*
-        $resultTallyman[0]['totalPortfolio'] = $resultTallyman[0]['totalMyPlatform'] / 
-                $resultTallyman[0]['investorglobaldata_totalActiveInvestments'];
-        $totalMyModality = $resultTallyman[0]['totalMyPlatform'] /
-                $resultTallyman[0]['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
-        $resultTallyman[0]['totalMyModality'] = $totalMyModality;  
-     */      
         $resultTallyman[$key]['AtotalPortfolio'] = $value['totalMyPlatform'] / 
                 $value['investorglobaldata_totalActiveInvestments'];
         $totalMyModality = $value['totalMyPlatform'] /
                 $value['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
-       echo "DED"  . $value['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
+       echo "<br>DED"  . $value['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
  
         $resultTallyman[$key]['AtotalMyModality'] = $totalMyModality;
    
@@ -353,9 +351,7 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
         $resultTallyman[0]['AtotalMyModalityTendency'] = UPWARDS;
     } 
     
-    
-    
-    
+ 
     
 
 // Store "historical" data for "$totalPortfolio"
@@ -366,7 +362,7 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
         foreach ($value['Userplatformglobaldata'] as $data) {
             if ($data['userplatformglobaldata_companyId'] == $platformId) {
                 $resultTallyman[$key]['totalMyPlatform'] = $data['userplatformglobaldata_activeInInvestments'];
-                $resultTallyman[$key]['totalPortfolio'] =  $resultTallyman[$key]['totalMyPlatform'] / 
+                $resultTallyman[$key]['totalPortfolio'] =  100 * $resultTallyman[$key]['totalMyPlatform'] / 
                                             $resultTallyman[$key]['investorglobaldata_totalActiveInvestments'];
                 $found = YES;
                 break;
@@ -376,20 +372,15 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
             $resultTallyman[$key]['totalPortfolio'] = 0;
         }
     }
-      
+ 
         
    foreach ($resultTallyman as $value) {
-       $totalPortfolioHistorical[] = $value['totalPortfolio'];
+       $totalPortfolioHistorical[] = round($value['totalPortfolio'], 1);        // in %
        $totalPortfolioHistoricalDate[] = $value['createdDate'];
    }     
         
     $resultTallyman[0]['totalPortfolioHistorical'] = array_reverse($totalPortfolioHistorical);
     $resultTallyman[0]['totalPortfolioHistoricalDate'] = array_reverse($totalPortfolioHistoricalDate);  
-
-
-
-// echo round($resultTallyman[0]['totalPortfolio'], 1) . "<br>";  used tyo show 1 or more decimals 
-
 
     return $resultTallyman;
 }

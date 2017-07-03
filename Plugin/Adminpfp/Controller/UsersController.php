@@ -147,7 +147,7 @@ public function readtallymandata() {
         $value[] = $userTelephone;
         ++$inputParmCount;
     }  
-    
+
     if ($inputParmCount < 2) {
         $error = NOT_ENOUGH_PARAMETERS;
     }
@@ -163,7 +163,7 @@ public function readtallymandata() {
         else {
             $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
             $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
-           
+            
             if (!$resultTallymanData) {
                 $error = NO_DATA_AVAILABLE;
             }   
@@ -171,6 +171,7 @@ public function readtallymandata() {
                  $this->set('resultTallyman', $resultTallymanData);
                  $this->print_r2($resultTallymanData);
                  // provide data for possible billing
+                  
                  $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
                  $data = array();
                  $data['reference'] = $userIdentification;
@@ -181,11 +182,11 @@ public function readtallymandata() {
             }
         }
     }
-    
+Configure::write('debug', 2);
     if (!$error) {                              // No error encountered, use default view
         return;
     }    
-    
+
     $this->set("error", $error);         
     $this->render('tallymanErrorPage'); 
 }
