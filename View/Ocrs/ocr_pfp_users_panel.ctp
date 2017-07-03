@@ -65,7 +65,12 @@
 <script>
     $(function () {
         $("#usersTable").DataTable();
-
+        $(document).on("click", ".btnTallyman", function() {
+            id = $(this).val();
+            tel = $("#telephone"+id).text();
+            em = $("#email"+id).text();
+            alert("el id valeeee " + id + "    y el telephone: " + tel + "     y el emaiiil: " + em);
+        });
     });
 
 </script>
@@ -120,8 +125,8 @@
                                                             <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
                                                             <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_name']) ?></td>
                                                             <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_surname']) ?></td>
-                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
-                                                            <td><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
+                                                            <td id="telephone<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>"><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_telephone']) ?></td>
+                                                            <td id="email<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>"><?php echo __($ocr[1]['invesotrInfo']['Investor']['investor_email']) ?></td>
                                                             <td><?php echo __($statusName[$ocr[1]['invesotrInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?></td>
                                                             <td>
                                                                 <form  action="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>">
@@ -142,7 +147,7 @@
                                                                     <button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button>
                                                                 </form>
                                                             </td>
-                                                            <td><button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                            <td><button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" id="investor<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn btnTallyman btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
                                                             <?php } ?>
                                                     </tr>
                                                 <?php } ?>
