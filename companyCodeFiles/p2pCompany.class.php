@@ -1,37 +1,36 @@
 <?php
-/*
-* +-----------------------------------------------------------------------+
-* | Copyright (C) 2016, http://beyond-language-skills.com                 |
-* +-----------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify     |
-* | it under the terms of the GNU General Public License as published by  |
-* | the Free Software Foundation; either version 2 of the License, or     |
-* | (at your option) any later version.                                   |
-* | This file is distributed in the hope that it will be useful           |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
-* | GNU General Public License for more details.                          |
-* +-----------------------------------------------------------------------+
-* | Author: Antoine de Poorter                                            |
-* +-----------------------------------------------------------------------+
+/**
+* +-----------------------------------------------------------------------------+
+* | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+* +-----------------------------------------------------------------------------+
+* | This file is free software; you can redistribute it and/or modify 		|
+* | it under the terms of the GNU General Public License as published by  	|
+* | the Free Software Foundation; either version 2 of the License, or 		|
+* | (at your option) any later version.                                      	|
+* | This file is distributed in the hope that it will be useful   		|
+* | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+* | GNU General Public License for more details.        			|
+* +-----------------------------------------------------------------------------+
 *
+*
+* @author 
+* @version 0.3
+* @date 2017-01-28
+* @package
 *
 * Base class for all the p2p companies
 *
 * 
-* @author Antoine de Poorter
-* @version 0.3
-* @date 2017-01-28
-* @package
 
 
 2016-08-11		version 2016_0.1
 Basic version
-function getMonetaryValue													[OK, tested] 
-function getPercentage														[OK, tested] 
-function getDurationValue													[OK, tested] 
-Testing system for "simulating" accesses to the different sites				[OK, tested] 
-Added UrlSequence array with all url's to be used for a particular sequence [OK, tested]
+function getMonetaryValue							[OK, tested] 
+function getPercentage								[OK, tested] 
+function getDurationValue							[OK, tested] 
+Testing system for "simulating" accesses to the different sites			[OK, tested] 
+Added UrlSequence array with all url's to be used for a particular sequence     [OK, tested]
 
 
 2016-12-12		version 2016_0.2
@@ -46,11 +45,16 @@ Adding generic tracing capability 											[OK, NOT tested]
 function "getCurrentAccumulativeRowValue" was updated with the capability	[NOT OK, not tested]
 of ONLY adding cuotas realmente pagados.
  
+2017-05-16              version 0.5
+Added parallelization to collectUserInvestmentData
+Added dom verification to collectUserInvestmentData
 
-2017-05-31
-function to save into DB
 
-2017-06-30
+2017-05-31              version 0.6
+Function to save user investment data into DB
+
+
+2017-06-30              version 0.7
 Added function to create an individual cookies file for company when a request and delete after logout
 
 
@@ -1252,6 +1256,10 @@ function print_r2($val){
         $this->password = $password;
     }
     
+    /**
+     * Generate a cookies file per user and per company to keep their cookies
+     * @return string It is the name of the cookies file
+     */
     public function generateCookiesFile() {
         $randomName = $this->getGUID();
         $randomName = str_replace(array('{', '}', '-'), array(''), $randomName);
@@ -1261,6 +1269,10 @@ function print_r2($val){
         return $nameFileCookies;
     }
     
+    /**
+     * Create the cookies file inside the directory selected with the permissions selected
+     * @param string $nameFile It is the name generated
+     */
     public function createCookiesFile($nameFile) {
         if (!file_exists($this->cookiesDir . '/' . $nameFile)) {
             //Be careful with this function because maybe cannot work on Windows
@@ -1279,6 +1291,9 @@ function print_r2($val){
          //or die("Can't create file");
     }
     
+    /**
+     * Delete the cookies file generated for the request
+     */
     public function deleteCookiesFile() {
         if (file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
             unlink($this->cookiesDir . '/' . $this->cookies_name);
@@ -1286,19 +1301,34 @@ function print_r2($val){
         
     }
     
-    
+    /**
+     * Get the tries to make a the Curl call
+     * @return integer It is the number of times what we try to make the curl call
+     */
     public function getTries() {
         return $this->tries;
     }
     
+    /**
+     * Set the number of tries we spent to get the information by company
+     * @param int $tries
+     */
     public function setTries($tries) {
         $this->tries = $tries;
     }
     
+    /**
+     * Function to get the id that has the company in the queue
+     * @return integer
+     */
     public function getQueueId() {
-        return $this->tries;
+        return $this->queueId;
     }
     
+    /**
+     * Set the id that has the company in the queue
+     * @param integer $queueId
+     */
     public function setQueueId($queueId) {
         $this->queueId = $queueId;
     }
