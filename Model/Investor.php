@@ -459,7 +459,7 @@ class Investor extends AppModel {
      * 	Rules are defined for what should happen when a database record is created or updated.
      * 	
      */
-    function beforeSave($created, $options = array()) {
+    function beforeSave($options = array()) {
 
 // Store telephone number without spaces
         if (!empty($this->data['Investor']['investor_dateOfBirth'])) {
