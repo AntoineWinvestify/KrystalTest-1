@@ -182,8 +182,8 @@ class AppController extends Controller {
         'Session',
         'Auth' => array(
             /* 				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller */
-            'loginRedirect' => array('controller' => 'investors',
-                'action' => 'userProfileDataPanel'
+            'loginRedirect' => array('controller' => 'marketplaces',
+                'action' => 'showMarketPlace'
             ),
             'logoutRedirect' => array('controller' => 'marketplaces',
                 'action' => 'getGlobalMarketPlaceData'

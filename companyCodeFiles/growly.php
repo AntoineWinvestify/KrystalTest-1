@@ -583,7 +583,7 @@ function companyUserLogin($user, $password) {
 */	
 function companyUserLogout() {
 
-	$str = $this->doCompanyLogoutMultiCurl();
+	$str = $this->doCompanyLogout();
 	return true;
 }
 

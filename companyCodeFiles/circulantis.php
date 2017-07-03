@@ -46,7 +46,7 @@ Basic version
  * 
 
 2017-05-25
- * There is an array_shift to delete the first url of urlsequence on case 0 of the swithc
+ * There is an array_shift to delete the first url of urlsequence on case 0 of the switch
  * We would need to delete the urlsequence on DB for Circulantis to work
 Pending:
 

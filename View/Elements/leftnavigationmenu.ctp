@@ -147,6 +147,8 @@ $(document).ready(function() {
             <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>*/?>
           </ul>
         </li>
+        <?php 
+        /*
         <li class="treeview">
             <a href="/ocrs/ocrInvestorView">
               <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
