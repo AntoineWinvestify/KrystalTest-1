@@ -232,7 +232,7 @@ public function getTestConfig() {
 */
 function doCompanyLogin(array $loginCredentials) {
 
-        $this->generateCookiesFile();
+        
 	$url = array_shift($this->urlSequence);	
 	if (!empty($this->testConfig['active']) == true) {		// test system active, so read input from prepared files
 		if (!empty($this->testConfig['siteReadings'])) {
@@ -409,7 +409,6 @@ function doCompanyLogout() {
 
 // close cURL resource to free up system resources		
     curl_close($curl);
-    $this->deleteCookiesFile();
 	if ($this->config['appDebug'] == true) {
 		echo "LOGOUT URL = $url <br>";
 	}
@@ -742,8 +741,8 @@ function getCompanyWebpage($url) {
                 // Do not check the SSL certificates
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
-                ->set(CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt') // important
-                ->set(CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt'); // Important
+                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
+                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
 
         //Add the request to the queue in the marketplaces controller
         $this->marketplaces->addRequetsToQueueCurls($request);

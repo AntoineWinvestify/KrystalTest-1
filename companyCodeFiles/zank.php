@@ -495,7 +495,7 @@ class zank extends p2pCompany {
                     $this->data1[$key]['commission'] = $this->getMonetaryValue($item['Comision']);
                     $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
             }
-            if ($numberJsonInvestments % 100 == 0) {
+            if ($numberJsonInvestments != 0 && $numberJsonInvestments % 100 == 0) {
                 //If investments are 100, we verify that there is no more, so we recall starting at 100 investments
                 $this->start = $this->start + 100;
                 $form = [
@@ -854,8 +854,8 @@ class zank extends p2pCompany {
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
-        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');   // important
-        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');    // Important
+        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);   // important
+        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);    // Important
         // Fetch the URL and save the content
         $str = curl_exec($curl);
         if (!empty($this->testConfig['active']) == true) {
@@ -948,8 +948,8 @@ class zank extends p2pCompany {
                 // Do not check the SSL certificates
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
-                ->set(CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt') // important
-                ->set(CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt'); // Important
+                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
+                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
 
         //Add the request to the queue in the marketplaces controller
         $this->marketplaces->addRequetsToQueueCurls($request);
