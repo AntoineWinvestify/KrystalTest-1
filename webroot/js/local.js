@@ -938,7 +938,7 @@ app.visual = {
 
         //Checking Minimum
         for (var i = 0; i < arrayChecking.length; i++) {
-            if (arrayChecking[i] == "yes") {
+            if (arrayChecking[i] == 1) {
                 countChecking++;
             }
         }
@@ -957,7 +957,7 @@ app.visual = {
 
             //Checking Optionals
             for (var i = 0; i < arrayCheckingOptional.length; i++) {
-                if (arrayCheckingOptional[i] == "yes") {
+                if (arrayCheckingOptional[i] == 1) {
                     countCheckingOptional++;
                 }
             }
@@ -974,14 +974,13 @@ app.visual = {
         var correctCheckingDocs = false;
 
         $(".file :checked").each(function () {
-            if ($(this).val() == "yes") {            
+            if ($(this).val() == 1) {            
                 countCheckingDocs++;
             }
             countDocs++;
         });
 
-        var limitCheckingDocs = countDocs;
-        if (countCheckingDocs == limitCheckingDocs) {
+        if (countCheckingDocs == countDocs) {
             correctCheckingDocs = true;
         }
 
@@ -992,20 +991,26 @@ app.visual = {
         var correctCheckingPFPs = false;
 
         $(".company:checked").each(function () {
-            if ($(this).val() == "yes") {
+            if (($(this).val() == 1) || $(this).val() == 2) {
                 countCheckingPFPs++;
             }
             countPFPs++;
         });
 
-        var limitCheckingPFPs = countPFPs;
-        if (countCheckingPFPs == limitCheckingPFPs) {
+        if (countCheckingPFPs == countPFPs) {
             correctCheckingPFPs = true;
         }
 
         //FINAL TESTING!!!
-        if (!correctChecking || !correctCheckingDocs || !correctCheckingPFPs) {
-            correctForm = false;
+        if ($("#cifOptional").length) {
+            if (!correctChecking || !correctCheckingOptional || !correctCheckingDocs || !correctCheckingPFPs) {
+                correctForm = false;
+            }
+        }
+        else {
+            if (!correctChecking || !correctCheckingDocs || !correctCheckingPFPs) {
+                correctForm = false;
+            }
         }
         return correctForm;
     }
