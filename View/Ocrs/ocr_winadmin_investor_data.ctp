@@ -53,11 +53,13 @@
  * [2017-06-28] Version 0.7
  * Added Arrays to checking
  * 
-* [2017-07-03] Version 0.8
+ * [2017-07-03] Version 0.8
  * Save ajax
+ * Approve Ajax
  * Check values defined in appController
  * Time stamp implemented
  */
+
 ?>
 
 <style>
@@ -77,11 +79,25 @@
     $(function () {
 
         $(document).on('click', '#saveBtn', function () {
-            //DATABASE SAVING!!!!!!!!!
-            //save all radio button status (yes/no/pending) & charge them on next visit at this investor data
+
+<?php //Create files info array        ?>
+            fileArray = [];
+            i = 0
+            $(".file :checked").each(function () {
+                id = $(this).attr('name');
+                status = $(this).val();
+                fileArray[i] = {id, status};
+                i++;
+            });
+
+<?php //save all radio button status (yes/no/pending) & charge them on next visit at this investor data       ?>
             var params = {
+
+                //Investor Info
                 id: <?php echo $checking[0]['Check']['Id'] ?>,
                 investorId: <?php echo $checking[0]['Check']['investor_id'] ?>,
+
+                //Checks Info
                 name: $("input[name=checkName]:checked").val(),
                 nameCheck: $("#checkName").text(),
                 surname: $("input[name=checkSurname]:checked").val(),
@@ -104,32 +120,109 @@
                 countryCheck: $("#checkCountry").text(),
                 iban: $("input[name=checkIban]:checked").val(),
                 ibanCheck: $("#checkIban").text(),
+                cif: $("input[name=checkCIF]:checked").val(),
+                cifCheck: $("#checkCIF").text(),
+                businessName: $("input[name=checkBusinessName]:checked").val(),
+                businessNameCheck: $("#checkBusinessName").text(),
+                type: 'save',
+
+                //File data
+                file: fileArray,
+
             };
             link = '/ocrs/updateChecks';
             var data = jQuery.param(params);
-            getServerData(link, data, successSave, errorSave);
+            getServerData(link, data, success, error);
         });
 
 
         $(document).on('click', '#approveBtn', function () {
             if ((app.visual.checkFormWinadminInvestorData()) === true) {
-                alert("chachi");
+
+<?php //Create companies info array        ?>
+                companyArray = [];
+                i = 0;
+                $(".company :checked").each(function () {
+                    id = $(this).attr('name');
+                    status = $(this).val();
+                    companyArray[i] = {id, status};
+                    i++;
+                });
+
+
+<?php //Create files info array        ?>
+                fileArray = [];
+                i = 0;
+                $(".file :checked").each(function () {
+                    id = $(this).attr('name');
+                    status = $(this).val();
+                    fileArray[i] = {id, status};
+                    i++;
+                });
+
+
+                var params = {
+
+                    //Investor data   
+                    id: <?php echo $checking[0]['Check']['Id'] ?>,
+                    investorId: <?php echo $checking[0]['Check']['investor_id'] ?>,
+
+                    //Checking data
+                    name: $("input[name=checkName]:checked").val(),
+                    nameCheck: $("#checkName").text(),
+                    surname: $("input[name=checkSurname]:checked").val(),
+                    surnameCheck: $("#checkSurname").text(),
+                    dni: $("input[name=checkId]:checked").val(),
+                    dniCheck: $("#checkId").text(),
+                    dateOfBirth: $("input[name=checkDateOfBirth]:checked").val(),
+                    dateOfBirthCheck: $("#checkDateOfBirth").text(),
+                    email: $("input[name=checkEmail]:checked").val(),
+                    emailCheck: $("#checkEmail").text(),
+                    telephone: $("input[name=checkTelephone]:checked").val(),
+                    telephoneCheck: $("#checkTelephone").text(),
+                    postCode: $("input[name=checkPostCode]:checked").val(),
+                    postCodeCheck: $("#checkPostCode").text(),
+                    address: $("input[name=checkAddress]:checked").val(),
+                    addressCheck: $("#checkAddress").text(),
+                    city: $("input[name=checkCity]:checked").val(),
+                    cityCheck: $("#checkCity").text(),
+                    country: $("input[name=checkCountry]:checked").val(),
+                    countryCheck: $("#checkCountry").text(),
+                    iban: $("input[name=checkIban]:checked").val(),
+                    ibanCheck: $("#checkIban").text(),
+                    cif: $("input[name=checkCIF]:checked").val(),
+                    cifCheck: $("#checkCIF").text(),
+                    businessName: $("input[name=checkBusinessName]:checked").val(),
+                    businessNameCheck: $("#checkBusinessName").text(),
+                    type: 'approve',
+
+                    //File data
+                    file: fileArray,
+
+                    //Companies data
+                    company: companyArray,
+                };
+                link = '/ocrs/updateChecks';
+                var data = jQuery.param(params);
+                getServerData(link, data, successApprove, error);
             }
         });
 
 
         $(document).on('change', "input", function () {
-
             id = $(this).attr('name');
             timeStamp = new Date($.now());
             $("#" + id).html(timeStamp);
         });
     });
-    function successSave(data) {
-    
+    function success(data) {
+
     }
-    function errorSave(data) {
-        
+    function successApprove(data) {
+
+    }
+    function error(data) {
+
     }
 </script>
 <div id="1CR_winAdmin_2_investorData">
@@ -164,7 +257,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_name"><?php echo __('Name') ?></label>
                                         <div>
-                                            <div id="checkName"></div>
+                                            <div id="checkName"><?php echo $checking[0]['Check']['check_nameTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" class="checkCorrect" name="checkName" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkName" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkName" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -194,7 +287,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)') ?></label>
                                         <div>
-                                            <div id="checkSurname"></div>
+                                            <div id="checkSurname"><?php echo $checking[0]['Check']['check_surnameTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkSurname" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkSurname" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkSurname" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -224,7 +317,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_dni"><?php echo __('Id') ?></label>
                                         <div>
-                                            <div id="checkId"></div>
+                                            <div id="checkId"><?php echo $checking[0]['Check']['check_dniTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkId" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkId" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkId" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -255,7 +348,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth') ?></label>
                                         <div>
-                                            <div id="checkDateOfBirth"></div>
+                                            <div id="checkDateOfBirth"><?php echo $checking[0]['Check']['check_dateOfBirthTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkDateOfBirth" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkDateOfBirth" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkDateOfBirth" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -282,7 +375,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_email"><?php echo __('Email') ?></label>
                                         <div>
-                                            <div id="checkEmail"></div>
+                                            <div id="checkEmail"><?php echo $checking[0]['Check']['check_emailTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkEmail" checked="checked" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkEmail" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkEmail" value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
@@ -312,7 +405,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
                                         <div>
-                                            <div id="checkTelephone"></div>
+                                            <div id="checkTelephone"><?php echo $checking[0]['Check']['check_telephoneTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkTelephone" checked="checked" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkTelephone" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkTelephone" value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
@@ -351,7 +444,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode') ?></label>
                                         <div>
-                                            <div id="checkPostCode"></div>
+                                            <div id="checkPostCode"><?php echo $checking[0]['Check']['check_postCodeTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkPostCode" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkPostCode" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkPostCode" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -380,7 +473,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_address1"><?php echo __('Address') ?></label>
                                         <div>
-                                            <div id="checkAddress"></div>
+                                            <div id="checkAddress"><?php echo $checking[0]['Check']['check_addressTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkAddress" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkAddress" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkAddress" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -412,7 +505,7 @@
                                     <div class="form-group">
                                         <label for="exampleInputPassword1"><?php echo __('City') ?></label>
                                         <div>
-                                            <div id="checkCity"></div>
+                                            <div id="checkCity"><?php echo $checking[0]['Check']['check_cityTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkCity" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkCity" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkCity" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -442,7 +535,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_country"><?php echo __('Country') ?></label>
                                         <div>
-                                            <div id="checkCountry"></div>
+                                            <div id="checkCountry"><?php echo $checking[0]['Check']['check_countryTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkCountry" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkCountry" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkCountry" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -471,7 +564,7 @@
                                     <div class="form-group">
                                         <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
                                         <div>
-                                            <div id="checkIban"></div>
+                                            <div id="checkIban"><?php echo $checking[0]['Check']['check_ibanTime'] ?></div>
                                             <label class="radio-inline"><input type="radio" name="checkIban" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkIban" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                             <label class="radio-inline"><input type="radio" name="checkIban" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -492,7 +585,7 @@
                                         <div class="form-group">
                                             <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
                                             <div>
-                                                <div id="checkCIF"></div>
+                                                <div id="checkCIF"><?php echo $checking[0]['Check']['check_cifTime'] ?></div>
                                                 <label class="radio-inline"><input type="radio" name="checkCIF" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                                 <label class="radio-inline"><input type="radio" name="checkCIF" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                                 <label class="radio-inline"><input type="radio" name="checkCIF" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
@@ -507,12 +600,12 @@
                                         <div class="form-group">
                                             <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
                                             <div>
-                                                <div id="checkBusinessName"></div>
+                                                <div id="checkBusinessName"><?php echo $checking[0]['Check']['check_businessNameTime'] ?></div>
                                                 <label class="radio-inline"><input type="radio" name="checkBusinessName" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
                                                 <label class="radio-inline"><input type="radio" name="checkBusinessName" value="<?php echo NO ?>"><?php echo __('No') ?></label>
                                                 <label class="radio-inline"><input type="radio" name="checkBusinessName" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
                                             </div>
-                                            <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_ businessName'] ?>">
+                                            <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_businessName'] ?>">
                                         </div>
                                         <!-- /CIF -->
 
@@ -534,9 +627,9 @@
                                                     echo $company['company_name']
                                                     ?>
                                                     <div>
-                                                        <label class="radio-inlinev company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                                        <label class="radio-inlinev company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo ACCEPTED ?>"><?php echo __('Yes') ?></label>
+                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo DENIED ?>"><?php echo __('No') ?></label>
+                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo SENT ?>" checked="checked"><?php echo __('Pending') ?></label>
                                                     </div>
                                                 </li>
                                                 <?php

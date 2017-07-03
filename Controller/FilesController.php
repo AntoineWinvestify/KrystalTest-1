@@ -46,6 +46,8 @@
  * 2017/6/30 version 0.6
  * zip download  
  * 
+ * 2017/07/03 version 0.7
+ * Json path in the zip
  */
 App::uses('CakeEvent', 'Event');
 
@@ -127,7 +129,7 @@ class filesController extends AppController {
         //Zip archives
         $investorFiles = $this->Ocrfile->readExistingFiles($id);
         $urlList = array();
-        print_r($investorFiles);
+        $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'results.json';
         foreach ($investorFiles as $investorFile) {
            
             $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
@@ -135,7 +137,7 @@ class filesController extends AppController {
         }
 
         //Create the zip
-        if ($this->Ocrfile->createZip($urlList, $pathToZipFile, true)) {
+        if ($this->Ocrfile->createZip($urlList, $pathToZipFile, true, $jsonPath)) {
 
             $this->set('result', true);
             $this->set('message', 'Zip downloaded');

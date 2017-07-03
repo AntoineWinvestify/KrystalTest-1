@@ -56,6 +56,9 @@
  * Event after save 
  * Validate iban
  * 
+ * 
+ * 2017/07/03
+ * getCompaniesOcrId
  */
 App::uses('CakeEvent', 'Event');
 
@@ -271,6 +274,21 @@ class ocr extends AppModel {
     }
 
     /**
+     * Get companies_ocrs id from the company id and ocr id
+     * @param type $companyId
+     * @param type $OcrId
+     */
+    function getCompaniesOcrId($companyId,$OcrId){
+        $id = $this->CompaniesOcr->find('first',array(
+            'fields' => array('id'),
+            'conditions' => array('company_id' => $companyId, 'ocr_id' => $OcrId),
+        ));
+        return $id['CompaniesOcr']['id'];
+    }
+    
+    
+    
+    /**
      * Update the sent companies status
      * @param type $id
      */
@@ -280,6 +298,7 @@ class ocr extends AppModel {
         return "," . 1 . "]";
     }
 
+    
     /**
      * Find ocrId
      * @param type $id
@@ -435,7 +454,7 @@ class ocr extends AppModel {
      */
     function afterSave($created, $options = array()) {
 
-        if (!empty($this->data['Ocr']['ocr_status']) && $this->data['Ocr']['ocr_status'] != ERROR) {
+        if (!empty($this->data['Ocr']['ocr_status']) && $this->data['Ocr']['ocr_status'] == SENT) {
             $event = new CakeEvent("checkMessage", $this);
             $this->getEventManager()->dispatch($event);
         }

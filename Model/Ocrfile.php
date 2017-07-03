@@ -50,6 +50,9 @@
  * 2017/6/30 version 0.9
  * Event 
  * 
+ * 2017/07/03
+ * Generate and include json in zip file
+ * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -175,6 +178,22 @@ class ocrfile extends AppModel {
     }
 
     /**
+     * Generate a json with the $data passed in the $path
+     * @param type $data
+     * @param type $path
+     */
+    public function generateJson($data, $path) {
+        $fp = fopen($path . DS . 'results.json', 'w');
+        if (fwrite($fp, json_encode($data))) {
+            fclose($fp);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    /**
      * Delete investor file
      * @param string $url
      * @param type $file_id
@@ -268,7 +287,7 @@ class ocrfile extends AppModel {
     }
 
     /**
-     * 
+     * Get the info of one document
      * @param type $id
      * @return type
      */
@@ -278,7 +297,7 @@ class ocrfile extends AppModel {
     }
 
     /**
-     * 
+     * Get the info of one bill
      * @param type $id
      * @return type
      */
@@ -311,12 +330,26 @@ class ocrfile extends AppModel {
         return $allBillInfo;
     }
 
+    /**
+     * Get all the bills of a company
+     * @param type $id
+     * @return type
+     */
     public function billCompanyFilter($id) {
         $bills = $this->CompaniesFile->find('all', array('conditions' => array('company_id' => $id)));
         return $bills;
     }
 
-    function createZip($files = array(), $destination = '', $overwrite = false) {
+    
+    /**
+     * Create a zip of an investor documents and a json
+     * 
+     * @param type $files
+     * @param type $destination
+     * @param type $overwrite
+     * @return boolean
+     */
+    function createZip($files = array(), $destination = '', $overwrite = false, $json = null) {
         //if the zip file already exists and overwrite is false, return false
         if (file_exists($destination) && !$overwrite) {
             return false;
@@ -350,11 +383,14 @@ class ocrfile extends AppModel {
                     return false;
                 }
             }
-
+            
             //add the files
             foreach ($validFiles as $file) {
                 $zip->addFromString(basename($file), file_get_contents($file));
             }
+             $zip->addFromString(basename($json), file_get_contents($json));
+            // $zip->addFromString('result.json', file_get_contents('result.json'));
+            // 
             //debug
             //echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
             //close the zip -- done!
