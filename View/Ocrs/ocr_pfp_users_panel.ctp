@@ -66,10 +66,12 @@
     $(function () {
         $("#usersTable").DataTable();
         $(document).on("click", ".btnTallyman", function() {
-            id = $(this).val();
-            tel = $("#telephone"+id).text();
-            em = $("#email"+id).text();
-            alert("el id valeeee " + id + "    y el telephone: " + tel + "     y el emaiiil: " + em);
+            var id = $(this).val();
+            var tel = $("#telephone"+id).text();
+            var em = $("#email"+id).text();
+            var baseUrl = window.location.host;
+            var link = baseUrl + "/adminpfp/users/readTallymanData" + tel + "/"+ em;
+            alert("FINAL URL: " + link );
         });
     });
 
@@ -102,7 +104,7 @@
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
                                         <table id="usersTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                               data-order='[[ 0, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                               data-order='[[ 0, "asc" ]]' data-page-length='25'>
                                             <thead>
                                                 <tr>
                                                     <th><?php echo __('Date') ?></th>
@@ -133,7 +135,7 @@
                                                                     <button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button>
                                                                 </form>
                                                             </td>
-                                                            <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                            <td><button value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnTallyman btnRounded"><?php echo __('Tallyman') ?></button></td>
 
                                                         <?php } else if ($pfpStatus == SER_SUSPENDED) { // If servoce is active, hide the full data?>
                                                             <td><?php echo __($ocr[1]['invesotrInfo']['Ocr']['ocr_sent']) ?></td>
@@ -147,7 +149,7 @@
                                                                     <button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] . DS . $ocr[1]['invesotrInfo']['Investor']['user_id'] ?>"></a><?php echo __('Download') ?></button>
                                                                 </form>
                                                             </td>
-                                                            <td><button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" id="investor<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn btnTallyman btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                            <td><button disabled value="<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" id="investor<?php echo $ocr[1]['invesotrInfo']['Investor']['id'] ?>" class="btn btnPFPAdmin btnRounded"><?php echo __('Tallyman') ?></button></td>
                                                             <?php } ?>
                                                     </tr>
                                                 <?php } ?>
