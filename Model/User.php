@@ -63,7 +63,7 @@ class User extends AppModel {
             'foreignKey' => 'user_id',
             'fields' => '',
             'order' => '',
-        )
+        ),
         
  /*       'Winadmin' => array(
             'className' => 'Admin.Winadmin',
@@ -383,6 +383,19 @@ class User extends AppModel {
                 'recursive' => -1,
             ));
         }
+        return $info;
+    }
+    
+    /**
+     *Get pfp admins's mails FROM PFPS TABLE(NOT USERS TABLE)
+     * @param type $id
+     */
+    public function getPfpAdminMail($id){
+        $info = $this->Adminpfp->find("all", array(
+                'fields' => array('adminpfp_email'),
+                'conditions' => array('company_id' => $id),
+                'recursive' => -1,
+            ));
         return $info;
     }
 

@@ -32,15 +32,18 @@
   2017-06-23 version 0.4
   db relation
 
-* [2017-07-03] Version 0.5
+ * [2017-07-03] Version 0.5
  * Update check data
+ * File relation
+ * 
+ * [2017-07-04] Version 0.6
+ * Create check data
 
   Pending:
   function generateGUIDs(). 													[not Ok, not tested]
-
-
-
  */
+App::uses('CakeEvent', 'Event');
+
 class Investor extends AppModel {
 
     var $name = 'Investor';
@@ -68,6 +71,14 @@ class Investor extends AppModel {
             'ForeignKey' => 'investor_id',
             'associationForeignKey' => 'ocr_id',
         )
+    );
+    public $hasAndBelongsToMany = array(
+        'Ocrfile' => array(
+            'className' => 'Ocrfile',
+            'joinTable' => 'files_investors',
+            'associationForeignKey' => 'file_id',
+            'foreignKey' => 'investor_id',
+        ),
     );
 
     /**
@@ -201,7 +212,10 @@ class Investor extends AppModel {
         );
         $this->save($data, $validate = true);
         echo __FILE__ . " " . __LINE__ . "<br>";
-        return true;
+        if ($this->createCheckdata($currentStatus['Investor']['id'])) {
+            $this->createCheckdata($id); //create the line in the table checks
+            return true;
+        }
     }
 
     /** NOT YET FINISHED
@@ -391,6 +405,37 @@ class Investor extends AppModel {
     }
 
     /**
+     * Create a check line in the checks table for the user
+     * @param type $id
+     * @return boolean
+     */
+    public function createCheckdata($id) {
+        //Checks data
+        $checksArray = Array(
+            'investor_id' => $id,
+            'check_name' => 0,
+            'check_surname' => 0,
+            'check_dni' => 0,
+            'check_dateOfBirth' => 0,
+            'check_email' => 1,
+            'check_telephone' => 1,
+            'check_postCode' => 0,
+            'check_address' => 0,
+            'check_city' => 0,
+            'check_country' => 0,
+            'check_iban' => 0,
+            'check_ibanTime' => 0,
+            'check_cif' => 0,
+            'check_businessName' => 0,
+        );
+        if ($this->Check->save($checksArray)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Read the cheack data
      * @param type $investorId
      * @return type
@@ -407,42 +452,137 @@ class Investor extends AppModel {
      * @return int
      */
     public function updateCheckData($checks) {
+        //Company id for mailing
+        $compMail = array();
+        //Get ocr id
+        $ocr = $this->Ocr->findOcrId($checks['investorId']);
 
+        //Get user id
+        $userId = $this->find('first', array('fields' => 'user_id', 'conditions' => array('Investor.id' => $checks['investorId'])))['Investor']['user_id'];
+
+        //Checks data
         $checksArray = Array(
-        'id' => $checks['id'],
-        'investor_id' => $checks['investorId'],
-        'check_name' => ($checks['name']),
-        'check_nameTime' => $checks['nameCheck'],
-        'check_surname' => ($checks['surname']),
-        'check_surnameTime' => $checks['surnameCheck'],
-        'check_dni' => ($checks['dni']),
-        'check_dniTime' => $checks['dniCheck'],
-        'check_dateOfBirth' => ($checks['dateOfBirth']),
-        'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
-        'check_email' => ($checks['email']),
-        'check_emailTime' => $checks['emailCheck'],
-        'check_telephone' => ($checks['telephone']),
-        'check_telephoneTime' => $checks['telephoneCheck'],
-        'check_postCode' => ($checks['postCode']),
-        'check_postCodeTime' => $checks['postCodeCheck'],
-        'check_address' => ($checks['address']),
-        'check_addressTime' => $checks['addressCheck'],
-        'check_city' => ($checks['city']),
-        'check_cityTime' => $checks['cityCheck'],
-        'check_country' => ($checks['country']),
-        'check_countryTime' => $checks['countryCheck'],
-        'check_iban' => ($checks['iban']),
-        'check_ibanTime' => $checks['ibanCheck'],
-        'check_cif' => ($checks['cif']),
-        'check_cifTime' => $checks['cifCheck'],
-        'check_bussinesName' => ($checks['bussinesName']),
-        'check_bussinesNameTime' => $checks['bussinesNameCheck'],
+            'id' => $checks['id'],
+            'investor_id' => $checks['investorId'],
+            'check_name' => ($checks['name']),
+            'check_nameTime' => $checks['nameCheck'],
+            'check_surname' => ($checks['surname']),
+            'check_surnameTime' => $checks['surnameCheck'],
+            'check_dni' => ($checks['dni']),
+            'check_dniTime' => $checks['dniCheck'],
+            'check_dateOfBirth' => ($checks['dateOfBirth']),
+            'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
+            'check_email' => ($checks['email']),
+            'check_emailTime' => $checks['emailCheck'],
+            'check_telephone' => ($checks['telephone']),
+            'check_telephoneTime' => $checks['telephoneCheck'],
+            'check_postCode' => ($checks['postCode']),
+            'check_postCodeTime' => $checks['postCodeCheck'],
+            'check_address' => ($checks['address']),
+            'check_addressTime' => $checks['addressCheck'],
+            'check_city' => ($checks['city']),
+            'check_cityTime' => $checks['cityCheck'],
+            'check_country' => ($checks['country']),
+            'check_countryTime' => $checks['countryCheck'],
+            'check_iban' => ($checks['iban']),
+            'check_ibanTime' => $checks['ibanCheck'],
+            'check_cif' => ($checks['cif']),
+            'check_cifTime' => $checks['cifCheck'],
+            'check_businessName' => ($checks['businessName']),
+            'check_businessNameTime' => $checks['businessNameCheck'],
+        );
+        //Change status, at least one NO, status => ERROR, all YES status => OCR_PENDING
+        //OCR_PENDING -> Default status change
+        $statusFinal = OCR_PENDING;
+        $statusArray = Array(
+            'check_name' => ($checks['name']),
+            'check_surname' => ($checks['surname']),
+            'check_dni' => ($checks['dni']),
+            'check_dateOfBirth' => ($checks['dateOfBirth']),
+            'check_email' => ($checks['email']),
+            'check_telephone' => ($checks['telephone']),
+            'check_postCode' => ($checks['postCode']),
+            'check_address' => ($checks['address']),
+            'check_city' => ($checks['city']),
+            'check_country' => ($checks['country']),
+            'check_iban' => ($checks['iban']),
+            'check_cif' => ($checks['cif']),
+            'check_businessName' => ($checks['businessName']),
         );
 
+        foreach ($statusArray as $status) {
+            //If we find a NO, change the status
+            if ($status == NO) {
+                $statusFinal = ERROR;
+            }
+        }
+
+
+        //If we click approve, change the status
+        if ($checks['type'] == 'approve') {
+
+            //Json path
+            $fileConfig = Configure::read('files');
+
+            $folder = $this->getInvestorIdentity($userId);
+            $path = $fileConfig['investorPath'] . $folder;
+
+            //Generate Json
+            $created = $this->Ocrfile->generateJson($checksArray, $path);
+            if ($created) {
+                $statusFinal = OCR_FINISHED;
+
+                //Change companies_ocr status
+                foreach ($checks['company'] as $company) {
+
+                    //Get id of the table
+                    $companyOcrsId = $this->Ocr->getCompaniesOcrId($company['id'], $ocr);
+
+                    //If company_ocr is accepted, send a mail
+                    if ($company['status'] == ACCEPTED) {
+                        $mail = $this->User->getPfpAdminMail($company['id']);
+                        $this->data['mail'] = $mail;
+                    }
+
+                    //Save company_ocr status
+                    if ($this->Ocr->updateOcrCompanyStatus($companyOcrsId, $company['status'])) {
+
+                        continue;
+                    } else {
+                        //error feedback
+                        return [0, __("Error updating companies status.")];
+                    }
+                }
+            } else {
+                return [0, __("Error generating JSON.")];
+            }
+        }
+
+        //Change files status
+        foreach ($checks['file'] as $file) {
+            if ($this->FilesInvestor->save(array('id' => $file['id'], 'file_status' => $file['status']))) {
+                continue;
+            } else {
+                //error feedback
+                return [0, __("Error updating files status.")];
+            }
+        }
+
+
+        //Save the data
         if ($this->Check->save($checksArray)) {
-            return [1,__("Saved correctly.")];
+            //Change ocr status
+
+            if ($this->Ocr->save(array("id" => $ocr, "investor_id" => $checks['investorId'], "ocr_status" => $statusFinal))) {
+                //Feedback
+                return [1, __("Saved correctly.")];
+            } else {
+                //Feedback
+                return [0, __("Error updating investor status.")];
+            }
         } else {
-            return  [0,__("Error saving.")];
+            //Feedback
+            return [0, __("Error saving.")];
         }
     }
 
@@ -470,7 +610,7 @@ class Investor extends AppModel {
                 ));
                 $this->getEventManager()->dispatch($event);
             }
-        }
+        }    
     }
 
     /**

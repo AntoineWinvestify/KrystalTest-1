@@ -990,8 +990,8 @@ app.visual = {
         var countCheckingPFPs = 0;
         var correctCheckingPFPs = false;
 
-        $(".company:checked").each(function () {
-            if (($(this).val() == 1) || $(this).val() == 2) {
+        $(".company :checked").each(function () {
+            if (($(this).val() == 2) || $(this).val() == 3) {          
                 countCheckingPFPs++;
             }
             countPFPs++;

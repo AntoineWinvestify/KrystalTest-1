@@ -69,7 +69,7 @@
  * Update pfp completed
  * Upload cif
  * 
-* [2017-07-03] Version 0.14
+ * [2017-07-03] Version 0.14
  * Update Checks
  */
 App::uses('CakeEvent', 'Event');
@@ -543,18 +543,17 @@ class ocrsController extends AppController {
      */
     function updateChecks() {
         if (!$this->request->is('ajax')) {
-            $result = array (false, __('Error updating data check.'));
+            $result = array(false, __('Error updating data check.'));
             $this->set("result", $result);
         } else {
             $this->layout = 'ajax';
             $this->disableCache();
             //Request the data
-           $data = $this->request['data'];
-           $result = $this->Investor->updateCheckData($data);
-           
-           //set result
-           $this->set("result", $result);
-           
+            $data = $this->request['data'];    
+            $result = $this->Investor->updateCheckData($data);
+
+            //set result
+            $this->set("result", $result);
         }
     }
 

@@ -110,7 +110,7 @@
                                                 <tbody>
                                                     <?php foreach($bills as $bill){?>
                                                     <tr>
-                                                        <td><?php echo __($bill['CompaniesFile']['created']); ?></td>
+                                                        <td><?php echo __(substr($bill['CompaniesFile']['created'],0,10)); ?></td>
                                                         <td><?php echo __($bill['CompaniesFile']['bill_number']); ?></td>
                                                         <td><?php echo __($bill['CompaniesFile']['bill_concept']); ?></td>
                                                         <td id="<?php echo __($bill['CompaniesFile']['id']) ?>" align="right"><script>formatMoney(<?php echo __($bill['CompaniesFile']['id']) ?>, <?php echo __($bill['CompaniesFile']['bill_amount']) ?>);</script></td>

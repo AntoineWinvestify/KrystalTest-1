@@ -411,7 +411,7 @@
                                         <?php foreach ($bills as $billsTable) {//Bills table creation    ?>                                      
                                             <tr>
                                                 <td><?php echo __($billsTable['Pfpname']) ?></td>
-                                                <td><?php echo __($billsTable['info']['created']) ?></td>
+                                                <td><?php echo __(substr($billsTable['info']['created'],0,10)) ?></td>
                                                 <td><?php echo __($billsTable['info']['bill_number']) ?></td>
                                                 <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
                                                 <td id="<?php echo __($billsTable['info']['id']) ?>" align="right"><script>formatMoney(<?php echo __($billsTable['info']['id']) ?>, <?php echo __($billsTable['info']['bill_amount']) ?>);</script></td>
