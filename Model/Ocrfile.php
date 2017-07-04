@@ -152,13 +152,14 @@ class ocrfile extends AppModel {
                     return [true, __('Upload ok'), $result];
                 } else if ($path == "bill") {
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
+                    
 
                     $bill = array(
                         'CompaniesFile' => Array(
                             'company_id' => $id,
                             'file_id' => 50,
                             'bill_number' => $type['number'],
-                            'bill_amount' => $type['amount'] * 100,
+                            'bill_amount' => str_replace (",",".",$type['amount'] )* 100,
                             'bill_concept' => $type['concept'],
                             'bill_currency' => $type['currency'],
                             'bill_url' => $folder . DS . $filename
@@ -166,8 +167,11 @@ class ocrfile extends AppModel {
                     );
 
                     if ($this->validates($this->CompaniesFile->save($bill))) {
-                        echo 'hola';
-                        $this->data['mail'] = $this->Investor->User->getPfpAdminMail($id);
+                        $mail = $this->Investor->User->getPfpAdminMail($id);
+
+                        $event = new CakeEvent("billMailEvent", $this, $mail);
+                        $this->getEventManager()->dispatch($event);
+
                         return [true, __('Upload ok')];
                     } else {
                         return [false, __("Upload failed. Incorrect type or file too big.")];
@@ -411,13 +415,7 @@ class ocrfile extends AppModel {
      * 
      */
     function afterSave($created, $options = array()) {
-        echo '123';
-        $this->data['mail'];
-        if (!empty($this->data['CompaniesFile']['id'])) {
-            echo 'entro';
-            $event = new CakeEvent("billMailEvent", $this, $this->data['mail']);
-            $this->getEventManager()->dispatch($event);
-        }
+        
     }
 
 }

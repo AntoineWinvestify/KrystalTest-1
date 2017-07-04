@@ -541,12 +541,10 @@ class Investor extends AppModel {
                     //If company_ocr is accepted, send a mail
                     if ($company['status'] == ACCEPTED) {
                         $mail = $this->User->getPfpAdminMail($company['id']);
-                        $this->data['mail'] = $mail;
                     }
 
                     //Save company_ocr status
-                    if ($this->Ocr->updateOcrCompanyStatus($companyOcrsId, $company['status'])) {
-
+                    if ($this->Ocr->updateOcrCompanyStatus($companyOcrsId, $company['status'], $mail)) {
                         continue;
                     } else {
                         //error feedback
