@@ -303,7 +303,9 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
                 }
             }
     }
-   
+
+    $resultTallyman[0]['totalMyPlatform_Norm'] = $resultTallyman[0]['totalMyPlatform_Abs'] / 
+                                        $resultTallyman[0]['userplatformglobaldata_activeInInvestments']
  
 
     
