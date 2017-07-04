@@ -104,7 +104,7 @@ public function loadInvestorDataOld($investoridentity) {
      * 
      */
 public function readinvestorData($investorIdentity, $platformId) {
- 
+
 $resultTallyman[0]['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[0]['investorglobaldata_activePFPs'] = 3;
 $resultTallyman[0]['investorglobaldata_totalPFPs'] = 3;
@@ -232,7 +232,6 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCount
 $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
 
 
-
 // Do some simple calculations to get extra "new" values so they can be displayed
 // enrich the information to be provided to the PFPAdmin user
 // index 0 is the most recent read-out of the user investment data
@@ -242,7 +241,7 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
     $resultCompany = $this->Company->getCompanyDataList($companyFilterConditions);
 
 //  Data for geographical distribution of PFPs as used by investor
-    $homeCountryPFP = $resultCompany[$platformId][company_country];
+    $homeCountryPFP = $resultCompany[$platformId]['company_country'];
 
     foreach ($resultTallyman[0]['Userplatformglobaldata'] as $platform) {
         if ($platform['userplatformglobaldata_PFPCountry'] == $homeCountryPFP) {
@@ -261,6 +260,7 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
     $resultTallyman[0]['dataPieChart1'] = $dataPieChart1;
 
 
+
 // How many types of platforms do we have?
     $platformTypes = count($this->crowdlendingTypesShort);
     $platformInvestmentsPerType = array_fill(0,  $platformTypes, 0);
@@ -269,71 +269,68 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
     foreach ($resultTallyman as $key => $value) {
         unset($platformInvestmentsPerType);
         unset($platformInvestmentsPerAmount);
-        foreach($value['Userplatformglobaldata'] as $platform) {
-            $platformInvestmentsPerType[$platform['userplatformglobaldata_PFPType']] = 
-                    $platformInvestmentsPerType[$platform['userplatformglobaldata_PFPType']] + 1;
+        foreach($value['Userplatformglobaldata'] as $keyNew =>$platform) {
+            $platformInvestmentsPerType[$platform['userplatformglobaldata_PFPType']]++;
+
             $platformInvestmentsPerAmount[$platform['userplatformglobaldata_PFPType']]  = 
-                    $platformInvestmentsPerAmount[$platform['userplatformglobaldata_PFPType']] + 
+            $platformInvestmentsPerAmount[$platform['userplatformglobaldata_PFPType']] + 
                     $platform['userplatformglobaldata_activeInInvestments'];
         }
-        $resultTallyman[$key]['userplatformglobaldata_PFPPerType'] = $platformInvestmentsPerType;
-        $resultTallyman[$key]['userplatformglobaldata_PFPPerAmount'] = $platformInvestmentsPerAmount;     
+        $resultTallyman[$key]['investorglobaldata_PfpPerType_Abs'] = $platformInvestmentsPerType;
+        $resultTallyman[$key]['investorglobaldata_PfpPerAmount_Abs'] = $platformInvestmentsPerAmount;     
     }
 
 
-
-// Also provide "normalized" data, i.e. in %.
-// Total represents 100
-    $totalPerType = array_sum($platformInvestmentsPerType);
-    $totalPerAmount = array_sum($platformInvestmentsPerAmount);
-
-
-/*
-    foreach ($resultTallyman as $key => $value) {
-        $i = 0;        
-        foreach ($value['userplatformglobaldata_PFPPerType'] as $type) {
-     //       CHECK THIS
-     //       $resultTallyman[$key]['userplatformglobaldata_PFPPerTypeNorm'][$i] = (int) (100 * $value / $totalPerType); 
-            $i = $i + 1;
-        }
-    }
-*/
-    $j = 0;
-    foreach ($platformInvestmentsPerAmount as $key => $value) {
-        $resultTallyman[$key]['userplatformglobaldata_PFPPerAmountNorm'][$j] = (int) (100 *$value / $totalPerAmount); 
-        $j = $j + 1;       
-    }
-
-
-    foreach ($resultTallyman as $key => $value) {
-        foreach($value['Userplatformglobaldata'] as $platform) {
-            if ($platform['userplatformglobaldata_companyId'] == $platformId) {
-                $resultTallyman[$key]['totalMyPlatform'] = $platform['userplatformglobaldata_activeInInvestments'];
-                break;
-            }
-        }
-    }
+    $platformTypes = count($this->crowdlendingTypesShort);
+    $platformInvestmentsPerType_Norm = array_fill(0,  $platformTypes, 0);
+    $platformInvestmentsPerAmount_Norm = array_fill(0,  $platformTypes, 0); 
     
     foreach ($resultTallyman as $key => $value) {
+        foreach ($value['investorglobaldata_PfpPerAmount_Abs'] as $newKey => $platformAmount) {
+            $resultTallyman[$key]['investorglobaldata_PfpPerAmount_Norm'][$newKey] = 
+                    round((100 * $resultTallyman[$key]['investorglobaldata_PfpPerAmount_Abs'][$newKey]) /  
+                        $resultTallyman[$key]['investorglobaldata_totalActiveInvestments'], 1);
+        }
+    }
+ 
+
+
+    foreach ($resultTallyman as $key => $value) {
+            foreach($value['Userplatformglobaldata'] as $platform) {
+                if ($platform['userplatformglobaldata_companyId'] == $platformId) {
+                    $resultTallyman[$key]['totalMyPlatform_Abs'] = $platform['userplatformglobaldata_activeInInvestments'];
+                    break;
+                }
+            }
+    }
+
+    $resultTallyman[0]['totalMyPlatform_Norm'] = $resultTallyman[0]['totalMyPlatform_Abs'] / 
+                                        $resultTallyman[0]['userplatformglobaldata_activeInInvestments']
+ 
+
+    
+// Checked untill here 
+/*
+    foreach ($resultTallyman as $key => $value) {
+        echo "BBBB key = $key<br>";
         foreach($value['Userplatformglobaldata'] as $platform) {
-            if ($platform['userplatformglobaldata_PFPType'] ==  $resultCompany[$platformId]['company_typeOfCrowdlending']) {
-                $resultTallyman[$key]['totalMyModality'] = $resultTallyman[$key]['totalMyModality'] + 
-                                                $platform['userplatformglobaldata_activeInInvestments'];
+            if ($platform['userplatformglobaldata_PfpType'] ==  $resultCompany[$platformId]['company_typeOfCrowdlending']) {
+      //          $resultTallyman[$key]['totalMyModalityNorm'] = $resultTallyman[$key]['totalMyModality'] + 
+      //                                          $platform['userplatformglobaldata_activeInInvestments'];
                 break;
             }
         }    
     }
-    
-
-    
-    
+   
+echo "AB $key = $key <br>";
+  return $resultTallyman;     
  // Calculate some values for this view
         $resultTallyman[$key]['AtotalPortfolio'] = $value['totalMyPlatform'] / 
                 $value['investorglobaldata_totalActiveInvestments'];
         $totalMyModality = $value['totalMyPlatform'] /
-                $value['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
-       echo "<br>DED"  . $value['userplatformglobaldata_PFPPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
- 
+                $value['userplatformglobaldata_PfpPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
+       echo "<br>DED"  . $value['userplatformglobaldata_PfpPerAmount'][$resultCompany[$platformId]['company_typeOfCrowdlending']];
+ echo "keyt = $key<br>";
         $resultTallyman[$key]['AtotalMyModality'] = $totalMyModality;
    
    
@@ -351,18 +348,19 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
         $resultTallyman[0]['AtotalMyModalityTendency'] = UPWARDS;
     } 
     
- 
-    
-
+*/
 // Store "historical" data for "$totalPortfolio"
     foreach ($resultTallyman as $key => $value) {
     // get value of investment in present platform
         $found = NO;
 
         foreach ($value['Userplatformglobaldata'] as $data) {
+            $found = NO;
+            echo "sss " . $resultTallyman[$key]['totalMyPlatform_Abs'] ."<br>";
+            echo "sss " . resultTallyman[$key]['investorglobaldata_totalActiveInvestments'] ."<br>";
             if ($data['userplatformglobaldata_companyId'] == $platformId) {
-                $resultTallyman[$key]['totalMyPlatform'] = $data['userplatformglobaldata_activeInInvestments'];
-                $resultTallyman[$key]['totalPortfolio'] =  100 * $resultTallyman[$key]['totalMyPlatform'] / 
+ //               $resultTallyman[$key]['totalMyPlatform'] = $data['userplatformglobaldata_activeInInvestments'];
+                $resultTallyman[$key]['totalPortfolio_Norm'] =  100 * $resultTallyman[$key]['totalMyPlatform_Abs'] / 
                                             $resultTallyman[$key]['investorglobaldata_totalActiveInvestments'];
                 $found = YES;
                 break;
@@ -372,16 +370,16 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
             $resultTallyman[$key]['totalPortfolio'] = 0;
         }
     }
- 
+
         
    foreach ($resultTallyman as $value) {
-       $totalPortfolioHistorical[] = round($value['totalPortfolio'], 1);        // in %
+       $totalPortfolioHistorical[] = round($value['totalPortfolio_Norm'], 1);        // in % 
        $totalPortfolioHistoricalDate[] = $value['createdDate'];
    }     
         
     $resultTallyman[0]['totalPortfolioHistorical'] = array_reverse($totalPortfolioHistorical);
     $resultTallyman[0]['totalPortfolioHistoricalDate'] = array_reverse($totalPortfolioHistoricalDate);  
-
+    
     return $resultTallyman;
 }
 
