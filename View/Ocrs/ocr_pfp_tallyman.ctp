@@ -58,7 +58,7 @@
 <script>
     $(function () {
         //telephone
-        $('#tallymanTelephone').intlTelInput();
+        //$('#tallymanTelephone').intlTelInput();
         //chart doughnut
         var ctx = document.getElementById("pieChart1").getContext('2d');
         var myChart = new Chart(ctx, {
@@ -162,7 +162,6 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                                            <div class="form-control blue_noborder2 tallymanTelephone tallymanGeneral">
                                                 <label><?php echo __('Telephone')?></label>
                                                 <?php
                                                 $class = "form-control blue_noborder3";
@@ -170,10 +169,11 @@
                                                     'name' => 'telephone',
                                                     'id' => 'tallymanTelephone',
                                                     'label' => false,
+                                                    'placeholder' => 'Enter telephone here',
                                                     'class' => $class,
                                                     'type' => 'tel'
                                                 ));
-                                                $errorClassesText = "errorInputMessage ErrorTelephone";
+                                                $errorClassesText = "errorInputMessage ErrorTelephone tallymanTelephone tallymanGeneral";
                                                 if (array_key_exists('tallyman_telephone', $billValidationErrors)) {
                                                     $errorClassesText .= " " . "actived";
                                                 }
@@ -184,7 +184,6 @@
                                                         <?php echo $billValidationErrors['tallyman_telephone'][0] ?>
                                                     </span>
                                                 </div>
-                                            </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
                                             <label class= "invisible"> </label>
