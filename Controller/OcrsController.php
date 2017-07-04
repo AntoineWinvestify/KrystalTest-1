@@ -410,7 +410,7 @@ class ocrsController extends AppController {
     //PFPAdmin View #2
     function ocrPfpBillingPanel() {
         //Read all company bills
-        $bills = $this->Ocrfile->billCompanyFilter(6);
+        $bills = $this->Ocrfile->billCompanyFilter($this->Session->read('Auth.User.Adminpfp.company_id'));
         $this->set('bills', $bills);
 
         $this->layout = 'azarus_private_layout';
@@ -424,12 +424,12 @@ class ocrsController extends AppController {
     function ocrPfpUsersPanel() {
 
 
-        $status = $this->Company->checkOcrServiceStatus(6);
+        $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));
 
         if ($status[0]) {
             if ($status[0]) {
                 //Read and accepted relations
-                $ocrList = $this->Ocr->getAllOcrRelations(6);
+                $ocrList = $this->Ocr->getAllOcrRelations($this->Session->read('Auth.User.Adminpfp.company_id'));
                 $this->set('ocrList', $ocrList);
 
                 //PFP  status

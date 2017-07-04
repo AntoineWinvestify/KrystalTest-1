@@ -102,21 +102,19 @@ class ocr extends AppModel {
      * @return int
      */
     public function createOcr($id) {
-
+        
         //Ocr id find
         $idFind = $this->findOcrId($id);
-
+        
         //No ocr id = new ocr
         if (count($idFind) == 0) {
+
             $data = array(
                 'investor_id' => $id,
                 'ocr_investmentVehicle' => 0,
-                'investor_cif' => null,
-                'investor_businessName' => null,
-                'investor_iban' => null,
                 'ocr_status' => 0,
             );
-
+            
             //Update
             if ($this->save($data)) {
                 $idOcr = $this->findOcrId($id);

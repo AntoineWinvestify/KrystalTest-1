@@ -171,17 +171,10 @@
 
     function successRefesh(result) {
         $("#billsTable").html(result);
-        $(".alert-to-fade").show();
-        $(".alert-to-fade").addClass("alert-win-success");
-        fadeOutElement(".alert-to-fade", 10000);
-
     }
 
-    function errorRefresh() {
+    function errorRefresh(result) {
         $("#billsTable").html(result);
-        $(".alert-to-fade").show();
-        $(".alert-to-fade").addClass("alert-win-warning");
-        fadeOutElement(".alert-to-fade", 10000);
     }
 
 </script>
