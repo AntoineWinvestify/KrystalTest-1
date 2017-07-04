@@ -35,13 +35,15 @@
  * [2017-07-03] Version 0.5
  * Update check data
  * File relation
+ * 
+ * [2017-07-04] Version 0.6
+ * Create check data
 
   Pending:
   function generateGUIDs(). 													[not Ok, not tested]
-
-
-
  */
+App::uses('CakeEvent', 'Event');
+
 class Investor extends AppModel {
 
     var $name = 'Investor';
@@ -210,7 +212,10 @@ class Investor extends AppModel {
         );
         $this->save($data, $validate = true);
         echo __FILE__ . " " . __LINE__ . "<br>";
-        return true;
+        if ($this->createCheckdata($currentStatus['Investor']['id'])) {
+            $this->createCheckdata($id); //create the line in the table checks
+            return true;
+        }
     }
 
     /** NOT YET FINISHED
@@ -400,6 +405,37 @@ class Investor extends AppModel {
     }
 
     /**
+     * Create a check line in the checks table for the user
+     * @param type $id
+     * @return boolean
+     */
+    public function createCheckdata($id) {
+        //Checks data
+        $checksArray = Array(
+            'investor_id' => $id,
+            'check_name' => 0,
+            'check_surname' => 0,
+            'check_dni' => 0,
+            'check_dateOfBirth' => 0,
+            'check_email' => 1,
+            'check_telephone' => 1,
+            'check_postCode' => 0,
+            'check_address' => 0,
+            'check_city' => 0,
+            'check_country' => 0,
+            'check_iban' => 0,
+            'check_ibanTime' => 0,
+            'check_cif' => 0,
+            'check_businessName' => 0,
+        );
+        if ($this->Check->save($checksArray)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Read the cheack data
      * @param type $investorId
      * @return type
@@ -416,6 +452,8 @@ class Investor extends AppModel {
      * @return int
      */
     public function updateCheckData($checks) {
+        //Company id for mailing
+        $compMail = array();
         //Get ocr id
         $ocr = $this->Ocr->findOcrId($checks['investorId']);
 
@@ -469,7 +507,7 @@ class Investor extends AppModel {
             'check_country' => ($checks['country']),
             'check_iban' => ($checks['iban']),
             'check_cif' => ($checks['cif']),
-            'check_bussinesName' => ($checks['bussinesName']),
+            'check_businessName' => ($checks['businessName']),
         );
 
         foreach ($statusArray as $status) {
@@ -496,10 +534,19 @@ class Investor extends AppModel {
 
                 //Change companies_ocr status
                 foreach ($checks['company'] as $company) {
+
                     //Get id of the table
                     $companyOcrsId = $this->Ocr->getCompaniesOcrId($company['id'], $ocr);
+
+                    //If company_ocr is accepted, send a mail
+                    if ($company['status'] == ACCEPTED) {
+                        $mail = $this->User->getPfpAdminMail($company['id']);
+                        $this->data['mail'] = $mail;
+                    }
+
                     //Save company_ocr status
-                    if ($this->Ocr->CompaniesOcr->save(array('id' => $companyOcrsId, 'company_status' => $company['status']))) {
+                    if ($this->Ocr->updateOcrCompanyStatus($companyOcrsId, $company['status'])) {
+
                         continue;
                     } else {
                         //error feedback
@@ -563,12 +610,7 @@ class Investor extends AppModel {
                 ));
                 $this->getEventManager()->dispatch($event);
             }
-        }
-
-        if (!empty($this->data['Ocr']['CompaniesOcr']['company_status']) && $this->data['Ocr']['CompaniesOcr']['company_status'] == ACCEPTED) {  // If a investor is accepted by a company, send mails to pfp admins
-            $event = new CakeEvent('pfpMail', $this, array());
-            $this->getEventManager()->dispatch($event);
-        }
+        }    
     }
 
     /**

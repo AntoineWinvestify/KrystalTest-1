@@ -55,7 +55,7 @@ class filesController extends AppController {
 
     var $name = 'Files';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile');
+    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile','User');
     var $error;
 
     function beforeFilter() {

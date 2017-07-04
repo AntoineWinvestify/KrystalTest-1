@@ -42,6 +42,8 @@
   2017-05-15  Version 0.3                                                                     [OK, tested]
   Removed unused methods
 
+2017/07/04
+ * pfp mailing
  */
 
 
@@ -66,7 +68,8 @@ class GlobalEmailListener implements CakeEventListener {
             'newUserCreated' => 'newUserCreatedEmail',
             'sendContactMessage' => 'contactEmail',
             'checkMessage' => 'checkData',
-            'billMailEvent' => 'billMail'
+            'billMailEvent' => 'billMail',
+            'pfpMail' => 'newUserMail',
         );
         Configure::load('p2pGestor.php', 'default');
         $configuredEvents = Configure::read('event');
@@ -190,29 +193,60 @@ class GlobalEmailListener implements CakeEventListener {
             echo $infoString;
         }
     }
-    
+
+    /**
+     * Mail to pfp admins after data checking 
+     * 
+     * @param CakeEvent $event
+     */
+    public function newUserMail(CakeEvent $event) {
+        Configure::load('p2pGestor.php', 'default');
+        $adminData = Configure::read('admin');
+
+        foreach ($event->data['mail'] as $mail) {
+            print_r($mail);
+            // Send contact text to pfp admin
+            /* try {
+              $Email = new CakeEmail('smtp_Winvestify');
+              $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+              $Email->to(array($adminData['winAdminCheck'] => __("Admin")));
+              $Email->subject("Nuevo usuario ocr");
+              $Email->template('winadminNewUserOcr', 'standard_email_layout');
+              $Email->emailFormat('html');
+              $Email->send();
+              } catch (Exception $e) {
+              $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
+              CakeLog::error($infoString);
+              echo $infoString;
+              } */
+        }
+    }
     
     /**
      * Mail to pfp admins after creating a bill
      * 
      * @param CakeEvent $event
      */
-     public function billMail(CakeEvent $event) {
+    public function billMail(CakeEvent $event) {
         Configure::load('p2pGestor.php', 'default');
         $adminData = Configure::read('admin');
-        // Send contact text to server admin
-        try {
-            $Email = new CakeEmail('smtp_Winvestify');
-            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
-            $Email->to(array($adminData['winAdminCheck'] => __("Admin")));
-            $Email->subject("Nuevo usuario ocr");
-            $Email->template('winadminNewUserOcr', 'standard_email_layout');
-            $Email->emailFormat('html');
-            $Email->send();
-        } catch (Exception $e) {
-            $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
-            CakeLog::error($infoString);
-            echo $infoString;
+
+        foreach ($event->data['mail'] as $mail) {
+            print_r($mail);
+            // Send contact text to pfp admin
+            /* try {
+              $Email = new CakeEmail('smtp_Winvestify');
+              $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+              $Email->to(array($adminData['winAdminCheck'] => __("Admin")));
+              $Email->subject("Nuevo usuario ocr");
+              $Email->template('winadminNewUserOcr', 'standard_email_layout');
+              $Email->emailFormat('html');
+              $Email->send();
+              } catch (Exception $e) {
+              $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
+              CakeLog::error($infoString);
+              echo $infoString;
+              } */
         }
     }
 

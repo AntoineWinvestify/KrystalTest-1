@@ -59,6 +59,7 @@
  * Check values defined in appController
  * Time stamp implemented
  * Added feedback box to user.
+ * Checked from db
  */
 ?>
 
@@ -206,7 +207,7 @@
                 var data = jQuery.param(params);
                 getServerData(link, data, successApprove, error);
             } else {
-                $(".feedbackText").html("<?php echo __('You must select on "Yes" all radio buttons') ?>");
+                $(".feedbackText").html('<?php echo __('You must select on "Yes" all radio buttons') ?>');
             }
         });
 
@@ -217,14 +218,14 @@
             $("#" + id).html(timeStamp);
         });
     });
-    function successSave(data) {
+    function success(data) {
         $(".feedbackText").html(data);
         $(".alert-to-fade").addClass("alert-win-success");
     }
     function successApprove(){
-        
+         //window.history.back();
     }
-    function errorSave(data) {
+    function error(data) {
         $(".feedbackText").html(data);
         $(".alert-to-fade").addClass("alert-win-warning");
     }
@@ -265,9 +266,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_name"><?php echo __('Name') ?></label>
                                         <div>
                                             <div id="checkName"><?php echo $checking[0]['Check']['check_nameTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" class="checkCorrect" name="checkName" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkName" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkName" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" class="checkCorrect" name="checkName" <?php if( $checking[0]['Check']['check_name'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkName" <?php if( $checking[0]['Check']['check_name'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkName" <?php if( $checking[0]['Check']['check_name'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <?php
                                         $errorClass = "";
@@ -295,9 +296,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)') ?></label>
                                         <div>
                                             <div id="checkSurname"><?php echo $checking[0]['Check']['check_surnameTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkSurname" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkSurname" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkSurname" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkSurname" <?php if( $checking[0]['Check']['check_surname'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkSurname" <?php if( $checking[0]['Check']['check_surname'] == YES){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkSurname" <?php if( $checking[0]['Check']['check_surname'] == YES){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <?php
                                         $errorClass = "";
@@ -325,9 +326,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_dni"><?php echo __('Id') ?></label>
                                         <div>
                                             <div id="checkId"><?php echo $checking[0]['Check']['check_dniTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkId" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkId" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkId" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkId" <?php if( $checking[0]['Check']['check_dni'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkId" <?php if( $checking[0]['Check']['check_dni'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkId" <?php if( $checking[0]['Check']['check_dni'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <?php
                                         $errorClass = "";
@@ -356,9 +357,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth') ?></label>
                                         <div>
                                             <div id="checkDateOfBirth"><?php echo $checking[0]['Check']['check_dateOfBirthTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth" <?php if( $checking[0]['Check']['check_dateOfBirth'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth" <?php if( $checking[0]['Check']['check_dateOfBirth'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkDateOfBirth" <?php if( $checking[0]['Check']['check_dateOfBirth'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <div class="input-group input-group-sm blue_noborder date">
                                             <?php
@@ -383,9 +384,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_email"><?php echo __('Email') ?></label>
                                         <div>
                                             <div id="checkEmail"><?php echo $checking[0]['Check']['check_emailTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkEmail" checked="checked" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkEmail" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkEmail" value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail" <?php if( $checking[0]['Check']['check_email'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail" <?php if( $checking[0]['Check']['check_email'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkEmail" <?php if( $checking[0]['Check']['check_email'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <?php
                                         $errorClass = "";
@@ -413,9 +414,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
                                         <div>
                                             <div id="checkTelephone"><?php echo $checking[0]['Check']['check_telephoneTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkTelephone" checked="checked" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkTelephone" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkTelephone" value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone" <?php if( $checking[0]['Check']['check_telephone'] == YES){ echo 'checked="checked"';} ?>  value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone" <?php if( $checking[0]['Check']['check_telephone'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkTelephone" <?php if( $checking[0]['Check']['check_telephone'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <div class="form-control blue_noborder">
                                             <?php
@@ -452,9 +453,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode') ?></label>
                                         <div>
                                             <div id="checkPostCode"><?php echo $checking[0]['Check']['check_postCodeTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkPostCode" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkPostCode" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkPostCode" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode" <?php if( $checking[0]['Check']['check_postCode'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode" <?php if( $checking[0]['Check']['check_postCode'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkPostCode" <?php if( $checking[0]['Check']['check_postCode'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <?php
                                         $errorClass = "";
@@ -481,9 +482,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_address1"><?php echo __('Address') ?></label>
                                         <div>
                                             <div id="checkAddress"><?php echo $checking[0]['Check']['check_addressTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkAddress" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkAddress" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkAddress" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress" <?php if( $checking[0]['Check']['check_address'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress" <?php if( $checking[0]['Check']['check_address'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkAddress" <?php if( $checking[0]['Check']['check_address'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <?php
                                         $errorClass = "";
@@ -513,9 +514,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="exampleInputPassword1"><?php echo __('City') ?></label>
                                         <div>
                                             <div id="checkCity"><?php echo $checking[0]['Check']['check_cityTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkCity" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkCity" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkCity" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCity" <?php if( $checking[0]['Check']['check_city'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCity" <?php if( $checking[0]['Check']['check_city'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCity" <?php if( $checking[0]['Check']['check_city'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <?php
                                         $errorClass = "";
@@ -543,9 +544,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_country"><?php echo __('Country') ?></label>
                                         <div>
                                             <div id="checkCountry"><?php echo $checking[0]['Check']['check_countryTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkCountry" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkCountry" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkCountry" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry" <?php if( $checking[0]['Check']['check_country'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry" <?php if( $checking[0]['Check']['check_country'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkCountry" <?php if( $checking[0]['Check']['check_country'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <?php
                                         $errorClass = "";
@@ -572,9 +573,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                         <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
                                         <div>
                                             <div id="checkIban"><?php echo $checking[0]['Check']['check_ibanTime'] ?></div>
-                                            <label class="radio-inline"><input type="radio" name="checkIban" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkIban" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                            <label class="radio-inline"><input type="radio" name="checkIban" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkIban" <?php if( $checking[0]['Check']['check_iban'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkIban" <?php if( $checking[0]['Check']['check_iban'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                            <label class="radio-inline"><input type="radio" name="checkIban" <?php if( $checking[0]['Check']['check_iban'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                         </div>
                                         <input type="text" disabled="disabled" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_iban'] ?>">
                                     </div>
@@ -593,9 +594,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                             <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
                                             <div>
                                                 <div id="checkCIF"><?php echo $checking[0]['Check']['check_cifTime'] ?></div>
-                                                <label class="radio-inline"><input type="radio" name="checkCIF" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="checkCIF" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="checkCIF" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF" <?php if( $checking[0]['Check']['check_cif'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF" <?php if( $checking[0]['Check']['check_cif'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkCIF" <?php if( $checking[0]['Check']['check_cif'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                             </div>
                                             <input disabled="disabled" type="text" class="form-control blue_noborder"value ="<?php echo $userData[0]['Ocr']['investor_cif'] ?>" >
                                         </div>
@@ -608,9 +609,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                             <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
                                             <div>
                                                 <div id="checkBusinessName"><?php echo $checking[0]['Check']['check_businessNameTime'] ?></div>
-                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" <?php if( $checking[0]['Check']['check_businessName'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" <?php if( $checking[0]['Check']['check_businessName'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                                <label class="radio-inline"><input type="radio" name="checkBusinessName" <?php if( $checking[0]['Check']['check_businessName'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                             </div>
                                             <input disabled="disabled" type="text" class="form-control blue_noborder" value ="<?php echo $userData[0]['Ocr']['investor_businessName'] ?>">
                                         </div>
@@ -634,9 +635,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                                     echo $company['company_name']
                                                     ?>
                                                     <div>
-                                                        <label class="radio-inlinev company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo ACCEPTED ?>"><?php echo __('Yes') ?></label>
-                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo DENIED ?>"><?php echo __('No') ?></label>
-                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>" value="<?php echo SENT ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                                        <label class="radio-inlinev company"><input type="radio" name="<?php echo $company['id'] ?>"  value="<?php echo ACCEPTED ?>"><?php echo __('Yes') ?></label>
+                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>"  value="<?php echo DENIED ?>"><?php echo __('No') ?></label>
+                                                        <label class="radio-inline company"><input type="radio" name="<?php echo $company['id'] ?>"  value="<?php echo SENT ?>" checked="checked"><?php echo __('Pending') ?></label>
                                                     </div>
                                                 </li>
                                                 <?php
@@ -657,9 +658,9 @@ echo __('One Click Registration Le permite registrarse con un solo click en cual
                                                     <button  type="submit" class="download" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></button> 
                                                 </form>
                                                 <div>
-                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" value="<?php echo PENDING ?>" checked="checked"><?php echo __('Pending') ?></label>
+                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php if( $file['file']['FilesInvestor']['file_status'] == YES){ echo 'checked="checked"';} ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
+                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php if( $file['file']['FilesInvestor']['file_status'] == NO){ echo 'checked="checked"';} ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
+                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php if( $file['file']['FilesInvestor']['file_status'] == PENDING){ echo 'checked="checked"';} ?> value="<?php echo PENDING ?>"><?php echo __('Pending') ?></label>
                                                 </div>
                                             </li>
                                         <?php } ?>

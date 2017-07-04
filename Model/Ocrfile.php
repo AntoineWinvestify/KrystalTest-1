@@ -166,6 +166,8 @@ class ocrfile extends AppModel {
                     );
 
                     if ($this->validates($this->CompaniesFile->save($bill))) {
+                        echo 'hola';
+                        $this->data['mail'] = $this->Investor->User->getPfpAdminMail($id);
                         return [true, __('Upload ok')];
                     } else {
                         return [false, __("Upload failed. Incorrect type or file too big.")];
@@ -187,8 +189,7 @@ class ocrfile extends AppModel {
         if (fwrite($fp, json_encode($data))) {
             fclose($fp);
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
@@ -340,7 +341,6 @@ class ocrfile extends AppModel {
         return $bills;
     }
 
-    
     /**
      * Create a zip of an investor documents and a json
      * 
@@ -383,12 +383,12 @@ class ocrfile extends AppModel {
                     return false;
                 }
             }
-            
+
             //add the files
             foreach ($validFiles as $file) {
                 $zip->addFromString(basename($file), file_get_contents($file));
             }
-             $zip->addFromString(basename($json), file_get_contents($json));
+            $zip->addFromString(basename($json), file_get_contents($json));
             // $zip->addFromString('result.json', file_get_contents('result.json'));
             // 
             //debug
@@ -411,9 +411,11 @@ class ocrfile extends AppModel {
      * 
      */
     function afterSave($created, $options = array()) {
-
+        echo '123';
+        $this->data['mail'];
         if (!empty($this->data['CompaniesFile']['id'])) {
-            $event = new CakeEvent("billMailEvent", $this);
+            echo 'entro';
+            $event = new CakeEvent("billMailEvent", $this, $this->data['mail']);
             $this->getEventManager()->dispatch($event);
         }
     }

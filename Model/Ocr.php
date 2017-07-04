@@ -59,6 +59,8 @@
  * 
  * 2017/07/03
  * getCompaniesOcrId
+ * updateOcrCompanyStatus
+ * after save
  */
 App::uses('CakeEvent', 'Event');
 
@@ -158,7 +160,7 @@ class ocr extends AppModel {
                 } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT) {
                     $status = SENT;
                 }
-                
+
 
                 if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
                     $data = array(
@@ -278,16 +280,14 @@ class ocr extends AppModel {
      * @param type $companyId
      * @param type $OcrId
      */
-    function getCompaniesOcrId($companyId,$OcrId){
-        $id = $this->CompaniesOcr->find('first',array(
+    function getCompaniesOcrId($companyId, $OcrId) {
+        $id = $this->CompaniesOcr->find('first', array(
             'fields' => array('id'),
             'conditions' => array('company_id' => $companyId, 'ocr_id' => $OcrId),
         ));
         return $id['CompaniesOcr']['id'];
     }
-    
-    
-    
+
     /**
      * Update the sent companies status
      * @param type $id
@@ -298,7 +298,6 @@ class ocr extends AppModel {
         return "," . 1 . "]";
     }
 
-    
     /**
      * Find ocrId
      * @param type $id
@@ -407,6 +406,22 @@ class ocr extends AppModel {
     }
 
     /**
+     * Update Ocr Company Status
+     * @param type $id
+     * @param type $status
+     * @return boolean
+     */
+    public function updateOcrCompanyStatus($id, $status) {
+        $this->data['status'] = $status;
+        if ($this->CompaniesOcr->save(array('id' => $id, 'company_status' => $status))) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      *
      * 	Callback Function
      * 	Decrypt the sensitive data provided by the investor
@@ -441,6 +456,7 @@ class ocr extends AppModel {
             $this->data['Ocr']['investor_iban'] = $this->encryptDataBeforeSave($this->data['Ocr']['investor_iban']);
         }
 
+
         return true;
     }
 
@@ -453,9 +469,18 @@ class ocr extends AppModel {
      * 
      */
     function afterSave($created, $options = array()) {
-
+        echo 'hola';
+        //Sent mail to winadmin
         if (!empty($this->data['Ocr']['ocr_status']) && $this->data['Ocr']['ocr_status'] == SENT) {
             $event = new CakeEvent("checkMessage", $this);
+            $this->getEventManager()->dispatch($event);
+        }
+
+
+        print_r($this->data['status']);
+        if ($this->data['status'] == ACCEPTED) {  // If a investor is accepted by a company, send mails to pfp admins
+            echo 'hola';
+            $event = new CakeEvent('pfpMail', $this, $this->data);
             $this->getEventManager()->dispatch($event);
         }
     }
