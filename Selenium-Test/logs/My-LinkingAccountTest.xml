@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" tests="1" assertions="1" failures="1" errors="0" time="19.159306">
+    <testcase name="testLinkingComunitaeCorrect" class="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" line="12" assertions="1" time="19.159306">
+      <failure type="PHPUnit_Framework_ExpectationFailedException">My\LinkingAccountTest::testLinkingComunitaeCorrect
+Failed asserting that 'Both the 'Username' and 'Password' of a linked account are encrypted before they are stored on our servers' contains "incorrect".
+
+/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php:73
+</failure>
+      <system-out>[2017-07-04 14:58:58]: Starting execution of test My\LinkingAccountTest::testLinkingComunitaeCorrect
+[2017-07-04 14:58:58]: [WebDriver] Loading URL "http://cake_branch"
+[2017-07-04 14:59:17]: Finished execution of test My\LinkingAccountTest::testLinkingComunitaeCorrect
+[2017-07-04 14:59:18]: 
+[2017-07-04 14:59:18]: [WARN] Test failed on page "http://cake_branch/investors/userProfileDataPanel", taking page snapshots:
+[2017-07-04 14:59:18]: Screenshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingComunitaeCorrect-2017-07-04-14-59-17.png"
+[2017-07-04 14:59:18]: HTML snapshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingComunitaeCorrect-2017-07-04-14-59-17.html"
+[2017-07-04 14:59:18]: 
+[2017-07-04 14:59:18]: Destroying "firefox" WebDriver for "My\LinkingAccountTest::testLinkingComunitaeCorrect" (session 1b2dd09a-df28-4404-af6c-5aa1b9ef125b)
+</system-out>
+    </testcase>
+  </testsuite>
+</testsuites>

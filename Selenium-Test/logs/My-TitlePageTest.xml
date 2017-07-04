@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="My\TitlePageTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/TitlePageTest.php" tests="1" assertions="2" failures="0" errors="0" time="5.824453">
-    <testcase name="testShouldContainSearchInput" class="My\TitlePageTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/TitlePageTest.php" line="8" assertions="2" time="5.824453">
-      <system-out>[2017-07-04 11:27:57]: Starting execution of test My\TitlePageTest::testShouldContainSearchInput
-[2017-07-04 11:27:57]: [WebDriver] Loading URL "http://www.w3.org/"
-[2017-07-04 11:28:02]: Current page "https://www.w3.org/" has title "World Wide Web Consortium (W3C)"
-[2017-07-04 11:28:03]: Finished execution of test My\TitlePageTest::testShouldContainSearchInput
-[2017-07-04 11:28:03]: Destroying "firefox" WebDriver for "My\TitlePageTest::testShouldContainSearchInput" (session 52aaa25a-1131-4126-81a7-956ff2bb0816)
-</system-out>
-    </testcase>
+  <testsuite name="My\TitlePageTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/TitlePageTest.php" tests="1" assertions="0" failures="0" errors="0" time="0.103540">
+    <testcase name="Warning" assertions="0" time="0.103540"/>
   </testsuite>
 </testsuites>
