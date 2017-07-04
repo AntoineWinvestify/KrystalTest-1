@@ -544,7 +544,7 @@ class Investor extends AppModel {
                     }
 
                     //Save company_ocr status
-                    if ($this->Ocr->updateOcrCompanyStatus($companyOcrsId, $company['status'], $mail)) {
+                    if ($this->Ocr->updateOcrCompanyStatus($companyOcrsId, $statusFinal, $mail)) {
                         continue;
                     } else {
                         //error feedback
