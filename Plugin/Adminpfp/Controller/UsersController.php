@@ -117,8 +117,8 @@ public function readtallymandata() {
     $this->disableCache();
 */
 //    $platformId = $this->Auth->user('AdminPFP.company_id');
-//   Configure::write('debug', 2); 
-      $this->layout = 'Adminpfp.azarus_private_layout';
+   
+    $this->layout = 'Adminpfp.azarus_private_layout';
 
     $error = null;
     $platformId = 1;
@@ -127,9 +127,8 @@ public function readtallymandata() {
     $userTelephone = $_REQUEST['userTelephone'];
     
     $userEmail ="antoine.de.poorter@gmail.com";
-    $userTelephone = "+34675546946";
-    
- 
+    $userTelephone = "+34675546946";  
+
 // Get the unique user identification
     $inputParmCount = 0;
     if (!empty($inputId)) {     
@@ -152,10 +151,12 @@ public function readtallymandata() {
         $error = NOT_ENOUGH_PARAMETERS;
     }
     else {
+         
         $filterConditions = array_combine($key, $value);
         $this->Investor = ClassRegistry::init('Investor');   
         $resultInvestor = $this->Investor->getInvestorData($filterConditions);
         $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
+
 
         if (!$userIdentification) {
             $error = USER_DOES_NOT_EXIST;
@@ -163,13 +164,14 @@ public function readtallymandata() {
         else {
             $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
             $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
-            
+
             if (!$resultTallymanData) {
                 $error = NO_DATA_AVAILABLE;
             }   
             else {
+ $this->print_r2($resultTallymanData);               
                  $this->set('resultTallyman', $resultTallymanData);
-                 $this->print_r2($resultTallymanData);
+
                  // provide data for possible billing
                   
                  $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
@@ -179,10 +181,11 @@ public function readtallymandata() {
                  $data['parm2'] = $userIdentification;
                  $data['parm3'] =  null;       
                  $this->Billingparm->writeChargingData($data, "tallyman");
+  
             }
         }
     }
-Configure::write('debug', 2);
+
     if (!$error) {                              // No error encountered, use default view
         return;
     }    

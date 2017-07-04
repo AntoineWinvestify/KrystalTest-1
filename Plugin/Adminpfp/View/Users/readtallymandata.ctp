@@ -153,8 +153,8 @@ var myChart = new Chart(ctx, {
 </script>
 
 
-
-
+<?php print_r($resultTallyman[0]['dataPieChart1'])?>
+<?php print_r($resultTallyman[0]['labelsPieChart1'])?>
 <div id="1CR_pfpAdmin_3_searchResult">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -172,8 +172,6 @@ var myChart = new Chart(ctx, {
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
                                 echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-                                        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
-                                        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
                                         . ' PFP puedan validar y autenticar su identidad.')
                                 ?></p>
                         </div>
@@ -186,7 +184,7 @@ var myChart = new Chart(ctx, {
                                         <div class="col-lg-3">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;">
-                                                    <h1><?php //echo round($resultTallyman[0]['totalPortfolio'], 1)?></h1>
+                                                    <h1><?php echo  round($resultTallyman[0]['totalPortfolio'], 1)?></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
@@ -194,7 +192,7 @@ var myChart = new Chart(ctx, {
                                                         <strong><?php echo __('invertida')?></strong>
                                                         <div class="card-content"> 
                                                             <p class="category"><span class="text-success"><i 
-                                                                        class="<?php //echo $arrowClass[$resultTallyman[0]['AtotalPortfolioTendency']] ?>"></i></span></p>
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['AtotalPortfolioTendency']] ?>"></i></span></p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -216,7 +214,7 @@ var myChart = new Chart(ctx, {
                                         <div class="col-lg-3">
                                             <div class="card card-stats">
                                                 <div class="card-content">
-                                                    <h1 style="text-align: center;"><?php //echo round($resultTallyman[0]['totalMyModality'],1) ?></h1>
+                                                    <h1 style="text-align: center;"><?php echo round($resultTallyman[0]['totalMyModality'],1) ?></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
@@ -225,7 +223,7 @@ var myChart = new Chart(ctx, {
                                                     </div>
                                                     <div class="card-content">
                                                             <p class="category"><span class="text-success"><i 
-                                                                        class="<?php //echo $arrowClass[$resultTallyman[0]['AtotalMyModalityTendency']] ?>"><?php echo $arrowClass[$resultTallyman[0]['AtotalMyModalityTendency']] ?></i></span></p>
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['AtotalMyModalityTendency']] ?>"><?php echo $arrowClass[$resultTallyman[0]['AtotalMyModalityTendency']] ?></i></span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -263,7 +261,7 @@ var myChart = new Chart(ctx, {
                                                     <div class="card card-stats">
                                                         <div class="card-content">
                                                             <!-- Number of linked accounts -->
-                                                            <h1 style="text-align: center;"><?php //echo count($resultTallyman[0]['Userplatformglobaldata'])?></h1>
+                                                            <h1 style="text-align: center;"><?php echo count($resultTallyman[0]['Userplatformglobaldata'])?></h1>
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">
@@ -276,7 +274,7 @@ var myChart = new Chart(ctx, {
                                                     <div class="card card-stats">
                                                         <div class="card-content">
                                                             <!-- total number of platforms -->
-                                                            <h1 style="text-align: center;"><?php //echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
+                                                            <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">
