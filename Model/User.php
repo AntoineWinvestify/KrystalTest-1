@@ -38,8 +38,9 @@
   Added new routine uncomfirmedUserExists()
 
 
-2017-06-30      version 0.4                                                         [Not OK, not tested]
-  get pfp admin info
+    2017-06-30      version 0.4  
+    included support for general authentication of Winadmin and AdminPFP roles                                                    
+  get pfp admin info                                                                [Not OK, not tested]
 
   PENDING
   -
@@ -57,6 +58,21 @@ class User extends AppModel {
             'fields' => '',
             'order' => '',
         ),
+        'Adminpfp' => array(
+            'className' => 'Adminpfp.Adminpfp',
+            'foreignKey' => 'user_id',
+            'fields' => '',
+            'order' => '',
+        )
+        
+ /*       'Winadmin' => array(
+            'className' => 'Admin.Winadmin',
+            'foreignKey' => 'user_id',
+            'fields' => '',
+            'order' => '',
+        )
+*/
+ 
     );
 
     /**
