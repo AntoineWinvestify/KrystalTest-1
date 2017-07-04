@@ -19,15 +19,15 @@
   //
 
   2016-10-18	  version 0.1
-  function updateAccountCreationStatus										[Not OK, Not tested]
+  function updateAccountCreationStatus						[Not OK, Not tested]
 
 
   2017-01-17	  version 0.2
-  function investmentInformationUpdate added									[OK]
+  function investmentInformationUpdate added					[OK]
 
   2017-06-06 version 0.3
   getInvestorId									[OK]
-  getInvestorIdentity									[OK]
+  getInvestorIdentity								[OK]
 
   2017-06-23 version 0.4
   db relation
@@ -40,7 +40,7 @@
  * Create check data
 
   Pending:
-  function generateGUIDs(). 													[not Ok, not tested]
+  function generateGUIDs(). 							[not Ok, not tested]
  */
 App::uses('CakeEvent', 'Event');
 
@@ -584,6 +584,30 @@ class Investor extends AppModel {
         }
     }
 
+    
+
+    
+    
+    
+    /**
+     *
+     * 	Get information of all investors according to the conditions as defined
+     *  in $filterConditions.
+     * 
+     * 	@param 		string	$filterConditions     conditions of the investor
+     * 	@return 	array	data of the investor
+     * 					
+     */    
+    public function getInvestorData($filterConditions) {
+
+        $info = $this->find("all", array(
+            'conditions' => array($filterConditions),
+            'recursive' => -1,
+        ));
+        return $info;         
+     }  
+    
+    
     /*
      * **** CALLBACK FUNCTIONS *****
      */
