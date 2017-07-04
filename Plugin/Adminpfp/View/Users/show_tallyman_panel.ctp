@@ -46,7 +46,7 @@
 <script type="text/javascript">
  
 function successTallymanData(data) {
-    $("#TallymanResult").replaceWith(data);
+    $("#TallymanResult").html(data);
     console.log("edit_user_profile_data: LINE 70");
 
 }
@@ -54,7 +54,7 @@ function successTallymanData(data) {
  
  function errorTallymanData(data) {
 
-    $("#TallymanResult").replaceWith(data);
+    $("#TallymanResult").html(data);
 	console.log("profile_data: LINE 99990");
 
 }

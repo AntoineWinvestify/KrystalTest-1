@@ -73,7 +73,7 @@ function beforeFilter() {
 
 /**
  * 
- * Shows a list of investors, using dataTable, in order to select/view/modifiy the data of 1 
+ * Shows a list of investors, using dataTable, in order to select/view/modify the data of 1 
  * investor
  * 
  */
@@ -90,7 +90,6 @@ public function showInvestorList() {
  * 
  */
 public function startTallyman() {
- //   	Configure::write('debug', 2); 
 
     $this->layout = 'Adminpfp.azarus_private_layout';
  
@@ -109,76 +108,97 @@ public function startTallyman() {
  * 
  */
 public function readtallymandata() {
-
+/*
     if (!$this->request->is('ajax')) {
         throw new
         FatalErrorException(__('You cannot access this page directly'));
         }
     $this->layout = 'ajax';
     $this->disableCache();
-
+*/
 //    $platformId = $this->Auth->user('AdminPFP.company_id');
+//   Configure::write('debug', 2); 
+      $this->layout = 'Adminpfp.azarus_private_layout';
+
     $error = null;
     $platformId = 1;
     $inputId = $_REQUEST['inputId'];
     $userEmail = $_REQUEST['userEmail'];
     $userTelephone = $_REQUEST['userTelephone'];
-  
+    
+    $userEmail ="antoine.de.poorter@gmail.com";
+    $userTelephone = "+34675546946";
+    
+ 
 // Get the unique user identification
+    $inputParmCount = 0;
     if (!empty($inputId)) {     
-//        $error = USER_DOES_NOT_EXIST;
         $key[] = "Investor.investor_DNI";
         $value[] = $inputId;
+        ++$inputParmCount;
     } 
     if (!empty($userEmail)) { 
-        $error = NO_DATA_AVAILABLE;
         $key[] = 'Investor.investor_email';
         $value[] = $userEmail;
+        ++$inputParmCount;
     }  
     if (!empty($userTelephone)) { 
         $key[] = 'Investor.investor_telephone';
         $value[] = $userTelephone;
+        ++$inputParmCount;
     }  
-    $filterConditions = array_combine($key, $value);
-    
-    $this->Investor = ClassRegistry::init('Investor');   
-    $resultInvestor = $this->Investor->getInvestorData($filterConditions);
-    $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
-    
-    if (!$userIdentification) {
- //       $error = USER_DOES_NOT_EXIST;
-    }
- 
-    $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
-    $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
-    if (!$resultTallymanData) {
-//        $error = NO_DATA_AVAILABLE;
-    }   
 
-    $this->set('resultTallyman', $resultTallymanData);
+    if ($inputParmCount < 2) {
+        $error = NOT_ENOUGH_PARAMETERS;
+    }
+    else {
+        $filterConditions = array_combine($key, $value);
+        $this->Investor = ClassRegistry::init('Investor');   
+        $resultInvestor = $this->Investor->getInvestorData($filterConditions);
+        $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
+
+        if (!$userIdentification) {
+            $error = USER_DOES_NOT_EXIST;
+        }
+        else {
+            $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
+            $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
+            
+            if (!$resultTallymanData) {
+                $error = NO_DATA_AVAILABLE;
+            }   
+            else {
+                 $this->set('resultTallyman', $resultTallymanData);
+                 $this->print_r2($resultTallymanData);
+                 // provide data for possible billing
+                  
+                 $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
+                 $data = array();
+                 $data['reference'] = $userIdentification;
+                 $data['parm1'] = $userIdentification;
+                 $data['parm2'] = $userIdentification;
+                 $data['parm3'] =  null;       
+                 $this->Billingparm->writeChargingData($data, "tallyman");
+            }
+        }
+    }
+Configure::write('debug', 2);
     if (!$error) {                              // No error encountered, use default view
         return;
     }    
 
-    switch ($error) { 
-        case 1:                         // NO_DATA_AVAILABLE
-            $this->render('noDataAvailable');
-            break;
-        case 2:                         // USER_DOES_NOT_EXIST
-            $this->render('userDoesNotExist');
-            break;
-        default:
-     //       $this->render('GeneralError');
-            
-    }
+    $this->set("error", $error);         
+    $this->render('tallymanErrorPage'); 
 }
 
 
 
   
 /**
-*	
-*/
+ * 
+ * Shows the initial, basic screen of the Tallyman service with the three input fields
+ * 
+ */
 public function showTallymanPanel() {
   $this->layout = 'Adminpfp.azarus_private_layout';
   
@@ -187,101 +207,17 @@ public function showTallymanPanel() {
   
 
 
-/** ajax call
- *
- *
-*	Reads the data from an Administrator 
-*
-*/
-public function adminHome() {
-echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";	
-
-
-echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";		
-}
-
- 
-
-
-
-
-
-
-/**
-*	password change function
-*/
-public function changeAdminPw() {
-
-	if ($this->Auth->user('id')) {   // Just to  make sure User is logged
-		$this->User->id = $this->Auth->user('id');  // Set User Id
-		if (!$this->User->exists()) {
-			throw new NotFoundException(__('Invalid user'));
-		}
-		if ($this->request->is('post')) {
-			if ($this->User->save($this->request->data)) {
-				$this->Session->setFlash(__("Password has been changed"), 'default', array('class' => 'intranet_flash_msg'));
-				$this->redirect(array('controller' => 'startpanels', 'action' => 'index' ));
-			}
-			else {
-				$this->Session->setFlash(__("Password could not be changed."), 'default', array('class' => 'flash_msg_error'));
-			}
-		}
-		else
-			{
-				
-		}
-	}
-}
-
-
-
-
-
-
-
-/**ajax call
-*	Write (= modifies) some data of an existing Administrator
-*
-*/
-function editAdministratorData($id) {
-
-
-}
-
 
 
 
 public function loginAction() {
-Configure::write('debug', 0); 
-    echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-//$this->print_r2($this->request->data);
-//$this->autoRender = false;
-	 
         if ($this->Auth->login()) {
-            echo "SESSION155 <br>";
-            echo "We have succesfully logged in <br>";
-  //          print_r($this->Session->read()) ."<br>";
-            echo "<br>" . $this->Auth->redirectUrl()."<br>"."<br>";
-         //   return $this->Auth->redirectUrl();
             $this->redirect($this->Auth->redirectUrl());
-  echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";        
         }
         else {
             echo "User is not logged on<br>";
-            echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
         }
-        
-  exit;  
-        if ($this->Auth->loggedIn()){
-		echo "user has logged on";
-                return $this->redirect($this->Auth->redirectUrl());
-	}
-	else {
-		echo "User not logged on";
-	}
-
-
-}
+ }
 
 
 
@@ -320,8 +256,8 @@ public function logout() {
 
 
 
-/**ajax call
-*	Reads the data from an Administrator 
+/**
+*	Reads the data of an Administrator 
 *
 */
 function readAdministratorData($adminId) {
@@ -493,13 +429,6 @@ public function calculateGlobalindicator($data) {
     
     return $data;   
 }
-
-
-
-
-
-
-
 
 
 }
