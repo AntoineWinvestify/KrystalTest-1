@@ -84,7 +84,7 @@
             symbol: " &euro;",
             decimal: ",",
             thousand: ".",
-            precision: 0,
+            precision: 2,
             format: "%v%s"
         };
 
@@ -122,7 +122,8 @@
         });
         $(document).on("click", "#sendBill", function () {
             console.log("validate Winadmin billing data");
-<?php //Javascript validation                ?>
+
+<?php //Javascript validation                  ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
                 link = '../Files/upload';
@@ -136,14 +137,20 @@
                     traditional: true
                 }).done(function (data) {
                     if (data[0]) {
+                        $(".feedbackText").html(data[1]);
                         $(".alert-to-fade").show();
-                        $(".alert-to-fade").html("<strong>" + data[1] + "</strong>");
+                        $(".alert-to-fade").addClass("alert-win-success");
+                        fadeOutElement(".alert-to-fade", 10000);
+
                         $('#selected').html("");
                         $("#bill").trigger("reset");
                         refreshTable();
                     } else {
+                        $(".feedbackText").html(data[1]);
                         $(".alert-to-fade").show();
-                        $(".alert-to-fade").html("<strong>" + data[1] + "</strong>");
+                        $(".alert-to-fade").addClass("alert-win-success");
+                        fadeOutElement(".alert-to-fade", 10000);
+                       
                         $('#selected').html("");
                         $("#bill").trigger("reset");
                     }
@@ -159,15 +166,14 @@
     function refreshTable() {
         link = "../Ocrs/billsTable";
         var data = null;
-        getServerData(link, data, successRefesh, errorRefesh);
+        getServerData(link, data, successRefesh, errorRefresh);
     }
 
     function successRefesh(result) {
         $("#billsTable").html(result);
-
     }
 
-    function errorRefesh() {
+    function errorRefresh(result) {
         $("#billsTable").html(result);
     }
 
@@ -196,8 +202,8 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert" style="display:none;">
-                                <strong></strong>
+                            <div class="alert bg-success alert-dismissible fade in alert-to-fade" role="alert" style="display:none;">
+                                <strong class = "feedbackText"></strong>
                             </div>
                             <div class="table-responsive">
                                 <table id="uploadBill" class="table table-striped display dataTable"  width="100%" cellspacing="0" data-page-length='25' rowspan='1' colspan='1'>
@@ -220,7 +226,7 @@
                                             foreach ($companies as $companyInfo) {
                                                 $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
                                             }
-                                            
+
                                             $class = "form-control blue_noborder billPFP";
                                             echo $this->Form->input('Companies.company_id', array(
                                                 'name' => 'pfp',
@@ -411,7 +417,7 @@
                                         <?php foreach ($bills as $billsTable) {//Bills table creation    ?>                                      
                                             <tr>
                                                 <td><?php echo __($billsTable['Pfpname']) ?></td>
-                                                <td><?php echo __(substr($billsTable['info']['created'],0,10)) ?></td>
+                                                <td><?php echo __(substr($billsTable['info']['created'], 0, 10)) ?></td>
                                                 <td><?php echo __($billsTable['info']['bill_number']) ?></td>
                                                 <td><?php echo __($billsTable['info']['bill_concept']) ?></td>
                                                 <td id="<?php echo __($billsTable['info']['id']) ?>" align="right"><script>formatMoney(<?php echo __($billsTable['info']['id']) ?>, <?php echo __($billsTable['info']['bill_amount']) ?>);</script></td>

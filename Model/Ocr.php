@@ -102,21 +102,19 @@ class ocr extends AppModel {
      * @return int
      */
     public function createOcr($id) {
-
+        
         //Ocr id find
         $idFind = $this->findOcrId($id);
-
+        
         //No ocr id = new ocr
         if (count($idFind) == 0) {
+
             $data = array(
                 'investor_id' => $id,
                 'ocr_investmentVehicle' => 0,
-                'investor_cif' => null,
-                'investor_businessName' => null,
-                'investor_iban' => null,
                 'ocr_status' => 0,
             );
-
+            
             //Update
             if ($this->save($data)) {
                 $idOcr = $this->findOcrId($id);
@@ -411,10 +409,14 @@ class ocr extends AppModel {
      * @param type $status
      * @return boolean
      */
-    public function updateOcrCompanyStatus($id, $status) {
-        $this->data['status'] = $status;
+    public function updateOcrCompanyStatus($id, $status , $mail = null) {
+        $this->create();
+        //$this->data['status'] = $status;
         if ($this->CompaniesOcr->save(array('id' => $id, 'company_status' => $status))) {
-
+            if ($status == ACCEPTED) {  // If a investor is accepted by a company, send mails to pfp admins
+                $event = new CakeEvent('pfpMail', $this, $mail);
+                $this->getEventManager()->dispatch($event);
+            }
             return true;
         } else {
             return false;
@@ -469,7 +471,6 @@ class ocr extends AppModel {
      * 
      */
     function afterSave($created, $options = array()) {
-        echo 'hola';
         //Sent mail to winadmin
         if (!empty($this->data['Ocr']['ocr_status']) && $this->data['Ocr']['ocr_status'] == SENT) {
             $event = new CakeEvent("checkMessage", $this);
@@ -477,12 +478,12 @@ class ocr extends AppModel {
         }
 
 
-        print_r($this->data['status']);
-        if ($this->data['status'] == ACCEPTED) {  // If a investor is accepted by a company, send mails to pfp admins
-            echo 'hola';
-            $event = new CakeEvent('pfpMail', $this, $this->data);
-            $this->getEventManager()->dispatch($event);
-        }
+
+        /* if ($this->data['status'] == ACCEPTED) {  // If a investor is accepted by a company, send mails to pfp admins
+          echo 'mail';
+          $event = new CakeEvent('pfpMail', $this, $this->data);
+          $this->getEventManager()->dispatch($event);
+          } */
     }
 
 }
