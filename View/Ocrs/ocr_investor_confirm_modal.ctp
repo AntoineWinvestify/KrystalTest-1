@@ -126,7 +126,7 @@
     }
 
 </script>
-<?php if ($status[0]['Ocr']['ocr_status'] == NOT_SENT && $status[0]['Ocr']['ocr_status'] == FINISHED) { ?>
+<?php if ($status[0]['Ocr']['ocr_status'] == NOT_SENT || $status[0]['Ocr']['ocr_status'] == FINISHED) { ?>
     <div id="1CR_investor_3_confirming" class="modal show" role="dialog">
         <!--   Big container   -->
         <div class="container">
