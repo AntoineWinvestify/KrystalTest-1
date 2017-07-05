@@ -389,18 +389,13 @@ class ocrsController extends AppController {
         //Selected companies
         $companyId = $this->Ocr->getSelectedCompanies($id);
 
-        //Selected companies info
-        $idArray = array();
-        foreach ($companyId as $id) {
-            array_push($idArray, $id["companies_ocrs"]["company_id"]);
-        }
-        $idFilter = array("Company.id" => $idFilter);
-        $companies = $this->Company->getCompanyDataList($idFilter);
+        //Status
+        $status = $this->Ocr->checkStatus($id);
 
         //Set info
-        $this->set("companies", $companies);
+        $this->set("companies", $companyId);
+        $this->set("status", $status);
 
-        //$this->Auth->redirectUrl();
 
 
         echo " ";
@@ -549,7 +544,7 @@ class ocrsController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
             //Request the data
-            $data = $this->request['data'];    
+            $data = $this->request['data'];
             $result = $this->Investor->updateCheckData($data);
 
             //set result
