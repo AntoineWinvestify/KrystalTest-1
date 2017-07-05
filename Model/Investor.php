@@ -1,9 +1,7 @@
 <?php
-
 /**
-  // @(#) $Id$
   // +-----------------------------------------------------------------------+
-  // | Copyright (C) 2009, http://yoursite                                   |
+  // | Copyright (C) 2017, http://www.winvestify.com                         |
   // +-----------------------------------------------------------------------+
   // | This file is free software; you can redistribute it and/or modify     |
   // | it under the terms of the GNU General Public License as published by  |
@@ -30,8 +28,16 @@
   getInvestorIdentity								[OK]
 
 
+
+2017-07-05
+ * modified the rules in the $validate variable, making it more flexible
+
+
+
+
   Pending:
   function generateGUIDs(). 							[not Ok, not tested]
+
 
 
 
@@ -65,9 +71,10 @@ class Investor extends AppModel {
      * 	have to map to a existing field in the database. Very useful for automatic checks
      * 	provided by framework
      */
+    
     var $validate = array(
         'investor_name' => array(
-            'rule1' => array('rule' => array('minLength', 1),
+            'rule1' => array('rule' => array('minLength', 2),
                 'allowEmpty' => false,
                 'message' => 'Name validation error'),
         /* 'rule2' => array('rule' => 'alphaNumeric',
@@ -75,45 +82,45 @@ class Investor extends AppModel {
           'message' => 'Name validation error'), */
         ),
         'investor_surname' => array(
-            'rule1' => array('rule' => array('minLength', 1),
+            'rule1' => array('rule' => array('minLength', 2),
                 'allowEmpty' => false,
                 'message' => 'Surname validation error'),
-            'rule2' => array('rule' => 'alphaNumeric',
+         /*   'rule2' => array('rule' => 'alphaNumeric',
                 'allowEmpty' => false,
-                'message' => 'Surname validation error'),
+                'message' => 'Surname validation error'),*/
         ),
         'investor_DNI' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 3),
             'allowEmpty' => false,
             'message' => 'Id validation error',
         ),
         'investor_dateOfBirth' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 6),
             'allowEmpty' => false,
             'message' => 'Date validation error',
         ),
         'investor_telephone' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 4),
             'allowEmpty' => false,
             'message' => 'Telephone validation error',
         ),
         'investor_address1' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 2),
             'allowEmpty' => false,
             'message' => 'Address validation error',
         ),
         'investor_postCode' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 2),
             'allowEmpty' => false,
             'message' => 'Postcode validation error',
         ),
         'investor_city' => array(
-            'rule' => array(array('minLength', 1), 'alphaNumeric'),
+            'rule' => array(array('minLength', 2), 'alphaNumeric'),
             'allowEmpty' => false,
             'message' => 'City validation error',
         ),
         'investor_country' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 2),
             'allowEmpty' => false,
             'message' => 'Country validation error',
         ),
