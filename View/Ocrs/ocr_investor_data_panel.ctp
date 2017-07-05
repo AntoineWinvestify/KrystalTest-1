@@ -226,7 +226,7 @@ if ($result) {
             function successDelete(id) {
         <?php // Delete ok                     ?>
                 $("#del" + id).prop("disabled", true);
-                $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile label' + id + '" for="fileId1' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
+                $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile label' + id + '" for="fileId' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
                 $("#file" + id).append('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '">');
                 $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                 $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="0">');
