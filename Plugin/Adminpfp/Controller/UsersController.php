@@ -108,17 +108,17 @@ public function startTallyman() {
  * 
  */
 public function readtallymandata() {
-/*
+
     if (!$this->request->is('ajax')) {
         throw new
         FatalErrorException(__('You cannot access this page directly'));
         }
     $this->layout = 'ajax';
     $this->disableCache();
-*/
+
 //    $platformId = $this->Auth->user('AdminPFP.company_id');
    
-    $this->layout = 'Adminpfp.azarus_private_layout';
+//    $this->layout = 'Adminpfp.azarus_private_layout';
 
     $error = null;
     $platformId = 1;
@@ -169,7 +169,10 @@ public function readtallymandata() {
                 $error = NO_DATA_AVAILABLE;
             }   
             else {
- $this->print_r2($resultTallymanData);               
+                
+echo "1";
+$this->print_r2($resultTallymanData);   
+
                  $this->set('resultTallyman', $resultTallymanData);
 
                  // provide data for possible billing

@@ -30,11 +30,12 @@
  * Added plugins CSS & JS
  * 
 
+ 2017-07-05     version 0.3
+ * class="fa fa-long-arrow-down" for the % of invested money
  
- 
+
  
  PENDING:
- * class="fa fa-long-arrow-down" for the % of invested money
  * colors of the graphs (line chart and bar chart)
  * vertical axis of line chart (multiply by 100 and name the axis)
  * vertical axis of bar chart (name of the axis)
@@ -47,10 +48,14 @@ $arrowClass[UPWARDS] = "fa fa-long-arrow-up";
 $arrowClass[DOWNWARDS] = "fa fa-long-arrow-down";
 
 ?>
+<!--
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<!--
 <script src="/plugins/chartjs/Chartist.min.js"></script>
+-->
 <style>
     .togetoverlay .overlay  {
         z-index: 50;
@@ -63,6 +68,8 @@ $arrowClass[DOWNWARDS] = "fa fa-long-arrow-down";
 </style>
 <script>
     $(function () {
+        
+        
         //chart bar
         var ctx = document.getElementById("barChart1").getContext('2d');
         var myChart = new Chart(ctx, {
@@ -71,38 +78,38 @@ $arrowClass[DOWNWARDS] = "fa fa-long-arrow-down";
                 labels: <?php echo json_encode(array_values($crowdlendingTypesShort))?>,
                 datasets: [{
                     label: 'Number of Investments',
-                    data: <?php echo json_encode($resultTallyman[0]['userplatformglobaldata_PFPPerTypeNorm'])?>,
+                    data: <?php echo json_encode($resultTallyman[0]['investorglobaldata_PfpPerType_Abs'])?>,
                     backgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
+                            "#55acee",
+                            "#55acee",
+                            "#55acee",
+                            "#55acee",
                             "#55acee"
                         ],
                     hoverBackgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
+                            "#55acee",
+                            "#55acee",
+                            "#55acee",
+                            "#55acee",
                             "#55acee"
                     ]
                 },
                 {
                     label: 'Investment Amount',
-                    data: <?php echo json_encode($resultTallyman[0]['userplatformglobaldata_PFPPerAmountNorm'])?>,
+                    data: <?php echo json_encode($resultTallyman[0]['investorglobaldata_PfpPerAmount_Norm'])?>,
                     backgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
-                            "#55acee"
+                            "#1acc5a",
+                            "#1acc5a",
+                            "#1acc5a",
+                            "#1acc5a",
+                            "#1acc5a"
                     ],
                     hoverBackgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
-                            "#55acee"
+                            "#1acc5a",
+                            "#1acc5a",
+                            "#1acc5a",
+                            "#1acc5a",
+                            "#1acc5a"
                     ]
                 }]  
          }
@@ -119,7 +126,7 @@ var myChart = new Chart(ctx, {
     datasets: [{
       label: 'Portfolio Invested',
       data:<?php echo json_encode($resultTallyman[0]['totalPortfolioHistorical'])?>,
- //     backgroundColor: "#2acc5a", "#9acc5a", "#5acc5a"
+      backgroundColor: ["#2acc5a", "#9acc5a", "#5acc5a"],
     }]
   }
 });
@@ -153,8 +160,6 @@ var myChart = new Chart(ctx, {
 </script>
 
 
-<?php print_r($resultTallyman[0]['dataPieChart1'])?>
-<?php print_r($resultTallyman[0]['labelsPieChart1'])?>
 <div id="1CR_pfpAdmin_3_searchResult">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
@@ -164,10 +169,6 @@ var myChart = new Chart(ctx, {
                     <p class="category"><?php echo __('Tallyman service about @search_fields') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <!--<div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>-->
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -184,7 +185,7 @@ var myChart = new Chart(ctx, {
                                         <div class="col-lg-3">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;">
-                                                    <h1><?php echo  round($resultTallyman[0]['totalPortfolio'], 1)?></h1>
+                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
@@ -192,7 +193,7 @@ var myChart = new Chart(ctx, {
                                                         <strong><?php echo __('invertida')?></strong>
                                                         <div class="card-content"> 
                                                             <p class="category"><span class="text-success"><i 
-                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['AtotalPortfolioTendency']] ?>"></i></span></p>
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i></span></p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -213,8 +214,8 @@ var myChart = new Chart(ctx, {
                                     <div class="row">
                                         <div class="col-lg-3">
                                             <div class="card card-stats">
-                                                <div class="card-content">
-                                                    <h1 style="text-align: center;"><?php echo round($resultTallyman[0]['totalMyModality'],1) ?></h1>
+                                                <div class="card-content">                    
+                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
@@ -223,7 +224,7 @@ var myChart = new Chart(ctx, {
                                                     </div>
                                                     <div class="card-content">
                                                             <p class="category"><span class="text-success"><i 
-                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['AtotalMyModalityTendency']] ?>"><?php echo $arrowClass[$resultTallyman[0]['AtotalMyModalityTendency']] ?></i></span></p>
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalMyModalityTendency']] ?> "></i></span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -265,7 +266,7 @@ var myChart = new Chart(ctx, {
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">
-                                                                <?php echo __('Account Linking')?>
+                                                                <?php echo __('Active PFPs')?>
                                                             </div>
                                                         </div>
                                                     </div>

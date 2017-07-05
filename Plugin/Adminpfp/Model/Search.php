@@ -1,7 +1,7 @@
 <?php
 /**
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2009, http://www.winvestify.com                         |
+// | Copyright (C) 2017, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -19,7 +19,7 @@
 
  The model that stores all the searches doen by the adminpfp's for Tallyman data
 
-2016-06-29	  version 0.1
+2017-06-29	  version 0.1
 First version
 
 

@@ -57,8 +57,8 @@ class AdminpfpAppController extends AppController {
                                                 'loginRedirect'	=> array(
 									'plugin' => 'adminpfp',
 									'controller' 	=> 'users',
-								//	'action' 	=> 'showTallyman'
-                                                                        'action' 	=> 'readtallymandata'
+									'action' 	=> 'showTallymanPanel'
+                                                                //        'action' 	=> 'readtallymandata'
 									),
 						'logoutRedirect' => array('controller' 	=> 'users',
 									 'action' => 'login'
