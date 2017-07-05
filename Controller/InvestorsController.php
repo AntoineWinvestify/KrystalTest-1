@@ -205,7 +205,7 @@ function linkAccount() {
             'traceID' => $this->Auth->user('Investor.investor_identity'),
         );
         $newComp->defineConfigParms($configurationParameters);
-        $newComp->generateCookiesFile();
+        //$newComp->generateCookiesFile();
         $userInvestment = $newComp->companyUserLogin($_REQUEST['userName'], $_REQUEST['password']);
 
         if (!$userInvestment) {                                                 // authentication error
@@ -215,7 +215,7 @@ function linkAccount() {
 
             $linkedaccountFilterConditions = array('investor_id' => $investorId);
             $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
-            $newComp->deleteCookiesFile();
+            //$newComp->deleteCookiesFile();
             $this->set('linkedAccountResult', $linkedAccountResult);
             $this->set('companyResults', $companyResults);
             $this->set('action', "error");      // add a new account
@@ -228,7 +228,7 @@ function linkAccount() {
                 $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
                 $newComp->setUrlSequence($urlSequenceList);
                 $newComp->companyUserLogout();
-                $newComp->deleteCookiesFile();
+                //$newComp->deleteCookiesFile();
 // load the list of all companies for display purposes
                 $companyFilterConditions = array('id >' => 0);  // Load ALL company data as array
                 $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
