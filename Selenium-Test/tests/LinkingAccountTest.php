@@ -69,7 +69,7 @@ class LinkingAccountTest extends AbstractTestCase {
             'Error locating more than one elements'
         );
         
-        $messageError = $this->wd->findElement(WebDriverBy::cssSelector('.box-warning strong'));
+        $messageError = $this->wd->findElement(WebDriverBy::cssSelector('#messageErrorLinkAccount strong'));
         $this->assertContains('incorrect', $messageError->getText());
         /*$this->wd->wait()->until(
             WebDriverExpectedCondition::urlContains('marketplaces/showMarketPlace')
