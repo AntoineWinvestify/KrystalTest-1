@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" tests="1" assertions="1" failures="1" errors="0" time="19.159306">
-    <testcase name="testLinkingComunitaeCorrect" class="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" line="12" assertions="1" time="19.159306">
-      <failure type="PHPUnit_Framework_ExpectationFailedException">My\LinkingAccountTest::testLinkingComunitaeCorrect
-Failed asserting that 'Both the 'Username' and 'Password' of a linked account are encrypted before they are stored on our servers' contains "incorrect".
+  <testsuite name="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" tests="1" assertions="0" failures="0" errors="1" time="26.896463">
+    <testcase name="testLinkingComunitaeCorrect" class="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" line="12" assertions="0" time="26.896463">
+      <error type="Facebook\WebDriver\Exception\NoSuchElementException">My\LinkingAccountTest::testLinkingComunitaeCorrect
+Facebook\WebDriver\Exception\NoSuchElementException: Unable to locate element: #messageErrorLinkAccount strong
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: '3.4.0', revision: 'unknown', time: 'unknown'
+System info: host: 'bilbo', ip: '127.0.1.1', os.name: 'Linux', os.arch: 'amd64', os.version: '4.8.0-58-generic', java.version: '1.8.0_131'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Capabilities [{moz:profile=/tmp/rust_mozprofile.9TndTWmH8itp, rotatable=false, timeouts={implicit=0.0, pageLoad=300000.0, script=30000.0}, pageLoadStrategy=normal, platform=ANY, specificationLevel=0.0, moz:accessibilityChecks=false, acceptInsecureCerts=false, browserVersion=54.0, platformVersion=4.8.0-58-generic, moz:processID=5295.0, browserName=firefox, javascriptEnabled=true, platformName=linux}]
+Session ID: 87529b48-7962-475e-900a-97ddc9b9b262
+*** Element info: {Using=css selector, value=#messageErrorLinkAccount strong}
 
-/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php:73
-</failure>
-      <system-out>[2017-07-04 14:58:58]: Starting execution of test My\LinkingAccountTest::testLinkingComunitaeCorrect
-[2017-07-04 14:58:58]: [WebDriver] Loading URL "http://cake_branch"
-[2017-07-04 14:59:17]: Finished execution of test My\LinkingAccountTest::testLinkingComunitaeCorrect
-[2017-07-04 14:59:18]: 
-[2017-07-04 14:59:18]: [WARN] Test failed on page "http://cake_branch/investors/userProfileDataPanel", taking page snapshots:
-[2017-07-04 14:59:18]: Screenshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingComunitaeCorrect-2017-07-04-14-59-17.png"
-[2017-07-04 14:59:18]: HTML snapshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingComunitaeCorrect-2017-07-04-14-59-17.html"
-[2017-07-04 14:59:18]: 
-[2017-07-04 14:59:18]: Destroying "firefox" WebDriver for "My\LinkingAccountTest::testLinkingComunitaeCorrect" (session 1b2dd09a-df28-4404-af6c-5aa1b9ef125b)
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Exception/WebDriverException.php:102
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/HttpCommandExecutor.php:320
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/RemoteWebDriver.php:535
+/var/www/html/cake_branch/app/Selenium-Test/vendor/lmc/steward/src/WebDriver/RemoteWebDriver.php:29
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/RemoteWebDriver.php:175
+/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php:72
+</error>
+      <system-out>[2017-07-05 10:01:58]: Starting execution of test My\LinkingAccountTest::testLinkingComunitaeCorrect
+[2017-07-05 10:01:58]: [WebDriver] Loading URL "http://cake_branch"
+[2017-07-05 10:02:24]: Finished execution of test My\LinkingAccountTest::testLinkingComunitaeCorrect
+[2017-07-05 10:02:25]: 
+[2017-07-05 10:02:25]: [WARN] Test failed on page "http://cake_branch/investors/userProfileDataPanel", taking page snapshots:
+[2017-07-05 10:02:25]: Screenshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingComunitaeCorrect-2017-07-05-10-02-24.png"
+[2017-07-05 10:02:25]: HTML snapshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingComunitaeCorrect-2017-07-05-10-02-24.html"
+[2017-07-05 10:02:25]: 
+[2017-07-05 10:02:25]: Destroying "firefox" WebDriver for "My\LinkingAccountTest::testLinkingComunitaeCorrect" (session 1bbea34a-7f7e-45bb-9f10-893b874c1665)
 </system-out>
     </testcase>
   </testsuite>

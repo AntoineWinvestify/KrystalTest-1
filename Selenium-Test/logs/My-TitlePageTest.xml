@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="My\TitlePageTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/TitlePageTest.php" tests="1" assertions="0" failures="0" errors="0" time="0.103540">
-    <testcase name="Warning" assertions="0" time="0.103540"/>
-  </testsuite>
-</testsuites>
