@@ -62,7 +62,7 @@ class LinkingAccountTest extends AbstractTestCase {
         $this->wd->findElement(WebDriverBy::id("linkNewAccount"))->click();
         $this->wd->wait()->until(
             function () use ($driver) {
-                $elements = $driver->findElements(WebDriverBy::cssSelector('.box-warning strong'));
+                $elements = $driver->findElements(WebDriverBy::cssSelector('#messageErrorLinkAccount strong'));
 
                 return count($elements) > 0;
             },
