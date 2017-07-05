@@ -109,7 +109,7 @@ class ocrfile extends AppModel {
      * @param type $data
      * @param type $identity
      * @param type $id
-     * @param type $type
+     * @param type $type Type of document (DNI, IBAN, CIF...) as defined in AppController
      * @return string|int
      */
     public function ocrFileSave($fileInfo, $folder, $id, $type, $path) {
@@ -146,8 +146,16 @@ class ocrfile extends AppModel {
                 //Save in db
                 if ($path == "file") {
 
-                    $query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES (" . $id . ", " . $type . ", '" . $name . "', '" . $folder . DS . $filename . "');";
-                    $query = $this->query($query);
+                    //$query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $id . "', '" . $type . "', '" . $name . "', '" . $folder . DS . $filename . "');";
+                    //$query = $this->query($query);
+                        $investorFileData = array (
+                            'investor_id' => $id ,
+                            'file_id' => $type ,
+                            'file_name' => $name ,
+                            'file_url' => $folder . DS . $filename,
+                            'file_status'  => 0
+                        );
+                        $this->Filesinvestor->save($investorFileData);
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
                     return [true, __('Upload ok'), $result];
                 } else if ($path == "bill") {
