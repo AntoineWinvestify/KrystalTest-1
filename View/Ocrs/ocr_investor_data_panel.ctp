@@ -168,7 +168,7 @@ if ($result) {
                     id: id
                 };
                 var data = jQuery.param(params);
-                link = '../Files/delete';
+                link = '/files/delete';
                 $.ajax({
                     url: link,
                     method: 'post',
