@@ -19,7 +19,9 @@
   2016-10-18	  version 0.1
   function updateAccountCreationStatus						[Not OK, Not tested]
 
-
+  2017-07-05
+ * modified the rules in the $validate variable, mixing it 
+ 
   2017-01-17	  version 0.2
   function investmentInformationUpdate added					[OK]
 
@@ -223,7 +225,6 @@ class Investor extends AppModel {
         $this->save($data, $validate = true);
         echo __FILE__ . " " . __LINE__ . "<br>";
         if ($this->createCheckdata($currentStatus['Investor']['id'])) {
-            $this->createCheckdata($id); //create the line in the table checks
             return true;
         }
     }
