@@ -382,7 +382,7 @@ if ($result) {
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
                                             <ul class="nav nav-stacked">
-                                                <li class = 'country'><img src="/img/flags/<?php echo $comp['Company']['company_country'] ?>.png" alt="Spain Flag"/> <?php echo __($comp['Company']['company_countryName']) ?></li>
+                                                <li class = 'country'><img src="/img/flags/<?php echo mb_strtolower($comp['Company']['company_country']) ?>.png" alt="Spain Flag"/> <?php echo __($comp['Company']['company_countryName']) ?></li>
                                                 <li class = 'type'><?php echo __($CompanyType[$comp['Company']['Company_type']]) ?></li>
                                             </ul>
                                         </div>
