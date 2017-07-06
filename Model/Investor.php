@@ -286,6 +286,21 @@ class Investor extends AppModel {
         return true;
     }
 
+    
+    
+    
+    /**
+ * Read the cheack data
+ * @param type $investorId
+ * @return type
+ */
+public function readCheckData($investorId) {
+    $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+    return $checkData;
+}
+
+
+    
     /**
      *
      * 	Checks if current stored investment information of the user is recent enough
