@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------------+
 //
 
-2016-06-23	  version 0.1
+2016-07-05	  version 0.1
 
 
 
@@ -30,18 +30,14 @@ class Investorglobaldata extends AppModel
 {
         var $useDbConfig = 'mldata';    
 	public $name = 'Investorglobaldata';
-//        var $useTable = "investorglobaldata";
-/*
-	public $hasOne = array(	);
-
 
 	var $hasMany = array(
-		'Marketplace' => array(
-			'className' => 'Marketplace',
-			'foreignKey' => 'company_id',
+		'Userplatformglobaldata' => array(
+			'className' => 'Adminpfp.Userplatformglobaldata',
+			'foreignKey' => 'investorglobaldata_id',
 		)
 	);
-*/
+
 
 
 
@@ -106,10 +102,11 @@ public function loadInvestorDataOld($investoridentity) {
 public function readinvestorData($investorIdentity, $platformId) {
 
 $resultTallyman[0]['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
-$resultTallyman[0]['investorglobaldata_activePFPs'] = 3;
-$resultTallyman[0]['investorglobaldata_totalPFPs'] = 3;
+$resultTallyman[0]['investorglobaldata_activePFPs'] = 4;
+$resultTallyman[0]['investorglobaldata_totalPFPs'] = 5;
 $resultTallyman[0]['investorglobaldata_totalMoneyInWallets'] = 11737;
 $resultTallyman[0]['investorglobaldata_totalActiveInvestments'] = 113233;
+$resultTallyman[0]['investorglobaldata_totalActiveInvestments'] = 202053;
 $resultTallyman[0]['investorglobaldata_currency'] = 1;     // = Euro
 $resultTallyman[0]['created'] = "2017-04-15 01:55:21";     
 $resultTallyman[0]['createdDate'] = "2017-04-15";
@@ -122,7 +119,7 @@ $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_reserved
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_finishedInvestments'] = 22352;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_companyId'] = 2;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_companyName'] = 'Comunitae';
-$resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'] = 2;
+$resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'] = 3;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCountry'] = "ES";
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
 $resultTallyman[0]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOfActiveInvestments'] = 13;
@@ -146,13 +143,39 @@ $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_moneyInW
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_currency'] = 1;
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_reservedInvestments'] = 0;
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_finishedInvestments'] = 15992;
-$resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_companyId'] = 21;
-$resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_companyName'] = "Lendix";
+$resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_companyId'] = 18;
+$resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_companyName'] = "Dummy";
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_PFPType'] = 4;
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_PFPCountry'] = "IT";
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_globalIndicator'] = 112;
 $resultTallyman[0]['Userplatformglobaldata'][3]['userplatformglobaldata_numberOfActiveInvestments'] = 43;
-        
+ 
+$resultTallyman[0]['Userplatformglobaldata'][4]['id'] = 1;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_activeInInvestments'] = 44410;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_moneyInWallet'] = 733;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_currency'] = 1;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_reservedInvestments'] = 0;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_finishedInvestments'] = 15992;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_companyId'] = 21;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_companyName'] = "Lendix";
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_PFPType'] = 4;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_PFPCountry'] = "IT";
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_globalIndicator'] = 112;
+$resultTallyman[0]['Userplatformglobaldata'][4]['userplatformglobaldata_numberOfActiveInvestments'] = 43;
+
+$resultTallyman[0]['Userplatformglobaldata'][5]['id'] = 2;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_activeInInvestments'] = 44410;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_moneyInWallet'] = 733;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_currency'] = 1;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_reservedInvestments'] = 0;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_finishedInvestments'] = 15992;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_companyId'] = 19;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_companyName'] = "Circulantis";
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_PFPType'] = 0;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_PFPCountry'] = "IT";
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_globalIndicator'] = 112;
+$resultTallyman[0]['Userplatformglobaldata'][5]['userplatformglobaldata_numberOfActiveInvestments'] = 43;
+
 
 $resultTallyman[1]['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[1]['investorglobaldata_activePFPs'] = 3;
@@ -171,7 +194,7 @@ $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_reserved
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_finishedInvestments'] = 21352;
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_companyId'] = 2;
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_companyName'] = 'Comunitae';
-$resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'] = 2;
+$resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'] = 3;
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCountry'] = "ES";
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
 $resultTallyman[1]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOfActiveInvestments'] = 16;
@@ -196,8 +219,8 @@ $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_currency
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_reservedInvestments'] = 0;
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_finishedInvestments'] = 14992;
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_companyId'] = 21;
-$resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_companyName'] = "Lendix";
-$resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_PFPType'] = 4;
+$resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_companyName'] = "LendixIT";
+$resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_PFPType'] = 3;
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_PFPCountry'] = "IT";
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_globalIndicator'] = 112;
 $resultTallyman[1]['Userplatformglobaldata'][3]['userplatformglobaldata_numberOfActiveInvestments'] = 43;
@@ -239,12 +262,11 @@ $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIn
 $resultTallyman[2]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOfActiveInvestments'] = 45;
 
 
-
 $resultTallyman[3]['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[3]['investorglobaldata_activePFPs'] = 2;
 $resultTallyman[3]['investorglobaldata_totalPFPs'] = 2;
 $resultTallyman[3]['investorglobaldata_totalMoneyInWallets'] = 5514;
-$resultTallyman[3]['investorglobaldata_totalActiveInvestments'] = 65821;
+$resultTallyman[3]['investorglobaldata_totalActiveInvestments'] = 52821;
 $resultTallyman[3]['investorglobaldata_currency'] = 1;     // = Euro
 $resultTallyman[3]['created'] = "2017-03-24 01:51:21"; 
 $resultTallyman[3]['createdDate'] = "2017-03-24";
@@ -280,7 +302,7 @@ $resultTallyman[4]['investorglobaldata_investorIdentity'] = '39048098ab409be490A
 $resultTallyman[4]['investorglobaldata_activePFPs'] = 2;
 $resultTallyman[4]['investorglobaldata_totalPFPs'] = 2;
 $resultTallyman[4]['investorglobaldata_totalMoneyInWallets'] = 3514;
-$resultTallyman[4]['investorglobaldata_totalActiveInvestments'] = 65821;
+$resultTallyman[4]['investorglobaldata_totalActiveInvestments'] = 69821;
 $resultTallyman[4]['investorglobaldata_currency'] = 1;     // = Euro
 $resultTallyman[4]['created'] = "2017-03-17 01:51:21"; 
 $resultTallyman[4]['createdDate'] = "2017-03-17";
@@ -306,20 +328,56 @@ $resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_reserved
 $resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_finishedInvestments'] = 14392;
 $resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_companyId'] = 21;
 $resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_companyName'] = "Lendix";
-$resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'] = 4;
+$resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'] = 1;
 $resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCountry'] = "IT";
 $resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
 $resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOfActiveInvestments'] = 45;
 
 
+$resultTallyman[5]['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
+$resultTallyman[5]['investorglobaldata_activePFPs'] = 2;
+$resultTallyman[5]['investorglobaldata_totalPFPs'] = 2;
+$resultTallyman[5]['investorglobaldata_totalMoneyInWallets'] = 3514;
+$resultTallyman[5]['investorglobaldata_totalActiveInvestments'] = 65821;
+$resultTallyman[5]['investorglobaldata_currency'] = 1;     // = Euro
+$resultTallyman[5]['created'] = "2017-03-10 01:51:21"; 
+$resultTallyman[5]['createdDate'] = "2017-03-10";
+
+$resultTallyman[5]['Userplatformglobaldata'][0]['id'] = 12;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_activeInInvestments'] = 20411;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_moneyInWallet'] = 1952;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_currency'] = 1;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_reservedInvestments'] = 11;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_finishedInvestments'] = 12952;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_companyId'] = 1;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_companyName'] = "Zank";
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_PFPType'] = 2;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_PFPCountry'] = "ES";
+$resultTallyman[5]['Userplatformglobaldata'][0]['globalIndicator'] = 112;
+$resultTallyman[5]['Userplatformglobaldata'][0]['userplatformglobaldata_numberOfActiveInvestments'] = 6;
+
+$resultTallyman[5]['Userplatformglobaldata'][1]['id'] = 19;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_activeInInvestments'] = 45410;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_moneyInWallet'] = 1562;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_currency'] = 1;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_reservedInvestments'] = 0;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_finishedInvestments'] = 14392;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_companyId'] = 21;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_companyName'] = "Lendix";
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'] = 1;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCountry'] = "IT";
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
+$resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOfActiveInvestments'] = 41;
+
+
+
 // Do some simple calculations to get extra "new" values so they can be displayed
 // enrich the information to be provided to the PFPAdmin user
-// index 0 is the most recent read-out of the user investment data
   
     $this->Company = ClassRegistry::init('Company');
     $companyFilterConditions = array('id' => $platformId);
     $resultCompany = $this->Company->getCompanyDataList($companyFilterConditions);
-
+//print_r($resultCompany);
 //  Data for geographical distribution of PFPs as used by investor
     $homeCountryPFP = $resultCompany[$platformId]['company_country'];
 
@@ -339,14 +397,11 @@ $resultTallyman[4]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOf
     $resultTallyman[0]['labelsPieChart1'] = $labelsPieChart1;
     $resultTallyman[0]['dataPieChart1'] = $dataPieChart1;
 
-echo "1";
 
 // How many types of platforms do we have?
-    $platformTypes = count($this->crowdlendingTypesShort);
-    $platformTypes = 5;
+    $platformTypes = 5;           // P2P, P2B, IT, R.E. SOCIAL
     $platformInvestmentsPerType = array_fill(0,  $platformTypes, 0);
     $platformInvestmentsPerAmount = array_fill(0,  $platformTypes, 0); 
-//    echo "platformTypes = $platformTypes <br>";
    
 
     foreach ($resultTallyman as $key => $value) {
@@ -371,21 +426,27 @@ echo "1";
         $resultTallyman[$key]['investorglobaldata_PfpPerAmount_Abs'] = $platformInvestmentsPerAmount;     
     }
 
-
-    $platformTypes = count($this->crowdlendingTypesShort);
-    $platformInvestmentsPerType_Norm = array_fill(0,  $platformTypes, 0);
-    $platformInvestmentsPerAmount_Norm = array_fill(0,  $platformTypes, 0); 
     
     foreach ($resultTallyman as $key => $value) {
         foreach ($value['investorglobaldata_PfpPerAmount_Abs'] as $newKey => $platformAmount) {
             $resultTallyman[$key]['investorglobaldata_PfpPerAmount_Norm'][$newKey] = 
                     round((100 * $resultTallyman[$key]['investorglobaldata_PfpPerAmount_Abs'][$newKey]) /  
-                        $resultTallyman[$key]['investorglobaldata_totalActiveInvestments'], 1);
+                        $resultTallyman[$key]['investorglobaldata_totalActiveInvestments'], 2);
         }
     }
  
 
+    
+// Normalize the data for the number of investments per platformtype    
+    foreach ($resultTallyman as $key => $value) {
+        foreach ($value['investorglobaldata_PfpPerType_Abs'] as $newKey => $platformAmount) {
+            $resultTallyman[$key]['investorglobaldata_PfpPerType_Norm'][$newKey] = 
+                    round((100 * $resultTallyman[$key]['investorglobaldata_PfpPerType_Abs'][$newKey]) /  
+                        $resultTallyman[$key]['investorglobaldata_numberOfActiveInvestments'], 2);
+        }
+    }
 
+    
     foreach ($resultTallyman as $key => $value) {
             foreach($value['Userplatformglobaldata'] as $platform) {
                 if ($platform['userplatformglobaldata_companyId'] == $platformId) {
@@ -398,61 +459,31 @@ echo "1";
 
     $PFPType = $resultCompany[$platformId]['company_typeOfCrowdlending'];
  
- /*  
-    $resultTallyman[0]['totalModality_Norm'] = round (100 * $resultTallyman[0]['totalMyPlatform_Abs'] / 
-                                        $resultTallyman[0]['investorglobaldata_PfpPerAmount_Abs'][$PFPType], 1);
-    $resultTallyman[0]['totalPortfolio_Norm'] = round(10 * $resultTallyman[0]['totalMyPlatform_Abs'] / 
-                                        $resultTallyman[0]['investorglobaldata_totalActiveInvestments'], 1);
- */
-
-
     foreach ($resultTallyman as $key => $platform) {
+     //   if ($resultTallyman[$key]['investorglobaldata_PfpPerAmount_Abs'][$PFPType] <> 0) {
         $resultTallyman[$key]['totalModality_Norm'] = round (100 * $resultTallyman[$key]['totalMyPlatform_Abs'] / 
                                             $resultTallyman[$key]['investorglobaldata_PfpPerAmount_Abs'][$PFPType], 1);
+    //    }
         $resultTallyman[$key]['totalPortfolio_Norm'] = round(100 * $resultTallyman[$key]['totalMyPlatform_Abs'] / 
                                             $resultTallyman[$key]['investorglobaldata_totalActiveInvestments'], 1);
     }
 
     
-  
-    // create tendency arrows
+    // Create tendency arrows
     if ($resultTallyman[0]['totalPortfolio_Norm'] < $resultTallyman[1]['totalPortfolio_Norm']){
         $resultTallyman[0]['totalPortfolioTendency'] = DOWNWARDS;
     }
     if ($resultTallyman[0]['totalPortfolio_Norm'] > $resultTallyman[1]['totalPortfolio_Norm']){
         $resultTallyman[0]['totalPortfolioTendency'] = UPWARDS;
-    }       
-    if ($resultTallyman[0]['totalMyModality_Norm'] < $resultTallyman[1]['totalMyModality_Norm']){
-        $resultTallyman[0]['totalMyModalityTendency'] = DOWNWARDS; 
+    }  
+    if ($resultTallyman[0]['totalModality_Norm'] < $resultTallyman[1]['totalModality_Norm']){
+        $resultTallyman[0]['totalModalityTendency'] = DOWNWARDS; 
     }
-    if ($resultTallyman[0]['totalMyModality_Norm'] > $resultTallyman[1]['totalMyModality_Norm']){
-        $resultTallyman[0]['totalMyModalityTendency'] = UPWARDS;
+    if ($resultTallyman[0]['totalModality_Norm'] > $resultTallyman[0]['totalModality_Norm']){
+        $resultTallyman[0]['totalModalityTendency'] = UPWARDS;
     } 
-    
 
 // Store "historical" data for "$totalPortfolio"
-    foreach ($resultTallyman as $key => $value) {
-    // get value of investment in present platform
-        $found = NO;
-
-        foreach ($value['Userplatformglobaldata'] as $data) {
-            $found = NO;
- //           echo "sss " . $resultTallyman[$key]['totalMyPlatform_Abs'] ."<br>";
-  //          echo "sss " . resultTallyman[$key]['investorglobaldata_totalActiveInvestments'] ."<br>";
-            if ($data['userplatformglobaldata_companyId'] == $platformId) {
- //               $resultTallyman[$key]['totalMyPlatform'] = $data['userplatformglobaldata_activeInInvestments'];
- //               $resultTallyman[$key]['totalPortfolio_Norm'] =  100 * $resultTallyman[$key]['totalMyPlatform_Abs'] / 
- //                                           $resultTallyman[$key]['investorglobaldata_totalActiveInvestments'];
-                $found = YES;
-                break;
-            } 
-        }
-        if ($found == NO) {
- //           $resultTallyman[$key]['totalPortfolio'] = 0;
-        }
-    }
-
-        
    foreach ($resultTallyman as $value) {            
        $totalPortfolioHistorical[] = round($value['totalPortfolio_Norm'], 1);        // in % 
        $totalPortfolioHistoricalDate[] = $value['createdDate'];

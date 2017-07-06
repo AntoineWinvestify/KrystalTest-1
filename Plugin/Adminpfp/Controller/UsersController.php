@@ -42,7 +42,7 @@ class UsersController extends AdminpfpAppController
 
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Js');
-	var $uses = array('User', 'Company');
+	var $uses = array('User');
 	var $components = array('Security');
   	var $error;
 	
@@ -116,20 +116,19 @@ public function readtallymandata() {
     $this->layout = 'ajax';
     $this->disableCache();
 
-//    $platformId = $this->Auth->user('AdminPFP.company_id');
-   
-//    $this->layout = 'Adminpfp.azarus_private_layout';
-
+    $platformId = $this->Session->read('Auth.User.Adminpfp.company_id');
     $error = null;
-    $platformId = 1;
+    
     $inputId = $_REQUEST['inputId'];
     $userEmail = $_REQUEST['userEmail'];
     $userTelephone = $_REQUEST['userTelephone'];
+ 
     
     $userEmail ="antoine.de.poorter@gmail.com";
     $userTelephone = "+34675546946";  
 
-// Get the unique user identification
+      
+// Get the unique investor identification
     $inputParmCount = 0;
     if (!empty($inputId)) {     
         $key[] = "Investor.investor_DNI";
@@ -151,17 +150,21 @@ public function readtallymandata() {
         $error = NOT_ENOUGH_PARAMETERS;
     }
     else {
-         
         $filterConditions = array_combine($key, $value);
+        $searchData =  json_encode($filterConditions);
+   
+        $this->Search = ClassRegistry::init('Adminpfp.Search');   
+        $result = $this->Search->writeSearchData($searchData, $platformId, null, null, TALLYMAN_APP); 
+      
         $this->Investor = ClassRegistry::init('Investor');   
         $resultInvestor = $this->Investor->getInvestorData($filterConditions);
         $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
-
 
         if (!$userIdentification) {
             $error = USER_DOES_NOT_EXIST;
         }
         else {
+            
             $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
             $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
 
@@ -169,22 +172,16 @@ public function readtallymandata() {
                 $error = NO_DATA_AVAILABLE;
             }   
             else {
-                
-echo "1";
-$this->print_r2($resultTallymanData);   
-
                  $this->set('resultTallyman', $resultTallymanData);
 
                  // provide data for possible billing
-                  
                  $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
                  $data = array();
-                 $data['reference'] = $userIdentification;
-                 $data['parm1'] = $userIdentification;
-                 $data['parm2'] = $userIdentification;
-                 $data['parm3'] =  null;       
+                 $data['reference'] = $userIdentification;                           // investor unique identification
+                 $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
+                 $data['parm2'] = $platformId;                                      // platformId of the adminfp user
+                 $data['parm3'] = null;       
                  $this->Billingparm->writeChargingData($data, "tallyman");
-  
             }
         }
     }
@@ -304,11 +301,12 @@ public function cronMoveToMLDatabase() {
 							  'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
                                                                            'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                              ),
+                                                                             ),
+                                                          'limit' => 10,
 				)); 
 
-    while (!empty($UserinvestmentdataResult)) {
-        $internalRawDataReference = $result[0]['Userinvestmentdata']['investorglobaldata_internalRawDataReference'];
+    foreach ($UserinvestmentdataResult as $key => $result) {
+        $internalRawDataReference = $result['Userinvestmentdata']['investorglobaldata_internalRawDataReference'];
         $tempResult = $this->Userinvestmentdata->find("all", $params = array('conditions'  => array('investorglobaldata_internalRawDataReference' => $internalRawDataReference),
             ));
 
@@ -329,6 +327,7 @@ public function cronMoveToMLDatabase() {
                 echo "ERROR OCCURED, TAKE ACTION";  
                 // add possible errors in interface errors table  
                 $userinvestmentpointer = 0;
+                continue;
             }
         }
         $nextRecord = $result[0]['Userinvestmentdata'][0]['id'];
@@ -341,7 +340,8 @@ public function cronMoveToMLDatabase() {
 							  'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
                                                               'investorglobaldata_internalRawDataReference' => $internalRawDataReference,
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED),
-                        			));    
+                                                              'limit' => 10,
+                                                      ));    
         foreach ($Userinvestmentdata as $data) {
           // mapping of data from "raw" format to MLData format    
             $companyResult = $this->read("first", $params = array('recursive' => -1,
@@ -349,7 +349,7 @@ public function cronMoveToMLDatabase() {
                                                           'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
 				));        
 
-            $platformData['id'] = $companyId;
+            //$platformData['id'] = $companyId;
             $platformData['userplatformglobaldata_moneyInWallet'] = data['userinvestmentdata_myWallet']; 
             $platformData['userplatformglobaldata_numberOfInvestments'] = sizeof(data['investments']);
             $platformData['userplatformglobaldata_activeInInvestments'] = data['userinvestmentdata_activeInInvestments'];    
@@ -376,7 +376,7 @@ public function cronMoveToMLDatabase() {
                 // reset something ????
             }
         }
-    }    
+    } 
 }
 
 

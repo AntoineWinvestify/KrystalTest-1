@@ -17,7 +17,7 @@
 //
 
 
- The model that stores all the searches doen by the adminpfp's for Tallyman data
+ The model that stores all the searches does by the adminpfp's for Tallyman data
 
 2017-06-29	  version 0.1
 First version
@@ -49,33 +49,31 @@ var $validate = array();
      * 
      * Store the data related to user searches
      * 	
-     * @param array $searchParms    array of all search parameters, key = parameter name, value = parameter value
-     *
+     * @param json  $searchParms    all search parameters, key = parameter name, value = parameter value
+     * @param string $parameter1    parameter1, transparent data
+     * @param string $parameter2    parameter2, transparent data
+     * @param string $parameter3    parameter3, transparent data
+     * @param int   $application    identification of application 
      * @return boolean  true if data has been stored
      * 
      */
-
-
-public function writeSearchData($searchParms, $application = null) {
+public function writeSearchData($searchParms, $parameter1, $parameter2, $parameter3, $application = null) {
 
     $data = array();
-    $data['company_id'] = $this->Auth->user('AdminPFP.company_id');   
-    $data['search_searchparms'] = json_encode($searchParms);     
-    $data['user_id'] = $this->Auth->user('AdminPFP.user_id');
-    $data['search_application'] = $application;    
     
+    $data['search_searchparms'] = $searchParms;
+    $data['search_parameter1'] = $parameter1;     
+    $data['search_parameter2'] = $parameter2;
+    $data['search_parameter3'] = $parameter3;   
+    $data['search_application'] = $application;    
+ 
     if ($this->save($data, $validate = true)) {
         return true;
     }
     else  { 
         return false;
     }
-    
 }
-
-
-
-
 
 
 }

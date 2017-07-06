@@ -195,7 +195,9 @@ define('EUR', 1);           // Euro
 define('GBP', 2);           // UK Pound Sterling
 define('USD', 3);           // US Dollar
 
-   
+// APPLICATION THAT CAN PRODUCE BILLING DATA
+define('TALLYMAN_APP', 1);
+
 
 
 class AppController extends Controller {
