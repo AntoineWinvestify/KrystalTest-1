@@ -447,16 +447,6 @@ class Investor extends AppModel {
     }
 
     /**
-     * Read the cheack data
-     * @param type $investorId
-     * @return type
-     */
-    public function readCheckData($investorId) {
-        $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
-        return $checkData;
-    }
-
-    /**
      * Update the check data
      * @param type $checks
      * @param type $invesorId
