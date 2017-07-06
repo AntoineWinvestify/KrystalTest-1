@@ -34,14 +34,10 @@
 <script> 
     $(document).ready(function() {
         $(document).on("click", ".closeBtn", function(){
-            $("#activatedService").removeClass("show");
-            $("#activatedService").hide();
-            window.history.back();
+            window.location.href="/marketplaces/showMarketPlace";
         });
-        $(document).on("click", "#btnBack", function(){
-            $("#activatedService").removeClass("show");
-            $("#activatedService").hide();
-            window.history.back();
+        $(document).on("click", "#btnClose", function(){
+            window.location.href="/marketplaces/showMarketPlace";
         });
     });
 </script>
@@ -66,7 +62,7 @@
                         </div> <!-- /tab-content -->
                         <div class="wizard-footer">
                             <div class="pull-right">
-                                <button type='button' id="btnBack" class='btn btn-default btn-wd' name='back'><?php echo __('Back')?></button>
+                                <button type='button' id="btnClose" class='btn btn-default btn-wd' name='back'><?php echo __('Close')?></button>
                             </div>
                             <div class="clearfix"></div>
                         </div>
