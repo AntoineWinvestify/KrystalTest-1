@@ -128,7 +128,7 @@
                 type: 'save',
 
                 //File data
-                file: fileArray,
+                file: fileArray
 
             };
             link = '/ocrs/updateChecks';
@@ -201,7 +201,7 @@
                     file: fileArray,
 
                     //Companies data
-                    company: companyArray,
+                    company: companyArray
                 };
                 link = '/ocrs/updateChecks';
                 var data = jQuery.param(params);
