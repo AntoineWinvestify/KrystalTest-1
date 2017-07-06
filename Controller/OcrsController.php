@@ -400,6 +400,14 @@ class ocrsController extends AppController {
 
         echo " ";
     }
+    
+    /** Investor View #4
+     * Modal to completed process
+     */
+    function ocrCompletedProcess() {
+        $this->layout = 'azarus_private_layout';
+        echo " ";
+    }
 
     //One Click Registration - PFPAdmin Views
     //PFPAdmin View #2
