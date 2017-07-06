@@ -430,17 +430,15 @@ class ocrsController extends AppController {
         $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));
 
         if ($status[0]) {
-            if ($status[0]) {
-                //Read and accepted relations
-                $ocrList = $this->Ocr->getAllOcrRelations($this->Session->read('Auth.User.Adminpfp.company_id'));
-                $this->set('ocrList', $ocrList);
+            //Read and accepted relations
+            $ocrList = $this->Ocr->getAllOcrRelations($this->Session->read('Auth.User.Adminpfp.company_id'));
+            $this->set('ocrList', $ocrList);
 
-                //PFP  status
-                $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
+            //PFP  status
+            $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
 
-                //Status name
-                $this->set('statusName', $this->pfpStatus);
-            }
+            //Status name
+            $this->set('statusName', $this->pfpStatus);
         } else {
             //You can't access to this page
         }
