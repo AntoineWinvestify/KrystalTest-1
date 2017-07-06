@@ -79,8 +79,8 @@ class filesController extends AppController {
                 $type = $data['info'];
                 $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
                 $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-                $result = $this->Ocrfile->ocrFileSave($data, $identity, $id, $type, "file");
-                $this->set("result", $result);
+                $data_json = $this->ocrFileSave($data, $identity, $id, $type, "file");
+                $this->set("result", json_encode($data_json));
             } else if (count($this->params['data']['bill']) > 0) {
                 $data = $this->params['data']['bill'];
                 $info = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency']);
@@ -88,6 +88,93 @@ class filesController extends AppController {
                 $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile'];
                 $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $info, "bill");
                 $this->set("result", $result);
+            }
+        }
+    }
+    
+    /**
+     * Upload investor file
+     * @param type $data
+     * @param type $identity
+     * @param type $id
+     * @param type $type Type of document (DNI, IBAN, CIF...) as defined in AppController
+     * @return string|int
+     */
+    public function ocrFileSave($fileInfo, $folder, $id, $type, $path) {
+        //Load files config
+        $fileConfig = Configure::read('files');
+        if ($path == "file") {
+            $up = $fileConfig['investorPath'] . $folder;
+        } else if ($path == "bill") {
+            $up = $fileConfig['billsPath'] . $folder;
+        }
+
+        foreach ($fileInfo as $file) {
+
+            //Error filter
+            if ($file['size'] == 0 || $file['error'] !== 0) {
+                continue;
+            }
+            //Type and size filter
+            if (in_array($file['type'], $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
+                $name = basename($file['name']);
+                $filename = time() . "_" . $name;
+                $uploadFolder = $up;
+                $uploadPath = $uploadFolder . DS . $filename;
+                //Create the dir if not exist
+                if (!file_exists($uploadFolder)) {
+                    mkdir($uploadFolder, 0770, true);
+                }
+
+                //Move the uploaded file to the new dir
+                if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
+                    return [false, __("Upload failed. Incorrect type or file too big.")];
+                }
+
+                //Save in db
+                if ($path == "file") {
+
+                    //$query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $id . "', '" . $type . "', '" . $name . "', '" . $folder . DS . $filename . "');";
+                    //$query = $this->query($query);
+                    $investorFileData = array (
+                        'investor_id' => $id ,
+                        'file_id' => $type ,
+                        'file_name' => $name ,
+                        'file_url' => $folder . DS . $filename,
+                        'file_status'  => 0
+                    );
+                    $result = $this->Ocrfile->FilesInvestor->save($investorFileData);
+                    $data_json = array(basename($file['name']), $folder . DS . $filename, $type);
+                    return [true, __('Upload ok'), $data_json];
+                } else if ($path == "bill") {
+                    $result = array(basename($file['name']), $folder . DS . $filename, $type);
+                    
+
+                    $bill = array(
+                        'CompaniesFile' => Array(
+                            'company_id' => $id,
+                            'file_id' => 50,
+                            'bill_number' => $type['number'],
+                            'bill_amount' => str_replace (",",".",$type['amount'] )* 100,
+                            'bill_concept' => $type['concept'],
+                            'bill_currency' => $type['currency'],
+                            'bill_url' => $folder . DS . $filename
+                        )
+                    );
+
+                    if ($this->validates($this->CompaniesFile->save($bill))) {
+                        $mail = $this->Investor->User->getPfpAdminMail($id);
+
+                        $event = new CakeEvent("billMailEvent", $this, $mail);
+                        $this->getEventManager()->dispatch($event);
+
+                        return [true, __('Upload ok')];
+                    } else {
+                        return [false, __("Upload failed. Incorrect type or file too big.")];
+                    }
+                }
+            } else {
+                return [false, __("Upload failed. Incorrect type or file too big.")];
             }
         }
     }
