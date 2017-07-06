@@ -523,14 +523,15 @@ class ocrsController extends AppController {
      * @param type $id
      */
     function ocrWinadminInvestorData($id) {
-
+        App::import('Controller', 'Investors');
         //Search and set investor data
         $userData = $this->Ocr->ocrGetData($id, null);
         $this->set('userData', $userData);
 
-
+        $investorsController = new InvestorsController;
+        // Call a method from
         //Search and set investor checking
-        $checking = $this->Investor->readCheckData($id);
+        $checking = $investorsController->readCheckData($id);
         $this->set('checking', $checking);
 
         //Search and set investor files
