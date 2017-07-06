@@ -209,7 +209,7 @@
             } else {
                 $(".feedbackText").html('<?php echo __('You must select on "Yes" all radio buttons') ?>');
                 $(".alert-to-fade").show();
-                $(".alert-to-fade").addClass("alert-win-success");
+                $(".alert-to-fade").addClass("alert-win-warning");
                 fadeOutElement(".alert-to-fade", 10000);
             }
         });
