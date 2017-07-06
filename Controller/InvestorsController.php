@@ -92,6 +92,15 @@ function deleteLinkedAccount() {
 }
 
     
+/**
+ * Read the cheack data
+ * @param type $investorId
+ * @return type
+ */
+public function readCheckData($investorId) {
+    $checkData = $this->Investor->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+    return $checkData;
+}
     
     
     
