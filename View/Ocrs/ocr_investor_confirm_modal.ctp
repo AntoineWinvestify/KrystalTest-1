@@ -35,6 +35,9 @@
  * 
  * [2017-06-16] Version 0.3
  * New feedback and flow
+ * 
+ * [2017-07-06] version 0.4
+ * Final process
  */
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
@@ -95,7 +98,7 @@
         $(document).on("click", "#btnOk", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
-            window.location.replace('/investors/userProfileDataPanel');
+            window.location.replace('/ocrs/ocrCompletedProcess');
         });
 
 
@@ -108,13 +111,14 @@
         console.log(resultJson);
         if (resultJson[0] == 1 && resultJson[0] == 1 && resultJson[0] == 1) {
             //$(".successMsg").fadeIn();
-            window.location.replace('/ocrs/ocrInvestorView');
+            window.location.replace('/ocrs/ocrCompletedProcess');
             //User feedback(Status ocr control?)
         } else {
             console.log("db error");
             //Save error
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
+            $(".feedbackMsg").fadeIn();
             //User feedback
         }
     }
@@ -203,14 +207,7 @@
                                             <?php } ?>
                                         </ul>
                                     </div>
-                                    <div style="display:none;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 successMsg">
-                                        <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
-                                            <i class="fa fa-exclamation-circle"></i>
-                                            <span class="errorMessage" style="font-size:large"><?php echo __('The service has been activated.') ?></span>
-                                            <button id="btnOk" class="btn btn1CR center-block" type="button"><?php echo __('Thank you') ?></button>
-                                        </div>
-                                    </div>
-                                    <div style="display:none;" class="errorMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div style="display:none;" class="feedbackMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                             <i class="fa fa-exclamation-circle"></i>
                                             <span class="errorMessage" style="font-size:large"><?php echo __('Error.') ?></span>
