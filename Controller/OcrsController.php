@@ -321,7 +321,6 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', true);
         }
-        echo " ";
     }
 
     /** Investor View #1
@@ -376,7 +375,6 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', true);
         }
-        echo " ";
     }
 
     /** Investor View #3
@@ -395,10 +393,6 @@ class ocrsController extends AppController {
         //Set info
         $this->set("companies", $companyId);
         $this->set("status", $status);
-
-
-
-        echo " ";
     }
     
     /** Investor View #4
@@ -406,7 +400,6 @@ class ocrsController extends AppController {
      */
     function ocrCompletedProcess() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //One Click Registration - PFPAdmin Views
@@ -417,7 +410,6 @@ class ocrsController extends AppController {
         $this->set('bills', $bills);
 
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     /*     * PFPAdmin View #1
@@ -443,13 +435,11 @@ class ocrsController extends AppController {
             //You can't access to this page
         }
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //PFPAdmin View #3
     function ocrPfpTallyman() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //One Click Registration - Winvestify functions
@@ -478,7 +468,6 @@ class ocrsController extends AppController {
         $this->set('status', $this->ocrStatus);
 
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     /** WinAdmin View #1
@@ -497,7 +486,6 @@ class ocrsController extends AppController {
 
         // Currency names
         $this->set('currencyName', $this->currencyName);
-        echo " ";
     }
 
     function billsTable() {
@@ -537,7 +525,6 @@ class ocrsController extends AppController {
         $this->set('files', $files);
 
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     /**
@@ -564,7 +551,6 @@ class ocrsController extends AppController {
      */
     function ocrWinadminUpdatePfpData() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
 
         // Country Codes
         Configure::load('countryCodes.php', 'default');
@@ -627,13 +613,11 @@ class ocrsController extends AppController {
     //WinAdmin View #5
     function ocrWinadminSoldUsers() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //WinAdmin View #6
     function ocrWinadminTallyman() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //Activated Service VIEW
