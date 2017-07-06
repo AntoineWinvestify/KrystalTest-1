@@ -204,12 +204,12 @@ if ($result) {
 
 
             function successUpload(data, id) {
+                data = JSON.parse(data);
                 if (data[0]) {
-        <?php //Upload ok                     ?>
                     $("#file" + id).html(data[2][0]);
                     $("#file" + id).attr("value", data[2][0]);
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
-                    $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[2][1] + '" id="FilesInfo">');
+                    $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[2] + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
                     $("#del" + id).prop("disabled", false);
                     $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon center-block" />');
