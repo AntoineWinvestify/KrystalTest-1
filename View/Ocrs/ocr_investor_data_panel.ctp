@@ -839,8 +839,7 @@ if ($result) {
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
                     <div class="card">
                         <div class="card-header" data-background-color="blue">
-                            <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
-                            <p class="category"><?php echo __('Document Uploading') ?></p>
+                            <h4 class="title"><strong><?php echo __('Documentation Uploading') ?></strong></h4>
                         </div>
                         <div class="card-content table-responsive togetoverlay">
                             <div class="overlay">
