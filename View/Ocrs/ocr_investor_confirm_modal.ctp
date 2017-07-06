@@ -91,11 +91,12 @@
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
             //Delete uploaded files
+            $(".sureMsg").show();
             window.location.replace('/ocrs/ocrInvestorView');
         });
 
 
-        $(document).on("click", "#btnOk", function () {
+        $(document).on("click", "#btnConfirm", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
             window.location.replace('/ocrs/ocrCompletedProcess');
@@ -118,7 +119,7 @@
             //Save error
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
-            $(".feedbackMsg").fadeIn();
+            $(".errorMsg").fadeIn();
             //User feedback
         }
     }
@@ -153,17 +154,17 @@
                                             <?php } ?>
                                         </ul>
                                     </div>
-                                    <div style="display:none;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 successMsg">
+                                    <div style="display:none;" class="sureMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                             <i class="fa fa-exclamation-circle"></i>
-                                            <span class="errorMessage" style="font-size:large"><?php echo __('The service has been activated.') ?></span>
-                                            <button id="btnOk" class="btn btn1CR center-block" type="button"><?php echo __('Thank you') ?></button>
-                                        </div>
-                                    </div>
-                                    <div style="display:none;" class="errorMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
-                                            <i class="fa fa-exclamation-circle"></i>
-                                            <span class="errorMessage" style="font-size:large"><?php echo __('Error.') ?></span>
+                                            <span class="errorMessage" style="font-size:large"><?php echo __('Are you sure you want to cancel the process? All your data & documents will be deleted.') ?></span>
+                                            <div class="pull-right">
+                                                <input type='button' id="btnSure" class='btn btn-default' name='sureBtn' value='<?php echo __('Sure, I want to CANCEL the process')?>' />
+                                            </div>
+
+                                            <div class="pull-left">
+                                                <input type='button' id="btnNotSure" class='btn btn-default' name='notSureBtn' value='<?php echo __('Go back')?>' />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -207,7 +208,7 @@
                                             <?php } ?>
                                         </ul>
                                     </div>
-                                    <div style="display:none;" class="feedbackMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div style="display:none;" class="errorMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                             <i class="fa fa-exclamation-circle"></i>
                                             <span class="errorMessage" style="font-size:large"><?php echo __('Error.') ?></span>
