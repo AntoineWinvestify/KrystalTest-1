@@ -332,7 +332,7 @@ class ocrsController extends AppController {
             $this->set('result', false);
         } else {
             //Companies with ocr
-            $this->set('company', $this->Company->companiesDataOCR());
+            $this->set('companies', $this->Company->companiesDataOCR());
 
             //Types
             $this->set('CompanyType', $this->crowdlendingTypesLong);
