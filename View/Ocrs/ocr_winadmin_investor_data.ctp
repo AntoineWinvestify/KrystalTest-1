@@ -210,7 +210,6 @@
                 $(".feedbackText").html('<?php echo __('You must select on "Yes" all radio buttons') ?>');
                 $(".alert-to-fade").show();
                 $(".alert-to-fade").addClass("alert-win-warning");
-                fadeOutElement(".alert-to-fade", 10000);
             }
         });
 
@@ -225,7 +224,6 @@
         $(".feedbackText").html(data);
         $(".alert-to-fade").show();
         $(".alert-to-fade").addClass("alert-win-success");
-        fadeOutElement(".alert-to-fade", 10000);
     }
     function successApprove() {
         window.history.back();
@@ -234,7 +232,6 @@
         $(".feedbackText").html(data);
         $(".alert-to-fade").show();
         $(".alert-to-fade").addClass("alert-win-warning");
-        fadeOutElement(".alert-to-fade", 10000);
     }
 </script>
 <div id="1CR_winAdmin_2_investorData">
@@ -262,7 +259,8 @@
                     <div class="row">
                         <!-- Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="alert bg-success alert-dismissible fade in alert-to-fade <?php echo $class ?>" role="alert" style="display:none;">
+                            <div class="box box-warning fade in alert-to-fade" style="display:none;">
+				<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                                 <strong class="feedbackText"></strong>
                             </div>
                             <h4 class="header1CR"><?php echo __('Investor Data') ?></h4>
