@@ -407,6 +407,38 @@ public function readCheckData($investorId) {
         ));
         return $info;
     }
+    
+    /**
+     * Get all data of a investor by investor.id
+     * @param int $id It is the investor's id
+     * @return array $info It is all the investor's data
+     */
+    public function getInvestorIdentityByInvestorId($id) {
+
+        $info = $this->find("all", array(
+            'conditions' => array('Investor.id' => $id),
+            'recursive' => -1,
+        ));
+        return $info;
+    }
+    
+    public function getJsonDataForPFP($id) {
+        /*$options['joins'] = array(
+            array('table' => 'ocrs',
+                'alias' => 'Ocr',
+                'type' => 'inner',
+                'conditions' => array(
+                    'Investor.id = Ocr.investor_id'
+                )
+            )
+        );*/
+
+        $options['conditions'] = array(
+            'Investor.id' => $id
+        );
+        $investorData = $this->find("all", $options);
+        return $investorData;
+    }
 
     /**
      * Get investor id
