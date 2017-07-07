@@ -88,11 +88,11 @@
 
 
         $(document).on("click", "#btnCancel", function () {
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
+            //$("#1CR_investor_3_confirming").removeClass("show");
+            //$("#1CR_investor_3_confirming").hide();
             //Delete uploaded files
             $(".sureMsg").show();
-            window.location.replace('/ocrs/ocrInvestorView');
+            //window.location.replace('/ocrs/ocrInvestorView');
         });
 
 
