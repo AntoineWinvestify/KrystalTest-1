@@ -457,7 +457,7 @@ $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOf
     }
 
 
-    $PFPType = $resultCompany[$platformId]['company_typeOfCrowdlending'];
+    $PFPType = $resultCompany[$platformId]['company_PFPType'];
  
     foreach ($resultTallyman as $key => $platform) {
      //   if ($resultTallyman[$key]['investorglobaldata_PfpPerAmount_Abs'][$PFPType] <> 0) {
