@@ -417,7 +417,7 @@ class ocr extends AppModel {
         //Search the investor info
         foreach ($OcrArray as $ocr) {
             $investorData = $this->find('first', array('recursive' => 1, 'conditions' => array('Ocr.id' => $ocr['CompaniesOcr']['ocr_id'])));
-            array_push($result, array(array('ocrInfo' => $ocr), array('invesotrInfo' => $investorData)));
+            array_push($result, array(array('ocrInfo' => $ocr), array('investorInfo' => $investorData)));
         }
         return $result;
     }
