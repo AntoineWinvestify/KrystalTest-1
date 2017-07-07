@@ -211,12 +211,28 @@ class filesController extends AppController {
         $fileConfig = Configure::read('files');
         $folder = $this->Investor->getInvestorIdentity($userId);
         $pathToZipFile = $fileConfig['investorPath'] . $folder . DS . 'investorData.Zip';
-
-
+        
         //Zip archives
         $investorFiles = $this->Ocrfile->readExistingFiles($id);
         $urlList = array();
-        $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'results.json';
+        $investorData = $this->Investor->getJsonDataForPFP($id);
+        $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json';
+        $response = array();
+        $prefix = "investor_";
+        $values = [
+            $prefix . "name",
+            $prefix . "surname",
+            $prefix . "DNI",
+            $prefix . "dateOfBirth",
+            $prefix . "telephone"
+        ];
+        foreach ($values as $value) {
+            array_push($response, $investorData[0]["Investor"][$value]);
+        }
+
+        $fp = fopen($fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json', 'w');
+        fwrite($fp, json_encode($response));
+        fclose($fp);
         foreach ($investorFiles as $investorFile) {
            
             $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
