@@ -46,20 +46,37 @@
 <script type="text/javascript">
  
 function successTallymanData(data) {
+    
+console.log("successTallymanData(data): LINE 50");    
     $("#TallymanResult").html(data);
-    console.log("edit_user_profile_data: LINE 70");
+    
+}
+ 
+ 
+function errorTallymanData(data) {
+    
+console.log("errorTallymanData(data)");
+    $("#TallymanResult").html(data);
+	console.log("profile_data: LINE 60");
 
 }
  
  
- function errorTallymanData(data) {
 
+function successTallymanCheckCharging(data) {
+    
+console.log("Charging check has been done, data string = " + data);    
     $("#TallymanResult").html(data);
-	console.log("profile_data: LINE 99990");
 
 }
  
  
+function errorTallymanCheckCharging(data) {
+    
+console.log("Error occured while checking the charging of the investorrequest");
+    $("#TallymanResult").html(data);
+	
+}
  
  
 $(document).ready(function() {
@@ -68,8 +85,10 @@ $("#tallymanBtnSearch").bind("click", function(event) {
 console.log("btn clicked");    
      
     var link = $(this).attr( "href" );
+    link = "/adminpfp/users/testmodal";   //TESTING
 console.log ("link = " + link); 
-  // validar los parametros  
+
+  // validate the input parameters
     var inputid = $("#tallymanInputId").val();
     var useremail = $("#tallymanInputEmail").val();
     var usertelephone = $("#tallymanInputTelephone").val();   

@@ -53,8 +53,6 @@ var $validate = array();
      * @return boolean  true if data has been stored
      * 
      */
-
-
 public function writeChargingData($chargingData, $application = null) {
 
     $data = array();

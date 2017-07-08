@@ -35,6 +35,8 @@ Pending
 Method "cronMoveToMLDatabase": fields 'userplatformglobaldata_reservedInvestments' and
   'userplatformglobaldata_finishedInvestments' are not yet available in the raw data
 
+isChargeableEvent should also keep special conditions in mind, like NEVER charge the user,
+or charge only xx events/time-period/user, etc etc.
 
 */
 
@@ -56,16 +58,16 @@ class UsersController extends AdminpfpAppController
 function beforeFilter() {
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
-//	$this->Security->disabledFields = array('Participant.club'); // this excludes the club1 field from CSRF protection
+//	$this->Security->disabledFields = array('Participant.club'); // this excludes the club33 field from CSRF protection
 															// as it is "dynamic" and would fail the CSRF test
 
 //	$this->Security->requireSecure(	'login'	);
 	$this->Security->csrfCheck = false;
 	$this->Security->validatePost = false;	
-// Allow only the following actions.
+// Allow only the following actons.
 //	$this->Security->requireAuth();
 	$this->Auth->allow('login','session', 'loginAction', 'showTallymanPanel', 'cronMoveToMLDatabase',
-                                'startTallyman', 'readtallymandata');    // allow the actions without logon
+                                'startTallyman', 'readtallymandata', 'testmodal');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
 //   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 //var_dump($_REQUEST);
@@ -94,15 +96,43 @@ public function showInvestorList() {
  * Shows the initial, basic screen of the Tallyman service
  * 
  */
-public function startTallyman() {
-
-    $this->layout = 'Adminpfp.azarus_private_layout';
+public function startTallyman($investorEmail, $investorTelephone) {
  
+    $this->layout = 'Adminpfp.azarus_private_layout';
+ // check inputparameters against dangerous inputs
+ //   $investorTelephone = "+" . $investorTelephone;
+    
+    $investorDNI = "";
+    $investorTelephone = ""; 
+    $investorEmail = "";
+
+    $this->set("investorEmail", $investorEmail);
+    $this->set("investorDNI", $investorDNI);
+    $this->set("investorTelephone", $investorTelephone);            
+            
 
     $filterconditions = array('investor_identity', $investorIdentification);
  //   $result = $this->Investorglobaldata->readInvestorData($filterConditions);
     $this->set('result', $result);
        
+}
+
+
+
+
+// to test if modal shows up correctly. to be deleted
+/*
+ * should receive the request for one or more users
+ * It checks if charging is to be applied. IF so then show the modal with information
+ * about how many requests will be charged ("this event will be charged")
+ * 
+ * 
+ * 
+ */
+public function testmodal() {
+    
+    
+
 }
 
 
@@ -180,13 +210,15 @@ public function readtallymandata() {
                  $this->set('resultTallyman', $resultTallymanData);
 
                  // provide data for possible billing
-                 $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
-                 $data = array();
-                 $data['reference'] = $userIdentification;                           // investor unique identification
-                 $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
-                 $data['parm2'] = $platformId;                                      // platformId of the adminfp user
-                 $data['parm3'] = null;       
-                 $this->Billingparm->writeChargingData($data, "tallyman");
+                $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm'); 
+                if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
+                    $data = array();
+                    $data['reference'] = $userIdentification;                           // investor unique identification
+                    $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
+                    $data['parm2'] = $platformId;                                      // platformId of the adminfp user
+                    $data['parm3'] = null;       
+                    $this->Billingparm->writeChargingData($data, "tallyman");
+                 }
             }
         }
     }
@@ -197,6 +229,46 @@ public function readtallymandata() {
 
     $this->set("error", $error);         
     $this->render('tallymanErrorPage'); 
+}
+
+
+   /**
+     *
+     * 	Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
+     * 	@param 		$reference      parameter to be checked
+     *  @param      string      transparent parameter 2 to be checked
+     *  @param      string      transparent parameter 3 to be checked
+     *  @param      string      transparent parameter 4 to be checked
+     *  @param      string      name of application
+     *
+     * 	@return 	boolean	true	All OK, data has been saved
+     * 				false	Error occured
+     * 						
+     */
+public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
+return false;
+//  Calculate cutoff date for billing purposes
+    Configure::load('p2pGestor.php', 'default');
+    $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
+    $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 *24);    
+  
+    $result = $this->Billingparm->find('first', array(
+                                            "fields" => array("created"),
+                                            "order" => "id DESC",
+                                            "recursive" => -1,
+                                            "conditions" => array("billingparm_reference" => $reference,
+                                                                    "billingparm_parm2" => $parameter2,
+                                                                "billingparm_serviceName" => $application),
+                                             ));
+            
+    if (empty($result)) {  // No information found, 
+        return false;
+    }
+
+    if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
+        return true;           
+    }
+    return false;
 }
 
 
@@ -393,7 +465,6 @@ public function cronMoveToMLDatabase() {
             }
             if ($activeInvestments) {
                 $investorglobalData['investorglobaldata_activePFPs'] += 1;
-                $activeInvestments = false;
             }
             
             $investorglobalData['investorglobaldata_totalPFPs'] += 1;
