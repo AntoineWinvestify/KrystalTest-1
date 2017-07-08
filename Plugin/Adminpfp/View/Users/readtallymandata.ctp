@@ -36,7 +36,6 @@
 
  
  PENDING:
- * colors of the graphs (line chart and bar chart)
  * vertical axis of line chart (multiply by 100 and name the axis)
  * vertical axis of bar chart (name of the axis)
 
@@ -77,8 +76,8 @@ $arrowClass[DOWNWARDS] = "fa fa-long-arrow-down";
             data: {
                 labels: <?php echo json_encode(array_values($crowdlendingTypesShort))?>,
                 datasets: [{
-                    label: 'Number of Investments',
-                    data: <?php echo json_encode($resultTallyman[0]['investorglobaldata_PfpPerType_Abs'])?>,
+                    label: 'Number of Investments [%]',
+                    data: <?php echo json_encode($resultTallyman[0]['investorglobaldata_PfpPerType_Norm'])?>,
                     backgroundColor: [
                             "#55acee",
                             "#55acee",
@@ -95,7 +94,7 @@ $arrowClass[DOWNWARDS] = "fa fa-long-arrow-down";
                     ]
                 },
                 {
-                    label: 'Investment Amount',
+                    label: 'Investment Amount [%]',
                     data: <?php echo json_encode($resultTallyman[0]['investorglobaldata_PfpPerAmount_Norm'])?>,
                     backgroundColor: [
                             "#1acc5a",
@@ -124,7 +123,7 @@ var myChart = new Chart(ctx, {
   data: {
     labels: <?php echo json_encode($resultTallyman[0]['totalPortfolioHistoricalDate'])?>,
     datasets: [{
-      label: 'Portfolio Invested',
+      label: 'Portfolio Invested %',
       data:<?php echo json_encode($resultTallyman[0]['totalPortfolioHistorical'])?>,
       backgroundColor: ["#2acc5a", "#9acc5a", "#5acc5a"],
     }]
@@ -185,7 +184,7 @@ var myChart = new Chart(ctx, {
                                         <div class="col-lg-3">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;">
-                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?></h1>
+                                                    <h1  title ="<?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>"><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
@@ -201,9 +200,6 @@ var myChart = new Chart(ctx, {
                                         </div>
                                         <div class="col-lg-9">
                                             <div class="card">
-                                                <div class="card-header card-chart" data-background-color="green">
-                                                        <div class="ct-chart" id="dailySalesChart"></div>
-                                                </div>
                                                 <div class="card-content">
                                                     <h4 class="title"></h4>
                                                     <canvas id="lineChart1" style="height: 100px;"></canvas>
@@ -215,7 +211,7 @@ var myChart = new Chart(ctx, {
                                         <div class="col-lg-3">
                                             <div class="card card-stats">
                                                 <div class="card-content">                    
-                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?></h1>
+                                                    <h1 title ="fdjkdfjkj" style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
@@ -224,16 +220,13 @@ var myChart = new Chart(ctx, {
                                                     </div>
                                                     <div class="card-content">
                                                             <p class="category"><span class="text-success"><i 
-                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalMyModalityTendency']] ?> "></i></span></p>
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i></span></p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">
                                             <div class="card">
-                                                <div class="card-header card-chart" data-background-color="blue">
-                                                    <div class="ct-chart" id="emailsSubscriptionChart"></div>
-                                                </div>
                                                 <div class="card-content">
                                                     <h4 class="title" style="text-align: center;">
                                                         <?php echo __('A) Investments Volume')?>
@@ -262,7 +255,7 @@ var myChart = new Chart(ctx, {
                                                     <div class="card card-stats">
                                                         <div class="card-content">
                                                             <!-- Number of linked accounts -->
-                                                            <h1 style="text-align: center;"><?php echo count($resultTallyman[0]['Userplatformglobaldata'])?></h1>
+                                                            <h1 <?php echo __('The number of platforms where the user has ACTIVE investments. Investment MAY have payment delays')?>style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h1>
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">
@@ -275,7 +268,7 @@ var myChart = new Chart(ctx, {
                                                     <div class="card card-stats">
                                                         <div class="card-content">
                                                             <!-- total number of platforms -->
-                                                            <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
+                                                            <h1 <?php echo __('The number of platforms where the investor has an account')?>style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">

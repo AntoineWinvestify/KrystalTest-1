@@ -63,14 +63,13 @@ public function writeChargingData($chargingData, $application = null) {
     $data['billingparm_parm2'] = $chargingData['parm2']; 
     $data['billingparm_parm3'] = $chargingData['parm3'];   
     $data['billingparm_serviceName'] = $application;    
-       
+     
     if ($this->save($data, $validate = true)) {
         return true;
     }
     else  { 
         return false;
     }
-    
 }
 
 
