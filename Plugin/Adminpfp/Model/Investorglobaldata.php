@@ -29,11 +29,11 @@ App::uses('AppModel', 'Model');
 class Investorglobaldata extends AppModel
 {
         var $useDbConfig = 'mldata';    
-	public $name = 'Investorglobaldata';
+	public $name = 'Investorglobaldatas';
 
 	var $hasMany = array(
 		'Userplatformglobaldata' => array(
-			'className' => 'Adminpfp.Userplatformglobaldata',
+			'className' => 'Userplatformglobaldata',
 			'foreignKey' => 'investorglobaldata_id',
 		)
 	);

@@ -85,7 +85,7 @@ $("#tallymanBtnSearch").bind("click", function(event) {
 console.log("btn clicked");    
      
     var link = $(this).attr( "href" );
-    link = "/adminpfp/users/testmodal";   //TESTING
+//    link = "/adminpfp/users/testmodal";   //TESTING
 console.log ("link = " + link); 
 
   // validate the input parameters

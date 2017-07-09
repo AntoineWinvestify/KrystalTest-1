@@ -10,15 +10,17 @@
  * @date 2017-07-07
  * @package
 
+
+  Shows a modal indicating that this event is going to be charged 
  
- 
+  
+    
 2016-10-25		version 0.1
 initial test version
  * 
  * 
  * 
- * 
- * SHOWS A MODAL WITH A NOTE THAT THIS EVENT WILL BE CHARGED
+
  * 
  * 
  not finished yet
@@ -26,7 +28,7 @@ initial test version
 ?>
 <?php  
 	if (!$error) {			// this is the "first" time that this screen is show, will not be send when server has detected an error
-// For updating the url in browser if user decides to close a registration window
+// For updating the url in browser if user decides to close the modal
 		echo $this->Form->input('', array('name'    => 'ownDomain',
 						'value'     => $ownDomain,
 						'id'        => 'ownDomain',
