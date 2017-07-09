@@ -143,7 +143,7 @@ public function testmodal() {
  * 
  */
 public function readtallymandata() {
-
+Configure::write('debug', 0);
     if (!$this->request->is('ajax')) {
         throw new
         FatalErrorException(__('You cannot access this page directly'));
@@ -212,6 +212,13 @@ public function readtallymandata() {
                  // provide data for possible billing
                 $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm'); 
                 if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
+                    $parms = array($inputId, $userEmail, $userTelephone);
+                    $this->set('parms', $parms);
+                    print_r($parms);
+                    echo "AANANANANANANANAN";
+                    $this->render('testmodal');
+                    exit;
+                    
                     $data = array();
                     $data['reference'] = $userIdentification;                           // investor unique identification
                     $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
