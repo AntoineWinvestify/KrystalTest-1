@@ -39,20 +39,11 @@ Simple first version
 
 
 PENDING:
-Put authorization table in the acl.php config file
-isAuthorised: Does not seem to work for AJAX actions
-APROBADO is missing in global constants
-
-// used in investmentState
-	define("UNDEFINED", 1);
-	define("CANCELED", 3);
-	define("PAID_IMMEDIATELY", 32);	
-	define("WAITING_FOR_PAYMENT", 31);
-	define("DELAYED_PAYMENT", 33);					
-	define("WAITING_FOR_PAYMENT_AFTER_WARNING", 34);	
-	define("DELAYED_PAYMENT_AFTER_WARNING", 35);
-
-
+---
+ * 
+ * 
+ * 
+ * 
 */
  
 class AdminAppController extends AppController {
@@ -66,8 +57,8 @@ class AdminAppController extends AppController {
 				'Auth' => array('authorize' => 'Controller',
                                                 'loginRedirect'	=> array(
 									'plugin' => 'admin',
-									'controller' 	=> 'users',
-									'action' 	=> 'testmodal'
+									'controller' 	=> 'ocrs',
+									'action' 	=> 'ocr_winadmin_investor_checking'
 									),
 						'logoutRedirect' => array('controller' 	=> 'users',
 									 'action' => 'login'
