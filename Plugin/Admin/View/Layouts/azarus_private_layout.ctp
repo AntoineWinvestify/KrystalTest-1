@@ -92,7 +92,7 @@
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
 			
-<?php echo $this->element('leftnavigationmenu')?>			
+<?php echo $this->element('leftnavigationmenuwinadmin')?>			
 			
 
     </section>

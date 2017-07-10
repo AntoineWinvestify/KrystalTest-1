@@ -27,17 +27,20 @@ initial test version
 */
 ?>
 <?php  
+echo "0";
 	if (!$error) {			// this is the "first" time that this screen is show, will not be send when server has detected an error
 // For updating the url in browser if user decides to close the modal
-echo "1";
+
             echo $this->Form->input('', array('name'    => 'ownDomain',
 						'value'     => $ownDomain,
 						'id'        => 'ownDomain',
 						'type'      => 'hidden'
 					));
 	
-print_r($parms);   
-echo "FFFFFFFFFfff";
+
+$email = $parameters[1];
+$phone = $parameters[2];
+$userid = $parameters[0];
 ?>
 
 <script type="text/javascript">
@@ -48,7 +51,6 @@ echo "FFFFFFFFFfff";
             $('#registerModal').hide();
             document.location.href = "https://" + $('#ownDomain').val();
         });
-
 
         $(document).on("click", '.closeBtn', function () {
             $("#registerModal").removeClass("show");
@@ -64,62 +66,24 @@ echo "FFFFFFFFFfff";
 
 
 
+        $(document).on("click", "#btnConfirm", function (event) {
 
-        $(document).on("click", "#btnRequestNewCode", function (event) {
             var link = $(this).attr("href");
-            var username = $("#username").val();
-            var params = {requestNewCode: true, username: username};
+            
+            var inputid = "<?php echo $userid ?>";
+            var useremail = "<?php echo $email ?>";
+            var usertelephone = "<?php echo $phone ?>";
+            var chargingconfirmed = 1;
+
+            var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
+            var data = jQuery.param( params );           
+            event.stopPropagation();
+            event.preventDefault();     
+
             var data = jQuery.param(params);
-            var telephone = $("#telephone").val();
-
-            event.stopPropagation();
-            event.preventDefault();
-
-            ga_registrationStep2NewCode(telephone);
-            getServerData(link, data, successSendFollowersButton, errorSendFollowersButton);
+            getServerData(link, data, successTallymanData, errorTallymanData);
+            return false;
         });
-
-
-        $(document).on("click", ".btnSendInvestedCompanies", function (event) {
-            var link = $(this).attr("href");
-            var username = $("#username").val();
-            var investor = $('input[name="accreditedInvestor"]:checked').val();
-            var p2p = $('#ContentPlaceHolder_P2PInvestment').is(':checked') ? <?php echo P2P ?> : 0;
-            var p2b = $('#ContentPlaceHolder_P2BInvestment').is(':checked') ? <?php echo P2B ?> : 0;
-            var invoiceTrading = $('#ContentPlaceHolder_InvoiceTrading').is(':checked') ? <?php echo INVOICE_TRADING ?> : 0;
-            var crowdRealEstate = $('#ContentPlaceHolder_CrowdRealEstate').is(':checked') ? <?php echo CROWD_REAL_ESTATE ?> : 0;
-            var platformcount = $('#investor_investmentPlatforms option:selected').val();
-            var platformtypes = p2b + p2p + invoiceTrading + crowdRealEstate;
-
-            event.stopPropagation();
-            event.preventDefault();
-
-            if ((app.visual.checkFormRegistrationD()) === true) {
-                ga_registrationStep4(investor, platformtypes);
-                var params = {username: username,
-                    platformcount: platformcount,
-                    platformtypes: platformtypes,
-                    accreditedInvestor: investor
-                };
-                var data = jQuery.param(params);
-                getServerData(link, data, successSendRegistrationDButton, errorSendRegistrationDButton);
-                return false;
-            }
-        });
-
-
-
-        $(document).on("click", "#btnRegisterGoToAccount", function (event) {
-            var link = $(this).attr("href");
-            ga_registrationStep5();
-
-            event.stopPropagation();
-            event.preventDefault();
-
-            window.location = link;
-
-        });
-
     });
 </script>
 
@@ -182,8 +146,8 @@ echo "FFFFFFFFFfff";
                                 <div style="display:none;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 successMsg">
                                     <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                         <i class="fa fa-exclamation-circle"></i>
-                                        <span class="errorMessage" style="font-size:large"><?php echo __('This is an action which will be billed to your account.') ?></span>
-                                        <button id="btnOk" class="btn btn1CR center-block" type="button"><?php echo __('Thank you') ?></button>
+                                        <span class="errorMessage" style="font-size:large"><?php echo __('You requested information about an investor. This event is going to be charged to your account.') ?></span>
+                                        <button id="btnOk" class="btn btn1CR center-block" type="button"><?php echo __('Confirm') ?></button>
                                     </div>
                                 </div>
                                 <div style="display:none;" class="errorMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -196,7 +160,7 @@ echo "FFFFFFFFFfff";
                         </div> <!-- /tab-content -->
                         <div class="wizard-footer">
                             <div class="pull-right">
-                                <input type='button' id="btnConfirm" class='btn btn-default' name='confirm' value='Confirm' />
+                                <input type='button' id="btnConfirm" class='btn btn-default' name='confirm' href="/adminpfp/users/readtallymandata" value='Confirm' />
                             </div>
 
                             <div class="pull-left">

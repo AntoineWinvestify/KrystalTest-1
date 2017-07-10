@@ -57,7 +57,7 @@ function errorTallymanData(data) {
     
 console.log("errorTallymanData(data)");
     $("#TallymanResult").html(data);
-	console.log("profile_data: LINE 60");
+	console.log("profile_data: LINE 60 CONFIRMATION REQUIRED");
 
 }
  
@@ -85,14 +85,14 @@ $("#tallymanBtnSearch").bind("click", function(event) {
 console.log("btn clicked");    
      
     var link = $(this).attr( "href" );
- //   link = "/adminpfp/users/testmodal";   //TESTING
-console.log ("link = " + link); 
 
   // validate the input parameters
     var inputid = $("#tallymanInputId").val();
     var useremail = $("#tallymanInputEmail").val();
-    var usertelephone = $("#tallymanInputTelephone").val();   
-    var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone };
+    var usertelephone = $("#tallymanInputTelephone").val(); 
+    var chargingconfirmed = 0;
+    
+    var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
     var data = jQuery.param( params );
     
     event.stopPropagation();

@@ -152,24 +152,7 @@ $(document).ready(function() {
               <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
             </a>
         </li>
-    <li class="header">
-            <strong>PFP Admin Menu</strong>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrPfpUsersPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('New Users')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrPfpBillingPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrPfpTallyman">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
-            </a>
-        </li>
+    
         <li class="header">
             <strong>WinAdmin Menu</strong>
         </li>

@@ -143,7 +143,8 @@ public function testmodal() {
  * 
  */
 public function readtallymandata() {
-Configure::write('debug', 0);
+//echo "0";
+//Configure::write('debug', 0);
     if (!$this->request->is('ajax')) {
         throw new
         FatalErrorException(__('You cannot access this page directly'));
@@ -153,16 +154,16 @@ Configure::write('debug', 0);
 
     $platformId = $this->Session->read('Auth.User.Adminpfp.company_id');
     $error = null;
-    
-    $inputId = $_REQUEST['inputId'];
+
+    $inputId = $_REQUEST['inputId']; 
     $userEmail = $_REQUEST['userEmail'];
     $userTelephone = $_REQUEST['userTelephone'];
- 
+    $chargingConfirmed = $_REQUEST['chargingConfirmed'];
     
-    $userEmail ="antoine.de.poorter@gmail.com";
-    $userTelephone = "+34675546946";  
+ //   $userEmail ="antoine.de.poorter@gmail.com";
+ //   $userTelephone = "+34675546946";  
+   
 
-      
 // Get the unique investor identification
     $inputParmCount = 0;
     if (!empty($inputId)) {     
@@ -199,7 +200,6 @@ Configure::write('debug', 0);
             $error = USER_DOES_NOT_EXIST;
         }
         else {
-            
             $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
             $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
 
@@ -207,18 +207,20 @@ Configure::write('debug', 0);
                 $error = NO_DATA_AVAILABLE;
             }   
             else {
-                 $this->set('resultTallyman', $resultTallymanData);
-
-                 // provide data for possible billing
+                $this->set('resultTallyman', $resultTallymanData);
                 $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm'); 
+
                 if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
-                    $parms = array($inputId, $userEmail, $userTelephone);
-                    $this->set('parms', $parms);
-                    print_r($parms);
-                    echo "AANANANANANANANAN";
-                    $this->render('testmodal');
-                    exit;
-                    
+                    if ($chargingConfirmed == false){ 
+                        $parameters = array($inputId, $userEmail, $userTelephone);
+                        $this->set('parameters', $parameters);
+                        $this->render('chargingconfirmationmodal');
+                        return;
+                    }
+                } 
+                
+                // provide data for possible billing
+                 if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
                     $data = array();
                     $data['reference'] = $userIdentification;                           // investor unique identification
                     $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
@@ -255,6 +257,7 @@ Configure::write('debug', 0);
     */
 public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
 return true;
+
 //  Calculate cutoff date for billing purposes
     Configure::load('p2pGestor.php', 'default');
     $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
@@ -269,7 +272,7 @@ return true;
                                                                 "billingparm_serviceName" => $application),
                                              ));
             
-    if (empty($result)) {  // No information found, 
+    if (empty($result)) {  // No information found, so not a chargeable event
         return false;
     }
 

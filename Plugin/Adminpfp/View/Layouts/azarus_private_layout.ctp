@@ -69,7 +69,7 @@
 
 <?php
 	$sessionData = $this->Session->read();
-	echo $this->element('headerline', array('sessionData' => $sessionData));
+	echo $this->element('headerlinepfpadmin', array('sessionData' => $sessionData));
 ?>
     </nav>
   </header>
