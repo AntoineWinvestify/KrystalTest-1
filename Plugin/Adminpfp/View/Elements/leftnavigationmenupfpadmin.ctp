@@ -139,18 +139,7 @@ $(document).ready(function() {
               <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
             </a>
         </li>       
-        
-        
-        <li class="treeview">
-            <a href="/ocrs/ocrInvestorPlatformSelection">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
-            </a>
-        </li>
-        
- 
-<?php /*<li class="treeview">
-			<a href="/invitations/recommend"><i class="fa fa-power-off"></i><span><?php //echo __('Recommend to a friend')?></a></span>
-        </li>*/?>
+
         <li class="treeview">
           <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>

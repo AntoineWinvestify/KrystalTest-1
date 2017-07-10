@@ -160,8 +160,8 @@ public function readtallymandata() {
     $userTelephone = $_REQUEST['userTelephone'];
     $chargingConfirmed = $_REQUEST['chargingConfirmed'];
     
- //   $userEmail ="antoine.de.poorter@gmail.com";
- //   $userTelephone = "+34675546946";  
+//    $userEmail ="antoine.de.poorter@gmail.com";
+//    $userTelephone = "+34675546946";  
    
 
 // Get the unique investor identification
@@ -203,7 +203,8 @@ public function readtallymandata() {
             $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
             $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
 
-            if (!$resultTallymanData) {
+            // CHECK IF F structure can be improved
+            if (empty($resultTallymanData)) {
                 $error = NO_DATA_AVAILABLE;
             }   
             else {
@@ -226,7 +227,7 @@ public function readtallymandata() {
                     $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
                     $data['parm2'] = $platformId;                                      // platformId of the adminfp user
                     $data['parm3'] = null;       
-                    $this->Billingparm->writeChargingData($data, "tallyman");
+                    $this->Billingparm->writeChargingData($data, "tallyman");  // CHECK RESULT CODE
                  }
             }
         }
