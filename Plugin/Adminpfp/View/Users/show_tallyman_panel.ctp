@@ -47,38 +47,54 @@
  
 function successTallymanData(data) {
     $("#TallymanResult").html(data);
-    console.log("edit_user_profile_data: LINE 70");
-
+    
 }
  
  
- function errorTallymanData(data) {
-
+function errorTallymanData(data) {
+    
     $("#TallymanResult").html(data);
-	console.log("profile_data: LINE 99990");
+	console.log("profile_data: LINE 60 CONFIRMATION REQUIRED");
 
 }
  
  
+
+function successTallymanCheckCharging(data) {
+    
+console.log("Charging check has been done, data string = " + data);    
+    $("#TallymanResult").html(data);
+
+}
+ 
+ 
+function errorTallymanCheckCharging(data) {
+    
+console.log("Error occured while checking the charging of the investorrequest");
+    $("#TallymanResult").html(data);
+	
+}
  
  
 $(document).ready(function() {
    
-    $("#tallymanBtnSearch").bind("click", function(event) {
-        console.log("btn clicked");    
+$("#tallymanBtnSearch").bind("click", function(event) {
+console.log("btn clicked");    
+     
+    var link = $(this).attr( "href" );
 
-            var link = $(this).attr( "href" );
-            console.log ("link = " + link); 
-            // validar los parametros  
-            var inputid = $("#tallymanInputId").val();
-            var useremail = $("#tallymanInputEmail").val();
-            var usertelephone = $("#tallymanInputTelephone").val();   
-            var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone };
-            var data = jQuery.param( params );
-
-            event.stopPropagation();
-            event.preventDefault();    
-            getServerData(link, data, successTallymanData, errorTallymanData);
+  // validate the input parameters
+    var inputid = $("#tallymanInputId").val();
+    var useremail = $("#tallymanInputEmail").val();
+    var usertelephone = $("#tallymanInputTelephone").val(); 
+    var chargingconfirmed = 0;
+    
+    var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
+    var data = jQuery.param( params );
+    
+    event.stopPropagation();
+    event.preventDefault();    
+    getServerData(link, data, successTallymanData, errorTallymanData);
          
     }); 
 });

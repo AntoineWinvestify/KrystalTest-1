@@ -47,7 +47,7 @@ App::uses('CakeEvent', 'Event');
 class Data extends AppModel
 {
 	var $name= 'Data';
-	public $useTable = 'data';
+	public $useTable = 'datas';
 /*
 	var $hasOne = array(
 		'Company' => array(

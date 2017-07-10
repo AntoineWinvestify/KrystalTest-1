@@ -1,7 +1,7 @@
 <?php
 /**
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2009, http://www.winvestify.com                         |
+// | Copyright (C) 2017, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -16,11 +16,8 @@
 // +-----------------------------------------------------------------------+
 //
 
+2017-07-05	  version 0.1
 
- The model that stores all the searches for Tallyman data
-
-2016-06-29	  version 0.1
-First version
 
 
 
@@ -28,9 +25,17 @@ First version
 */
 
 App::uses('AppModel', 'Model');
-class Billingparm extends AppModel
+class Userplatformglobaldata extends AppModel
 {
-	public $name = 'Billingparm';
+        var $useDbConfig = 'mldata';   
+	public $name = 'Userplatformglobaldatas';
+
+        public $belongsTo = array(
+            'Investorglobaldata' => array(
+            'className' => 'Investorglobaldata',
+            'foreignKey' => 'investorglobaldata_id'
+            )
+        );
 
 
 /**
@@ -39,36 +44,6 @@ class Billingparm extends AppModel
 *	provided by framework
 */
 var $validate = array();
-
-
-
-
-
-    /**
-     * 
-     * Store the data needed for billing purposes
-     * 	
-     * @param array $data    array with charging data/indicators to be stored
-     *
-     * @return boolean  true if data has been stored
-     * 
-     */
-public function writeChargingData($chargingData, $application = null) {
-
-    $data = array();
-    $data['billingparm_reference'] = $chargingData['reference'];   
-    $data['billingparm_parm1'] = $chargingData['parm1'];     
-    $data['billingparm_parm2'] = $chargingData['parm2']; 
-    $data['billingparm_parm3'] = $chargingData['parm3'];   
-    $data['billingparm_serviceName'] = $application;    
-     
-    if ($this->save($data, $validate = true)) {
-        return true;
-    }
-    else  { 
-        return false;
-    }
-}
 
 
 

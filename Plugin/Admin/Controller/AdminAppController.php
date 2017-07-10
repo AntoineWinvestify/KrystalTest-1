@@ -56,7 +56,7 @@ APROBADO is missing in global constants
 */
  
 class AdminAppController extends AppController {
- 
+  
     public $components = array('DebugKit.Toolbar',
 				'RequestHandler',
 				'Session',
@@ -67,7 +67,7 @@ class AdminAppController extends AppController {
                                                 'loginRedirect'	=> array(
 									'plugin' => 'admin',
 									'controller' 	=> 'users',
-									'action' 	=> 'readInvestmentsList'
+									'action' 	=> 'testmodal'
 									),
 						'logoutRedirect' => array('controller' 	=> 'users',
 									 'action' => 'login'

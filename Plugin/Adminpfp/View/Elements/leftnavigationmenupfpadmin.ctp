@@ -51,12 +51,7 @@ $(document).ready(function() {
 
 
 	<ul class="sidebar-menu">
-    <li class="header">MAI NAVIGATION</li>
-	  <li class="treeview">
-      <a href="/adminpfp/users/startTallyman">
-        <i class="fa fa-dashboard"></i> <span><?php echo __('Start Tallyman')?></span>
-      </a>
-    </li>
+    <li class="header">MAIN NAVIGATION</li>
         <?php  
         /*<li class="treeview">
           <a href="#">
@@ -74,16 +69,7 @@ $(document).ready(function() {
         </li>*/
         ?>
        <li class="treeview">
-          <a href="#">
-            <i class="fa fa-globe"></i>
-            <span><?php echo __('Global Marketplace')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="/marketplaces/showMarketPlace"><i class="fa fa-circle-o"></i> <?php echo __('My Marketplace')?></a></li>
-          </ul>
+
             <?php  
             /*<li class="disabled" style="opacity:0.5"><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> <?php echo __('Spain')?></a></li>
             <li class="disabled" style="opacity:0.5"><a href="pages/charts/flot.html"><i class="fa fa-circle-o"></i> <?php echo __('France')?></a></li>
@@ -133,40 +119,29 @@ $(document).ready(function() {
             <li><a href="pages/forms/editors.html"><i class="fa fa-circle-o"></i> Editors</a></li>
           </ul>
         </li>*/?>
-        <li class="treeview">
-          <a href="#">
-            <i class="fa fa-user-secret"></i> <span><?php echo __('Tallyman')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="/adminpfp/users/startTallyman""><i class="fa fa-circle-o"></i> <?php echo __('Start Tallyman')?></a></li>
-            <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>*/?>
-          </ul>
-          <ul class="treeview-menu">
-            <li><a href="/adminpfp/users/showTallyman""><i class="fa fa-circle-o"></i> <?php echo __('Show Tallyman')?></a></li>
-            <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>*/?>
-          </ul>
+
+        
+     <li class="header">
+            <strong>PFP Admin Menu</strong>
         </li>
         <li class="treeview">
-            <a href="/ocrs/ocrInvestorPlatformSelection">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
+            <a href="/ocrs/ocrPfpUsersPanel">
+              <i class="fa fa-dashboard"></i> <span><?php echo __('New Users')?></span>
             </a>
         </li>
-        
- 
-<?php /*<li class="treeview">
-			<a href="/invitations/recommend"><i class="fa fa-power-off"></i><span><?php //echo __('Recommend to a friend')?></a></span>
-        </li>*/?>
+        <li class="treeview">
+            <a href="/ocrs/ocrPfpBillingPanel">
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
+            </a>
+        </li>
+        <li class="treeview">
+            <a href="showTallymanPanel">
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
+            </a>
+        </li>       
+
         <li class="treeview">
           <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
-        <li class="treeview">
-<?php /*      <a>
-<button type="button" href="/usererrors/getErrorModal" class="btn btn-primary errorBtn">  
-          <?php // echo __('Report Error')?>
-        </button>
-      </a>*/ ?>
-        </li>
+ 
 	</ul>
