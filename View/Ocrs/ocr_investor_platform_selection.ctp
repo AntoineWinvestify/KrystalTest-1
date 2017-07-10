@@ -276,8 +276,8 @@ if ($result) {
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <h3>
-                    <strong><?php echo __("One Click Registration"); ?></strong> <?php echo __("le permite registrarse en cualquiera de las siguientes plataformas."); ?>
-                    <small><?php echo __("Aquellas plataformas que se encuentren linkeadas en Winvestify no aparecerán en el proceso de selección"); ?></small>
+                    <?php echo __("Winvestify pone a su disposición la posibilidad darse de alta mediante un único registro, accediendo a  cualquiera de las plataformas que tenemos actualmente habilitadas.
+Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuentas* antes de iniciar One Click Resgistration, así evitaremos que se muestren en el proceso de selección. "); ?>
                 </h3>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">

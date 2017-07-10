@@ -88,11 +88,15 @@
 
 
         $(document).on("click", "#btnCancel", function () {
-            //$("#1CR_investor_3_confirming").removeClass("show");
-            //$("#1CR_investor_3_confirming").hide();
-            //Delete uploaded files
             $(".sureMsg").show();
-            //window.location.replace('/ocrs/ocrInvestorView');
+            $(".btnCancel").prop("disabled", true);
+        });
+        
+        $(document).on("click", "#sureBtn", function () {
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
+            //Delete uploaded files
+            window.location.replace('/marketplaces/showMarketPlace');
         });
 
 
@@ -147,7 +151,7 @@
                             <div class="tab-content">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.') ?></p>
+                                        <p align="justify"><?php echo __('Para finalizar con el proceso de alta de sus plataformas, le informarmos que Winvestify atendiendo a su petición facilitará a las plataformas solicitadas toda la información y documentación aportada por usted  (nombre, apellidos, DNI/NIE, cuenta bancaria y otros datos que puedan permitir identificarle como usuario). Mediante la aceptación de estas condiciones, usted confirma que ha leído y acepta las condiciones de este servicio.') ?></p>
                                         <ul>
                                             <?php foreach ($companies as $company) { ?>
                                                 <li><?php echo __($company["name"]) ?></li>
@@ -155,16 +159,9 @@
                                         </ul>
                                     </div>
                                     <div style="display:none;" class="sureMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
-                                            <i class="fa fa-exclamation-circle"></i>
-                                            <span class="errorMessage" style="font-size:large"><?php echo __('¿Está seguro de que quiere cancelar el proceso? Todos sus datos almacenados y documentos serán eliminados.') ?></span>
-                                            <div class="pull-right">
-                                                <input type='button' id="btnSure" class='btn btn-default' name='sureBtn' value='<?php echo __('Sí, quiero CANCELAR el proceso')?>' />
-                                            </div>
-
-                                            <div class="pull-left">
-                                                <input type='button' id="btnNotSure" class='btn btn-default' name='notSureBtn' value='<?php echo __('Volver')?>' />
-                                            </div>
+                                        <div class="feedback col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
+                                            <p class="errorMessage" style="padding: 20px; margin-top: 10px;"><?php echo __('¿Está seguro de que quiere cancelar el proceso? Todos sus datos almacenados y documentos serán eliminados.') ?></p>
+                                            <button id="btnSure" class='btn btn-default center-block' name='sureBtn'><?php echo __('Sí, quiero CANCELAR el proceso')?></button>
                                         </div>
                                     </div>
                                 </div>

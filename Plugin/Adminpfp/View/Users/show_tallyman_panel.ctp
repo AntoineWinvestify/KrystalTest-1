@@ -114,12 +114,7 @@ $(document).ready(function() {
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
-                                echo __('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut' 
-                                        . 'labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc'
-                                        . 'laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in' 
-                                        . 'voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat' 
-                                        . 'non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-                                        );
+                                echo __('Para activar la búsqueda de uno de sus inversores es necesario rellenar obligatoriamente el campo del DNI/NIE más uno de los dos campos restantes. Ej: DNI(obligatorio)+ teléfono o email. ');
                                 ?>
                             </p>
                         </div>
