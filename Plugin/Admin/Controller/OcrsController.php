@@ -112,10 +112,10 @@ class ocrsController extends AppController {
         //Control status
         if ($status == NOT_SENT || $status == OCR_FINISHED) {
             //$this->ocrInvestorPlatformSelection();
-            $this->set('link', 'ocrInvestorPlatformSelection');
+            $this->set('link', '/Ocrs/ocrInvestorPlatformSelection');
         } else if ($status == ERROR) {
             //$this->ocrInvestorDataPanel();
-            $this->set('link', 'ocrInvestorDataPanel');
+            $this->set('link', '/Ocrs/ocrInvestorDataPanel');
         } else if ($status == SENT || $status == OCR_PENDING || $status = FIXED) {
             $this->activatedService();
         }
@@ -327,15 +327,12 @@ class ocrsController extends AppController {
      * Select the companies you want register
      */
     function ocrInvestorPlatformSelection() {
-//        Configure::write('debug', 2); 
         if (!$this->request->is('ajax')) {
             //Ajax result
             $this->set('result', false);
         } else {
             //Companies with ocr
             $this->set('companies', $this->Company->companiesDataOCR());
-            echo "AAAA";
-            $this->print_r2($this->Company->companiesDataOCR());
 
             //Types
             $this->set('CompanyType', $this->crowdlendingTypesLong);
@@ -403,8 +400,47 @@ class ocrsController extends AppController {
      */
     function ocrCompletedProcess() {
         $this->layout = 'azarus_private_layout';
+    
+
+    //One Click Registration - PFPAdmin Views
+    //PFPAdmin View #2
+    function ocrPfpBillingPanel() {
+        //Read all company bills
+        $bills = $this->Ocrfile->billCompanyFilter($this->Session->read('Auth.User.Adminpfp.company_id'));
+        $this->set('bills', $bills);
+
+        $this->layout = 'azarus_private_layout';
     }
 
+    /*     * PFPAdmin View #1
+     * New accepted user
+     */
+
+    function ocrPfpUsersPanel() {
+
+
+        $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));
+
+        if ($status[0]) {
+            //Read and accepted relations
+            $ocrList = $this->Ocr->getAllOcrRelations($this->Session->read('Auth.User.Adminpfp.company_id'));
+            $this->set('ocrList', $ocrList);
+
+            //PFP  status
+            $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
+
+            //Status name
+            $this->set('statusName', $this->pfpStatus);
+        } else {
+            //You can't access to this page
+        }
+        $this->layout = 'azarus_private_layout';
+    }
+
+    //PFPAdmin View #3
+    function ocrPfpTallyman() {
+        $this->layout = 'azarus_private_layout';
+    }
 
     //One Click Registration - Winvestify functions
     function addBill() {

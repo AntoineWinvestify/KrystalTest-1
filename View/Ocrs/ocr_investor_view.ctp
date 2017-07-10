@@ -20,8 +20,9 @@
  * @package
  * 
  */
-?>
 
+
+?>
 <script>
     $(document).ready(function () {
         link = "<?php echo $link ?>";

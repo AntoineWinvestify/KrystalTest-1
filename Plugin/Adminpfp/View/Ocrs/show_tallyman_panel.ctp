@@ -154,7 +154,7 @@ console.log("btn clicked");
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-1">
                                             <label class= "invisible"> </label>
-                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/users/readtallymandata" class="btn btnPFPAdmin pull-right btnRounded"><?php echo __('Search')?></button>
+                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/ocrs/readtallymandata" class="btn btnPFPAdmin pull-right btnRounded"><?php echo __('Search')?></button>
                                         </div>
                                     </div>
                                 </div>

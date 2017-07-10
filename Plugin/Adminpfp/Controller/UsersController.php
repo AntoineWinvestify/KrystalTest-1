@@ -66,8 +66,7 @@ function beforeFilter() {
 	$this->Security->validatePost = false;	
 // Allow only the following actons.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login','session', 'loginAction', 'showTallymanPanel', 'cronMoveToMLDatabase',
-                                'startTallyman', 'readtallymandata', 'testmodal');    // allow the actions without logon
+	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
 //   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 //var_dump($_REQUEST);
@@ -143,8 +142,7 @@ public function testmodal() {
  * 
  */
 public function readtallymandata() {
-//echo "0";
-//Configure::write('debug', 0);
+
     if (!$this->request->is('ajax')) {
         throw new
         FatalErrorException(__('You cannot access this page directly'));
@@ -159,10 +157,6 @@ public function readtallymandata() {
     $userEmail = $_REQUEST['userEmail'];
     $userTelephone = $_REQUEST['userTelephone'];
     $chargingConfirmed = $_REQUEST['chargingConfirmed'];
-    
-//    $userEmail ="antoine.de.poorter@gmail.com";
-//    $userTelephone = "+34675546946";  
-   
 
 // Get the unique investor identification
     $inputParmCount = 0;
@@ -203,7 +197,7 @@ public function readtallymandata() {
             $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
             $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
 
-            // CHECK IF F structure can be improved
+            // CHECK IF structure can be improved
             if (empty($resultTallymanData)) {
                 $error = NO_DATA_AVAILABLE;
             }   
