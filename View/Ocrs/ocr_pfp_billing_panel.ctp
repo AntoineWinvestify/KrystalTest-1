@@ -81,16 +81,6 @@
                     <h4 class="title"><strong><?php echo __('PFPAdmin - Billing Panel') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
-                    <div class="row firstParagraph">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <p><?php
-                                echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-                                        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
-                                        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
-                                        . ' PFP puedan validar y autenticar su identidad.')
-                                ?></p>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="row">

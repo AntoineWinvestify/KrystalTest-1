@@ -99,10 +99,7 @@
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
-                                echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-                                        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
-                                        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
-                                        . ' PFP puedan validar y autenticar su identidad.')
+                                echo __('Para activar la búsqueda de uno de sus inversores es necesario rellenar obligatoriamente el campo del DNI/NIE más uno de los dos campos restantes. Ej: DNI(obligatorio)+ teléfono o email.')
                                 ?></p>
                         </div>
                     </div>
@@ -111,10 +108,6 @@
                             <div id="investorFilters" class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="row">
-                                        <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1">
-                                            <label class= "invisible"></label>
-                                            <h4 class="header1CR"><?php echo __('Search:') ?></h4>
-                                        </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                                             <label><?php echo __('NIF')?></label>
                                             <?php
@@ -138,7 +131,7 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                             <label><?php echo __('Email')?></label>
                                             <?php
                                             $class = "form-control blue_noborder3 tallymanEmail tallymanGeneral";
@@ -161,7 +154,7 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                                 <label><?php echo __('Telephone')?></label>
                                                 <?php
                                                 $class = "form-control blue_noborder3";
@@ -185,9 +178,9 @@
                                                     </span>
                                                 </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                                        <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1">
                                             <label class= "invisible"> </label>
-                                            <button type="button" id="searchBtn" class="btn btnPFPAdmin center-block btnRounded"><?php echo __('Search')?></button>
+                                            <button type="button" id="searchBtn" class="btn btnPFPAdmin pull-right btnRounded"><?php echo __('Search')?></button>
                                         </div>
                                         <div class="col-md-10">
                                             <?php 
@@ -201,136 +194,6 @@
                                                 <span class="errorMessage">
                                                     <?php echo $billValidationErrors['tallyman_general'][0] ?>
                                                 </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> <!-- /.row general -->
-</div>
-<div id="1CR_pfpAdmin_3_searchResult">
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="card">
-                <div class="card-header" data-background-color="orange">
-                    <h4 class="title"><strong><?php echo __('Tallyman') ?></strong></h4>
-                </div>
-                <div class="card-content table-responsive togetoverlay">
-                    <!--<div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>-->
-                    <div class="row firstParagraph">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <p><?php
-                                echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-                                        . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
-                                        . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
-                                        . ' PFP puedan validar y autenticar su identidad.')
-                                ?></p>
-                        </div>
-                    </div>
-                    <div class="row firstParagraph">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
-                                    <div class="row">
-                                        <div class="col-lg-3">
-                                            <div class="card card-stats">
-                                                <div class="card-content" style="text-align: center;">
-                                                    <h1><?php echo __('30%')?></h1>
-                                                </div>
-                                                <div class="card-footer">
-                                                    <div class="stats" style="text-align: center;">
-                                                        <?php echo __('% Total cartera')?>
-                                                        <strong><?php echo __('invertida')?></strong>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <div class="card">
-                                                <div class="card-header card-chart" data-background-color="green">
-                                                        <div class="ct-chart" id="dailySalesChart"></div>
-                                                </div>
-                                                <div class="card-content">
-                                                        <h4 class="title">Desplegable??</h4>
-                                                        <p class="category"><span class="text-success"><i class="fa fa-long-arrow-up"></i> 55%  </span> Incremento</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3">
-                                            <div class="card card-stats">
-                                                <div class="card-content">
-                                                    <h1 style="text-align: center;"><?php echo __('70%')?></h1>
-                                                </div>
-                                                <div class="card-footer">
-                                                    <div class="stats" style="text-align: center;">
-                                                        <?php echo __('% Total cartera')?>
-                                                        <strong><?php echo __('por modalidad')?></strong>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <div class="card">
-                                                <div class="card-header card-chart" data-background-color="blue">
-                                                    <div class="ct-chart" id="emailsSubscriptionChart"></div>
-                                                </div>
-                                                <div class="card-content">
-                                                    <h4 class="title" style="text-align: center;">
-                                                        <?php echo __('A) Investments Volume')?>
-                                                        <?php echo __('B) nº of investments')?>
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="card card-stats">
-                                                <div class="card-content">			
-                                                    <canvas id="pieChart1" style="height: 100px;"></canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="card card-stats">
-                                                        <div class="card-content">
-                                                            <h1 style="text-align: center;"><?php echo __('4')?></h1>
-                                                        </div>
-                                                        <div class="card-footer">
-                                                            <div class="stats" style="text-align: center;">
-                                                                <?php echo __('Account Linking')?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="card card-stats">
-                                                        <div class="card-content">
-                                                            <h1 style="text-align: center;"><?php echo __('6')?></h1>
-                                                        </div>
-                                                        <div class="card-footer">
-                                                            <div class="stats" style="text-align: center;">
-                                                                <?php echo __('Total PFP')?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
