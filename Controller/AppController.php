@@ -215,6 +215,16 @@ define('UNCHECKED', 0);
 define('CHECKED', 1);
 define('ERROR', 2);
 
+//FILE OPTIONAL OR REQUIRED
+define('OPTIONAL', 1);
+define('REQUIRED', 0);
+
+//CHECK STATUS(for winadmin invcestor data)
+define('YES', 1);
+define('NO', 2);
+define('PENDING', 0);
+
+
 // CURL ERRORS
 define('CURL_ERROR_TIMEOUT', 28);
 

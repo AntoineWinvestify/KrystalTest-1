@@ -218,7 +218,7 @@ class filesController extends AppController {
         $urlList = array();
         $investorData = $this->Investor->getJsonDataForPFP($id);
         $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json';
-        $response = array();
+        /*$response = array();
         $prefix = "investor_";
         $values = [
             $prefix . "name",
@@ -233,7 +233,7 @@ class filesController extends AppController {
 
         $fp = fopen($fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json', 'w');
         fwrite($fp, json_encode($response));
-        fclose($fp);
+        fclose($fp);*/
         foreach ($investorFiles as $investorFile) {
            
             $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
