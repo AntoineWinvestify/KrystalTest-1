@@ -68,7 +68,6 @@ class filesController extends AppController {
      * Upload a document
      */
     function upload() {
-        Configure::write('debug', 2);
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
@@ -194,7 +193,7 @@ class filesController extends AppController {
             $file_id = $this->request->data('id');
             $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
-
+            
             $result = $this->Ocrfile->ocrFileDelete($url, $file_id, $investor_id);
             $this->set("result", $result);
         }

@@ -60,9 +60,12 @@
  * Time stamp implemented
  * Added feedback box to user.
  * Checked from db
+ * 
+ * [2017-07-10] Version 0.9
+ *Plugin for time stamp
  */
 ?>
-
+<script src="/js/jquery-dateFormat.js"/>
 <style>
     .togetoverlay .overlay  {
         z-index: 50;
@@ -217,7 +220,7 @@
         $(document).on('change', "input", function () {
             id = $(this).attr('name');
             timeStamp = new Date($.now());
-            $("#" + id).html(timeStamp);
+            $("#" + id).html($.format.date(timeStamp, "yyyy-MM-dd HH:mm:ss"));
         });
     });
     function success(data) {

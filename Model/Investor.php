@@ -38,6 +38,9 @@
  * 
  * [2017-07-04] Version 0.6
  * Create check data
+ * 
+ * [2017-07-10] Version 0.7
+ *New Json array
 
 
 2017-07-05
@@ -575,8 +578,39 @@ public function readCheckData($investorId) {
             $folder = $this->getInvestorIdentity($userId);
             $path = $fileConfig['investorPath'] . $folder;
 
+            
+            
+        //Json array, hte json file is generated with this data.
+        $jsonArray = Array(
+            'check_name' => ($checks['name']),
+            'check_nameTime' => $checks['nameCheck'],
+            'check_surname' => ($checks['surname']),
+            'check_surnameTime' => $checks['surnameCheck'],
+            'check_dni' => ($checks['dni']),
+            'check_dniTime' => $checks['dniCheck'],
+            'check_dateOfBirth' => ($checks['dateOfBirth']),
+            'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
+            'check_email' => ($checks['email']),
+            'check_emailTime' => $checks['emailCheck'],
+            'check_telephone' => ($checks['telephone']),
+            'check_telephoneTime' => $checks['telephoneCheck'],
+            'check_postCode' => ($checks['postCode']),
+            'check_postCodeTime' => $checks['postCodeCheck'],
+            'check_address' => ($checks['address']),
+            'check_addressTime' => $checks['addressCheck'],
+            'check_city' => ($checks['city']),
+            'check_cityTime' => $checks['cityCheck'],
+            'check_country' => ($checks['country']),
+            'check_countryTime' => $checks['countryCheck'],
+            'check_iban' => ($checks['iban']),
+            'check_ibanTime' => $checks['ibanCheck'],
+            'check_cif' => ($checks['cif']),
+            'check_cifTime' => $checks['cifCheck'],
+            'check_businessName' => ($checks['businessName']),
+            'check_businessNameTime' => $checks['businessNameCheck'],
+        );
             //Generate Json
-            $created = $this->Ocrfile->generateJson($checksArray, $path);
+            $created = $this->Ocrfile->generateJson($jsonArray, $path); //$JsonArray -> data for json, $path-> path where the json is created
             if ($created) {
                 $statusFinal = OCR_FINISHED;
 
