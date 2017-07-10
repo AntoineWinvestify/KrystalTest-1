@@ -341,7 +341,7 @@ if ($result) {
         <div id = "notification"></div>
         <div id="1CR_investor_2_investorDataPanel">
             <div class="row">
-                <div class="col-lg-9">
+                <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header" data-background-color="blue">
                             <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
@@ -835,7 +835,7 @@ if ($result) {
 
         <div id="OCR_InvestorPanelB">
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="card">
                         <div class="card-header" data-background-color="blue">
                             <h4 class="title"><strong><?php echo __('Documentation Uploading') ?></strong></h4>

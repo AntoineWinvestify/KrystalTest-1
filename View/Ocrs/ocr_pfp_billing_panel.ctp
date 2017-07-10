@@ -75,7 +75,7 @@
 </style>
 <div id="1CR_pfpadmin_2_billingPanel">
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('PFPAdmin - Billing Panel') ?></strong></h4>

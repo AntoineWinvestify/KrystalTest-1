@@ -275,17 +275,17 @@ if ($result) {
     <div id="1CR_investor_1_platformSelection">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <h3>
+                <h4>
                     <?php echo __("Winvestify pone a su disposición la posibilidad darse de alta mediante un único registro, accediendo a  cualquiera de las plataformas que tenemos actualmente habilitadas.
 Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuentas* antes de iniciar One Click Resgistration, así evitaremos que se muestren en el proceso de selección. "); ?>
-                </h3>
+                </h4>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <?php
                 /* DIV 1: Selected platforms */
                 ?>
                 <div id="sel" style="display: none;">
-                    <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
+                    <h4 class="header1CR"><?php echo __('Sus plataformas seleccionadas:') ?></h4>
 
                     <div id="investorSelection" class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -357,7 +357,7 @@ Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuenta
                   </div>
                   <hr class="nomargin" width="100%"/> */ ?>
                 <?php /* Div 3: Platforms Selection */ ?>
-                <h4 class="header1CR"><?php echo __('Select platforms to register') ?></h4>
+                <h4 class="header1CR"><?php echo __('Seleccione las plataformas en las que registrarse:') ?></h4>
                 <div id="platformSelection" class="row">
                     <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                         <p>
