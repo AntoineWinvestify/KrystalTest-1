@@ -157,13 +157,13 @@
                                     <div style="display:none;" class="sureMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                             <i class="fa fa-exclamation-circle"></i>
-                                            <span class="errorMessage" style="font-size:large"><?php echo __('Are you sure you want to cancel the process? All your data & documents will be deleted.') ?></span>
+                                            <span class="errorMessage" style="font-size:large"><?php echo __('¿Está seguro de que quiere cancelar el proceso? Todos sus datos almacenados y documentos serán eliminados.') ?></span>
                                             <div class="pull-right">
-                                                <input type='button' id="btnSure" class='btn btn-default' name='sureBtn' value='<?php echo __('Sure, I want to CANCEL the process')?>' />
+                                                <input type='button' id="btnSure" class='btn btn-default' name='sureBtn' value='<?php echo __('Sí, quiero CANCELAR el proceso')?>' />
                                             </div>
 
                                             <div class="pull-left">
-                                                <input type='button' id="btnNotSure" class='btn btn-default' name='notSureBtn' value='<?php echo __('Go back')?>' />
+                                                <input type='button' id="btnNotSure" class='btn btn-default' name='notSureBtn' value='<?php echo __('Volver')?>' />
                                             </div>
                                         </div>
                                     </div>
