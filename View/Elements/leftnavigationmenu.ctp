@@ -153,39 +153,7 @@ $(document).ready(function() {
             </a>
         </li>
     
-        <li class="header">
-            <strong>WinAdmin Menu</strong>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminBillingPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminInvestorChecking">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Investor Checking')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminUpdatePfpData">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Update PFP data')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminSoldUsers">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Sold Users')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminTallyman">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
-            </a>
-        </li>
-        
  
-<li class="treeview">
-			<a href="/invitations/recommend"><i class="fa fa-power-off"></i><span><?php //echo __('Recommend to a friend')?></a></span>
-        </li>*/?>
         <li class="treeview">
           <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
