@@ -275,19 +275,17 @@ if ($result) {
     <div id="1CR_investor_1_platformSelection">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="box box-warning fade in alert-win-success" style="padding: 10px; font-size:large">
-                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i>
-                    </button>
-                    <strong><?php echo __("One Click Registration"); ?></strong> <?php echo __("le permite registrarse en cualquiera de las siguientes plataformas."); ?>
-                    <small><?php echo __("Aquellas plataformas que se encuentren linkeadas en Winvestify no aparecerán en el proceso de selección"); ?></small>
-                </div>
+                <h4>
+                    <?php echo __("Winvestify pone a su disposición la posibilidad darse de alta mediante un único registro, accediendo a  cualquiera de las plataformas que tenemos actualmente habilitadas.
+Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuentas* antes de iniciar One Click Resgistration, así evitaremos que se muestren en el proceso de selección. "); ?>
+                </h4>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <?php
                 /* DIV 1: Selected platforms */
                 ?>
                 <div id="sel" style="display: none;">
-                    <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
+                    <h4 class="header1CR"><?php echo __('Sus plataformas seleccionadas:') ?></h4>
 
                     <div id="investorSelection" class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -359,15 +357,13 @@ if ($result) {
                   </div>
                   <hr class="nomargin" width="100%"/> */ ?>
                 <?php /* Div 3: Platforms Selection */ ?>
-                <h4 class="header1CR"><?php echo __('Select platforms to register') ?></h4>
+                <h4 class="header1CR"><?php echo __('Seleccione las plataformas en las que registrarse:') ?></h4>
                 <div id="platformSelection" class="row">
                     <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
-                        <div class="box box-warning fade in alert-win-success" style="padding: 10px;">
-                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times" style="margin-right:5px"></i>
-                            </button>
+                        <p>
                             <?php echo __("Para poder seleccionar cualquiera de las plataformas, es necesario "); ?>
                             <strong><?php echo __("aceptar su política de privacidad y sus términos  y condiciones de uso ") ?></strong>
-                        </div>
+                        </p>
                     </div>
                     <?php
                     foreach ($companies as $company) {

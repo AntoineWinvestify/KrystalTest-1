@@ -336,509 +336,506 @@ if ($result) {
 
         }
 
-
-
-
-    </script>
-    <div id = "notification"></div>
-    <div id="1CR_investor_2_investorDataPanel">
-        <div class="row">
-            <div class="col-lg-9">
-                <div class="card">
-                    <div class="card-header" data-background-color="blue">
-                        <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
-                    </div>
-                    <div class="card-content table-responsive togetoverlay">
-                        <div class="overlay">
-                            <div class="fa fa-spin fa-spinner" style="color:green">	
-                            </div>
+        </script>
+        
+        <div id = "notification"></div>
+        <div id="1CR_investor_2_investorDataPanel">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header" data-background-color="blue">
+                            <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
                         </div>
-                        <div class="row firstParagraph">
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <p><?php
-                                    echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-                                            . ' que Winvestify tenga habilitada. Para ello, cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
-                                            . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
-                                            . ' PFP puedan validar y autenticar su identidad.')
-                                    ?></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <?php
-                            echo $this->Form->create('OCR', array('default' => false));
-                            ?>
-                            <!-- Investor complete data -->
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
-                                <!-- User data -->
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4"> <!-- Name -->
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_name"><?php echo __('Name') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_name', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorName" . ' ' . $errorClass;
-                                            echo $this->Form->input('Investor.investor_name', array(
-                                                'name' => 'name',
-                                                'id' => 'ContentPlaceHolder_name',
-                                                'label' => false,
-                                                'placeholder' => __('Name'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Investor']['investor_name'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorName";
-                                            if (array_key_exists('investor_name', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_name'][0] ?>
-                                                </span>
-                                            </div>									
-                                        </div>					
-                                    </div>
-                                    <!-- /name -->
-
-                                    <!-- Surname(s) -->
-                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_surname', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorSurname" . ' ' . $errorClass;
-                                            echo $this->Form->input('Investor.investor_surname', array(
-                                                'name' => 'surname',
-                                                'id' => 'ContentPlaceHolder_surname',
-                                                'label' => false,
-                                                'placeholder' => __('Surname'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Investor']['investor_surname'],
-                                            ));
-
-                                            $errorClassesText = "errorInputMessage ErrorSurname";
-                                            if (array_key_exists('investor_surname', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_surname'][0] ?>
-                                                </span>
-                                            </div>	
-                                        </div>		
-                                    </div>
-                                    <!-- /Surname(s) -->
-
-                                    <!-- NIF -->
-                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="dni"><?php echo __('Id') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_DNI', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorDni" . ' ' . $errorClass;
-                                            echo $this->Form->input('Investor.investor_DNI', array(
-                                                'name' => 'dni',
-                                                'id' => 'dni',
-                                                'label' => false,
-                                                'placeholder' => __('Id'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Investor']['investor_DNI'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorId";
-                                            if (array_key_exists('investor_DNI', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_DNI'][0] ?>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /NIF -->
+                        <div class="card-content table-responsive togetoverlay">
+                            <div class="overlay">
+                                <div class="fa fa-spin fa-spinner" style="color:green">	
                                 </div>
-                                <div class="row">
-                                    <!-- Date of Birth -->
-                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth') ?></label>
-                                            <div class="input-group input-group-sm blue_noborder2 date investorDateOfBirth disabledPointer">
+                            </div>
+                            <div class="row firstParagraph">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <p><?php
+                                        echo __('Para continuar con su proceso de registro debe rellenar las siguientes casillas:')
+                                        ?>
+                                        <small><?php echo __('(Todos los campos son obligatorios)')?></small>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <?php
+                                echo $this->Form->create('OCR', array('default' => false));
+                                ?>
+                                <!-- Investor complete data -->
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+                                    <!-- User data -->
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4"> <!-- Name -->
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_name"><?php echo __('Name') ?></label>
                                                 <?php
                                                 $errorClass = "";
-                                                if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
+                                                if (array_key_exists('investor_name', $investorValidationErrors)) {
                                                     $errorClass = "redBorder";
                                                 }
-                                                $class = "form-control pull-right" . ' ' . $errorClass;
-                                                ?>
-                                                <div class="input-group-addon" style="border-radius:8px; border: none;">
-                                                    <i class="fa fa-calendar"></i>
-                                                </div>
-                                                <input type="text" style="border-radius:8px; border:none;" disabled="disabled" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php echo $investor[0]['Investor']['investor_dateOfBirth']; ?>">
-                                                <?php
-                                                $errorClassesText = "errorInputMessage ErrorDateOfBirth";
-                                                if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
-                                                    $errorClassesText .= " " . "actived";
-                                                }
-                                                ?>
-                                                <div class="<?php echo $errorClassesText ?>">
-                                                    <i class="fa fa-exclamation-circle"></i>
-                                                    <span class="errorMessage">
-                                                        <?php echo $investorValidationErrors['investor_dateOfBirth'][0] ?>
-                                                    </span>
-                                                </div>	
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /Date of Birth -->
-
-                                    <!-- email -->
-                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_email"><?php echo __('Email') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_email', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorEmail" . ' ' . $errorClass;
-                                            echo $this->Form->input('Investor.investor_email', array(
-                                                'name' => 'dni',
-                                                'id' => 'ContentPlaceHolder_email',
-                                                'label' => false,
-                                                'placeholder' => __('Email'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Investor']['investor_email'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorEmail";
-                                            if (array_key_exists('investor_email', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_email'][0] ?>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /email -->
-
-                                    <!-- Telephone -->
-                                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
-                                            <div class="form-control blue_noborder2 telephoneNumber disabledPointer">
-                                                <?php
-                                                $errorClass = "";
-                                                if (array_key_exists('investor_telephone', $investorValidationErrors)) {
-                                                    $errorClass = "redBorder";
-                                                }
-                                                $class = "center-block" . ' ' . $errorClass;
-
-                                                echo $this->Form->input('Investor.investor_telephone', array(
-                                                    'name' => 'telephone',
-                                                    'id' => 'ContentPlaceHolder_telephone',
+                                                $class = "form-control blue_noborder2 investorName" . ' ' . $errorClass;
+                                                echo $this->Form->input('Investor.investor_name', array(
+                                                    'name' => 'name',
+                                                    'id' => 'ContentPlaceHolder_name',
                                                     'label' => false,
-                                                    'placeholder' => __('Telephone'),
+                                                    'placeholder' => __('Name'),
                                                     'class' => $class,
-                                                    'type' => 'tel',
-                                                    'value' => $investor[0]['Investor']['investor_telephone'],
-                                                    'disabled' => 'disabled'
+                                                    'value' => $investor[0]['Investor']['investor_name'],
                                                 ));
-                                                $errorClassesText = "errorInputMessage ErrorTelephone";
-                                                if (array_key_exists('investor_telephone', $investorValidationErrors)) {
+                                                $errorClassesText = "errorInputMessage ErrorName";
+                                                if (array_key_exists('investor_name', $investorValidationErrors)) {
                                                     $errorClassesText .= " " . "actived";
                                                 }
                                                 ?>
                                                 <div class="<?php echo $errorClassesText ?>">
                                                     <i class="fa fa-exclamation-circle"></i>
                                                     <span class="errorMessage">
-                                                        <?php echo $investorValidationErrors['investor_telephone'][0] ?>
+                                                        <?php echo $investorValidationErrors['investor_name'][0] ?>
+                                                    </span>
+                                                </div>									
+                                            </div>					
+                                        </div>
+                                        <!-- /name -->
+
+                                        <!-- Surname(s) -->
+                                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_surname', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorSurname" . ' ' . $errorClass;
+                                                echo $this->Form->input('Investor.investor_surname', array(
+                                                    'name' => 'surname',
+                                                    'id' => 'ContentPlaceHolder_surname',
+                                                    'label' => false,
+                                                    'placeholder' => __('Surname'),
+                                                    'class' => $class,
+                                                    'value' => $investor[0]['Investor']['investor_surname'],
+                                                ));
+
+                                                $errorClassesText = "errorInputMessage ErrorSurname";
+                                                if (array_key_exists('investor_surname', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_surname'][0] ?>
                                                     </span>
                                                 </div>	
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /telephone -->
-                                </div>
-                                <div class="row">
-                                    <!-- Postal code -->
-                                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_postCode', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorPostCode" . ' ' . $errorClass;
-                                            echo $this->Form->input('Investor.investor_postCode', array(
-                                                'name' => 'investor_postCode',
-                                                'id' => 'ContentPlaceHolder_postCode',
-                                                'label' => false,
-                                                'placeholder' => __('PostCode'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Investor']['investor_postCode'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorPostCode";
-                                            if (array_key_exists('investor_postCode', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_postCode'][0] ?>
-                                                </span>
                                             </div>		
                                         </div>
+                                        <!-- /Surname(s) -->
+
+                                        <!-- NIF -->
+                                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="dni"><?php echo __('Id') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_DNI', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorDni" . ' ' . $errorClass;
+                                                echo $this->Form->input('Investor.investor_DNI', array(
+                                                    'name' => 'dni',
+                                                    'id' => 'dni',
+                                                    'label' => false,
+                                                    'placeholder' => __('Id'),
+                                                    'class' => $class,
+                                                    'value' => $investor[0]['Investor']['investor_DNI'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorId";
+                                                if (array_key_exists('investor_DNI', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_DNI'][0] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /NIF -->
                                     </div>
-                                    <!-- /postal code -->
-                                    <!-- Address -->
-                                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_address1"><?php echo __('Address') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_address1', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorAddress" . ' ' . $errorClass;
-                                            echo $this->Form->input('Investor.investor_address1', array(
-                                                'name' => 'address1',
-                                                'id' => 'ContentPlaceHolder_address1',
-                                                'label' => false,
-                                                'placeholder' => __('Address'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Investor']['investor_address1'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorAddress";
-                                            if (array_key_exists('investor_address1', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_address1'][0] ?>
-                                                </span>
+                                    <div class="row">
+                                        <!-- Date of Birth -->
+                                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth') ?></label>
+                                                <div class="input-group input-group-sm blue_noborder2 date investorDateOfBirth disabledPointer">
+                                                    <?php
+                                                    $errorClass = "";
+                                                    if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
+                                                        $errorClass = "redBorder";
+                                                    }
+                                                    $class = "form-control pull-right" . ' ' . $errorClass;
+                                                    ?>
+                                                    <div class="input-group-addon" style="border-radius:8px; border: none;">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </div>
+                                                    <input type="text" style="border-radius:8px; border:none;" disabled="disabled" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth') ?>" id="ContentPlaceHolder_dateOfBirth" value="<?php echo $investor[0]['Investor']['investor_dateOfBirth']; ?>">
+                                                    <?php
+                                                    $errorClassesText = "errorInputMessage ErrorDateOfBirth";
+                                                    if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
+                                                        $errorClassesText .= " " . "actived";
+                                                    }
+                                                    ?>
+                                                    <div class="<?php echo $errorClassesText ?>">
+                                                        <i class="fa fa-exclamation-circle"></i>
+                                                        <span class="errorMessage">
+                                                            <?php echo $investorValidationErrors['investor_dateOfBirth'][0] ?>
+                                                        </span>
+                                                    </div>	
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /Date of Birth -->
+
+                                        <!-- email -->
+                                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_email"><?php echo __('Email') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_email', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorEmail" . ' ' . $errorClass;
+                                                echo $this->Form->input('Investor.investor_email', array(
+                                                    'name' => 'dni',
+                                                    'id' => 'ContentPlaceHolder_email',
+                                                    'label' => false,
+                                                    'placeholder' => __('Email'),
+                                                    'class' => $class,
+                                                    'value' => $investor[0]['Investor']['investor_email'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorEmail";
+                                                if (array_key_exists('investor_email', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_email'][0] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /email -->
+
+                                        <!-- Telephone -->
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone') ?></label>
+                                                <div class="form-control blue_noborder2 telephoneNumber disabledPointer">
+                                                    <?php
+                                                    $errorClass = "";
+                                                    if (array_key_exists('investor_telephone', $investorValidationErrors)) {
+                                                        $errorClass = "redBorder";
+                                                    }
+                                                    $class = "center-block" . ' ' . $errorClass;
+
+                                                    echo $this->Form->input('Investor.investor_telephone', array(
+                                                        'name' => 'telephone',
+                                                        'id' => 'ContentPlaceHolder_telephone',
+                                                        'label' => false,
+                                                        'placeholder' => __('Telephone'),
+                                                        'class' => $class,
+                                                        'type' => 'tel',
+                                                        'value' => $investor[0]['Investor']['investor_telephone'],
+                                                        'disabled' => 'disabled'
+                                                    ));
+                                                    $errorClassesText = "errorInputMessage ErrorTelephone";
+                                                    if (array_key_exists('investor_telephone', $investorValidationErrors)) {
+                                                        $errorClassesText .= " " . "actived";
+                                                    }
+                                                    ?>
+                                                    <div class="<?php echo $errorClassesText ?>">
+                                                        <i class="fa fa-exclamation-circle"></i>
+                                                        <span class="errorMessage">
+                                                            <?php echo $investorValidationErrors['investor_telephone'][0] ?>
+                                                        </span>
+                                                    </div>	
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /telephone -->
+                                    </div>
+                                    <div class="row">
+                                        <!-- Postal code -->
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_postCode', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorPostCode" . ' ' . $errorClass;
+                                                echo $this->Form->input('Investor.investor_postCode', array(
+                                                    'name' => 'investor_postCode',
+                                                    'id' => 'ContentPlaceHolder_postCode',
+                                                    'label' => false,
+                                                    'placeholder' => __('PostCode'),
+                                                    'class' => $class,
+                                                    'value' => $investor[0]['Investor']['investor_postCode'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorPostCode";
+                                                if (array_key_exists('investor_postCode', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_postCode'][0] ?>
+                                                    </span>
+                                                </div>		
+                                            </div>
+                                        </div>
+                                        <!-- /postal code -->
+                                        <!-- Address -->
+                                        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_address1"><?php echo __('Address') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_address1', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorAddress" . ' ' . $errorClass;
+                                                echo $this->Form->input('Investor.investor_address1', array(
+                                                    'name' => 'address1',
+                                                    'id' => 'ContentPlaceHolder_address1',
+                                                    'label' => false,
+                                                    'placeholder' => __('Address'),
+                                                    'class' => $class,
+                                                    'value' => $investor[0]['Investor']['investor_address1'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorAddress";
+                                                if (array_key_exists('investor_address1', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_address1'][0] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /Address -->
+                                    </div>
+                                    <div class="row">
+
+                                        <!-- city -->
+                                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="exampleInputCity"><?php echo __('City') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_city', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorCity" . ' ' . $errorClass;
+                                                echo $this->Form->input('ContentPlaceHolder_city', array(
+                                                    'name' => 'city',
+                                                    'id' => 'ContentPlaceHolder_city',
+                                                    'label' => false,
+                                                    'placeholder' => __('City'),
+                                                    'class' => $class,
+                                                    'value' => $investor[0]['Investor']['investor_city'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorCity";
+                                                if (array_key_exists('investor_city', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_city'][0] ?>
+                                                    </span>
+                                                </div>						
+                                            </div>	
+                                        </div>
+                                        <!-- /city -->
+
+                                        <!-- Country -->
+                                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_country"><?php echo __('Country') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_country', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorCountry" . ' ' . $errorClass;
+                                                echo $this->Form->input('Investor.investor_country', array(
+                                                    'name' => 'country',
+                                                    'id' => 'ContentPlaceHolder_country',
+                                                    'label' => false,
+                                                    'options' => $countryData,
+                                                    'placeholder' => __('Country'),
+                                                    'class' => $class,
+                                                    'value' => $investor[0]['Investor']['investor_country'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorCountry";
+                                                if (array_key_exists('investor_country', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_country'][0] ?>
+                                                    </span>
+                                                </div>
+                                            </div>	
+                                        </div>
+                                        <!-- /country -->
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_iban', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorIban" . ' ' . $errorClass;
+                                                echo $this->Form->input('Ocr.investor_iban', array(
+                                                    'name' => 'iban',
+                                                    'id' => 'ContentPlaceHolder_iban',
+                                                    'label' => false,
+                                                    'placeholder' => __('IBAN'),
+                                                    'class' => $class,
+                                                    'value' => $ocr[0]['Ocr']['investor_iban'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorIban";
+                                                if (array_key_exists('investor_iban', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_iban'][0] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div><!-- /Cif + Business Name -->
+                                    </div>
+                                    <!-- /User data -->
+                                </div>
+                                <!-- /Investor complete data -->
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <!-- Checkbox -->
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="investmentVehicle" type="checkbox">  <?php echo __('I use my company as investment vehicle') ?>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- /Address -->
-                                </div>
-                                <div class="row">
-
-                                    <!-- city -->
-                                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="exampleInputCity"><?php echo __('City') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_city', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorCity" . ' ' . $errorClass;
-                                            echo $this->Form->input('ContentPlaceHolder_city', array(
-                                                'name' => 'city',
-                                                'id' => 'ContentPlaceHolder_city',
-                                                'label' => false,
-                                                'placeholder' => __('City'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Investor']['investor_city'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorCity";
-                                            if (array_key_exists('investor_city', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_city'][0] ?>
-                                                </span>
-                                            </div>						
-                                        </div>	
-                                    </div>
-                                    <!-- /city -->
-
-                                    <!-- Country -->
-                                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_country"><?php echo __('Country') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_country', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorCountry" . ' ' . $errorClass;
-                                            echo $this->Form->input('Investor.investor_country', array(
-                                                'name' => 'country',
-                                                'id' => 'ContentPlaceHolder_country',
-                                                'label' => false,
-                                                'options' => $countryData,
-                                                'placeholder' => __('Country'),
-                                                'class' => $class,
-                                                'value' => $investor[0]['Investor']['investor_country'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorCountry";
-                                            if (array_key_exists('investor_country', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_country'][0] ?>
-                                                </span>
-                                            </div>
-                                        </div>	
-                                    </div>
-                                    <!-- /country -->
-                                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_iban"><?php echo __('IBAN') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_iban', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorIban" . ' ' . $errorClass;
-                                            echo $this->Form->input('Ocr.investor_iban', array(
-                                                'name' => 'iban',
-                                                'id' => 'ContentPlaceHolder_iban',
-                                                'label' => false,
-                                                'placeholder' => __('IBAN'),
-                                                'class' => $class,
-                                                'value' => $ocr[0]['Ocr']['investor_iban'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorIban";
-                                            if (array_key_exists('investor_iban', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_iban'][0] ?>
-                                                </span>
+                                    <!-- /checkbox -->
+                                    <div class="row" id="investmentVehicleContent">
+                                        <!-- CIF -->
+                                        <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_cif', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorCif" . ' ' . $errorClass;
+                                                echo $this->Form->input('Ocr.investor_cif', array(
+                                                    'name' => 'cif',
+                                                    'id' => 'ContentPlaceHolder_cif',
+                                                    'label' => false,
+                                                    'placeholder' => __('Your company CIF'),
+                                                    'class' => $class,
+                                                    'value' => $ocr[0]['Ocr']['investor_cif'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorCif";
+                                                if (array_key_exists('investor_cif', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_cif'][0] ?>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div><!-- /Cif + Business Name -->
+                                        <!-- /CIF -->
+
+                                        <!-- Business Name -->
+                                        <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                                            <div class="form-group">
+                                                <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_businessName', $investorValidationErrors)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "form-control blue_noborder2 investorBusinessName" . ' ' . $errorClass;
+                                                echo $this->Form->input('Ocr.investor_businessName', array(
+                                                    'name' => 'iban',
+                                                    'id' => 'ContentPlaceHolder_businessName',
+                                                    'label' => false,
+                                                    'placeholder' => __('Your company name'),
+                                                    'class' => $class,
+                                                    'value' => $ocr[0]['Ocr']['investor_businessName'],
+                                                ));
+                                                $errorClassesText = "errorInputMessage ErrorBusinessName";
+                                                if (array_key_exists('investor_businessName', $investorValidationErrors)) {
+                                                    $errorClassesText .= " " . "actived";
+                                                }
+                                                ?>
+                                                <div class="<?php echo $errorClassesText ?>">
+                                                    <i class="fa fa-exclamation-circle"></i>
+                                                    <span class="errorMessage">
+                                                        <?php echo $investorValidationErrors['investor_businessName'][0] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /Business Name -->
+                                        <!-- /Business Data -->
+                                    </div>
                                 </div>
-                                <!-- /User data -->
+                                <?php
+                                echo $this->Form->end();
+                                ?>
                             </div>
-                            <!-- /Investor complete data -->
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <!-- Checkbox -->
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input id="investmentVehicle" type="checkbox">  <?php echo __('I use my company as investment vehicle') ?>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /checkbox -->
-                                <div class="row" id="investmentVehicleContent">
-                                    <!-- CIF -->
-                                    <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_cif"><?php echo __('CIF') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_cif', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorCif" . ' ' . $errorClass;
-                                            echo $this->Form->input('Ocr.investor_cif', array(
-                                                'name' => 'cif',
-                                                'id' => 'ContentPlaceHolder_cif',
-                                                'label' => false,
-                                                'placeholder' => __('Your company CIF'),
-                                                'class' => $class,
-                                                'value' => $ocr[0]['Ocr']['investor_cif'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorCif";
-                                            if (array_key_exists('investor_cif', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_cif'][0] ?>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /CIF -->
 
-                                    <!-- Business Name -->
-                                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_businessName"><?php echo __('Business Name') ?></label>
-                                            <?php
-                                            $errorClass = "";
-                                            if (array_key_exists('investor_businessName', $investorValidationErrors)) {
-                                                $errorClass = "redBorder";
-                                            }
-                                            $class = "form-control blue_noborder2 investorBusinessName" . ' ' . $errorClass;
-                                            echo $this->Form->input('Ocr.investor_businessName', array(
-                                                'name' => 'iban',
-                                                'id' => 'ContentPlaceHolder_businessName',
-                                                'label' => false,
-                                                'placeholder' => __('Your company name'),
-                                                'class' => $class,
-                                                'value' => $ocr[0]['Ocr']['investor_businessName'],
-                                            ));
-                                            $errorClassesText = "errorInputMessage ErrorBusinessName";
-                                            if (array_key_exists('investor_businessName', $investorValidationErrors)) {
-                                                $errorClassesText .= " " . "actived";
-                                            }
-                                            ?>
-                                            <div class="<?php echo $errorClassesText ?>">
-                                                <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_businessName'][0] ?>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /Business Name -->
-                                    <!-- /Business Data -->
-                                </div>
-                            </div>
-                            <?php
-                            echo $this->Form->end();
-                            ?>
                         </div>
-
-                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
 
     <div id="OCR_InvestorPanelB">
         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="card">
                     <div class="card-header" data-background-color="blue">
                         <h4 class="title"><strong><?php echo __('Documentation Uploading') ?></strong></h4>
@@ -848,6 +845,18 @@ if ($result) {
                             <div class="fa fa-spin fa-spinner" style="color:green">	
                             </div>
                         </div>
+                        <div class="row firstParagraph">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <p><?php
+                                        echo __('Cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
+                                                . ' blanqueo de capitales y de Financiación del Terrorismo deberá aportar la siguiente documentación para que las'
+                                                . ' PFP puedan validar y autenticar su identidad.')
+                                        ?></p>
+                                    <p><?php
+                                        echo __('Para ello, deberá de aportar copia de su DNI/NIE en vigor y justificante de titularidad bancaria.')
+                                        ?></p>
+                                </div>
+                            </div>
                         <div class="row firstParagraph">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <p><?php echo __('Maximun File Size: 10MB'); ?></p>
@@ -929,7 +938,7 @@ if ($result) {
                     </div>
                 </div>
             </div>
-            <div id="btn1CR" class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
+            <div id="btn1CR" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="form-group">
                     <?php if( $ocr[0]['Ocr']['ocr_status'] != ERROR ){ ?>
                     <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn1CR btnRounded pull-left"><?php echo __('Back') ?></button>

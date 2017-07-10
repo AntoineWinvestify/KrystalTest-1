@@ -105,7 +105,6 @@ $(document).ready(function() {
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('PFPAdmin - Tallyman') ?></strong></h4>
-                    <p class="category"><?php echo __('Tallyman service about Investor Profile') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">
@@ -115,12 +114,7 @@ $(document).ready(function() {
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
-                                echo __('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut' 
-                                        . 'labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc'
-                                        . 'laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in' 
-                                        . 'voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat' 
-                                        . 'non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-                                        );
+                                echo __('Para activar la búsqueda de uno de sus inversores es necesario rellenar obligatoriamente el campo del DNI/NIE más uno de los dos campos restantes. Ej: DNI(obligatorio)+ teléfono o email. ');
                                 ?>
                             </p>
                         </div>
@@ -130,25 +124,21 @@ $(document).ready(function() {
                             <div id="investorFilters" class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="row">
-                                        <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1">
-                                            <label class= "invisible"></label>
-                                            <h4 class="header1CR"><?php echo __('Search:') ?></h4>
-                                        </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                                             <label><?php echo __('ID')?></label>
                                             <input type="text" id ="tallymanInputId" class="form-control blue_noborder3" placeholder="<?php echo __('ID')?>">
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-4">
                                             <label><?php echo __('Email')?></label>
                                             <input type="text" id ="tallymanInputEmail" class="form-control blue_noborder3" placeholder="<?php echo __('Email')?>">
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-4">
                                             <label><?php echo __('Telephone')?></label>
                                             <input type="text" id ="tallymanInputTelephone" class="form-control blue_noborder3" placeholder="<?php echo __('Telephone')?>">
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-1">
                                             <label class= "invisible"> </label>
-                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/users/readtallymandata" class="btn btnPFPAdmin center-block btnRounded"><?php echo __('Search')?></button>
+                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/users/readtallymandata" class="btn btnPFPAdmin pull-right btnRounded"><?php echo __('Search')?></button>
                                         </div>
                                     </div>
                                 </div>
