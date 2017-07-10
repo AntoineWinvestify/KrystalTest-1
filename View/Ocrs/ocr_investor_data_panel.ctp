@@ -131,7 +131,7 @@ if ($result) {
     <?php //Validation error                       ?>
                     event.stopPropagation();
                     event.preventDefault();
-                    $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
+                    $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
                 } else { //Validation ok
                     $('#notification').load("/ocrs/ocrInvestorConfirmModal");
                 }
@@ -168,7 +168,7 @@ if ($result) {
                     id: id
                 };
                 var data = jQuery.param(params);
-                link = '../Files/delete';
+                link = '/files/delete';
                 $.ajax({
                     url: link,
                     method: 'post',
@@ -204,12 +204,12 @@ if ($result) {
 
 
             function successUpload(data, id) {
+                data = JSON.parse(data);
                 if (data[0]) {
-        <?php //Upload ok                     ?>
                     $("#file" + id).html(data[2][0]);
                     $("#file" + id).attr("value", data[2][0]);
                     $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
-                    $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[2][1] + '" id="FilesInfo">');
+                    $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[2] + '" id="FilesInfo">');
                     $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
                     $("#del" + id).prop("disabled", false);
                     $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon center-block" />');
@@ -226,7 +226,7 @@ if ($result) {
             function successDelete(id) {
         <?php // Delete ok                     ?>
                 $("#del" + id).prop("disabled", true);
-                $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile label' + id + '" for="fileId1' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
+                $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile label' + id + '" for="fileId' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
                 $("#file" + id).append('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '">');
                 $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
                 $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="0">');
@@ -241,7 +241,7 @@ if ($result) {
             }
             function errorBack(result) {
         <?php //Go back error                     ?>
-                $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
+                $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
             }
 
 
@@ -839,8 +839,7 @@ if ($result) {
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
                     <div class="card">
                         <div class="card-header" data-background-color="blue">
-                            <h4 class="title"><strong><?php echo __('One Click Registration') ?></strong></h4>
-                            <p class="category"><?php echo __('Document Uploading') ?></p>
+                            <h4 class="title"><strong><?php echo __('Documentation Uploading') ?></strong></h4>
                         </div>
                         <div class="card-content table-responsive togetoverlay">
                             <div class="overlay">

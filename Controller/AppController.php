@@ -218,9 +218,9 @@ define('ERROR', 2);
 // CURL ERRORS
 define('CURL_ERROR_TIMEOUT', 28);
 
-// TYPES OF DASHBOARD RECORD	
-define('USER_GENERATED', 1);
-define('SYSTEM_GENERATED', 2);
+// TYPES OF DASHBOARD RECORDS	
+define('USER_GENERATED', 2);
+define('SYSTEM_GENERATED', 1);
 
 
 // DEFINED CURRENCIES
@@ -228,14 +228,9 @@ define('EUR', 1);           // Euro
 define('GBP', 2);           // UK Pound Sterling
 define('USD', 3);           // US Dollar
 
-//DEFINE REQUIRED FILES
-define('OPTIONAL',1);
-define('NOT_OPTIONAL',0);
+// APPLICATION THAT CAN PRODUCE BILLING DATA
+define('TALLYMAN_APP', 1);
 
-//DEFINE CHECKS 
-define('PENDING',0);
-define('YES',1);
-define('NO',2);
 
 
 class AppController extends Controller {
@@ -293,7 +288,7 @@ class AppController extends Controller {
         $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
 
         //Investor Ocr Status
-        $this->ocrStatus = array(1 => __("Uncheked"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
+        $this->ocrStatus = array(1 => __("Unchecked"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
 
         //Company ocr service status
         $this->serviceStatus = array(0 => __('Choose One'), 1 => __("Inactive"), 2 => __("Active"), 3 => __("Suspended"));

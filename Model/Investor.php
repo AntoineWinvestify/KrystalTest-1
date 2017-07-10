@@ -19,7 +19,9 @@
   2016-10-18	  version 0.1
   function updateAccountCreationStatus						[Not OK, Not tested]
 
-
+  2017-07-05
+ * modified the rules in the $validate variable, mixing it 
+ 
   2017-01-17	  version 0.2
   function investmentInformationUpdate added					[OK]
 
@@ -223,7 +225,6 @@ class Investor extends AppModel {
         $this->save($data, $validate = true);
         echo __FILE__ . " " . __LINE__ . "<br>";
         if ($this->createCheckdata($currentStatus['Investor']['id'])) {
-            $this->createCheckdata($id); //create the line in the table checks
             return true;
         }
     }
@@ -285,6 +286,21 @@ class Investor extends AppModel {
         return true;
     }
 
+    
+    
+    
+    /**
+ * Read the cheack data
+ * @param type $investorId
+ * @return type
+ */
+public function readCheckData($investorId) {
+    $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+    return $checkData;
+}
+
+
+    
     /**
      *
      * 	Checks if current stored investment information of the user is recent enough
@@ -391,6 +407,38 @@ class Investor extends AppModel {
         ));
         return $info;
     }
+    
+    /**
+     * Get all data of a investor by investor.id
+     * @param int $id It is the investor's id
+     * @return array $info It is all the investor's data
+     */
+    public function getInvestorIdentityByInvestorId($id) {
+
+        $info = $this->find("all", array(
+            'conditions' => array('Investor.id' => $id),
+            'recursive' => -1,
+        ));
+        return $info;
+    }
+    
+    public function getJsonDataForPFP($id) {
+        /*$options['joins'] = array(
+            array('table' => 'ocrs',
+                'alias' => 'Ocr',
+                'type' => 'inner',
+                'conditions' => array(
+                    'Investor.id = Ocr.investor_id'
+                )
+            )
+        );*/
+
+        $options['conditions'] = array(
+            'Investor.id' => $id
+        );
+        $investorData = $this->find("all", $options);
+        return $investorData;
+    }
 
     /**
      * Get investor id
@@ -443,16 +491,6 @@ class Investor extends AppModel {
         } else {
             return false;
         }
-    }
-
-    /**
-     * Read the cheack data
-     * @param type $investorId
-     * @return type
-     */
-    public function readCheckData($investorId) {
-        $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
-        return $checkData;
     }
 
     /**

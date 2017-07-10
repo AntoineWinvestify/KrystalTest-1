@@ -321,7 +321,6 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', true);
         }
-        echo " ";
     }
 
     /** Investor View #1
@@ -333,7 +332,7 @@ class ocrsController extends AppController {
             $this->set('result', false);
         } else {
             //Companies with ocr
-            $this->set('company', $this->Company->companiesDataOCR());
+            $this->set('companies', $this->Company->companiesDataOCR());
 
             //Types
             $this->set('CompanyType', $this->crowdlendingTypesLong);
@@ -376,7 +375,6 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', true);
         }
-        echo " ";
     }
 
     /** Investor View #3
@@ -395,10 +393,13 @@ class ocrsController extends AppController {
         //Set info
         $this->set("companies", $companyId);
         $this->set("status", $status);
-
-
-
-        echo " ";
+    }
+    
+    /** Investor View #4
+     * Modal to completed process
+     */
+    function ocrCompletedProcess() {
+        $this->layout = 'azarus_private_layout';
     }
 
     //One Click Registration - PFPAdmin Views
@@ -409,7 +410,6 @@ class ocrsController extends AppController {
         $this->set('bills', $bills);
 
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     /*     * PFPAdmin View #1
@@ -422,28 +422,24 @@ class ocrsController extends AppController {
         $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));
 
         if ($status[0]) {
-            if ($status[0]) {
-                //Read and accepted relations
-                $ocrList = $this->Ocr->getAllOcrRelations($this->Session->read('Auth.User.Adminpfp.company_id'));
-                $this->set('ocrList', $ocrList);
+            //Read and accepted relations
+            $ocrList = $this->Ocr->getAllOcrRelations($this->Session->read('Auth.User.Adminpfp.company_id'));
+            $this->set('ocrList', $ocrList);
 
-                //PFP  status
-                $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
+            //PFP  status
+            $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
 
-                //Status name
-                $this->set('statusName', $this->pfpStatus);
-            }
+            //Status name
+            $this->set('statusName', $this->pfpStatus);
         } else {
             //You can't access to this page
         }
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //PFPAdmin View #3
     function ocrPfpTallyman() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //One Click Registration - Winvestify functions
@@ -472,7 +468,6 @@ class ocrsController extends AppController {
         $this->set('status', $this->ocrStatus);
 
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     /** WinAdmin View #1
@@ -491,7 +486,6 @@ class ocrsController extends AppController {
 
         // Currency names
         $this->set('currencyName', $this->currencyName);
-        echo " ";
     }
 
     function billsTable() {
@@ -515,14 +509,15 @@ class ocrsController extends AppController {
      * @param type $id
      */
     function ocrWinadminInvestorData($id) {
-
+        App::import('Controller', 'Investors');
         //Search and set investor data
         $userData = $this->Ocr->ocrGetData($id, null);
         $this->set('userData', $userData);
 
-
+        $investorsController = new InvestorsController;
+        // Call a method from
         //Search and set investor checking
-        $checking = $this->Investor->readCheckData($id);
+        $checking = $investorsController->readCheckData($id);
         $this->set('checking', $checking);
 
         //Search and set investor files
@@ -530,7 +525,6 @@ class ocrsController extends AppController {
         $this->set('files', $files);
 
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     /**
@@ -557,7 +551,6 @@ class ocrsController extends AppController {
      */
     function ocrWinadminUpdatePfpData() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
 
         // Country Codes
         Configure::load('countryCodes.php', 'default');
@@ -620,13 +613,11 @@ class ocrsController extends AppController {
     //WinAdmin View #5
     function ocrWinadminSoldUsers() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //WinAdmin View #6
     function ocrWinadminTallyman() {
         $this->layout = 'azarus_private_layout';
-        echo " ";
     }
 
     //Activated Service VIEW

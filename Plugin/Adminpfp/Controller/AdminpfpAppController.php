@@ -43,7 +43,7 @@ Simple first version
 // Tendency indicators    
     define('UPWARDS', 1);
     define('DOWNWARDS', 2);   
-    
+   
     
 class AdminpfpAppController extends AppController {
  

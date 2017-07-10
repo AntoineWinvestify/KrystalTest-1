@@ -279,9 +279,9 @@ class ocrfile extends AppModel {
      * @param type $id
      * @return type
      */
-    public function readExistingFiles($id) {
+    public function readExistingFiles($investorId) {
 
-        $investorFiles = $this->FilesInvestor->find("all", array('conditions' => array('investor_id' => $id)));
+        $investorFiles = $this->FilesInvestor->find("all", array('conditions' => array('investor_id' => $investorId)));
         $filesName = $this->find("all");
         $result = array();
 
@@ -356,9 +356,10 @@ class ocrfile extends AppModel {
     /**
      * Create a zip of an investor documents and a json
      * 
-     * @param type $files
-     * @param type $destination
-     * @param type $overwrite
+     * @param array $files
+     * @param string $destination
+     * @param boolean $overwrite
+     * @param string $json
      * @return boolean
      */
     function createZip($files = array(), $destination = '', $overwrite = false, $json = null) {

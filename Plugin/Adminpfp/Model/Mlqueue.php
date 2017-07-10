@@ -28,9 +28,9 @@ First version
 */
 
 App::uses('AppModel', 'Model');
-class Search extends AppModel
+class Mlqueue extends AppModel
 {
-	public $name = 'Search';
+	public $name = 'Mlqueue';
 
 
 
@@ -42,38 +42,6 @@ class Search extends AppModel
 var $validate = array();
 
 
-
-
-
-    /**
-     * 
-     * Store the data related to user searches
-     * 	
-     * @param json  $searchParms    all search parameters, key = parameter name, value = parameter value
-     * @param string $parameter1    parameter1, transparent data
-     * @param string $parameter2    parameter2, transparent data
-     * @param string $parameter3    parameter3, transparent data
-     * @param int   $application    identification of application 
-     * @return boolean  true if data has been stored
-     * 
-     */
-public function writeSearchData($searchParms, $parameter1, $parameter2, $parameter3, $application = null) {
-
-    $data = array();
-    
-    $data['search_searchparms'] = $searchParms;
-    $data['search_parameter1'] = $parameter1;     
-    $data['search_parameter2'] = $parameter2;
-    $data['search_parameter3'] = $parameter3;   
-    $data['search_application'] = $application;    
- 
-    if ($this->save($data, $validate = true)) {
-        return true;
-    }
-    else  { 
-        return false;
-    }
-}
 
 
 }

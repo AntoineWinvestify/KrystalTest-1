@@ -370,20 +370,20 @@ if ($result) {
                         </div>
                     </div>
                     <?php
-                    foreach ($company as $comp) {
+                    foreach ($companies as $company) {
                         ?>
 
-                        <div id = "<?php echo $comp['Company']['company_name'] ?>" class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $comp['Company']['id'] ?>">
+                        <div id = "<?php echo $company['Company']['company_name'] ?>" class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $company['Company']['id'] ?>">
                             <div class="box box-widget widget-user-2">
                                 <div class="widget-user-header">
                                     <div class="row">
                                         <div id="companyLogo" class="col-xs-12 col-sm-12 col-md-12 col-lg-5">
-                                            <img src="/img/logo/<?php echo $comp['Company']['company_logoGUID'] ?>" style="max-height: 100px" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
+                                            <img src="/img/logo/<?php echo $company['Company']['company_logoGUID'] ?>" style="max-height: 100px" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
                                             <ul class="nav nav-stacked">
-                                                <li class = 'country'><img src="/img/flags/<?php echo $comp['Company']['company_country'] ?>.png" alt="Spain Flag"/> <?php echo __($comp['Company']['company_countryName']) ?></li>
-                                                <li class = 'type'><?php echo __($CompanyType[$comp['Company']['Company_type']]) ?></li>
+                                                <li class = 'country'><img src="/img/flags/<?php echo mb_strtolower($company['Company']['company_country']) ?>.png" alt="Spain Flag"/> <?php echo __($company['Company']['company_countryName']) ?></li>
+                                                <li class = 'type'><?php echo __($CompanyType[$company['Company']['Company_type']]) ?></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -391,11 +391,11 @@ if ($result) {
                                 <div class="box-footer no-padding">
                                     <div class="row">
                                         <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                            <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a target="_blank" href="<?php echo $comp['Company']['Company_privacyUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
-                                            <div class="input_platforms"><input type="checkbox" class="check check<?php echo $comp['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a target="_blank" href="<?php echo $comp['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
+                                            <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído la ') ?><a target="_blank" href="<?php echo $company['Company']['Company_privacyUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
+                                            <div class="input_platforms"><input type="checkbox" class="check check<?php echo $company['Company']['id'] ?>"> <?php echo __('He leído los ') ?><a target="_blank" href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                            <button id ="<?php echo $comp['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin btnSelected btnRounded pull-right" style="margin-right: 10px !important;"><?php echo __('Select') ?></button>
+                                            <button id ="<?php echo $company['Company']['id'] ?>"  class="btnSelect btn btn-default btn1CR btnMargin btnSelected btnRounded pull-right" style="margin-right: 10px !important;"><?php echo __('Select') ?></button>
                                         </div>
                                     </div>
                                 </div>
