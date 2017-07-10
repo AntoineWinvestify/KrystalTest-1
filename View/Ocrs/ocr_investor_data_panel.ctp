@@ -141,7 +141,7 @@ if ($result) {
     <?php // Upload  file                       ?>
                 id = $(this).attr("value");
                 var formdatas = new FormData($("#FileForm" + id)[0]);
-                link = '../Files/upload';
+                link = '/files/upload';
                 $.ajax({
                     url: link,
                     dataType: 'json',
@@ -902,7 +902,7 @@ if ($result) {
                                                         <?php
                                                         $uploaded = "uploaded" . $filesTable[0]['Ocrfile']['id'];
 
-                                                        echo $this->Form->create('Files', array('action' => '../Files/upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['Ocrfile']['id'], 'class' => 'upload', 'value' => $filesTable[0]['Ocrfile']['id']));
+                                                        echo $this->Form->create('Files', array('action' => 'upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['Ocrfile']['id'], 'class' => 'upload', 'value' => $filesTable[0]['Ocrfile']['id']));
                                                         echo "<span id='" . $file . "' >";
                                                         echo "<label class='btn labelFile btnRounded btnUploadFile label" . $filesTable[0]['Ocrfile']['id'] . "' for='fileId" . $filesTable[0]['Ocrfile']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
                                                         echo "<input type='file' name='data[Files][fileId" . $filesTable[0]['Ocrfile']['id'] . "]' id='fileId" . $filesTable[0]['Ocrfile']['id'] . "' >";

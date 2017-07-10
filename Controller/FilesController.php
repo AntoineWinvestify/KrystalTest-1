@@ -68,6 +68,7 @@ class filesController extends AppController {
      * Upload a document
      */
     function upload() {
+        Configure::write('debug', 2);
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {

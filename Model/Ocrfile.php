@@ -135,7 +135,7 @@ class ocrfile extends AppModel {
                 $uploadPath = $uploadFolder . DS . $filename;
                 //Create the dir if not exist
                 if (!file_exists($uploadFolder)) {
-                    mkdir($uploadFolder, 0755, true);
+                    mkdir($uploadFolder, 0770, true);
                 }
 
                 //Move the uploaded file to the new dir
