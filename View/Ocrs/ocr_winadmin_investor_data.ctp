@@ -85,7 +85,7 @@
             fileArray = [];
             i = 0
             $(".file :checked").each(function () {
-                id = $(this).attr('name');
+                id = $(this).attr('id');
                 status = $(this).val();
                 fileArray[i] = {id, status};
                 i++;
@@ -155,7 +155,7 @@
                 fileArray = [];
                 i = 0;
                 $(".file :checked").each(function () {
-                    id = $(this).attr('name');
+                    id = $(this).attr('id');
                     status = $(this).val();
                     fileArray[i] = {id, status};
                     i++;
@@ -226,7 +226,7 @@
         $(".alert-to-fade").addClass("alert-win-success");
     }
     function successApprove() {
-        window.history.back();
+        window.location.replace('/ocrs/ocrWinadminInvestorChecking');
     }
     function error(data) {
         $(".feedbackText").html(data);
@@ -821,17 +821,17 @@
                                                 </form>
 
                                                 <div>
-                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php
+                                                    <label class="radio-inline file"><input type="radio" id ="<?php echo $file['file']['FilesInvestor']['id'] ?>" name="File<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php
                                                         if ($file['file']['FilesInvestor']['file_status'] == YES) {
                                                             echo 'checked="checked"';
                                                         }
                                                         ?> value="<?php echo YES ?>"><?php echo __('Yes') ?></label>
-                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php
+                                                    <label class="radio-inline file"><input type="radio" id ="<?php echo $file['file']['FilesInvestor']['id'] ?>" name="File<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php
                                                         if ($file['file']['FilesInvestor']['file_status'] == NO) {
                                                             echo 'checked="checked"';
                                                         }
                                                         ?> value="<?php echo NO ?>"><?php echo __('No') ?></label>
-                                                    <label class="radio-inline file"><input type="radio" name="<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php
+                                                    <label class="radio-inline file"><input type="radio" id ="<?php echo $file['file']['FilesInvestor']['id'] ?>" name="File<?php echo $file['file']['FilesInvestor']['id'] ?>" <?php
                                                         if ($file['file']['FilesInvestor']['file_status'] == PENDING) {
                                                             echo 'checked="checked"';
                                                         }

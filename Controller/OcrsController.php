@@ -167,7 +167,7 @@ class ocrsController extends AppController {
             $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
             $status = $this->Ocr->checkStatus($id);
 
-            //Ocr data
+            //Ocr data          
             $datosOcr = array(
                 'investor_id' => $id,
                 'ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],

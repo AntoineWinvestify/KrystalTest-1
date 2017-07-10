@@ -97,24 +97,26 @@ if ($result) {
             addExistingDocuments();
             disbleCheckedData();
             validationerrors = false;
-    <?php //telephone                       ?>
+    <?php //telephone                        ?>
             $('#ContentPlaceHolder_telephone').intlTelInput();
 
-    <?php //Date picker                       ?>
+    <?php //Date picker                        ?>
             $('#ContentPlaceHolder_dateOfBirth').datepicker({
                 autoclose: true,
                 format: 'dd/mm/yyyy'
             });
-    <?php //Show div with CIF & IBAN if its checked.                       ?>
+    <?php //Show div with CIF & IBAN if its checked.                        ?>
             $(document).on("change", "#investmentVehicle", function () {
                 if ($(this).is(":checked")) {
                     $("#investmentVehicleContent").show();
+                    //4 is cif id
                     $("#4").show();
                     $("#notification4").show();
                     $("#uploaded4").addClass('uploaded');
 
                 } else {
                     $("#investmentVehicleContent").hide();
+                    //4 is cif id
                     $("#4").hide();
                     $("#notification4").hide();
                     $("#uploaded4").removeClass('uploaded');
@@ -126,9 +128,9 @@ if ($result) {
                 console.log("validate 1CR data");
                 var result; //link = $(this).attr("href");
 
-    <?php //Javascript validation                       ?>
+    <?php //Javascript validation                        ?>
                 if ((result = app.visual.checkForm1CRInvestorData()) === false) {
-    <?php //Validation error                       ?>
+    <?php //Validation error                        ?>
                     event.stopPropagation();
                     event.preventDefault();
                     $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
@@ -138,7 +140,7 @@ if ($result) {
             });
 
             $(document).on("change", ".upload", function () {
-    <?php // Upload  file                       ?>
+    <?php // Upload  file                        ?>
                 id = $(this).attr("value");
                 var formdatas = new FormData($("#FileForm" + id)[0]);
                 link = '/files/upload';
@@ -160,7 +162,7 @@ if ($result) {
             });
 
             $(document).on("click", ".delete", function () {
-    <?php //Delete File                       ?>
+    <?php //Delete File                        ?>
                 id = $(this).val();
                 url = $(".url" + id).attr("value");
                 params = {
@@ -178,14 +180,14 @@ if ($result) {
             });
 
             $(document).on("click", "#backOCR", function () {
-    <?php //Go back                       ?>
+    <?php //Go back                        ?>
                 link = "../Ocrs/ocrInvestorPlatformSelection";
                 var data = null;
                 getServerData(link, data, successBack, errorBack);
             });
 
 
-    <?php if ($ocr[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) {   //Invesment vehicle check                ?>
+    <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) {   //Investment vehicle check                 ?>
                 $("#investmentVehicle").prop('checked', true);
                 $("#investmentVehicleContent").show();
                 $("#4").show();
@@ -197,147 +199,145 @@ if ($result) {
 
                 $("#uploaded4").removeClass('uploaded');
 
-        <?php } ?>
+    <?php } ?>
 
 
-            });
+        });
 
 
-            function successUpload(data, id) {
-                data = JSON.parse(data);
-                if (data[0]) {
-                    $("#file" + id).html(data[2][0]);
-                    $("#file" + id).attr("value", data[2][0]);
-                    $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
-                    $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[2] + '" id="FilesInfo">');
-                    $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
-                    $("#del" + id).prop("disabled", false);
-                    $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon center-block" />');
-                } else { //upload fail, incorrect file type or too big
-                    $("#notification" + id).html('<td colspan="4"><div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong>' + data[1] + '</strong></div></td>');
-                    $("#status" + id).html('<img src="/img/feedback_false.png" class="feedbackIcon center-block" />');
-                }
-                $(".label" + id).removeClass("btn");
-                $(".label" + id).removeClass("btnRounded");
-                $(".label" + id).removeClass("btnUploadFile");
-                $(".label" + id).html("");
-            }
-
-            function successDelete(id) {
-        <?php // Delete ok                     ?>
-                $("#del" + id).prop("disabled", true);
-                $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile label' + id + '" for="fileId' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
-                $("#file" + id).append('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '">');
+        function successUpload(data, id) {
+            data = JSON.parse(data);
+            if (data[0]) {
+                $("#file" + id).html(data[2][0]);
+                $("#file" + id).attr("value", data[2][0]);
                 $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
-                $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="0">');
-                $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>')
+                $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + data[2] + '" id="FilesInfo">');
+                $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
+                $("#del" + id).prop("disabled", false);
+                $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon center-block" />');
+            } else { //upload fail, incorrect file type or too big
+                $("#notification" + id).html('<td colspan="4"><div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong>' + data[1] + '</strong></div></td>');
+                $("#status" + id).html('<img src="/img/feedback_false.png" class="feedbackIcon center-block" />');
             }
-
-            function successBack(result) {
-        <?php // Go back ok                     ?>
-                $(document).off('click');
-                $(document).off('change');
-                $("#content").html(result);
-            }
-            function errorBack(result) {
-        <?php //Go back error                     ?>
-                $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
-            }
-
-
-
-            function addExistingDocuments() {
-        <?php //Show alreadey upladed files in the table                     ?>
-        <?php
-        foreach ($existingFiles as $file) {
-            ?>
-                    id = <?php echo $file["file"]["FilesInvestor"]["file_id"] ?>;
-                    url = "<?php echo $file["file"]["FilesInvestor"]["file_url"] ?>";
-                    $(".documentRow").each(function () {
-                        if ($(this).attr("id") == id) {
-                            $("#file" + id).html('<?php echo $file["file"]["FilesInvestor"]["file_name"] ?>');
-                            $("#file" + id).attr("value", "<?php echo $file["file"]["FilesInvestor"]["file_name"] ?>");
-                            $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
-                            $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
-                            $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
-                            $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon center-block" />');
-                            $("#del" + id).prop("disabled", false);
-                        }
-                    });
-                    // DISABLED FIELDS
-                    //Telephone
-                    if ($("#ContentPlaceHolder_telephone").is(':disabled')) {
-                        $("#ContentPlaceHolder_telephone").addClass("disabledPointer");
-                        $("#ContentPlaceHolder_telephone .selected-flag").addClass("disabledPointer");
-                    }
-                    //dateOfBirth
-                    if ($("#ContentPlaceHolder_dateOfBirth").is(':disabled')) {
-                        $('#ContentPlaceHolder_dateOfBirth').datepicker({
-                            showOn: "off"
-                        });
-                        $("#ContentPlaceHolder_dateOfBirth").addClass("disabledPointer");
-                    }
-            <?php
+            $(".label" + id).removeClass("btn");
+            $(".label" + id).removeClass("btnRounded");
+            $(".label" + id).removeClass("btnUploadFile");
+            $(".label" + id).html("");
         }
+
+        function successDelete(id) {
+    <?php // Delete ok                      ?>
+            $("#del" + id).prop("disabled", true);
+            $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile label' + id + '" for="fileId' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
+            $("#file" + id).append('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '">');
+            $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+            $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="0">');
+            $("#status" + id).html('<span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span>')
+        }
+
+        function successBack(result) {
+    <?php // Go back ok                      ?>
+            $(document).off('click');
+            $(document).off('change');
+            $("#content").html(result);
+        }
+        function errorBack(result) {
+    <?php //Go back error                      ?>
+            $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
+        }
+
+
+
+        function addExistingDocuments() {
+    <?php //Show alreadey upladed files in the table                      ?>
+    <?php
+    foreach ($existingFiles as $file) {
         ?>
-            }
+                id = <?php echo $file["file"]["FilesInvestor"]["file_id"] ?>;
+                url = "<?php echo $file["file"]["FilesInvestor"]["file_url"] ?>";
+                $(".documentRow").each(function () {
+                    if ($(this).attr("id") == id) {
+                        $("#file" + id).html('<?php echo $file["file"]["FilesInvestor"]["file_name"] ?>');
+                        $("#file" + id).attr("value", "<?php echo $file["file"]["FilesInvestor"]["file_name"] ?>");
+                        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="typeFile" value="' + id + '" id="FilesInfo">');
+                        $("#file" + id).append('<input type="hidden" name="data[Files][info]" class="url' + id + '" value="' + url + '" id="FilesInfo">');
+                        $("#file" + id).append('<input type="hidden" name="data[Files][upload]" id="uploaded' + id + '" class="uploaded" value="1">');
+                        $("#status" + id).html('<img src="/img/feedback_true.png" class="feedbackIcon center-block" />');
+                        $("#del" + id).prop("disabled", false);
+                    }
+                });
+                // DISABLED FIELDS
+                //Telephone
+                if ($("#ContentPlaceHolder_telephone").is(':disabled')) {
+                    $("#ContentPlaceHolder_telephone").addClass("disabledPointer");
+                    $("#ContentPlaceHolder_telephone .selected-flag").addClass("disabledPointer");
+                }
+                //dateOfBirth
+                if ($("#ContentPlaceHolder_dateOfBirth").is(':disabled')) {
+                    $('#ContentPlaceHolder_dateOfBirth').datepicker({
+                        showOn: "off"
+                    });
+                    $("#ContentPlaceHolder_dateOfBirth").addClass("disabledPointer");
+                }
+        <?php
+    }
+    ?>
+        }
 
-            function disbleCheckedData() {
-
-
-        <?php if ($checkData[0]['Check']['check_name'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_name').prop('disabled', true);
-        <?php } ?>
-
-
-        <?php if ($checkData[0]['Check']['check_surname'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_surname').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_dni'] == CHECKED) { //Data checking                ?>
-                    $('#dni').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_dateOfBirth'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_dateOfBirth').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_email'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_email').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_telephone'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_telephone').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_postCode'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_postCode').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_address1'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_address1').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_city'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_city').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_country'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_country').prop('disabled', true);
-        <?php } ?>
-
-        <?php if ($checkData[0]['Check']['check_iban'] == CHECKED) { //Data checking                ?>
-                    $('#ContentPlaceHolder_iban').prop('disabled', true);
-        <?php } ?>
+        function disbleCheckedData() {
 
 
+    <?php if ($checkData[0]['Check']['check_name'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_name').prop('disabled', true);
+    <?php } ?>
 
-            }
+
+    <?php if ($checkData[0]['Check']['check_surname'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_surname').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_dni'] == CHECKED) { //Data checking                 ?>
+                $('#dni').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_dateOfBirth'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_dateOfBirth').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_email'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_email').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_telephone'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_telephone').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_postCode'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_postCode').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_address1'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_address1').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_city'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_city').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_country'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_country').prop('disabled', true);
+    <?php } ?>
+
+    <?php if ($checkData[0]['Check']['check_iban'] == CHECKED) { //Data checking                 ?>
+                $('#ContentPlaceHolder_iban').prop('disabled', true);
+    <?php } ?>
 
 
 
+        }
 
         </script>
+        
         <div id = "notification"></div>
         <div id="1CR_investor_2_investorDataPanel">
             <div class="row">
@@ -828,24 +828,24 @@ if ($result) {
                             </div>
 
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="OCR_InvestorPanelB">
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="card">
-                        <div class="card-header" data-background-color="blue">
-                            <h4 class="title"><strong><?php echo __('Documentation Uploading') ?></strong></h4>
-                        </div>
-                        <div class="card-content table-responsive togetoverlay">
-                            <div class="overlay">
-                                <div class="fa fa-spin fa-spinner" style="color:green">	
-                                </div>
+
+    <div id="OCR_InvestorPanelB">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header" data-background-color="blue">
+                        <h4 class="title"><strong><?php echo __('Documentation Uploading') ?></strong></h4>
+                    </div>
+                    <div class="card-content table-responsive togetoverlay">
+                        <div class="overlay">
+                            <div class="fa fa-spin fa-spinner" style="color:green">	
                             </div>
-                            <div class="row firstParagraph">
+                        </div>
+                        <div class="row firstParagraph">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <p><?php
                                         echo __('Cumpliendo con la Ley 10/2012, del 28 de Abril, de prevención del'
@@ -857,94 +857,96 @@ if ($result) {
                                         ?></p>
                                 </div>
                             </div>
-                            <div class="row firstParagraph">
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <p><?php echo __('Maximun File Size: 10MB'); ?></p>
-                                    <p><?php echo __('Permitted Formats:' . $filesType); ?></p>
-                                </div>
+                        <div class="row firstParagraph">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <p><?php echo __('Maximun File Size: 10MB'); ?></p>
+                                <p><?php echo __('Permitted Formats:' . $filesType); ?></p>
                             </div>
-                            <div class="row">
-                                <!-- Investor complete data -->
-                                <?php
-                                $errorClassesText = "errorInputMessage ErrorFiles";
-                                if (array_key_exists('investor_files', $investorValidationErrors)) {
-                                    $errorClassesText .= " " . "actived";
-                                }
-                                ?>
-                                <div class="<?php echo $errorClassesText ?> col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <span class="errorMessage">
-                                        <?php echo $investorValidationErrors['investor_files'][0] ?>
-                                    </span>
-                                </div>
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">	
-                                    <div class="table-responsive">  
-                                        <table id="documentsTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                               data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
-                                            <thead>
-                                                <tr>
-                                                    <th><?php echo __('Name') ?></th>
-                                                    <th><?php echo __('Status') ?></th>
-                                                    <th><?php echo __('Upload') ?></th>
-                                                    <th><?php echo __('Delete') ?></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="body">
-                                            <input type="hidden" name="countFiles" value="<?php echo count($requiredFiles) ?>">
-                                            <?php
-                                            foreach ($requiredFiles as $filesTable) {  //Generate the required files table
-                                                $file = "file" . $filesTable[0]['Ocrfile']['id'];
-                                                ?>
-                                                <tr <?php
-                                                if ($filesTable[0]['Ocrfile']['file_optional'] == OPTIONAL) {
-                                                    echo "style='display: none'";
-                                                }
-                                                ?> id = "notification<?php echo $filesTable[0]['Ocrfile']['id'] ?>">
-                                                </tr>
-                                                <tr <?php
-                                                if ($filesTable[0]['Ocrfile']['file_optional'] == OPTIONAL) {
-                                                    echo "style='display: none'";
-                                                }
-                                                ?> id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="documentRow">
-                                                    <td title="<?php echo $filesTable[0]['Ocrfile']['file_tooltip'] ?>"><?php echo __($filesTable[0]['Ocrfile']['file_type']) ?></td>
-                                                    <td id="status<?php echo $filesTable[0]['Ocrfile']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
-                                                    <td>
-                                                        <?php
-                                                        $uploaded = "uploaded" . $filesTable[0]['Ocrfile']['id'];
-
-                                                        echo $this->Form->create('Files', array('action' => 'upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['Ocrfile']['id'], 'class' => 'upload', 'value' => $filesTable[0]['Ocrfile']['id']));
-                                                        echo "<span id='" . $file . "' >";
-                                                        echo "<label class='btn labelFile btnRounded btnUploadFile label" . $filesTable[0]['Ocrfile']['id'] . "' for='fileId" . $filesTable[0]['Ocrfile']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
-                                                        echo "<input type='file' name='data[Files][fileId" . $filesTable[0]['Ocrfile']['id'] . "]' id='fileId" . $filesTable[0]['Ocrfile']['id'] . "' >";
-                                                        //echo $this->Form->file("fileId" . $filesTable[0]['Ocrfile']['id']);
-                                                        echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $filesTable[0]['Ocrfile']['id']));
-                                                        echo $this->Form->hidden('upload', array('id' => $uploaded, 'class' => 'uploaded', 'value' => 0));
-                                                        echo "</span>";
-                                                        echo $this->Form->end();
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <button type="button" id="del<?php echo $filesTable[0]['Ocrfile']['id'] ?>" value="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="delete btn btn-default btnDeleteFile btnRounded" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
-                                                    </td>
-                                                </tr>
-                                                <?php
-                                            }
+                        </div>
+                        <div class="row">
+                            <!-- Investor complete data -->
+                            <?php
+                            $errorClassesText = "errorInputMessage ErrorFiles";
+                            if (array_key_exists('investor_files', $investorValidationErrors)) {
+                                $errorClassesText .= " " . "actived";
+                            }
+                            ?>
+                            <div class="<?php echo $errorClassesText ?> col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $investorValidationErrors['investor_files'][0] ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">	
+                                <div class="table-responsive">  
+                                    <table id="documentsTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
+                                           data-order='[[ 2, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                        <thead>
+                                            <tr>
+                                                <th><?php echo __('Name') ?></th>
+                                                <th><?php echo __('Status') ?></th>
+                                                <th><?php echo __('Upload') ?></th>
+                                                <th><?php echo __('Delete') ?></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="body">
+                                        <input type="hidden" name="countFiles" value="<?php echo count($requiredFiles) ?>">
+                                        <?php
+                                        foreach ($requiredFiles as $filesTable) {  //Generate the required files table
+                                            $file = "file" . $filesTable[0]['Ocrfile']['id'];
                                             ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            <tr <?php
+                                            if ($filesTable[0]['Ocrfile']['file_optional'] == OPTIONAL) {
+                                                echo "style='display: none'";
+                                            }
+                                            ?> id = "notification<?php echo $filesTable[0]['Ocrfile']['id'] ?>">
+                                            </tr>
+                                            <tr <?php
+                                            if ($filesTable[0]['Ocrfile']['file_optional'] == OPTIONAL) {
+                                                echo "style='display: none'";
+                                            }
+                                            ?> id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="documentRow">
+                                                <td title="<?php echo $filesTable[0]['Ocrfile']['file_tooltip'] ?>"><?php echo __($filesTable[0]['Ocrfile']['file_type']) ?></td>
+                                                <td id="status<?php echo $filesTable[0]['Ocrfile']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
+                                                <td>
+                                                    <?php
+                                                    $uploaded = "uploaded" . $filesTable[0]['Ocrfile']['id'];
+
+                                                    echo $this->Form->create('Files', array('action' => 'upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['Ocrfile']['id'], 'class' => 'upload', 'value' => $filesTable[0]['Ocrfile']['id']));
+                                                    echo "<span id='" . $file . "' >";
+                                                    echo "<label class='btn labelFile btnRounded btnUploadFile label" . $filesTable[0]['Ocrfile']['id'] . "' for='fileId" . $filesTable[0]['Ocrfile']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
+                                                    echo "<input type='file' name='data[Files][fileId" . $filesTable[0]['Ocrfile']['id'] . "]' id='fileId" . $filesTable[0]['Ocrfile']['id'] . "' >";
+                                                    //echo $this->Form->file("fileId" . $filesTable[0]['Ocrfile']['id']);
+                                                    echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $filesTable[0]['Ocrfile']['id']));
+                                                    echo $this->Form->hidden('upload', array('id' => $uploaded, 'class' => 'uploaded', 'value' => 0));
+                                                    echo "</span>";
+                                                    echo $this->Form->end();
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <button type="button" id="del<?php echo $filesTable[0]['Ocrfile']['id'] ?>" value="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="delete btn btn-default btnDeleteFile btnRounded" disabled=""><i class="fa fa-times"></i> <?php echo __('Delete') ?> </button>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+                                        ?>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="btn1CR" class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
-                    <div class="form-group">
-                        <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn1CR btnRounded pull-left"><?php echo __('Back') ?></button>
-                        <button type="submit" href="/ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn1CR btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
-                    </div>
-                </div>	
             </div>
+            <div id="btn1CR" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="form-group">
+                    <?php if( $ocr[0]['Ocr']['ocr_status'] != ERROR ){ ?>
+                    <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn1CR btnRounded pull-left"><?php echo __('Back') ?></button>
+                    <?php } ?>
+                    <button type="submit" href="/ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn1CR btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
+                </div>
+            </div>	
         </div>
-        <?php
-    }    
+    </div>
+    <?php
+}    
