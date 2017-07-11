@@ -56,9 +56,8 @@ class AdminpfpAppController extends AppController {
 				'Auth' => array('authorize' => 'Controller',
                                                 'loginRedirect'	=> array(
 									'plugin' => 'adminpfp',
-									'controller' 	=> 'users',
-									'action' 	=> 'showTallymanPanel'
-									),
+									'controller' 	=> 'ocrs',
+									'action' 	=> 'ocrPfpUsersPanel'),
 						'logoutRedirect' => array('controller' 	=> 'users',
 									 'action' => 'login'
 										 ),

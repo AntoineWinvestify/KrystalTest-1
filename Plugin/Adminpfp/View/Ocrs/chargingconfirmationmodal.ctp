@@ -160,7 +160,7 @@ $userid = $parameters[0];
                         </div> <!-- /tab-content -->
                         <div class="wizard-footer">
                             <div class="pull-right">
-                                <input type='button' id="btnConfirm" class='btn btn-default' name='confirm' href="/adminpfp/users/readtallymandata" value='Confirm' />
+                                <input type='button' id="btnConfirm" class='btn btn-default' name='confirm' href="/adminpfp/ocrs/readtallymandata" value='Confirm' />
                             </div>
 
                             <div class="pull-left">
