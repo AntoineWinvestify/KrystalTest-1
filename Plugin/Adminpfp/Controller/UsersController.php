@@ -59,14 +59,14 @@ function beforeFilter() {
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club33 field from CSRF protection
-															// as it is "dynamic" and would fail the CSRF test
+	echo "AAAA";														// as it is "dynamic" and would fail the CSRF test
 
 //	$this->Security->requireSecure(	'login'	);
 	$this->Security->csrfCheck = false;
 	$this->Security->validatePost = false;	
 // Allow only the following actons.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
+	$this->Auth->allow('login', 'loginAction', 'cronMoveToMLDatabase' , 'readMLDatabase');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
 //   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 //var_dump($_REQUEST);
@@ -76,221 +76,6 @@ function beforeFilter() {
 }
 
 
-
-/**
- * 
- * Shows a list of investors, using dataTable, in order to select/view/modify the data of 1 
- * investor
- * 
- */
-public function showInvestorList() {
-  
-}
-
-
-
-
-/**
- * 
- * Shows the initial, basic screen of the Tallyman service
- * 
- */
-public function startTallyman($investorEmail, $investorTelephone) {
- 
-    $this->layout = 'Adminpfp.azarus_private_layout';
- // check inputparameters against dangerous inputs
- //   $investorTelephone = "+" . $investorTelephone;
-    
-    $investorDNI = "";
-    $investorTelephone = ""; 
-    $investorEmail = "";
-
-    $this->set("investorEmail", $investorEmail);
-    $this->set("investorDNI", $investorDNI);
-    $this->set("investorTelephone", $investorTelephone);            
-            
-
-    $filterconditions = array('investor_identity', $investorIdentification);
- //   $result = $this->Investorglobaldata->readInvestorData($filterConditions);
-    $this->set('result', $result);
-       
-}
-
-
-
-
-// to test if modal shows up correctly. to be deleted
-/*
- * should receive the request for one or more users
- * It checks if charging is to be applied. IF so then show the modal with information
- * about how many requests will be charged ("this event will be charged")
- * 
- * 
- * 
- */
-public function testmodal() {
-    
-    
-
-}
-
-
-
-/**
- * 
- * Shows the Tallyman data of a user in a graphical manner
- * 
- */
-public function readtallymandata() {
-
-    if (!$this->request->is('ajax')) {
-        throw new
-        FatalErrorException(__('You cannot access this page directly'));
-        }
-    $this->layout = 'ajax';
-    $this->disableCache();
-
-    $platformId = $this->Session->read('Auth.User.Adminpfp.company_id');
-    $error = null;
-
-    $inputId = $_REQUEST['inputId']; 
-    $userEmail = $_REQUEST['userEmail'];
-    $userTelephone = $_REQUEST['userTelephone'];
-    $chargingConfirmed = $_REQUEST['chargingConfirmed'];
-
-// Get the unique investor identification
-    $inputParmCount = 0;
-    if (!empty($inputId)) {     
-        $key[] = "Investor.investor_DNI";
-        $value[] = $inputId;
-        ++$inputParmCount;
-    } 
-    if (!empty($userEmail)) { 
-        $key[] = 'Investor.investor_email';
-        $value[] = $userEmail;
-        ++$inputParmCount;
-    }  
-    if (!empty($userTelephone)) { 
-        $key[] = 'Investor.investor_telephone';
-        $value[] = $userTelephone;
-        ++$inputParmCount;
-    }  
-
-    if ($inputParmCount < 2) {
-        $error = NOT_ENOUGH_PARAMETERS;
-    }
-    else {
-        $filterConditions = array_combine($key, $value);
-        $searchData =  json_encode($filterConditions);
-   
-        $this->Search = ClassRegistry::init('Adminpfp.Search');   
-        $result = $this->Search->writeSearchData($searchData, $platformId, null, null, TALLYMAN_APP); 
-      
-        $this->Investor = ClassRegistry::init('Investor');   
-        $resultInvestor = $this->Investor->getInvestorData($filterConditions);
-        $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
-
-        if (!$userIdentification) {
-            $error = USER_DOES_NOT_EXIST;
-        }
-        else {
-            $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
-            $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
-
-            // CHECK IF structure can be improved
-            if (empty($resultTallymanData)) {
-                $error = NO_DATA_AVAILABLE;
-            }   
-            else {
-                $this->set('resultTallyman', $resultTallymanData);
-                $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm'); 
-
-                if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
-                    if ($chargingConfirmed == false){ 
-                        $parameters = array($inputId, $userEmail, $userTelephone);
-                        $this->set('parameters', $parameters);
-                        $this->render('chargingconfirmationmodal');
-                        return;
-                    }
-                } 
-                
-                // provide data for possible billing
-                 if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
-                    $data = array();
-                    $data['reference'] = $userIdentification;                           // investor unique identification
-                    $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
-                    $data['parm2'] = $platformId;                                      // platformId of the adminfp user
-                    $data['parm3'] = null;       
-                    $this->Billingparm->writeChargingData($data, "tallyman");  // CHECK RESULT CODE
-                 }
-            }
-        }
-    }
-
-    if (!$error) {                              // No error encountered, use default view
-        return;
-    }    
-
-    $this->set("error", $error);         
-    $this->render('tallymanErrorPage'); 
-}
-
-
-   /**
-    *
-    *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
-    * 
-    *  @param 		$reference      parameter to be checked
-    *  @param      string      transparent parameter 2 to be checked
-    *  @param      string      transparent parameter 3 to be checked
-    *  @param      string      transparent parameter 4 to be checked
-    *  @param      string      name of application
-    *
-    *  @return 	boolean	true	All OK, data has been saved
-    * 				false	Error occured
-    * 						
-    */
-public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
-return true;
-
-//  Calculate cutoff date for billing purposes
-    Configure::load('p2pGestor.php', 'default');
-    $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
-    $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 *24);    
-  
-    $result = $this->Billingparm->find('first', array(
-                                            "fields" => array("created"),
-                                            "order" => "id DESC",
-                                            "recursive" => -1,
-                                            "conditions" => array("billingparm_reference" => $reference,
-                                                                    "billingparm_parm2" => $parameter2,
-                                                                "billingparm_serviceName" => $application),
-                                             ));
-            
-    if (empty($result)) {  // No information found, so not a chargeable event
-        return false;
-    }
-
-    if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
-        return true;           
-    }
-    return false;
-}
-
-
-
-  
-/**
- * 
- * Shows the initial, basic screen of the Tallyman service with the three input fields
- * 
- */
-public function showTallymanPanel() {
-  $this->layout = 'Adminpfp.azarus_private_layout';
-  
-}  
-  
-  
 
 
 
@@ -340,20 +125,25 @@ public function logout() {
 
 
 
+public function readMLDatabase() {
+     $this->autoRender = false;
+    Configure::write('debug', 2);   
+    echo "Antoine";
+     $this->Userplatformglobaldata = ClassRegistry::init('Adminpfp.Userplatformglobaldata'); 
+    $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');     
+     
+    $investorResult = $this->Investorglobaldata->find('all', $params = array('recursive' => 1,
+							  'conditions'  => array(
+                                                         //       'id >' => $queueResult[0]['MLqueue_actualId'],
+                                                         //       'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                           //     'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
+                                                         //       'queue_id' => 57
+                                                              ),
+                                                          'limit' => 3));
 
-
-/**
-*	Reads the data of an Administrator 
-*
-*/
-function readAdministratorData($adminId) {
-	$this->layout = 'zastac_admin_layout';
-
+    $this->print_r2($investorResult);
+    
 }
-
-
-
-
 
 
 
@@ -386,7 +176,7 @@ public function cronMoveToMLDatabase() {
                                                          //                   'id >' => $queueResult[0]['MLqueue_actualId'],
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
                                                            //                'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                                            'queue_id' => 57 ),
+                                                                            'queue_id >' => 57 ),
                                                           'limit' => 3)
 				); 
 
@@ -447,10 +237,11 @@ public function cronMoveToMLDatabase() {
                 
  $this->print_r2($data);               
                  
-                 if ($data['investment_amount'] > 0) {
-                    $platformglobalData[$index]['userplatformglobaldata_activeInInvestments'] += $data[$index]['investment_amount'];
+                if ($data['investment_amount'] > 0) {
+                    echo "investment found, value = " . $data['investment_amount'];
+                    $platformglobalData[$index]['userplatformglobaldata_activeInInvestments'] += $data['investment_amount'];
                     $platformglobalData[$index]['userplatformglobaldata_numberOfInvestments']++;
-                    $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['investment_amount'];
+                    $investorglobalData['investorglobaldata_activeInInvestments'] += $data['investment_amount'];
                     $activeInvestments = true;
                 }               
                 $data[$index]['userplatformglobaldata_moneyInWallet'] += $data['userinvestmentdata_myWallet'];
@@ -458,13 +249,13 @@ public function cronMoveToMLDatabase() {
 //              $investorglobalData['userplatformglobaldata_reservedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
 //              $investorglobalData['userplatformglobaldata_finishedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
                 $platformglobalData[$index]['userplatformglobaldata_companyId'] = $companyId;            
-               $platformglobalData[$index]['userplatformglobaldata_companyName'] = $companyResult['Company']['company_name'];
+                $platformglobalData[$index]['userplatformglobaldata_companyName'] = $companyResult['Company']['company_name'];
                 $platformglobalData[$index]['userplatformglobaldata_PFPType'] = $companyResult['Company']['company_PFPType'];
                 $platformglobalData[$index]['userplatformglobaldata_PFPCountry'] = $companyResult['Company']['company_country']; 
                 $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;   
                 
                 $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $data[$index]['userinvestmentdata_myWallet'];
-                $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];
+ //               $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];
                 
  
  //$temp['Investorglobaldata']['Userplatformglobaldata'][$index]['userplatformglobaldata_companyId'] = $companyId; 

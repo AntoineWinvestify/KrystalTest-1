@@ -291,4 +291,30 @@ class ocrsController extends AppController {
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
 
+  
+/**
+ * 
+ * Shows the initial, basic screen of the Tallyman service
+ * 
+ */
+public function startTallyman($investorEmail, $investorTelephone) {
+ 
+    $this->layout = 'Adminpfp.azarus_private_layout';
+  
+    $investorDNI = "";
+    $investorTelephone = ""; 
+    $investorEmail = "";
+
+    $this->set("investorEmail", $investorEmail);
+    $this->set("investorDNI", $investorDNI);
+    $this->set("investorTelephone", $investorTelephone);            
+            
+
+    $filterconditions = array('investor_identity', $investorIdentification);
+    $this->set('result', $result);
+}
+  
+    
+    
+    
 }
