@@ -147,9 +147,9 @@ class Company extends AppModel {
      * @return type
      */
     public function companiesDataOCR($filter = null) {
-Configure::write('debug', 2);
+
         $ocrServices = $this->Serviceocr->find('all', array('conditions' => array('serviceocr_status' => SER_ACTIVE)));
- print_r($ocrServices);       
+    
         $idList = array();
         foreach ($ocrServices as $ocrService) {
             array_push($idList, $ocrService['Serviceocr']['company_id']);
@@ -162,13 +162,12 @@ Configure::write('debug', 2);
             $filtro = array('Company.company_countryName' => $filter['country_filter']);
             $conditions = array_merge($conditions, $filtro);
         }
-print_r($filter);
-print_r($idList);
+
         if ($filter['type_filter']) {
             $filtro = array('Company.Company_type' => $filter['type_filter']);
             $conditions = array_merge($conditions, $filtro);
         }
-print_r($conditions);
+       
         $data = $this->find("all", array(
             'fields' => array('id', 'Company.company_name', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
                 'Company.Company_privacyUrl', 'Company.Company_type'),

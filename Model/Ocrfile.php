@@ -50,8 +50,11 @@
  * 2017/6/30 version 0.9
  * Event 
  * 
- * 2017/07/03
+ * 2017/07/03 0.10
  * Generate and include json in zip file
+ * 
+ * 2017/07/11 version 0.11
+ * Delete all investor files
  * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
@@ -148,26 +151,26 @@ class ocrfile extends AppModel {
 
                     //$query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $id . "', '" . $type . "', '" . $name . "', '" . $folder . DS . $filename . "');";
                     //$query = $this->query($query);
-                        $investorFileData = array (
-                            'investor_id' => $id ,
-                            'file_id' => $type ,
-                            'file_name' => $name ,
-                            'file_url' => $folder . DS . $filename,
-                            'file_status'  => 0
-                        );
-                        $this->Filesinvestor->save($investorFileData);
+                    $investorFileData = array(
+                        'investor_id' => $id,
+                        'file_id' => $type,
+                        'file_name' => $name,
+                        'file_url' => $folder . DS . $filename,
+                        'file_status' => 0
+                    );
+                    $this->Filesinvestor->save($investorFileData);
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
                     return [true, __('Upload ok'), $result];
                 } else if ($path == "bill") {
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
-                    
+
 
                     $bill = array(
                         'CompaniesFile' => Array(
                             'company_id' => $id,
                             'file_id' => 50,
                             'bill_number' => $type['number'],
-                            'bill_amount' => str_replace (",",".",$type['amount'] )* 100,
+                            'bill_amount' => str_replace(",", ".", $type['amount']) * 100,
                             'bill_concept' => $type['concept'],
                             'bill_currency' => $type['currency'],
                             'bill_url' => $folder . DS . $filename
@@ -223,6 +226,40 @@ class ocrfile extends AppModel {
             return 1;
         }
         return 0;
+    }
+
+    /**
+     * Delete all files
+     * @param type $id
+     * @return int
+     */
+    public function ocrAllFileDelete($id) {
+
+        $files = $this->FilesInvestor->find('all');
+
+        if (count($files) == 0) {
+            return [1, "There is not files to delete"];
+        }
+
+        
+        $fileConfig = Configure::read('files');
+
+        foreach ($files as $file) {
+            $url = $file['FilesInvestor']['file_url'];
+            $path = $fileConfig['investorPath'] . $url;
+
+            if (unlink($path)) {
+                if ($this->FilesInvestor->delete($file['FilesInvestor']['id'])) {
+                    continue;
+                } else {
+                    return [0, "Can't delete"];
+                }
+            } else {
+                return [0, "Can't delete"];
+            }
+        }
+        
+        return [1, "Delete ok"];
     }
 
     /**

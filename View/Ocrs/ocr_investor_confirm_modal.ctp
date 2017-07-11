@@ -38,6 +38,9 @@
  * 
  * [2017-07-06] version 0.4
  * Final process
+ * 
+ * [2017/07/11] version 0.5
+ * Ajax for delete all investor files
  */
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
@@ -91,7 +94,7 @@
             $(".sureMsg").show();
             $(".btnCancel").prop("disabled", true);
         });
-        
+
         $(document).on("click", "#sureBtn", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
@@ -106,12 +109,17 @@
             window.location.replace('/ocrs/ocrCompletedProcess');
         });
 
+        $(document).on("click", "#btnSure", function () {
+            link = "/files/deleteAll"
+            data = "null"
+            getServerData(link, data, successCancel, errorCancel);
+        });
 
     });
 
 
     function success(result) {
-<?php //Server validation Ok              ?>
+<?php //Server validation Ok               ?>
         resultJson = JSON.parse(result);
         console.log(resultJson);
         if (resultJson[0] == 1 && resultJson[0] == 1 && resultJson[0] == 1) {
@@ -128,11 +136,21 @@
         }
     }
 
+    function successCancel() {
+        window.location.replace('/marketplaces/showMarketPlace');
+    }
+
+
     function error(result) {
-<?php //Server validation Error          ?>
+<?php //Server validation Error           ?>
         console.log("validation error");
         $(".errorMsg").fadeIn();
     }
+
+    function errorCancel(result) {
+        $(".errorMsg").fadeIn();
+    }
+
 
 </script>
 <?php if ($status[0]['Ocr']['ocr_status'] == NOT_SENT || $status[0]['Ocr']['ocr_status'] == FINISHED) { ?>
@@ -161,7 +179,7 @@
                                     <div style="display:none;" class="sureMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
                                             <p class="errorMessage" style="padding: 20px; margin-top: 10px;"><?php echo __('¿Está seguro de que quiere cancelar el proceso? Todos sus datos almacenados y documentos serán eliminados.') ?></p>
-                                            <button id="btnSure" class='btn btn-default center-block' name='sureBtn'><?php echo __('Sí, quiero CANCELAR el proceso')?></button>
+                                            <button id="btnSure" class='btn btn-default center-block' name='sureBtn'><?php echo __('Sí, quiero CANCELAR el proceso') ?></button>
                                         </div>
                                     </div>
                                 </div>
@@ -229,5 +247,5 @@
             </div>
         </div>
     </div>
-<?php
+    <?php
 }
