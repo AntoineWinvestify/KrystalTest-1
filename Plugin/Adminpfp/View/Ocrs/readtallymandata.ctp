@@ -125,7 +125,9 @@ var myChart = new Chart(ctx, {
     datasets: [{
       label: 'Portfolio Invested %',
       data:<?php echo json_encode($resultTallyman[0]['totalPortfolioHistorical'])?>,
-      backgroundColor: ["#2acc5a", "#9acc5a", "#5acc5a"],
+      borderColor: ["rgba(42,204,90,1)"],
+      borderWidth: 5,
+      fill: false
     }]
   }
 });
@@ -161,44 +163,47 @@ var myChart = new Chart(ctx, {
 
 <div id="1CR_pfpAdmin_3_searchResult">
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('Tallyman') ?></strong></h4>
-                    <p class="category"><?php echo __('Tallyman service about @search_fields') ?></p>
+                    <p class="category"><?php echo __('Tallyman service data') ?></p>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
-                                echo __('One Click Registration Le permite registrarse con un solo click en cualquier plataforma'
-                                        . ' PFP puedan validar y autenticar su identidad.')
+                                echo __('');
+                            
                                 ?></p>
                         </div>
                     </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="row">
-                                        <div class="col-lg-3">
+                                        <div class="col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;">
-                                                    <h1  title ="<?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>"><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?></h1>
+                                                    <h1  title ="<?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>"><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?><span class="text-success"><i 
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i></span></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
-                                                        <?php echo __('% Total cartera')?>
-                                                        <strong><?php echo __('invertida')?></strong>
                                                         <div class="card-content"> 
-                                                            <p class="category"><span class="text-success"><i 
-                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i></span></p>
+                                                            <p class="category">
+                                                                <?php echo __('% Total cartera')?>
+                                                                <strong>
+                                                                    <?php echo __('invertida')?>
+                                                                </strong>
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-9">
+                                        <div class="col-lg-8">
                                             <div class="card">
                                                 <div class="card-content">
                                                     <h4 class="title"></h4>
@@ -208,52 +213,49 @@ var myChart = new Chart(ctx, {
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-3">
+                                        <div class="col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content">                    
-                                                    <h1 title ="fdjkdfjkj" style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?></h1>
+                                                    <h1 title ="<?php echo __('The amount invested in the platformtype of the AdminPFP/total invested amount in platformtype[ in %]')?>" style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?><span class="text-success"><i 
+                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i></span></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
-                                                        <?php echo __('% Total cartera')?>
-                                                        <strong><?php echo __('por modalidad')?></strong>
-                                                    </div>
-                                                    <div class="card-content">
-                                                            <p class="category"><span class="text-success"><i 
-                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i></span></p>
+                                                        <div class="card-content">
+                                                            <p class="category">
+                                                                <?php echo __('% Total cartera')?>
+                                                                <strong>
+                                                                    <?php echo __('por su modalidad')?>
+                                                                </strong>
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-9">
+                                        <div class="col-lg-8">
                                             <div class="card">
                                                 <div class="card-content">
-                                                    <h4 class="title" style="text-align: center;">
-                                                        <?php echo __('A) Investments Volume')?>
-                                                        <?php echo __('B) nº of investments')?>
-                                                    </h4>
                                                     <canvas id="barChart1" style="height: 100px;"></canvas>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="row">
-                                        <div class="col-lg-12">
+                                        <div class="col-lg-6">
                                             <div class="card card-stats">
                                                 <div class="card-content">			
                                                     <canvas id="pieChart1" style="height: 100px;"></canvas>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
-                                                        <div class="card-content">
+                                                        <div class="card-content" style="text-align:center">
                                                             <!-- Number of linked accounts -->
                                                             <h1 <?php echo __('The number of platforms where the user has ACTIVE investments. Investment MAY have payment delays')?>style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h1>
                                                         </div>
@@ -266,7 +268,7 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
-                                                        <div class="card-content">
+                                                        <div class="card-content" style="text-align:center">
                                                             <!-- total number of platforms -->
                                                             <h1 <?php echo __('The number of platforms where the investor has an account')?>style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
                                                         </div>

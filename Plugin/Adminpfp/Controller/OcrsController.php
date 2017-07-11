@@ -201,7 +201,7 @@ public function readtallymandata() {
         else {
             $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
             $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
-
+//$this->print_r2($resultTallymanData);
             // CHECK IF structure can be improved
             if (empty($resultTallymanData)) {
                 $error = NO_DATA_AVAILABLE;
@@ -300,7 +300,36 @@ public function showTallymanPanel() {
     
     
     
+  /**
+ * 
+ * Shows the initial, basic screen of the Tallyman service
+ * 
+ */
+public function startTallyman($investorEmail, $investorTelephone) {
+ 
+    $this->layout = 'Adminpfp.azarus_private_layout';
+ // check inputparameters against dangerous inputs
+    $investorTelephone = "+" . $investorTelephone;
     
+    $investorDNI = "";
+    $investorTelephone = ""; 
+    $investorEmail = "";
+
+ $investorEmail ="antoine.de.poorter@gmail.com"; 
+ $investorTelephone="+34675546946";
+ 
+    $this->set("investorEmail", $investorEmail);
+    $this->set("investorDNI", $investorDNI);
+    $this->set("investorTelephone", $investorTelephone);            
+            
+
+    $filterconditions = array('investor_identity', $investorIdentification);
+ //   $result = $this->Investorglobaldata->readInvestorData($filterConditions);
+    $this->set('result', $result);
+       
+}
+
+  
     
     
     

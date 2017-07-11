@@ -70,8 +70,8 @@
             var tel = $("#telephone"+id).text();
             var em = $("#email"+id).text();
             var baseUrl = window.location.host;
-            var link = baseUrl + "/adminpfp/users/readTallymanData" + tel + "/"+ em;
-            alert("FINAL URL: " + link );
+            var link =  "/adminpfp/ocrs/startTallyman/" + em + "/"+ tel;
+            window.location.replace(link);
         });
     });
 
@@ -134,7 +134,7 @@
                                                             </td>
                                                             <td><button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnTallyman btnRounded"><?php echo __('Tallyman') ?></button></td>
 
-                                                        <?php } else if ($pfpStatus == SER_SUSPENDED) { // If servoce is active, hide the full data?>
+                                                        <?php } else if ($pfpStatus == SER_SUSPENDED) { // If service is active, hide the full data?>
                                                             <td><?php echo __($ocr[1]['investorInfo']['Ocr']['ocr_sent']) ?></td>
                                                             <td><?php echo __($ocr[1]['investorInfo']['Investor']['investor_name']) ?></td>
                                                             <td><?php echo __($ocr[1]['investorInfo']['Investor']['investor_surname']) ?></td>

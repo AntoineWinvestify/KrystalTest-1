@@ -65,18 +65,20 @@ console.log("errorTallymanData(data)");
  
     
 $(document).ready(function() {
-
+console.log("Antoin");
     var link = $(this).attr( "href" );
-    link = "/adminpfp/users/readtallymandata";  // FOR TESTING PURPOSES ONLY
+    link = "/adminpfp/ocrs/readtallymandata";  // FOR TESTING PURPOSES ONLY
 
 
   // validate the input parameters
     var inputid = "<?php echo $investorDNI ?>";
     var useremail = "<?php echo $investorEmail ?>";
     var usertelephone = "<?php echo $investorTelephone ?>";
-
-    var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone };
+    var chargingconfirmed = 0;
+    
+    var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
     var data = jQuery.param( params );
+ 
   
     getServerData(link, data, successTallymanData, errorTallymanData);
          });   
