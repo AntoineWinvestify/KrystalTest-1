@@ -273,14 +273,15 @@ class ocr extends AppModel {
 
             $comp = $data["idCompanies"];
 
+            $dataArray = array();
             for ($i = 0; $i < count($comp); $i++) {
-                if ($i == 0) {
-                    $query = "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `company_status`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
-                } else {
-                    $query = $query . "INSERT INTO `companies_ocrs` (`company_id`, `ocr_id`, `company_status`) VALUES ('" . $comp[$i] . "', '" . $ocrId['Ocr']['id'] . "', '0');";
-                }
+                array_push($dataArray, array('company_id' => $comp[$i],
+                    'ocr_id' => $ocrId['Ocr']['id'],
+                    'company_status' => 0));
             }
-            $query = $this->query($query);
+            print_r($dataArray);
+            $this->CompaniesOcr->saveAll($dataArray);
+
             $this->set('data', $data);
             return 1;
         } else {
@@ -357,8 +358,7 @@ class ocr extends AppModel {
         $ocrId = $this->findOcrId($data['investorId']);
 
         /* Delete company */
-        $query = "DELETE FROM `companies_ocrs` WHERE `company_id`='" . $data['companyId'] . "' and`ocr_id`='" . $ocrId . "';";
-        $this->query($query);
+        $this->CompaniesOcr->deleteAll(array('company_id' => $data['companyId'], 'ocr_id' => $ocrId));
         return 1;
     }
 
