@@ -161,7 +161,7 @@ var myChart = new Chart(ctx, {
 
 <div id="1CR_pfpAdmin_3_searchResult">
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="orange">
                     <h4 class="title"><strong><?php echo __('Tallyman') ?></strong></h4>
@@ -179,9 +179,9 @@ var myChart = new Chart(ctx, {
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="row">
-                                        <div class="col-lg-3">
+                                        <div class="col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;">
                                                     <h1  title ="<?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>"><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?></h1>
@@ -198,7 +198,7 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-9">
+                                        <div class="col-lg-8">
                                             <div class="card">
                                                 <div class="card-content">
                                                     <h4 class="title"></h4>
@@ -208,7 +208,7 @@ var myChart = new Chart(ctx, {
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-3">
+                                        <div class="col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content">                    
                                                     <h1 title ="fdjkdfjkj" style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?></h1>
@@ -225,7 +225,7 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-9">
+                                        <div class="col-lg-8">
                                             <div class="card">
                                                 <div class="card-content">
                                                     <h4 class="title" style="text-align: center;">
@@ -238,7 +238,7 @@ var myChart = new Chart(ctx, {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="card card-stats">
@@ -249,7 +249,7 @@ var myChart = new Chart(ctx, {
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
