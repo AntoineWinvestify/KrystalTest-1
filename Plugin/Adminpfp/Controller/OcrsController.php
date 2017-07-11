@@ -1,4 +1,5 @@
 <?php
+
 /**
  * +--------------------------------------------------------------------------------------------+
  * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
@@ -87,12 +88,10 @@ class ocrsController extends AppController {
 
     function beforeFilter() {
         parent::beforeFilter(); // only call if the generic code for all the classes is required.
- //       $this->Security->requireAuth();
+        //       $this->Security->requireAuth();
         $this->Auth->allow();       //allow these actions without login
     }
 
-  
-    
     //One Click Registration - PFPAdmin Views
     //PFPAdmin View #2
     function ocrPfpBillingPanel() {
@@ -102,9 +101,8 @@ class ocrsController extends AppController {
         $this->set('bills', $bills);
 
         $this->layout = 'Adminpfp.azarus_private_layout';
-    }  
-    
-    
+    }
+
     /*     * PFPAdmin View #1
      * New accepted user
      */
@@ -133,178 +131,164 @@ class ocrsController extends AppController {
     function ocrPfpTallyman() {
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
-    
-    
-    
-    
-    
-    
-  
 
-/**
- * 
- * Shows the Tallyman data of a user in a graphical manner
- * 
- */
-public function readtallymandata() {
+    /**
+     * 
+     * Shows the Tallyman data of a user in a graphical manner
+     * 
+     */
+    public function readtallymandata() {
 
-    if (!$this->request->is('ajax')) {
-        throw new
-        FatalErrorException(__('You cannot access this page directly'));
+        if (!$this->request->is('ajax')) {
+            throw new
+            FatalErrorException(__('You cannot access this page directly'));
         }
-    $this->layout = 'ajax';
-    $this->disableCache();
+        $this->layout = 'ajax';
+        $this->disableCache();
 
-    $platformId = $this->Session->read('Auth.User.Adminpfp.company_id');
-    $error = null;
+        $platformId = $this->Session->read('Auth.User.Adminpfp.company_id');
+        $error = null;
 
-    $inputId = $_REQUEST['inputId']; 
-    $userEmail = $_REQUEST['userEmail'];
-    $userTelephone = $_REQUEST['userTelephone'];
-    $chargingConfirmed = $_REQUEST['chargingConfirmed'];
+        $inputId = $_REQUEST['inputId'];
+        $userEmail = $_REQUEST['userEmail'];
+        $userTelephone = $_REQUEST['userTelephone'];
+        $chargingConfirmed = $_REQUEST['chargingConfirmed'];
 
 // Get the unique investor identification
-    $inputParmCount = 0;
-    if (!empty($inputId)) {     
-        $key[] = "Investor.investor_DNI";
-        $value[] = $inputId;
-        ++$inputParmCount;
-    } 
-    if (!empty($userEmail)) { 
-        $key[] = 'Investor.investor_email';
-        $value[] = $userEmail;
-        ++$inputParmCount;
-    }  
-    if (!empty($userTelephone)) { 
-        $key[] = 'Investor.investor_telephone';
-        $value[] = $userTelephone;
-        ++$inputParmCount;
-    }  
-
-    if ($inputParmCount < 2) {
-        $error = NOT_ENOUGH_PARAMETERS;
-    }
-    else {
-        $filterConditions = array_combine($key, $value);
-        $searchData =  json_encode($filterConditions);
-   
-        $this->Search = ClassRegistry::init('Adminpfp.Search');   
-        $result = $this->Search->writeSearchData($searchData, $platformId, null, null, TALLYMAN_APP); 
-      
-        $this->Investor = ClassRegistry::init('Investor');   
-        $resultInvestor = $this->Investor->getInvestorData($filterConditions);
-        $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
-
-        if (!$userIdentification) {
-            $error = USER_DOES_NOT_EXIST;
+        $inputParmCount = 0;
+        if (!empty($inputId)) {
+            $key[] = "Investor.investor_DNI";
+            $value[] = $inputId;
+            ++$inputParmCount;
         }
-        else {
-            $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
-            $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
+        if (!empty($userEmail)) {
+            $key[] = 'Investor.investor_email';
+            $value[] = $userEmail;
+            ++$inputParmCount;
+        }
+        if (!empty($userTelephone)) {
+            $key[] = 'Investor.investor_telephone';
+            $value[] = $userTelephone;
+            ++$inputParmCount;
+        }
 
-            // CHECK IF structure can be improved
-            if (empty($resultTallymanData)) {
-                $error = NO_DATA_AVAILABLE;
-            }   
-            else {
-                $this->set('resultTallyman', $resultTallymanData);
-                $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm'); 
+        if ($inputParmCount < 2) {
+            $error = NOT_ENOUGH_PARAMETERS;
+        } else {
+            $filterConditions = array_combine($key, $value);
+            $searchData = json_encode($filterConditions);
 
-                if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
-                    if ($chargingConfirmed == false){ 
-                        $parameters = array($inputId, $userEmail, $userTelephone);
-                        $this->set('parameters', $parameters);
-                        $this->render('chargingconfirmationmodal');
-                        return;
+            $this->Search = ClassRegistry::init('Adminpfp.Search');
+            $result = $this->Search->writeSearchData($searchData, $platformId, null, null, TALLYMAN_APP);
+
+            $this->Investor = ClassRegistry::init('Investor');
+            $resultInvestor = $this->Investor->getInvestorData($filterConditions);
+            $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];
+
+            if (!$userIdentification) {
+                $error = USER_DOES_NOT_EXIST;
+            } else {
+                $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
+                $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
+
+                // CHECK IF structure can be improved
+                if (empty($resultTallymanData)) {
+                    $error = NO_DATA_AVAILABLE;
+                } else {
+                    $this->set('resultTallyman', $resultTallymanData);
+                    $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
+
+                    if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
+                        if ($chargingConfirmed == false) {
+                            $parameters = array($inputId, $userEmail, $userTelephone);
+                            $this->set('parameters', $parameters);
+                            $this->render('chargingconfirmationmodal');
+                            return;
+                        }
                     }
-                } 
-                
-                // provide data for possible billing
-                 if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
-                    $data = array();
-                    $data['reference'] = $userIdentification;                           // investor unique identification
-                    $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
-                    $data['parm2'] = $platformId;                                      // platformId of the adminfp user
-                    $data['parm3'] = null;       
-                    $this->Billingparm->writeChargingData($data, "tallyman");  // CHECK RESULT CODE
-                 }
+
+                    // provide data for possible billing
+                    if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
+                        $data = array();
+                        $data['reference'] = $userIdentification;                           // investor unique identification
+                        $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
+                        $data['parm2'] = $platformId;                                      // platformId of the adminfp user
+                        $data['parm3'] = null;
+                        $this->Billingparm->writeChargingData($data, "tallyman");  // CHECK RESULT CODE
+                    }
+                }
             }
         }
+
+        if (!$error) {                              // No error encountered, use default view
+            return;
+        }
+
+        $this->set("error", $error);
+        $this->render('tallymanErrorPage');
     }
 
-    if (!$error) {                              // No error encountered, use default view
-        return;
-    }    
-
-    $this->set("error", $error);         
-    $this->render('tallymanErrorPage'); 
-}
-
-
-   /**
-    *
-    *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
-    * 
-    *  @param 		$reference      parameter to be checked
-    *  @param      string      transparent parameter 2 to be checked
-    *  @param      string      transparent parameter 3 to be checked
-    *  @param      string      transparent parameter 4 to be checked
-    *  @param      string      name of application
-    *
-    *  @return 	boolean	true	All OK, data has been saved
-    * 				false	Error occured
-    * 						
-    */
-public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
-return true;
+    /**
+     *
+     *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
+     * 
+     *  @param 		$reference      parameter to be checked
+     *  @param      string      transparent parameter 2 to be checked
+     *  @param      string      transparent parameter 3 to be checked
+     *  @param      string      transparent parameter 4 to be checked
+     *  @param      string      name of application
+     *
+     *  @return 	boolean	true	All OK, data has been saved
+     * 				false	Error occured
+     * 						
+     */
+    public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
+        return true;
 
 //  Calculate cutoff date for billing purposes
-    Configure::load('p2pGestor.php', 'default');
-    $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
-    $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 *24);    
-  
-    $result = $this->Billingparm->find('first', array(
-                                            "fields" => array("created"),
-                                            "order" => "id DESC",
-                                            "recursive" => -1,
-                                            "conditions" => array("billingparm_reference" => $reference,
-                                                                    "billingparm_parm2" => $parameter2,
-                                                                "billingparm_serviceName" => $application),
-                                             ));
-            
-    if (empty($result)) {  // No information found, so not a chargeable event
+        Configure::load('p2pGestor.php', 'default');
+        $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
+        $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 * 24);
+
+        $result = $this->Billingparm->find('first', array(
+            "fields" => array("created"),
+            "order" => "id DESC",
+            "recursive" => -1,
+            "conditions" => array("billingparm_reference" => $reference,
+                "billingparm_parm2" => $parameter2,
+                "billingparm_serviceName" => $application),
+        ));
+
+        if (empty($result)) {  // No information found, so not a chargeable event
+            return false;
+        }
+
+        if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
+            return true;
+        }
         return false;
     }
 
-    if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
-        return true;           
+    public function uploadStatusInvestorPfp() {
+        if (!$this->request->is('ajax')) {
+            $result = false;
+        } else {
+            $id = $this->request->params['id'];
+            $status = DOWNLOADED;
+            $companyId = $this->Session->read('Auth.User.Adminpfp.company_id');
+
+            $result = $this->Ocr->updateInvestorStatus($id, $status, $companyId);
+            $this->set('result', $result);
+        }
     }
-    return false;
-}
 
+    /**
+     * 
+     * Shows the initial, basic screen of the Tallyman service with the three input fields
+     * 
+     */
+    public function showTallymanPanel() {
+        $this->layout = 'Adminpfp.azarus_private_layout';
+    }
 
-
-  
-/**
- * 
- * Shows the initial, basic screen of the Tallyman service with the three input fields
- * 
- */
-public function showTallymanPanel() {
-  $this->layout = 'Adminpfp.azarus_private_layout';
-  
-}  
-  
-  
-  
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }
