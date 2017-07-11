@@ -466,6 +466,7 @@ $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOf
     //    }
         $resultTallyman[$key]['totalPortfolio_Norm'] = round(100 * $resultTallyman[$key]['totalMyPlatform_Abs'] / 
                                             $resultTallyman[$key]['investorglobaldata_totalActiveInvestments'], 1);
+     
     }
 
     

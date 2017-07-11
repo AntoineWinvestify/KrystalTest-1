@@ -307,7 +307,6 @@ class AppController extends Controller {
         $this->durationPublic = $durationPublic;
 
         $this->crowdlendingTypesLong = array(
-            0 => __('Choose One'),
             P2P => __('P2P Crowdlending'),
             P2B => __('P2B Crowdlending'),
             INVOICE_TRADING => __('P2P Invoice Trading'),
@@ -318,7 +317,6 @@ class AppController extends Controller {
 
 
         $this->crowdlendingTypesShort = array(
-            0 => __('Choose One'),
             P2P => __('P2P'),
             P2B => __('P2B'),
             INVOICE_TRADING => __('I.T.'),

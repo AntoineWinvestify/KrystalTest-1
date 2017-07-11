@@ -42,18 +42,19 @@ $email = $parameters[1];
 $phone = $parameters[2];
 $userid = $parameters[0];
 ?>
-
+<link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
 <script type="text/javascript">
 
     $(function () {
 
         $(document).on('click', '.close', function () {
-            $('#registerModal').hide();
-            document.location.href = "https://" + $('#ownDomain').val();
-        });
+            console.log("Antoine");
+            $('#chargingConfirmationModal').hide();
+        });   
 
         $(document).on("click", '.closeBtn', function () {
-            $("#registerModal").removeClass("show");
+            console.log("Antoin de Poorter");
+            $("#chargingConfirmationModal").removeClass("show");
         });
 
         $(document).on("click", 'ul > li > a', function () {
@@ -99,7 +100,7 @@ $userid = $parameters[0];
     }
 
     .modal-body{
-        height: 450px;
+        height: 150px;
         overflow-y: auto;
     }
 
@@ -121,7 +122,7 @@ $userid = $parameters[0];
  print_r($parms);       
 ?>
 
-<div id="1CR_investor_3_confirming" class="modal show" role="dialog">
+<div id="chargingConfirmationModal" class="modal show" role="dialog">
     <!--   Big container   -->
     <div class="container">
         <div class="row">
@@ -137,11 +138,6 @@ $userid = $parameters[0];
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <p align="justify"><?php echo __('You requested information about an investor. This event is going to be charged to your account') ?></p>
-                                    <ul>
-                                        <?php foreach ($companies as $companies) { ?>
-                                            <li><?php echo __($companies["company_name"]) ?></li>
-                                        <?php } ?>
-                                    </ul>
                                 </div>
                                 <div style="display:none;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 successMsg">
                                     <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
@@ -164,7 +160,7 @@ $userid = $parameters[0];
                             </div>
 
                             <div class="pull-left">
-                                <input type='button' id="btnCancel" class='btn btn-default' name='cancel' value='Cancel' />
+                                <input type='button' id="btnCancel" class='btn btn-default close' name='cancel' value='Cancel' />
                             </div>
                             <div class="clearfix"></div>
                         </div>
