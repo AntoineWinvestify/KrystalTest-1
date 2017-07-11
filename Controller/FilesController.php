@@ -48,6 +48,9 @@
  * 
  * 2017/07/03 version 0.7
  * Json path in the zip
+ * 
+ * 2017/07/11 version 0.8
+ * Delete all investor files
  */
 App::uses('CakeEvent', 'Event');
 
@@ -199,6 +202,25 @@ class filesController extends AppController {
         }
     }
 
+        /**
+         * Delete all files of a investor 
+         */
+        function deleteAll() {
+        if (!$this->request->is('ajax')) {
+            $result = false;
+        } else {
+            $this->layout = 'ajax';
+            $this->disableCache();
+
+            $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.Investor.id'));
+
+            
+            $result = $this->Ocrfile->ocrAllFileDelete($investor_id);
+            $this->set("result", $result);
+        }
+    }
+    
+    
     /**
      * Generate and download the zip
      * @param type $id
@@ -215,7 +237,7 @@ class filesController extends AppController {
         //Zip archives
         $investorFiles = $this->Ocrfile->readExistingFiles($id);
         $urlList = array();
-        $investorData = $this->Investor->getJsonDataForPFP($id);
+        //$investorData = $this->Investor->getJsonDataForPFP($id);
         $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json';
         /*$response = array();
         $prefix = "investor_";

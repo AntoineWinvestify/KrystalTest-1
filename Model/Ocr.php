@@ -95,22 +95,21 @@ class ocr extends AppModel {
         ),
         'investor_iban' => array(
             'rule1' => array('rule' => 'checkIbanNumber',
-                             'message' 	=> 'The IBAN number is not correct'
+                'message' => 'The IBAN number is not correct'
             )
         )
     );
-    
+
     public function checkIbanNumber($check) {
         $ibancode = $check['investor_iban'];
 
-	$myIban = new IBAN($ibancode);
+        $myIban = new IBAN($ibancode);
 
- 	if($myIban->Verify()) {
-		return true;
-	}
-	else {
-		return false;
-	}
+        if ($myIban->Verify()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -120,10 +119,10 @@ class ocr extends AppModel {
      * @return int
      */
     public function createOcr($id) {
-        
+
         //Ocr id find
         $idFind = $this->findOcrId($id);
-        
+
         //No ocr id = new ocr
         if (count($idFind) == 0) {
 
@@ -132,7 +131,7 @@ class ocr extends AppModel {
                 'ocr_investmentVehicle' => 0,
                 'ocr_status' => 0,
             );
-            
+
             //Update
             if ($this->save($data)) {
                 $idOcr = $this->findOcrId($id);
@@ -165,7 +164,6 @@ class ocr extends AppModel {
             'recursive' => -1,));
         //$iban = $dataParam['investor_iban'];
         //$ibanValidation = new IBAN($iban);
-
         //Ocr data
         if (count($id) > 0) {
             $time = date('Y-m-d H:i:s', time());
@@ -204,8 +202,7 @@ class ocr extends AppModel {
             //if ($this->validates($this->save($data))) 
             if ($this->save($data, $validate = true)) { //Save ok
                 return true . "," . $result;  //Return for a json
-            }
-            else {
+            } else {
                 return false . ",";
             }
         } else {
@@ -216,7 +213,6 @@ class ocr extends AppModel {
              */
             return false . ","; //Save failed
         }
-        
     }
 
     /**
@@ -313,6 +309,25 @@ class ocr extends AppModel {
         $query = "UPDATE `companies_ocrs` SET `company_status`='1' WHERE `ocr_id`='" . $id . "' and `company_status`='0';";
         $query = $this->query($query);
         return "," . 1 . "]";
+    }
+
+    /**
+     * Update the sent companies status
+     * @param type $id
+     */
+    public function updateInvestorStatus($investorId, $status, $companyId) {
+        $ocrId = $this->findOcrId($investorId);
+        $id = $this->getCompaniesOcrId($companyId, $ocrId);
+
+        $data = array(
+            'id' => $id,
+            'company_status' => 4
+        );
+        if ($this->CompaniesOcr->save($data)) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -428,7 +443,7 @@ class ocr extends AppModel {
      * @param type $status
      * @return boolean
      */
-    public function updateOcrCompanyStatus($id, $status , $mail = null) {
+    public function updateOcrCompanyStatus($id, $status, $mail = null) {
         $this->create();
         //$this->data['status'] = $status;
         if ($this->CompaniesOcr->save(array('id' => $id, 'company_status' => $status))) {

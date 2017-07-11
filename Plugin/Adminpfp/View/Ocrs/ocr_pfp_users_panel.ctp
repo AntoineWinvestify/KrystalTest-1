@@ -65,14 +65,24 @@
 <script>
     $(function () {
         $("#usersTable").DataTable();
-        $(document).on("click", ".btnTallyman", function() {
+        $(document).on("click", ".btnTallyman", function () {
             var id = $(this).val();
-            var tel = $("#telephone"+id).text();
-            var em = $("#email"+id).text();
+            var tel = $("#telephone" + id).text();
+            var em = $("#email" + id).text();
             var baseUrl = window.location.host;
             var link =  "/adminpfp/ocrs/startTallyman/" + em + "/"+ tel;
             window.location.replace(link);
         });
+        $(document).on("click", ".download", function () {
+            var id = $(this).val();
+            link = baseUrl + "/adminpfp/users/uploadStatusInvestorPfp";
+            params = {
+                id: id,
+            }
+            var data = jQuery.param(params);
+            getServerData(link, data, success, error);
+        }
+
     });
 
 </script>
@@ -128,8 +138,8 @@
                                                             <td id="email<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><?php echo __($ocr[1]['investorInfo']['Investor']['investor_email']) ?></td>
                                                             <td><?php echo __($statusName[$ocr[1]['investorInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?></td>
                                                             <td>
-                                                                <form  action="/files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/". $ocr[1]['investorInfo']['Investor']['user_id'] ?>">
-                                                                    <button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="/files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['id']?>"></a><?php echo __('Download') ?></button>
+                                                                <form  class="download" action="/files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['user_id'] ?>">
+                                                                  <button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['id'] ?>"></a><?php echo __('Download') ?></button>
                                                                 </form>
                                                             </td>
                                                             <td><button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnTallyman btnRounded"><?php echo __('Tallyman') ?></button></td>
