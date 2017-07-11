@@ -220,12 +220,14 @@ class ocrfile extends AppModel {
         $fileConfig = Configure::read('files');
         $url = $fileConfig['investorPath'] . $url;
 
+        $filesInvestorId = $this->FilesInvestor->find('first', array('conditions' => array('file_id' => $file_id, 'investor_id' => $investor_id)));
+
         if (unlink($url)) {
-            $query = "DELETE FROM `files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
-            $this->query($query);
-            return 1;
+            return $this->FilesInvestor->delete($filesInvestorId['FilesInvestor']['id']);
+            //$query = "DELETE FROM `files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
+            // $this->query($query);
         }
-        return 0;
+        return false;
     }
 
     /**
@@ -241,7 +243,7 @@ class ocrfile extends AppModel {
             return [1, "There is not files to delete"];
         }
 
-        
+
         $fileConfig = Configure::read('files');
 
         foreach ($files as $file) {
@@ -258,7 +260,7 @@ class ocrfile extends AppModel {
                 return [0, "Can't delete"];
             }
         }
-        
+
         return [1, "Delete ok"];
     }
 

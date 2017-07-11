@@ -137,8 +137,6 @@ class filesController extends AppController {
                 //Save in db
                 if ($path == "file") {
 
-                    //$query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $id . "', '" . $type . "', '" . $name . "', '" . $folder . DS . $filename . "');";
-                    //$query = $this->query($query);
                     $investorFileData = array (
                         'investor_id' => $id ,
                         'file_id' => $type ,

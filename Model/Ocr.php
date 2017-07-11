@@ -279,7 +279,6 @@ class ocr extends AppModel {
                     'ocr_id' => $ocrId['Ocr']['id'],
                     'company_status' => 0));
             }
-            print_r($dataArray);
             $this->CompaniesOcr->saveAll($dataArray);
 
             $this->set('data', $data);
@@ -307,9 +306,19 @@ class ocr extends AppModel {
      * @param type $id
      */
     public function updateCompaniesStatus($id) {
-        $query = "UPDATE `companies_ocrs` SET `company_status`='1' WHERE `ocr_id`='" . $id . "' and `company_status`='0';";
-        $query = $this->query($query);
-        return "," . 1 . "]";
+        
+        $CompanyOcr = $this->CompaniesOcr->find('all' , array('conditions' => array('ocr_id' => $id , 'company_status' => NOT_SENT)));
+         
+        $data = array();
+        foreach($CompanyOcr as $value){
+            array_push($data,array('id' => $value['CompaniesOcr']['id'] , 'company_status'=> SENT));
+        }
+        
+        if($this->CompaniesOcr->saveAll($data)){
+            return "," . true . "]";
+        }else{
+            return "," . false . "]";
+        }    
     }
 
     /**
@@ -325,9 +334,9 @@ class ocr extends AppModel {
             'company_status' => 4
         );
         if ($this->CompaniesOcr->save($data)) {
-            return 1;
+            return true;
         } else {
-            return 0;
+            return false;
         }
     }
 
@@ -358,8 +367,7 @@ class ocr extends AppModel {
         $ocrId = $this->findOcrId($data['investorId']);
 
         /* Delete company */
-        $this->CompaniesOcr->deleteAll(array('company_id' => $data['companyId'], 'ocr_id' => $ocrId));
-        return 1;
+        return $this->CompaniesOcr->deleteAll(array('company_id' => $data['companyId'], 'ocr_id' => $ocrId));
     }
 
     /**
