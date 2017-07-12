@@ -52,10 +52,9 @@ function successTallymanData(data) {
  
  
 function errorTallymanData(data) {
-    
-    $("#TallymanResult").html(data);
+    $("#tallymanGeneral").html(data);
 	console.log("profile_data: LINE 60 CONFIRMATION REQUIRED");
-
+    $(".ErrorTallyman").show();
 }
  
  
@@ -80,6 +79,7 @@ $(document).ready(function() {
    
     $("#tallymanBtnSearch").bind("click", function(event) {
         console.log("btn clicked");    
+        $(".ErrorTallyman").hide();
          if ((result = app.visual.checkFormPFPAdminTallyman()) === true) { 
             var link = $(this).attr( "href" );
 
@@ -197,7 +197,7 @@ $(document).ready(function() {
                                             <button type="submit" id="tallymanBtnSearch" href="/adminpfp/ocrs/readtallymandata" class="btn btnPFPAdmin pull-right btnRounded"><?php echo __('Search')?></button>
                                         </div>
                                         <div class="col-md-10" id="telephoneTooltip" style="display:none; margin-top: 10px;"><?php echo __('El teléfono debe de contener el código internacional (EJ: España +34)')?></div>
-                                        <div class="col-md-10">
+                                        <div class="col-md-10" style="margin-top: 10px;">
                                             <?php 
                                             $errorClassesText = "errorInputMessage ErrorTallyman";
                                             if (array_key_exists('tallyman_general', $billValidationErrors)) {
@@ -206,7 +206,7 @@ $(document).ready(function() {
                                             ?>
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
-                                                <span class="errorMessage">
+                                                <span class="errorMessage" id="tallymanGeneral">
                                                     <?php echo $billValidationErrors['tallyman_general'][0] ?>
                                                 </span>
                                             </div>
