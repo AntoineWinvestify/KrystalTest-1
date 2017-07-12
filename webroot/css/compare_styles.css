@@ -2029,3 +2029,19 @@ hr.nomargin {
     margin: 0 auto;
     margin-top: -5px;
 }
+/* STATUS COLORS */
+.statusNew {
+    color: #47badf; /*blue*/
+}
+
+.statusDownloaded, .statusFinished {
+    color: #33cc33; /*green*/
+}
+
+.statusPending {
+    color: #ff9933; /*orange*/
+}
+
+.statusError {
+    color: #ff5886; /*red*/
+}
