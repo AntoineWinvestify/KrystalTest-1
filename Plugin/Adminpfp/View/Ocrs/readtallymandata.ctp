@@ -248,23 +248,16 @@ var myChart = new Chart(ctx, {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="card card-stats">
-                                                <div class="card-content">			
-                                                    <canvas id="pieChart1" style="height: 100px;"></canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                             <div class="row">
-                                                <div class="col-lg-6">
+                                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                     <div class="card card-stats">
                                                         <div class="card-content" style="text-align:center">
                                                             <p class="category"><?php echo __('Active PFPs')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
                                                             <!-- Number of linked accounts -->
-                                                            <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h1>
+                                                            <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h2>
                                                         </div>
                                                         <div class="card-footer" style="display:none" id="tooltip_activePFP">
                                                             <div class="stats" style="text-align: center;">
@@ -273,12 +266,12 @@ var myChart = new Chart(ctx, {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6">
+                                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                     <div class="card card-stats">
                                                         <div class="card-content" style="text-align:center">
                                                             <p class="category"><?php echo __('Total PFP')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
                                                             <!-- total number of platforms -->
-                                                            <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
+                                                            <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h2>
                                                         </div>
                                                         <div class="card-footer" style="display:none" id="tooltip_totalPFP">
                                                             <div class="stats" style="text-align: center;">
@@ -286,6 +279,13 @@ var myChart = new Chart(ctx, {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                            <div class="card card-stats">
+                                                <div class="card-content">			
+                                                    <canvas id="pieChart1" style="height: 100px;"></canvas>
                                                 </div>
                                             </div>
                                         </div>
