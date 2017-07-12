@@ -9,7 +9,7 @@ use Lmc\Steward\Test\AbstractTestCase;
 
 class LinkingAccountTest extends AbstractTestCase {
     
-    public function testLinkingComunitaeCorrect() {
+    public function testLinkingComunitaeIncorrect() {
         $website = 'http://cake_branch';
         
         // Load the URL (will wait until page is loaded)
@@ -88,6 +88,53 @@ class LinkingAccountTest extends AbstractTestCase {
         //$this->log($searchInput);
         // Assert title of the search input
         //$this->assertEquals('Search', $searchInput->getAttribute('title'));
+        
+    }
+    
+    public function testLinkingZankIncorrect() {
+        $website = 'http://cake_branch';
+        // Load the URL (will wait until page is loaded)
+        $this->wd->get($website); // $this->wd holds instance of \RemoteWebDriver
+        $driver = $this->wd;
+        $this->wd->findElement(WebDriverBy::cssSelector('#liLogin a'))->click();
+        $this->wd->findElement(WebDriverBy::id("btnLoginUsername"))->sendKeys("inigo.iturburua@gmail.com");
+        $this->wd->findElement(WebDriverBy::id("btnLoginPassword"))->sendKeys("8870mit");
+        
+        $this->wd->findElement(WebDriverBy::cssSelector('#loginBtn'))->click();
+        $this->wd->wait()->until(
+            WebDriverExpectedCondition::urlContains('marketplaces/showMarketPlace')
+          );
+        
+        $url_linking = $website . "/investors/userProfileDataPanel";
+        
+        $this->wd->navigate()->to($url_linking);
+        $driver->wait(5);
+        $this->wd->findElement(WebDriverBy::id("linkedAccountsData"))->click();
+        $this->wd->wait()->until(
+            function () use ($driver) {
+                $elements = $driver->findElements(WebDriverBy::id('addNewAccount'));
+
+                return count($elements) > 0;
+            },
+            'Error locating more than one elements'
+        );
+        $this->wd->findElement(WebDriverBy::cssSelector('#addNewAccount'))->click();
+        $select = $driver->findElement( WebDriverBy::id('linkedaccount_companyId') )
+               ->findElement( WebDriverBy::cssSelector("option[value='1']") )
+               ->click();
+        $this->wd->findElement(WebDriverBy::id("ContentPlaceHolder_userName"))->sendKeys("dssfg@gmail.com");
+        $this->wd->findElement(WebDriverBy::id("ContentPlaceHolder_password"))->sendKeys("fgsdfg");
+        $this->wd->findElement(WebDriverBy::id("linkNewAccount"))->click();
+        $this->wd->wait()->until(
+            function () use ($driver) {
+                $elements = $driver->findElements(WebDriverBy::cssSelector('#messageErrorLinkAccount strong'));
+
+                return count($elements) > 0;
+            },
+            'Error locating more than one elements'
+        );
+        $messageError = $this->wd->findElement(WebDriverBy::cssSelector('#messageErrorLinkAccount strong'));
+        $this->assertContains('incorrect', $messageError->getText());
         
     }
     

@@ -1,11 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" tests="1" assertions="1" failures="0" errors="0" time="51.654554">
-    <testcase name="testLinkingComunitaeCorrect" class="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" line="12" assertions="1" time="51.654554">
-      <system-out>[2017-07-05 11:26:28]: Starting execution of test My\LinkingAccountTest::testLinkingComunitaeCorrect
-[2017-07-05 11:26:29]: [WebDriver] Loading URL "http://cake_branch"
-[2017-07-05 11:27:20]: Finished execution of test My\LinkingAccountTest::testLinkingComunitaeCorrect
-[2017-07-05 11:27:20]: Destroying "firefox" WebDriver for "My\LinkingAccountTest::testLinkingComunitaeCorrect" (session 1e01a281-5d67-4e5c-afc3-7adf88c5ef47)
+  <testsuite name="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" tests="2" assertions="0" failures="0" errors="2" time="10.582269">
+    <testcase name="testLinkingComunitaeIncorrect" class="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" line="12" assertions="0" time="4.725618">
+      <error type="Facebook\WebDriver\Exception\NoSuchElementException">My\LinkingAccountTest::testLinkingComunitaeIncorrect
+Facebook\WebDriver\Exception\NoSuchElementException: Unable to locate element: #liLogin a
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: '3.4.0', revision: 'unknown', time: 'unknown'
+System info: host: 'bilbo', ip: '127.0.1.1', os.name: 'Linux', os.arch: 'amd64', os.version: '4.8.0-58-generic', java.version: '1.8.0_131'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Capabilities [{moz:profile=/tmp/rust_mozprofile.8IrzUmR5yTTm, rotatable=false, timeouts={implicit=0.0, pageLoad=300000.0, script=30000.0}, pageLoadStrategy=normal, platform=ANY, specificationLevel=0.0, moz:accessibilityChecks=false, acceptInsecureCerts=false, browserVersion=54.0, platformVersion=4.8.0-58-generic, moz:processID=12790.0, browserName=firefox, javascriptEnabled=true, platformName=linux}]
+Session ID: 9ec6ac66-8b31-4de8-9551-b0c22231a092
+*** Element info: {Using=css selector, value=#liLogin a}
+
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Exception/WebDriverException.php:102
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/HttpCommandExecutor.php:320
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/RemoteWebDriver.php:535
+/var/www/html/cake_branch/app/Selenium-Test/vendor/lmc/steward/src/WebDriver/RemoteWebDriver.php:29
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/RemoteWebDriver.php:175
+/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php:18
+</error>
+      <system-out>[2017-07-12 13:18:33]: Starting execution of test My\LinkingAccountTest::testLinkingComunitaeIncorrect
+[2017-07-12 13:18:33]: [WebDriver] Loading URL "http://cake_branch"
+[2017-07-12 13:18:37]: Finished execution of test My\LinkingAccountTest::testLinkingComunitaeIncorrect
+[2017-07-12 13:18:38]: 
+[2017-07-12 13:18:38]: [WARN] Test failed on page "http://cake_branch/", taking page snapshots:
+[2017-07-12 13:18:38]: Screenshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingComunitaeIncorrect-2017-07-12-13-18-37.png"
+[2017-07-12 13:18:38]: HTML snapshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingComunitaeIncorrect-2017-07-12-13-18-37.html"
+[2017-07-12 13:18:38]: 
+[2017-07-12 13:18:38]: Destroying "firefox" WebDriver for "My\LinkingAccountTest::testLinkingComunitaeIncorrect" (session fed1da2b-1555-4a3a-87fa-b80d05a0adc8)
+</system-out>
+    </testcase>
+    <testcase name="testLinkingZankIncorrect" class="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" line="94" assertions="0" time="5.856651">
+      <error type="Facebook\WebDriver\Exception\NoSuchElementException">My\LinkingAccountTest::testLinkingZankIncorrect
+Facebook\WebDriver\Exception\NoSuchElementException: Unable to locate element: #liLogin a
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: '3.4.0', revision: 'unknown', time: 'unknown'
+System info: host: 'bilbo', ip: '127.0.1.1', os.name: 'Linux', os.arch: 'amd64', os.version: '4.8.0-58-generic', java.version: '1.8.0_131'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Capabilities [{moz:profile=/tmp/rust_mozprofile.TONRoU6AOR8s, rotatable=false, timeouts={implicit=0.0, pageLoad=300000.0, script=30000.0}, pageLoadStrategy=normal, platform=ANY, specificationLevel=0.0, moz:accessibilityChecks=false, acceptInsecureCerts=false, browserVersion=54.0, platformVersion=4.8.0-58-generic, moz:processID=12914.0, browserName=firefox, javascriptEnabled=true, platformName=linux}]
+Session ID: 489c462a-765b-4dcc-a7a1-7f31e00ceab6
+*** Element info: {Using=css selector, value=#liLogin a}
+
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Exception/WebDriverException.php:102
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/HttpCommandExecutor.php:320
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/RemoteWebDriver.php:535
+/var/www/html/cake_branch/app/Selenium-Test/vendor/lmc/steward/src/WebDriver/RemoteWebDriver.php:29
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/Remote/RemoteWebDriver.php:175
+/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php:99
+</error>
+      <system-out>[2017-07-12 13:18:57]: Starting execution of test My\LinkingAccountTest::testLinkingZankIncorrect
+[2017-07-12 13:18:57]: [WebDriver] Loading URL "http://cake_branch"
+[2017-07-12 13:19:03]: Finished execution of test My\LinkingAccountTest::testLinkingZankIncorrect
+[2017-07-12 13:19:03]: 
+[2017-07-12 13:19:03]: [WARN] Test failed on page "http://cake_branch/", taking page snapshots:
+[2017-07-12 13:19:03]: Screenshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingZankIncorrect-2017-07-12-13-19-03.png"
+[2017-07-12 13:19:03]: HTML snapshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingZankIncorrect-2017-07-12-13-19-03.html"
+[2017-07-12 13:19:03]: 
+[2017-07-12 13:19:03]: Destroying "firefox" WebDriver for "My\LinkingAccountTest::testLinkingZankIncorrect" (session 752ff2f9-c3bd-48e8-9db6-821b3d56b8e9)
 </system-out>
     </testcase>
   </testsuite>
