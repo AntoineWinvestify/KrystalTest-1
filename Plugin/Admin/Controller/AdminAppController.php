@@ -58,7 +58,7 @@ class AdminAppController extends AppController {
                                                 'loginRedirect'	=> array(
 									'plugin' => 'admin',
 									'controller' 	=> 'ocrs',
-									'action' 	=> 'ocr_winadmin_investor_checking'
+									'action' 	=> 'ocrWinadminInvestorChecking'
 									),
 						'logoutRedirect' => array(
                                                                         'plugin' => 'admin',

@@ -59,7 +59,7 @@ function beforeFilter() {
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club33 field from CSRF protection
-	echo "AAAA";														// as it is "dynamic" and would fail the CSRF test
+										// as it is "dynamic" and would fail the CSRF test
 
 //	$this->Security->requireSecure(	'login'	);
 	$this->Security->csrfCheck = false;
@@ -172,98 +172,69 @@ public function cronMoveToMLDatabase() {
     $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
 
     $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
-							  'conditions'  => array(
+							  'conditions'  => array(// sort by queueid
                                                          //                   'id >' => $queueResult[0]['MLqueue_actualId'],
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
                                                            //                'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                                            'queue_id >' => 57 ),
-                                                          'limit' => 3)
+                                                                            'queue_id >' => 57 
+                                                              ),
+                                                         'limit' => 6
+        )
 				); 
 
     $this->print_r2($userinvestmentdataResult);
-
+    $oldQueueId = 0;
     unset($platformglobalData);
     $index = 0;
     foreach ($userinvestmentdataResult as $key => $result) {
-   
- //       $internalRawDataReference = $result['Userinvestmentdata']['investorglobaldata_internalRawDataReference'];
-//        $tempResult = $this->Userinvestmentdata->find("all", $params = array('conditions'  => array('investorglobaldata_internalRawDataReference' => $internalRawDataReference),
- //           ));
-/*
-        if (!empty($tempResult)) {     // Already dealt with this queueID
-            $userinvestmentdataResult = $this->Userinvestmentdata->read("first", $params = array('recursive' => 1,
-                                                                'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
-                                                                           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                                                                           'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                              ),
-				));       
-        }
-        else {              // Deal with this database record,          here we have a new queue_id so we have to
-            $userData['investorglobaldata_investorIdentity'] = $UserinvestmentdataResult[0]['investorglobaldata_investorIdentity'];
-
-            if ($this->Userinvestmentdata->save($userData, $validate = true)) {
-                $userinvestmentpointer = $this->Userinvestmentdata->id;
-            }
-            else {
-                echo "ERROR OCCURED, TAKE ACTION";  
-                // add possible errors in interface errors table  
-                $userinvestmentpointer = 0;
-                continue;
-            }
-        }
- */
-  //      $nextRecord = $result[0]['Userinvestmentdata'][0]['id'];
- //       $this->MLqueue->save(array('id' => 1, 
- //                                   'MLqueue_actualId' => $nextRecord,
- //                                   'MLqueue_dateActualId' => $currentDate,
- //                           ));
-   
-
         $companyId = $result['Userinvestmentdata']['company_id'];
           // mapping of data from "raw" format to MLData format    
-            $companyResult = $this->Company->find("first", $params = array('recursive' => -1,
-							  'conditions'  => array('id' => $companyId),
-                                                          'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
-				));        
-            $investorglobalData['createdDate'] = $currentDate;
-            $investorglobalData['investorglobaldata_currency'] = 1;  
-            $investorglobalData['investorglobaldata_investorIdentity'] = $result['Userinvestmentdata']['userinvestmentdata_investorIdentity'];             
-            $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $result['Userinvestmentdata']['userinvestmentdata_myWallet'];          
+        $companyResult = $this->Company->find("first", $params = array('recursive' => -1,
+                                                      'conditions'  => array('id' => $companyId),
+                                                      'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
+                            ));        
+        $investorglobalData['createdDate'] = $currentDate;
+        $investorglobalData['investorglobaldata_currency'] = 1;  
+        $investorglobalData['investorglobaldata_investorIdentity'] = $result['Userinvestmentdata']['userinvestmentdata_investorIdentity'];             
+        $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $result['Userinvestmentdata']['userinvestmentdata_myWallet'];          
 
-            $activeInvestments = false;
-            
-  //          unset($platformglobalData);
-            foreach ($result['Investment'] as $investmentKey => $data)  {
-                
- $this->print_r2($data);               
-                 
-                if ($data['investment_amount'] > 0) {
-                    echo "investment found, value = " . $data['investment_amount'];
-                    $platformglobalData[$index]['userplatformglobaldata_activeInInvestments'] += $data['investment_amount'];
-                    $platformglobalData[$index]['userplatformglobaldata_numberOfInvestments']++;
-                    $investorglobalData['investorglobaldata_activeInInvestments'] += $data['investment_amount'];
-                    $activeInvestments = true;
-                }               
-                $data[$index]['userplatformglobaldata_moneyInWallet'] += $data['userinvestmentdata_myWallet'];
-                $platformglobalData[$index]['userplatformglobaldata_currency'] = 1;
-//              $investorglobalData['userplatformglobaldata_reservedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
-//              $investorglobalData['userplatformglobaldata_finishedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
-                $platformglobalData[$index]['userplatformglobaldata_companyId'] = $companyId;            
-                $platformglobalData[$index]['userplatformglobaldata_companyName'] = $companyResult['Company']['company_name'];
-                $platformglobalData[$index]['userplatformglobaldata_PFPType'] = $companyResult['Company']['company_PFPType'];
-                $platformglobalData[$index]['userplatformglobaldata_PFPCountry'] = $companyResult['Company']['company_country']; 
-                $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;   
-                
-                $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $data[$index]['userinvestmentdata_myWallet'];
- //               $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];
-                
- 
- //$temp['Investorglobaldata']['Userplatformglobaldata'][$index]['userplatformglobaldata_companyId'] = $companyId; 
- //$temp['Investorglobaldata']['Userplatformglobaldata'][$index]['userplatformglobaldata_activeInInvestments'] = $data[$index]['investment_amount'];
- //$temp['investorglobaldata_totalActiveInInvestments'] = 3333;          
-                
-                
-               
+        $this->print_r2($result);
+
+        $activeInvestments = false;
+   echo __FUNCTION__ . " " . __LINE__ ."<br>";         
+        foreach ($result['Investment'] as $investmentKey => $data)  {
+            $this->print_r2($data);
+            $queueId = $result['Userinvestmentdata']['queue_id'];
+            if ($queueId <> $oldQueueId) {
+                unset ($investorglobalData);
+                unset ($platformuserglobalData);
+                echo "NEW queueId found<br>";
+                $oldQueueId = $queueId;
+                $index = 0;
+                echo __FUNCTION__ . " " . __LINE__ ."<br>";
+            }
+      echo __FUNCTION__ . " " . __LINE__ ."<br>";
+     $this->print_r2($data);               
+
+            if ($data['investment_amount'] > 0) {
+                echo "investment found, value = " . $data['investment_amount'];
+                $platformglobalData[$index]['userplatformglobaldata_activeInInvestments'] += $data['investment_amount'];
+                $platformglobalData[$index]['userplatformglobaldata_numberOfInvestments']++;
+                $investorglobalData['investorglobaldata_activeInInvestments'] += $data['investment_amount'];
+                $activeInvestments = true;
+            }               
+            $data[$index]['userplatformglobaldata_moneyInWallet'] += $data['userinvestmentdata_myWallet'];
+            $platformglobalData[$index]['userplatformglobaldata_currency'] = 1;
+    //              $investorglobalData['userplatformglobaldata_reservedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
+    //              $investorglobalData['userplatformglobaldata_finishedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
+            $platformglobalData[$index]['userplatformglobaldata_companyId'] = $companyId;            
+            $platformglobalData[$index]['userplatformglobaldata_companyName'] = $companyResult['Company']['company_name'];
+            $platformglobalData[$index]['userplatformglobaldata_PFPType'] = $companyResult['Company']['company_PFPType'];
+            $platformglobalData[$index]['userplatformglobaldata_PFPCountry'] = $companyResult['Company']['company_country']; 
+            $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;   
+            $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $data['userinvestmentdata_myWallet'];
+            $investorglobalData['queueID'] = $queueId;
+//               $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];  
             }
             if ($activeInvestments) {
                 $investorglobalData['investorglobaldata_activePFPs'] += 1;
@@ -272,47 +243,38 @@ public function cronMoveToMLDatabase() {
             $investorglobalData['investorglobaldata_totalPFPs'] += 1;
             
             $index++;
-   echo "END OF LIST";         
-        /*    
-         * 
-         * 
-
-
-
-            if ($this->save->Userplatformglobaldata($platformData, $validate = true)) {
-                
+   echo "END OF LIST, so start saving<br>";         
+  
+            if ($this->Userplatformglobaldata->save($platformData, $validate = true)) {
+                unset($platformData);
             }
             else {
-                echo "ERROR OCCURED, TAKE ACTION";  
-                // add possible errors in interface errors table
-                // reset something ????
+                echo "ERROR OCCURED while saving userplatformglobaldata, TAKE ACTION";  
             }
-         
-         */
         }
         $this->print_r2($investorglobalData);
         $this->print_r2($platformglobalData);
-       
+
         echo "AANAN";
-        
+
         $data = array(
             'Investorglobaldata' => $investorglobalData,
             'Userplatformglobaldata' => $platformglobalData
             );
         $this->print_r2($data);
         echo "going to save<br>";
-         
+
   //      $this->Investorglobaldata->create($data);
         $rr = $this->Investorglobaldata->save($data, array('validate' => false, 'deep' => true));
         if ($rr == true) {
             echo "OK";
             echo $rr['Investorglobaldata']['id'];
-            echo "BB = " . $this->print_r2($rr);
+            echo "BB id = " . $this->print_r2($rr);
         }
         else {
             echo "error while saving";
         }
-        echo "CHARO";
+        echo "SAVING ALL RELEVANT PFP DATA<br>";
         foreach ($platformglobalData as $item) {
             $item['investorglobaldata_id'] = $rr['Investorglobaldata']['id'];
             $this->Userplatformglobaldata->create($item1);
@@ -320,7 +282,7 @@ public function cronMoveToMLDatabase() {
             $this->Userplatformglobaldata->save($item1);
 
         }
-
+           
 } 
 
 
