@@ -99,15 +99,20 @@ if ($result) {
             addExistingDocuments();
             disbleCheckedData();
             validationerrors = false;
-    <?php //telephone                          ?>
+            <?php //telephone                          ?>
             $('#ContentPlaceHolder_telephone').intlTelInput();
 
-    <?php //Date picker                          ?>
+            <?php //Date picker                          ?>
             $('#ContentPlaceHolder_dateOfBirth').datepicker({
                 autoclose: true,
                 format: 'dd/mm/yyyy'
             });
-    <?php //Show div with CIF & IBAN if its checked.                          ?>
+            <?php //Tooltip clicks ?>
+            $(document).on("click", ".tooltipIcon", function() {
+                id = $(this).attr("id");
+                $("#tooltip" + id).toggle();
+            });
+            <?php //Show div with CIF & IBAN if its checked.                          ?>
             $(document).on("change", "#investmentVehicle", function () {
                 if ($(this).is(":checked")) {
                     $("#investmentVehicleContent").show();
@@ -910,7 +915,10 @@ if ($result) {
                                                     echo "style='display: none'";
                                                 }
                                                 ?> id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="documentRow">
-                                                    <td title="<?php echo $filesTable[0]['Ocrfile']['file_tooltip'] ?>"><?php echo __($filesTable[0]['Ocrfile']['file_type']) ?></td>
+                                                    <td>
+                                                        <?php echo __($filesTable[0]['Ocrfile']['file_type']) ?> <i class="fa fa-exclamation-circle tooltipIcon" id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>"></i>
+                                                        <span id="tooltip<?php echo $filesTable[0]['Ocrfile']['id'] ?>" style="display:none"><br/><?php echo $filesTable[0]['Ocrfile']['file_tooltip'] ?></span>
+                                                    </td>
                                                     <td id="status<?php echo $filesTable[0]['Ocrfile']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
                                                     <td>
                                                         <?php
