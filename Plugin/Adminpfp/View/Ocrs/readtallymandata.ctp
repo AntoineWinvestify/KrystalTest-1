@@ -155,7 +155,11 @@ var myChart = new Chart(ctx, {
           }
         });
         
-
+    <?php //Tooltip clicks ?>
+    $(document).on("click", ".tooltipIcon", function() {
+        id = $(this).attr("id");
+        $("#tooltip_" + id).toggle();
+    });
 });
 
 </script>
@@ -191,11 +195,12 @@ var myChart = new Chart(ctx, {
                                                         <strong>
                                                             <?php echo __('invertida')?>
                                                         </strong>
+                                                        <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
                                                     </p>
                                                     <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?><span class="text-success"><i 
                                                                         class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i></span></h1>
                                                 </div>
-                                                <div class="card-footer">
+                                                <div class="card-footer" id="tooltip_totalPortfolioTendency" style="display:none">
                                                     <div class="stats" style="text-align: center;">
                                                         <div class="stats" style="text-align: center;">
                                                                 <?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>
@@ -216,17 +221,18 @@ var myChart = new Chart(ctx, {
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
-                                                <div class="card-content"> 
+                                                <div class="card-content" style="text-align: center;"> 
                                                     <p class="category">
                                                         <?php echo __('% Total cartera')?>
                                                         <strong>
                                                             <?php echo __('por su modalidad')?>
                                                         </strong>
+                                                        <i class="fa fa-exclamation-circle tooltipIcon" id="totalModalityTendency"></i>
                                                     </p>
                                                     <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?><span class="text-success"><i 
                                                                         class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i></span></h1>
                                                 </div>
-                                                <div class="card-footer">
+                                                <div class="card-footer" id="tooltip_totalModalityTendency" style="display:none">
                                                     <div class="stats" style="text-align: center;">
                                                         <?php echo __('The amount invested in the platformtype of the AdminPFP/total invested amount in platformtype[ in %]')?>
                                                     </div>
@@ -256,11 +262,11 @@ var myChart = new Chart(ctx, {
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
                                                         <div class="card-content" style="text-align:center">
-                                                            <p class="category"><?php echo __('Active PFPs')?></p>
+                                                            <p class="category"><?php echo __('Active PFPs')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
                                                             <!-- Number of linked accounts -->
                                                             <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h1>
                                                         </div>
-                                                        <div class="card-footer">
+                                                        <div class="card-footer" style="display:none" id="tooltip_activePFP">
                                                             <div class="stats" style="text-align: center;">
                                                                 <?php echo __('The number of platforms where the user has ACTIVE investments. Investment MAY have payment delays')?>
                                                             </div>
@@ -270,11 +276,11 @@ var myChart = new Chart(ctx, {
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
                                                         <div class="card-content" style="text-align:center">
-                                                            <p class="category"><?php echo __('Total PFP')?></p>
+                                                            <p class="category"><?php echo __('Total PFP')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
                                                             <!-- total number of platforms -->
                                                             <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
                                                         </div>
-                                                        <div class="card-footer">
+                                                        <div class="card-footer" style="display:none" id="tooltip_totalPFP">
                                                             <div class="stats" style="text-align: center;">
                                                                 <?php echo __('The number of platforms where the investor has an account')?>
                                                             </div>
