@@ -2045,3 +2045,21 @@ hr.nomargin {
 .statusError {
     color: #ff5886; /*red*/
 }
+
+/*PAPER BOOTSTRAP MODAL CUSTOMIZATION*/
+.wizard-container-small {
+    padding-top: 50px;
+}
+
+.wizard-card-small {
+    min-height: 200px;
+}
+
+.wizard-card-small .tab-content {
+    min-height: 200px;
+    padding: 30px;
+}
+
+.wizard-card-small .wizard-footer {
+    padding: 0 15px 5px !important;
+}
