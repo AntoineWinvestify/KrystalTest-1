@@ -154,7 +154,7 @@ var myChart = new Chart(ctx, {
  
           }
         });
-
+        
 
 });
 
@@ -186,18 +186,19 @@ var myChart = new Chart(ctx, {
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;">
-                                                    <h1  title ="<?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>"><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?><span class="text-success"><i 
+                                                    <p class="category">
+                                                        <?php echo __('% Total cartera')?>
+                                                        <strong>
+                                                            <?php echo __('invertida')?>
+                                                        </strong>
+                                                    </p>
+                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?><span class="text-success"><i 
                                                                         class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i></span></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
-                                                        <div class="card-content"> 
-                                                            <p class="category">
-                                                                <?php echo __('% Total cartera')?>
-                                                                <strong>
-                                                                    <?php echo __('invertida')?>
-                                                                </strong>
-                                                            </p>
+                                                        <div class="stats" style="text-align: center;">
+                                                                <?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -215,20 +216,19 @@ var myChart = new Chart(ctx, {
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
-                                                <div class="card-content">                    
-                                                    <h1 title ="<?php echo __('The amount invested in the platformtype of the AdminPFP/total invested amount in platformtype[ in %]')?>" style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?><span class="text-success"><i 
+                                                <div class="card-content"> 
+                                                    <p class="category">
+                                                        <?php echo __('% Total cartera')?>
+                                                        <strong>
+                                                            <?php echo __('por su modalidad')?>
+                                                        </strong>
+                                                    </p>
+                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?><span class="text-success"><i 
                                                                         class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i></span></h1>
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="stats" style="text-align: center;">
-                                                        <div class="card-content">
-                                                            <p class="category">
-                                                                <?php echo __('% Total cartera')?>
-                                                                <strong>
-                                                                    <?php echo __('por su modalidad')?>
-                                                                </strong>
-                                                            </p>
-                                                        </div>
+                                                        <?php echo __('The amount invested in the platformtype of the AdminPFP/total invested amount in platformtype[ in %]')?>
                                                     </div>
                                                 </div>
                                             </div>
@@ -256,12 +256,13 @@ var myChart = new Chart(ctx, {
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
                                                         <div class="card-content" style="text-align:center">
+                                                            <p class="category"><?php echo __('Active PFPs')?></p>
                                                             <!-- Number of linked accounts -->
-                                                            <h1 <?php echo __('The number of platforms where the user has ACTIVE investments. Investment MAY have payment delays')?>style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h1>
+                                                            <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h1>
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">
-                                                                <?php echo __('Active PFPs')?>
+                                                                <?php echo __('The number of platforms where the user has ACTIVE investments. Investment MAY have payment delays')?>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -269,12 +270,13 @@ var myChart = new Chart(ctx, {
                                                 <div class="col-lg-6">
                                                     <div class="card card-stats">
                                                         <div class="card-content" style="text-align:center">
+                                                            <p class="category"><?php echo __('Total PFP')?></p>
                                                             <!-- total number of platforms -->
-                                                            <h1 <?php echo __('The number of platforms where the investor has an account')?>style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
+                                                            <h1 style="text-align: center;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h1>
                                                         </div>
                                                         <div class="card-footer">
                                                             <div class="stats" style="text-align: center;">
-                                                                <?php echo __('Total PFP')?>
+                                                                <?php echo __('The number of platforms where the investor has an account')?>
                                                             </div>
                                                         </div>
                                                     </div>
