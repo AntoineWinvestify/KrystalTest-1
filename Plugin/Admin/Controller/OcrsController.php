@@ -401,7 +401,7 @@ class ocrsController extends AppController {
     function ocrCompletedProcess() {
         $this->layout = 'azarus_private_layout';
     
-
+    }
     //One Click Registration - PFPAdmin Views
     //PFPAdmin View #2
     function ocrPfpBillingPanel() {
@@ -625,5 +625,4 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
         $this->render("../Layouts/activated_service");
     }
-
 }
