@@ -126,7 +126,7 @@
 <?php //Javascript validation                  ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
-                link = '../Files/upload';
+                link = '/Files/upload';
                 $.ajax({
                     url: link,
                     dataType: 'json',

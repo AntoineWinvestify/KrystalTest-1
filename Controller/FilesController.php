@@ -79,10 +79,10 @@ class filesController extends AppController {
         } else {
             $this->layout = 'ajax';
             $this->disableCache();
-            
-            //Bill/Investor document filter
+
+            //Bill|Investor document filter
             if (count($this->params['data']['Files']) > 0) {
-                $data = $this->params['data']['Files'];
+                $data = $this->params['data']['Files']; //File info
 
                 //binary data type
                 $finfo = finfo_open();
@@ -99,11 +99,17 @@ class filesController extends AppController {
                 
             } else if (count($this->params['data']['bill']) > 0) {
                 $data = $this->params['data']['bill'];
+
+                //binary data type
+                $finfo = finfo_open();
+                $fileinfo = finfo_file($finfo, $data['bill']['tmp_name'], FILEINFO_MIME);
+                finfo_close($finfo);
+                
                 //Info about the bill like number, amount ...
                 $extraInfo = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency']);
                 $id = $this->params['data']['pfp'];
                 $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile'];
-                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $extraInfo, "bill");
+                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $extraInfo, "bill", $fileinfo);
                 $this->set("result", $result);
             }
         }
@@ -117,7 +123,7 @@ class filesController extends AppController {
      * @param type $type Type of document (DNI, IBAN, CIF...) as defined in AppController
      * @return string|int
      */
-    public function ocrFileSave($fileInfo, $folder, $id, $type, $path) {
+   /* public function ocrFileSave($fileInfo, $folder, $id, $type, $path) {
         //Load files config
         $fileConfig = Configure::read('files');
         if ($path == "file") {
@@ -192,7 +198,7 @@ class filesController extends AppController {
                 return [false, __("Upload failed. Incorrect type or file too big.")];
             }
         }
-    }
+    }*/
 
     /**
      * Delete a document
