@@ -115,6 +115,9 @@ $(document).ready(function() {
     .togetoverlay .overlay > .fa {
         font-size: 50px;
     }
+    .btn1CR {
+        padding: 5px 10px;
+    }
 </style>
 
 
@@ -160,7 +163,7 @@ $(document).ready(function() {
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-4">
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                             <label><?php echo __('Email')?></label>
                                             <input type="text" id ="tallymanInputEmail" class="form-control blue_noborder2 tallymanEmail tallymanGeneral" placeholder="<?php echo __('Email')?>">
                                             <?php
@@ -193,8 +196,8 @@ $(document).ready(function() {
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-1">
-                                            <label class= "invisible"> </label>
-                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/ocrs/readtallymandata" class="btn btn1CR pull-right btnRounded"><?php echo __('Search')?></button>
+                                            <label class= "invisible pull-right"> </label>
+                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/ocrs/readtallymandata" class="btn btn1CR btn-sm pull-right btnRounded"><?php echo __('Search')?></button>
                                         </div>
                                         <div class="col-md-10" id="telephoneTooltip" style="display:none; margin-top: 10px;"><?php echo __('El teléfono debe de contener el código internacional (EJ: España +34)')?></div>
                                         <div class="col-md-10" style="margin-top: 10px;">
