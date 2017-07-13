@@ -90,8 +90,8 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
-                <div class="card-header" data-background-color="orange">
-                    <h4 class="title"><strong><?php echo __('PFPAdmin - New users Panel') ?></strong></h4>
+                <div class="card-header" data-background-color="blue">
+                    <h4 class="title"><strong><?php echo __('New users Panel') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">
@@ -149,10 +149,10 @@
                                                             <td class="<?php echo $td_class ?>"><i class='<?php echo $icon?>'></i> <?php echo __($statusName[$ocr[1]['investorInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?></td>
                                                             <td>
                                                                 <form  class="download" action="/files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['user_id'] ?>">
-                                                                  <button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnRounded download"   ><a href="files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['id'] ?>"></a><?php echo __('Download') ?></button>
+                                                                  <button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btn1CR btnRounded download"   ><a href="files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['id'] ?>"></a><?php echo __('Download') ?></button>
                                                                 </form>
                                                             </td>
-                                                            <td><button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btnPFPAdmin btnTallyman btnRounded"><?php echo __('Tallyman') ?></button></td>
+                                                            <td><button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btn1CR btnTallyman btnRounded"><?php echo __('Tallyman') ?></button></td>
 
                                                         <?php } else if ($pfpStatus == SER_SUSPENDED) { // If service is active, hide the full data?>
                                                             <td><?php echo __($ocr[1]['investorInfo']['Ocr']['ocr_sent']) ?></td>
