@@ -56,6 +56,9 @@
  * 2017/07/11 version 0.11
  * Delete all investor files
  * 
+ * 2017/07/13 version 0.12
+ * File binary validation
+ * 
  */
 App::uses('CakeEvent', 'Event', 'File', 'Utility');
 Configure::load('p2pGestor.php', 'default');
@@ -112,10 +115,11 @@ class ocrfile extends AppModel {
      * @param type $data
      * @param type $identity
      * @param type $id
-     * @param type $type Type of document (DNI, IBAN, CIF...) as defined in AppController
+     * @param type $type
      * @return string|int
      */
-    public function ocrFileSave($fileInfo, $folder, $id, $type, $path) {
+    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $path , $binaryType) {
+
         //Load files config
         $fileConfig = Configure::read('files');
         if ($path == "file") {
@@ -123,7 +127,7 @@ class ocrfile extends AppModel {
         } else if ($path == "bill") {
             $up = $fileConfig['billsPath'] . $folder;
         }
-
+        
         foreach ($fileInfo as $file) {
 
             //Error filter
@@ -131,7 +135,9 @@ class ocrfile extends AppModel {
                 continue;
             }
             //Type and size filter
-            if (in_array($file['type'], $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
+
+
+            if (in_array($binaryType, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
                 $name = basename($file['name']);
                 $filename = time() . "_" . $name;
                 $uploadFolder = $up;
@@ -153,26 +159,26 @@ class ocrfile extends AppModel {
                     //$query = $this->query($query);
                     $investorFileData = array(
                         'investor_id' => $id,
-                        'file_id' => $type,
+                        'file_id' => $extraInfo,
                         'file_name' => $name,
                         'file_url' => $folder . DS . $filename,
                         'file_status' => 0
                     );
-                    $this->Filesinvestor->save($investorFileData);
-                    $result = array(basename($file['name']), $folder . DS . $filename, $type);
+                    $this->FilesInvestor->save($investorFileData);
+                    $result = array(basename($file['name']), $folder . DS . $filename, $extraInfo);
                     return [true, __('Upload ok'), $result];
                 } else if ($path == "bill") {
-                    $result = array(basename($file['name']), $folder . DS . $filename, $type);
+                    $result = array(basename($file['name']), $folder . DS . $filename, $extraInfo);
 
 
                     $bill = array(
                         'CompaniesFile' => Array(
                             'company_id' => $id,
                             'file_id' => 50,
-                            'bill_number' => $type['number'],
-                            'bill_amount' => str_replace(",", ".", $type['amount']) * 100,
-                            'bill_concept' => $type['concept'],
-                            'bill_currency' => $type['currency'],
+                            'bill_number' => $extraInfo['number'],
+                            'bill_amount' => str_replace(",", ".", $extraInfo['amount']) * 100,
+                            'bill_concept' => $extraInfo['concept'],
+                            'bill_currency' => $extraInfo['currency'],
                             'bill_url' => $folder . DS . $filename
                         )
                     );

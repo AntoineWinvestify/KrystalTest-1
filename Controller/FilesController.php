@@ -51,6 +51,9 @@
  * 
  * 2017/07/11 version 0.8
  * Delete all investor files
+ * 
+ * 2017/07/13 version 0.9
+ * File binary validation
  */
 App::uses('CakeEvent', 'Event');
 
@@ -58,7 +61,7 @@ class filesController extends AppController {
 
     var $name = 'Files';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile','User');
+    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile', 'User');
     var $error;
 
     function beforeFilter() {
@@ -76,25 +79,36 @@ class filesController extends AppController {
         } else {
             $this->layout = 'ajax';
             $this->disableCache();
-
+            
+            //Bill/Investor document filter
             if (count($this->params['data']['Files']) > 0) {
                 $data = $this->params['data']['Files'];
-                $type = $data['info'];
-                $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-                $identity = $this->Investor->getInvestorIdentity($this->Session->read('Auth.User.id'));
-                $data_json = $this->ocrFileSave($data, $identity, $id, $type, "file");
-                $this->set("result", json_encode($data_json));
+
+                //binary data type
+                $finfo = finfo_open();
+                $fileinfo = finfo_file($finfo, $data['fileId' . $data['info']]['tmp_name'], FILEINFO_MIME);
+                finfo_close($finfo);
+               
+                
+                $extraInfo = $data['info']; //Extra info, in this case only the document type id
+                $id = $this->Session->read('Auth.User.Investor.id'); //Investor id
+                $identity = $this->Session->read('Auth.User.Investor.investor_identity'); //$Investor identity
+                
+                $data_json = $this->Ocrfile->ocrFileSave($data, $identity, $id, $extraInfo , "file" , $fileinfo); //Save the file and return a Json
+                $this->set("result", json_encode($data_json)); //Set info into the view
+                
             } else if (count($this->params['data']['bill']) > 0) {
                 $data = $this->params['data']['bill'];
-                $info = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency']);
+                //Info about the bill like number, amount ...
+                $extraInfo = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency']);
                 $id = $this->params['data']['pfp'];
                 $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile'];
-                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $info, "bill");
+                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $extraInfo, "bill");
                 $this->set("result", $result);
             }
         }
     }
-    
+
     /**
      * Upload investor file
      * @param type $data
@@ -137,26 +151,26 @@ class filesController extends AppController {
                 //Save in db
                 if ($path == "file") {
 
-                    $investorFileData = array (
-                        'investor_id' => $id ,
-                        'file_id' => $type ,
-                        'file_name' => $name ,
+                    $investorFileData = array(
+                        'investor_id' => $id,
+                        'file_id' => $type,
+                        'file_name' => $name,
                         'file_url' => $folder . DS . $filename,
-                        'file_status'  => 0
+                        'file_status' => 0
                     );
                     $result = $this->Ocrfile->FilesInvestor->save($investorFileData);
                     $data_json = array(basename($file['name']), $folder . DS . $filename, $type);
                     return [true, __('Upload ok'), $data_json];
                 } else if ($path == "bill") {
                     $result = array(basename($file['name']), $folder . DS . $filename, $type);
-                    
+
 
                     $bill = array(
                         'CompaniesFile' => Array(
                             'company_id' => $id,
                             'file_id' => 50,
                             'bill_number' => $type['number'],
-                            'bill_amount' => str_replace (",",".",$type['amount'] )* 100,
+                            'bill_amount' => str_replace(",", ".", $type['amount']) * 100,
                             'bill_concept' => $type['concept'],
                             'bill_currency' => $type['currency'],
                             'bill_url' => $folder . DS . $filename
@@ -194,16 +208,16 @@ class filesController extends AppController {
             $file_id = $this->request->data('id');
             $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
 
-            
+
             $result = $this->Ocrfile->ocrFileDelete($url, $file_id, $investor_id);
             $this->set("result", $result);
         }
     }
 
-        /**
-         * Delete all files of a investor 
-         */
-        function deleteAll() {
+    /**
+     * Delete all files of a investor 
+     */
+    function deleteAll() {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
@@ -212,13 +226,12 @@ class filesController extends AppController {
 
             $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.Investor.id'));
 
-            
+
             $result = $this->Ocrfile->ocrAllFileDelete($investor_id);
             $this->set("result", $result);
         }
     }
-    
-    
+
     /**
      * Generate and download the zip
      * @param type $id
@@ -231,30 +244,30 @@ class filesController extends AppController {
         $fileConfig = Configure::read('files');
         $folder = $this->Investor->getInvestorIdentity($userId);
         $pathToZipFile = $fileConfig['investorPath'] . $folder . DS . 'investorData.Zip';
-        
+
         //Zip archives
         $investorFiles = $this->Ocrfile->readExistingFiles($id);
         $urlList = array();
         //$investorData = $this->Investor->getJsonDataForPFP($id);
         $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json';
-        /*$response = array();
-        $prefix = "investor_";
-        $values = [
-            $prefix . "name",
-            $prefix . "surname",
-            $prefix . "DNI",
-            $prefix . "dateOfBirth",
-            $prefix . "telephone"
-        ];
-        foreach ($values as $value) {
-            array_push($response, $investorData[0]["Investor"][$value]);
-        }
+        /* $response = array();
+          $prefix = "investor_";
+          $values = [
+          $prefix . "name",
+          $prefix . "surname",
+          $prefix . "DNI",
+          $prefix . "dateOfBirth",
+          $prefix . "telephone"
+          ];
+          foreach ($values as $value) {
+          array_push($response, $investorData[0]["Investor"][$value]);
+          }
 
-        $fp = fopen($fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json', 'w');
-        fwrite($fp, json_encode($response));
-        fclose($fp);*/
+          $fp = fopen($fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json', 'w');
+          fwrite($fp, json_encode($response));
+          fclose($fp); */
         foreach ($investorFiles as $investorFile) {
-           
+
             $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
             array_push($urlList, $url);
         }
