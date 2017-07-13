@@ -69,7 +69,7 @@ Pending:
         }
 ?>
         <div id="messageErrorLinkAccount" class="box box-warning fade in <?php echo $class_message ?>">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button type="button" class="btn btn-box-tool" data-widget="remove">
                 <i class="fa fa-times"></i>
             </button>
             <?php echo $message ?>

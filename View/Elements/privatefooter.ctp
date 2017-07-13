@@ -28,7 +28,7 @@ Pending:
 
 <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> 0.7.4 
+      <b>Version</b> 0.7.5 
     </div>
 	<strong>Copyright &copy; <?php echo $actualDate['year']; echo "&nbsp;" . __("Winvestify") . ". ";
 	echo "</strong>";
