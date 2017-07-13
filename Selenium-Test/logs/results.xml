@@ -230,8 +230,8 @@
       <!-- ignore the stylesheet from being processed -->
     </xsl:template>
   </xsl:stylesheet>
-  <testcase name="My\LinkingAccountTest" status="done" start="2017-07-12T13:42:00+0200" end="2017-07-12T13:43:49+0200" result="failed">
-    <test name="testLinkingComunitaeIncorrect" status="done" start="2017-07-12T13:42:25+0200" end="2017-07-12T13:42:51+0200" result="passed"/>
-    <test name="testLinkingZankIncorrect" status="done" start="2017-07-12T13:43:30+0200" end="2017-07-12T13:43:49+0200" result="broken"/>
+  <testcase name="My\LinkingAccountTest" status="done" start="2017-07-13T10:30:52+0200" end="2017-07-13T10:33:00+0200" result="failed">
+    <test name="testLinkingComunitaeIncorrect" status="done" start="2017-07-13T10:31:25+0200" end="2017-07-13T10:31:58+0200" result="passed"/>
+    <test name="testLinkingZankIncorrect" status="done" start="2017-07-13T10:32:16+0200" end="2017-07-13T10:33:00+0200" result="broken"/>
   </testcase>
 </testcases>

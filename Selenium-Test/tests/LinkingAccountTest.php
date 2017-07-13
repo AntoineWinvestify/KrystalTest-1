@@ -108,7 +108,7 @@ class LinkingAccountTest extends AbstractTestCase {
         $url_linking = $website . "/investors/userProfileDataPanel";
         
         $this->wd->navigate()->to($url_linking);
-        $driver->wait(5);
+        $driver->wait(20);
         $this->wd->findElement(WebDriverBy::id("linkedAccountsData"))->click();
         $this->wd->wait()->until(
             function () use ($driver) {
