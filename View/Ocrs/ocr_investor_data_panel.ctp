@@ -62,7 +62,7 @@
  * [2017-06-27] Version 0.10
  * Upload cif
  * 
-[2017-07-10] Version 0.11
+  [2017-07-10] Version 0.11
  * Upload failed fix
  */
 echo $result; //for ajax
@@ -93,26 +93,26 @@ if ($result) {
             display: none;
         }
     </style>
-<script src="/js/jquery-dateFormat.js"/>
+    <script src="/js/jquery-dateFormat.js"/>
     <script>
         $(function () {
             addExistingDocuments();
             disbleCheckedData();
             validationerrors = false;
-            <?php //telephone                          ?>
+    <?php //telephone                            ?>
             $('#ContentPlaceHolder_telephone').intlTelInput();
 
-            <?php //Date picker                          ?>
+    <?php //Date picker                            ?>
             $('#ContentPlaceHolder_dateOfBirth').datepicker({
                 autoclose: true,
                 format: 'dd/mm/yyyy'
             });
-            <?php //Tooltip clicks ?>
-            $(document).on("click", ".tooltipIcon", function() {
+    <?php //Tooltip clicks   ?>
+            $(document).on("click", ".tooltipIcon", function () {
                 id = $(this).attr("id");
                 $("#tooltip" + id).toggle();
             });
-            <?php //Show div with CIF & IBAN if its checked.                          ?>
+    <?php //Show div with CIF & IBAN if its checked.                            ?>
             $(document).on("change", "#investmentVehicle", function () {
                 if ($(this).is(":checked")) {
                     $("#investmentVehicleContent").show();
@@ -135,9 +135,9 @@ if ($result) {
                 console.log("validate 1CR data");
                 var result; //link = $(this).attr("href");
 
-    <?php //Javascript validation                          ?>
+    <?php //Javascript validation                            ?>
                 if ((result = app.visual.checkForm1CRInvestorData()) === false) {
-    <?php //Validation error                          ?>
+    <?php //Validation error                            ?>
                     event.stopPropagation();
                     event.preventDefault();
                     $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
@@ -147,7 +147,7 @@ if ($result) {
             });
 
             $(document).on("change", ".upload", function () {
-    <?php // Upload  file                          ?>
+    <?php // Upload  file                            ?>
                 id = $(this).attr("value");
                 var formdatas = new FormData($("#FileForm" + id)[0]);
                 link = '/files/upload';
@@ -169,7 +169,7 @@ if ($result) {
             });
 
             $(document).on("click", ".delete", function () {
-    <?php //Delete File                          ?>
+    <?php //Delete File                            ?>
                 id = $(this).val();
                 url = $(".url" + id).attr("value");
                 params = {
@@ -187,14 +187,14 @@ if ($result) {
             });
 
             $(document).on("click", "#backOCR", function () {
-    <?php //Go back                          ?>
+    <?php //Go back                            ?>
                 link = "../Ocrs/ocrInvestorPlatformSelection";
                 var data = null;
                 getServerData(link, data, successBack, errorBack);
             });
 
 
-    <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) {   //Investment vehicle check                   ?>
+    <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) {   //Investment vehicle check                     ?>
                 $("#investmentVehicle").prop('checked', true);
                 $("#investmentVehicleContent").show();
                 $("#4").show();
@@ -234,7 +234,7 @@ if ($result) {
         }
 
         function successDelete(id) {
-    <?php // Delete ok                        ?>
+    <?php // Delete ok                          ?>
             $("#del" + id).prop("disabled", true);
             $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile label' + id + '" for="fileId' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
             $("#file" + id).append('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '">');
@@ -244,20 +244,20 @@ if ($result) {
         }
 
         function successBack(result) {
-    <?php // Go back ok                        ?>
+    <?php // Go back ok                          ?>
             $(document).off('click');
             $(document).off('change');
             $("#content").html(result);
         }
         function errorBack(result) {
-    <?php //Go back error                        ?>
+    <?php //Go back error                          ?>
             $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
         }
 
 
 
         function addExistingDocuments() {
-    <?php //Show alreadey uploaded files in the table                        ?>
+    <?php //Show alreadey uploaded files in the table                          ?>
     <?php
     foreach ($existingFiles as $file) {
         ?>
@@ -295,58 +295,18 @@ if ($result) {
 
         function disbleCheckedData() {
 
-
-    <?php if ($checkData[0]['Check']['check_name'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_name').prop('disabled', true);
-    <?php } ?>
-
-
-    <?php if ($checkData[0]['Check']['check_surname'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_surname').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_dni'] == CHECKED) { //Data checking                   ?>
-                $('#dni').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_dateOfBirth'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_dateOfBirth').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_email'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_email').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_telephone'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_telephone').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_postCode'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_postCode').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_address'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_address1').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_city'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_city').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_country'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_country').prop('disabled', true);
-    <?php } ?>
-
-    <?php if ($checkData[0]['Check']['check_iban'] == CHECKED) { //Data checking                   ?>
-                $('#ContentPlaceHolder_iban').prop('disabled', true);
-    <?php } ?>
-
-
-
+        //$inputName must be a class of the input
+    <?php foreach ($checkData[0]['Check'] as $inputName => $check) {
+        if ($check == CHECKED) { //Data checking  ?> 
+                    $('.<?php echo $inputName ?>').prop('disabled', true); // If is CHECKED, block hte input
+        <?php } else if ($check == ERROR) { ?>
+                    $('.<?php echo $inputName ?>').addClass('redBorder'); // If is ERROR, mark the input
+        <?php }} ?>
         }
 
     </script>
-
+<?php foreach ($checkData[0]['Check'] as $inputName => $check) {
+print_r($inputName);} ?>
     <div id = "notification"></div>
     <div id="1CR_investor_2_investorDataPanel">
         <div class="row">
@@ -363,8 +323,8 @@ if ($result) {
                         <div class="row firstParagraph">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <p><?php
-                                    echo __('Para continuar con su proceso de registro debe rellenar las siguientes casillas:')
-                                    ?>
+    echo __('Para continuar con su proceso de registro debe rellenar las siguientes casillas:')
+    ?>
                                     <small><?php echo __('(Todos los campos son obligatorios)') ?></small>
                                 </p>
                             </div>
@@ -386,7 +346,7 @@ if ($result) {
                                             if (array_key_exists('investor_name', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorName" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorName check_name" . ' ' . $errorClass;
                                             echo $this->Form->input('Investor.investor_name', array(
                                                 'name' => 'name',
                                                 'id' => 'ContentPlaceHolder_name',
@@ -403,7 +363,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_name'][0] ?>
+    <?php echo $investorValidationErrors['investor_name'][0] ?>
                                                 </span>
                                             </div>									
                                         </div>					
@@ -419,7 +379,7 @@ if ($result) {
                                             if (array_key_exists('investor_surname', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorSurname" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorSurname check_surname" . ' ' . $errorClass;
                                             echo $this->Form->input('Investor.investor_surname', array(
                                                 'name' => 'surname',
                                                 'id' => 'ContentPlaceHolder_surname',
@@ -437,7 +397,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_surname'][0] ?>
+    <?php echo $investorValidationErrors['investor_surname'][0] ?>
                                                 </span>
                                             </div>	
                                         </div>		
@@ -453,7 +413,7 @@ if ($result) {
                                             if (array_key_exists('investor_DNI', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorDni" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorDni check_dni" . ' ' . $errorClass;
                                             echo $this->Form->input('Investor.investor_DNI', array(
                                                 'name' => 'dni',
                                                 'id' => 'dni',
@@ -470,7 +430,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_DNI'][0] ?>
+    <?php echo $investorValidationErrors['investor_DNI'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -488,7 +448,7 @@ if ($result) {
                                                 if (array_key_exists('investor_dateOfBirth', $investorValidationErrors)) {
                                                     $errorClass = "redBorder";
                                                 }
-                                                $class = "form-control pull-right" . ' ' . $errorClass;
+                                                $class = "form-control pull-right check_dateOfBirth" . ' ' . $errorClass;
                                                 ?>
                                                 <div class="input-group-addon" style="border-radius:8px; border: none;">
                                                     <i class="fa fa-calendar"></i>
@@ -503,7 +463,7 @@ if ($result) {
                                                 <div class="<?php echo $errorClassesText ?>">
                                                     <i class="fa fa-exclamation-circle"></i>
                                                     <span class="errorMessage">
-                                                        <?php echo $investorValidationErrors['investor_dateOfBirth'][0] ?>
+    <?php echo $investorValidationErrors['investor_dateOfBirth'][0] ?>
                                                     </span>
                                                 </div>	
                                             </div>
@@ -520,7 +480,7 @@ if ($result) {
                                             if (array_key_exists('investor_email', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorEmail" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorEmail check_email" . ' ' . $errorClass;
                                             echo $this->Form->input('Investor.investor_email', array(
                                                 'name' => 'dni',
                                                 'id' => 'ContentPlaceHolder_email',
@@ -537,7 +497,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_email'][0] ?>
+    <?php echo $investorValidationErrors['investor_email'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -554,7 +514,7 @@ if ($result) {
                                                 if (array_key_exists('investor_telephone', $investorValidationErrors)) {
                                                     $errorClass = "redBorder";
                                                 }
-                                                $class = "center-block" . ' ' . $errorClass;
+                                                $class = "center-block check_telephone" . ' ' . $errorClass;
 
                                                 echo $this->Form->input('Investor.investor_telephone', array(
                                                     'name' => 'telephone',
@@ -574,7 +534,7 @@ if ($result) {
                                                 <div class="<?php echo $errorClassesText ?>">
                                                     <i class="fa fa-exclamation-circle"></i>
                                                     <span class="errorMessage">
-                                                        <?php echo $investorValidationErrors['investor_telephone'][0] ?>
+    <?php echo $investorValidationErrors['investor_telephone'][0] ?>
                                                     </span>
                                                 </div>	
                                             </div>
@@ -592,7 +552,7 @@ if ($result) {
                                             if (array_key_exists('investor_postCode', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorPostCode" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorPostCode check_postCode" . ' ' . $errorClass;
                                             echo $this->Form->input('Investor.investor_postCode', array(
                                                 'name' => 'investor_postCode',
                                                 'id' => 'ContentPlaceHolder_postCode',
@@ -609,7 +569,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_postCode'][0] ?>
+    <?php echo $investorValidationErrors['investor_postCode'][0] ?>
                                                 </span>
                                             </div>		
                                         </div>
@@ -624,7 +584,7 @@ if ($result) {
                                             if (array_key_exists('investor_address1', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorAddress" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorAddress check_address" . ' ' . $errorClass;
                                             echo $this->Form->input('Investor.investor_address1', array(
                                                 'name' => 'address1',
                                                 'id' => 'ContentPlaceHolder_address1',
@@ -641,7 +601,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_address1'][0] ?>
+    <?php echo $investorValidationErrors['investor_address1'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -659,7 +619,7 @@ if ($result) {
                                             if (array_key_exists('investor_city', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorCity" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorCity check_city" . ' ' . $errorClass;
                                             echo $this->Form->input('ContentPlaceHolder_city', array(
                                                 'name' => 'city',
                                                 'id' => 'ContentPlaceHolder_city',
@@ -676,7 +636,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_city'][0] ?>
+    <?php echo $investorValidationErrors['investor_city'][0] ?>
                                                 </span>
                                             </div>						
                                         </div>	
@@ -692,7 +652,7 @@ if ($result) {
                                             if (array_key_exists('investor_country', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorCountry" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorCountry check_country" . ' ' . $errorClass;
                                             echo $this->Form->input('Investor.investor_country', array(
                                                 'name' => 'country',
                                                 'id' => 'ContentPlaceHolder_country',
@@ -710,7 +670,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_country'][0] ?>
+    <?php echo $investorValidationErrors['investor_country'][0] ?>
                                                 </span>
                                             </div>
                                         </div>	
@@ -724,7 +684,7 @@ if ($result) {
                                             if (array_key_exists('investor_iban', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorIban" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorIban check_iban" . ' ' . $errorClass;
                                             echo $this->Form->input('Ocr.investor_iban', array(
                                                 'name' => 'iban',
                                                 'id' => 'ContentPlaceHolder_iban',
@@ -741,7 +701,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_iban'][0] ?>
+    <?php echo $investorValidationErrors['investor_iban'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -772,7 +732,7 @@ if ($result) {
                                             if (array_key_exists('investor_cif', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorCif" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorCif check_cif" . ' ' . $errorClass;
                                             echo $this->Form->input('Ocr.investor_cif', array(
                                                 'name' => 'cif',
                                                 'id' => 'ContentPlaceHolder_cif',
@@ -789,7 +749,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_cif'][0] ?>
+    <?php echo $investorValidationErrors['investor_cif'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -805,7 +765,7 @@ if ($result) {
                                             if (array_key_exists('investor_businessName', $investorValidationErrors)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder2 investorBusinessName" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder2 investorBusinessName check_businessName" . ' ' . $errorClass;
                                             echo $this->Form->input('Ocr.investor_businessName', array(
                                                 'name' => 'iban',
                                                 'id' => 'ContentPlaceHolder_businessName',
@@ -822,7 +782,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-                                                    <?php echo $investorValidationErrors['investor_businessName'][0] ?>
+    <?php echo $investorValidationErrors['investor_businessName'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -862,8 +822,8 @@ if ($result) {
                                                 . ' PFP puedan validar y autenticar su identidad.')
                                         ?></p>
                                     <p><?php
-                                        echo __('Para ello, deberá de aportar copia de su DNI/NIE en vigor y justificante de titularidad bancaria.')
-                                        ?></p>
+                                    echo __('Para ello, deberá de aportar copia de su DNI/NIE en vigor y justificante de titularidad bancaria.')
+                                    ?></p>
                                 </div>
                             </div>
                             <div class="row firstParagraph">
@@ -883,7 +843,7 @@ if ($result) {
                                 <div class="<?php echo $errorClassesText ?> col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
                                     <i class="fa fa-exclamation-circle"></i>
                                     <span class="errorMessage">
-                                        <?php echo $investorValidationErrors['investor_files'][0] ?>
+    <?php echo $investorValidationErrors['investor_files'][0] ?>
                                     </span>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">	
@@ -916,7 +876,7 @@ if ($result) {
                                                 }
                                                 ?> id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="documentRow">
                                                     <td>
-                                                        <?php echo __($filesTable[0]['Ocrfile']['file_type']) ?> <i class="fa fa-exclamation-circle tooltipIcon" id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>"></i>
+        <?php echo __($filesTable[0]['Ocrfile']['file_type']) ?> <i class="fa fa-exclamation-circle tooltipIcon" id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>"></i>
                                                         <span id="tooltip<?php echo $filesTable[0]['Ocrfile']['id'] ?>" style="display:none"><br/><?php echo $filesTable[0]['Ocrfile']['file_tooltip'] ?></span>
                                                     </td>
                                                     <td id="status<?php echo $filesTable[0]['Ocrfile']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
@@ -954,7 +914,7 @@ if ($result) {
                     <div class="form-group">
                         <?php if ($ocr[0]['Ocr']['ocr_status'] != ERROR) { ?>
                             <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn1CR btnRounded pull-left"><?php echo __('Back') ?></button>
-                        <?php } ?>
+    <?php } ?>
                         <button type="submit" href="/ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn1CR btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
                     </div>
                 </div>	
