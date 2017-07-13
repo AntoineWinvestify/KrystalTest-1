@@ -59,14 +59,14 @@ function beforeFilter() {
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club33 field from CSRF protection
-															// as it is "dynamic" and would fail the CSRF test
+										// as it is "dynamic" and would fail the CSRF test
 
 //	$this->Security->requireSecure(	'login'	);
 	$this->Security->csrfCheck = false;
 	$this->Security->validatePost = false;	
 // Allow only the following actons.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
+	$this->Auth->allow('login', 'loginAction', 'cronMoveToMLDatabase' , 'readMLDatabase');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
 //   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 //var_dump($_REQUEST);
@@ -76,221 +76,6 @@ function beforeFilter() {
 }
 
 
-
-/**
- * 
- * Shows a list of investors, using dataTable, in order to select/view/modify the data of 1 
- * investor
- * 
- */
-public function showInvestorList() {
-  
-}
-
-
-
-
-/**
- * 
- * Shows the initial, basic screen of the Tallyman service
- * 
- */
-public function startTallyman($investorEmail, $investorTelephone) {
- 
-    $this->layout = 'Adminpfp.azarus_private_layout';
- // check inputparameters against dangerous inputs
- //   $investorTelephone = "+" . $investorTelephone;
-    
-    $investorDNI = "";
-    $investorTelephone = ""; 
-    $investorEmail = "";
-
-    $this->set("investorEmail", $investorEmail);
-    $this->set("investorDNI", $investorDNI);
-    $this->set("investorTelephone", $investorTelephone);            
-            
-
-    $filterconditions = array('investor_identity', $investorIdentification);
- //   $result = $this->Investorglobaldata->readInvestorData($filterConditions);
-    $this->set('result', $result);
-       
-}
-
-
-
-
-// to test if modal shows up correctly. to be deleted
-/*
- * should receive the request for one or more users
- * It checks if charging is to be applied. IF so then show the modal with information
- * about how many requests will be charged ("this event will be charged")
- * 
- * 
- * 
- */
-public function testmodal() {
-    
-    
-
-}
-
-
-
-/**
- * 
- * Shows the Tallyman data of a user in a graphical manner
- * 
- */
-public function readtallymandata() {
-
-    if (!$this->request->is('ajax')) {
-        throw new
-        FatalErrorException(__('You cannot access this page directly'));
-        }
-    $this->layout = 'ajax';
-    $this->disableCache();
-
-    $platformId = $this->Session->read('Auth.User.Adminpfp.company_id');
-    $error = null;
-
-    $inputId = $_REQUEST['inputId']; 
-    $userEmail = $_REQUEST['userEmail'];
-    $userTelephone = $_REQUEST['userTelephone'];
-    $chargingConfirmed = $_REQUEST['chargingConfirmed'];
-
-// Get the unique investor identification
-    $inputParmCount = 0;
-    if (!empty($inputId)) {     
-        $key[] = "Investor.investor_DNI";
-        $value[] = $inputId;
-        ++$inputParmCount;
-    } 
-    if (!empty($userEmail)) { 
-        $key[] = 'Investor.investor_email';
-        $value[] = $userEmail;
-        ++$inputParmCount;
-    }  
-    if (!empty($userTelephone)) { 
-        $key[] = 'Investor.investor_telephone';
-        $value[] = $userTelephone;
-        ++$inputParmCount;
-    }  
-
-    if ($inputParmCount < 2) {
-        $error = NOT_ENOUGH_PARAMETERS;
-    }
-    else {
-        $filterConditions = array_combine($key, $value);
-        $searchData =  json_encode($filterConditions);
-   
-        $this->Search = ClassRegistry::init('Adminpfp.Search');   
-        $result = $this->Search->writeSearchData($searchData, $platformId, null, null, TALLYMAN_APP); 
-      
-        $this->Investor = ClassRegistry::init('Investor');   
-        $resultInvestor = $this->Investor->getInvestorData($filterConditions);
-        $userIdentification = $resultInvestor[0]['Investor']['investor_identity'];  
-
-        if (!$userIdentification) {
-            $error = USER_DOES_NOT_EXIST;
-        }
-        else {
-            $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
-            $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
-
-            // CHECK IF structure can be improved
-            if (empty($resultTallymanData)) {
-                $error = NO_DATA_AVAILABLE;
-            }   
-            else {
-                $this->set('resultTallyman', $resultTallymanData);
-                $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm'); 
-
-                if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
-                    if ($chargingConfirmed == false){ 
-                        $parameters = array($inputId, $userEmail, $userTelephone);
-                        $this->set('parameters', $parameters);
-                        $this->render('chargingconfirmationmodal');
-                        return;
-                    }
-                } 
-                
-                // provide data for possible billing
-                 if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
-                    $data = array();
-                    $data['reference'] = $userIdentification;                           // investor unique identification
-                    $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
-                    $data['parm2'] = $platformId;                                      // platformId of the adminfp user
-                    $data['parm3'] = null;       
-                    $this->Billingparm->writeChargingData($data, "tallyman");  // CHECK RESULT CODE
-                 }
-            }
-        }
-    }
-
-    if (!$error) {                              // No error encountered, use default view
-        return;
-    }    
-
-    $this->set("error", $error);         
-    $this->render('tallymanErrorPage'); 
-}
-
-
-   /**
-    *
-    *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
-    * 
-    *  @param 		$reference      parameter to be checked
-    *  @param      string      transparent parameter 2 to be checked
-    *  @param      string      transparent parameter 3 to be checked
-    *  @param      string      transparent parameter 4 to be checked
-    *  @param      string      name of application
-    *
-    *  @return 	boolean	true	All OK, data has been saved
-    * 				false	Error occured
-    * 						
-    */
-public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
-return true;
-
-//  Calculate cutoff date for billing purposes
-    Configure::load('p2pGestor.php', 'default');
-    $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
-    $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 *24);    
-  
-    $result = $this->Billingparm->find('first', array(
-                                            "fields" => array("created"),
-                                            "order" => "id DESC",
-                                            "recursive" => -1,
-                                            "conditions" => array("billingparm_reference" => $reference,
-                                                                    "billingparm_parm2" => $parameter2,
-                                                                "billingparm_serviceName" => $application),
-                                             ));
-            
-    if (empty($result)) {  // No information found, so not a chargeable event
-        return false;
-    }
-
-    if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
-        return true;           
-    }
-    return false;
-}
-
-
-
-  
-/**
- * 
- * Shows the initial, basic screen of the Tallyman service with the three input fields
- * 
- */
-public function showTallymanPanel() {
-  $this->layout = 'Adminpfp.azarus_private_layout';
-  
-}  
-  
-  
 
 
 
@@ -340,20 +125,25 @@ public function logout() {
 
 
 
+public function readMLDatabase() {
+     $this->autoRender = false;
+    Configure::write('debug', 2);   
+    echo "Antoine";
+     $this->Userplatformglobaldata = ClassRegistry::init('Adminpfp.Userplatformglobaldata'); 
+    $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');     
+     
+    $investorResult = $this->Investorglobaldata->find('all', $params = array('recursive' => 1,
+							  'conditions'  => array(
+                                                         //       'id >' => $queueResult[0]['MLqueue_actualId'],
+                                                         //       'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                           //     'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
+                                                         //       'queue_id' => 57
+                                                              ),
+                                                          'limit' => 3));
 
-
-/**
-*	Reads the data of an Administrator 
-*
-*/
-function readAdministratorData($adminId) {
-	$this->layout = 'zastac_admin_layout';
-
+    $this->print_r2($investorResult);
+    
 }
-
-
-
-
 
 
 
@@ -376,103 +166,131 @@ public function cronMoveToMLDatabase() {
 //    $serviceData = Configure::read('Tallyman');   
     
     $this->Company = ClassRegistry::init('Company');   
-    $this->MLqueue = ClassRegistry::init('MLqueue'); 
+    $this->Mlqueue = ClassRegistry::init('Adminpfp.Mlqueue'); 
     $this->Userplatformglobaldata = ClassRegistry::init('Adminpfp.Userplatformglobaldata'); 
     $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');   
     $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
 
-    $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
-							  'conditions'  => array(
-                                                         //                   'id >' => $queueResult[0]['MLqueue_actualId'],
+// Get the data from the previous readout    
+    $resultMlqueue = $this->Mlqueue->find("all",$params = array('recursive' => -1,
+                                               'conditions'  => array('id' => 1))); 
+  // Check if a limit is required  
+    
+
+     $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => -1,
+							  'conditions'  => array(// sort by queueid
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
                                                            //                'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                                            'queue_id' => 57 ),
-                                                          'limit' => 3)
-				); 
+                                                                            'queue_id >' => $resultMlqueue[0]['Mlqueue']['mlqueue_actualQueueId'] ),
+                                                              'limit' => 6 )
+       );       
+ $this->print_r2($userinvestmentdataResult);
+ $x = 1;
+// Make sure that a records belong to the same queueId do not spill over in two reading.
+    while (!empty($userinvestmentdataResult)) {
+        $count = sizeof($userinvestmentdataResult);
+        echo "count = $count ";
+        $maxQueueId = $userinvestmentdataResult[$count - 1]['Userinvestmentdata']['queue_id'];
+        echo "maxqueueId = $maxQueueId ";
+        $actualQueueId = $maxQueueId;
+        
+        $index = $count - 1;
+        while ($actualQueueId == $maxQueueId) {
+            unset($userinvestmentdataResult[$index]);
+            echo "deleting $index<br>";
+            $index = $index -1;
+            $actualQueueId = $userinvestmentdataResult[$index]['Userinvestmentdata']['queue_id'];
+            echo "new actual = $actualQueueId<br>";
+        }
+      $this->print_r2($userinvestmentdataResult);   
+  /*
+   * $maxQueueId = $userinvestmentdataResult['Userinvestmentdata']['queue_id'];
+    read queueid of last record and also store it
+    delete last record.
+            loop
+                read previous record 
+                if same queueId delet it
+    Go to beginning  
+   */     
+        
+   exit;     
+$x = $x + 1;
+ //   $this->print_r2($userinvestmentdataResult);
+echo "_______________________________________<br>";
 
-    $this->print_r2($userinvestmentdataResult);
-
-    unset($platformglobalData);
-    $index = 0;
-    foreach ($userinvestmentdataResult as $key => $result) {
-   
- //       $internalRawDataReference = $result['Userinvestmentdata']['investorglobaldata_internalRawDataReference'];
-//        $tempResult = $this->Userinvestmentdata->find("all", $params = array('conditions'  => array('investorglobaldata_internalRawDataReference' => $internalRawDataReference),
- //           ));
-/*
-        if (!empty($tempResult)) {     // Already dealt with this queueID
-            $userinvestmentdataResult = $this->Userinvestmentdata->read("first", $params = array('recursive' => 1,
-                                                                'conditions'  => array('id >' => $queueResult[0]['MLqueue_actualId'],
+    $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => -1,
+							  'conditions'  => array(// sort by queueid
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                                                                           'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                              ),
-				));       
-        }
-        else {              // Deal with this database record,          here we have a new queue_id so we have to
-            $userData['investorglobaldata_investorIdentity'] = $UserinvestmentdataResult[0]['investorglobaldata_investorIdentity'];
+                                                           //                'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
+                                                                            'queue_id >' => $resultMlqueue[0]['Mlqueue']['mlqueue_actualQueueId'] ),
+                                                              'limit' => 6 )
+       );
 
-            if ($this->Userinvestmentdata->save($userData, $validate = true)) {
-                $userinvestmentpointer = $this->Userinvestmentdata->id;
-            }
-            else {
-                echo "ERROR OCCURED, TAKE ACTION";  
-                // add possible errors in interface errors table  
-                $userinvestmentpointer = 0;
-                continue;
-            }
-        }
- */
-  //      $nextRecord = $result[0]['Userinvestmentdata'][0]['id'];
- //       $this->MLqueue->save(array('id' => 1, 
- //                                   'MLqueue_actualId' => $nextRecord,
- //                                   'MLqueue_dateActualId' => $currentDate,
- //                           ));
-   
 
+$this->print_r2($userinvestmentdataResult);
+             
+if ($x == 3) {
+    echo "Antoine";
+    exit;
+}
+
+    }
+    
+    exit;
+    
+
+    $oldQueueId = 0;
+    $index = 0;
+    
+    foreach ($userinvestmentdataResult as $key => $result) {
         $companyId = $result['Userinvestmentdata']['company_id'];
-          // mapping of data from "raw" format to MLData format    
-            $companyResult = $this->Company->find("first", $params = array('recursive' => -1,
-							  'conditions'  => array('id' => $companyId),
-                                                          'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
-				));        
-            $investorglobalData['createdDate'] = $currentDate;
-            $investorglobalData['investorglobaldata_currency'] = 1;  
-            $investorglobalData['investorglobaldata_investorIdentity'] = $result['Userinvestmentdata']['userinvestmentdata_investorIdentity'];             
-            $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $result['Userinvestmentdata']['userinvestmentdata_myWallet'];          
+  
+        $companyResult = $this->Company->find("first", $params = array('recursive' => -1,
+                                                      'conditions'  => array('id' => $companyId),
+                                                      'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
+                            ));        
+        $investorglobalData['createdDate'] = $currentDate;
+        $investorglobalData['investorglobaldata_currency'] = 1;  
+        $investorglobalData['investorglobaldata_investorIdentity'] = $result['Userinvestmentdata']['userinvestmentdata_investorIdentity'];             
+        $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $result['Userinvestmentdata']['userinvestmentdata_myWallet'];          
 
-            $activeInvestments = false;
-            
-  //          unset($platformglobalData);
-            foreach ($result['Investment'] as $investmentKey => $data)  {
-                
- $this->print_r2($data);               
-                 
-                 if ($data['investment_amount'] > 0) {
-                    $platformglobalData[$index]['userplatformglobaldata_activeInInvestments'] += $data[$index]['investment_amount'];
-                    $platformglobalData[$index]['userplatformglobaldata_numberOfInvestments']++;
-                    $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['investment_amount'];
-                    $activeInvestments = true;
-                }               
-                $data[$index]['userplatformglobaldata_moneyInWallet'] += $data['userinvestmentdata_myWallet'];
-                $platformglobalData[$index]['userplatformglobaldata_currency'] = 1;
-//              $investorglobalData['userplatformglobaldata_reservedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
-//              $investorglobalData['userplatformglobaldata_finishedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
-                $platformglobalData[$index]['userplatformglobaldata_companyId'] = $companyId;            
-               $platformglobalData[$index]['userplatformglobaldata_companyName'] = $companyResult['Company']['company_name'];
-                $platformglobalData[$index]['userplatformglobaldata_PFPType'] = $companyResult['Company']['company_PFPType'];
-                $platformglobalData[$index]['userplatformglobaldata_PFPCountry'] = $companyResult['Company']['company_country']; 
-                $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;   
-                
-                $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $data[$index]['userinvestmentdata_myWallet'];
-                $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];
-                
- 
- //$temp['Investorglobaldata']['Userplatformglobaldata'][$index]['userplatformglobaldata_companyId'] = $companyId; 
- //$temp['Investorglobaldata']['Userplatformglobaldata'][$index]['userplatformglobaldata_activeInInvestments'] = $data[$index]['investment_amount'];
- //$temp['investorglobaldata_totalActiveInInvestments'] = 3333;          
-                
-                
-               
+        $this->print_r2($result);
+
+        $activeInvestments = false;
+echo __FUNCTION__ . " " . __LINE__ ."<br>";         
+        foreach ($result['Investment'] as $investmentKey => $data)  {
+            $this->print_r2($data);
+            $queueId = $result['Userinvestmentdata']['queue_id'];
+            if ($queueId <> $oldQueueId) {
+                unset ($investorglobalData);
+                unset ($platformuserglobalData);
+                echo "NEW queueId found<br>";
+                $oldQueueId = $queueId;
+                $index = 0;
+                echo __FUNCTION__ . " " . __LINE__ ."<br>";
+            }
+echo __FUNCTION__ . " " . __LINE__ ."<br>";
+$this->print_r2($data);               
+
+            if ($data['investment_amount'] > 0) {
+                echo "investment found, value = " . $data['investment_amount'];
+                $platformglobalData[$index]['userplatformglobaldata_activeInInvestments'] += $data['investment_amount'];
+                $platformglobalData[$index]['userplatformglobaldata_numberOfInvestments']++;
+                $investorglobalData['investorglobaldata_activeInInvestments'] += $data['investment_amount'];
+                $activeInvestments = true;
+            }               
+            $data[$index]['userplatformglobaldata_moneyInWallet'] += $data['userinvestmentdata_myWallet'];
+            $platformglobalData[$index]['userplatformglobaldata_currency'] = 1;
+    //              $investorglobalData['userplatformglobaldata_reservedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
+    //              $investorglobalData['userplatformglobaldata_finishedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
+            $platformglobalData[$index]['userplatformglobaldata_companyId'] = $companyId;            
+            $platformglobalData[$index]['userplatformglobaldata_companyName'] = $companyResult['Company']['company_name'];
+            $platformglobalData[$index]['userplatformglobaldata_PFPType'] = $companyResult['Company']['company_PFPType'];
+            $platformglobalData[$index]['userplatformglobaldata_PFPCountry'] = $companyResult['Company']['company_country']; 
+            $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;   
+            $investorglobalData['investorglobaldata_totalMoneyInWallets'] += $data['userinvestmentdata_myWallet'];
+            $investorglobalData['queueID'] = $queueId;
+//               $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];  
             }
             if ($activeInvestments) {
                 $investorglobalData['investorglobaldata_activePFPs'] += 1;
@@ -481,47 +299,38 @@ public function cronMoveToMLDatabase() {
             $investorglobalData['investorglobaldata_totalPFPs'] += 1;
             
             $index++;
-   echo "END OF LIST";         
-        /*    
-         * 
-         * 
-
-
-
-            if ($this->save->Userplatformglobaldata($platformData, $validate = true)) {
-                
+   echo "END OF LIST, so start saving<br>";         
+  
+            if ($this->Userplatformglobaldata->save($platformData, $validate = true)) {
+                unset($platformData);
             }
             else {
-                echo "ERROR OCCURED, TAKE ACTION";  
-                // add possible errors in interface errors table
-                // reset something ????
+                echo "ERROR OCCURED while saving userplatformglobaldata, TAKE ACTION";  
             }
-         
-         */
         }
         $this->print_r2($investorglobalData);
         $this->print_r2($platformglobalData);
-       
+
         echo "AANAN";
-        
+
         $data = array(
             'Investorglobaldata' => $investorglobalData,
             'Userplatformglobaldata' => $platformglobalData
             );
         $this->print_r2($data);
         echo "going to save<br>";
-         
+
   //      $this->Investorglobaldata->create($data);
         $rr = $this->Investorglobaldata->save($data, array('validate' => false, 'deep' => true));
         if ($rr == true) {
             echo "OK";
             echo $rr['Investorglobaldata']['id'];
-            echo "BB = " . $this->print_r2($rr);
+            echo "BB id = " . $this->print_r2($rr);
         }
         else {
             echo "error while saving";
         }
-        echo "CHARO";
+        echo "SAVING ALL RELEVANT PFP DATA<br>";
         foreach ($platformglobalData as $item) {
             $item['investorglobaldata_id'] = $rr['Investorglobaldata']['id'];
             $this->Userplatformglobaldata->create($item1);
@@ -529,7 +338,7 @@ public function cronMoveToMLDatabase() {
             $this->Userplatformglobaldata->save($item1);
 
         }
-
+           
 } 
 
 

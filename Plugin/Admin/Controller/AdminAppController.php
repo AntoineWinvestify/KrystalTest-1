@@ -58,16 +58,15 @@ class AdminAppController extends AppController {
                                                 'loginRedirect'	=> array(
 									'plugin' => 'admin',
 									'controller' 	=> 'ocrs',
-									'action' 	=> 'ocr_winadmin_investor_checking'
+									'action' 	=> 'ocrWinadminInvestorChecking'
 									),
-						'logoutRedirect' => array('controller' 	=> 'users',
+						'logoutRedirect' => array(
+                                                                        'plugin' => 'admin',
+                                                                        'controller' => 'users',
 									 'action' => 'login'
 										 ),
 									),								
 								);
-		
-    var $uses = array('Administrators');	
-
 
 /**
 *	This code is common to all the classes that actively define a method for the beforeFilter

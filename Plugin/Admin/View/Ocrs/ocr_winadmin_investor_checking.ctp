@@ -109,54 +109,29 @@
                                                 <td><?php echo __($usersTable['Investor']['investor_surname']) ?></td>
                                                 <td><?php echo __($usersTable['Investor']['investor_telephone']) ?></td>
                                                 <td><?php echo __($usersTable['Investor']['investor_email']) ?></td>
-                                                <td><span style="color:#990000"><i class="fa fa-times"></i> <?php echo __($status[$usersTable['Ocr']['ocr_status']]) ?></span></td>
+                                                <?php 
+                                                switch($status[$usersTable['Ocr']['ocr_status']]) {
+                                                    case "New":
+                                                        $icon = "fa fa-user";
+                                                        $td_class = "statusNew";
+                                                        break;
+                                                    case "Pending":
+                                                        $icon = "fa fa-user";
+                                                        $td_class = "statusPending";
+                                                        break;
+                                                    case "Error":
+                                                        $icon = "fa fa-user";
+                                                        $td_class = "statusNew";
+                                                        break;
+                                                    case "Finished":
+                                                        $icon = "fa fa-user";
+                                                        $td_class = "statusFinished";
+                                                }    
+                                                ?>
+                                                <td class="<?php echo $td_class ?>"><i class="<?php echo $icon ?>"></i> <?php echo __($status[$usersTable['Ocr']['ocr_status']]) ?></td>
                                                 <td><a href="/ocrs/ocrWinadminInvestorData/<?php echo __($usersTable['Investor']['id']) ?>"><button class="btn btn-default btnWinAdmin btnRounded view"><?php echo __('View') ?></button></a></td>
                                             </tr>
                                         <?php } ?>
-                                        <!-- 
-                                         <tr>
-                                             <td><?php echo __('2017-01-01') ?></td>
-                                             <td><?php echo __('Nameeeeeee') ?></td>
-                                             <td><?php echo __('Surnameeee') ?></td>
-                                             <td><?php echo __('+34123456789') ?></td>
-                                             <td><?php echo __('example@example.com') ?></td>
-                                             <td><span style="color:#cc6600"><i class="fa fa-exclamation-triangle"></i> <?php echo __('Warning') ?></span></td>
-                                             <td><button class="btn btn-default btnWinAdmin btnRounded"><?php echo __('View') ?></button></td>
-                                         </tr>
-                                         <tr>
-                                             <td><?php echo __('2017-01-01') ?></td>
-                                             <td><?php echo __('Nameeeeeee') ?></td>
-                                             <td><?php echo __('Surnameeee') ?></td>
-                                             <td><?php echo __('+34123456789') ?></td>
-                                             <td><?php echo __('example@example.com') ?></td>
-                                             <td><span style="color:#33cc33"><i class="fa fa-check"></i> <?php echo __('Correct') ?></span></td>
-                                             <td><button class="btn btn-default btnWinAdmin btnRounded"><?php echo __('View') ?></button></td>
-                                         </tr>
-                                         <tr>
-                                             <td><?php echo __('2017-01-01') ?></td>
-                                             <td><?php echo __('Nameeeeeee') ?></td>
-                                             <td><?php echo __('Surnameeee') ?></td>
-                                             <td><?php echo __('+34123456789') ?></td>
-                                             <td><?php echo __('example@example.com') ?></td>
-                                             <td><span style="color:#3399ff"><i class="fa fa-thumb-tack"></i> <?php echo __('Validating') ?></span></td>
-                                             <td><button class="btn btn-default btnWinAdmin btnRounded"><?php echo __('View') ?></button></td>
-                                         </tr>
-                                         <tr>
-                                             <td><?php echo __('2017-01-01') ?></td>
-                                             <td><?php echo __('Nameeeeeee') ?></td>
-                                             <td><?php echo __('Surnameeee') ?></td>
-                                             <td><?php echo __('+34123456789') ?></td>
-                                             <td><?php echo __('example@example.com') ?></td>
-                                             <td><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
-                                             <td>
-                                                 <a href="/ocrs/ocrWinadminInvestorData"> 
-                                                     <button class="btn btn-default btnWinAdmin btnRounded btnRounded" type="button">
-                                        <?php echo __('View') ?>
-                                                     </button>
-                                                 </a>
-                                             </td>
-                                         </tr> -->
-
                                     </tbody>
                                 </table>
                             </div>

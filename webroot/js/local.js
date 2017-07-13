@@ -757,9 +757,9 @@ app.visual = {
         var correctFormatTelephone = true;
         $(".errorInputMessage").hide(); // remove all error texts
         $("#investorFilters input").removeClass("redBorder"); // remove ALL redborders
-        var nif = $("#tallyman_nif").val();
-        var email = $("#tallyman_email").val();
-        var telephone = $("#tallyman_telephone").val();
+        var nif = $("#tallymanInputId").val();
+        var email = $("#tallymanInputEmail").val();
+        var telephone = $("#tallymanInputTelephone").val();
 
         //NIF validation
         if (nif === "") {
@@ -803,7 +803,7 @@ app.visual = {
         if (!correctNIF && correctEmail && !correctTelephone) {
             console.log("nif & telephone empty");
             $(".tallymanTelephone").addClass("redBorder");
-            $(".tallymanNIF").addClass("redBorder");
+            $(".tallymanID").addClass("redBorder");
             $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
             $(".ErrorTallyman").fadeIn();
             correctForm = false;
@@ -811,7 +811,7 @@ app.visual = {
         if (!correctNIF && !correctEmail && correctTelephone) {
             console.log("nif & email empty");
             $(".tallymanEmail").addClass("redBorder");
-            $(".tallymanNIF").addClass("redBorder");
+            $(".tallymanID").addClass("redBorder");
             $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
             $(".ErrorTallyman").fadeIn();
             correctForm = false;

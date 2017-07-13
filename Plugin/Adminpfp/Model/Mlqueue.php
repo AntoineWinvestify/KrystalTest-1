@@ -22,7 +22,7 @@
 2017-06-29	  version 0.1
 First version
 
-
+ 
 
 
 */
@@ -30,9 +30,9 @@ First version
 App::uses('AppModel', 'Model');
 class Mlqueue extends AppModel
 {
-	public $name = 'Mlqueue';
-
-
+	
+        var $useDbConfig = 'mldata'; 
+        public $name = 'Mlqueue';
 
 /**
 *	Apparently it can contain any type field which is used in a field. It does NOT necessarily

@@ -58,14 +58,12 @@ class AdminpfpAppController extends AppController {
 									'plugin' => 'adminpfp',
 									'controller' 	=> 'ocrs',
 									'action' 	=> 'ocrPfpUsersPanel'),
-						'logoutRedirect' => array('controller' 	=> 'users',
+						'logoutRedirect' => array('plugin' => 'adminpfp',
+                                                                        'controller' => 'users',
 									 'action' => 'login'
 										 ),
 									),								
 								);
-		
-    var $uses = array('Administrators');	
-
 
 /**
 *	This code is common to all the classes that actively define a method for the beforeFilter

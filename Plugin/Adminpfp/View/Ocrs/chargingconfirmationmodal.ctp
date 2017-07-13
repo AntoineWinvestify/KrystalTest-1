@@ -49,7 +49,7 @@ $userid = $parameters[0];
 
         $(document).on('click', '.close', function () {
             console.log("Antoine");
-            $('#chargingConfirmationModal').hide();
+            $('#chargingConfirmationModal').removeClass("show");
         });   
 
         $(document).on("click", '.closeBtn', function () {
@@ -69,6 +69,7 @@ $userid = $parameters[0];
 
         $(document).on("click", "#btnConfirm", function (event) {
 
+            $("#chargingConfirmationModal").removeClass("show");
             var link = $(this).attr("href");
             
             var inputid = "<?php echo $userid ?>";
@@ -127,8 +128,8 @@ $userid = $parameters[0];
     <div class="container">
         <div class="row">
             <div class="col-sm-8 col-sm-offset-2">
-                <div class="wizard-container">
-                    <div class="card wizard-card" data-color="green" id="wizardProfile">
+                <div class="wizard-container-small">
+                    <div class="card wizard-card-small" data-color="green" id="wizardProfile">
                         <div class="wizard-header text-center">
                             <button type="button" class="close closeBtn" data-dismiss="modal" aria-hidden="true" style="margin-right: 15px;">&times;</button>
                             <img src="/img/logo_winvestify/Logo.png" style="max-width:75px;"/>

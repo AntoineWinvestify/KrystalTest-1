@@ -2029,3 +2029,37 @@ hr.nomargin {
     margin: 0 auto;
     margin-top: -5px;
 }
+/* STATUS COLORS */
+.statusNew {
+    color: #47badf; /*blue*/
+}
+
+.statusDownloaded, .statusFinished {
+    color: #33cc33; /*green*/
+}
+
+.statusPending {
+    color: #ff9933; /*orange*/
+}
+
+.statusError {
+    color: #ff5886; /*red*/
+}
+
+/*PAPER BOOTSTRAP MODAL CUSTOMIZATION*/
+.wizard-container-small {
+    padding-top: 50px;
+}
+
+.wizard-card-small {
+    min-height: 200px;
+}
+
+.wizard-card-small .tab-content {
+    min-height: 200px;
+    padding: 30px;
+}
+
+.wizard-card-small .wizard-footer {
+    padding: 0 15px 5px !important;
+}
