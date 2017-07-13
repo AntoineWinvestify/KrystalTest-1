@@ -298,7 +298,7 @@ class AppController extends Controller {
         $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
 
         //Investor Ocr Status
-        $this->ocrStatus = array(1 => __("Unchecked"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
+        $this->ocrStatus = array(1 => __("New"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
 
         //Company ocr service status
         $this->serviceStatus = array(0 => __('Choose One'), 1 => __("Inactive"), 2 => __("Active"), 3 => __("Suspended"));
