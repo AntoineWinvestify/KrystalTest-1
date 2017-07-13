@@ -103,11 +103,11 @@
         });
 
 
-        $(document).on("click", "#btnConfirm", function () {
+        /*$(document).on("click", "#btnConfirm", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
             window.location.replace('/ocrs/ocrCompletedProcess');
-        });
+        });*/
 
         $(document).on("click", "#btnSure", function () {
             link = "/files/deleteAll"
@@ -122,7 +122,7 @@
 <?php //Server validation Ok               ?>
         resultJson = JSON.parse(result);
         console.log(resultJson);
-        if (resultJson[0] == 1 && resultJson[0] == 1 && resultJson[0] == 1) {
+        if (resultJson[0] == 1 && resultJson[2] == 1) {
             //$(".successMsg").fadeIn();
             window.location.replace('/ocrs/ocrCompletedProcess');
             //User feedback(Status ocr control?)

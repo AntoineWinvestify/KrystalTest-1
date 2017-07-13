@@ -131,7 +131,7 @@
                 file: fileArray
 
             };
-            link = '/ocrs/updateChecks';
+            link = '/admin/ocrs/updateChecks';
             var data = jQuery.param(params);
             getServerData(link, data, success, error);
         });
@@ -203,7 +203,7 @@
                     //Companies data
                     company: companyArray
                 };
-                link = '/ocrs/updateChecks';
+                link = '/admin/ocrs/updateChecks';
                 var data = jQuery.param(params);
                 getServerData(link, data, successApprove, error);
             } else {
@@ -226,7 +226,7 @@
         $(".alert-to-fade").addClass("alert-win-success");
     }
     function successApprove() {
-        window.location.replace('/ocrs/ocrWinadminInvestorChecking');
+        window.location.replace('/admin/ocrs/ocrWinadminInvestorChecking');
     }
     function error(data) {
         $(".feedbackText").html(data);
@@ -844,7 +844,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <button type="button" id="saveBtn" href = '/ocrs/updateChecks' class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save') ?></button>
+                                    <button type="button" id="saveBtn" href = 'admin/ocrs/updateChecks' class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save') ?></button>
                                     <button type="button" id="approveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-right" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve') ?></button>
                                 </div>
                             </div>

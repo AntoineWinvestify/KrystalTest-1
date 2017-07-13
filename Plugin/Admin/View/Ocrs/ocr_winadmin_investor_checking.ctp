@@ -134,7 +134,7 @@
                                                 }    
                                                 ?>
                                                 <td class="<?php echo $td_class ?>"><i class="<?php echo $icon ?>"></i> <?php echo __($status[$usersTable['Ocr']['ocr_status']]) ?></td>
-                                                <td><a href="/ocrs/ocrWinadminInvestorData/<?php echo __($usersTable['Investor']['id']) ?>"><button class="btn btn-default btnWinAdmin btnRounded view"><?php echo __('View') ?></button></a></td>
+                                                <td><a href="/admin/ocrs/ocrWinadminInvestorData/<?php echo __($usersTable['Investor']['id']) ?>"><button class="btn btn-default btnWinAdmin btnRounded view"><?php echo __('View') ?></button></a></td>
                                             </tr>
                                         <?php } ?>
                                     </tbody>

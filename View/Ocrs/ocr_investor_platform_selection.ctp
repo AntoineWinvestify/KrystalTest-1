@@ -379,7 +379,7 @@ Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuenta
                                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
                                             <ul class="nav nav-stacked">
                                                 <li class = 'country'><img src="/img/flags/<?php echo mb_strtolower($company['Company']['company_country']) ?>.png" alt="Spain Flag"/> <?php echo __($company['Company']['company_countryName']) ?></li>
-                                                <li class = 'type'><?php echo __($CompanyType[$company['Company']['Company_type']]) ?></li>
+                                                <li class = 'type'><?php echo __($CompanyType[$company['Company']['company_PFPType']]) ?></li>
                                             </ul>
                                         </div>
                                     </div>
