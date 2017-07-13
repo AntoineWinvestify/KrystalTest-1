@@ -118,7 +118,7 @@ class ocrfile extends AppModel {
      * @param type $type
      * @return string|int
      */
-    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $path , $binaryType) {
+    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $path, $binaryType) {
 
         //Load files config
         $fileConfig = Configure::read('files');
@@ -127,7 +127,7 @@ class ocrfile extends AppModel {
         } else if ($path == "bill") {
             $up = $fileConfig['billsPath'] . $folder;
         }
-        
+
         foreach ($fileInfo as $file) {
 
             //Error filter
@@ -138,8 +138,8 @@ class ocrfile extends AppModel {
 
 
             if (in_array($binaryType, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $name = basename($file['name']);
-                $filename = time() . "_" . $name;
+                $name = $this->find('first',array(array('conditions' => array('id' => $extraInfo)), 'recursive' => -1))['Ocrfile']['file_type'];
+                $filename = date("Y-m-d_H:i:s" ,time()) . "_" . $name;
                 $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
                 //Create the dir if not exist
@@ -155,8 +155,7 @@ class ocrfile extends AppModel {
                 //Save in db
                 if ($path == "file") {
 
-                    //$query = "INSERT INTO `files_investors` (`investor_id`, `file_id`, `file_name`, `file_url`) VALUES ('" . $id . "', '" . $type . "', '" . $name . "', '" . $folder . DS . $filename . "');";
-                    //$query = $this->query($query);
+                    //Array to save
                     $investorFileData = array(
                         'investor_id' => $id,
                         'file_id' => $extraInfo,
@@ -164,9 +163,12 @@ class ocrfile extends AppModel {
                         'file_url' => $folder . DS . $filename,
                         'file_status' => 0
                     );
-                    $this->FilesInvestor->save($investorFileData);
-                    $result = array(basename($file['name']), $folder . DS . $filename, $extraInfo);
-                    return [true, __('Upload ok'), $result];
+                    if ($this->FilesInvestor->save($investorFileData)) {
+                        $result = array($name, $folder . DS . $filename, $extraInfo);
+                        return [true, __('Upload ok'), $result];
+                    } else {
+                        return [false, __('Upload fail')];
+                    }
                 } else if ($path == "bill") {
                     $result = array(basename($file['name']), $folder . DS . $filename, $extraInfo);
 
