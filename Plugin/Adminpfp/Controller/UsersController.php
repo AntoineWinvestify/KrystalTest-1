@@ -166,29 +166,85 @@ public function cronMoveToMLDatabase() {
 //    $serviceData = Configure::read('Tallyman');   
     
     $this->Company = ClassRegistry::init('Company');   
-    $this->MLqueue = ClassRegistry::init('MLqueue'); 
+    $this->Mlqueue = ClassRegistry::init('Adminpfp.Mlqueue'); 
     $this->Userplatformglobaldata = ClassRegistry::init('Adminpfp.Userplatformglobaldata'); 
     $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');   
     $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
 
-    $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
+// Get the data from the previous readout    
+    $resultMlqueue = $this->Mlqueue->find("all",$params = array('recursive' => -1,
+                                               'conditions'  => array('id' => 1))); 
+  // Check if a limit is required  
+    
+
+     $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => -1,
 							  'conditions'  => array(// sort by queueid
-                                                         //                   'id >' => $queueResult[0]['MLqueue_actualId'],
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
                                                            //                'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                                            'queue_id >' => 57 
-                                                              ),
-                                                         'limit' => 6
-        )
-				); 
+                                                                            'queue_id >' => $resultMlqueue[0]['Mlqueue']['mlqueue_actualQueueId'] ),
+                                                              'limit' => 6 )
+       );       
+ $this->print_r2($userinvestmentdataResult);
+ $x = 1;
+// Make sure that a records belong to the same queueId do not spill over in two reading.
+    while (!empty($userinvestmentdataResult)) {
+        $count = sizeof($userinvestmentdataResult);
+        echo "count = $count ";
+        $maxQueueId = $userinvestmentdataResult[$count - 1]['Userinvestmentdata']['queue_id'];
+        echo "maxqueueId = $maxQueueId ";
+        $actualQueueId = $maxQueueId;
+        
+        $index = $count - 1;
+        while ($actualQueueId == $maxQueueId) {
+            unset($userinvestmentdataResult[$index]);
+            echo "deleting $index<br>";
+            $index = $index -1;
+            $actualQueueId = $userinvestmentdataResult[$index]['Userinvestmentdata']['queue_id'];
+            echo "new actual = $actualQueueId<br>";
+        }
+      $this->print_r2($userinvestmentdataResult);   
+  /*
+   * $maxQueueId = $userinvestmentdataResult['Userinvestmentdata']['queue_id'];
+    read queueid of last record and also store it
+    delete last record.
+            loop
+                read previous record 
+                if same queueId delet it
+    Go to beginning  
+   */     
+        
+   exit;     
+$x = $x + 1;
+ //   $this->print_r2($userinvestmentdataResult);
+echo "_______________________________________<br>";
 
-    $this->print_r2($userinvestmentdataResult);
+    $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => -1,
+							  'conditions'  => array(// sort by queueid
+                                                                           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                           //                'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
+                                                                            'queue_id >' => $resultMlqueue[0]['Mlqueue']['mlqueue_actualQueueId'] ),
+                                                              'limit' => 6 )
+       );
+
+
+$this->print_r2($userinvestmentdataResult);
+             
+if ($x == 3) {
+    echo "Antoine";
+    exit;
+}
+
+    }
+    
+    exit;
+    
+
     $oldQueueId = 0;
-    unset($platformglobalData);
     $index = 0;
+    
     foreach ($userinvestmentdataResult as $key => $result) {
         $companyId = $result['Userinvestmentdata']['company_id'];
-          // mapping of data from "raw" format to MLData format    
+  
         $companyResult = $this->Company->find("first", $params = array('recursive' => -1,
                                                       'conditions'  => array('id' => $companyId),
                                                       'fields'  => array('id', 'company_name','company_country', 'company_PFPType'),
@@ -201,7 +257,7 @@ public function cronMoveToMLDatabase() {
         $this->print_r2($result);
 
         $activeInvestments = false;
-   echo __FUNCTION__ . " " . __LINE__ ."<br>";         
+echo __FUNCTION__ . " " . __LINE__ ."<br>";         
         foreach ($result['Investment'] as $investmentKey => $data)  {
             $this->print_r2($data);
             $queueId = $result['Userinvestmentdata']['queue_id'];
@@ -213,8 +269,8 @@ public function cronMoveToMLDatabase() {
                 $index = 0;
                 echo __FUNCTION__ . " " . __LINE__ ."<br>";
             }
-      echo __FUNCTION__ . " " . __LINE__ ."<br>";
-     $this->print_r2($data);               
+echo __FUNCTION__ . " " . __LINE__ ."<br>";
+$this->print_r2($data);               
 
             if ($data['investment_amount'] > 0) {
                 echo "investment found, value = " . $data['investment_amount'];

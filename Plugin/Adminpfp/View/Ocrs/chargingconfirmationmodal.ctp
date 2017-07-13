@@ -49,7 +49,7 @@ $userid = $parameters[0];
 
         $(document).on('click', '.close', function () {
             console.log("Antoine");
-            $('#chargingConfirmationModal').hide();
+            $('#chargingConfirmationModal').removeClass("show");
         });   
 
         $(document).on("click", '.closeBtn', function () {
@@ -69,6 +69,7 @@ $userid = $parameters[0];
 
         $(document).on("click", "#btnConfirm", function (event) {
 
+            $("#chargingConfirmationModal").removeClass("show");
             var link = $(this).attr("href");
             
             var inputid = "<?php echo $userid ?>";
