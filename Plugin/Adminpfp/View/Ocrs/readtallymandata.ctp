@@ -196,6 +196,9 @@ var myChart = new Chart(ctx, {
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
+                                                <div class="card-header" data-background-color="blue">
+                                                        <i class="fa fa-signal"></i>
+                                                </div>
                                                 <div class="card-content" style="text-align: center;">
                                                     <p>
                                                         <?php echo __('% Total cartera')?>
@@ -204,8 +207,8 @@ var myChart = new Chart(ctx, {
                                                         </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
                                                     </p>
-                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?></h1>
-                                                    <p align="left" class="statusError">
+                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?>%</h1>
+                                                    <p align="left" class="statusError" style="display:none">
                                                         <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
                                                         <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
                                                         <?php echo __('Text')?>
@@ -232,6 +235,9 @@ var myChart = new Chart(ctx, {
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
+                                                <div class="card-header" data-background-color="blue">
+                                                        <i class="fa fa-bar-chart"></i>
+                                                </div>
                                                 <div class="card-content" style="text-align: center;"> 
                                                     <p>
                                                         <?php echo __('% Total cartera')?>
@@ -240,8 +246,8 @@ var myChart = new Chart(ctx, {
                                                         </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalModalityTendency"></i>
                                                     </p>
-                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?></h1>
-                                                    <p align="left" class="statusDownloaded">
+                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?> %</h1>
+                                                    <p align="left" class="statusDownloaded" style="display:none">
                                                         <i class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i>
                                                         <i class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i>
                                                         <?php echo __('Text')?>
@@ -269,8 +275,11 @@ var myChart = new Chart(ctx, {
                                             <div class="row">
                                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                     <div class="card card-stats">
+                                                        <div class="card-header" data-background-color="blue">
+                                                                <i class="fa fa-university"></i>
+                                                        </div>
                                                         <div class="card-content" style="text-align:center">
-                                                            <p><?php echo __('Active PFPs')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
+                                                            <p><?php echo __('Active Investor Platforms')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
                                                             <!-- Number of linked accounts -->
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h2>
                                                         </div>
@@ -283,8 +292,11 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                     <div class="card card-stats">
+                                                        <div class="card-header" data-background-color="blue">
+                                                                <i class="fa fa-sitemap"></i>
+                                                        </div>
                                                         <div class="card-content" style="text-align:center">
-                                                            <p><?php echo __('Total PFP')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
+                                                            <p><?php echo __('Account Linking')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
                                                             <!-- total number of platforms -->
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h2>
                                                         </div>
