@@ -127,7 +127,15 @@ var myChart = new Chart(ctx, {
       data:<?php echo json_encode($resultTallyman[0]['totalPortfolioHistorical'])?>,
       borderColor: ["rgba(42,204,90,1)"],
       borderWidth: 5,
-      fill: false
+      fill: false,
+      scales: {
+          yAxes: [{
+                  ticks: {
+                      beginAtZero: true,
+                      min: 0
+                  }
+          }]
+      }
     }]
   }
 });
@@ -189,15 +197,19 @@ var myChart = new Chart(ctx, {
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;">
-                                                    <p class="category">
+                                                    <p>
                                                         <?php echo __('% Total cartera')?>
                                                         <strong>
                                                             <?php echo __('invertida')?>
                                                         </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
                                                     </p>
-                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?><span class="text-success"><i 
-                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i></span></h1>
+                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?></h1>
+                                                    <p align="left" class="statusError">
+                                                        <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
+                                                        <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
+                                                        <?php echo __('Text')?>
+                                                    </p>
                                                 </div>
                                                 <div class="card-footer" id="tooltip_totalPortfolioTendency" style="display:none">
                                                     <div class="stats" style="text-align: center;">
@@ -221,15 +233,19 @@ var myChart = new Chart(ctx, {
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content" style="text-align: center;"> 
-                                                    <p class="category">
+                                                    <p>
                                                         <?php echo __('% Total cartera')?>
                                                         <strong>
                                                             <?php echo __('por su modalidad')?>
                                                         </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalModalityTendency"></i>
                                                     </p>
-                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?><span class="text-success"><i 
-                                                                        class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i></span></h1>
+                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?></h1>
+                                                    <p align="left" class="statusDownloaded">
+                                                        <i class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i>
+                                                        <i class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i>
+                                                        <?php echo __('Text')?>
+                                                    </p>
                                                 </div>
                                                 <div class="card-footer" id="tooltip_totalModalityTendency" style="display:none">
                                                     <div class="stats" style="text-align: center;">
@@ -254,7 +270,7 @@ var myChart = new Chart(ctx, {
                                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                     <div class="card card-stats">
                                                         <div class="card-content" style="text-align:center">
-                                                            <p class="category"><?php echo __('Active PFPs')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
+                                                            <p><?php echo __('Active PFPs')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
                                                             <!-- Number of linked accounts -->
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h2>
                                                         </div>
@@ -268,7 +284,7 @@ var myChart = new Chart(ctx, {
                                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                     <div class="card card-stats">
                                                         <div class="card-content" style="text-align:center">
-                                                            <p class="category"><?php echo __('Total PFP')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
+                                                            <p><?php echo __('Total PFP')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
                                                             <!-- total number of platforms -->
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h2>
                                                         </div>
