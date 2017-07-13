@@ -25,16 +25,23 @@
 * @package
 
 
+function calculateLoanCost()										[OK not tested]
+function collectCompanyMarketplaceData()								[OK, tested]
+function companyUserLogin()										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+function companyUserLogout()										[OK, tested]
+parallelization                                                                                         [OK, tested]
+
 2016-10-05	  version 2016_0.1
 Basic version
-function calculateLoanCost()											[OK not tested]
-function collectCompanyMarketplaceData()								[OK, tested]
-function companyUserLogin()												[OK, tested]
-function collectUserInvestmentData()									[OK not fully tested]
-
-
+ 
 2017-04-27
 Duration fixed
+
+2017-05-16       version 2017_0.2
+ * Added parallelization
+ * Added logout
+ * Added verification of dom elements
 
 PENDING:
 
@@ -179,8 +186,286 @@ function collectCompanyMarketplaceData() {
 
 
 
+    /**
+     *
+     * 	Collects the investment data of the user
+     * 	@return array	Data of each investment of the user as an element of an array
+     * 	
+     */
+    function collectUserInvestmentDataParallel($str) {
 
-		
+
+        switch ($this->idForSwitch) {
+            case 0:
+                /*
+                FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
+
+                csrf		539d6241ffbb10437f4fe6e27552bfe9
+                password	cede_4040
+                signin		Login
+                username	antoine.de.poorter@gmail.com				
+                */
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+            case 1:
+
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Click "login" needed so I can read the csrf code
+                break;
+            case 2:
+                $credentials['username'] = $this->user;
+                $credentials['password'] = $this->password;
+                $credentials['signin'] = "Login";
+                $dom = new DOMDocument;
+                //echo $str;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $forms = $dom->getElementsByTagName('form');
+                /*$this->verifyNodeHasElements($forms);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }*/
+                $index = 0;	
+                foreach ($forms as $form) {
+                    $index = $index + 1;
+                    $inputs = $form->getElementsByTagName('input');
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    foreach ($inputs as $input) {
+                        if (!empty($input->getAttribute('name'))) {  // check all hidden input fields, like csrf
+                            if ($input->getAttribute('name') == "csrf") {
+                                echo "AAAA" . $credentials[$input->getAttribute('name')] . "<br>";
+                                $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                                break 2;
+                            }
+                        }
+                    }
+                }
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($credentials);
+                break;
+            case 3:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $resultMiLoanbook = false; // Could not login, credential error
+                $uls = $dom->getElementsByTagName('ul');
+                /*if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }*/
+                foreach ($uls as $ul) {
+
+                    $as = $ul->getElementsByTagName('a');
+                    $this->verifyNodeHasElements($as);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    $index = 0;
+                    foreach ($as as $a) {
+                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                            $this->mainPortalPage = $str;
+                            $resultMiLoanbook = true;
+                            break 2;
+                        }
+                        $index++;
+                    }
+                }
+                if (!$resultMiLoanbook) {   // Error while logging in
+                    echo __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN<br>";
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN\n";
+                    $tracings .= "Loanbook login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($this->mainPortalPage); // obtained in the function	"companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+
+        // Read the global investment data of this user
+                $globals = $this->getElements($dom, "span", "class", "lb_main_menu_bold");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($globals[0]->nodeValue);
+
+                $globals = $this->getElements($dom, "div", "id", "lb_cartera_data_3");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $spans = $globals[0]->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->tempArray['global']['profitibility'] = $this->getPercentage(trim($spans[0]->nodeValue));
+
+                $globals = $this->getElements($dom, "div", "id", "lb_cartera_data_1");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $spans = $globals[0]->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($spans[0]->nodeValue);
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
+                break;
+            case 4:
+                $this->idForSwitch++;
+                array_shift($this->urlSequence);
+                //$this->getCompanyWebpageMultiCurl();  //str2 load Webpage into a string variable so it can be parsed
+                //break;
+            case 5:
+                $this->idForSwitch++;
+                array_shift($this->urlSequence);
+                //$this->getCompanyWebpageMultiCurl();  //str3 load Webpage into a string variable so it can be parsed	
+                //break;
+            case 6:
+                $this->idForSwitch++;
+                array_shift($this->urlSequence);
+                //$this->getCompanyWebpageMultiCurl();  //str4 load Webpage into a string variable so it can be parsed	
+                //break;
+            case 7:
+                $this->idForSwitch++;
+                array_shift($this->urlSequence);
+                //$this->getCompanyWebpageMultiCurl();  //str5 load Webpage into a string variable so it can be parsed	
+                //break;
+            case 8:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  //str6 load Webpage into a string variable so it can be parsed	
+                break;
+            case 9:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                $trs = $dom->getElementsByTagName('tr');
+                $this->verifyNodeHasElements($trs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                // Get information about each individual transaction
+                $this->numberOfInvestments = 0;
+                for ($key = 0 ; $key < count($trs); $key++) {
+                    if ($trs[$key]->getAttribute("class") <> "expander") {
+                        continue;
+                    }
+
+                    $this->numberOfInvestments++;
+                    $tds = $this->getElements($trs[$key], "td");
+                    
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    $spans = $this->getElements($tds[0], "span");
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    $this->data1[$key]['loanId'] = $spans[1]->nodeValue;
+
+                    //Duration. The unit (=días) is hardcoded
+                    $temp = explode("              ", trim($tds[4]->nodeValue));
+                    $this->data1[$key]['date'] = trim($temp[0]);
+                    $tempDuration = trim($temp[1]);
+                    $this->data1[$key]['duration'] = filter_var($tempDuration, FILTER_SANITIZE_NUMBER_INT) . " D&iacute;as";
+                    $this->data1[$key]['invested'] = $this->getMonetaryValue($tds[5]->nodeValue);
+                    $this->data1[$key]['commission'] = 0;
+                    $this->data1[$key]['interest'] = $this->getPercentage($tds[6]->nodeValue);
+
+                    // Get amortization table. first get base URL for amortization table
+                    $baseUrl = array_shift($this->urlSequence);
+                    $as = $tds[0]->getElementsByTagName('a');   // only 1 will be found
+                    $this->verifyNodeHasElements($as);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    $dataId = $as[0]->getAttribute("data-id");
+                    $this->tempUrl[$key] = $baseUrl . "/" . $dataId;
+                    // Deal with the amortization table
+                    //$strAmortizationTable = $this->getCompanyWebpage($baseUrl . "/" . $dataId);
+                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Deal with the amortization table
+                break;
+            case 10:
+                $strAmortizationTable = $str;
+                $domAmortizationTable = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $domAmortizationTable->loadHTML($strAmortizationTable);
+                $domAmortizationTable->preserveWhiteSpace = false;
+                $amortizationData = $this->getElements($domAmortizationTable, "tr", "class", "detail"); // only 1 found
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                // Convert into table
+                $mainIndex = -1;
+
+                // map status to Winvestify normalized status, (PENDING), OK, DELAYED, DEFAULTED	
+                $this->data1[$this->accountPosition]['status'] = 0;
+
+                // prepare amortization table and normalize (payment) status (PENDING), OK, DELAYED, DEFAULTED
+                // and get the "real" status of theloan. Index 2 of table represents the loan state
+                foreach ($amortizationData as $key1 => $trAmortizationTable) {
+                    $mainIndex = $mainIndex + 1;
+                    $subIndex = -1;
+                    $tdsAmortizationTable = $trAmortizationTable->getElementsByTagName('td');
+                    $this->verifyNodeHasElements($tdsAmortizationTable);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    foreach ($tdsAmortizationTable as $tdAmortizationTable) {
+                        $subIndex++;
+                        if ($subIndex == 2) {   // normalize the status, needed for payment calculations
+                            $is = $tdAmortizationTable->getElementsByTagName('i');
+                            $this->verifyNodeHasElements($is);
+                            if (!$this->hasElements) {
+                                return $this->getError(__LINE__, __FILE__);
+                            }
+                            $actualState = $is[0]->getAttribute("title");
+                            $amortizationTable[$mainIndex][$subIndex] = $this->getLoanState($actualState);
+                        } else {
+                            $amortizationTable[$mainIndex][$subIndex] = trim($tdAmortizationTable->nodeValue);
+                        }
+                    }
+                }
+                $this->data1[$this->accountPosition]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 2);
+                $this->data1[$this->accountPosition]['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 2);
+
+                $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
+                        $this->data1[$this->accountPosition]['profitGained'];
+                $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->accountPosition]['invested'];
+                if ($this->accountPosition != ($this->numberOfInvestments-1)) {
+                    $this->idForSwitch = 10;
+                    $this->accountPosition++;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);
+                    break;
+                }
+                else {
+                    $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                    $this->tempArray['investments'] = $this->data1;
+                    $this->print_r2($this->tempArray);
+                    return $this->tempArray; 
+                }
+
+        }
+    }
+
+
+
 /**
 *
 *	Collects the investment data of the user

@@ -24,19 +24,23 @@
  * @version 0.1
  * @date 2016-08-04
  * @package
+  
 
+function calculateLoanCost()										[Not OK]
+function collectCompanyMarketplaceData()								[OK, tested]
+function companyUserLogin()										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK]
+function companyUserLogout()                                                                            [OK, tested]
+parallelization                                                                                         [OK, tested]
 
-  2016-08-04	  version 2016_0.1
-  Basic version
-  function calculateLoanCost()											[Not OK]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()												[OK, tested]
-  function collectUserInvestmentData()									[Not OK]
-  introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK]
-
-  2017-04-18
-  Rating fixed
- 
+2016-08-04	  version 2016_0.1
+Basic version
+ * introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK] 
+2017-04-18
+ * Rating fixed
+2017-05-16      version 2017_0.2
+ * Added parallelization
 
   Pending
   More Ratings
@@ -221,6 +225,230 @@ class mytriplea extends p2pCompany {
         }
         $this->print_r2($totalArray);
         return $totalArray;
+    }
+    
+    
+    /**
+     *
+     * 	Collects the investment data of the user
+     * 	@return array	Data of each investment of the user as an element of an array
+     * 	
+     */
+    function collectUserInvestmentDataParallel($str) {
+
+        switch ($this->idForSwitch) {
+            case 0:
+                error_reporting(0);
+                //$this->config['appDebug'] = true;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+            case 1:
+                $tempCredentials = array();
+                $credentials = array();
+                $credentials['emailAcceso'] = $this->user;
+                $credentials['passAcceso'] = $this->password;
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $hiddenInputFields = $this->getElements($dom, "input", "type", "hidden");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($hiddenInputFields as $hiddenInputField) {
+                    $tempCredentials[$hiddenInputField->getAttribute('name')] = $hiddenInputField->getAttribute('value');
+                }
+
+                $credentials['token'] = $tempCredentials['token'];
+                $credentials['paginaOrigen'] = $tempCredentials['paginaOrigen'];
+                $credentials['comprobar'] = "Entrar";
+                $credentials['_sourcePage'] = $tempCredentials['_sourcePage'];
+                $credentials['__fp'] = $tempCredentials['__fp'];
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($credentials);
+                break;
+                
+                
+            case 2:
+                // check if user actually has entered the portal of the company
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $labels = $this->getElements($dom, "a", "href", "/mi-posicion/resumen");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                $resultMyTripleAAA = false;
+                foreach ($labels as $label) {
+                    if (strcasecmp($label->nodeValue, "Resumen") == 0) {
+                        $this->mainPortalPage = $str;
+                        $resultMyTripleAAA = true;  // logged in
+                    }
+                }
+
+                if (!$resultMyTripleAAA) {   // Error while logging in
+                    echo __FILE__ . " " . __LINE__ . "<br>";
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "MyTripleAAA login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                echo "LOGIN CONFIRMED<br>";
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($this->mainPortalPage);
+                $dom->preserveWhiteSpace = false;
+
+                $infoBodys = $this->getElements($dom, "div", "class", "panel-info-body");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                $tempProfitibility = $this->getElements($infoBodys[2], "div", "class", "panel-info-cell-value panel-info-cell-value-big");
+                $this->tempArray['global']['profitibility'] = $this->getPercentage($tempProfitibility[0]->nodeValue);
+//echo __FILE__ . " " . __LINE__ . "<br>";
+                $tempWallet = $this->getElements($infoBodys[5], "div", "class", "panel-info-cell-value");
+                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($tempWallet[0]->nodeValue);
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // page "mi-posicion/cartera-viva"
+                break;
+            case 3:
+                
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+//echo __FILE__ . " " . __LINE__ . "<br>";
+                //$dom->saveHTMLFile("test1.html");
+                $baseUrl = array_shift($this->urlSequence);
+                echo "baseUrl = $baseUrl<br>";
+                $tables = $this->getElements($dom, "table", "id", "tablaPaginadaInversiones");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $tbodys = $this->getElements($tables[0], "tbody");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $trs = $this->getElements($tbodys[0], "tr"); // table with all active investments
+//echo __FILE__ . " " . __LINE__ . "<br>";
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->numberOfInvestments = 0;
+                for ($key = 0 ; $key < count($trs); $key++) { // cycle through all the investments and get the data, including amortization table
+                    $this->numberOfInvestments++;
+                    $tds = $this->getElements($trs[$key], "td");
+//echo __FILE__ . " " . __LINE__ . "<br>";
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    $this->data1[$key]['loanId'] = trim($tds[0]->nodeValue);     // Get decimals of loanId
+                    $this->data1[$key]['interest'] = $this->getPercentage($tds[3]->nodeValue);
+                    $this->data1[$key]['invested'] = $this->getMonetaryValue($tds[1]->nodeValue);
+                    $this->data1[$key]['date'] = trim($tds[4]->nodeValue);
+                    $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] + $this->getMonetaryValue($tds[8]->nodeValue);
+                    
+                    $tempStatus = trim($tds[6]->nodeValue);
+                    if (strncasecmp($tempStatus, "Vivo / Al", 9) == 0) {
+                        $this->data1[$key]['status'] = OK;
+                    }
+                    if (strncasecmp($tempStatus, "Vivo / Retras", 13) == 0) {
+                        $this->data1[$key]['status'] = PAYMENT_DELAYED;
+                    }
+                    if (strncasecmp($tempStatus, "En retraso", 10) == 0) {
+                        $this->data1[$key]['status'] = PAYMENT_DELAYED;
+                    }
+
+                    if (strncasecmp($tempStatus, "En mora", 7) == 0) {
+                        $this->data1[$key]['status'] = DEFAULTED;
+                    }
+//echo __FILE__ . " " . __LINE__ . "<br>";
+                    $as = $this->getElements($tds[10], "a");
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    $this->tempUrl[$key] = $baseUrl . $as[0]->getAttribute("href");
+                    //$this->getCompanyWebpage($tempUrl);     // Load amortization Table
+                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Load amortization Table
+                break;
+            case 4:
+                $domAmortizationTable = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $domAmortizationTable->loadHTML($str);
+                $domAmortizationTable->preserveWhiteSpace = false;
+                $tempAmortizationData = $this->getElements($domAmortizationTable, "table", "id", "tablaPaginadaCuotas"); // only 1 found
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $amortizationData = $this->getElements($tempAmortizationData[0], "tr"); // only 1 found
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                //echo __FILE__ . " " . __LINE__ . "<br>";
+                // deal with amortization table and normalize the loan state
+                $mainIndex = -1;
+                foreach ($amortizationData as $key1 => $trAmortizationTable) {
+                    $mainIndex = $mainIndex + 1;
+                    $subIndex = -1;
+                    $tdsAmortizationTable = $trAmortizationTable->getElementsByTagName('td');
+                    /* THIS ELEMENT DOESN'T HAVE TO BE ANALYZED
+                    $this->verifyNodeHasElements($tdsAmortizationTable);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }*/
+                    foreach ($tdsAmortizationTable as $tdAmortizationTable) {
+                        $subIndex = $subIndex + 1;
+                        if ($subIndex == 8) {
+                            $amortizationTable[$mainIndex][$subIndex] = trim($tdAmortizationTable->nodeValue);
+                            /*
+                              getLoanState($actualState)
+                             */
+                        } 
+                        else {
+                            $amortizationTable[$mainIndex][$subIndex] = trim($tdAmortizationTable->nodeValue);
+                        }
+                    }
+                }
+                //echo "TABLE = ";
+                //$this->print_r2($amortizationTable);		
+                $this->data1[$this->accountPosition]['commission'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 0, 6, 8);
+                $this->data1[$this->accountPosition]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 0, 2, 8);
+                $this->data1[$this->accountPosition]['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 0, 3, 8);
+                $this->data1[$this->accountPosition]['profitGained'] = $this->data1[$this->accountPosition]['profitGained'] + $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 0, 4, 8);
+                //echo __FILE__ . " " . __LINE__ . "<br>";		
+                $this->data1[$this->accountPosition]['duration'] = count($amortizationTable) . " " . __('Meses');
+
+                $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->accountPosition]['invested'];
+                $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
+                $this->data1[$this->accountPosition]['profitGained'];
+                $this->tempArray['global']['totalInvestments'] = $this->tempArray['global']['totalInvestments'] +
+                $this->data1[$this->accountPosition]['invested'];
+                
+                if ($this->accountPosition != ($this->numberOfInvestments-1) ) {
+                    $this->idForSwitch = 4;
+                    $this->accountPosition++;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Load amortization Table
+                    break;
+                }
+                else {
+                    $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                    //echo __FILE__ . " " . __LINE__ . "<br>";
+                    $this->tempArray['investments'] = $this->data1;
+                    return $this->tempArray; 
+                }
+        }
     }
 
     /**

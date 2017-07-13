@@ -26,32 +26,36 @@
  * @package
 
 
-  2016-08-04	  version 2016_0.1
-  Basic version
-  function calculateLoanCost()											[OK, tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()												[OK, tested]
-  function companyUserLogout												[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
+function calculateLoanCost()										[OK, tested]
+function collectCompanyMarketplaceData()								[OK, tested]
+function companyUserLogin()										[OK, tested]
+function companyUserLogout										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+parallelization on collectUserInvestmentData                                                            [OK, tested]
 
-  2016-11-30	  version 2016_0.2
-  Zank introduced csrf code for improved security
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()												[OK, tested]
+2016-08-04	  version 2016_0.1
+Basic version
 
-
-  function companyUserLogout										[OK, STILL TO CHECK]
-  function collectUserInvestmentData()									[OK, STILL TO CHECK]
+2016-11-30	  version 2016_0.2
+* Zank introduced csrf code for improved security
 
 
+2017-04-25
+Estado amortizado
 
-  2017/4/25
-  Estado amortizado
-  2017/4/26
-  Total invertido correcto, fecha
+2017-04-26
+Total invertido correcto, fecha
+
+2017-05-16      version 2017_0.3
+
+* Added parallelization to collectUserInvestmentData
+* Added dom verification to collectUserInvestmentData
  
-  2017/06/01
- * Added loop when we take json investments                                     [OK, STILL TO CHECK]
+2017/06/01
+* Added loop when we take json investments                                     [OK, STILL TO CHECK]
+
+2017/06/22
+ * Added mechanism to take more than 100 investments by Json
  
   Pending:
   Fecha en duda
@@ -60,6 +64,12 @@
  */
 
 class zank extends p2pCompany {
+    
+    private $credentials = array();
+    private $userId;
+    private $resultMiZank = false;
+    private $url;
+    private $start = 0;
 
     function __construct() {
         parent::__construct();
@@ -225,6 +235,289 @@ class zank extends p2pCompany {
             unset($tempArray);
         }
         return $totalArray;
+    }
+    
+    /**
+    * Collects the investment data of the user
+    *	
+    * @param string $str   It is the web converted to string of the company
+    * @return array	Data of each investment of the user as an element of an array
+    */
+    function collectUserInvestmentDataParallel($str) {
+    
+    
+        switch ($this->idForSwitch) {
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
+                break;
+            case 1:
+                //Change account
+                $this->credentials['_username'] = $this->user;
+                $this->credentials['_password'] = $this->password;
+                //$this->credentials['_username'] = "Klauskuk@gmail.com";
+                //$this->credentials['_password'] = "P2Pes2017";
+
+                // get login page
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $forms = $dom->getElementsByTagName('form');
+                $this->verifyNodeHasElements($forms);
+                $index = 0;
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                foreach ($forms as $form) {
+                    $index = $index + 1;
+                    if ($index == 1) {
+                        continue;
+                    }
+                    $inputs = $form->getElementsByTagName('input');
+                    $this->verifyNodeHasElements($inputs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    
+                    foreach ($inputs as $input) {
+                        if (!empty($input->getAttribute('value'))) {  // look for the csrf code
+                            $this->credentials[$name] = $input->getAttribute('value');
+                        }
+                    }
+                    
+                }
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($this->credentials);
+                break;
+            case 2:
+                //This is an error because we don't verify if we have entered
+                if ($str == 200 or $str == 103) {
+                    //echo "CODE 103 or 200 received, so do it again , OK <br>";
+                    $this->idForSwitch++;
+                    $this->doCompanyLoginMultiCurl($this->credentials);
+                    //$this->mainPortalPage = $str;
+                    $this->resultMiZank = true;
+                }
+                break;
+            case 3:
+                
+                $this->mainPortalPage = $str;
+                
+                //echo "user = $user and pw = $password<br>";
+                if (!$this->resultMiZank) {			// Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__  . " \n";
+                    $tracings .= "Zank login: userName =  " . $this->config['company_username'] .  ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    //fix this problem
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                echo "LOGIN CONFIRMED";
+                // We are at page: "MI ZANK". Look for the "internal user identification"
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($this->mainPortalPage); // obtained in the function	"companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+
+                $scripts = $dom->getElementsByTagName('script');
+                $this->verifyNodeHasElements($scripts);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                foreach ($scripts as $script) {
+                    $position = stripos($script->nodeValue, "$.ajax");
+                    if ($position !== false) {  // We found an entry
+                        echo "ENTRY FOUND";
+                        break;
+                    }
+                }
+                $testArray = explode(":", $script->nodeValue);
+                $this->print_r2($testArray);
+                $this->userId = trim(preg_replace('/\D/', ' ', $testArray[4]));
+
+                if (!is_numeric($this->userId)) {
+                    echo "<br>An error has occured, could not find internal userId<br>";
+                }
+
+                $needle = "kpi_panel";
+
+                $index = 0;
+                $ps = $dom->getElementsByTagName('p');
+                /*if ($ps.length > 0) {
+                    Verify there are som elements
+                }*/
+                $this->verifyNodeHasElements($ps);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($ps as $p) {
+                    $class = trim($p->getAttribute('class'));
+                    $position = stripos($class, $needle);
+                    if ($position !== false) {  // found a kpi
+                        switch ($index) {
+                            case 0:
+                                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 1:
+                                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 2:
+                                $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 4:
+                                $this->tempArray['global']['profitibility'] = $this->getPercentage($p->nodeValue);
+                                break;
+                        }
+                        $index++;
+                    }
+                }
+                // goto page "MI CARTERA"
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // load Webpage into a string variable so it can be parsed	
+                break;
+                
+            case 4:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                $needle = "kpi_panel";
+                $index = 0;
+
+                // Look for the kpi's 
+                $ps = $dom->getElementsByTagName('p');
+                $this->verifyNodeHasElements($ps);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($ps as $p) {
+                    $class = trim($p->getAttribute('class'));
+                    $position = stripos($class, $needle);
+                    if ($position !== false) {  // found a kpi
+                        switch ($index) {
+                            case 0:
+                                $this->tempArray['global']['totalInvestments'] = $this->getMonetaryValue($p->nodeValue); // Money still tied up in active investment(s)
+                                break;
+                            case 1:
+                                $this->tempArray['global']['activeInvestments'] = $p->nodeValue; // The number of active investments
+                                break;
+                        }
+                        $index++;
+                    }
+                }
+
+                // Download the list of the individual investments of this user
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            case 5:
+                $url = array_shift($this->urlSequence);
+                $this->url = $url . $this->userId . "/0";
+                //We put a postitem into the curl call because initialy we don't take the first investment
+                //Nor more than 25 investment, so we alter those values
+                $form = [
+                    "length" => 100,
+                    "start" => $this->start];
+
+                $this->idForSwitch++;
+                //Add here the Edu's adaption to the url, we add the form into the call
+                $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
+                break;
+            case 6:
+                $temp = json_decode($str, $assoc = true);
+                $this->numberOfInvestments = 0;
+                $numberJsonInvestments = count($temp['data']);
+                foreach ($temp['data'] as $key => $item) {  // mapping of the data to a generic, own format.
+                    // Keep all which don't have status == "amortizado"
+                    //$this->data1[$key]['status'] = 10;    // dummy value											
+                    if (strpos($item['Estado'], "Retrasado")) {
+                        $this->data1[$key]['status'] = PAYMENT_DELAYED;
+                    }
+                    if (strpos($item['Estado'], "Amortizaci")) {
+                        $this->data1[$key]['status'] = OK;
+                    }
+
+                    if (strpos($item['Estado'], "Amortizado")) {
+                        $this->data1[$key]['status'] = TERMINATED_OK;
+                    }
+
+                    //		if (!($data1[$key]['status'] <> OK OR $data1[$key]['status'] <> PAYMENT_DELAYED)) {
+                    //			continue;									// flush non required loans
+                    //		echo "FLUSH";
+                    //		}
+
+                    if ($this->data1[$key]['status'] == TERMINATED_OK) {
+                        unset($this->data1[$key]);
+                        continue;
+                    }
+
+                    $this->numberOfInvestments++;
+                    $day = 1; //substr($item['Fecha'],0,2);
+                    
+                    if ($item['Plazo'] <= 50) {
+                        $month = substr($item['Fecha'], 3, 2) + 1;
+
+                        $year = substr($item['Fecha'], 6, 4);
+                        if ($month == 13) {
+                            $month = 1;
+                            $year++;
+                        }
+                    }
+                    if ($item['Plazo'] >= 50) {
+                        $month = substr($item['Fecha'], 3, 2) - 1;
+
+                        $year = substr($item['Fecha'], 6, 4);
+                        if ($month == 0) {
+                            $month = 1;
+                        }
+                    }
+
+                    //if($month==13){$month=1; $year = $year+1; } 
+                    $date = $year . "/" . $month . "/" . $day;
+                    $date = date('d/m/Y', strtotime("+" . $item['Plazo'] . "months", strtotime($date)));
+                    //$date = date('d/m/Y', strtotime("+".$item['Plazo']." months", strtotime($date)));
+
+                    $this->data1[$key]['loanId'] = $item['Prestamo'];
+                    $this->data1[$key]['dateOriginal'] = $item['Fecha'];
+                    $this->data1[$key]['date'] = $date;
+                    $this->data1[$key]['interest'] = $this->getPercentage($item['Rentabilidad']);
+                    $this->data1[$key]['invested'] = $this->getMonetaryValue($item['Inversion']);
+                    $this->data1[$key]['amortized'] = $this->getMonetaryValue($item['Amortizado']);
+                    $this->data1[$key]['profitGained'] = $this->getPercentage($item['InteresesOrdinarios']);
+                    $this->data1[$key]['duration'] = $item['Plazo'] . " Meses";
+                    $this->data1[$key]['commission'] = $this->getMonetaryValue($item['Comision']);
+                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
+            }
+            if ($numberJsonInvestments != 0 && $numberJsonInvestments % 100 == 0) {
+                //If investments are 100, we verify that there is no more, so we recall starting at 100 investments
+                $this->start = $this->start + 100;
+                $form = [
+                "length" => 100,
+                "start" => $this->start];
+
+                $this->idForSwitch = 6;
+                //Add here the Edu's adaption to the url
+                $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
+
+            }
+            else {
+                $this->data1 = array_values($this->data1);
+                $this->tempArray['global']['investments'] = count($this->data1);
+                //echo __FILE__ . " " . __LINE__ . "<br>";
+                $this->tempArray['investments'] = $this->data1;
+                $this->print_r2($this->tempArray);
+                return $this->tempArray; 
+            }
+                
+                                    
+        }
     }
 
     /**
@@ -403,7 +696,7 @@ class zank extends p2pCompany {
             }
             //If the investments are 100, we repeat the process to take more investments
             //And increasea start by 100
-            if ($numberJsonInvestments % 100 == 0) {
+            if ($numberJsonInvestments != 0 && $numberJsonInvestments % 100 == 0) {
                 $start = $start + 100;
             }
         }
@@ -561,8 +854,8 @@ class zank extends p2pCompany {
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
-        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies.txt');   // important
-        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies.txt');    // Important
+        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);   // important
+        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);    // Important
         // Fetch the URL and save the content
         $str = curl_exec($curl);
         if (!empty($this->testConfig['active']) == true) {
@@ -580,6 +873,92 @@ class zank extends p2pCompany {
         }
         return $str;
     }
+    
+     /**
+     * Function that is used to pick up inversions by 100 instead of 25 with a json
+     * The normal function of Zank is to give 25 but we change the petition with the posts item
+     * with curl
+     * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
+     * @return string $str It is the website resulted of the curl petition
+     */
+    function getCompanyWebpageJsonMultiCurl($url, $form) {
+
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
+        }
+        $this->errorInfo = $url;
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                echo "currentScreen = $currentScreen";
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
+        }
+
+        $request = new \cURL\Request();
+
+        if ($this->config['postMessage'] == true) {
+            $request->getOptions()
+                ->set(CURLOPT_POST, true);
+        //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
+        }
+
+        // check if extra headers have to be added to the http message  
+        if (!empty($this->headers)) {
+            echo "EXTRA HEADERS TO BE ADDED<br>";
+            $request->getOptions()
+                //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
+                ->set(CURLOPT_HTTPHEADER, $this->headers);
+            
+            unset($this->headers);   // reset fields
+        }
+        
+        foreach ($form as $key => $value) {
+            $postItems[] = $key . '=' . $value;
+        }
+        $postString = implode('&', $postItems);
+
+        $request->_page = $this->idForQueue . ";". $this->idForSwitch . ";WEBPAGE";
+        $request->getOptions()
+                // Set the file URL to fetch through cURL
+                ->set(CURLOPT_URL, $url)
+                // Set a different user agent string (Googlebot)
+                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                // Follow redirects, if any
+                ->set(CURLOPT_FOLLOWLOCATION, true)
+                ->set(CURLOPT_POSTFIELDS, $postString)
+                // Fail the cURL request if response code = 400 (like 404 errors) 
+                ->set(CURLOPT_FAILONERROR, true)
+                
+                ->set(CURLOPT_AUTOREFERER, true)
+                //->set(CURLOPT_VERBOSE, 1)
+                // Return the actual result of the curl result instead of success code
+                ->set(CURLOPT_RETURNTRANSFER, true)
+                // Wait for 10 seconds to connect, set 0 to wait indefinitely
+                ->set(CURLOPT_CONNECTTIMEOUT, 30)
+                // Execute the cURL request for a maximum of 50 seconds
+                ->set(CURLOPT_TIMEOUT, 100)
+                // Do not check the SSL certificates
+                ->set(CURLOPT_SSL_VERIFYHOST, false)
+                ->set(CURLOPT_SSL_VERIFYPEER, false)
+                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
+                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
+
+        //Add the request to the queue in the marketplaces controller
+        $this->marketplaces->addRequetsToQueueCurls($request);
+        
+        if ($this->config['appDebug'] == true) {
+            echo "VISITED COMPANY URL = $url <br>";
+        }
+    }
+
 
 }
 
