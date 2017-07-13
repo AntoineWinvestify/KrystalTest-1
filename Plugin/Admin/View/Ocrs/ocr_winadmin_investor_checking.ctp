@@ -116,16 +116,21 @@
                                                         $td_class = "statusNew";
                                                         break;
                                                     case "Pending":
-                                                        $icon = "fa fa-user";
+                                                        $icon = "fa fa-times";
                                                         $td_class = "statusPending";
                                                         break;
                                                     case "Error":
-                                                        $icon = "fa fa-user";
-                                                        $td_class = "statusNew";
+                                                        $icon = "fa fa-times";
+                                                        $td_class = "statusError";
                                                         break;
                                                     case "Finished":
-                                                        $icon = "fa fa-user";
+                                                        $icon = "fa fa-check";
                                                         $td_class = "statusFinished";
+                                                        break;
+                                                    case "Fixed":
+                                                        $icon = "fa fa-user";
+                                                        $td_class = "statusFixed";
+                                                        break;
                                                 }    
                                                 ?>
                                                 <td class="<?php echo $td_class ?>"><i class="<?php echo $icon ?>"></i> <?php echo __($status[$usersTable['Ocr']['ocr_status']]) ?></td>
