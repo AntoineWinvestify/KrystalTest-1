@@ -582,7 +582,7 @@ class ocrsController extends AppController {
             'id' => $this->request['data']['pfp'],
             'company_termsUrl' => $this->request['data']['temrs'],
             'company_privacyUrl' => $this->request['data']['privacy'],
-            'company_type' => $this->request['data']['modality'],
+            'company_PFPType' => $this->request['data']['modality'],
             'company_country' => $this->request['data']['country'],
             'company_countryName' => $countryData[$this->request['data']['country']]
         );
