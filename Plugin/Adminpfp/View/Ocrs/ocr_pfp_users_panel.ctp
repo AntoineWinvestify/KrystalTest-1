@@ -90,8 +90,8 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
-                <div class="card-header" data-background-color="orange">
-                    <h4 class="title"><strong><?php echo __('PFPAdmin - New users Panel') ?></strong></h4>
+                <div class="card-header" data-background-color="blue">
+                    <h4 class="title"><strong><?php echo __('New users Panel') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">

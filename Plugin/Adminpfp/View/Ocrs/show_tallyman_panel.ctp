@@ -123,8 +123,8 @@ $(document).ready(function() {
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
-                <div class="card-header" data-background-color="orange">
-                    <h4 class="title"><strong><?php echo __('PFPAdmin - Tallyman') ?></strong></h4>
+                <div class="card-header" data-background-color="blue">
+                    <h4 class="title"><strong><?php echo __('Tallyman Searching Panel') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">
@@ -146,7 +146,7 @@ $(document).ready(function() {
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                                             <label><?php echo __('ID')?></label>
-                                            <input type="text" id ="tallymanInputId" class="form-control blue_noborder3 tallymanID tallymanGeneral" placeholder="<?php echo __('ID')?>">
+                                            <input type="text" id ="tallymanInputId" class="form-control blue_noborder2 tallymanID tallymanGeneral" placeholder="<?php echo __('ID')?>">
                                             <?php
                                             $errorClassesText = "errorInputMessage ErrorID";
                                             if (array_key_exists('tallyman_id', $billValidationErrors)) {
@@ -162,7 +162,7 @@ $(document).ready(function() {
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-4">
                                             <label><?php echo __('Email')?></label>
-                                            <input type="text" id ="tallymanInputEmail" class="form-control blue_noborder3 tallymanEmail tallymanGeneral" placeholder="<?php echo __('Email')?>">
+                                            <input type="text" id ="tallymanInputEmail" class="form-control blue_noborder2 tallymanEmail tallymanGeneral" placeholder="<?php echo __('Email')?>">
                                             <?php
                                             $errorClassesText = "errorInputMessage ErrorEmail";
                                             if (array_key_exists('tallyman_email', $billValidationErrors)) {
@@ -178,7 +178,7 @@ $(document).ready(function() {
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-4">
                                             <label><?php echo __('Telephone')?> <i id="telephoneIconTooltip" class="fa fa-exclamation-circle"></i></label>
-                                            <input type="text" id ="tallymanInputTelephone" class="form-control blue_noborder3 tallymanTelephone tallymanGeneral" placeholder="<?php echo __('Telephone')?>">
+                                            <input type="text" id ="tallymanInputTelephone" class="form-control blue_noborder2 tallymanTelephone tallymanGeneral" placeholder="<?php echo __('Telephone')?>">
                                             <?php 
                                             $errorClassesText = "errorInputMessage ErrorTelephone";
                                             if (array_key_exists('tallyman_telephone', $billValidationErrors)) {
@@ -194,7 +194,7 @@ $(document).ready(function() {
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-1">
                                             <label class= "invisible"> </label>
-                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/ocrs/readtallymandata" class="btn btnPFPAdmin pull-right btnRounded"><?php echo __('Search')?></button>
+                                            <button type="submit" id="tallymanBtnSearch" href="/adminpfp/ocrs/readtallymandata" class="btn btn1CR pull-right btnRounded"><?php echo __('Search')?></button>
                                         </div>
                                         <div class="col-md-10" id="telephoneTooltip" style="display:none; margin-top: 10px;"><?php echo __('El teléfono debe de contener el código internacional (EJ: España +34)')?></div>
                                         <div class="col-md-10" style="margin-top: 10px;">
