@@ -66,6 +66,7 @@
     $(function () {
         $("#usersTable").DataTable();
         $(document).on("click", ".btnTallyman", function () {
+            console.log("Tallyman btn");
             var id = $(this).val();
             var tel = $("#telephone" + id).text();
             var em = $("#email" + id).text();
@@ -78,10 +79,10 @@
             link = baseUrl + "/adminpfp/users/uploadStatusInvestorPfp";
             params = {
                 id: id,
-            }
+            };
             var data = jQuery.param(params);
             getServerData(link, data, success, error);
-        }
+        });
 
     });
 

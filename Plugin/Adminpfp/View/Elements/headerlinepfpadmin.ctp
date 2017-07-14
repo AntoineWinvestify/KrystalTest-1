@@ -81,7 +81,7 @@
 			<!-- User Account: style can be found in dropdown.less -->
 			<li class="dropdown user user-menu">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-					<img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" class="user-image" alt="Small User Image">
+					<img src="<?php echo "/" .IMAGES_URL . $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" class="user-image" alt="Small User Image">
 					<span class="hidden-xs"  style="color: black !important;"><?php echo $sessionData['Auth']['User']['Adminpfp']['adminpfp_name']?></span>
 				</a>
 				
@@ -93,9 +93,9 @@
 		        <ul class="dropdown-menu">
 		        <!-- User image -->
 					<li class="user-header">
-					    <img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" alt="Big User Image">
+					    <img src="<?php echo "/" . IMAGES_URL . $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" alt="Big User Image">
 	
-					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Adminpfp']['adminpfp_name'] . " " . $sessionData['Auth']['User']['Adminpfp']['adminpfp_surname'] ?> - PFP Admin
+					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Adminpfp']['adminpfp_name'] . " " . $sessionData['Auth']['User']['Adminpfp']['adminpfp_surname'] ?> - Admin
 							<small></small>
 					    </p>
 					</li>
