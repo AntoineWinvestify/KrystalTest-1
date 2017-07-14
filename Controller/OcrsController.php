@@ -100,7 +100,7 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
 
         //Investor id
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $id = $this->Session->read('Auth.User.investor_id');
 
         //First time ocr
         $this->Ocr->createOcr($id);
@@ -164,7 +164,7 @@ class ocrsController extends AppController {
 
             $result1 = $this->Investor->investorDataSave($datosInvestor);
 
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
             $status = $this->Ocr->checkStatus($id);
 
             //Ocr data          
@@ -199,7 +199,7 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $this->set('result', false);
         } else {
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
             $this->layout = 'ajax';
             $this->disableCache();
 
@@ -228,7 +228,7 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
             $this->layout = 'ajax';
             $this->disableCache();
 
@@ -279,7 +279,7 @@ class ocrsController extends AppController {
             $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
 
             //Investor id
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
 
             //Ocr infe
             $data2 = $this->Ocr->ocrGetData($id);
@@ -339,7 +339,7 @@ class ocrsController extends AppController {
             $this->set('CompanyType', $this->crowdlendingTypesLong);
 
             //Investor id
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
 
             //Set selected companies(not sent)
             $this->set('selected', $this->Ocr->getSelectedCompanies($id));
@@ -383,7 +383,7 @@ class ocrsController extends AppController {
      */
     function ocrInvestorConfirmModal() {
         //Invesor od
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $id = $this->Session->read('Auth.User.investor_id');
 
         //Selected companies
         $companyId = $this->Ocr->getSelectedCompanies($id);
