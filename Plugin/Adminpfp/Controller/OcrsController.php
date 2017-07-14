@@ -138,7 +138,7 @@ class ocrsController extends AppController {
      * 
      */
     public function readtallymandata() {
-
+        
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
@@ -190,6 +190,8 @@ class ocrsController extends AppController {
             } else {
                 $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
                 $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
+
+//print_r($resulyTallyManData);
 
                 // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
@@ -305,6 +307,9 @@ public function startTallyman($investorEmail, $investorTelephone) {
     $investorTelephone = ""; 
     $investorEmail = "";
 
+    $investorEmail = "antoine.de.poorter@gmail.com";
+    $investorTelephone = "+34675546946";
+    
     $this->set("investorEmail", $investorEmail);
     $this->set("investorDNI", $investorDNI);
     $this->set("investorTelephone", $investorTelephone);            
