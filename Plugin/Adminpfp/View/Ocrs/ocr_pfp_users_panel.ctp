@@ -107,8 +107,6 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
                                         <table id="usersTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
                                                data-order='[[ 0, "asc" ]]' data-page-length='25'>
@@ -169,8 +167,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
-                            </div>
                         </div> <!-- /.col 9 -->
                     </div>
                 </div>
