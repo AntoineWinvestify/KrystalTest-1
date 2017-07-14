@@ -369,7 +369,7 @@ $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCount
 $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
 $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOfActiveInvestments'] = 41;
 
-
+$platformId = 1;
 
 // Do some simple calculations to get extra "new" values so they can be displayed
 // enrich the information to be provided to the PFPAdmin user
@@ -377,7 +377,7 @@ $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOf
     $this->Company = ClassRegistry::init('Company');
     $companyFilterConditions = array('id' => $platformId);
     $resultCompany = $this->Company->getCompanyDataList($companyFilterConditions);
-//print_r($resultCompany);
+
 //  Data for geographical distribution of PFPs as used by investor
     $homeCountryPFP = $resultCompany[$platformId]['company_country'];
 
@@ -493,10 +493,35 @@ $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOf
     $resultTallyman[0]['totalPortfolioHistorical'] = array_reverse($totalPortfolioHistorical);
     $resultTallyman[0]['totalPortfolioHistoricalDate'] = array_reverse($totalPortfolioHistoricalDate);  
     
-    return $resultTallyman;
-}
 
+    
+// Show investments per geographical area     
+    $homeCountryPFP = $resultCompany[$platformId]['company_country'];
 
+    foreach ($resultTallyman[0]['Userplatformglobaldata'] as $platform) {
+        if ($platform['userplatformglobaldata_PFPCountry'] == $homeCountryPFP) {
+            $platformsHomeCountryInvestmentsAbs += $platform['userplatformglobaldata_activeInInvestments'];
+        }
+        else {
+            $platformsForeignCountriesinvestmentsAbs += $platform['userplatformglobaldata_activeInInvestments'];
+        }
+    }
 
+    $resultTallyman[0]['platformsHomeCountryAbs'] = $platformsHomeCountryInvestmentsAbs;
+    $resultTallyman[0]['platformsForeignCountriesAbs'] = $platformsForeignCountriesinvestmentsAbs;    
 
+// normalize the data in %
+    $totalInvestmentAbs = $platformsHomeCountryInvestmentsAbs + $platformsForeignCountriesinvestmentsAbs; 
+    $resultTallyman[0]['platformsHomeCountryNorm'] = round ($platformsHomeCountryInvestmentsAbs * 100 / $totalInvestmentAbs, 1);
+    $resultTallyman[0]['platformsForeignCountriesNorm'] = round($platformsForeignCountriesinvestmentsAbs * 100 / $totalInvestmentAbs, 1);        
+          
+          
+    $labelsPieChart1 = array("Local Investments [%]", "Foreign Investments [%]"); 
+
+    $dataPieChart1 = array($resultTallyman[0]['platformsHomeCountryNorm'], $resultTallyman[0]['platformsForeignCountriesNorm']);
+    $resultTallyman[0]['labelsPieChart1'] = $labelsPieChart1;
+    $resultTallyman[0]['dataPieChart1'] = $dataPieChart1;
+    
+    return $resultTallyman;   
+    }
 }

@@ -2030,7 +2030,7 @@ hr.nomargin {
     margin-top: -5px;
 }
 /* STATUS COLORS */
-.statusNew {
+.statusNew, .statusFixed {
     color: #47badf; /*blue*/
 }
 

@@ -43,7 +43,7 @@
 
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
-require_once "../../vendors/autoload.php";	
+//require_once "../../vendors/autoload.php";	
 
 class MarketPlacesController extends AppController {
 

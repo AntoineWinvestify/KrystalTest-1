@@ -67,6 +67,7 @@
         $("#usersTable").DataTable();
         
         $(document).on("click", ".btnTallyman", function () {
+            console.log("Tallyman btn");
             var id = $(this).val();
             var tel = $("#telephone" + id).text();
             var em = $("#email" + id).text();
