@@ -585,7 +585,7 @@ class ocrsController extends AppController {
     //Activated Service VIEW
     function activatedService() {
         $this->layout = 'azarus_private_layout';
-        $this->render("../Layouts/activated_service");
+        $this->render("/Layouts/activated_service");
     }
 
 }
