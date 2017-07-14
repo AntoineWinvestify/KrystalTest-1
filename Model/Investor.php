@@ -577,7 +577,7 @@ class Investor extends AppModel {
 
             //Find ocr info for the json
             $ocrData = $this->Ocr->ocrGetData($checks['investorId']);
-            
+
             //Json array, hte json file is generated with this data.
             $jsonArray = Array(
                 'name' => $investorData['Investor']['investor_name'],
@@ -601,12 +601,16 @@ class Investor extends AppModel {
                 'country' => $investorData['Investor']['investor_country'],
                 'check_countryTime' => $checks['countryCheck'],
                 'iban' => $ocrData[0]['Ocr']['investor_iban'],
-                'check_ibanTime' => $checks['ibanCheck'],
-                'cif' => $ocrData[0]['Ocr']['investor_cif'],
-                'check_cifTime' => $checks['cifCheck'],
-                'businessName' => $ocrData[0]['Ocr']['investor_businessName'],
-                'check_businessNameTime' => $checks['businessNameCheck'],
+                'check_ibanTime' => $checks['ibanCheck']
             );
+            if ($ocrData[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) { //If we have investmentVehicle checked, write the cif and bussines name in the json
+                array_push($jsonArray, array(
+                    'cif' => $ocrData[0]['Ocr']['investor_cif'],
+                    'check_cifTime' => $checks['cifCheck'],
+                    'businessName' => $ocrData[0]['Ocr']['investor_businessName'],
+                    'check_businessNameTime' => $checks['businessNameCheck']));
+            }
+
             //Generate Json
             $created = $this->Ocrfile->generateJson($jsonArray, $path); //$JsonArray -> data for json, $path-> path where the json is created
             if ($created) {
