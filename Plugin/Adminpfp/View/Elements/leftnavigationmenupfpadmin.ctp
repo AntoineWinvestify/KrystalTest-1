@@ -125,23 +125,23 @@ $(document).ready(function() {
             <strong>PFP Admin Menu</strong>
         </li>
         <li class="treeview">
-            <a href="/ocrs/ocrPfpUsersPanel">
+            <a href="/adminpfp/ocrs/ocrPfpUsersPanel">
               <i class="fa fa-dashboard"></i> <span><?php echo __('New Users')?></span>
             </a>
         </li>
         <li class="treeview">
-            <a href="/ocrs/ocrPfpBillingPanel">
+            <a href="/adminpfp/ocrs/ocrPfpBillingPanel">
               <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
             </a>
         </li>
         <li class="treeview">
-            <a href="/ocrs/showTallymanPanel">
+            <a href="/adminpfp/ocrs/showTallymanPanel">
               <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
             </a>
         </li>       
 
         <li class="treeview">
-          <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
+          <a href="/adminpfp/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
  
 	</ul>
