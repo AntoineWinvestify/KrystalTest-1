@@ -305,8 +305,6 @@ if ($result) {
         }
 
     </script>
-<?php foreach ($checkData[0]['Check'] as $inputName => $check) {
-print_r($inputName);} ?>
     <div id = "notification"></div>
     <div id="1CR_investor_2_investorDataPanel">
         <div class="row">

@@ -76,6 +76,9 @@
  * 2017-07-10
  * Copied only the relevant part of the adminpfp original Controlller to plugin "adminpfp" directory
  * 
+ * 
+ * Pending:
+ * Fix uploadStatusInvestorPfp id request.
  */
 App::uses('CakeEvent', 'Event');
 
@@ -271,16 +274,16 @@ class ocrsController extends AppController {
         return false;
     }
 
-    public function uploadStatusInvestorPfp() {
+    public function uploadStatusInvestorPfp($idInv) {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            $id = $this->request->params['id'];
+            $id = $idInv;//$this->request->params['id'];
             $status = DOWNLOADED;
             $companyId = $this->Session->read('Auth.User.Adminpfp.company_id');
 
             $result = $this->Ocr->updateInvestorStatus($id, $status, $companyId);
-            $this->set('result', $result);
+            $this->set('result', [$result, $id]);
         }
     }
 

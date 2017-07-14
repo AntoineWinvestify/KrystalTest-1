@@ -76,6 +76,8 @@
         margin-left: 15px !important;
     }
 </style>
+<script src="/js/dateFormat.js"></script>
+<script src="/js/jquery-dateFormat.js"></script>
 <script>
     $(function () {
 
@@ -217,7 +219,7 @@
         $(document).on('change', "input", function () {
             id = $(this).attr('name');
             timeStamp = new Date($.now());
-            $("#" + id).html(timeStamp);
+             $("#" + id).html(DateFormat.format.date(timeStamp, "yyyy-MM-dd HH:mm:ss"));
         });
     });
     function success(data) {

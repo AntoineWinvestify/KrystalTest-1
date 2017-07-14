@@ -574,39 +574,40 @@ public function readCheckData($investorId) {
 
             //Json path
             $fileConfig = Configure::read('files');
-
             $folder = $this->getInvestorIdentity($userId);
             $path = $fileConfig['investorPath'] . $folder;
 
-            
+        //Find investor info for the json
+            $investorData = $this->find('first', array( array( 'conditions' => array ( 'id' => $checks['investorId'])) , 'recursive' => -1));
+
             
         //Json array, hte json file is generated with this data.
         $jsonArray = Array(
-            'check_name' => ($checks['name']),
+            'name' => $investorData['Investor']['investor_name'],
             'check_nameTime' => $checks['nameCheck'],
-            'check_surname' => ($checks['surname']),
+            'surname' => $investorData['Investor']['investor_surname'],
             'check_surnameTime' => $checks['surnameCheck'],
-            'check_dni' => ($checks['dni']),
+            'dni' => $investorData['Investor']['investor_dni'],
             'check_dniTime' => $checks['dniCheck'],
-            'check_dateOfBirth' => ($checks['dateOfBirth']),
+            'dateOfBirth' => $investorData['Investor']['investor_dateOfBirth'],
             'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
-            'check_email' => ($checks['email']),
+            'email' => $investorData['Investor']['investor_email'],
             'check_emailTime' => $checks['emailCheck'],
-            'check_telephone' => ($checks['telephone']),
+            'telephone' => $investorData['Investor']['investor_telephone'],
             'check_telephoneTime' => $checks['telephoneCheck'],
-            'check_postCode' => ($checks['postCode']),
+            'postCode' => $investorData['Investor']['investor_postCode'],
             'check_postCodeTime' => $checks['postCodeCheck'],
-            'check_address' => ($checks['address']),
+            'address' => $investorData['Investor']['investor_address'],
             'check_addressTime' => $checks['addressCheck'],
-            'check_city' => ($checks['city']),
+            'city' => $investorData['Investor']['investor_city'],
             'check_cityTime' => $checks['cityCheck'],
-            'check_country' => ($checks['country']),
+            'country' => $investorData['Investor']['investor_country'],
             'check_countryTime' => $checks['countryCheck'],
-            'check_iban' => ($checks['iban']),
+            'iban' => $investorData['Investor']['investor_iban'],
             'check_ibanTime' => $checks['ibanCheck'],
-            'check_cif' => ($checks['cif']),
+            'cif' => $investorData['Investor']['investor_cif'],
             'check_cifTime' => $checks['cifCheck'],
-            'check_businessName' => ($checks['businessName']),
+            'businessName' => $investorData['Investor']['investor_businessName'],
             'check_businessNameTime' => $checks['businessNameCheck'],
         );
             //Generate Json
