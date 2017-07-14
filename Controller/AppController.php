@@ -61,6 +61,10 @@
  * [2017-07-03] Version 0.6
  * Defined checks
  * 
+ * [2017-07-14] Version 0.7
+ * Files type defined
+ * 
+ * 
  *  PENDING:
  * -
  *
@@ -241,7 +245,11 @@ define('USD', 3);           // US Dollar
 // APPLICATION THAT CAN PRODUCE BILLING DATA
 define('TALLYMAN_APP', 1);
 
-
+//DOCUMENT TYPE(Files table)
+define('DNI_FRONT', 1);
+define('DNI_BACK', 2);
+define('IBAN', 3);
+define('CIF', 4);
 
 class AppController extends Controller {
 
@@ -341,6 +349,8 @@ class AppController extends Controller {
             'feature' => __('New Feature'));
         $this->set('subjectContactForm', $subjectContactForm);
 
+        //$this->documentTypes = array ('dni_front' => 1, 'dni_back' => 2, 'iban' => 3, 'cif' => 4);
+        //$this->set('documentTypes', $this->documentTypes);
 
         $filterCompanies1 = array(__('Country filter'), 'Spain' => __('Spain'), 'Italy' => __('Italy'));
         $filterCompanies2 = array(__('Type filter'), 'P2P (Peer-to-Peer)' => __('P2P (Peer-to-Peer)'));

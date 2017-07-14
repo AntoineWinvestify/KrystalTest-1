@@ -138,7 +138,7 @@ class ocrfile extends AppModel {
 
 
             if (in_array($binaryType, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $name = $this->find('first',array(array('conditions' => array('id' => $extraInfo)), 'recursive' => -1))['Ocrfile']['file_type'];
+                $name = $this->find('first',array('conditions' => array('id' => $extraInfo), 'recursive' => -1))['Ocrfile']['file_type'];
                 $filename = date("Y-m-d_H:i:s" ,time()) . "_" . $name;
                 $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
@@ -278,21 +278,26 @@ class ocrfile extends AppModel {
      * @return type
      */
     public function readRequiredFiles($data) {
+        
         //Id list of selected companies
         $selectedList = array();
         foreach ($data as $selectedId) {
             array_push($selectedList, $selectedId['ocrInfo']['company_id']);
         }
-        //All company files
+        
+                
+        //All company files     
         $allCompanyFiles = $this->find('all', array(
             'conditions' => array(
-                'id' => array(1, 2, 3, 4)), //1,2,3,4 are the documents
+                'id' => array(DNI_FRONT, DNI_BACK, IBAN, CIF),
+                ), //Read documents type from app controller
             'recursive' => 1,));
 
         //Filter required files
         $requiredFileIdList = array();
 
         foreach ($allCompanyFiles as $allFiles) {
+           // print_r($allFiles);
             foreach ($allFiles["requiredFiles"] as $requiredFiles) {
                 //Filter selected companies required files
                 if (in_array($requiredFiles["id"], $selectedList)) {
@@ -301,6 +306,7 @@ class ocrfile extends AppModel {
                 }
             }
         }
+       
         //Delete duplicates
         $requiredFileResult = array_unique($requiredFileIdList, SORT_REGULAR);
         return $requiredFileResult;

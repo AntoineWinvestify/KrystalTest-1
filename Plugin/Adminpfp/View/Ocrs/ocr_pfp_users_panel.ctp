@@ -65,6 +65,7 @@
 <script>
     $(function () {
         $("#usersTable").DataTable();
+        
         $(document).on("click", ".btnTallyman", function () {
             var id = $(this).val();
             var tel = $("#telephone" + id).text();
@@ -73,18 +74,28 @@
             var link =  "/adminpfp/ocrs/startTallyman/" + em + "/"+ tel;
             window.location.replace(link);
         });
+        
         $(document).on("click", ".download", function () {
-            var id = $(this).val();
-            link = baseUrl + "/adminpfp/users/uploadStatusInvestorPfp";
+            var id = $(this).attr('value');
+            link = "/adminpfp/ocrs/uploadStatusInvestorPfp/" + id;
+           /* link = baseUrl + "/adminpfp/users/uploadStatusInvestorPfp";
             params = {
                 id: id,
             }
-            var data = jQuery.param(params);
+            var data = jQuery.param(params);*/
+            data = null;
             getServerData(link, data, success, error);
-        }
+        });
 
     });
-
+function success(data){
+    $(".status" + data).removeClass('statusNew');
+    $(".status" + data).addClass('statusDownloaded');
+    $(".statusIcon" + data).removeClass('fa fa-user');    
+    $(".statusIcon" + data).addClass('fa fa-download');
+    $(".statusText" + data).html('<?php echo __("Viewed")?>');
+}
+function error(data){}
 </script>
 <div id="1CR_pfpAdmin_1_usersPanel">
     <div class="row">
@@ -146,10 +157,10 @@
                                                                     $td_class = "statusDownloaded";
                                                                 }
                                                             ?>
-                                                            <td class="<?php echo $td_class ?>"><i class='<?php echo $icon?>'></i> <?php echo __($statusName[$ocr[1]['investorInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?></td>
+                                                            <td class="<?php echo $td_class ?> status<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><i class='<?php echo $icon?> statusIcon<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>'></i> <span class="statusText<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><?php echo __($statusName[$ocr[1]['investorInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?> </span></td>
                                                             <td>
-                                                                <form  class="download" action="/files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['user_id'] ?>">
-                                                                  <button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btn1CR btnRounded download"   ><a href="files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['id'] ?>"></a><?php echo __('Download') ?></button>
+                                                                <form action="/files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['user_id'] ?>">
+                                                                  <button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btn1CR btnRounded download"><?php echo __('Download') ?></button>
                                                                 </form>
                                                             </td>
                                                             <td><button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btn1CR btnTallyman btnRounded"><?php echo __('Tallyman') ?></button></td>

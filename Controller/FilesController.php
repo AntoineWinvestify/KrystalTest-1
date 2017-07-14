@@ -54,6 +54,10 @@
  * 
  * 2017/07/13 version 0.9
  * File binary validation
+ * 
+ * 2017/07/13 version 0.10
+ * Zip now only contains the required files of the pfp
+ * 
  */
 App::uses('CakeEvent', 'Event');
 
@@ -83,28 +87,25 @@ class filesController extends AppController {
             //Bill|Investor document filter
             if (count($this->params['data']['Files']) > 0) {
                 $data = $this->params['data']['Files']; //File info
-
                 //binary data type
                 $finfo = finfo_open();
                 $fileinfo = finfo_file($finfo, $data['fileId' . $data['info']]['tmp_name'], FILEINFO_MIME);
                 finfo_close($finfo);
-               
-                
+
+
                 $extraInfo = $data['info']; //Extra info, in this case only the document type id
                 $id = $this->Session->read('Auth.User.Investor.id'); //Investor id
                 $identity = $this->Session->read('Auth.User.Investor.investor_identity'); //$Investor identity
-                
-                $data_json = $this->Ocrfile->ocrFileSave($data, $identity, $id, $extraInfo , "file" , $fileinfo); //Save the file and return a Json
+
+                $data_json = $this->Ocrfile->ocrFileSave($data, $identity, $id, $extraInfo, "file", $fileinfo); //Save the file and return a Json
                 $this->set("result", json_encode($data_json)); //Set info into the view
-                
             } else if (count($this->params['data']['bill']) > 0) {
                 $data = $this->params['data']['bill']; //File info
-
                 //binary data type
                 $finfo = finfo_open();
                 $fileinfo = finfo_file($finfo, $data['bill']['tmp_name'], FILEINFO_MIME);
                 finfo_close($finfo);
-                
+
                 //Info about the bill like number, amount ...
                 $extraInfo = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency']);
                 $id = $this->params['data']['pfp']; //Pfp id
@@ -127,7 +128,7 @@ class filesController extends AppController {
 
             $url = $this->request->data('url');
             $file_id = $this->request->data('id');
-            $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $investor_id = $this->Session->read('Auth.User.Investor.id');
 
 
             $result = $this->Ocrfile->ocrFileDelete($url, $file_id, $investor_id);
@@ -145,7 +146,7 @@ class filesController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
 
-            $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.Investor.id'));
+            $investor_id = $this->Session->read('Auth.User.Investor.id');
 
 
             $result = $this->Ocrfile->ocrAllFileDelete($investor_id);
@@ -154,7 +155,7 @@ class filesController extends AppController {
     }
 
     /**
-     * Generate and download the zip
+     * Generate and download the zip, Adminpfp uses it.
      * @param type $id
      * @param type $userId
      * @return type
@@ -163,31 +164,41 @@ class filesController extends AppController {
 
         //Zip path
         $fileConfig = Configure::read('files');
-        $folder = $this->Investor->getInvestorIdentity($userId);
+        $folder = $this->Investor->getInvestorIdentity($userId); //Get investor identity, not $this->Session->read, Adminpfp uses it.
         $pathToZipFile = $fileConfig['investorPath'] . $folder . DS . 'investorData.Zip';
 
-        //Zip archives
-        $investorFiles = $this->Ocrfile->readExistingFiles($id);
-        $urlList = array();
-        //$investorData = $this->Investor->getJsonDataForPFP($id);
-        $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json';
-      
-        foreach ($investorFiles as $investorFile) {
 
+
+        //Zip archives
+        $investorFiles = $this->Ocrfile->readExistingFiles($id); //Read all investor files
+        $companyId[0]['ocrInfo']['company_id'] = $this->Session->read('Auth.User.Adminpfp.company_id'); //Set the company id for the readRequiredFiles function
+        $requiredFiles = $this->Ocrfile->readRequiredFiles($companyId);   //required files for the pfp
+         
+        $filter = array();  //Filter for download only the required files for the pfp
+        foreach($requiredFiles as $file){
+           array_push($filter,$file['id']);
+        }
+
+        
+        $urlList = array();
+        $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json';
+
+        foreach ($investorFiles as $investorFile) {
+            if(in_array($investorFile['file']['FilesInvestor']['file_id'],$filter))
             $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
             array_push($urlList, $url);
         }
 
+
         //Create the zip
         if ($this->Ocrfile->createZip($urlList, $pathToZipFile, true, $jsonPath)) {
 
-            $this->set('result', true);
-            $this->set('message', 'Zip downloaded');
-            $this->download($pathToZipFile,  'investorData_' . $this->Session->read('Auth.User.Investor.investor_DNI') . '.Zip');
-        } else {
-            $this->set('result', false);
-            $this->set('message', 'Zip download failed');
-        }
+          $this->set('result', true);
+          $this->set('message', 'Zip downloaded');
+          $this->download($pathToZipFile,  'investorData_' . $this->Session->read('Auth.User.Investor.investor_DNI') . '.Zip');
+          } else {
+
+          }
     }
 
     /**
@@ -198,11 +209,10 @@ class filesController extends AppController {
         $data = $this->request['data'];
         //Load files config
         $fileConfig = Configure::read('files');
-        
+
         //Path and file name
         if ($type == 'ocrfile') {
             $data = $this->Ocrfile->readSimpleDocument($id);
-            print_r($data);
             $pathToFile = $fileConfig['investorPath'] . $data['FilesInvestor']['file_url'];
             $name = $data['FilesInvestor']['file_name'];
         } else if ($type == 'bill') {
