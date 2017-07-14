@@ -216,7 +216,7 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                                 <div class="card-footer" id="tooltip_totalPortfolioTendency" style="display:none">
                                                     <div class="stats" style="text-align: center;">
-                                                        <div class="stats" style="text-align: center;">
+                                                        <div class="stats" style="text-align: right;">
                                                                 <?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>
                                                         </div>
                                                     </div>
@@ -254,7 +254,7 @@ var myChart = new Chart(ctx, {
                                                     </p>
                                                 </div>
                                                 <div class="card-footer" id="tooltip_totalModalityTendency" style="display:none">
-                                                    <div class="stats" style="text-align: center;">
+                                                    <div class="stats" style="text-align: right;">
                                                         <?php echo __('The amount invested in the platformtype of the AdminPFP/total invested amount in platformtype[ in %]')?>
                                                     </div>
                                                 </div>
@@ -284,7 +284,7 @@ var myChart = new Chart(ctx, {
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h2>
                                                         </div>
                                                         <div class="card-footer" style="display:none" id="tooltip_activePFP">
-                                                            <div class="stats" style="text-align: center;">
+                                                            <div class="stats" style="text-align: right;">
                                                                 <?php echo __('The number of platforms where the user has ACTIVE investments. Investment MAY have payment delays')?>
                                                             </div>
                                                         </div>
@@ -301,7 +301,7 @@ var myChart = new Chart(ctx, {
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h2>
                                                         </div>
                                                         <div class="card-footer" style="display:none" id="tooltip_totalPFP">
-                                                            <div class="stats" style="text-align: center;">
+                                                            <div class="stats" style="text-align: right;">
                                                                 <?php echo __('The number of platforms where the investor has an account')?>
                                                             </div>
                                                         </div>
