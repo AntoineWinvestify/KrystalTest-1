@@ -106,7 +106,7 @@
                                                         <td id="<?php echo __($bill['CompaniesFile']['id']) ?>" align="right"><script>formatMoney(<?php echo __($bill['CompaniesFile']['id']) ?>, <?php echo __($bill['CompaniesFile']['bill_amount']) ?>);</script></td>
                                                         <td>
                                                             <form action = "/files/downloadDocument/bill/<?php echo __($bill['CompaniesFile']['id']) ?>">
-                                                            <button type="submit"  class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
+                                                            <button type="submit"  class="btn btn-default btn1CR btnRounded"><?php echo __('Download')?></button>
                                                             </form>
                                                         </td>
                                                     </tr>
