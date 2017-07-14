@@ -52,9 +52,18 @@ function successTallymanData(data) {
  
  
 function errorTallymanData(data) {
-    $("#tallymanGeneral").html(data);
-	console.log("profile_data: LINE 60 CONFIRMATION REQUIRED");
-    $(".ErrorTallyman").show();
+    console.log("ANTOINIIOSIOIOII");
+    var temp = data.search("chargingConfirmationModal");
+    console.log ("errorTallymanData; temp = " + temp);
+    if (temp != -1) {
+        $("#TallymanResult").html(data); 
+        console.log("errorTallymanData:modal detected");
+    }
+    else {        
+        $(".ErrorTallyman").show();
+	console.log("errorTallymanData: profile_data: LINE 60 CONFIRMATION REQUIRED");
+    
+    }
 }
  
  
