@@ -575,7 +575,9 @@ class Investor extends AppModel {
             //Find investor info for the json
             $investorData = $this->find('first', array(array('conditions' => array('id' => $checks['investorId'])), 'recursive' => -1));
 
-
+            //Find ocr info for the json
+            $ocrData = $this->Ocr->ocrGetData($checks['investorId']);
+            
             //Json array, hte json file is generated with this data.
             $jsonArray = Array(
                 'name' => $investorData['Investor']['investor_name'],
@@ -598,11 +600,11 @@ class Investor extends AppModel {
                 'check_cityTime' => $checks['cityCheck'],
                 'country' => $investorData['Investor']['investor_country'],
                 'check_countryTime' => $checks['countryCheck'],
-                'iban' => $investorData['Investor']['investor_iban'],
+                'iban' => $ocrData[0]['Ocr']['investor_iban'],
                 'check_ibanTime' => $checks['ibanCheck'],
-                'cif' => $investorData['Investor']['investor_cif'],
+                'cif' => $ocrData[0]['Ocr']['investor_cif'],
                 'check_cifTime' => $checks['cifCheck'],
-                'businessName' => $investorData['Investor']['investor_businessName'],
+                'businessName' => $ocrData[0]['Ocr']['investor_businessName'],
                 'check_businessNameTime' => $checks['businessNameCheck'],
             );
             //Generate Json
