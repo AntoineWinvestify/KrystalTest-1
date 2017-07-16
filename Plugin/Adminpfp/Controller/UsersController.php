@@ -148,7 +148,7 @@ public function readMLDatabase() {
 
 
 /**DURING THE NIGHT WE WILL DOWNLOAD THE RELEVANT DATA FROM THE RAW DATABASE TO THIS MLDATA DATABASE  
- * 
+ * checks if an read or write error occurred during routine.
  * Moves in 'semi-realtime' raw data to the database which is used by the Tallyman service
  * 
  * 
@@ -161,10 +161,13 @@ public function cronMoveToMLDatabase() {
     $this->autoRender = false;
     Configure::write('debug', 2);    
     $currentDate = date("Y-m-d", time());     
- $limit = 12;    
+    $limit = 12;    
     Configure::load('p2pGestor.php', 'default');
-//    $serviceData = Configure::read('Tallyman');   
-    
+    $serviceData = Configure::read('Tallyman');   
+    $limit = $serviceData['maxReadingsintoMldata'];
+    if (empty($limit)) {
+        $limit = 100;
+    }
     $this->Company = ClassRegistry::init('Company');   
     $this->Mlqueue = ClassRegistry::init('Adminpfp.Mlqueue'); 
     $this->Userplatformglobaldata = ClassRegistry::init('Adminpfp.Userplatformglobaldata'); 
@@ -186,6 +189,8 @@ public function cronMoveToMLDatabase() {
      $tempCount = 0;
  //$this->print_r2($userinvestmentdataResult);
 $actualQueueId = 0;
+
+
 // Make sure that records belonging to the same queueId do not spill over into two reading.
     while (!empty($userinvestmentdataResult)) {
         $count = count($userinvestmentdataResult);
