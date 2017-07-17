@@ -50,24 +50,8 @@ $(document).ready(function() {
 
 
 
-	<ul class="sidebar-menu">
-    <li class="header">MAIN NAVIGATION</li>
-        <?php  
-        /*<li class="treeview">
-          <a href="#">
-            <i class="fa fa-users"></i>
-            <span class="disabled" style="opacity:0.5"><?php echo __('Investor Comunity')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Mi perfil</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Mi muro</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Mis Notificaciones</a></li>
-          </ul>
-        </li>*/
-        ?>
+    <ul class="sidebar-menu">
+        <li class="header">PFPADMIN NAVIGATION</li>
        <li class="treeview">
 
             <?php  
@@ -119,11 +103,6 @@ $(document).ready(function() {
             <li><a href="pages/forms/editors.html"><i class="fa fa-circle-o"></i> Editors</a></li>
           </ul>
         </li>*/?>
-
-        
-     <li class="header">
-            <strong>PFP Admin Menu</strong>
-        </li>
         <li class="treeview">
             <a href="/adminpfp/ocrs/ocrPfpUsersPanel">
               <i class="fa fa-dashboard"></i> <span><?php echo __('New Users')?></span>
@@ -144,4 +123,4 @@ $(document).ready(function() {
           <a href="/adminpfp/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
  
-	</ul>
+    </ul>
