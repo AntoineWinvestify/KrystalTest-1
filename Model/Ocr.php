@@ -174,7 +174,7 @@ class ocr extends AppModel {
 
                 if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
                     $status = FIXED;
-                } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT) {
+                } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT || $dataParam['ocr_status'][0]['Ocr']['ocr_status'] == FINISHED) {
                     $status = SENT;
                 }
 

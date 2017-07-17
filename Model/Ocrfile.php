@@ -107,7 +107,7 @@ class ocrfile extends AppModel {
             'rule1' => array('rule' => array('notBlank'),
                 'allowEmpty' => false,
                 'message' => 'Amount validation error'),
-        )
+        ),
     );
 
     /**
@@ -118,28 +118,33 @@ class ocrfile extends AppModel {
      * @param type $type
      * @return string|int
      */
-    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $path, $binaryType) {
+    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $path) {
 
         //Load files config
         $fileConfig = Configure::read('files');
+        
         if ($path == "file") {
             $up = $fileConfig['investorPath'] . $folder;
         } else if ($path == "bill") {
             $up = $fileConfig['billsPath'] . $folder;
         }
 
-        foreach ($fileInfo as $file) {
-
+        foreach ($fileInfo as $file) {    
+            
             //Error filter
             if ($file['size'] == 0 || $file['error'] !== 0) {
                 continue;
             }
+            
+            
+            $fileOpened = new File($file['tmp_name']); //Open the file
+            $fileMime = $fileOpened->mime(); //Get mime type
+
+            
             //Type and size filter
-
-
-            if (in_array($binaryType, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $name = $this->find('first',array('conditions' => array('id' => $extraInfo), 'recursive' => -1))['Ocrfile']['file_type'];
-                $filename = date("Y-m-d_H:i:s" ,time()) . "_" . $name;
+            if (in_array($fileMime, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
+                $name = $this->find('first', array('conditions' => array('id' => $extraInfo), 'recursive' => -1))['Ocrfile']['file_type'];
+                $filename = date("Y-m-d_H:i:s", time()) . "_" . $name;
                 $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
                 //Create the dir if not exist
@@ -278,26 +283,26 @@ class ocrfile extends AppModel {
      * @return type
      */
     public function readRequiredFiles($data) {
-        
+
         //Id list of selected companies
         $selectedList = array();
         foreach ($data as $selectedId) {
             array_push($selectedList, $selectedId['ocrInfo']['company_id']);
         }
-        
-                
+
+
         //All company files     
         $allCompanyFiles = $this->find('all', array(
             'conditions' => array(
                 'id' => array(DNI_FRONT, DNI_BACK, IBAN, CIF),
-                ), //Read documents type from app controller
+            ), //Read documents type from app controller
             'recursive' => 1,));
 
         //Filter required files
         $requiredFileIdList = array();
 
         foreach ($allCompanyFiles as $allFiles) {
-           // print_r($allFiles);
+            // print_r($allFiles);
             foreach ($allFiles["requiredFiles"] as $requiredFiles) {
                 //Filter selected companies required files
                 if (in_array($requiredFiles["id"], $selectedList)) {
@@ -306,7 +311,7 @@ class ocrfile extends AppModel {
                 }
             }
         }
-       
+
         //Delete duplicates
         $requiredFileResult = array_unique($requiredFileIdList, SORT_REGULAR);
         return $requiredFileResult;
