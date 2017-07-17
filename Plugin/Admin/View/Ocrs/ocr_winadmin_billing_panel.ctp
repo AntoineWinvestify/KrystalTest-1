@@ -122,6 +122,7 @@
         });
         $(document).on("click", "#sendBill", function () {
             console.log("validate Winadmin billing data");
+            $(".alert-to-fade").hide();
 
 <?php //Javascript validation                  ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
@@ -140,7 +141,6 @@
                         $(".feedbackText").html(data[1]);
                         $(".alert-to-fade").show();
                         $(".alert-to-fade").addClass("alert-win-success");
-                        fadeOutElement(".alert-to-fade", 10000);
 
                         $('#selected').html("");
                         $("#bill").trigger("reset");
@@ -148,8 +148,7 @@
                     } else {
                         $(".feedbackText").html(data[1]);
                         $(".alert-to-fade").show();
-                        $(".alert-to-fade").addClass("alert-win-success");
-                        fadeOutElement(".alert-to-fade", 10000);
+                        $(".alert-to-fade").addClass("alert-win-warning");
                        
                         $('#selected').html("");
                         $("#bill").trigger("reset");
