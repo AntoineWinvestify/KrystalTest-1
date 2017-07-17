@@ -49,17 +49,17 @@ $(document).ready(function() {
     <ul class="sidebar-menu">
         <li class="header"><?php echo __('WINADMIN NAVIGATION')?></li>
         <li class="treeview">
-            <a href="/ocrs/ocrWinadminBillingPanel">
+            <a href="/admin/ocrs/ocrWinadminBillingPanel">
               <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
             </a>
         </li>
         <li class="treeview">
-            <a href="/ocrs/ocrWinadminInvestorChecking">
+            <a href="/admin/ocrs/ocrWinadminInvestorChecking">
               <i class="fa fa-dashboard"></i> <span><?php echo __('Investor Checking')?></span>
             </a>
         </li>
         <li class="treeview">
-            <a href="/ocrs/ocrWinadminUpdatePfpData">
+            <a href="/admin/ocrs/ocrWinadminUpdatePfpData">
               <i class="fa fa-dashboard"></i> <span><?php echo __('Update PFP data')?></span>
             </a>
         </li>
@@ -76,6 +76,6 @@ $(document).ready(function() {
             </a>
         </li>*/?>
         <li class="treeview">
-          <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
+          <a href="/admin/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
     </ul>

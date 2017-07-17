@@ -82,8 +82,7 @@
 			<li class="dropdown user user-menu">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 					<img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Admin']['admin_photoChatGUID']?>" class="user-image" alt="Small User Image">
-					<span class="hidden-xs"  style="color: black !important;"><?php echo $sessionData['Auth']['User']['Admin']['admin_name'] . " " .
-														$sessionData['Auth']['User']['Admin']['admin_surname'] ?>
+					<span class="hidden-xs"  style="color: black !important;"><?php echo $sessionData['Auth']['User']['Admin']['admin_name'] ?>
 					</span>
 				</a>
 				
@@ -97,7 +96,7 @@
 					<li class="user-header">
 					    <img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Admin']['admin_photoChatGUID']?>" class="img-circle" alt="Big User Image">
 	
-					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Admin']['admin_name'] . " " . $sessionData['Auth']['User']['Admin']['admin_surname'] ?> - PFP Admin
+					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Admin']['admin_name'] . " " . $sessionData['Auth']['User']['Admin']['admin_surname'] ?> - Winadmin
 							<small></small>
 					    </p>
 					</li>
