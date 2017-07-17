@@ -216,12 +216,7 @@
                             <div class="tab-content">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.') ?></p>
-                                        <ul>
-                                            <?php foreach ($companies as $company) { ?>
-                                                <li><?php echo __($company["name"]) ?></li>
-                                            <?php } ?>
-                                        </ul>
+                                        <p align="justify"><?php echo __('Gracias por actualizar los datos erróneos que hemos detectado.') ?></p>
                                     </div>
                                     <div style="display:none;" class="errorMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
