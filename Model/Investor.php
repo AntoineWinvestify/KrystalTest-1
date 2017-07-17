@@ -578,7 +578,7 @@ class Investor extends AppModel {
             //Find ocr info for the json
             $ocrData = $this->Ocr->ocrGetData($checks['investorId']);
 
-            //Json array, hte json file is generated with this data.
+            //Json array, the json file is generated with this data.
             $jsonArray = Array(
                 'name' => $investorData['Investor']['investor_name'],
                 'check_nameTime' => $checks['nameCheck'],

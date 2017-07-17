@@ -97,20 +97,16 @@ class filesController extends AppController {
                 $id = $this->Session->read('Auth.User.Investor.id'); //Investor id
                 $identity = $this->Session->read('Auth.User.Investor.investor_identity'); //$Investor identity
 
-                $data_json = $this->Ocrfile->ocrFileSave($data, $identity, $id, $extraInfo, "file", $fileinfo); //Save the file and return a Json
+                $data_json = $this->Ocrfile->ocrFileSave($data, $identity, $id, $extraInfo, "file"); //Save the file and return a Json
                 $this->set("result", json_encode($data_json)); //Set info into the view
             } else if (count($this->params['data']['bill']) > 0) {
                 $data = $this->params['data']['bill']; //File info
-                //binary data type
-                $finfo = finfo_open();
-                $fileinfo = finfo_file($finfo, $data['bill']['tmp_name'], FILEINFO_MIME);
-                finfo_close($finfo);
 
                 //Info about the bill like number, amount ...
                 $extraInfo = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency']);
                 $id = $this->params['data']['pfp']; //Pfp id
                 $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile']; //Get company codeFile, is the folder of the bill
-                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $extraInfo, "bill", $fileinfo); //Save the bill in db and return a result.
+                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $extraInfo, "bill"); //Save the bill in db and return a result.
                 $this->set("result", $result); //Set result into the view.
             }
         }
