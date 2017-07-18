@@ -125,8 +125,10 @@ class ocrfile extends AppModel {
         
         if ($path == "file") {
             $up = $fileConfig['investorPath'] . $folder;
+            $fileId = $extraInfo;
         } else if ($path == "bill") {
             $up = $fileConfig['billsPath'] . $folder;
+            $fileId = 50;
         }
 
         foreach ($fileInfo as $file) {    
@@ -143,7 +145,7 @@ class ocrfile extends AppModel {
             
             //Type and size filter
             if (in_array($fileMime, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $name = $this->find('first', array('conditions' => array('id' => $extraInfo), 'recursive' => -1))['Ocrfile']['file_type'];
+                $name = $this->find('first', array('conditions' => array('id' => $fileId), 'recursive' => -1))['Ocrfile']['file_type'];
                 $filename = date("Y-m-d_H:i:s", time()) . "_" . $name;
                 $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
