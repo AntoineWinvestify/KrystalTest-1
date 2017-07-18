@@ -69,7 +69,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - Investor Checking') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('New Users') ?></strong></h4>
                 </div>
                 <div class="card-content togetoverlay">
                     <div class="row firstParagraph">

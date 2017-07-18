@@ -43,7 +43,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - Sold Users') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('Sold Users') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">
@@ -69,7 +69,7 @@
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - History of Sold Users') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('Sold Users History') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">

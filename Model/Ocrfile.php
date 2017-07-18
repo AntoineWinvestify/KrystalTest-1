@@ -124,9 +124,11 @@ class ocrfile extends AppModel {
         $fileConfig = Configure::read('files');
         
         if ($path == "file") {
+            $fileId = $extraInfo;
             $up = $fileConfig['investorPath'] . $folder;
             $fileId = $extraInfo;
         } else if ($path == "bill") {
+            $fileId = 50;
             $up = $fileConfig['billsPath'] . $folder;
             $fileId = 50;
         }
@@ -142,7 +144,7 @@ class ocrfile extends AppModel {
             $fileOpened = new File($file['tmp_name']); //Open the file
             $fileMime = $fileOpened->mime(); //Get mime type
 
-            
+
             //Type and size filter
             if (in_array($fileMime, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
                 $name = $this->find('first', array('conditions' => array('id' => $fileId), 'recursive' => -1))['Ocrfile']['file_type'];
@@ -156,7 +158,7 @@ class ocrfile extends AppModel {
 
                 //Move the uploaded file to the new dir
                 if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
-                    return [false, __("Upload failed. Incorrect type or file too big.")];
+                    return [false, __("Cannot move the file.")];
                 }
 
                 //Save in db
