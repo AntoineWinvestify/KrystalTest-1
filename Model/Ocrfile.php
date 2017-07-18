@@ -254,8 +254,9 @@ class ocrfile extends AppModel {
      */
     public function ocrAllFileDelete($id) {
 
-        $files = $this->FilesInvestor->find('all');
+        $files = $this->FilesInvestor->find('all',array('conditons' => array('investor_id' => $id )));
 
+        
         if (count($files) == 0) {
             return [1, "There is not files to delete"];
         }

@@ -334,7 +334,7 @@ class ocrsController extends AppController {
         } else {
             //Companies with ocr
             $this->set('companies', $this->Company->companiesDataOCR());
-            
+
             //Types
             $this->set('CompanyType', $this->crowdlendingTypesLong);
 
@@ -395,14 +395,13 @@ class ocrsController extends AppController {
         $this->set("companies", $companyId);
         $this->set("status", $status);
     }
-    
+
     /** Investor View #4
      * Modal to completed process
      */
     function ocrCompletedProcess() {
         $this->layout = 'azarus_private_layout';
     }
-
 
     //One Click Registration - Winvestify functions
     function addBill() {
@@ -586,6 +585,16 @@ class ocrsController extends AppController {
     function activatedService() {
         $this->layout = 'azarus_private_layout';
         $this->render("/Layouts/activated_service");
+    }
+
+    /**
+     * 
+     */
+    public function resetInvestorDemo() {
+        $ocrId = $this->Session->read('Auth.User.Investor.ocr_id');
+        $this->Ocr->resetOcr($ocrId);
+        $this->Ocrfile->ocrAllFileDelete($this->Session->read('Auth.User.Investor.id'));
+        $this->Ocr->resetCompaniesOcr($ocrId);
     }
 
 }
