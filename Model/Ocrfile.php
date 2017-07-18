@@ -125,12 +125,7 @@ class ocrfile extends AppModel {
         
         if ($path == "file") {
             $fileId = $extraInfo;
-            $up = $fileConfig['investorPath'] . $folder;
-            $fileId = $extraInfo;
-        } else if ($path == "bill") {
-            $fileId = 50;
-            $up = $fileConfig['billsPath'] . $folder;
-            $fileId = 50;
+            $up = $fileConfig['investorPath'] . $folder;     
         }
 
         foreach ($fileInfo as $file) {    
@@ -178,38 +173,13 @@ class ocrfile extends AppModel {
                     } else {
                         return [false, __('Upload fail')];
                     }
-                } else if ($path == "bill") {
-                    $result = array(basename($file['name']), $folder . DS . $filename, $extraInfo);
-
-
-                    $bill = array(
-                        'CompaniesFile' => Array(
-                            'company_id' => $id,
-                            'file_id' => 50,
-                            'bill_number' => $extraInfo['number'],
-                            'bill_amount' => str_replace(",", ".", $extraInfo['amount']) * 100,
-                            'bill_concept' => $extraInfo['concept'],
-                            'bill_currency' => $extraInfo['currency'],
-                            'bill_url' => $folder . DS . $filename
-                        )
-                    );
-
-                    if ($this->validates($this->CompaniesFile->save($bill))) {
-                        $mail = $this->Investor->User->getPfpAdminMail($id);
-
-                        $event = new CakeEvent("billMailEvent", $this, $mail);
-                        $this->getEventManager()->dispatch($event);
-
-                        return [true, __('Upload ok')];
-                    } else {
-                        return [false, __("Upload failed. Incorrect type or file too big.")];
-                    }
-                }
             } else {
                 return [false, __("Upload failed. Incorrect type or file too big.")];
             }
         }
     }
+    
+            }
 
     /**
      * Generate a json with the $data passed in the $path
@@ -427,7 +397,8 @@ class ocrfile extends AppModel {
      * @param string $json
      * @return boolean
      */
-    function createZip($files = array(), $destination = '', $overwrite = false, $json = null) {
+    function createZip($dni, $files = array(), $destination = '', $overwrite = false, $json = null) {
+        print_r($dni);
         //if the zip file already exists and overwrite is false, return false
         if (file_exists($destination) && !$overwrite) {
             return false;
@@ -464,9 +435,9 @@ class ocrfile extends AppModel {
 
             //add the files
             foreach ($validFiles as $file) {
-                $zip->addFromString(basename($file), file_get_contents($file));
+                $zip->addFromString($dni . '_' . basename($file), file_get_contents($file));
             }
-            $zip->addFromString(basename($json), file_get_contents($json));
+            $zip->addFromString($dni . '_' . basename($json), file_get_contents($json));
             // $zip->addFromString('result.json', file_get_contents('result.json'));
             // 
             //debug

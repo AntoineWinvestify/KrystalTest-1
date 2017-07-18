@@ -50,6 +50,7 @@ class filesController extends AppController {
         //Zip path
         $fileConfig = Configure::read('files');
         $folder = $this->Investor->getInvestorIdentity($userId); //Get investor identity, not $this->Session->read, Adminpfp uses it.
+        $dni = $this->Investor->getInvestorDni($userId);
         $pathToZipFile = $fileConfig['investorPath'] . $folder . DS . 'investorData.Zip';
 
 
@@ -76,13 +77,11 @@ class filesController extends AppController {
 
 
         //Create the zip
-        if ($this->Ocrfile->createZip($urlList, $pathToZipFile, true, $jsonPath)) {
+        if ($this->Ocrfile->createZip($dni, $urlList, $pathToZipFile, true, $jsonPath)) {
 
           $this->set('result', true);
           $this->set('message', 'Zip downloaded');
-          $this->download($pathToZipFile,  'investorData_' . $this->Session->read('Auth.User.Investor.investor_DNI') . '.Zip');
-          } else {
-
+          $this->download($pathToZipFile,  'investorData_' . $dni . '.Zip');
           }
     }
 

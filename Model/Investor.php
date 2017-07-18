@@ -461,6 +461,17 @@ class Investor extends AppModel {
     }
 
     /**
+     * Get investor dni
+     * @param type $userid
+     * @return type
+     */
+    public function getInvestorDni($userid) {
+        $data = $this->investorGetInfo($userid);
+        $dni = $data[0]['Investor']['investor_DNI'];
+        return $dni;
+    }
+
+    /**
      * Create a check line in the checks table for the user
      * @param type $id
      * @return boolean
