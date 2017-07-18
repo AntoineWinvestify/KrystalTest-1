@@ -95,21 +95,11 @@
             $(".btnCancel").prop("disabled", true);
         });
 
-        $(document).on("click", "#sureBtn", function () {
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            //Delete uploaded files
-            window.location.replace('/marketplaces/showMarketPlace');
-        });
 
-
-        /*$(document).on("click", "#btnConfirm", function () {
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            window.location.replace('/ocrs/ocrCompletedProcess');
-        });*/
 
         $(document).on("click", "#btnSure", function () {
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
             link = "/files/deleteAll"
             data = "null"
             getServerData(link, data, successCancel, errorCancel);
@@ -124,6 +114,8 @@
         console.log(resultJson);
         if (resultJson[0] == 1 && resultJson[2] == 1) {
             //$(".successMsg").fadeIn();
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
             window.location.replace('/ocrs/ocrCompletedProcess');
             //User feedback(Status ocr control?)
         } else {
