@@ -52,7 +52,7 @@
             symbol : " &euro;",
             decimal : ",",
             thousand: ".",
-            precision : 0,
+            precision : 2,
             format: "%v%s"
             };
 
@@ -105,7 +105,7 @@
                                                         <td><?php echo __($bill['CompaniesFile']['bill_concept']); ?></td>
                                                         <td id="<?php echo __($bill['CompaniesFile']['id']) ?>" align="right"><script>formatMoney(<?php echo __($bill['CompaniesFile']['id']) ?>, <?php echo __($bill['CompaniesFile']['bill_amount']) ?>);</script></td>
                                                         <td>
-                                                            <form action = "/files/downloadDocument/bill/<?php echo __($bill['CompaniesFile']['id']) ?>">
+                                                            <form action = "/adminpfp/files/downloadDocument/bill/<?php echo __($bill['CompaniesFile']['id']) ?>">
                                                             <button type="submit"  class="btn btn-default btn1CR btnRounded"><?php echo __('Download')?></button>
                                                             </form>
                                                         </td>

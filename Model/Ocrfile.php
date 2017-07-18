@@ -126,9 +126,11 @@ class ocrfile extends AppModel {
         if ($path == "file") {
             $fileId = $extraInfo;
             $up = $fileConfig['investorPath'] . $folder;
+            $fileId = $extraInfo;
         } else if ($path == "bill") {
             $fileId = 50;
             $up = $fileConfig['billsPath'] . $folder;
+            $fileId = 50;
         }
 
         foreach ($fileInfo as $file) {    
@@ -215,7 +217,9 @@ class ocrfile extends AppModel {
      * @param type $path
      */
     public function generateJson($data, $path) {
-        $fp = fopen($path . DS . 'dataInvestor.json', 'w');
+        
+        $fp = fopen($path . DS . 'dataInvestor.json', 'w+');
+
         if (fwrite($fp, json_encode($data))) {
             fclose($fp);
             return true;
@@ -252,8 +256,9 @@ class ocrfile extends AppModel {
      */
     public function ocrAllFileDelete($id) {
 
-        $files = $this->FilesInvestor->find('all');
+        $files = $this->FilesInvestor->find('all',array('conditons' => array('investor_id' => $id )));
 
+        
         if (count($files) == 0) {
             return [1, "There is not files to delete"];
         }
