@@ -93,7 +93,7 @@
 		        <ul class="dropdown-menu">
 		        <!-- User image -->
 					<li class="user-header">
-					    <img src="<?php echo "/" . IMAGES_URL . "/logo/" .  $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" alt="Big User Image" style="display:block; width:100%;">
+					    <img src="<?php echo "/" . IMAGES_URL . "logo/" .  $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" alt="Big User Image" style="display:block; width:100%;">
 					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Adminpfp']['adminpfp_name'] ?> - Admin
 							<small></small>
 					    </p>
