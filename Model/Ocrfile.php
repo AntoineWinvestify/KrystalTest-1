@@ -217,7 +217,9 @@ class ocrfile extends AppModel {
      * @param type $path
      */
     public function generateJson($data, $path) {
-        $fp = fopen($path . DS . 'dataInvestor.json', 'w');
+        
+        $fp = fopen($path . DS . 'dataInvestor.json', 'w+');
+
         if (fwrite($fp, json_encode($data))) {
             fclose($fp);
             return true;

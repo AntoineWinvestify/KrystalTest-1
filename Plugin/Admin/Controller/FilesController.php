@@ -65,7 +65,7 @@ class filesController extends AppController {
 
     var $name = 'Files';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile', 'User');
+    var $uses = array('Company', 'Ocrfile');
     var $error;
 
     function beforeFilter() {
@@ -84,22 +84,6 @@ class filesController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
 
-            //Bill|Investor document filter
-            if (count($this->params['data']['Files']) > 0) {
-                $data = $this->params['data']['Files']; //File info
-                //binary data type
-                $finfo = finfo_open();
-                $fileinfo = finfo_file($finfo, $data['fileId' . $data['info']]['tmp_name'], FILEINFO_MIME);
-                finfo_close($finfo);
-
-
-                $extraInfo = $data['info']; //Extra info, in this case only the document type id
-                $id = $this->Session->read('Auth.User.Investor.id'); //Investor id
-                $identity = $this->Session->read('Auth.User.Investor.investor_identity'); //$Investor identity
-
-                $data_json = $this->Ocrfile->ocrFileSave($data, $identity, $id, $extraInfo, "file"); //Save the file and return a Json
-                $this->set("result", json_encode($data_json)); //Set info into the view
-            } else if (count($this->params['data']['bill']) > 0) {
                 $data = $this->params['data']['bill']; //File info
 
                 //Info about the bill like number, amount ...
@@ -108,45 +92,43 @@ class filesController extends AppController {
                 $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile']; //Get company codeFile, is the folder of the bill
                 $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $extraInfo, "bill"); //Save the bill in db and return a result.
                 $this->set("result", $result); //Set result into the view.
-            }
+            
         }
     }
 
     /**
-     * Delete a document
+     * Download documents and bills
      */
-    function delete() {
-        if (!$this->request->is('ajax')) {
-            $result = false;
-        } else {
-            $this->layout = 'ajax';
-            $this->disableCache();
+    function downloadDocument($type, $id) {
+        //Request data
+        $data = $this->request['data'];
+        //Load files config
+        $fileConfig = Configure::read('files');
 
-            $url = $this->request->data('url');
-            $file_id = $this->request->data('id');
-            $investor_id = $this->Session->read('Auth.User.Investor.id');
-
-
-            $result = $this->Ocrfile->ocrFileDelete($url, $file_id, $investor_id);
-            $this->set("result", $result);
+        //Path and file name
+        if ($type == 'ocrfile') {
+            $data = $this->Ocrfile->readSimpleDocument($id);
+            $pathToFile = $fileConfig['investorPath'] . $data['FilesInvestor']['file_url'];
+            $name = $data['FilesInvestor']['file_name'];
+        } else if ($type == 'bill') {
+            $data = $this->Ocrfile->readSimpleBill($id);
+            $pathToFile = $fileConfig['billsPath'] . $data['CompaniesFile']['bill_url'];
+            $name = $data['CompaniesFile']['bill_number'];
         }
+
+        //Download
+        $this->download($pathToFile, $name);
     }
 
-    /**
-     * Delete all files of a investor 
-     */
-    function deleteAll() {
-        if (!$this->request->is('ajax')) {
-            $result = false;
-        } else {
-            $this->layout = 'ajax';
-            $this->disableCache();
+    function download($path, $name) {
 
-            $investor_id = $this->Session->read('Auth.User.Investor.id');
+        $this->autoLayout = false;
 
-
-            $result = $this->Ocrfile->ocrAllFileDelete($investor_id);
-            $this->set("result", $result);
-        }
+        $this->response->file($path, array(
+            'download' => true,
+            'name' => $name,
+        ));
+        return $this->response;
     }
+
 }

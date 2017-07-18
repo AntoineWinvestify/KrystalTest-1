@@ -127,7 +127,7 @@
 <?php //Javascript validation                  ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
-                link = '/Files/upload';
+                link = '/admin/files/upload';
                 $.ajax({
                     url: link,
                     dataType: 'json',
@@ -163,7 +163,7 @@
     });
 
     function refreshTable() {
-        link = "../Ocrs/billsTable";
+        link = "/admin/Ocrs/billsTable";
         var data = null;
         getServerData(link, data, successRefesh, errorRefresh);
     }
