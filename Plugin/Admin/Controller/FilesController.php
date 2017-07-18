@@ -21,43 +21,9 @@
  * @package
  *
  *
- *  2016/29/2017 version 0.1
- *  function OneClickInvestorI, Save personal data in db                    [OK]
- *  function OneClickInvestorII Save selected companies                     [OK]
- *  function companyFilter      Company filter for platform selection panel [OK]
- *  function OneClickAdmin                                     [Not implemented]
- *  function OneClickCompany                                   [Not implemented]
- *
- * 2017/6/06 version 0.1
- * function upload                         [OK]
- * 
- * 2017/6/08 version 0.2
- * function delete                [ok]
- * 
- * 2017/6/14 version 0.3
- * url and name fixed                      [OK]
- * 
- * 2017/6/21 version 0.4
- * upload bill         [OK]
- * 
- * 2017/6/28 version 0.5
- * zip download         [OK]
- * 
- * 2017/6/30 version 0.6
- * zip download  
- * 
- * 2017/07/03 version 0.7
- * Json path in the zip
- * 
- * 2017/07/11 version 0.8
- * Delete all investor files
- * 
- * 2017/07/13 version 0.9
- * File binary validation
- * 
- * 2017/07/13 version 0.10
- * Zip now only contains the required files of the pfp
- * 
+ *  2017/07/18 version 0.1
+ *  Migrated
+ 
  */
 App::uses('CakeEvent', 'Event');
 
