@@ -1355,8 +1355,8 @@ hr.nomargin {
     margin: 0 auto;
     background-image: url("/img/admin/login.png");
     background-repeat: no-repeat;
-    max-width: 1280px;
-    height: 787px;
+    height: 780px;
+    background-size: cover;
 }
 .loginBox {
     background-color: white;
@@ -1376,7 +1376,21 @@ hr.nomargin {
 .paragraph p {
     color: white !important;
 }
-
+.adminLogos{
+    margin: 50px auto;
+    float: left;
+}
+.logo1 {
+    background-image: url("/img/logo_winvestify/Logo_favicon.png");
+    background-repeat: no-repeat;
+    width: auto;
+    height: 100%;
+}
+.logo2 {
+    background-image: url("/img/logo_winvestify/Logo_texto.png");
+    background-repeat: no-repeat;
+    width: 80%;
+}
 
 /*************************** MEDIA QUERIES ****************************/
                     /*MOBILE SWAP MEDIA QUERY >320*/
