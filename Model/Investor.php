@@ -437,6 +437,10 @@ class Investor extends AppModel {
         $investorData = $this->find("all", $options);
         return $investorData;
     }
+    
+    /****************************/
+    /**GET INVESTOR SINGLE DATA**/
+    /****************************/
 
     /**
      * Get investor id
@@ -448,6 +452,22 @@ class Investor extends AppModel {
         $id = $data[0]['Investor']['id'];
         return $id;
     }
+    
+        /**
+     * Get investor user_id
+     * @param type $userid
+     * @return type
+     */
+    public function getInvestorUserId($investorId) {
+        $data = $info = $this->find("all", array(
+            'conditions' => array('Investor.id' => $investorId),
+            'recursive' => -1,
+        ));
+        print_r($data);
+        $id = $data[0]['Investor']['user_id'];
+        return $id;
+    }
+    
 
     /**
      * Get investor identification code
@@ -471,6 +491,8 @@ class Investor extends AppModel {
         return $dni;
     }
 
+    
+    
     /**
      * Create a check line in the checks table for the user
      * @param type $id

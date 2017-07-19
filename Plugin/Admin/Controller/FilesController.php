@@ -31,7 +31,7 @@ class filesController extends AppController {
 
     var $name = 'Files';
     var $helpers = array('Session');
-    var $uses = array('Company', 'Ocrfile');
+    var $uses = array('Company', 'Ocrfile', 'Investor');
     var $error;
 
     function beforeFilter() {
@@ -75,7 +75,9 @@ class filesController extends AppController {
         if ($type == 'ocrfile') {
             $data = $this->Ocrfile->readSimpleDocument($id);
             $pathToFile = $fileConfig['investorPath'] . $data['FilesInvestor']['file_url'];
-            $name = $data['FilesInvestor']['file_name'];
+            $userId = $this->Investor->getInvestorUserId($data['FilesInvestor']['investor_id']);
+            $dni = $this->Investor->getInvestorDni($userId);
+            $name = $dni . '_' . $data['FilesInvestor']['file_name'];
         } else if ($type == 'bill') {
             $data = $this->Ocrfile->readSimpleBill($id);
             $pathToFile = $fileConfig['billsPath'] . $data['CompaniesFile']['bill_url'];
@@ -83,7 +85,7 @@ class filesController extends AppController {
         }
 
         //Download
-        $this->download($pathToFile, $name);
+         $this->download($pathToFile, $name);
     }
 
     function download($path, $name) {
