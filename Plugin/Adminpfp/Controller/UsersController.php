@@ -29,7 +29,7 @@ Initial version.
 
 
 2017-07-15      version 0.2
-added methods cronMoveToMLDatabase(), resetInvestmentArray() and resetInvestorsArray()
+added methods cronMoveToMLDatabase(), writeArray, resetInvestmentArray() and resetInvestorsArray()
 
 
 
@@ -326,7 +326,10 @@ echo "just read next batch of records but within outer foreach<br><br>";
     } // end of while      
 echo "FINALIZED<br>";
 $this->print_r2($data1);
-    $this->writeArray($data1[1]);
+    unset($data1[0]);
+    foreach ($data1 as $tempData1){
+       $this->writeArray($tempData1, "Investorglobaldata");
+    }
 } 
 
 
@@ -376,35 +379,36 @@ private function resetInvestorsArray(& $investorArray) {
 
 /**
  * 
- * Writes an array of data to its corresponding model(s). The writing
- * is database transaction protected
+ * Writes an array of data to its corresponding model(s). 
  * 
  * @param 	$investorArray  Array to be reset
+ * @param       $masterModel    String  Name of "master" model, of the hasOne or hasMany relationships
  * @return 	boolean	
  *
  */
-private function writeArray(& $array) {
+private function writeArray(& $array, $masterModel) {
 
+    $this->$masterModel->create();
+    $result = $this->$masterModel->save($array[$masterModel], $validate = true);
+    $masterId = $result[$masterModel]['id'];
     $models = array_keys($array);
-    foreach ($models as $model) {
+
+    foreach ($models as $key => $model) {
+        if ($model == "$masterModel") {
+            continue;
+        }
         $this->$model = ClassRegistry::init('adminpfp.'. $model); 
- 
-        if (is_array($array[$model][0]) == true) {
-            foreach ($array[$model] as $key => $tempModel) {
+
+        if (count($array[$model] > 0))
+            foreach ($array[$model] as $key => $tempModel) {       
                 $this->$model->create();
+                $tempModel[strtolower($masterModel) . "_id"] = $masterId;
                 $result = $this->$model->save($tempModel, $validate = true);
             }
-        }
-        else {
-            $result = $this->$model->save($array[$model], $validate = true);
-        }
+
     }
- 
- exit;   
     return true;
 }
-
-
 
 
 
