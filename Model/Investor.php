@@ -52,7 +52,7 @@
 
   Pending:
   function generateGUIDs(). 							[not Ok, not tested]
-
+  
 
 
 
@@ -453,7 +453,7 @@ class Investor extends AppModel {
         return $id;
     }
     
-        /**
+     /**
      * Get investor user_id
      * @param type $userid
      * @return type

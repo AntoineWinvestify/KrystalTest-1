@@ -375,6 +375,14 @@ class ocr extends AppModel {
         /* Delete company */
         return $this->CompaniesOcr->deleteAll(array('company_id' => $data['companyId'], 'ocr_id' => $ocrId));
     }
+    
+    /**
+     * Delete all NOT_SENT companies_ocrs of a investor
+     * @param type $ocrId
+     */
+    public function deleteCompanyOcrAll($ocrId){
+        return $this->CompaniesOcr->deleteAll(array('ocr_id' => $ocrId, 'company_status' => NOT_SENT));
+    }
 
     /**
      * Get all companies info related to a investor

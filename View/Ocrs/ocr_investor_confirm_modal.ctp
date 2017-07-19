@@ -96,7 +96,7 @@
         });
 
 
-
+        <?php  //Delete files on cancel  ?>
         $(document).on("click", "#btnSure", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
@@ -109,7 +109,7 @@
 
 
     function success(result) {
-<?php //Server validation Ok               ?>
+<?php //Server validation Ok                ?>
         resultJson = JSON.parse(result);
         console.log(resultJson);
         if (resultJson[0] == 1 && resultJson[2] == 1) {
@@ -128,13 +128,20 @@
         }
     }
 
+    <?php  //If delete files is ok then ,delete companies_ocr NOT_SENT  ?>
     function successCancel() {
+        link = "/ocrs/deleteCompanyOcrAll";
+        data = "null"
+        getServerData(link, data, successDeleteAll, errorCancel);
+    }
+    
+    <?php  //If you delete all files and companies_ocr, cancel is ok  ?>
+    function successDeleteAll() {
         window.location.replace('/marketplaces/showMarketPlace');
     }
 
-
     function error(result) {
-<?php //Server validation Error           ?>
+<?php //Server validation Error            ?>
         console.log("validation error");
         $(".errorMsg").fadeIn();
     }

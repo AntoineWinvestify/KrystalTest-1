@@ -222,7 +222,7 @@ class ocrsController extends AppController {
     }
 
     /**
-     * Send the selected companies to ocr model
+     * delete the selected company
      */
     function deleteCompanyOcr() {
         if (!$this->request->is('ajax')) {
@@ -244,7 +244,16 @@ class ocrsController extends AppController {
             $this->set('result', $result);
         }
     }
-
+    
+    /**
+     * Delete all NOT_SENT companies_ocrs of a investor
+     */
+    function deleteCompanyOcrAll(){
+         $ocrId = $this->Session->read('Auth.User.Investor.ocr_id');
+         $result = $this->Ocr->deleteCompanyOcrAll($ocrId);
+         $this->set('result', $result);
+    }
+    
     /**
      * Company filter
      * Send the filter conditions and return a companies list
