@@ -226,7 +226,7 @@ class ocrfile extends AppModel {
      */
     public function ocrAllFileDelete($id) {
 
-        $files = $this->FilesInvestor->find('all',array('conditons' => array('investor_id' => $id )));
+        $files = $this->FilesInvestor->find('all',array('conditons' => array('investor_id' => $id , 'file_status' => UNCHECKED)));
 
         
         if (count($files) == 0) {
