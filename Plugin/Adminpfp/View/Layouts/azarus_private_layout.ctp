@@ -20,7 +20,9 @@
 	
   <!-- Winvestify Styles -->
 <link type="text/css" rel="stylesheet" href="/css/compare_styles.css">	
-	
+<link type="text/css" rel="stylesheet" href="/megaKit/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="/megaKit/css/global.css"/>
+
 <title><?php echo __('Winvestify')?></title>
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
@@ -319,6 +321,7 @@
 
 <!-- jQuery 2.2.3 -->
 <script src="/plugins/jQuery/jquery-2.2.3.min.js"></script>
+<script type="text/javascript" src="/megaKit/js/global.min.js"></script>
 
 <!-- Bootstrap 3.3.6 -->
 <script src="/js/bootstrap.min.js"></script>
