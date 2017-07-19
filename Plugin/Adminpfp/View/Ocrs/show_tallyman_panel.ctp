@@ -52,7 +52,7 @@ function successTallymanData(data) {
  
  
 function errorTallymanData(data) {
-    console.log("ANTOINIIOSIOIOII");
+    console.log("ANTOINE");
     var temp = data.search("chargingConfirmationModal");
     console.log ("errorTallymanData; temp = " + temp);
     if (temp != -1) {
@@ -96,7 +96,7 @@ $(document).ready(function() {
             var inputid = $("#tallymanInputId").val();
             var useremail = $("#tallymanInputEmail").val();
             var usertelephone = $("#tallymanInputTelephone").val(); 
-            var chargingconfirmed = 0;
+            var chargingconfirmed = 1;
 
             var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
             var data = jQuery.param( params );

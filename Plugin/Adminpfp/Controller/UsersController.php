@@ -134,7 +134,8 @@ public function readMLDatabase() {
                                                            //     'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
                                                          //       'queue_id' => 57
                                                               ),
-                                                          'limit' => 3));
+                                                    //      'limit' => 3
+        ));
 
     $this->print_r2($investorResult);
     

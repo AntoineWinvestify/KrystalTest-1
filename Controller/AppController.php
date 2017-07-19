@@ -452,9 +452,7 @@ class AppController extends Controller {
 
     public function session() {
         $this->autoRender = FALSE;
-
-        $test1 = "apple " . "peer";
-        echo $test1;
+Configure::write('debug', 2); 
         echo "Now = : " . date('Y-m-d H:i:s', strtotime(now)) . "<br>";
         echo '5 minutes ago = : ' . date('Y-m-d h:i:s', strtotime('- 5 minutes')) . "<br><br>";
 

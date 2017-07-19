@@ -16,8 +16,8 @@
  *
  *
  * @author
- * @version 0.1
- * @date 2016-10-25
+ * @version 0.15
+ * @date 2017-07-10
  * @package
  *
  *
@@ -73,7 +73,7 @@
  * Update Checks
  * 
  * 
- * 2017-07-10
+ * 2017-07-10   Version 0.15
  * Copied only the relevant part of the adminpfp original Controlller to plugin "adminpfp" directory
  * 
  * 
@@ -156,7 +156,8 @@ class ocrsController extends AppController {
         $userEmail = $_REQUEST['userEmail'];
         $userTelephone = $_REQUEST['userTelephone'];
         $chargingConfirmed = $_REQUEST['chargingConfirmed'];
-
+        
+        
 // Get the unique investor identification
         $inputParmCount = 0;
         if (!empty($inputId)) {
@@ -193,8 +194,6 @@ class ocrsController extends AppController {
             } else {
                 $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
                 $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
-
-//print_r($resulyTallyManData);
 
                 // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
