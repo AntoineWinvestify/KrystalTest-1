@@ -181,7 +181,8 @@ class ocrsController extends AppController {
         } else {
             $filterConditions = array_combine($key, $value);
             $searchData = json_encode($filterConditions);
-
+            
+            // Save all the searches done by the adminpfp's in order to harvest email addresses
             $this->Search = ClassRegistry::init('Adminpfp.Search');
             $result = $this->Search->writeSearchData($searchData, $platformId, null, null, TALLYMAN_APP);
 
@@ -232,18 +233,18 @@ class ocrsController extends AppController {
         $this->render('tallymanErrorPage');
     }
 
-    /**
+    /** MOVE TO MODEL
      *
      *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
      * 
-     *  @param 		$reference      parameter to be checked
+     *  @param      $reference  parameter to be checked
      *  @param      string      transparent parameter 2 to be checked
      *  @param      string      transparent parameter 3 to be checked
      *  @param      string      transparent parameter 4 to be checked
      *  @param      string      name of application
      *
-     *  @return 	boolean	true	All OK, data has been saved
-     * 				false	Error occured
+     *  @return     boolean	true	All OK, data has been saved
+     * 				false	Error occurred
      * 						
      */
     public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
@@ -273,6 +274,51 @@ class ocrsController extends AppController {
         return false;
     }
 
+    
+    
+    /** MOVE TO MODEL
+     *
+     *  Store charging data in database
+     * 
+     *  @param      $reference  parameter to be added
+     *  @param      string      transparent parameter 2 to be added
+     *  @param      string      transparent parameter 3 to be added
+     *  @param      string      transparent parameter 4 to be added
+     *  @param      string      name of application
+     *
+     *  @return     boolean	true	All OK, data has been saved
+     * 				false	Error occurred
+     * 						
+     */
+    public function chargeEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
+
+//  Calculate cutoff date for billing purposes
+        Configure::load('p2pGestor.php', 'default');
+        $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
+        $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 * 24);
+
+        $result = $this->Billingparm->find('first', array(
+            "fields" => array("created"),
+            "order" => "id DESC",
+            "recursive" => -1,
+            "conditions" => array("billingparm_reference" => $reference,
+                "billingparm_parm2" => $parameter2,
+                "billingparm_serviceName" => $application),
+        ));
+
+        if (empty($result)) {  // No information found, so not a chargeable event
+            return false;
+        }
+
+        if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
+            return true;
+        }
+        return false;
+    }  
+    
+    
+    
+    
     public function uploadStatusInvestorPfp($idInv) {
         if (!$this->request->is('ajax')) {
             $result = false;

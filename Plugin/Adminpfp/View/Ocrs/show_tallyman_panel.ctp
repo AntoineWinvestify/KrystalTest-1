@@ -96,7 +96,7 @@ $(document).ready(function() {
             var inputid = $("#tallymanInputId").val();
             var useremail = $("#tallymanInputEmail").val();
             var usertelephone = $("#tallymanInputTelephone").val(); 
-            var chargingconfirmed = 1;
+            var chargingconfirmed = 0;
 
             var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
             var data = jQuery.param( params );
