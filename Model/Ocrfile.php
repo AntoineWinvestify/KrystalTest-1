@@ -122,24 +122,26 @@ class ocrfile extends AppModel {
 
         //Load files config
         $fileConfig = Configure::read('files');
-        
+
         if ($path == "file") {
             $fileId = $extraInfo;
-            $up = $fileConfig['investorPath'] . $folder;     
+            $up = $fileConfig['investorPath'] . $folder;
+        } else if ($path == "bill") {
+            $fileId = 50;
+            $up = $fileConfig['billsPath'] . $folder;
+            $fileId = 50;
         }
 
-        foreach ($fileInfo as $file) {    
-            
+        foreach ($fileInfo as $file) {
+
             //Error filter
             if ($file['size'] == 0 || $file['error'] !== 0) {
                 continue;
             }
-            
-            
+
+
             $fileOpened = new File($file['tmp_name']); //Open the file
             $fileMime = $fileOpened->mime(); //Get mime type
-
-
             //Type and size filter
             if (in_array($fileMime, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
                 $name = $this->find('first', array('conditions' => array('id' => $fileId), 'recursive' => -1))['Ocrfile']['file_type'];
@@ -173,13 +175,38 @@ class ocrfile extends AppModel {
                     } else {
                         return [false, __('Upload fail')];
                     }
+                } else if ($path == "bill") {
+                    $result = array(basename($file['name']), $folder . DS . $filename, $extraInfo);
+
+
+                    $bill = array(
+                        'CompaniesFile' => Array(
+                            'company_id' => $id,
+                            'file_id' => 50,
+                            'bill_number' => $extraInfo['number'],
+                            'bill_amount' => str_replace(",", ".", $extraInfo['amount']) * 100,
+                            'bill_concept' => $extraInfo['concept'],
+                            'bill_currency' => $extraInfo['currency'],
+                            'bill_url' => $folder . DS . $filename
+                        )
+                    );
+
+                    if ($this->validates($this->CompaniesFile->save($bill))) {
+                        $mail = $this->Investor->User->getPfpAdminMail($id);
+
+                        $event = new CakeEvent("billMailEvent", $this, $mail);
+                        $this->getEventManager()->dispatch($event);
+
+                        return [true, __('Upload ok')];
+                    } else {
+                        return [false, __("Upload failed. Incorrect type or file too big.")];
+                    }
+                }
             } else {
                 return [false, __("Upload failed. Incorrect type or file too big.")];
             }
         }
     }
-    
-            }
 
     /**
      * Generate a json with the $data passed in the $path
@@ -187,7 +214,7 @@ class ocrfile extends AppModel {
      * @param type $path
      */
     public function generateJson($data, $path) {
-        
+
         $fp = fopen($path . DS . 'dataInvestor.json', 'w+');
 
         if (fwrite($fp, json_encode($data))) {
@@ -226,9 +253,9 @@ class ocrfile extends AppModel {
      */
     public function ocrAllFileDelete($id) {
 
-        $files = $this->FilesInvestor->find('all',array('conditons' => array('investor_id' => $id , 'file_status' => UNCHECKED)));
+        $files = $this->FilesInvestor->find('all', array('conditons' => array('investor_id' => $id, 'file_status' => UNCHECKED)));
 
-        
+
         if (count($files) == 0) {
             return [1, "There is not files to delete"];
         }
