@@ -128,8 +128,8 @@ class ocr extends AppModel {
 
             $data = array(
                 'investor_id' => $id,
-                'ocr_investmentVehicle' => 0,
-                'ocr_status' => 0,
+                'ocr_investmentVehicle' => UNCHECKED,
+                'ocr_status' => NOT_SENT,
             );
 
             //Update
@@ -138,12 +138,12 @@ class ocr extends AppModel {
                 //Insert ocr_id in investor data
                 $data = array('id' => $id, 'ocr_id' => $idOcr);
                 $this->Investor->save($data);
-                return 1;
+                return true;
             } else {
-                return 0;
+                return false;
             }
         } else {
-            return 1;
+            return true;
         }
     }
 
@@ -163,18 +163,18 @@ class ocr extends AppModel {
                 'investor_id' => $dataParam['investor_id']),
             'recursive' => -1,));
 
-        $iban = $dataParam['investor_iban']; 
-        $ibanValidation = new IBAN($iban);
+        /*$iban = $dataParam['investor_iban']; 
+        $ibanValidation = new IBAN($iban);*/
 
         //Ocr data
-        if ($ibanValidation) {
+        //if ($ibanValidation) {
             if (count($id) > 0) {
                 $time = date('Y-m-d H:i:s', time());
 
 
                 if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
                     $status = FIXED;
-                } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT) {
+                } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT || $dataParam['ocr_status'][0]['Ocr']['ocr_status'] == FINISHED) {
                     $status = SENT;
                 }
 
@@ -216,9 +216,9 @@ class ocr extends AppModel {
                  */
                 return false . ","; //Save failed
             }
-        } else {
+        /*} else {
             return false . ","; //Iban validation error
-        }
+        }*/
     }
 
     /**
@@ -375,6 +375,14 @@ class ocr extends AppModel {
         /* Delete company */
         return $this->CompaniesOcr->deleteAll(array('company_id' => $data['companyId'], 'ocr_id' => $ocrId));
     }
+    
+    /**
+     * Delete all NOT_SENT companies_ocrs of a investor
+     * @param type $ocrId
+     */
+    public function deleteCompanyOcrAll($ocrId){
+        return $this->CompaniesOcr->deleteAll(array('ocr_id' => $ocrId, 'company_status' => NOT_SENT));
+    }
 
     /**
      * Get all companies info related to a investor
@@ -471,6 +479,26 @@ class ocr extends AppModel {
         }
     }
 
+    
+    
+    
+    /********/
+    /**DEMO**/
+    /********/
+    public function resetOcr($id){
+        $this->validator()->remove('investor_iban');
+        $this->validator()->remove('investor_cif');
+        $this->validator()->remove('investor_businessName');
+        $this->save(array('id'=> $id, 'ocr_status' => 0, 'ocr_investmentVehicle' => 0, 'investor_cif' => '', 'investor_businessName' => '', 'investor_iban' => ''));
+    }
+    public function resetCompaniesOcr($id){
+        $companyOcr = $this->CompaniesOcr->find('all',array('conditions' => array('ocr_id' => $id)));
+        foreach($companyOcr as $ocr){
+            $this->CompaniesOcr->deleteAll(array( 'id' => $ocr['CompaniesOcr']['id']));
+        }
+    }
+    
+    
     /**
      *
      * 	Callback Function

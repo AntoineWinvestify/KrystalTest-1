@@ -107,7 +107,7 @@ class ocrfile extends AppModel {
             'rule1' => array('rule' => array('notBlank'),
                 'allowEmpty' => false,
                 'message' => 'Amount validation error'),
-        )
+        ),
     );
 
     /**
@@ -118,28 +118,32 @@ class ocrfile extends AppModel {
      * @param type $type
      * @return string|int
      */
-    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $path, $binaryType) {
+    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $path) {
 
         //Load files config
         $fileConfig = Configure::read('files');
+        
         if ($path == "file") {
-            $up = $fileConfig['investorPath'] . $folder;
-        } else if ($path == "bill") {
-            $up = $fileConfig['billsPath'] . $folder;
+            $fileId = $extraInfo;
+            $up = $fileConfig['investorPath'] . $folder;     
         }
 
-        foreach ($fileInfo as $file) {
-
+        foreach ($fileInfo as $file) {    
+            
             //Error filter
             if ($file['size'] == 0 || $file['error'] !== 0) {
                 continue;
             }
+            
+            
+            $fileOpened = new File($file['tmp_name']); //Open the file
+            $fileMime = $fileOpened->mime(); //Get mime type
+
+
             //Type and size filter
-
-
-            if (in_array($binaryType, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $name = $this->find('first',array('conditions' => array('id' => $extraInfo), 'recursive' => -1))['Ocrfile']['file_type'];
-                $filename = date("Y-m-d_H:i:s" ,time()) . "_" . $name;
+            if (in_array($fileMime, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
+                $name = $this->find('first', array('conditions' => array('id' => $fileId), 'recursive' => -1))['Ocrfile']['file_type'];
+                $filename = date("Y-m-d_H:i:s", time()) . "_" . $name;
                 $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
                 //Create the dir if not exist
@@ -149,7 +153,7 @@ class ocrfile extends AppModel {
 
                 //Move the uploaded file to the new dir
                 if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
-                    return [false, __("Upload failed. Incorrect type or file too big.")];
+                    return [false, __("Cannot move the file.")];
                 }
 
                 //Save in db
@@ -169,38 +173,13 @@ class ocrfile extends AppModel {
                     } else {
                         return [false, __('Upload fail')];
                     }
-                } else if ($path == "bill") {
-                    $result = array(basename($file['name']), $folder . DS . $filename, $extraInfo);
-
-
-                    $bill = array(
-                        'CompaniesFile' => Array(
-                            'company_id' => $id,
-                            'file_id' => 50,
-                            'bill_number' => $extraInfo['number'],
-                            'bill_amount' => str_replace(",", ".", $extraInfo['amount']) * 100,
-                            'bill_concept' => $extraInfo['concept'],
-                            'bill_currency' => $extraInfo['currency'],
-                            'bill_url' => $folder . DS . $filename
-                        )
-                    );
-
-                    if ($this->validates($this->CompaniesFile->save($bill))) {
-                        $mail = $this->Investor->User->getPfpAdminMail($id);
-
-                        $event = new CakeEvent("billMailEvent", $this, $mail);
-                        $this->getEventManager()->dispatch($event);
-
-                        return [true, __('Upload ok')];
-                    } else {
-                        return [false, __("Upload failed. Incorrect type or file too big.")];
-                    }
-                }
             } else {
                 return [false, __("Upload failed. Incorrect type or file too big.")];
             }
         }
     }
+    
+            }
 
     /**
      * Generate a json with the $data passed in the $path
@@ -208,7 +187,9 @@ class ocrfile extends AppModel {
      * @param type $path
      */
     public function generateJson($data, $path) {
-        $fp = fopen($path . DS . 'dataInvestor.json', 'w');
+        
+        $fp = fopen($path . DS . 'dataInvestor.json', 'w+');
+
         if (fwrite($fp, json_encode($data))) {
             fclose($fp);
             return true;
@@ -245,8 +226,9 @@ class ocrfile extends AppModel {
      */
     public function ocrAllFileDelete($id) {
 
-        $files = $this->FilesInvestor->find('all');
+        $files = $this->FilesInvestor->find('all',array('conditons' => array('investor_id' => $id , 'file_status' => UNCHECKED)));
 
+        
         if (count($files) == 0) {
             return [1, "There is not files to delete"];
         }
@@ -278,26 +260,26 @@ class ocrfile extends AppModel {
      * @return type
      */
     public function readRequiredFiles($data) {
-        
+
         //Id list of selected companies
         $selectedList = array();
         foreach ($data as $selectedId) {
             array_push($selectedList, $selectedId['ocrInfo']['company_id']);
         }
-        
-                
+
+
         //All company files     
         $allCompanyFiles = $this->find('all', array(
             'conditions' => array(
                 'id' => array(DNI_FRONT, DNI_BACK, IBAN, CIF),
-                ), //Read documents type from app controller
+            ), //Read documents type from app controller
             'recursive' => 1,));
 
         //Filter required files
         $requiredFileIdList = array();
 
         foreach ($allCompanyFiles as $allFiles) {
-           // print_r($allFiles);
+            // print_r($allFiles);
             foreach ($allFiles["requiredFiles"] as $requiredFiles) {
                 //Filter selected companies required files
                 if (in_array($requiredFiles["id"], $selectedList)) {
@@ -306,7 +288,7 @@ class ocrfile extends AppModel {
                 }
             }
         }
-       
+
         //Delete duplicates
         $requiredFileResult = array_unique($requiredFileIdList, SORT_REGULAR);
         return $requiredFileResult;
@@ -415,7 +397,8 @@ class ocrfile extends AppModel {
      * @param string $json
      * @return boolean
      */
-    function createZip($files = array(), $destination = '', $overwrite = false, $json = null) {
+    function createZip($dni, $files = array(), $destination = '', $overwrite = false, $json = null) {
+        print_r($dni);
         //if the zip file already exists and overwrite is false, return false
         if (file_exists($destination) && !$overwrite) {
             return false;
@@ -452,9 +435,9 @@ class ocrfile extends AppModel {
 
             //add the files
             foreach ($validFiles as $file) {
-                $zip->addFromString(basename($file), file_get_contents($file));
+                $zip->addFromString($dni . '_' . basename($file), file_get_contents($file));
             }
-            $zip->addFromString(basename($json), file_get_contents($json));
+            $zip->addFromString($dni . '_' . basename($json), file_get_contents($json));
             // $zip->addFromString('result.json', file_get_contents('result.json'));
             // 
             //debug

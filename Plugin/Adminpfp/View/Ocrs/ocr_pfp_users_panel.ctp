@@ -147,7 +147,7 @@ function error(data){}
                                                             <td id="telephone<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><?php echo __($ocr[1]['investorInfo']['Investor']['investor_telephone']) ?></td>
                                                             <td id="email<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><?php echo __($ocr[1]['investorInfo']['Investor']['investor_email']) ?></td>
                                                             <?php 
-                                                                if (($statusName[$ocr[1]['investorInfo']['Company'][0]['CompaniesOcr']['company_status']]) == "New") {
+                                                                if ($ocr[0]['ocrInfo']['CompaniesOcr']['company_status'] == ACCEPTED) {
                                                                     $icon = "fa fa-user";
                                                                     $td_class = "statusNew";
                                                                 }
@@ -156,9 +156,9 @@ function error(data){}
                                                                     $td_class = "statusDownloaded";
                                                                 }
                                                             ?>
-                                                            <td class="<?php echo $td_class ?> status<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><i class='<?php echo $icon?> statusIcon<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>'></i> <span class="statusText<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><?php echo __($statusName[$ocr[1]['investorInfo']['Company'][0]['CompaniesOcr']['company_status']]) ?> </span></td>
+                                                            <td class="<?php echo $td_class ?> status<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><i class='<?php echo $icon?> statusIcon<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>'></i> <span class="statusText<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>"><?php echo __($statusName[$ocr[0]['ocrInfo']['CompaniesOcr']['company_status']]) ?> </span></td>
                                                             <td>
-                                                                <form action="/files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['user_id'] ?>">
+                                                                <form action="/adminpfp/files/generateZip/<?php echo $ocr[1]['investorInfo']['Investor']['id'] . "/" . $ocr[1]['investorInfo']['Investor']['user_id'] ?>">
                                                                   <button value="<?php echo $ocr[1]['investorInfo']['Investor']['id'] ?>" class="btn  btn1CR btnRounded download"><?php echo __('Download') ?></button>
                                                                 </form>
                                                             </td>

@@ -100,7 +100,7 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
 
         //Investor id
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $id = $this->Session->read('Auth.User.investor_id');
 
         //First time ocr
         $this->Ocr->createOcr($id);
@@ -164,7 +164,7 @@ class ocrsController extends AppController {
 
             $result1 = $this->Investor->investorDataSave($datosInvestor);
 
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
             $status = $this->Ocr->checkStatus($id);
 
             //Ocr data          
@@ -199,7 +199,7 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $this->set('result', false);
         } else {
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
             $this->layout = 'ajax';
             $this->disableCache();
 
@@ -222,13 +222,13 @@ class ocrsController extends AppController {
     }
 
     /**
-     * Send the selected companies to ocr model
+     * delete the selected company
      */
     function deleteCompanyOcr() {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
             $this->layout = 'ajax';
             $this->disableCache();
 
@@ -244,7 +244,16 @@ class ocrsController extends AppController {
             $this->set('result', $result);
         }
     }
-
+    
+    /**
+     * Delete all NOT_SENT companies_ocrs of a investor
+     */
+    function deleteCompanyOcrAll(){
+         $ocrId = $this->Session->read('Auth.User.Investor.ocr_id');
+         $result = $this->Ocr->deleteCompanyOcrAll($ocrId);
+         $this->set('result', $result);
+    }
+    
     /**
      * Company filter
      * Send the filter conditions and return a companies list
@@ -279,7 +288,7 @@ class ocrsController extends AppController {
             $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
 
             //Investor id
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
 
             //Ocr infe
             $data2 = $this->Ocr->ocrGetData($id);
@@ -334,12 +343,12 @@ class ocrsController extends AppController {
         } else {
             //Companies with ocr
             $this->set('companies', $this->Company->companiesDataOCR());
-            
+
             //Types
             $this->set('CompanyType', $this->crowdlendingTypesLong);
 
             //Investor id
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $id = $this->Session->read('Auth.User.investor_id');
 
             //Set selected companies(not sent)
             $this->set('selected', $this->Ocr->getSelectedCompanies($id));
@@ -383,7 +392,7 @@ class ocrsController extends AppController {
      */
     function ocrInvestorConfirmModal() {
         //Invesor od
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+        $id = $this->Session->read('Auth.User.investor_id');
 
         //Selected companies
         $companyId = $this->Ocr->getSelectedCompanies($id);
@@ -395,7 +404,7 @@ class ocrsController extends AppController {
         $this->set("companies", $companyId);
         $this->set("status", $status);
     }
-    
+
     /** Investor View #4
      * Modal to completed process
      */
@@ -403,189 +412,20 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
     }
 
-
-    //One Click Registration - Winvestify functions
-    function addBill() {
-        
-    }
-
-    //One Click Registration - Winvestify Admin Views
-
-
-    /*     * WinAdmin View #2
-     * 
-     */
-    function ocrWinadminInvestorChecking() {
-
-        //Filter
-        $filter = array('ocr_status' => array(SENT, ERROR, OCR_PENDING, OCR_FINISHED, FIXED));
-
-        //Search  and set investor data 
-        $ocrList = $this->Ocr->ocrGetData(null, $filter);
-        $this->set('usersList', $ocrList);
-
-        //Get user data
-        //$userList = $this->Ocr->getRegisterSentCompanies(null);
-        //Set Status name
-        $this->set('status', $this->ocrStatus);
-
-        $this->layout = 'azarus_private_layout';
-    }
-
-    /** WinAdmin View #1
-     *  WinAdmin Bill panel
-     */
-    function ocrWinadminBillingPanel() {
-        $this->layout = 'azarus_private_layout';
-
-        //get all bills and set them in the view
-        $billsInfo = $this->Ocrfile->getAllBills();
-        $this->set("bills", $billsInfo);
-
-        //Get companies info for the select
-        $companiesInfo = $this->Company->getCompanyDataList(null);
-        $this->set("companies", $companiesInfo);
-
-        // Currency names
-        $this->set('currencyName', $this->currencyName);
-    }
-
-    function billsTable() {
-        if (!$this->request->is('ajax')) {
-            $this->set("result", false);
-            $this->set("message", __('Error at refreshing the bills table.'));
-        } else {
-            $this->layout = 'ajax';
-            $this->disableCache();
-
-            //get all bills and set them in the view
-            $billsInfo = $this->Ocrfile->getAllBills();
-
-            $this->set("result", true);
-            $this->set("bills", $billsInfo);
-        }
-    }
-
-    /** Check data
-     * WinAdmin View #3
-     * @param type $id
-     */
-    function ocrWinadminInvestorData($id) {
-        App::import('Controller', 'Investors');
-        //Search and set investor data
-        $userData = $this->Ocr->ocrGetData($id, null);
-        $this->set('userData', $userData);
-
-        $investorsController = new InvestorsController;
-        // Call a method from
-        //Search and set investor checking
-        $checking = $investorsController->readCheckData($id);
-        $this->set('checking', $checking);
-
-        //Search and set investor files
-        $files = $this->Ocrfile->readExistingFiles($id);
-        $this->set('files', $files);
-
-        $this->layout = 'azarus_private_layout';
-    }
-
-    /**
-     * Update checks
-     */
-    function updateChecks() {
-        if (!$this->request->is('ajax')) {
-            $result = array(false, __('Error updating data check.'));
-            $this->set("result", $result);
-        } else {
-            $this->layout = 'ajax';
-            $this->disableCache();
-            //Request the data
-            $data = $this->request['data'];
-            $result = $this->Investor->updateCheckData($data);
-
-            //set result
-            $this->set("result", $result);
-        }
-    }
-
-    /**
-     * WinAdmin View #4
-     */
-    function ocrWinadminUpdatePfpData() {
-        $this->layout = 'azarus_private_layout';
-
-        // Country Codes
-        Configure::load('countryCodes.php', 'default');
-        $countryData = Configure::read('countrycodes');
-        $this->set('countryData', $countryData);
-
-        //Status selector
-        $this->set('serviceStatus', $this->serviceStatus);
-
-        //Modality selector
-        $this->set('type', $this->crowdlendingTypesLong);
-
-        //Get companies info for the selector
-        $companiesInfo = $this->Company->getCompanyDataList(null);
-        $this->set("companies", $companiesInfo);
-    }
-
-    /**
-     * Update a company
-     */
-    function updateCompanyOcrData() {
-
-        // Country Codes
-        Configure::load('countryCodes.php', 'default');
-        $countryData = Configure::read('countrycodes');
-
-        //Request data
-        $data = array(
-            'id' => $this->request['data']['pfp'],
-            'company_termsUrl' => $this->request['data']['temrs'],
-            'company_privacyUrl' => $this->request['data']['privacy'],
-            'company_PFPType' => $this->request['data']['modality'],
-            'company_country' => $this->request['data']['country'],
-            'company_countryName' => $countryData[$this->request['data']['country']]
-        );
-
-        //Check actual statuos
-        $id = $this->Company->checkOcrServiceStatus($data['id'])[1]['Serviceocr']['id'];
-
-        //If have a status, update it. If not, create it.
-        if ($id != null || $id != 0) {
-            $status = array(
-                'id' => $id,
-                'company_id' => $this->request['data']['pfp'],
-                'serviceocr_status' => $this->request['data']['ocr']
-            );
-        } else {
-            $status = array(
-                'company_id' => $this->request['data']['pfp'],
-                'serviceocr_status' => $this->request['data']['ocr']
-            );
-        }
-
-        //Set result
-        $result = $this->Company->UpdateCompany($data, $status);
-
-        $this->set('result', $result);
-    }
-
-    //WinAdmin View #5
-    function ocrWinadminSoldUsers() {
-        $this->layout = 'azarus_private_layout';
-    }
-
-    //WinAdmin View #6
-    function ocrWinadminTallyman() {
-        $this->layout = 'azarus_private_layout';
-    }
-
     //Activated Service VIEW
     function activatedService() {
         $this->layout = 'azarus_private_layout';
-        $this->render("../Layouts/activated_service");
+        $this->render("/Layouts/activated_service");
+    }
+
+    /**
+     * 
+     */
+    public function resetInvestorDemo() {
+        $ocrId = $this->Session->read('Auth.User.Investor.ocr_id');
+        $this->Ocr->resetOcr($ocrId);
+        $this->Ocrfile->ocrAllFileDelete($this->Session->read('Auth.User.Investor.id'));
+        $this->Ocr->resetCompaniesOcr($ocrId);
     }
 
 }

@@ -95,21 +95,11 @@
             $(".btnCancel").prop("disabled", true);
         });
 
-        $(document).on("click", "#sureBtn", function () {
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            //Delete uploaded files
-            window.location.replace('/marketplaces/showMarketPlace');
-        });
 
-
-        /*$(document).on("click", "#btnConfirm", function () {
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            window.location.replace('/ocrs/ocrCompletedProcess');
-        });*/
-
+        <?php  //Delete files on cancel  ?>
         $(document).on("click", "#btnSure", function () {
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
             link = "/files/deleteAll"
             data = "null"
             getServerData(link, data, successCancel, errorCancel);
@@ -119,11 +109,13 @@
 
 
     function success(result) {
-<?php //Server validation Ok               ?>
+<?php //Server validation Ok                ?>
         resultJson = JSON.parse(result);
         console.log(resultJson);
         if (resultJson[0] == 1 && resultJson[2] == 1) {
             //$(".successMsg").fadeIn();
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
             window.location.replace('/ocrs/ocrCompletedProcess');
             //User feedback(Status ocr control?)
         } else {
@@ -136,13 +128,20 @@
         }
     }
 
+    <?php  //If delete files is ok then ,delete companies_ocr NOT_SENT  ?>
     function successCancel() {
+        link = "/ocrs/deleteCompanyOcrAll";
+        data = "null"
+        getServerData(link, data, successDeleteAll, errorCancel);
+    }
+    
+    <?php  //If you delete all files and companies_ocr, cancel is ok  ?>
+    function successDeleteAll() {
         window.location.replace('/marketplaces/showMarketPlace');
     }
 
-
     function error(result) {
-<?php //Server validation Error           ?>
+<?php //Server validation Error            ?>
         console.log("validation error");
         $(".errorMsg").fadeIn();
     }
@@ -216,12 +215,7 @@
                             <div class="tab-content">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.') ?></p>
-                                        <ul>
-                                            <?php foreach ($companies as $company) { ?>
-                                                <li><?php echo __($company["name"]) ?></li>
-                                            <?php } ?>
-                                        </ul>
+                                        <p align="justify"><?php echo __('Gracias por actualizar los datos erróneos que hemos detectado.') ?></p>
                                     </div>
                                     <div style="display:none;" class="errorMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">

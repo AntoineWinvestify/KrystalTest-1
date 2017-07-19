@@ -149,23 +149,44 @@ var myChart = new Chart(ctx, {
     //chart doughnut
         var ctx = document.getElementById("pieChart1").getContext('2d');
         var myChart = new Chart(ctx, {
-         type: 'doughnut',
-          data: {
-     labels: <?php echo json_encode($resultTallyman[0]['labelsPieChart1'])?>,
-  datasets: [{
-      label: 'Volume',
-        backgroundColor: [
-                            "#5acc5a",
-                            "#55acee"
-                        ],
-        hoverBackgroundColor: [
-                            "#1acc5a",
-                            "#15acee"
-                        ],
-      data: <?php echo json_encode($resultTallyman[0]['dataPieChart1'])?>
-    }]      
+            type: 'doughnut',
+            data: {
+                labels: <?php echo json_encode($resultTallyman[0]['labelsPieChart1'])?>,
+                datasets: [{
+                    label: 'Volume',
+                    backgroundColor: [
+                                "#5acc5a",
+                                "#55acee"
+                            ],
+                    hoverBackgroundColor: [
+                                "#1acc5a",
+                                "#15acee"
+                            ],
+                    data: <?php echo json_encode($resultTallyman[0]['dataPieChart1'])?>
+                }]      
  
-          }
+            }
+        });
+        
+        var ctx = document.getElementById("pieChart2").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: <?php echo json_encode($resultTallyman[0]['labelsPieChart2'])?>,
+                datasets: [{
+                    label: 'Volume',
+                    backgroundColor: [
+                                "#5acc5a",
+                                "#55acee"
+                            ],
+                    hoverBackgroundColor: [
+                                "#1acc5a",
+                                "#15acee"
+                            ],
+                    data: <?php echo json_encode($resultTallyman[0]['dataPieChart2'])?>
+                }]      
+ 
+            }
         });
         
     <?php //Tooltip clicks ?>
@@ -314,10 +335,17 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content">			
                                                     <canvas id="pieChart1" style="height: 100px;"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                            <div class="card card-stats">
+                                                <div class="card-content">			
+                                                    <canvas id="pieChart2" style="height: 100px;"></canvas>
                                                 </div>
                                             </div>
                                         </div>
