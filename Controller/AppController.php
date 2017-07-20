@@ -48,6 +48,26 @@
   Added type of dashboard record
 
 
+2017-06-11      version 0.2
+Corrected test for language cookie 
+
+
+2017-06-14      version 0.21
+loginRedirect has changed to global market place 
+
+
+2017-06-19      version 0.22
+Added a new crowdlending type and defined its "string" values globally.
+Added type of dashboard record
+ 
+2017-06-22      version 0.23
+Added isAuthorized function to verify if a determinated role has access
+  
+2017-06-27      version 0.24  
+Added new function to get sectors of the leftnavigationmenu by role
+
+
+
  * 2017-06-23     version 0.3
  * OCr status defined
  * 
@@ -269,7 +289,7 @@ class AppController extends Controller {
         ),
         'Cookie',
     );
-    var $uses = array('User');
+    var $uses = array('User', 'Role', 'Sector');
 
     /**
      * 	This code is common to all the classes that actively define a method for the beforeFilter
@@ -359,16 +379,33 @@ class AppController extends Controller {
 
         //Use $this->params['controller'] to get the current controller.
         //Use $this->action to verify the current controller/action
-        $action = $this->action;
-        $controller = $this->params['controller'];
-        $action2 = $this->params['action'];
-        //Here we verify if this user has authorization to acces the page
-        //$resultAcl = $this->isAuthorized($action);
-        /* if (!$resultAcl) {
-          //In contructions, we use this now before we create a error page
-          throw new
-          FatalErrorException(__('You cannot access this page directly'));
-          } */
+        if ($this->Auth->user()) {
+
+            $action = $this->action;
+            $controller = $this->params['controller'];
+            $action2 = $this->params['action'];
+            //Here we verify if this user has authorization to acces the controller and the action
+            $resultAcl = $this->isAuthorized($controller,$action);
+            if (!$resultAcl) {
+                //In contructions, we use this now before we create a error page
+                throw new
+                            FatalErrorException(__('You cannot access this page directly'));
+            }
+        }
+        if ($this->Auth->user()) {
+            $sectorExist = $this->Session->read('sectorsMenu');
+            if (empty($sectorExist)) {
+                $roleId = $this->Auth->user('Role.id');
+                /*$this->Role = ClassRegistry::init('Role');
+                $sectors = $this->Role->getSectorsByRole($roleId);*/
+                $sectors = $this->getSectorsByRole($roleId);
+                $this->Session->write('sectorsMenu', $sectors);
+            }
+            $this->set('sectorsMenu', $this->Session->read('sectorsMenu'));
+        }
+       
+        
+        
     }
 
     /**
@@ -680,9 +717,55 @@ class AppController extends Controller {
      * @return boolean It is the access, it can be true or false
      */
     function isAuthorized($controller, $access = '*') {
-        //$userId = $this->Auth->user('id');
-        $aro = $this->Auth->user('role_id');
-        return $this->Acl->check($aro, $controller, $access);
+	//$userId = $this->Auth->user('id');
+	$aro = $this->Auth->user('Role.id');
+        // Get internal database reference of the investor
+        //$this->Role = ClassRegistry::init('Role');
+        //$aro = $this->Role->getRoleNameById($roleId);
+        
+	return $this->Acl->check($aro, $controller, $access);
+    }
+    
+    /**
+     * Function to get the sectors for the leftnavigationmenu by User's role
+     * We do a three table query using the joins option
+     * @param int $roleId It is the user's role id
+     * @return boolean|array Return false if there is not roleId or the array with the sectors
+     */
+    function getSectorsByRole($roleId = null){
+        if (empty($roleId)) {
+            return false;
+        }
+        $this->Sector = ClassRegistry::init('Sector');
+        $options['joins'] = array(
+            array('table' => 'roles_sectors',
+                'alias' => 'RolesSector',
+                'type' => 'inner',
+                'conditions' => array(
+                    'Sector.id = RolesSector.sector_id'
+                )
+            ),
+            array('table' => 'roles',
+                'alias' => 'Role',
+                'type' => 'inner',
+                'conditions' => array(
+                    'RolesSector.role_id = Role.id'
+                )
+            )
+        );
+
+        $options['conditions'] = array(
+            'Role.id' => $roleId
+        );
+        //$options['field'] = array('Sector.*');
+        $options['recursive'] = -1;
+        $options['order'] = array(
+            'Sector.sectors_father',
+            'Sector.sectors_subSectorSequence'
+        );
+
+        $sectors = $this->Sector->find('all', $options);
+        return $sectors;
     }
 
 }
