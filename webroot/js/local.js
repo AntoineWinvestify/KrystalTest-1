@@ -544,6 +544,194 @@ app.visual = {
         }
         return correctForm;
     },
+    checkForm1CRInvestorData: function (){
+        var correctForm = true;
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#1CR_investor_2_investorDataPanel input").removeClass("redBorder"); // remove ALL redborders
+        var name = $("#ContentPlaceHolder_name").val();
+        var surname = $("#ContentPlaceHolder_surname").val();
+        var identificationId = $("#dni").val();
+        var dateOfBirth = $("#ContentPlaceHolder_dateOfBirth").val();
+        var email = $("#ContentPlaceHolder_email").val();
+        var telephone = $("#ContentPlaceHolder_telephone").val();
+        var postCode = $("#ContentPlaceHolder_postCode").val();
+        var address = $("#ContentPlaceHolder_address1").val();
+        var city = $("#ContentPlaceHolder_city").val();
+        var country = $("#ContentPlaceHolder_country").val();
+        var iban = $("#ContentPlaceHolder_iban").val();
+        var cif = $("#ContentPlaceHolder_cif").val();
+        var businessName = $("#ContentPlaceHolder_businessName").val();
+        if (name === "") {
+            console.log("empty name");
+            $(".investorName").addClass("redBorder");
+            $(".ErrorName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorName").fadeIn();
+            correctForm = false;
+        }
+        if (surname === "") {
+            console.log("empty surname");
+            $(".investorSurname").addClass("redBorder");
+            $(".ErrorId").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorId").fadeIn();
+            correctForm = false;
+        }
+        if (identificationId === "") {
+            console.log("empty dni");
+            $(".investorDni").addClass("redBorder");
+            $(".ErrorSurname").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorSurname").fadeIn();
+            correctForm = false;
+        }
+        if (dateOfBirth === "") {
+            console.log("empty date of birth");
+            $(".investorDateOfBirth").addClass("redBorder");
+            $(".ErrorDateOfBirth").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorDateOfBirth").fadeIn();
+            correctForm = false;
+        }
+        if (email === "") {
+            $(".investorEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        } else {
+            if (!app.utils.validEmail(email)) {
+                $(".investorEmail").addClass("redBorder");
+                $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email not valid" warning
+                $(".ErrorEmail").fadeIn();
+                correctForm = false;
+            }
+        }
+        if (postCode === "") {
+            console.log("empty post code");
+            $(".investorPostCode").addClass("redBorder");
+            $(".ErrorPostCode").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPostCode").fadeIn();
+            correctForm = false;
+        }
+        if (address === "") {
+            console.log("empty address");
+            $(".investorAddress").addClass("redBorder");
+            $(".ErrorAddress").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorAddress").fadeIn();
+            correctForm = false;
+        }
+        if (city === "") {
+            console.log("empty city");
+            $(".investorCity").addClass("redBorder");
+            $(".ErrorCity").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorCity").fadeIn();
+            correctForm = false;
+        }
+        if (country === "") {
+            console.log("empty country");
+            $(".investorCountry").addClass("redBorder");
+            $(".ErrorCountry").find(".errorMessage").html(TEXTOS.T15); // "you have to select an option" warning
+            $(".ErrorCountry").fadeIn();
+            correctForm = false;
+        }
+        if (telephone === "") {
+            $(".telephoneNumber").addClass("redBorder");
+            $(".ErrorPhoneNumber").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPhoneNumber").fadeIn();
+            correctForm = false;
+        } else {
+            if (!app.utils.checkPhoneNumber(telephone)) {
+                $(".investorTelephone").addClass("redBorder");
+                $(".ErrorPhoneNumber").find(".errorMessage").html(TEXTOS.T10); // "The telephone number is not valid" warning
+                $(".ErrorPhoneNumber").fadeIn();
+                correctForm = false;
+            }
+        }
+        if (iban === "") {
+            console.log("empty IBAN");
+            $(".investorIban").addClass("redBorder");
+            $(".ErrorIban").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorIban").fadeIn();
+            correctForm = false;
+        }
+        else {
+            //Needed testing algorithm. (IBAN Format)
+            //var IBAN = required('iban');
+            if (!window.IBAN.isValid(iban)) {
+                $(".investorIban").addClass("redBorder");
+                $(".ErrorIban").find(".errorMessage").html(TEXTOS.T95); // "The IBAN is not valid" warning
+                $(".ErrorIban").fadeIn();
+                correctForm = false;
+            }
+        }
+        //If is selected 'I use my company as investment vehicle', validate CIF & Business Name
+            if ((cif === "") && ($("#investmentVehicle").prop("checked"))) { 
+                console.log("empty CIF");
+                $(".investorCif").addClass("redBorder");
+                $(".ErrorCif").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+                $(".ErrorCif").fadeIn();
+                correctForm = false;
+            }
+            /*else {
+                //Needed testing algorithm. (CIF Format)
+                if (!app.utils.checkCif(cif)) {
+                    $(".investorCif").addClass("redBorder");
+                    $(".ErrorCif").find(".errorMessage").html(TEXTOS.T24); // "The cif is not valid" warning
+                    $(".ErrorCif").fadeIn();
+                    correctForm = false;
+                }
+            }*/
+            if ((businessName === "") && ($("#investmentVehicle").prop("checked"))) {
+                console.log("empty business name");
+                $(".investorBusinessName").addClass("redBorder");
+                $(".ErrorBusinessName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+                $(".ErrorBusinessName").fadeIn();
+                correctForm = false;
+            }
+            $(".uploaded").each(function(){
+                if ($(this).val() == 0) {
+                    console.log("required files");
+                    $(".ErrorFiles").find(".errorMessage").html(TEXTOS.T96); // "update all required files" warning
+                    $(".ErrorFiles").fadeIn();
+                    correctForm = false;
+                }
+            });
+        return correctForm;   
+    },
+    checkFormWinadminBilling: function () {
+        var correctForm = true;
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#uploadedBills input").removeClass("redBorder"); // remove ALL redborders
+        var number = $("#ContentPlaceHolder_number").val();
+        var concept = $("#ContentPlaceHolder_concept").val();
+        var amount = $("#ContentPlaceHolder_amount").val();
+        if (number === "") {
+            console.log("empty bill number");
+            $(".billNumber").addClass("redBorder");
+            $(".ErrorNumber").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorNumber").fadeIn();
+            correctForm = false;
+        }
+        if (concept === "") {
+            console.log("empty bill concept");
+            $(".billConcept").addClass("redBorder");
+            $(".ErrorConcept").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorConcept").fadeIn();
+            correctForm = false;
+        }
+        var regexp =  /^[1-9]\d*$/g;
+        result = regexp.test(amount);
+        if (amount === "") {
+            console.log("empty bill amount");
+            $(".billAmount").addClass("redBorder");
+            $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorAmount").fadeIn();
+            correctForm = false;
+        }
+        else if (!result) {
+            console.log("incorrect bill amount");
+            $(".billAmount").addClass("redBorder");
+            $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T72); // "empty field" warning
+            $(".ErrorAmount").fadeIn();
+            correctForm = false;
+        }
+    }
 };
 app.utils = {
 
@@ -622,7 +810,7 @@ var TEXTOS = {
     T21: 'Please enter your alias',
     T22: 'Please introduce your date of birth',
     T23: 'Please select a crowdlending platform.',
-//    T24: "El CIF introducido no es válido.",
+    T24: "The CIF is not valid.",
     //   T25: "Por favor, introduzca el nombre de su empresa.",
     T26: 'Please introduce the code which was sent to your mobile phone',
 //    T27: "Por favor, introduzca la marca de su empresa.",
@@ -670,7 +858,7 @@ var TEXTOS = {
     //   T69: "Por favor, suba un documento con su DNI",
     //   T70: "Por favor, suba un documento con su titularidad bancaria",
     //   T71: "Por favor, suba un documento con sus tres últimas nominas",
-    T72: 'Por favor, introduzca una cantidad mayor que cero',
+    T72: 'Please, Introduce a quantity higher than 0',
     //   T73: "Por favor, introduzca su contraseña actual",
     //   T74: "Por favor, introduzca su nueva contraseña",
     //   T75: "El código postal introducido no es válido.",
@@ -692,6 +880,7 @@ var TEXTOS = {
     T91: "Una nueva contraseña ha sido enviado al email indicado",
     T92: "Por favor, introduzca el nombre",
     T93: "Por favor, introduzca los apellidos",
-    T94: "Por favor, introduzca su mensaje"
+    T94: "Por favor, introduzca su mensaje",
+    T95: "The IBAN is not valid",
+    T96: "You must upload all the required files",
 };
-

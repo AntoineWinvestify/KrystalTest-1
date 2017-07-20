@@ -18,10 +18,10 @@
 
 
 
-Functions for the AdminWin role
+Functions for the Winadmin role
 
 
-2017-06-14	  version 0.1
+2017-07-08	  version 0.1
 Initial version. 
  * All methods are "protected" using the "isAuthorized" function
  *
@@ -46,12 +46,11 @@ class UsersController extends AdminAppController
 	var $components = array('Security');
 
   	var $error;
-	var $layout = 'zastac_admin_layout';		// use of "flan template" for intranet access
+	var $layout = 'winvestify_admin_login_layout';		// use of "flan template" for intranet access
 
 
 
 function beforeFilter() {
-//	Configure::write('debug', 2);
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 
@@ -64,13 +63,8 @@ function beforeFilter() {
 	$this->Security->validatePost = false;	
 // Allow only the following actions.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
-//$this->Security->unlockedActions('login');
-   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
-
-//var_dump($_REQUEST);
-//var_dump($this->request);
-      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
+	$this->Auth->allow('login','session', 'loginAction', 'testmodal');    // allow the actions without logon
+    
 
 }
 
@@ -98,24 +92,12 @@ public function showInvestorDataPanel() {
     
 }
 
+public function testmodal() {
+ 
+    
 
-/**
- * 
- * Updates the (separate) database of investor data with the data obtained from data traffic
- * 
- */
-public function cronUpdateMLInvestorGlobalData() {
-/*
- * check if pending request in queue
- * 
- * 
- */ 
-    
-    
-    
 }
-
-
+    
 
 /**
 *	must eventually be moved to the admin section. After action this user does no longer exist
@@ -254,67 +236,12 @@ echo "<br/>";
 
 
 public function loginAction() {
-    echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-//$this->print_r2($this->request->data);
-$this->autoRender = false;
-	 
         if ($this->Auth->login()) {
-            echo "SESSION1 <br>";
-            echo "We have logged in <br>";
-            print_r($this->Session->read()) ."<br>";
-            echo "<br>" . $this->Auth->redirectUrl()."<br>"."<br>";
-  echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";        
+            $this->redirect($this->Auth->redirectUrl());
         }
         else {
             echo "User is not logged on<br>";
-            echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
         }
-        
-  exit;  
-        if ($this->Auth->loggedIn()){
-		echo "user has logged on";	
-	}
-	else {
-		echo "User not logged on";
-	}
-
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";	
-//	echo $this->Auth->authError();
-exit;	
-	$this->layout = 'zastac_admin_login_layout';
-//echo $this->Session->flash();
-//echo $this->Session->flash('auth');	
-	
-
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-echo $this->Auth->user('id');
-debug($this->request->data);
-echo  $this->Auth->loggedIn();
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-//var_dump($this->request);	
-	if ($this->request->is('post')) {
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-	
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-
-		if ($this->Auth->login()) {
-		echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-		pr($this->request);
-			$user = $this->Auth->user();		// get all the data of the authenticated user
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-			exit;
-			return $this->redirect($this->Auth->redirectUrl());
-		}
-		else {
-		echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-			$this->Session->setFlash(__('Username or password is incorrect'),
-											'default',array(),	'auth');
-			echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-			exit;
-		}
-	}
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-	exit;
 }
 
 
@@ -331,7 +258,7 @@ public function login()
 		$this->disableCache();
 	}
 	else {
-		$this->layout = 'zastac_admin_login_layout';
+		$this->layout = 'winvestify_admin_login_layout';
 	}
 	$error = false;
 	$this->set("error", $error);
@@ -342,9 +269,8 @@ public function login()
 
 public function logout() {
 	$user = $this->Auth->user();		// get all the data of the authenticated user
-	$event = new CakeEvent('Controller.User_logout', $this, array(
-										'data' => $user,
-										));
+	$event = new CakeEvent('Controller.User_logout', $this, array('data' => $user,
+				));
 	$this->getEventManager()->dispatch($event);
 	return $this->redirect($this->Auth->logout());
 }

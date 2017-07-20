@@ -51,11 +51,13 @@ $(document).ready(function() {
 
 
 	<ul class="sidebar-menu">
+    <li class="header">
+        <strong>Investor Menu</strong>
+    </li>
             <?php 
             //This is the variable to get the sectors of the user
             //It depends on the role that the user has
             echo $sectorsMenu[0]['sectors_name'] ?>
-    <li class="header">MAIN NAVIGATION</li>
         <?php
             $sectorActual = 0;
             $sectorHasChildren = false;
@@ -195,10 +197,13 @@ $(document).ready(function() {
             <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>?>
           </ul>
         </li>
+        <li class="treeview">
+            <a href="/ocrs/ocrInvestorView">
+              <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
+            </a>
+        </li>
+    
  
-<?php /*<li class="treeview">
-			<a href="/invitations/recommend"><i class="fa fa-power-off"></i><span><?php //echo __('Recommend to a friend')?></a></span>
-        </li>?>
         <li class="treeview">
           <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>

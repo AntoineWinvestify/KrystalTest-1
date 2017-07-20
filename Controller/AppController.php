@@ -66,7 +66,7 @@ Added new function to get sectors of the leftnavigationmenu by role
  *
  *
  */
- 
+
 App::uses('Controller', 'Controller');
 
 
@@ -188,10 +188,21 @@ define('REGISTRATION_PROGRESS_3', 3);
 define('REGISTRATION_PROGRESS_4', 4);
 define('REGISTRATION_PROGRESS_5', 5);
 
+// CURL ERRORS
+define('CURL_ERROR_TIMEOUT', 28);
 
-// TYPES OF DASHBOARD RECORD	
-define('USER_GENERATED', 1);
-define('SYSTEM_GENERATED', 2);
+// TYPES OF DASHBOARD RECORDS	
+define('USER_GENERATED', 2);
+define('SYSTEM_GENERATED', 1);
+
+
+// DEFINED CURRENCIES
+define('EUR', 1);           // Euro
+define('GBP', 2);           // UK Pound Sterling
+define('USD', 3);           // US Dollar
+
+// APPLICATION THAT CAN PRODUCE BILLING DATA
+define('TALLYMAN_APP', 1);
 
 
 
@@ -245,15 +256,23 @@ class AppController extends Controller {
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
-        $this->crowdlendingTypes = array(P2P => __('P2P Crowdlending'),
+        $this->crowdlendingTypesLong = array(P2P => __('P2P Crowdlending'),
                                         P2B => __('P2B Crowdlending'),
                                         INVOICE_TRADING => __('P2P Invoice Trading'),
                                         CROWD_REAL_ESTATE => __('Crowd Real Estate'),
                                         SOCIAL => __('Social')
-        );
-	$this->set('crowdlendingTypes', $$this->crowdlendingTypes);
+                                        );
+        $this->set('crowdlendingTypesLong', $this->crowdlendingTypesLong);
         
-
+        
+        $this->crowdlendingTypesShort = array(P2P => __('P2P'),
+                                              P2B => __('P2B'),
+                                        INVOICE_TRADING => __('I.T.'),
+                                        CROWD_REAL_ESTATE => __('R.E.'),
+                                        SOCIAL => __('SOCIAL')
+                                        );
+	$this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
+ 
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
@@ -269,6 +288,12 @@ class AppController extends Controller {
                                 'improvement' => __('Functional Improvement'), 
                                 'feature' => __('New Feature'));
         $this->set('subjectContactForm', $subjectContactForm);
+
+
+        $filterCompanies1 = array(__('Country filter'), 'Spain' => __('Spain'), 'Italy' => __('Italy'));
+        $filterCompanies2 = array(__('Type filter'), 'P2P (Peer-to-Peer)' => __('P2P (Peer-to-Peer)'));
+        $this->set('filterCompanies1', $filterCompanies1);
+        $this->set('filterCompanies2', $filterCompanies2);
         
         //Use $this->params['controller'] to get the current controller.
         //Use $this->action to verify the current controller/action
@@ -381,7 +406,6 @@ class AppController extends Controller {
     }
 
     public function session() {
-        Configure::write('debug', 2);
         $this->autoRender = FALSE;
 
         $test1 = "apple " . "peer";
@@ -495,59 +519,59 @@ class AppController extends Controller {
      * 	Get the location data of the user
      *
      */
-    /*public function getLocationData111() {
+    /* public function getLocationData111() {
 
-        $curl = curl_init();
-        if (!$curl) {
-            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
-            $msg = $msg . " \n";
-            return "";
-        }
-        $url = "http://icanhazip.com";
-        // Set the file URL to fetch through cURL
-        curl_setopt($curl, CURLOPT_URL, $url);
+      $curl = curl_init();
+      if (!$curl) {
+      $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
+      $msg = $msg . " \n";
+      return "";
+      }
+      $url = "http://icanhazip.com";
+      // Set the file URL to fetch through cURL
+      curl_setopt($curl, CURLOPT_URL, $url);
 
-        // Set a different user agent string (Googlebot)
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Googlebot/2.1 (+http://www.google.com/bot.html)');
+      // Set a different user agent string (Googlebot)
+      curl_setopt($curl, CURLOPT_USERAGENT, 'Googlebot/2.1 (+http://www.google.com/bot.html)');
 
-        // Follow redirects, if any
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+      // Follow redirects, if any
+      curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
-        // Fail the cURL request if response code = 400 (like 404 errors)
-        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+      // Fail the cURL request if response code = 400 (like 404 errors)
+      curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
-        // Return the actual result of the curl result instead of success code
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      // Return the actual result of the curl result instead of success code
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-        // Wait for 10 seconds to connect, set 0 to wait indefinitely
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
+      // Wait for 10 seconds to connect, set 0 to wait indefinitely
+      curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
 
-        // Execute the cURL request for a maximum of 50 seconds
-        curl_setopt($curl, CURLOPT_TIMEOUT, 50);
+      // Execute the cURL request for a maximum of 50 seconds
+      curl_setopt($curl, CURLOPT_TIMEOUT, 50);
 
-        // Do not check the SSL certificates
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+      // Do not check the SSL certificates
+      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
-        curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies1.txt');  // important
-        curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies1.txt');  // Important
-        // Fetch the URL and save the content
-        $ip = trim(curl_exec($curl));
-        $url = "http://freegeoip.net/json/" . $ip;
+      curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies1.txt');  // important
+      curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies1.txt');  // Important
+      // Fetch the URL and save the content
+      $ip = trim(curl_exec($curl));
+      $url = "http://freegeoip.net/json/" . $ip;
 
 
-        // Set the file URL to fetch through cURL
-        curl_setopt($curl, CURLOPT_URL, $url);
+      // Set the file URL to fetch through cURL
+      curl_setopt($curl, CURLOPT_URL, $url);
 
-        // Fetch the URL and save the content
-        $str = curl_exec($curl);
-        curl_close($curl);
+      // Fetch the URL and save the content
+      $str = curl_exec($curl);
+      curl_close($curl);
 
-        $this->print_r2(json_decode($str, true));
-        return json_decode($str, true);
-    }*/
-    
-      /** 
+      $this->print_r2(json_decode($str, true));
+      return json_decode($str, true);
+      } */
+
+    /**
      *
      * 	Get the geographical location data of the user
      *
@@ -599,7 +623,7 @@ class AppController extends Controller {
 
 // Also store it in the Session
         foreach ($geoData as $key => $element) {
-            $this->Session->write("locationData.". $key, $element);
+            $this->Session->write("locationData." . $key, $element);
         }
         return $geoData;
     }
