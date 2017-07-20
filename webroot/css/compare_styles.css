@@ -1369,27 +1369,26 @@ hr.nomargin {
     padding-top: 20px;
 }
 .paragraph {
-    margin: 300px 0 0 50px;
+    margin: 120px 0 0 50px;
     position: absolute;
-}
-
-.paragraph p {
     color: white !important;
+    text-align: right !important;
+    width: 600px;
 }
 .adminLogos{
-    margin: 50px auto;
+    margin: 250px auto;
+    height: 120px;
+    width: 600px;
     float: left;
 }
 .logo1 {
-    background-image: url("/img/logo_winvestify/Logo_favicon.png");
-    background-repeat: no-repeat;
-    width: auto;
-    height: 100%;
+    height: 100px;
+    float: left;
+    margin-left: 50px;
 }
 .logo2 {
-    background-image: url("/img/logo_winvestify/Logo_texto.png");
-    background-repeat: no-repeat;
-    width: 80%;
+    height: 100px;
+    float: right;
 }
 
 /*************************** MEDIA QUERIES ****************************/
