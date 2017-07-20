@@ -102,7 +102,7 @@ class filesController extends AppController {
         } else if ($type == 'bill') {
             $data = $this->Ocrfile->readSimpleBill($id);
             $pathToFile = $fileConfig['billsPath'] . $data['CompaniesFile']['bill_url'];
-            $name = $data['CompaniesFile']['bill_number'];
+            $name = 'Winvestify'. '_' . $data['CompaniesFile']['bill_number'] . '_' . $data['CompaniesFile']['bill_concept'];
         }
 
         //Download
