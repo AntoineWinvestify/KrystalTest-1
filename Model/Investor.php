@@ -596,8 +596,7 @@ class Investor extends AppModel {
             }
         }
 
-
-        //If we click approve, change the status
+echo false;        //If we click approve, change the status
         if ($checks['type'] == 'approve') {
 
             //Json path
@@ -606,7 +605,7 @@ class Investor extends AppModel {
             $path = $fileConfig['investorPath'] . $folder;
 
             //Find investor info for the json
-            $investorData = $this->find('first', array(array('conditions' => array('id' => $checks['investorId'])), 'recursive' => -1));
+            $investorData = $this->find('first', array('conditions' => array('id' => $checks['investorId']), 'recursive' => -1));
 
             //Find ocr info for the json
             $ocrData = $this->Ocr->ocrGetData($checks['investorId']);
