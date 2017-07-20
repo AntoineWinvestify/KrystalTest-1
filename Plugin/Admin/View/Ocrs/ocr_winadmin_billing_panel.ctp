@@ -393,7 +393,7 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive" id="billsTable">
                                 <table id="billsHistory" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                       data-order='[[ 1, "asc" ]]' data-page-length='10' rowspan='1' colspan='1'>
+                                       data-order='[[ 1, "desc" ]]' data-page-length='10' rowspan='1' colspan='1'>
                                     <thead>
                                         <tr>
                                             <th><?php echo __('PFP') ?></th>

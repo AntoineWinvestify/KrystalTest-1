@@ -121,7 +121,7 @@ function error(data){}
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="table-responsive">  
                                         <table id="usersTable" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                               data-order='[[ 0, "asc" ]]' data-page-length='25'>
+                                               data-order='[[ 0, "desc" ]]' data-page-length='25'>
                                             <thead>
                                                 <tr>
                                                     <th><?php echo __('Date') ?></th>
