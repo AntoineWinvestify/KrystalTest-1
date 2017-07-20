@@ -86,7 +86,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Ocrfile');
+    var $uses = array('Ocr', 'Company', 'Ocrfile', 'Investor');
     var $error;
 
     function beforeFilter() {
@@ -141,7 +141,7 @@ class ocrsController extends AppController {
      * 
      */
     public function readtallymandata() {
-        
+
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
@@ -195,7 +195,6 @@ class ocrsController extends AppController {
                 $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
 
 //print_r($resulyTallyManData);
-
                 // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
                     $error = NO_DATA_AVAILABLE;
@@ -278,12 +277,12 @@ class ocrsController extends AppController {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            $id = $idInv;//$this->request->params['id'];
+            $id = $this->request->data['id'];//idInv; //$this->request->params['id'];
+            $userId = $this->Investor->getInvestorUserId($id);
             $status = DOWNLOADED;
             $companyId = $this->Session->read('Auth.User.Adminpfp.company_id');
-
             $result = $this->Ocr->updateInvestorStatus($id, $status, $companyId);
-            $this->set('result', [$result, $id]);
+            $this->set('result', [$result, $id, $userId]);
         }
     }
 
@@ -296,33 +295,29 @@ class ocrsController extends AppController {
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
 
-  
-/**
- * 
- * Shows the initial, basic screen of the Tallyman service
- * 
- */
-public function startTallyman($investorEmail, $investorTelephone) {
- 
-    $this->layout = 'Adminpfp.azarus_private_layout';
-  
-    $investorDNI = "";
-    $investorTelephone = ""; 
-    $investorEmail = "";
+    /**
+     * 
+     * Shows the initial, basic screen of the Tallyman service
+     * 
+     */
+    public function startTallyman($investorEmail, $investorTelephone) {
 
-    $investorEmail = "antoine.de.poorter@gmail.com";
-    $investorTelephone = "+34675546946";
-    
-    $this->set("investorEmail", $investorEmail);
-    $this->set("investorDNI", $investorDNI);
-    $this->set("investorTelephone", $investorTelephone);            
-            
+        $this->layout = 'Adminpfp.azarus_private_layout';
 
-    $filterconditions = array('investor_identity', $investorIdentification);
-    $this->set('result', $result);
-}
-  
-    
-    
-    
+        $investorDNI = "";
+        $investorTelephone = "";
+        $investorEmail = "";
+
+        $investorEmail = "antoine.de.poorter@gmail.com";
+        $investorTelephone = "+34675546946";
+
+        $this->set("investorEmail", $investorEmail);
+        $this->set("investorDNI", $investorDNI);
+        $this->set("investorTelephone", $investorTelephone);
+
+
+        $filterconditions = array('investor_identity', $investorIdentification);
+        $this->set('result', $result);
+    }
+
 }

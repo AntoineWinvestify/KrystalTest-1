@@ -463,7 +463,7 @@ class Investor extends AppModel {
             'conditions' => array('Investor.id' => $investorId),
             'recursive' => -1,
         ));
-        print_r($data);
+
         $id = $data[0]['Investor']['user_id'];
         return $id;
     }
