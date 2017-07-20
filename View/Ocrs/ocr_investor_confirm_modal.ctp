@@ -100,8 +100,8 @@
         $(document).on("click", "#btnSure", function () {
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
-            link = "/files/deleteAll"
-            data = "null"
+            link = "/files/deleteAll";
+            data = "null";
             getServerData(link, data, successCancel, errorCancel);
         });
 
@@ -134,7 +134,7 @@
 <?php //If delete files is ok then ,delete companies_ocr NOT_SENT   ?>
     function successCancel() {
         link = "/ocrs/deleteCompanyOcrAll";
-        data = "null"
+        data = "null";
         getServerData(link, data, successDeleteAll, errorCancel);
     }
 
