@@ -144,8 +144,8 @@ class ocrfile extends AppModel {
             $fileMime = $fileOpened->mime(); //Get mime type
             //Type and size filter
             if (in_array($fileMime, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $name = $this->find('first', array('conditions' => array('id' => $fileId), 'recursive' => -1))['Ocrfile']['file_type'];
-                $filename = date("Y-m-d_H:i:s", time()) . "_" . $name;
+                $name = $this->find('first', array('conditions' => array('id' => $fileId), 'recursive' => -1))['Ocrfile']['file_type'] . '.' . explode('/',$fileMime)[1];
+                $filename = date("Y-m-d_H:i:s", time()) . "_" . $name . '.' . explode('/',$fileMime)[1];
                 $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
                 //Create the dir if not exist

@@ -318,7 +318,7 @@ class ocrsController extends AppController {
             $fileConfig = Configure::read('files');
             $typeString = null;
             foreach (array_unique($fileConfig['permittedFiles']) as $files) {
-                $file = substr($files, -3, 3);
+                $file = explode('/',$files)[1];
                 $typeString = $typeString . " ." . $file;
             }
             $this->set('filesType', $typeString);
