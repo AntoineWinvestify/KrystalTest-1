@@ -47,9 +47,9 @@ $(document).ready(function() {
 </script>
 
 	<ul class="sidebar-menu">
-    <li class="header">
-        <strong><?php echo __('Investor Menu')?></strong>
-    </li>
+            <li class="header">
+                <strong><?php echo __('Investor Menu')?></strong>
+            </li>
             <?php 
             //This is the variable to get the sectors of the user
             //It depends on the role that the user has
@@ -81,6 +81,9 @@ $(document).ready(function() {
                             </a>
                             <ul class="treeview-menu">
                         <?php
+                    }
+                    else {
+                        echo "</a></li>";
                     }
                 }
                 else {

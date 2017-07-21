@@ -80,6 +80,9 @@ $(document).ready(function() {
                             <ul class="treeview-menu">
                         <?php
                     }
+                    else {
+                        echo "</a></li>";
+                    }
                 }
                 else {
                     echo "<li><a href='". $sector["Sector"]["sectors_licontent"] . "'>";
