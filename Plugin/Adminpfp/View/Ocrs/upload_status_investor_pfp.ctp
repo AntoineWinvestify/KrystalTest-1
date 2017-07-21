@@ -7,4 +7,4 @@
  */
 
 echo $result[0]; //Ajax response
-echo $result[1];
+echo json_encode($result);

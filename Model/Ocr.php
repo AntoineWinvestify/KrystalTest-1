@@ -115,7 +115,7 @@ class ocr extends AppModel {
     /**
      * 
      * Saves data in ocr table for first time 
-     * @param type $id
+     * @param type $id Investor id
      * @return int
      */
     public function createOcr($id) {
@@ -135,21 +135,21 @@ class ocr extends AppModel {
             //Update
             if ($this->save($data)) {
                 $idOcr = $this->findOcrId($id);
-                //Insert ocr_id in investor data
-                $data = array('id' => $id, 'ocr_id' => $idOcr);
+                //Insert ocr_id in investors table
+                $data = array('id' => $id, 'ocr_id' => $idOcr); 
                 $this->Investor->save($data);
-                return true;
+                return true; //Ajax response
             } else {
-                return false;
+                return false; //Ajax response
             }
         } else {
-            return true;
+            return true; //Ajax response
         }
     }
 
     /**
      * Save or update ocr information
-     * @param type $dataParam
+     * @param type $dataParam Array, investor and ocr info
      * @return boolean
      */
     public function ocrDataSave($dataParam) {
@@ -163,22 +163,21 @@ class ocr extends AppModel {
                 'investor_id' => $dataParam['investor_id']),
             'recursive' => -1,));
 
-        /*$iban = $dataParam['investor_iban']; 
-        $ibanValidation = new IBAN($iban);*/
+
 
         //Ocr data
-        //if ($ibanValidation) {
+
             if (count($id) > 0) {
                 $time = date('Y-m-d H:i:s', time());
 
-
+                //Status control
                 if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
                     $status = FIXED;
                 } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT || $dataParam['ocr_status'][0]['Ocr']['ocr_status'] == FINISHED) {
                     $status = SENT;
                 }
 
-
+                //If  investment vehicle is CHECKED save cif and business name
                 if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
                     $data = array(
                         'id' => $id['Ocr']['id'],
@@ -191,7 +190,7 @@ class ocr extends AppModel {
                         'ocr_sent' => $time,
                     );
                 } else {
-                    $data = array(
+                    $data = array( // If is UNCHEKED , don't save cif and business name
                         'id' => $id['Ocr']['id'],
                         'investor_id' => $dataParam['investor_id'],
                         'ocr_investmentVehicle' => 0,
@@ -201,33 +200,27 @@ class ocr extends AppModel {
                     );
                 }
 
-                $result = json_encode($data);
-                //if ($this->validates($this->save($data))) 
+                $result = json_encode($data); //Data for ajax
                 if ($this->save($data, $validate = true)) { //Save ok
-                    return true . "," . $result;  //Return for a json
+                    return true . "," . $result;  //Return for a json 
                 } else {
                     return false . ",";
                 }
             } else {
-
                 /*
-                 * 
                  * SAVE ERROR
                  */
                 return false . ","; //Save failed
             }
-        /*} else {
-            return false . ","; //Iban validation error
-        }*/
     }
 
     /**
      * Get and return ocr data
-     * @param type $id
+     * @param type $id Investor id
      * @return type
      */
     public function ocrGetData($id, $filter = null) {
-
+        //Filter
         if ($id != null && $filter != null) {
             array_push($filter, array('investor_id' => $id));
         } else if ($filter == null && $id != null) {
@@ -242,13 +235,13 @@ class ocr extends AppModel {
         if ($info) {
             return $info; //Return info
         } else {
-            return 0; //No info
+            return false; //No info
         }
     }
 
     /**
      * Get only the ocr status
-     * @param type $id
+     * @param type $id Investor id
      * @return type
      */
     public function checkStatus($id) {
@@ -262,12 +255,13 @@ class ocr extends AppModel {
 
     /**
      * Save the selected companies in company_ocr
-     * @param type $data
+     * @param type $data Investor info
      * @return boolean
      */
     public function saveCompaniesOcr($data) {
 
-        if (count($data) > 2) {   // Data is array, $data > 2 are the id of selected companies $data<2 are number if companies and
+        if (count($data) > 2) {   // Data is array, $data > 2 are the id of selected companies $data<2 are number of companies
+            //Get ocr id
             $ocrId = $this->find('first', array(
                 'fields' => array(
                     'id',
@@ -277,20 +271,20 @@ class ocr extends AppModel {
                 'recursive' => -1,));
 
 
-            $comp = $data["idCompanies"];
+            $comp = $data["idCompanies"]; //Array with the id of the selected companies
 
             $dataArray = array();
             for ($i = 0; $i < count($comp); $i++) {
                 array_push($dataArray, array('company_id' => $comp[$i],
                     'ocr_id' => $ocrId['Ocr']['id'],
-                    'company_status' => 0));
+                    'company_status' => SELECTED));
             }
-            $this->CompaniesOcr->saveAll($dataArray);
+            $this->CompaniesOcr->saveAll($dataArray); //Save companies_ocr table  SELECTED
 
             $this->set('data', $data);
-            return 1;
+            return true;
         } else {
-            return 0;
+            return false;
         }
     }
 
@@ -308,18 +302,18 @@ class ocr extends AppModel {
     }
 
     /**
-     * Update the sent companies status
-     * @param type $id
+     * Update the selected companies status
+     * @param type $id ocr id
      */
     public function updateCompaniesStatus($id) {
 
-        $CompanyOcr = $this->CompaniesOcr->find('all', array('conditions' => array('ocr_id' => $id, 'company_status' => NOT_SENT)));
+        $CompanyOcr = $this->CompaniesOcr->find('all', array('conditions' => array('ocr_id' => $id, 'company_status' => NOT_SENT))); //Find companies_ocr realtions
 
         $data = array();
         foreach ($CompanyOcr as $value) {
             array_push($data, array('id' => $value['CompaniesOcr']['id'], 'company_status' => SENT));
         }
-
+        //Update companies_ocr table  SELECTED => SENT
         if ($this->CompaniesOcr->saveAll($data)) {
             return "," . true . "]";
         } else {
@@ -328,18 +322,19 @@ class ocr extends AppModel {
     }
 
     /**
-     * Update the sent companies status
+     * Update companies status
      * @param type $id
      */
     public function updateInvestorStatus($investorId, $status, $companyId) {
-        $ocrId = $this->findOcrId($investorId);
-        $id = $this->getCompaniesOcrId($companyId, $ocrId);
+        $ocrId = $this->findOcrId($investorId); //Ocr id
+        $id = $this->getCompaniesOcrId($companyId, $ocrId); //companies_ocr id
 
         $data = array(
             'id' => $id,
-            'company_status' => 4
-        );
-        if ($this->CompaniesOcr->save($data)) {
+            'company_status' => $status
+        ); 
+        
+        if ($this->CompaniesOcr->save($data)) { //Update status
             return true;
         } else {
             return false;
@@ -348,8 +343,8 @@ class ocr extends AppModel {
 
     /**
      * Find ocrId
-     * @param type $id
-     * @return type
+     * @param type $id Investor id
+     * @return type ocr id
      */
     public function findOcrId($id) {
         //Find ocrId
@@ -387,12 +382,12 @@ class ocr extends AppModel {
     /**
      * Get all companies info related to a investor
      * 
-     * @param type $id
+     * @param type $id Investor id
      * @return array
      */
     public function getAllCompanies($id) {
-        $companiesArray = $this->find('all', array('recursive' => 1, 'conditions' => array('investor_id' => $id)));
-        $companies_ocrs = array();
+        $companiesArray = $this->find('all', array('recursive' => 1, 'conditions' => array('investor_id' => $id))); 
+        $companies_ocrs = array(); //All companies_ocrs related with the investor
         foreach ($companiesArray as $company) {
             foreach ($company["Company"] as $companyOcr) {
                 array_push($companies_ocrs, array('ocrInfo' => $companyOcr["CompaniesOcr"], 'name' => $companyOcr['company_name']));
@@ -409,7 +404,7 @@ class ocr extends AppModel {
      */
     public function getSelectedCompanies($id) {
 
-        // Read all the companies_ocrof the user
+        // Read all the companies_ocr of the user
         $companyListNotFilter = $this->getAllCompanies($id);
         $companyList = array();
         //status filter
