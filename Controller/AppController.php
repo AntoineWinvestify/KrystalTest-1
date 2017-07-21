@@ -395,7 +395,7 @@ class AppController extends Controller {
         if ($this->Auth->user()) {
             $sectorExist = $this->Session->read('sectorsMenu');
             if (empty($sectorExist)) {
-                $roleId = $this->Auth->user('Role.id');
+                $roleId = $this->Auth->User('role_id');
                 /*$this->Role = ClassRegistry::init('Role');
                 $sectors = $this->Role->getSectorsByRole($roleId);*/
                 $sectors = $this->getSectorsByRole($roleId);
