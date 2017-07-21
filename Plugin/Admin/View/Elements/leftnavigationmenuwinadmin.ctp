@@ -83,7 +83,7 @@ $(document).ready(function() {
                 }
                 else {
                     echo "<li><a href='". $sector["Sector"]["sectors_licontent"] . "'>";
-                    echo "<i class=". $sector["Sector"]["sectors_class"]  . "></i>";
+                    echo "<i class='". $sector["Sector"]["sectors_class"]  . "'></i>";
                     echo __($sector["Sector"]["sectors_name"]);
                     echo "</a></li>";
                 }
