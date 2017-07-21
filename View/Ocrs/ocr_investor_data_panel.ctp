@@ -99,20 +99,20 @@ if ($result) {
             addExistingDocuments();
             disbleCheckedData();
             validationerrors = false;
-    <?php //telephone                               ?>
+    <?php //telephone                                ?>
             $('#ContentPlaceHolder_telephone').intlTelInput();
 
-    <?php //Date picker                               ?>
+    <?php //Date picker                                ?>
             $('#ContentPlaceHolder_dateOfBirth').datepicker({
                 autoclose: true,
                 format: 'dd/mm/yyyy'
             });
-    <?php //Tooltip clicks      ?>
+    <?php //Tooltip clicks       ?>
             $(document).on("click", ".tooltipIcon", function () {
                 id = $(this).attr("id");
                 $("#tooltip" + id).toggle();
             });
-    <?php //Show div with CIF & IBAN if its checked.                               ?>
+    <?php //Show div with CIF & IBAN if its checked.                                ?>
             $(document).on("change", "#investmentVehicle", function () {
                 if ($(this).is(":checked")) {
                     $("#investmentVehicleContent").show();
@@ -135,19 +135,23 @@ if ($result) {
                 console.log("validate 1CR data");
                 var result; //link = $(this).attr("href");
 
-    <?php //Javascript validation                               ?>
+    <?php //Javascript validation                                ?>
                 if ((result = app.visual.checkForm1CRInvestorData()) === false) {
-    <?php //Validation error                               ?>
+    <?php //Validation error                                ?>
                     event.stopPropagation();
                     event.preventDefault();
                     $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><strong><?php echo __("Your data is incorrect.") ?></strong></div>');
                 } else { //Validation ok
                     $('#notification').load("/ocrs/ocrInvestorConfirmModal");
                 }
+                <?php foreach($companies as $companyId){?>;
+                email = $('#ContentPlaceHolder_email').val();
+                ga_1CRConfirmCompanies(<?php echo $companyId ?>, email);
+                <?php } ?>
             });
 
             $(document).on("change", ".upload", function () {
-    <?php // Upload  file                               ?>
+    <?php // Upload  file                                ?>
                 id = $(this).attr("value");
                 var formdatas = new FormData($("#FileForm" + id)[0]);
                 link = '/files/upload';
@@ -169,7 +173,7 @@ if ($result) {
             });
 
             $(document).on("click", ".delete", function () {
-    <?php //Delete File                               ?>
+    <?php //Delete File                                ?>
                 id = $(this).val();
                 url = $(".url" + id).attr("value");
                 params = {
@@ -187,14 +191,14 @@ if ($result) {
             });
 
             $(document).on("click", "#backOCR", function () {
-    <?php //Go back                               ?>
+    <?php //Go back                                ?>
                 link = "../Ocrs/ocrInvestorPlatformSelection";
                 var data = null;
                 getServerData(link, data, successBack, errorBack);
             });
 
 
-    <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) {   //Investment vehicle check                        ?>
+    <?php if ($ocr[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) {   //Investment vehicle check                         ?>
                 $("#investmentVehicle").prop('checked', true);
                 $("#investmentVehicleContent").show();
                 $("#4").show();
@@ -234,7 +238,7 @@ if ($result) {
         }
 
         function successDelete(id) {
-    <?php // Delete ok                             ?>
+    <?php // Delete ok                              ?>
             $("#del" + id).prop("disabled", true);
             $("#file" + id).html('<label class="btn labelFile btnRounded btnUploadFile label' + id + '" for="fileId' + id + '"><i class="fa fa-upload"></i> Upload file</label>');
             $("#file" + id).append('<input type="file" name="data[Files][fileId' + id + ']" id="fileId' + id + '">');
@@ -244,20 +248,20 @@ if ($result) {
         }
 
         function successBack(result) {
-    <?php // Go back ok                             ?>
+    <?php // Go back ok                              ?>
             $(document).off('click');
             $(document).off('change');
             $("#content").html(result);
         }
         function errorBack(result) {
-    <?php //Go back error                             ?>
+    <?php //Go back error                              ?>
             $("#notification").html('<div class="alert bg-success alert-dismissible alert-win-warning fade in alert-to-fade" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Cant go back") ?></strong></div>');
         }
 
 
 
         function addExistingDocuments() {
-    <?php //Show alreadey uploaded files in the table                             ?>
+    <?php //Show alreadey uploaded files in the table                              ?>
     <?php
     foreach ($existingFiles as $file) {
         ?>
@@ -310,11 +314,25 @@ if ($result) {
                     $('.<?php echo $inputName ?>').prop('disabled', true); // If is CHECKED, block hte input
         <?php } else if ($check == ERROR) { ?>
                     $('.<?php echo $inputName ?>').addClass('redBorder'); // If is ERROR, mark the input
-        <?php
+            <?php
         }
     }
     ?>
         }
+
+
+        //Google Analytics
+        function ga_1CRConfirmCompanies(id, email) {
+            //Generate timestamp       
+            console.log("ga 'send' 'event' '1ClickRegistration'" + email + id);
+            if (typeof ga === 'function') {
+                ga('send', 'event', '1ClickRegistration','confirmCompanies', email, id);
+            }
+        }
+
+
+
+
 
     </script>
     <div id = "notification"></div>
@@ -373,7 +391,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_name'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_name'][0] ?>
                                                 </span>
                                             </div>									
                                         </div>					
@@ -407,7 +425,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_surname'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_surname'][0] ?>
                                                 </span>
                                             </div>	
                                         </div>		
@@ -440,7 +458,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_DNI'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_DNI'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -473,7 +491,7 @@ if ($result) {
                                                 <div class="<?php echo $errorClassesText ?>">
                                                     <i class="fa fa-exclamation-circle"></i>
                                                     <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_dateOfBirth'][0] ?>
+                                                        <?php echo $investorValidationErrors['investor_dateOfBirth'][0] ?>
                                                     </span>
                                                 </div>	
                                             </div>
@@ -507,7 +525,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_email'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_email'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -544,7 +562,7 @@ if ($result) {
                                                 <div class="<?php echo $errorClassesText ?>">
                                                     <i class="fa fa-exclamation-circle"></i>
                                                     <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_telephone'][0] ?>
+                                                        <?php echo $investorValidationErrors['investor_telephone'][0] ?>
                                                     </span>
                                                 </div>	
                                             </div>
@@ -579,7 +597,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_postCode'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_postCode'][0] ?>
                                                 </span>
                                             </div>		
                                         </div>
@@ -611,7 +629,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_address1'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_address1'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -646,7 +664,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_city'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_city'][0] ?>
                                                 </span>
                                             </div>						
                                         </div>	
@@ -680,7 +698,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_country'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_country'][0] ?>
                                                 </span>
                                             </div>
                                         </div>	
@@ -711,7 +729,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_iban'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_iban'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -759,7 +777,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_cif'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_cif'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -792,7 +810,7 @@ if ($result) {
                                             <div class="<?php echo $errorClassesText ?>">
                                                 <i class="fa fa-exclamation-circle"></i>
                                                 <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_businessName'][0] ?>
+                                                    <?php echo $investorValidationErrors['investor_businessName'][0] ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -853,7 +871,7 @@ if ($result) {
                                 <div class="<?php echo $errorClassesText ?> col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
                                     <i class="fa fa-exclamation-circle"></i>
                                     <span class="errorMessage">
-    <?php echo $investorValidationErrors['investor_files'][0] ?>
+                                        <?php echo $investorValidationErrors['investor_files'][0] ?>
                                     </span>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">	
@@ -886,7 +904,7 @@ if ($result) {
                                                 }
                                                 ?> id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>" class="documentRow">
                                                     <td>
-        <?php echo __($filesTable[0]['Ocrfile']['file_type']) ?> <i class="fa fa-exclamation-circle tooltipIcon" id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>"></i>
+                                                        <?php echo __($filesTable[0]['Ocrfile']['file_type']) ?> <i class="fa fa-exclamation-circle tooltipIcon" id="<?php echo $filesTable[0]['Ocrfile']['id'] ?>"></i>
                                                         <span id="tooltip<?php echo $filesTable[0]['Ocrfile']['id'] ?>" style="display:none"><br/><?php echo $filesTable[0]['Ocrfile']['file_tooltip'] ?></span>
                                                     </td>
                                                     <td id="status<?php echo $filesTable[0]['Ocrfile']['id'] ?>"><span style="color:#808080"><i class="fa fa-exclamation"></i> <?php echo __('Not uploaded yet') ?></span></td>
@@ -924,7 +942,7 @@ if ($result) {
                     <div class="form-group">
                         <?php if ($ocr[0]['Ocr']['ocr_status'] != ERROR) { ?>
                             <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn1CR btnRounded pull-left"><?php echo __('Back') ?></button>
-    <?php } ?>
+                        <?php } ?>
                         <button type="submit" href="/ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn1CR btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
                     </div>
                 </div>	

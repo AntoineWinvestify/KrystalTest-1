@@ -133,7 +133,6 @@ class ocrsController extends AppController {
             $this->disableCache();
 
             $id = $this->Session->read('Auth.User.investor_id'); //Investor id
-
             //Request investor data
             $investor_name = $this->request->data['investor_name'];
             $investor_surname = $this->request->data['investor_surname'];
@@ -160,7 +159,7 @@ class ocrsController extends AppController {
                 'investor_email' => $investor_email,
             );
 
-            
+
             $result1 = $this->Investor->investorDataSave($datosInvestor); //Save the investor data
             $status = $this->Ocr->checkStatus($id);
 
@@ -171,7 +170,7 @@ class ocrsController extends AppController {
                 'ocr_investmentVehicle' => $this->request->data['investmentVehicle'],
                 'investor_cif' => $this->request->data['cif'],
                 'investor_businessName' => $this->request->data['businessName'],
-                'investor_iban' =>$this->request->data['iban'],
+                'investor_iban' => $this->request->data['iban'],
                 'ocr_status' => $status,
             );
             $result2 = $this->Ocr->ocrDataSave($datosOcr); //Save ocr info
@@ -181,12 +180,11 @@ class ocrsController extends AppController {
             $idOcr = $ocrArray[1]["id"]; //Update companies_ocrs table
             $result3 = $this->Ocr->updateCompaniesStatus($idOcr);
 
-            
+
             //Set ajax response
             $this->set('result1', $result1);
             $this->set('result2', $result2);
             $this->set('result3', $result3);
-
         }
     }
 
@@ -212,7 +210,7 @@ class ocrsController extends AppController {
 
                 //Save the comapnies
                 $result = $this->Ocr->saveCompaniesOcr($companies); //Update companies_ocrs table
-                $this->set('result', [$result,$this->request->data['idCompany'], $id = $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
+                $this->set('result', [$result, $this->request->data['idCompany'], $id = $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
             } else {
                 $this->set('result', false); //Ajax response
             }
@@ -295,6 +293,15 @@ class ocrsController extends AppController {
             $companies = array();
             $companies = array_merge($this->Ocr->getSelectedCompanies($id), $this->Ocr->getRegisterSentCompanies($id));
 
+
+            $companiesId = array(); //Set selected companies for GA event
+            foreach ($companies as $companyId) {
+                if ($companyId['ocrInfo']['company_status'] == NOT_SENT) {
+                    array_push($companiesId, $companyId['ocrInfo']['company_id']);
+                }
+            };
+            $this->set('companies', $companiesId);
+
             //Required  files
             $requiredFiles = $this->Ocrfile->readRequiredFiles($companies);
             $filesData = $this->Ocrfile->getFilesData($requiredFiles);
@@ -309,7 +316,7 @@ class ocrsController extends AppController {
             $this->set('requiredFiles', $filesData);
             $this->set('existingFiles', $existingFiles);
             Configure::load('countryCodes.php', 'default');
-            
+
             //Country select
             $countryData = Configure::read('countrycodes');
             $this->set('countryData', $countryData);
@@ -370,7 +377,7 @@ class ocrsController extends AppController {
             foreach ($linkedList as $linked) {
                 array_push($notShow, $linked["Linkedaccount"]["company_id"]);
             }
-                      
+
             $notShowList = array_unique($notShow);
             $filterList = array('id' => $notShowList);
 
@@ -404,6 +411,7 @@ class ocrsController extends AppController {
 
         //Set info
         $this->set("companies", $companyId);
+        $this->set("number", count($companyId));
         $this->set("status", $status);
     }
 

@@ -120,11 +120,6 @@ if ($result) {
 
 
         function successSentCompanies(result) {
-            result = JSON.parse(result);
-            max = result[1].length;
-            for(i = 0; i < max ; i++){
-                ga_1CRConfirmCompanies(result[1][i],result[2]);
-            }
            
         }
         
@@ -256,17 +251,7 @@ if ($result) {
 
 
 
-        //Google Analytics
-        function ga_1CRConfirmCompanies(id,email) {
-            //Generate timestamp
-            timeStamp = new Date($.now());
-            timeStamp = DateFormat.format.date(timeStamp, "yyyy-MM-dd HH:mm:ss");
-            
-            console.log("ga 'send' 'event' '1ClickRegistration'" + email + id);
-            if (typeof ga === 'function') {
-                ga('send', 'event', '1ClickRegistration', email , id);
-            }
-        }
+
     </script>
     <style>
         .togetoverlay .overlay  {
