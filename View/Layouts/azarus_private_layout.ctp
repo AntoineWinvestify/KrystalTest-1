@@ -94,7 +94,10 @@
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
 			
-<?php echo $this->element('leftnavigationmenu')?>			
+<?php 
+    $sectorsMenu = $this->Session->read('sectorsMenu');
+    echo $this->element('leftnavigationmenu', array('sectorsMenu' => $sectorsMenu));
+?>			
 			
 
     </section>

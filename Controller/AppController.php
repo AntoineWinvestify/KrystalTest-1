@@ -401,7 +401,7 @@ class AppController extends Controller {
                 $sectors = $this->getSectorsByRole($roleId);
                 $this->Session->write('sectorsMenu', $sectors);
             }
-            $this->set('sectorsMenu', $this->Session->read('sectorsMenu'));
+
         }
        
         
