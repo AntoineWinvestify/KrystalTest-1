@@ -116,7 +116,8 @@
 
         console.log(resultJson);
         if (resultJson[0] == 1 && resultJson[2] == 1) {
-            ga_1CRConfirmCompanies(<?php echo $number ?>);
+            email = $('#ContentPlaceHolder_email').val();
+            ga_1CRConfirmCompanies(<?php echo $number ?>, email);
             //$(".successMsg").fadeIn();
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
@@ -157,11 +158,11 @@
             
         
     //Google Analytics
-    function ga_1CRConfirmCompanies(number) {
+    function ga_1CRConfirmCompanies(number,email) {
         //Use INVESTOR ID
-        console.log("ga 'send' 'event' '1ClickRegistration'  'serviceContracted' " + number);
+        console.log("ga 'send' 'event' '1ClickRegistration'  'serviceContracted' " + email + " " + number);
         if (typeof ga === 'function') { 
-            ga('send', 'event', '1ClickRegistration', 'serviceContracted', number);
+            ga('send', 'event', '1ClickRegistration', 'serviceContracted', email ,number);
         }
     }
 </script>
