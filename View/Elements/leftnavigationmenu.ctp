@@ -46,19 +46,14 @@ $(document).ready(function() {
 });		
 </script>
 
-
-
-
-
 	<ul class="sidebar-menu">
     <li class="header">
-        <strong>Investor Menu</strong>
+        <strong><?php echo __('Investor Menu')?></strong>
     </li>
             <?php 
             //This is the variable to get the sectors of the user
             //It depends on the role that the user has
-            echo $sectorsMenu[0]['sectors_name'] ?>
-        <?php
+            echo $sectorsMenu[0]['sectors_name']; 
             $sectorActual = 0;
             $sectorHasChildren = false;
             foreach ($sectorsMenu as $sector) {
@@ -95,7 +90,6 @@ $(document).ready(function() {
                     echo "</a></li>";
                 }
             }
-            echo "</ul>";
         /*
         ?>
 	  <li class="treeview">
@@ -109,22 +103,6 @@ $(document).ready(function() {
         </span>
       </a>
     </li>
-        <?php  
-        /*<li class="treeview">
-          <a href="#">
-            <i class="fa fa-users"></i>
-            <span class="disabled" style="opacity:0.5"><?php echo __('Investor Comunity')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Mi perfil</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Mi muro</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Mis Notificaciones</a></li>
-          </ul>
-        </li>
-        ?>
        <li class="treeview">
           <a href="#">
             <i class="fa fa-globe"></i>
@@ -147,22 +125,13 @@ $(document).ready(function() {
             <li><a href="/investors/userProfileDataPanel"><i class="fa fa-circle-o"></i> <?php echo __('Personal Data')?></a></li>
           </ul>
         </li>
-       <?php /*DELETE AFTER THIS COMMENT TO DISABLE ONE CLICK REGISTRATION LINKS!!!!!!!!!!!!*/?>
         <li class="treeview">
             <a href="/ocrs/ocrInvestorView">
               <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
             </a>
         </li>
-    
- 
         <li class="treeview">
           <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
-        <li class="treeview">
-<?php /*      <a>
-<button type="button" href="/usererrors/getErrorModal" class="btn btn-primary errorBtn">  
-          <?php // echo __('Report Error')?>
-        </button>
-      </a> ?>
-        </li>
-	</ul>
+        <li class="treeview">*/?>
+    </ul>
