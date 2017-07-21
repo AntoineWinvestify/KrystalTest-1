@@ -71,7 +71,45 @@ public function writeChargingData($chargingData, $application = null) {
 }
 
 
+   /** 
+     *
+     *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
+     * 
+     *  @param      $reference  parameter to be checked
+     *  @param      string      transparent parameter 2 to be checked
+     *  @param      string      transparent parameter 3 to be checked
+     *  @param      string      transparent parameter 4 to be checked
+     *  @param      string      name of application
+     *
+     *  @return     boolean	true	Event needs to be charged
+     * 				false	Event need not to be charged
+     * 						
+     */
+    public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
 
+//  Calculate cutoff date for billing purposes
+        Configure::load('p2pGestor.php', 'default');
+        $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
+        $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 * 24);
+
+        $result = $this->find('first', array(
+            "fields" => array("created"),
+            "order" => "id DESC",
+            "recursive" => -1,
+            "conditions" => array("billingparm_reference" => $reference,
+                "billingparm_parm2" => $parameter2,
+                "billingparm_serviceName" => $application),
+        ));
+
+        if (empty($result)) {  // No information found, so this is a chargeable event
+            return true;
+        }
+
+        if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
+            return false;
+        }
+        return true;
+    }
 
 
 

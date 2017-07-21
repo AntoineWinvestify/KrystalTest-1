@@ -75,6 +75,8 @@
  * 
  * 2017-07-10   Version 0.15
  * Copied only the relevant part of the adminpfp original Controlller to plugin "adminpfp" directory
+ * Added the truth table in readtallymandata
+ * 
  * 
  * 
  * Pending:
@@ -199,11 +201,21 @@ class ocrsController extends AppController {
                 // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
                     $error = NO_DATA_AVAILABLE;
-                } else {
+                } 
+                else {      // All parameters were provided and correct
                     $this->set('resultTallyman', $resultTallymanData);
                     $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
-
-                    if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
+                    $chargeThisEvent = $this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman");                
+/*
+ * Table:
+ * $chargingConfirmed $chargeThisEvent  Result
+ *          0               0           Continue without Charging
+ *          0               1           Send Confirmation Modal
+ *          1               0           Continue without Charging
+ *          1               1           Store the Charging Data
+ * 
+ */       
+                    if ($chargeThisEvent) {
                         if ($chargingConfirmed == false) {
                             $parameters = array($inputId, $userEmail, $userTelephone);
                             $this->set('parameters', $parameters);
@@ -212,8 +224,8 @@ class ocrsController extends AppController {
                         }
                     }
 
-                    // provide data for possible billing
-                    if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
+                    // provide data for billing purposes
+                    if ($chargeThisEvent && $chargingConfirmed) {
                         $data = array();
                         $data['reference'] = $userIdentification;                           // investor unique identification
                         $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
@@ -233,97 +245,13 @@ class ocrsController extends AppController {
         $this->render('tallymanErrorPage');
     }
 
-    /** MOVE TO MODEL
-     *
-     *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
-     * 
-     *  @param      $reference  parameter to be checked
-     *  @param      string      transparent parameter 2 to be checked
-     *  @param      string      transparent parameter 3 to be checked
-     *  @param      string      transparent parameter 4 to be checked
-     *  @param      string      name of application
-     *
-     *  @return     boolean	true	All OK, data has been saved
-     * 				false	Error occurred
-     * 						
-     */
-    public function isChargeableEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
-        return true;
-
-//  Calculate cutoff date for billing purposes
-        Configure::load('p2pGestor.php', 'default');
-        $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
-        $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 * 24);
-
-        $result = $this->Billingparm->find('first', array(
-            "fields" => array("created"),
-            "order" => "id DESC",
-            "recursive" => -1,
-            "conditions" => array("billingparm_reference" => $reference,
-                "billingparm_parm2" => $parameter2,
-                "billingparm_serviceName" => $application),
-        ));
-
-        if (empty($result)) {  // No information found, so not a chargeable event
-            return false;
-        }
-
-        if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
-            return true;
-        }
-        return false;
-    }
-
-    
-    
-    /** MOVE TO MODEL
-     *
-     *  Store charging data in database
-     * 
-     *  @param      $reference  parameter to be added
-     *  @param      string      transparent parameter 2 to be added
-     *  @param      string      transparent parameter 3 to be added
-     *  @param      string      transparent parameter 4 to be added
-     *  @param      string      name of application
-     *
-     *  @return     boolean	true	All OK, data has been saved
-     * 				false	Error occurred
-     * 						
-     */
-    public function chargeEvent($reference, $parameter1, $parameter2, $parameter3, $application) {
-
-//  Calculate cutoff date for billing purposes
-        Configure::load('p2pGestor.php', 'default');
-        $validBeforeExpiration = Configure::read('CollectNewInvestmentData');
-        $cutoffTime = date("Y-m-d H:i:s", time() - $validBeforeExpiration * 3600 * 7 * 24);
-
-        $result = $this->Billingparm->find('first', array(
-            "fields" => array("created"),
-            "order" => "id DESC",
-            "recursive" => -1,
-            "conditions" => array("billingparm_reference" => $reference,
-                "billingparm_parm2" => $parameter2,
-                "billingparm_serviceName" => $application),
-        ));
-
-        if (empty($result)) {  // No information found, so not a chargeable event
-            return false;
-        }
-
-        if ($result['Billingparm']['created'] > $cutoffTime) {          // This request should NOT be counted as a new chargeable request
-            return true;
-        }
-        return false;
-    }  
-    
-    
-    
+ 
     
     public function uploadStatusInvestorPfp($idInv) {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            $id = $idInv;//$this->request->params['id'];
+            $id = $idInv;           //$this->request->params['id'];
             $status = DOWNLOADED;
             $companyId = $this->Session->read('Auth.User.Adminpfp.company_id');
 
@@ -350,13 +278,6 @@ class ocrsController extends AppController {
 public function startTallyman($investorEmail, $investorTelephone) {
  
     $this->layout = 'Adminpfp.azarus_private_layout';
-  
-    $investorDNI = "";
-    $investorTelephone = ""; 
-    $investorEmail = "";
-
-    $investorEmail = "antoine.de.poorter@gmail.com";
-    $investorTelephone = "+34675546946";
     
     $this->set("investorEmail", $investorEmail);
     $this->set("investorDNI", $investorDNI);

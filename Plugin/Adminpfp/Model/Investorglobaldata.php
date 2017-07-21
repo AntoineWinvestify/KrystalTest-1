@@ -65,6 +65,12 @@ var $validate = array();
 
 
 
+
+
+
+
+
+
     /**
      *
      *  Returns all the data of an investor

@@ -55,6 +55,7 @@ class UsersController extends AdminpfpAppController
 
 
 function beforeFilter() {
+
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club33 field from CSRF protection
@@ -65,9 +66,8 @@ function beforeFilter() {
 	$this->Security->validatePost = false;	
 // Allow only the following actons.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login', 'loginAction', 'cronMoveToMLDatabase' , 'readMLDatabase');    // allow the actions without logon
+	$this->Auth->allow('login', 'loginAction', 'cronMoveToMLDatabase');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
- 
 
 }
 
@@ -78,6 +78,7 @@ function beforeFilter() {
 
 
 public function loginAction() {
+     
         if ($this->Auth->login()) {
             $this->redirect($this->Auth->redirectUrl());
         }
@@ -102,6 +103,7 @@ public function login()
 	else {
 		$this->layout = 'Adminpfp.winvestify_adminpfp_login_layout';
 	}
+         
 	$error = false;
 	$this->set("error", $error);
 }
@@ -143,9 +145,10 @@ public function readMLDatabase() {
 
 
 
-/**PENDING DATABASE ERRORS
+/**
  * 
- * Copies raw data to the Tallyman database
+ * Copies raw data to the Tallyman database for ALL users, independent of the "type of user",
+ * i.e. "free", "Premium" or "Pro" or "Family Office",....
  * 
  * 
  * @param 	
@@ -165,11 +168,11 @@ public function cronMoveToMLDatabase() {
     if (empty($limit)) {
         $limit = 100;
     }
-
+ echo $limit;
     $this->Company = ClassRegistry::init('Company');   
     $this->Mlqueue = ClassRegistry::init('Adminpfp.Mlqueue'); 
     $this->Userplatformglobaldata = ClassRegistry::init('Adminpfp.Userplatformglobaldata'); 
-    $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');   
+    $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata'); 
     $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
 
 // Get the data from the previous readout    
@@ -179,16 +182,13 @@ public function cronMoveToMLDatabase() {
     $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
 							  'conditions'  => array(// sort by queueid
                                                                            'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                                                           //                'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                                            'queue_id >=' => $resultMlqueue[0]['Mlqueue']['mlqueue_actualQueueId'] ),
+                                                                            'queue_id >' => $resultMlqueue[0]['Mlqueue']['mlqueue_actualQueueId'] ),
                                                               'limit' => $limit ));    
-    
-
     $tempCount = 0;
     $actualQueueId = 0;
 
-
 // Make sure that records belonging to the same queueId do not spill over into two reading.
+// so delete all records belonging to the *last* queue_id
     while (!empty($userinvestmentdataResult)) {
         $count = count($userinvestmentdataResult);
         echo "count = $count<br>";
@@ -203,31 +203,18 @@ public function cronMoveToMLDatabase() {
             while ($actualQueueId == $maxQueueId) {
                 unset($userinvestmentdataResult[$index]);
                 $index = $index - 1;
-                
                 $actualQueueId = $userinvestmentdataResult[$index]['Userinvestmentdata']['queue_id'];
-                echo "deleting <br>";
             }
         }
-        else {
- // Iterate through the "new" array
-        }
+
         $newCount = sizeof($userinvestmentdataResult);
-//        echo "newcount = $newCount <br>";        
         $newMaxQueueId = $userinvestmentdataResult[$newCount - 1]['Userinvestmentdata']['queue_id'] + 1;
- //       echo "newMaxQueueId = $newMaxQueueId <br>";        
-        
 
-                     //$this->print_r2($userinvestmentdataResult);
-
- //       foreach ($userinvestmentdataResult as $key => $result) {
- //       }
-
-// this is the list I have to deal with
-echo "....  Deal with array where START = $firstQueueId and END = $newMaxQueueId<br>";   
+        // start with everything clean
         unset($investorglobalData);
         unset($platformglobalData);  
         $oldQueueId = 0;
-        
+       
 $this->print_r2($userinvestmentdataResult);
         foreach ($userinvestmentdataResult as $key => $result) {
 echo "KEY = $key<br>";
@@ -293,44 +280,42 @@ echo __FUNCTION__ . " " . __LINE__ . " investment found, value = " . $data['inve
                         $investorglobalData['investorglobaldata_activePFPs'] += 1;
                     }
                     $investorglobalData['investorglobaldata_totalPFPs'] += 1;
-
-
                  }       // foreach ($result['Investment'] as $investmentKey => $data) 
             }
             else {
  echo " ---> No ACTIVE investments in current platform<br>";               
                 $investorglobalData['investorglobaldata_totalPFPs'] += 1;
-            }
-            
-             $index++;
+            }           
+            $index++;
 $this->print_r2($platformglobalData[$index]);             
             $tempCount = count($userinvestmentdataResult);     
     
         }  //          foreach ($userinvestmentdataResult as $key => $result) 
-        // show the last one
         $dataFin = array(
             'Investorglobaldata' => $investorglobalData,
             'Userplatformglobaldata' => $platformglobalData
            ); 
         $data1[] = $dataFin;
+        if (!empty($investorglobalData)) {
+            $this->writeArray($dataFin, "Investorglobaldata");
+            echo "DONE<br>";
+        }
 echo "tempCount = $tempCount and newMaxQueueId = $newMaxQueueId<br>";
 echo "just read next batch of records but within outer foreach<br><br>";       
     $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
 							  'conditions'  => array(// sort by queueid
-                                                                           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                                                           //                'created >= '  => $queueResult[0]['MLqueue_dateLastId'],
-                                                                            'queue_id >= ' => $newMaxQueueId),
+                                                                  'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                                            'queue_id > ' => $newMaxQueueId),
                                                               'limit' => $limit ));  
     $userinvestmentdataResult = null;
-
-
-    } // end of while      
+    }       // end of while      
+    
 echo "FINALIZED<br>";
-$this->print_r2($data1);
-    unset($data1[0]);
-    foreach ($data1 as $tempData1){
-       $this->writeArray($tempData1, "Investorglobaldata");
-    }
+//$this->print_r2($data1);
+ //   unset($data1[0]);       // Remove first index as it contains dummy data
+ //   foreach ($data1 as $tempData1){
+ //      $this->writeArray($tempData1, "Investorglobaldata");
+ //   }
 } 
 
 
@@ -380,7 +365,8 @@ private function resetInvestorsArray(& $investorArray) {
 
 /**
  * 
- * Writes an array of data to its corresponding model(s). 
+ * Writes an array of data to its corresponding model(s). This is done using transaction support of
+ * the database
  * 
  * @param 	$investorArray  Array to be reset
  * @param       $masterModel    String  Name of "master" model, of the hasOne or hasMany relationships
@@ -389,78 +375,33 @@ private function resetInvestorsArray(& $investorArray) {
  */
 private function writeArray(& $array, $masterModel) {
 
-    $this->$masterModel->create();
-    $result = $this->$masterModel->save($array[$masterModel], $validate = true);
-    $masterId = $result[$masterModel]['id'];
-    $models = array_keys($array);
+    $this->$masterModel = ClassRegistry::init('Adminpfp.' . $masterModel);    
+    $this->$masterModel->transaction();   
 
+    $this->$masterModel->create();
+    $saved = $this->$masterModel->save($array[$masterModel], $validate = true);  
+    $masterId = $this->$masterModel->id;
+
+    unset($array[$masterModel]);    
+    $models = array_keys($array);
+ 
     foreach ($models as $key => $model) {
-        if ($model == "$masterModel") {
-            continue;
-        }
         $this->$model = ClassRegistry::init('adminpfp.'. $model); 
 
-        if (count($array[$model] > 0))
+        if (count($array[$model] > 0)) {
             foreach ($array[$model] as $key => $tempModel) {       
                 $this->$model->create();
                 $tempModel[strtolower($masterModel) . "_id"] = $masterId;
-                $result = $this->$model->save($tempModel, $validate = true);
+                $saved = $saved && $this->$model->save($tempModel, $validate = true);
             }
-
+        }                          
     }
-    return true;
+    if($saved){
+    $this->$masterModel->transaction(true);
+        return true;
+    }
+    $this->$masterModel->transaction(false);
+    return false;    
 }
-
-
-
-/**DURING THE MIGRATION SOMETHING HAPPENED, AND THE MLDATA DATABASE MIGHT HAVE AN EXTRA RECORD WHICH
- * IS UNACCEPTABLE, DETECT IT AND REPAIR IT. this is normally a duplicate.
- *  NOT YET FUNCTIONAL
- * do this for all which were added during this day
- * filter:
- * duplicate internal reference
- * during today's DATE
- * 
- * duplicates will be delete without event notifying the system admin
- * 
- * 
- * @param 	
- * @param      
- * @return 	 	
- *
- */
-public function checkIntegrityMLData1() {
-    
-}
-
-
-/** NOT YET FUNCTIONAL
- * 
- * Returns a global indicator which represents the "value" of an investor for a PFP platform
- * 
- * 
- * @param 	array 	$data
- * @param       arrat   $id     $id of company for which 
- * @return 	array 	Investor data 	
- *
- */
-public function calculateGlobalindicator($data) {
-    
-// Calculate earlier date
-//    $referenceDate = actualData - $historyLength "months";
-    Configure::load('p2pGestor.php', 'default');
-    $serviceData = Configure::read('Tallyman');
-
-    $cutoffTime = date("Y-m-d H:i:s", time() - $serviceData['maxHistoryLength'] * 3600);     
-    $businessConditions = array('Company.created >' => $cutoffTime);
-    $conditions = array_merge($businessConditions, $filterConditions);
-
-    $data = $this->find('all', array('conditions'       => $conditions,
-                                          'recursive'   => 2,
-			));
-    
-    return $data;   
-}
-
 
 }
