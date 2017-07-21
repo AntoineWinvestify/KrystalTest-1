@@ -153,7 +153,16 @@
         $(".errorMsg").fadeIn();
     }
 
-
+            
+        
+    //Google Analytics
+    function ga_1CRConfirmCompanies(id) {
+        //Use INVESTOR ID
+        console.log("ga 'send' 'event' '1ClickRegistration'  'serviceContracted' " + id);
+        if (typeof ga === 'function') { 
+            ga('send', 'event', '1ClickRegistration', 'serviceContracted', id);
+        }
+    }
 </script>
 <?php if ($status[0]['Ocr']['ocr_status'] == NOT_SENT || $status[0]['Ocr']['ocr_status'] == FINISHED) { ?>
     <div id="1CR_investor_3_confirming" class="modal show" role="dialog">

@@ -257,7 +257,17 @@ if ($result) {
             }
 
         }
-
+        
+        
+        
+        //Google Analytics
+        function ga_1CRConfirmCompanies(id) {
+            //Generate timestamp
+            console.log("ga 'send' 'event' '1ClickRegistration'  'confirmCompanies' " + id);
+            if (typeof ga === 'function') { 
+                ga('send', 'event', '1ClickRegistration', 'confirmCompanies', id);
+            }
+        }
     </script>
     <style>
         .togetoverlay .overlay  {
