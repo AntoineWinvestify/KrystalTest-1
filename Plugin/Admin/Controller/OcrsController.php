@@ -74,7 +74,7 @@
  */
 App::uses('CakeEvent', 'Event');
 
-class ocrsController extends AppController {
+class ocrsController extends AdminAppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
@@ -87,191 +87,7 @@ class ocrsController extends AppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-    /*
-     * 
-     * Ciclo Principal
-     * 
-     */
-
-    /**
-     *  Main ocr view for investor
-     */
-    function ocrInvestorView() {
-        $this->layout = 'azarus_private_layout';
-
-        //Investor id
-        $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-
-        //First time ocr
-        $this->Ocr->createOcr($id);
-        $OcrData = $this->Ocr->checkStatus($id);
-
-        //Check ocr status
-        $status = $OcrData[0]['Ocr']['ocr_status'];
-
-        //Control status
-        if ($status == NOT_SENT || $status == OCR_FINISHED) {
-            //$this->ocrInvestorPlatformSelection();
-            $this->set('link', '/Ocrs/ocrInvestorPlatformSelection');
-        } else if ($status == ERROR) {
-            //$this->ocrInvestorDataPanel();
-            $this->set('link', '/Ocrs/ocrInvestorDataPanel');
-        } else if ($status == SENT || $status == OCR_PENDING || $status = FIXED) {
-            $this->activatedService();
-        }
-    }
-
-    /**
-     * Data panel actions
-     */
-    function oneClickInvestorII() {
-
-        App::import("Vendor", "ibanhandler/oophp-iban");
-        if (!$this->request->is('ajax')) {
-            $result = false;
-        } else {
-            //if ($this->Verify($_REQUEST['iban'])) {
-            $this->layout = 'ajax';
-            $this->disableCache();
-
-
-
-            //Investor data
-            $investor_name = strip_tags(htmlspecialchars($_REQUEST['investor_name']));
-            $investor_surname = strip_tags(htmlspecialchars($_REQUEST['investor_surname']));
-            $investor_DNI = strip_tags(htmlspecialchars($_REQUEST['investor_DNI']));
-            $investor_dateOfBirth = $_REQUEST['investor_dateOfBirth'];
-            $investor_telephone = $_REQUEST['investor_telephone'];
-            $investor_address1 = strip_tags(htmlspecialchars($_REQUEST['investor_address1']));
-            $investor_postCode = strip_tags(htmlspecialchars($_REQUEST['investor_postCode']));
-            $investor_city = strip_tags(htmlspecialchars($_REQUEST['investor_city']));
-            $investor_country = $_REQUEST['investor_country'];
-            $investor_email = $_REQUEST['investor_email'];
-
-            $datosInvestor = array(
-                'id' => $this->Session->read('Auth.User.id'),
-                'investor_name' => $investor_name,
-                'investor_surname' => $investor_surname,
-                'investor_DNI' => $investor_DNI,
-                'investor_dateOfBirth' => $investor_dateOfBirth,
-                'investor_telephone' => $investor_telephone,
-                'investor_address1' => $investor_address1,
-                'investor_postCode' => $investor_postCode,
-                'investor_city' => $investor_city,
-                'investor_country' => $investor_country,
-                'investor_email' => $investor_email,
-            );
-
-            $result1 = $this->Investor->investorDataSave($datosInvestor);
-
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-            $status = $this->Ocr->checkStatus($id);
-
-            //Ocr data          
-            $datosOcr = array(
-                'investor_id' => $id,
-                'ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],
-                'investor_cif' => $_REQUEST['cif'],
-                'investor_businessName' => $_REQUEST['businessName'],
-                'investor_iban' => $_REQUEST['iban'],
-                'ocr_status' => $status,
-            );
-            $result2 = $this->Ocr->ocrDataSave($datosOcr);
-            $ocrArray = json_decode("[" . $result2 . "]", true);
-
-            //Update the companies status
-            $idOcr = $ocrArray[1]["id"];
-            $result3 = $this->Ocr->updateCompaniesStatus($idOcr);
-
-            $this->set('result1', $result1);
-            $this->set('result2', $result2);
-            $this->set('result3', $result3);
-            /* } else {
-              $this->set('result1', false);
-              } */
-        }
-    }
-
-    /**
-     * Select platform actions
-     */
-    function oneClickInvestorI() {
-        if (!$this->request->is('ajax')) {
-            $this->set('result', false);
-        } else {
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-            $this->layout = 'ajax';
-            $this->disableCache();
-
-            $companyNumber = $_REQUEST['numberCompanies'];
-
-            if ($companyNumber != 0) {
-                $companies = array(
-                    'investorId' => $id,
-                    'number' => $companyNumber,
-                    'idCompanies' => $_REQUEST['idCompany']
-                );
-
-                //Save the comapnies
-                $result = $this->Ocr->saveCompaniesOcr($companies);
-                $this->set('result', $result);
-            } else {
-                $this->set('result', false);
-            }
-        }
-    }
-
-    /**
-     * Send the selected companies to ocr model
-     */
-    function deleteCompanyOcr() {
-        if (!$this->request->is('ajax')) {
-            $result = false;
-        } else {
-            $id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
-            $this->layout = 'ajax';
-            $this->disableCache();
-
-            $companyId = $_REQUEST['id_company'];
-
-            $delComp = array(
-                'investorId' => $id,
-                'companyId' => $companyId,
-            );
-
-            //Delete the companies
-            $result = $this->Ocr->deleteCompanyOcr($delComp);
-            $this->set('result', $result);
-        }
-    }
-
-    /**
-     * Company filter
-     * Send the filter conditions and return a companies list
-     */
-    function companyFilter() {
-        if (!$this->request->is('ajax')) {
-            $result = false;
-        } else {
-            $this->layout = 'ajax';
-            $this->disableCache();
-            $filter = ['country_filter' => $_REQUEST['country_filter'], 'type_filter' => $_REQUEST['type_filter'],];
-
-            //Filter
-            $result = $this->Company->companiesDataOCR($filter);
-            $this->set('company', $result);
-        }
-    }
-
-    //One Click Registration - Winvestify functions
-    function addBill() {
-        
-    }
-
-    //One Click Registration - Winvestify Admin Views
-
-
-    /*     * WinAdmin View #2
+    /*     WinAdmin View #2
      * 
      */
     function ocrWinadminInvestorChecking() {
@@ -439,11 +255,5 @@ class ocrsController extends AppController {
     //WinAdmin View #6
     function ocrWinadminTallyman() {
         $this->layout = 'Admin.azarus_private_layout';
-    }
-
-    //Activated Service VIEW
-    function activatedService() {
-        $this->layout = 'Admin.azarus_private_layout';
-        $this->render("../Layouts/activated_service");
     }
 }

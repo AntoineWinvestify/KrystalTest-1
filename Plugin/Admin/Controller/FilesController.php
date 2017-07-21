@@ -27,7 +27,7 @@
  */
 App::uses('CakeEvent', 'Event');
 
-class filesController extends AppController {
+class filesController extends AdminAppController {
 
     var $name = 'Files';
     var $helpers = array('Session');
