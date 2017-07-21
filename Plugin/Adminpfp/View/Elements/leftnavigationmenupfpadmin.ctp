@@ -51,58 +51,50 @@ $(document).ready(function() {
 
 
     <ul class="sidebar-menu">
-        <li class="header">PFPADMIN NAVIGATION</li>
+        <li class="header"><?php echo __('PFPADMIN NAVIGATION')?></li>
        <li class="treeview">
-
-            <?php  
-            /*<li class="disabled" style="opacity:0.5"><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> <?php echo __('Spain')?></a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/charts/flot.html"><i class="fa fa-circle-o"></i> <?php echo __('France')?></a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/charts/inline.html"><i class="fa fa-circle-o"></i> <?php echo __('Germany')?></a></li>-->
-          </ul>
-        </li>
-        <li class="treeview">
-          <a href="#">
-            <i class="fa fa-pie-chart"></i>
-            <span class="disabled" style="opacity:0.5"><?php echo __('Loan Control')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-      </a>
-          <ul class="treeview-menu">
-            <li class="disabled" style="opacity:0.5"><a href="pages/charts/chartjs.html"><i class="fa fa-circle-o"></i> Mis Incidencias</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> Buscador de incidencias</a></li>
-          </ul>
-        </li>
-        <li class="treeview">
-          <a href="#">
-            <i class="fa fa-bank"></i>
-            <span class="disabled" style="opacity:0.5"><?php echo __('Companies')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/general.html"><i class="fa fa-circle-o"></i> General</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/icons.html"><i class="fa fa-circle-o"></i> Icons</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/buttons.html"><i class="fa fa-circle-o"></i> Buttons</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/sliders.html"><i class="fa fa-circle-o"></i> Sliders</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/timeline.html"><i class="fa fa-circle-o"></i> Timeline</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/modals.html"><i class="fa fa-circle-o"></i> Modals</a></li>
-          </ul>
-        </li>
-        <li class="treeview">
-          <a href="#">
-            <i class="fa fa-edit"></i> <span><?php echo __('Suggestion Box')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="pages/forms/general.html"><i class="fa fa-circle-o"></i> General Elements</a></li>
-            <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> Advanced Elements</a></li>
-            <li><a href="pages/forms/editors.html"><i class="fa fa-circle-o"></i> Editors</a></li>
-          </ul>
-        </li>*/?>
+           <?php 
+            //This is the variable to get the sectors of the user
+            //It depends on the role that the user has
+            echo $sectorsMenu[0]['sectors_name'] ?>
+        <?php
+            $sectorActual = 0;
+            $sectorHasChildren = false;
+            foreach ($sectorsMenu as $sector) {
+                if ($sectorActual != $sector["Sector"]["sectors_father"]) {
+                    if ($sectorHasChildren) {
+                        echo "</ul>";
+                        $sectorHasChildren = false;
+                    }
+                    if ($sectorActual != 0) {
+                        echo "</li>";
+                    }
+                    echo "<li class='treeview'>";
+                    $sectorActual = $sector["Sector"]["sectors_father"];
+                }
+                if ($sector["Sector"]["sectors_subSectorSequence"] == 1) {
+                    echo "<a href='". __($sector["Sector"]["sectors_licontent"]) . "'>";
+                    echo "<i class='". __($sector["Sector"]["sectors_class"])  . "'></i>";
+                    echo "<span>". __($sector["Sector"]["sectors_name"]) ."</span>";
+                    if ($sector["Sector"]["sectors_licontent"] == "#") {
+                        $sectorHasChildren = true;
+                        ?>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                            </a>
+                            <ul class="treeview-menu">
+                        <?php
+                    }
+                }
+                else {
+                    echo "<li><a href='". $sector["Sector"]["sectors_licontent"] . "'>";
+                    echo "<i class=". $sector["Sector"]["sectors_class"]  . "></i>";
+                    echo __($sector["Sector"]["sectors_name"]);
+                    echo "</a></li>";
+                }
+            }
+      /*
         <li class="treeview">
             <a href="/adminpfp/ocrs/ocrPfpUsersPanel">
               <i class="fa fa-dashboard"></i> <span><?php echo __('New Users')?></span>
@@ -122,5 +114,5 @@ $(document).ready(function() {
         <li class="treeview">
           <a href="/adminpfp/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
- 
+             */?>
     </ul>
