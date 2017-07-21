@@ -201,7 +201,6 @@ class ocrsController extends AppController {
             $id = $this->Session->read('Auth.User.investor_id');
             $this->layout = 'ajax';
             $this->disableCache();
-            print_r($this->request);
             $companyNumber = $this->request->data['numberCompanies']; //Request the number of selected companies
 
             if ($companyNumber != 0) {
@@ -213,7 +212,7 @@ class ocrsController extends AppController {
 
                 //Save the comapnies
                 $result = $this->Ocr->saveCompaniesOcr($companies); //Update companies_ocrs table
-                $this->set('result', $result); //Ajax response
+                $this->set('result', [$result,$this->request->data['idCompany'], $id = $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
             } else {
                 $this->set('result', false); //Ajax response
             }
