@@ -36,7 +36,8 @@ added methods cronMoveToMLDatabase(), writeArray, resetInvestmentArray() and res
 Pending
 Method "cronMoveToMLDatabase": fields 'userplatformglobaldata_reservedInvestments' and
   'userplatformglobaldata_finishedInvestments' are not yet available in the raw data
-
+Move these database functions to Shell
+ * 
 */
 
 App::uses('ClassRegistry', 'Utility');
@@ -56,7 +57,7 @@ class UsersController extends AdminpfpAppController
 
 function beforeFilter() {
 
-    parent::beforeFilter(); // only call if the generic code for all the classes is required.
+    parent::beforeFilter();  
 
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club33 field from CSRF protection
 										// as it is "dynamic" and would fail the CSRF test
@@ -84,6 +85,7 @@ public function loginAction() {
         }
         else {
             echo "User is not logged on<br>";
+            // Inform the user why s/he could not login and offer "recover password" option
         }
  }
 
@@ -103,7 +105,7 @@ public function login()
 	else {
 		$this->layout = 'Adminpfp.winvestify_adminpfp_login_layout';
 	}
-         
+        
 	$error = false;
 	$this->set("error", $error);
 }

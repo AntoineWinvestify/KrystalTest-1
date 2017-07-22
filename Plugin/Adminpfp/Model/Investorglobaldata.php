@@ -16,11 +16,6 @@
 // +-----------------------------------------------------------------------+
 //
 
-2016-07-05	  version 0.1
-
-
-
-
 
 
 2017-07-15      version 0.1
@@ -30,10 +25,6 @@ Initial version.
 
 
 Pending
-Method "cronMoveToMLDatabase": fields 'userplatformglobaldata_reservedInvestments' and
-  'userplatformglobaldata_finishedInvestments' are not yet available in the raw data
-
-
 
 
 
@@ -81,7 +72,7 @@ var $validate = array();
      * @return array  array    All data of the user
      * 
      */
-public function readinvestorData($investorIdentity, $platformId) {
+public function readInvestorData($investorIdentity, $platformId) {
 
 $resultTallyman[0]['Investorglobaldata']['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[0]['Investorglobaldata']['investorglobaldata_activePFPs'] = 4;
