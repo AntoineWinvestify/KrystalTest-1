@@ -190,15 +190,14 @@ public function cronMoveToMLDatabase() {
 
 
     while (!empty($userinvestmentdataResult)) {
+        // Make sure that records belonging to the same queueId do not spill over into two reading.
+        // so delete all records belonging to the *last* queue_id        
         $count = count($userinvestmentdataResult);
-        echo "count = $count<br>";
         if ($count == $limit) {         // only do this if I am able to maximum number of records
             $maxQueueId = $userinvestmentdataResult[$count - 1]['Userinvestmentdata']['queue_id'];
-            $firstQueueId = $userinvestmentdataResult[0]['Userinvestmentdata']['queue_id'];
-
+ //           $firstQueueId = $userinvestmentdataResult[0]['Userinvestmentdata']['queue_id'];
             $actualQueueId = $maxQueueId;
-            // Make sure that records belonging to the same queueId do not spill over into two reading.
-            // so delete all records belonging to the *last* queue_id            
+            
             $index = $count - 1;
             while ($actualQueueId == $maxQueueId) {
                 unset($userinvestmentdataResult[$index]);
@@ -227,7 +226,6 @@ $this->print_r2($userinvestmentdataResult);
            
             $queueId = $result['Userinvestmentdata']['queue_id'];
             if ($queueId <> $oldQueueId) {
-// echo __FUNCTION__ . " " . __LINE__ ." ---> NEW queueId found, new queueId = $queueId . So save the data of the previous Investorglobal/userplatformglobaldata<br>";
                 $oldQueueId = $queueId;
                 $index = 0;
 
@@ -269,29 +267,26 @@ $this->print_r2($userinvestmentdataResult);
                     $platformglobalData[$index]['userplatformglobaldata_PFPCountry'] = $companyResult['Company']['company_country']; 
                     $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;               
         //               $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];             
-                 }       // foreach ($result['Investment'] as $investmentKey => $data) 
+                }    
                 if ($activeInvestments) {
                     $investorglobalData['investorglobaldata_activePFPs'] += 1;
                 } 
                 $investorglobalData['investorglobaldata_totalPFPs'] += 1;
             }
             else {
- //echo " ---> No ACTIVE investments in current platform<br>";               
-                
+     //           $investorglobalData['investorglobaldata_totalPFPs'] += 1;   // ????
             }           
             $index++;
 $this->print_r2($platformglobalData[$index]);             
             $tempCount = count($userinvestmentdataResult);     
-    
-        }  //          foreach ($userinvestmentdataResult as $key => $result) 
+        }  
+        
         $dataFin = array(
             'Investorglobaldata' => $investorglobalData,
             'Userplatformglobaldata' => $platformglobalData
            ); 
         $data1[] = $dataFin;
-
-//echo "tempCount = $tempCount and newMaxQueueId = $newMaxQueueId<br>";
-//echo "just read next batch of records but within outer foreach<br><br>";       
+     
     $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
 							  'conditions'  => array(// sort by queueid
                                                                   'userinvestmentdata_updateType' => SYSTEM_GENERATED,
@@ -302,9 +297,9 @@ $this->print_r2($platformglobalData[$index]);
     
 echo "FINALIZED<br>";
 $this->print_r2($data1);
-    unset($data1[0]);       // Remove first index as it contains dummy data
+    unset($data1[0]);       // Remove first index as it contains only dummy data
     foreach ($data1 as $tempData1){
-//        $this->writeArray($tempData1, "Investorglobaldata");
+        $this->writeArray($tempData1, "Investorglobaldata");
 // update the data in the mlqueues table
         $this->Mlqueue->id = 1;
         $savedQueueId = $tempData1['Investorglobaldata']['queueId'];      
