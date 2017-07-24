@@ -132,7 +132,6 @@ if ($result) {
 
 
             $(document).on("click", "#activateOCR", function () {
-                console.log("validate 1CR data");
                 var result; //link = $(this).attr("href");
 
     <?php //Javascript validation                                ?>
@@ -323,8 +322,6 @@ if ($result) {
 
         //Google Analytics
         function ga_1CRConfirmCompanies(id, email) {
-            //Generate timestamp       
-            console.log("ga 'send' 'event' '1ClickRegistration'" + email + id);
             if (typeof ga === 'function') {
                 ga('send', 'event', '1ClickRegistration','confirmCompanies', email, id);
             }
