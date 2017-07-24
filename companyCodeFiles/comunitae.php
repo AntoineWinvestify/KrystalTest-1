@@ -47,10 +47,12 @@ Added loading of ALL investments
 
 2017-05-16          version 2017_0.3
  * Added parallelization
- * Addde dom verification
+ * Added dom verification
 
 
-
+2017-07-24          version 2017_0.4
+ * Added two urlsequences for marketplaces to get investment of next pages
+ * Added code for marketplaces to verify if there is more investments in the next page
 
 
 
