@@ -1,7 +1,7 @@
 <?php
 /**
 * +--------------------------------------------------------------------------------------------+
-* | Copyright (C) 2016, http://www.winvestify.com                                              |
+* | Copyright (C) 2017, http://www.winvestify.com                                              |
 * +--------------------------------------------------------------------------------------------+
 * | This file is free software; you can redistribute it and/or modify                          |
 * | it under the terms of the GNU General Public License as published by                       |
@@ -52,8 +52,8 @@ function successTallymanData(data) {
  
  
 function errorTallymanData(data) {
-    console.log("ANTOINE");
-    var temp = data.search("chargingConfirmationModal");
+
+        var temp = data.search("chargingConfirmationModal");
     console.log ("errorTallymanData; temp = " + temp);
     if (temp != -1) {
         $("#TallymanResult").html(data); 
