@@ -24,11 +24,11 @@
 * @date 2016-11-05
 * @package
 
-function calculateLoanCost()											[not OK, not tested]
-function collectCompanyMarketplaceData()								[OK, testing]
-function companyUserLogin()												[not OK, not tested]
-function collectUserInvestmentData()									[not OK, not tested]
-function isNewEntry()													[not OK, not tested]
+function calculateLoanCost()							[not OK, not tested]
+function collectCompanyMarketplaceData()					[OK, testing]
+function companyUserLogin()							[OK, testing]
+function collectUserInvestmentData()						[not OK, not tested]
+function isNewEntry()								[not OK, not tested]
 
 2016-11-05	  version 2016_0.1
 Basic version
@@ -36,6 +36,10 @@ Basic version
 2017-04-10      version 0.3
  * Added casperjs to make a login into colectual
  * It has angularjs and because of that, we need to use casperjs
+
+2017-07-25      version 0.3
+ * Added login function to Colectual and urlsequences
+ * Added logout function to Colectual
 
 
 
@@ -96,6 +100,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
 /**
 *
 *	Collects the marketplace data. We must login first in order to obtain the marketplace data
+*       Colectual use casperjs to get the information
 *	@return array	Each investment option as an element of an array
 * 	
 */	
@@ -276,9 +281,8 @@ grant_type=password
 password=Azarus2016!
 username=manu.azarus@gmail.com
 
-look for "Mi cuenta"
+look for the class "step-instructions"
 */
-
         $loginIn = false;
 	$url = $this->urlSequence;
         $username = $user;
@@ -351,7 +355,7 @@ function companyUserLogout($url = null) {
         echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
         var_dump($casper_logout->getOutput());
         echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>";
-	//return true;
+	return true;
 }
 
 
