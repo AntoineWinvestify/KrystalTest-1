@@ -46,7 +46,7 @@ Install dependencies of casperjs and phantomjs
 */
 
 //require_once "../../vendors/autoload.php";
-//use Browser\Casper;
+use Browser\Casper;
 
 class colectual extends p2pCompany{
 
@@ -106,7 +106,7 @@ function collectCompanyMarketplaceData() {
         $username = $this->config['company_username'];
         $password = $this->config['company_password'];
         $totalArray = array();
-        echo __FUNCTION__ . __LINE__ . " MARKETPLACE<br>";
+        //echo __FUNCTION__ . __LINE__ . " MARKETPLACE<br>";
         $casper = new Casper();
         //First we must go to https://app.colectual.com/#/endSession to end session if previously is opened
         $casper->setOptions([
@@ -279,57 +279,51 @@ username=manu.azarus@gmail.com
 look for "Mi cuenta"
 */
 
+        $loginIn = false;
+	$url = $this->urlSequence;
+        $username = $user;
+        $password = $password;
+        $casper = new Casper();
+        //First we must go to https://app.colectual.com/#/endSession to end session if previously is opened
+        $casper->setOptions([
+            'ignore-ssl-errors' => 'yes'
+        ]);
+        // navigate to login web page
+        $casper->start("$url[0]");
+        // or wait for selector
+        $casper->waitForSelector('form[name="loginForm"]', 5000);
+        $casper->fillForm(
+                'form[name="loginForm"]', array(
+            'UserName' => $username,
+            'Password' => $password
+                ), false);
+        $casper->click('.md-btn');
 
-	$credentials['username'] = $user;
-	$credentials['password'] = $password;
-	$credentials['client_id'] = "ngAuthApp";
-	$credentials['grant_type'] = "password";
-
-	$str = $this->getCompanyWebpage();		// Main page
-echo "STRING1" . $str . "<br>";	
-	$str = $this->doCompanyLogin($credentials);
-echo __FILE__ . " " . __LINE__ . "<br>";
-echo "STRING2" . $str. "<br>";
-
-	$dom = new DOMDocument;
-	$dom->loadHTML($str);
-	$dom->preserveWhiteSpace = false; 
-echo __FILE__ . " " . __LINE__ . "<br>";
-	$divs = $this->getElements($dom, "div", "class", "collapse navbar-collapse");
-echo __FILE__ . " " . __LINE__ . "<br>";
-	$projectas = $this->getElements($divs[0], "a");
-echo __FILE__ . " " . __LINE__ . "<br>";	
-	foreach ($projectas as $key => $a) {
-echo __FILE__ . " " . __LINE__ . "<br>";
-		echo "key = $key " . $a->getAttribute("href") ."<br>";
-		if ($a->getAttribute("href") == "#/inversor/inversiones/activas") {
-			
-			echo "login confirmed";
-			return;
-		}
-	}
-
-
-
-
-
-	return 1;
-	$confirm = 0;
-	$uls = $dom->getElementsByTagName('ul');
-	foreach ($uls as $ul) {
-		$as = $ul->getElementsByTagName('a');
-		foreach ($as as $a) {
-			if (strcasecmp (trim($a->nodeValue), "Mi cuenta") == 0) {
-				$confirm++;
-				break;
-			}
-		}
-	}
-
-	if ($confirm == 1) {
-		return 1;
-	}
-	return 0;
+        $casper->addToScript(<<<FRAGMENT
+casper.waitUntilVisible(".step-instructions", function() {
+                     this.echo("I am in");
+		});
+FRAGMENT
+        );
+        
+        // run the casper script
+        $casper->run();
+        $str = $casper->getCurrentPageContent();
+        //This two lines are for debug purpose
+        //var_dump($casper->getOutput());
+        //echo __FUNCTION__ . __LINE__ . " LOGIN<br>";
+        $this->companyUserLogout($url[1]);
+        $dom = new DOMDocument;
+        $classname = 'step-instructions';
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $dom_xpath = new DOMXPath($dom);
+        $login = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
+        if ($login->length > 0) {
+            $loginIn = true;
+        }
+        
+        return $loginIn;
 }
 
 
@@ -343,10 +337,21 @@ echo __FILE__ . " " . __LINE__ . "<br>";
 * 	@returnboolean	true: user has logged out 
 *	
 */	
-function companyUserLogout() {
+function companyUserLogout($url = null) {
 
-	$str = $this->doCompanyLogout();
-	return true;
+        
+	$casper_logout = new Casper();
+        $casper_logout->setOptions([
+            'ignore-ssl-errors' => 'yes'
+        ]);
+        // navigate to make logout
+        $casper_logout->start("$url");
+        $casper_logout->wait(2000);
+        $casper_logout->run();
+        echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
+        var_dump($casper_logout->getOutput());
+        echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>";
+	//return true;
 }
 
 

@@ -49,7 +49,7 @@ of ONLY adding cuotas realmente pagados.
 
 */
 
-		
+require_once "../Vendor/autoload.php";		
 
 class p2pCompany{
 	const DAY 		= 1;
@@ -602,6 +602,12 @@ public function getElements($dom, $tag, $attribute, $value) {
 		}
 	}
 	return $list;
+}
+
+public function getElementsByClass ($dom, $class) {
+    $dom_xpath = new DOMXPath($dom);
+    $login = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class ')]");
+    return $login;
 }
 
 
