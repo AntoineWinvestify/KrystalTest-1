@@ -114,7 +114,7 @@ class zank extends p2pCompany {
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
         echo __FUNCTION__ . __LINE__ . "<br>";
 //set_time_limit(25);		// Zank is very very slow
-        echo $result;
+        //echo $result;
 
         if (!$result) {   // Error while logging in
             echo __FUNCTION__ . __LINE__ . "<br>";
@@ -762,8 +762,6 @@ class zank extends p2pCompany {
 //		echo "CODE 103 or 200 received, so do it again , OK <br>";
             $str = $this->doCompanyLogin($credentials);
             $this->mainPortalPage = $str;
-            echo 'entro';
-            echo $str;
             return true;
         }
 
