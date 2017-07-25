@@ -26,37 +26,37 @@
  * @package
 
 
-function calculateLoanCost()										[OK, tested]
-function collectCompanyMarketplaceData()								[OK, tested]
-function companyUserLogin()										[OK, tested]
-function companyUserLogout										[OK, tested]
-function collectUserInvestmentData()									[OK, tested]
-parallelization on collectUserInvestmentData                                                            [OK, tested]
+  function calculateLoanCost()										[OK, tested]
+  function collectCompanyMarketplaceData()								[OK, tested]
+  function companyUserLogin()										[OK, tested]
+  function companyUserLogout										[OK, tested]
+  function collectUserInvestmentData()									[OK, tested]
+  parallelization on collectUserInvestmentData                                                            [OK, tested]
 
-2016-08-04	  version 2016_0.1
-Basic version
+  2016-08-04	  version 2016_0.1
+  Basic version
 
-2016-11-30	  version 2016_0.2
-* Zank introduced csrf code for improved security
+  2016-11-30	  version 2016_0.2
+ * Zank introduced csrf code for improved security
 
 
-2017-04-25
-Estado amortizado
+  2017-04-25
+  Estado amortizado
 
-2017-04-26
-Total invertido correcto, fecha
+  2017-04-26
+  Total invertido correcto, fecha
 
-2017-05-16      version 2017_0.3
+  2017-05-16      version 2017_0.3
 
-* Added parallelization to collectUserInvestmentData
-* Added dom verification to collectUserInvestmentData
- 
-2017/06/01
-* Added loop when we take json investments                                     [OK, STILL TO CHECK]
+ * Added parallelization to collectUserInvestmentData
+ * Added dom verification to collectUserInvestmentData
 
-2017/06/22
+  2017/06/01
+ * Added loop when we take json investments                                     [OK, STILL TO CHECK]
+
+  2017/06/22
  * Added mechanism to take more than 100 investments by Json
- 
+
   Pending:
   Fecha en duda
 
@@ -64,7 +64,7 @@ Total invertido correcto, fecha
  */
 
 class zank extends p2pCompany {
-    
+
     private $credentials = array();
     private $userId;
     private $resultMiZank = false;
@@ -128,12 +128,15 @@ class zank extends p2pCompany {
             exit;
         }
 
+        $form = [
+            "length" => 100,
+            "start" => $this->start];
         echo __FUNCTION__ . __LINE__ . "start with first read<br>";
-        $str = $this->getCompanyWebpage();
+        $str = $this->getCompanyWebpageJson(null , $form);
 //print_r($str);
         echo __FUNCTION__ . __LINE__ . "start with second read<br>";
 //	$str = $this->getCompanyWebpage('https://www.zank.com.es/inversor/listaPrestamosAjax');		
-        $str = $this->getCompanyWebpage();
+        $str = $this->getCompanyWebpageJson(null , $form);
 //print_r($str);
         echo __FUNCTION__ . __LINE__ . "<br>";
         $totalArray = array();
@@ -234,18 +237,19 @@ class zank extends p2pCompany {
             $this->print_r2($tempArray);
             unset($tempArray);
         }
+        $this->companyUserLogout();
         return $totalArray;
     }
-    
+
     /**
-    * Collects the investment data of the user
-    *	
-    * @param string $str   It is the web converted to string of the company
-    * @return array	Data of each investment of the user as an element of an array
-    */
+     * Collects the investment data of the user
+     * 	
+     * @param string $str   It is the web converted to string of the company
+     * @return array	Data of each investment of the user as an element of an array
+     */
     function collectUserInvestmentDataParallel($str) {
-    
-    
+
+
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -257,7 +261,6 @@ class zank extends p2pCompany {
                 $this->credentials['_password'] = $this->password;
                 //$this->credentials['_username'] = "Klauskuk@gmail.com";
                 //$this->credentials['_password'] = "P2Pes2017";
-
                 // get login page
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -270,7 +273,7 @@ class zank extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                
+
                 foreach ($forms as $form) {
                     $index = $index + 1;
                     if ($index == 1) {
@@ -281,13 +284,12 @@ class zank extends p2pCompany {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    
+
                     foreach ($inputs as $input) {
                         if (!empty($input->getAttribute('value'))) {  // look for the csrf code
                             $this->credentials[$name] = $input->getAttribute('value');
                         }
                     }
-                    
                 }
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($this->credentials);
@@ -303,14 +305,14 @@ class zank extends p2pCompany {
                 }
                 break;
             case 3:
-                
+
                 $this->mainPortalPage = $str;
-                
+
                 //echo "user = $user and pw = $password<br>";
-                if (!$this->resultMiZank) {			// Error while logging in
+                if (!$this->resultMiZank) {   // Error while logging in
                     $tracings = "Tracing:\n";
-                    $tracings .= __FILE__ . " " . __LINE__  . " \n";
-                    $tracings .= "Zank login: userName =  " . $this->config['company_username'] .  ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Zank login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
                     $tracings .= " \n";
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
@@ -330,7 +332,7 @@ class zank extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                
+
                 foreach ($scripts as $script) {
                     $position = stripos($script->nodeValue, "$.ajax");
                     if ($position !== false) {  // We found an entry
@@ -350,9 +352,9 @@ class zank extends p2pCompany {
 
                 $index = 0;
                 $ps = $dom->getElementsByTagName('p');
-                /*if ($ps.length > 0) {
-                    Verify there are som elements
-                }*/
+                /* if ($ps.length > 0) {
+                  Verify there are som elements
+                  } */
                 $this->verifyNodeHasElements($ps);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
@@ -382,7 +384,7 @@ class zank extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // load Webpage into a string variable so it can be parsed	
                 break;
-                
+
             case 4:
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -460,7 +462,7 @@ class zank extends p2pCompany {
 
                     $this->numberOfInvestments++;
                     $day = 1; //substr($item['Fecha'],0,2);
-                    
+
                     if ($item['Plazo'] <= 50) {
                         $month = substr($item['Fecha'], 3, 2) + 1;
 
@@ -494,29 +496,25 @@ class zank extends p2pCompany {
                     $this->data1[$key]['duration'] = $item['Plazo'] . " Meses";
                     $this->data1[$key]['commission'] = $this->getMonetaryValue($item['Comision']);
                     $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
-            }
-            if ($numberJsonInvestments != 0 && $numberJsonInvestments % 100 == 0) {
-                //If investments are 100, we verify that there is no more, so we recall starting at 100 investments
-                $this->start = $this->start + 100;
-                $form = [
-                "length" => 100,
-                "start" => $this->start];
+                }
+                if ($numberJsonInvestments != 0 && $numberJsonInvestments % 100 == 0) {
+                    //If investments are 100, we verify that there is no more, so we recall starting at 100 investments
+                    $this->start = $this->start + 100;
+                    $form = [
+                        "length" => 100,
+                        "start" => $this->start];
 
-                $this->idForSwitch = 6;
-                //Add here the Edu's adaption to the url
-                $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
-
-            }
-            else {
-                $this->data1 = array_values($this->data1);
-                $this->tempArray['global']['investments'] = count($this->data1);
-                //echo __FILE__ . " " . __LINE__ . "<br>";
-                $this->tempArray['investments'] = $this->data1;
-                $this->print_r2($this->tempArray);
-                return $this->tempArray; 
-            }
-                
-                                    
+                    $this->idForSwitch = 6;
+                    //Add here the Edu's adaption to the url
+                    $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
+                } else {
+                    $this->data1 = array_values($this->data1);
+                    $this->tempArray['global']['investments'] = count($this->data1);
+                    //echo __FILE__ . " " . __LINE__ . "<br>";
+                    $this->tempArray['investments'] = $this->data1;
+                    $this->print_r2($this->tempArray);
+                    return $this->tempArray;
+                }
         }
     }
 
@@ -570,7 +568,7 @@ class zank extends p2pCompany {
         foreach ($ps as $p) {
             $class = trim($p->getAttribute('class'));
             $position = stripos($class, $needle);
-            
+
             if ($position !== false) {  // found a kpi
                 switch ($index) {
                     case 0:
@@ -649,10 +647,10 @@ class zank extends p2pCompany {
                     $data1[$key]['status'] = TERMINATED_OK;
                 }
 
-    //		if (!($data1[$key]['status'] <> OK OR $data1[$key]['status'] <> PAYMENT_DELAYED)) {
-    //			continue;									// flush non required loans
-    //		echo "FLUSH";
-    //		}
+                //		if (!($data1[$key]['status'] <> OK OR $data1[$key]['status'] <> PAYMENT_DELAYED)) {
+                //			continue;									// flush non required loans
+                //		echo "FLUSH";
+                //		}
                 if ($data1[$key]['status'] == TERMINATED_OK) {
                     unset($data1[$key]);
                     continue;
@@ -700,7 +698,7 @@ class zank extends p2pCompany {
                 $start = $start + 100;
             }
         }
-        
+
         $data1 = array_values($data1);
         $tempArray['global']['investments'] = count($data1);
         $tempArray['investments'] = $data1;
@@ -736,6 +734,7 @@ class zank extends p2pCompany {
         $forms = $dom->getElementsByTagName('form');
 
         $index = 0;
+
         foreach ($forms as $form) {
             $index = $index + 1;
             if ($index == 1) {
@@ -744,19 +743,30 @@ class zank extends p2pCompany {
             $inputs = $form->getElementsByTagName('input');
             foreach ($inputs as $input) {
                 if (!empty($input->getAttribute('value'))) {  // look for the csrf code
-                    $credentials[$name] = $input->getAttribute('value');
+                    $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
             }
         }
 
         $str = $this->doCompanyLogin($credentials);
 
-        if ($str == 200 or $str == 103) {
+        /* $stri = $this->getCompanyWebpage('https://www.zank.com.es/investor/overview');
+          $dom = new DOMDocument;
+          $dom->loadHTML($stri);
+          $dom->preserveWhiteSpace = false;
+          $login = $this->getElements($dom, "a");
+          //print_r($login); */
+
+        if ($str == 302 || $str == 200) {
+
 //		echo "CODE 103 or 200 received, so do it again , OK <br>";
             $str = $this->doCompanyLogin($credentials);
             $this->mainPortalPage = $str;
+            echo 'entro';
+            echo $str;
             return true;
         }
+
         return false;
     }
 
@@ -769,7 +779,8 @@ class zank extends p2pCompany {
      */
     function companyUserLogout() {
 
-        $str = $this->doCompanyLogout();
+        //$str = $this->doCompanyLogout();
+        $this->getCompanyWebpage();
         return true;
     }
 
@@ -821,7 +832,7 @@ class zank extends p2pCompany {
             curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);      // reset fields
         }
-        
+
         foreach ($form as $key => $value) {
             $postItems[] = $key . '=' . $value;
         }
@@ -873,8 +884,8 @@ class zank extends p2pCompany {
         }
         return $str;
     }
-    
-     /**
+
+    /**
      * Function that is used to pick up inversions by 100 instead of 25 with a json
      * The normal function of Zank is to give 25 but we change the petition with the posts item
      * with curl
@@ -906,26 +917,26 @@ class zank extends p2pCompany {
 
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
-                ->set(CURLOPT_POST, true);
-        //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
+                    ->set(CURLOPT_POST, true);
+            //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
         }
 
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
-                //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
-                ->set(CURLOPT_HTTPHEADER, $this->headers);
-            
+                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
+                    ->set(CURLOPT_HTTPHEADER, $this->headers);
+
             unset($this->headers);   // reset fields
         }
-        
+
         foreach ($form as $key => $value) {
             $postItems[] = $key . '=' . $value;
         }
         $postString = implode('&', $postItems);
 
-        $request->_page = $this->idForQueue . ";". $this->idForSwitch . ";WEBPAGE";
+        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
         $request->getOptions()
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
@@ -936,7 +947,6 @@ class zank extends p2pCompany {
                 ->set(CURLOPT_POSTFIELDS, $postString)
                 // Fail the cURL request if response code = 400 (like 404 errors) 
                 ->set(CURLOPT_FAILONERROR, true)
-                
                 ->set(CURLOPT_AUTOREFERER, true)
                 //->set(CURLOPT_VERBOSE, 1)
                 // Return the actual result of the curl result instead of success code
@@ -950,16 +960,13 @@ class zank extends p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-
         //Add the request to the queue in the marketplaces controller
         $this->marketplaces->addRequetsToQueueCurls($request);
-        
+
         if ($this->config['appDebug'] == true) {
             echo "VISITED COMPANY URL = $url <br>";
         }
     }
 
-
 }
-
 ?> 
