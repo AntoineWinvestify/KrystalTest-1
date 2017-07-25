@@ -1344,7 +1344,7 @@ function print_r2($val){
         $newLine = "\n";
         $this->tempArray['global']['error'] = "ERROR START $newLine"
                 . "An error has ocurred with the data on the line " . $line . $newLine." and the file " . $file
-                . "$newLine The queueId is" . $this->queueId
+                . "$newLine The queueId is" . $this->queueId['Queue']['queue_userReference']
                 . "$newLine The error was caused in the urlsequence: " . $this->errorInfo 
                 . "$newLine ERROR FINISHED<br>";
         $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
