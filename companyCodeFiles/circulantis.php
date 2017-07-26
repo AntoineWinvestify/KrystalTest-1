@@ -122,7 +122,15 @@ class circulantis extends p2pCompany {
                     $this->print_r2($tempArray);
                     unset($tempArray);
                     $onClick = $newdiv->getAttribute('onclick');
-                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick));
+                    $onClick = explode("-", $onClick);
+                    
+                    $name = "";
+                    for ($i = 4 ; $i < count($onClick)-1 ; $i++ ){                      
+                            $name = $name . " " . $onClick[$i];
+                    }
+                    
+                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick[count($onClick)-1]));
+                    $tempArray['marketplace_purpose'] = $name;
                 }
                 if ($class == "titulo-subasta") {
                     $sector = explode('Importe', trim($div1->nodeValue));
