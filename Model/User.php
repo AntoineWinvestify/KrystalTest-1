@@ -38,8 +38,8 @@
   Added new routine uncomfirmedUserExists()
 
 
-    2017-06-30      version 0.4  
-    included support for general authentication of Winadmin and AdminPFP roles                                                    
+  2017-06-30      version 0.4
+  included support for general authentication of Winadmin and AdminPFP roles
   get pfp admin info                                                                [Not OK, not tested]
 
   PENDING
@@ -64,15 +64,13 @@ class User extends AppModel {
             'fields' => '',
             'order' => '',
         ),
-        
- /*       'Winadmin' => array(
-            'className' => 'Admin.Winadmin',
-            'foreignKey' => 'user_id',
-            'fields' => '',
-            'order' => '',
-        )
-*/
- 
+            /*       'Winadmin' => array(
+              'className' => 'Admin.Winadmin',
+              'foreignKey' => 'user_id',
+              'fields' => '',
+              'order' => '',
+              )
+             */
     );
 
     /**
@@ -152,13 +150,14 @@ class User extends AppModel {
                 'investor_accountStatus' => UNCONFIRMED_ACCOUNT,
             );
 
-
             if ($this->Investor->save($data, $validation = true)) {                                   // OK
                 $investorId = $this->Investor->id;
                 // store this id in user model		
                 $this->id = $userId;
                 $this->save(array('investor_id' => $investorId));
-                $result[0] = true;
+                if ($this->Investor->createCheckdata($investorId)) {
+                    $result[0] = true;
+                }
             } else {
                 $result[0] = false;
                 $result[1] = $this->Investor->validationErrors;
@@ -385,17 +384,17 @@ class User extends AppModel {
         }
         return $info;
     }
-    
+
     /**
-     *Get pfp admins's mails FROM PFPS TABLE(NOT USERS TABLE)
+     * Get pfp admins's mails FROM PFPS TABLE(NOT USERS TABLE)
      * @param type $id
      */
-    public function getPfpAdminMail($id){
+    public function getPfpAdminMail($id) {
         $info = $this->Adminpfp->find("all", array(
-                'fields' => array('adminpfp_email'),
-                'conditions' => array('company_id' => $id),
-                'recursive' => -1,
-            ));
+            'fields' => array('adminpfp_email'),
+            'conditions' => array('company_id' => $id),
+            'recursive' => -1,
+        ));
         return $info;
     }
 

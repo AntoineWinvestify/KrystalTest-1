@@ -52,7 +52,7 @@
 
   Pending:
   function generateGUIDs(). 							[not Ok, not tested]
-  
+
 
 
 
@@ -225,9 +225,8 @@ class Investor extends AppModel {
         $data = array('id' => $investorReference,
             'investor_accountStatus' => $newStatus,
         );
-        $this->save($data, $validate = true);
-        echo __FILE__ . " " . __LINE__ . "<br>";
-        if ($this->createCheckdata($currentStatus['Investor']['id'])) {
+        if ($this->save($data, $validate = true)) {
+            echo __FILE__ . " " . __LINE__ . "<br>";
             return true;
         }
     }
@@ -437,10 +436,10 @@ class Investor extends AppModel {
         $investorData = $this->find("all", $options);
         return $investorData;
     }
-    
-    /****************************/
-    /**GET INVESTOR SINGLE DATA**/
-    /****************************/
+
+    /*     * ************************* */
+    /*     * GET INVESTOR SINGLE DATA* */
+    /*     * ************************* */
 
     /**
      * Get investor id
@@ -452,8 +451,8 @@ class Investor extends AppModel {
         $id = $data[0]['Investor']['id'];
         return $id;
     }
-    
-     /**
+
+    /**
      * Get investor user_id
      * @param type $userid
      * @return type
@@ -467,7 +466,6 @@ class Investor extends AppModel {
         $id = $data[0]['Investor']['user_id'];
         return $id;
     }
-    
 
     /**
      * Get investor identification code
@@ -491,8 +489,6 @@ class Investor extends AppModel {
         return $dni;
     }
 
-    
-    
     /**
      * Create a check line in the checks table for the user
      * @param type $id
@@ -596,7 +592,7 @@ class Investor extends AppModel {
             }
         }
 
-echo false;        //If we click approve, change the status
+        echo false;        //If we click approve, change the status
         if ($checks['type'] == 'approve') {
 
             //Json path
