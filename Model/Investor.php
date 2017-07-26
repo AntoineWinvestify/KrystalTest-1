@@ -188,7 +188,7 @@ class Investor extends AppModel {
 
     /**
      *
-     * 	Updates the status of the account of an investor
+     * 	Reads the status of the account of an investor
      * 	@param 		int	$investorReference  The database handler of the investor
      * 	@param 		bitmap	$statusBit          The "status characteristic" to be checked of the current account
      *                                                   The definition of the bitmap is defined in database table

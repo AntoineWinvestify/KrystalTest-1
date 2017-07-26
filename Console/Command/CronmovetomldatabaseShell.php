@@ -36,17 +36,9 @@ define('SYSTEM_GENERATED', 1);
 
 class CronmovetomldatabaseShell extends AppShell
 {
-    public $uses = array('User');
+    public $uses = array('Company', 'Userinvestmentdata');
+
     
-public function main() {
-		$this->out('Hello World.');
-}
-
-
-
-public function hey_there() {
-$this->out('Hey there ' . $this->args[0]);
-}
 
 
 
@@ -73,16 +65,11 @@ public function cronMove() {
     if (empty($limit)) {
         $limit = 100;
     }
-
-    $this->Company = ClassRegistry::init('Company');   
  
     $this->Mlqueue = ClassRegistry::init('Adminpfp.Mlqueue'); 
     $this->Userplatformglobaldata = ClassRegistry::init('Adminpfp.Userplatformglobaldata'); 
     $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata'); 
  
-    
-    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-
 // Get the information of the previous readout    
     $resultMlqueue = $this->Mlqueue->find("all",$params = array('recursive' => -1,
                                                'conditions'  => array('id' => 1))); 
@@ -94,7 +81,6 @@ public function cronMove() {
                                                               'limit' => $limit ));    
     $tempCount = 0;
     $actualQueueId = 0;
-
 
     while (!empty($userinvestmentdataResult)) {
         // Make sure that records belonging to the same queueId do not spill over into two reading.

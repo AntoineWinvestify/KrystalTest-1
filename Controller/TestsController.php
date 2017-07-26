@@ -41,6 +41,9 @@ function beforeFilter() {
         parent::beforeFilter();
 
 	$this->Security->requireAuth();
+        
+ 	$this->Auth->allow('linkCheckRecords');        
+        
 }
 
    
@@ -112,6 +115,44 @@ function showUserData($userIdentity, $number) {
 }
 
     
+
+
+
+
+function linkCheckRecords() {
+    $this->autoRender = false;
+    Configure::write('debug', 2);  
     
+    $this->User = ClassRegistry::init('User'); 
+    $this->Check = ClassRegistry::init('Check');   
+    
+    $userResults = $this->User->find("all", array('conditions'  => $dataFilterConditions,
+                                                    'fields' => array('id', 'email', 'investor_id' , 'username'),
+                                                    'recursive' => -1,
+                                    ));
+     
+$this->print_r2($userResults);    
+     foreach ($userResults as $key => $result) {
+         $this->print_r2($result);
+         echo "key = $key, username = " .  $result['User']['username'] . "<br>";
+         $this->Check->
+     }
+    
+    
+    
+
+     
+     
+}
+
+
+
+
+
+
+
+
+
+
     
 }
