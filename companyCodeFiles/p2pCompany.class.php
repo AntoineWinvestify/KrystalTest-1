@@ -1357,7 +1357,7 @@ function print_r2($val){
                 . $error_request
                 . "$newLine The time is : " . date("Y-m-d H:i:s")
                 . "$newLine ERROR FINISHED<br>";
-        $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
+        $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         return $this->tempArray;
     }
