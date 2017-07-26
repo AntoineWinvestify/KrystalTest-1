@@ -1338,13 +1338,23 @@ function print_r2($val){
      * @param string $file It is the reference of the file where the error occurred
      * @return array It is the principal array with only the error variable
      */
-    public function getError($line, $file, $id) {
+    public function getError($line, $file, $id = null, $error = null) {
         $newLine = "\n";
+        $type_sequence = null;
+        if (!empty($id)) {
+            $type_sequence = "$newLine The sequence is " . $id;
+        }
+        $error_request = null;
+        if (!empty($error)) {
+            $error_request = "$newLine The error code of the request: " . $error->getCode()
+                    . "$newLine The error message of the request: " . $error->getMessage();
+        }
         $this->tempArray['global']['error'] = "ERROR START $newLine"
                 . "An error has ocurred with the data on the line " . $line . $newLine." and the file " . $file
                 . "$newLine The queueId is" . $this->queueId['Queue']['queue_userReference']
                 . "$newLine The error was caused in the urlsequence: " . $this->errorInfo 
-                . "$newLine The sequence is " . $id
+                . $type_sequence
+                . $error_request
                 . "$newLine ERROR FINISHED<br>";
         $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);

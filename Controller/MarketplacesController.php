@@ -610,7 +610,7 @@ class MarketPlacesController extends AppController {
             else if ((!empty($this->tempArray[$ids[0]]) || ($response->hasError()) && $ids[2] != "LOGOUT")) {
                 if ($response->hasError()) {
                      //$this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
-                     $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2]);
+                     $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2], $error);
                 }
                 $this->logoutOnCompany($ids, $str);
                 if ($ids[2] == "LOGOUT") {
