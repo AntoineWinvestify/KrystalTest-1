@@ -262,9 +262,18 @@ class ocrsController extends AppController {
         $this->layout = 'Admin.azarus_private_layout';
     }
 
-    //Activated Service VIEW
-    function activatedService() {
-        $this->layout = 'Admin.azarus_private_layout';
-        $this->render("../Layouts/activated_service");
+    
+        /**
+     * FOR DEMO ONLY
+     */
+    public function resetInvestorDemo($investorId) {
+        $ocrId = $this->Ocr->findOcrId($investorId);
+        $this->Ocr->resetOcr($ocrId);
+        $this->Ocrfile->ocrAllFileDelete($investorId);
+        $this->Ocr->resetCompaniesOcr($ocrId);
     }
+    
+    
+    
+    
 }

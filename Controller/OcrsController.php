@@ -428,14 +428,6 @@ class ocrsController extends AppController {
         $this->render("/Layouts/activated_service"); //Load modal
     }
 
-    /**
-     * FOR DEMO ONLY
-     */
-    public function resetInvestorDemo() {
-        $ocrId = $this->Session->read('Auth.User.Investor.ocr_id');
-        $this->Ocr->resetOcr($ocrId);
-        $this->Ocrfile->ocrAllFileDelete($this->Session->read('Auth.User.Investor.id'));
-        $this->Ocr->resetCompaniesOcr($ocrId);
-    }
+
 
 }
