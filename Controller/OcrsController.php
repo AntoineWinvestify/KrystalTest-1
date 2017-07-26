@@ -122,7 +122,7 @@ class ocrsController extends AppController {
      * Data panel actions
      * Save investor data and update companies_ocrs status
      */
-    function oneClickInvestorII() {
+    function oneClickInvestorSentAction() {
 
         App::import("Vendor", "ibanhandler/oophp-iban");
         if (!$this->request->is('ajax')) {
@@ -192,7 +192,7 @@ class ocrsController extends AppController {
      * Select platform actions
      * Save selected companies
      */
-    function oneClickInvestorI() {
+    function oneClickInvestorPlatformSelectionAction() {
         if (!$this->request->is('ajax')) {
             $this->set('result', false);
         } else {
