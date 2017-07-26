@@ -547,7 +547,6 @@ function getCompanyWebpage($url) {
 
     function doCompanyLoginMultiCurl(array $loginCredentials) {
         
-        //$this->generateCookiesFile();
         $url = array_shift($this->urlSequence);
         echo $url;
         $this->errorInfo = $url;
@@ -670,7 +669,6 @@ function getCompanyWebpage($url) {
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir. '/' . $this->cookies_name);
 
         $this->marketplaces->addRequetsToQueueCurls($request);
-        //$this->deleteCookiesFile();
     }
     
     
@@ -1340,12 +1338,13 @@ function print_r2($val){
      * @param string $file It is the reference of the file where the error occurred
      * @return array It is the principal array with only the error variable
      */
-    public function getError($line, $file) {
+    public function getError($line, $file, $id) {
         $newLine = "\n";
         $this->tempArray['global']['error'] = "ERROR START $newLine"
                 . "An error has ocurred with the data on the line " . $line . $newLine." and the file " . $file
                 . "$newLine The queueId is" . $this->queueId['Queue']['queue_userReference']
                 . "$newLine The error was caused in the urlsequence: " . $this->errorInfo 
+                . "$newLine The sequence is " . $id
                 . "$newLine ERROR FINISHED<br>";
         $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);

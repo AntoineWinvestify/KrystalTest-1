@@ -608,10 +608,13 @@ class MarketPlacesController extends AppController {
                 //$this->newComp[$ids[0]]->deleteCookiesFile();
             }
             else if ((!empty($this->tempArray[$ids[0]]) || ($response->hasError()) && $ids[2] != "LOGOUT")) {
-                $this->logoutOnCompany($ids, $str);
                 if ($response->hasError()) {
-                     $this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
-                     $this->newComp[$ids[0]]->getError(__LINE__, __FILE__);
+                     //$this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
+                     $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2]);
+                }
+                $this->logoutOnCompany($ids, $str);
+                if ($ids[2] == "LOGOUT") {
+                    unset($this->tempArray['global']['error']);
                 }
             }
             
@@ -885,7 +888,7 @@ class MarketPlacesController extends AppController {
      */
     function logoutOnCompany($ids, $str) {
         $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$ids[0]], LOGOUT_SEQUENCE);
-        echo "Company = $this->companyId[$ids[0]]";
+        //echo "Company = $this->companyId[$ids[0]]";
         $this->newComp[$ids[0]]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
         $this->newComp[$ids[0]]->companyUserLogoutMultiCurl($str);
     }
