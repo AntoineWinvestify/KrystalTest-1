@@ -685,8 +685,8 @@ function getCompanyWebpage($url) {
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
             echo $url;
-            $this->errorInfo = $url;
         }
+         $this->errorInfo = $url;
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -1351,10 +1351,11 @@ function print_r2($val){
         }
         $this->tempArray['global']['error'] = "ERROR START $newLine"
                 . "An error has ocurred with the data on the line " . $line . $newLine." and the file " . $file
-                . "$newLine The queueId is" . $this->queueId['Queue']['queue_userReference']
+                . "$newLine The queueId is " . $this->queueId['Queue']['id']
                 . "$newLine The error was caused in the urlsequence: " . $this->errorInfo 
                 . $type_sequence
                 . $error_request
+                . "$newLine The time is : " . date("Y-m-d H:i:s")
                 . "$newLine ERROR FINISHED<br>";
         $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
