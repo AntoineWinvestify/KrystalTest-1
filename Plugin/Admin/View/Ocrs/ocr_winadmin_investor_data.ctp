@@ -725,7 +725,7 @@
                         <!-- /Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle">
 
-                            <?php if ($userData[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) { ?>
+                            <?php if ($userData[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) { ?>
                                 <div id="cifOptional" class="row">
                                     <!-- CIF -->
                                     <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">

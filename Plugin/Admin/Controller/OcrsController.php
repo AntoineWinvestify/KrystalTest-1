@@ -87,7 +87,12 @@ class ocrsController extends AdminAppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-    /*     WinAdmin View #2
+   
+
+    //One Click Registration - Winvestify Admin Views
+
+
+    /*     * WinAdmin View #2
      * 
      */
     function ocrWinadminInvestorChecking() {
@@ -256,4 +261,19 @@ class ocrsController extends AdminAppController {
     function ocrWinadminTallyman() {
         $this->layout = 'Admin.azarus_private_layout';
     }
+
+    
+        /**
+     * FOR DEMO ONLY
+     */
+    public function resetInvestorDemo($investorId) {
+        $ocrId = $this->Ocr->findOcrId($investorId);
+        $this->Ocr->resetOcr($ocrId);
+        $this->Ocrfile->ocrAllFileDelete($investorId);
+        $this->Ocr->resetCompaniesOcr($ocrId);
+    }
+    
+    
+    
+    
 }

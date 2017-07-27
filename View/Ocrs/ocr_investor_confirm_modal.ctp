@@ -114,8 +114,9 @@
             resultJson = JSON.parse(result);
 <?php } ?>
 
-        console.log(resultJson);
         if (resultJson[0] == 1 && resultJson[2] == 1) {
+            email = $('#ContentPlaceHolder_email').val();
+            ga_1CRConfirmCompanies(<?php echo $number ?>, email);
             //$(".successMsg").fadeIn();
             $("#1CR_investor_3_confirming").removeClass("show");
             $("#1CR_investor_3_confirming").hide();
@@ -145,7 +146,6 @@
 
     function error(result) {
 <?php //Server validation Error             ?>
-        console.log("validation error");
         $(".errorMsg").fadeIn();
     }
 
@@ -153,7 +153,14 @@
         $(".errorMsg").fadeIn();
     }
 
-
+            
+        
+    //Google Analytics
+    function ga_1CRConfirmCompanies(number,email) {
+        if (typeof ga === 'function') { 
+            ga('send', 'event', '1ClickRegistration', 'serviceContracted', email ,number);
+        }
+    }
 </script>
 <?php if ($status[0]['Ocr']['ocr_status'] == NOT_SENT || $status[0]['Ocr']['ocr_status'] == FINISHED) { ?>
     <div id="1CR_investor_3_confirming" class="modal show" role="dialog">

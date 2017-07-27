@@ -104,17 +104,14 @@ class ocrsController extends AppController {
 
         //First time ocr
         $this->Ocr->createOcr($id);
-        $OcrData = $this->Ocr->checkStatus($id);
-
+        $OcrData = $this->Ocr->checkStatus($id); //Check ocrs table ocr_status
         //Check ocr status
         $status = $OcrData[0]['Ocr']['ocr_status'];
 
         //Control status
         if ($status == NOT_SENT || $status == OCR_FINISHED) {
-            //$this->ocrInvestorPlatformSelection();
             $this->set('link', 'ocrInvestorPlatformSelection');
         } else if ($status == ERROR) {
-            //$this->ocrInvestorDataPanel();
             $this->set('link', 'ocrInvestorDataPanel');
         } else if ($status == SENT || $status == OCR_PENDING || $status = FIXED) {
             $this->activatedService();
@@ -123,32 +120,32 @@ class ocrsController extends AppController {
 
     /**
      * Data panel actions
+     * Save investor data and update companies_ocrs status
      */
-    function oneClickInvestorII() {
+    function oneClickInvestorSentAction() {
 
         App::import("Vendor", "ibanhandler/oophp-iban");
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            //if ($this->Verify($_REQUEST['iban'])) {
+
             $this->layout = 'ajax';
             $this->disableCache();
 
-
-
-            //Investor data
-            $investor_name = strip_tags(htmlspecialchars($_REQUEST['investor_name']));
-            $investor_surname = strip_tags(htmlspecialchars($_REQUEST['investor_surname']));
-            $investor_DNI = strip_tags(htmlspecialchars($_REQUEST['investor_DNI']));
-            $investor_dateOfBirth = $_REQUEST['investor_dateOfBirth'];
+            $id = $this->Session->read('Auth.User.investor_id'); //Investor id
+            //Request investor data
+            $investor_name = $this->request->data['investor_name'];
+            $investor_surname = $this->request->data['investor_surname'];
+            $investor_DNI = $this->request->data['investor_DNI'];
+            $investor_dateOfBirth = $this->request->data['investor_dateOfBirth'];
             $investor_telephone = $_REQUEST['investor_telephone'];
-            $investor_address1 = strip_tags(htmlspecialchars($_REQUEST['investor_address1']));
-            $investor_postCode = strip_tags(htmlspecialchars($_REQUEST['investor_postCode']));
-            $investor_city = strip_tags(htmlspecialchars($_REQUEST['investor_city']));
-            $investor_country = $_REQUEST['investor_country'];
-            $investor_email = $_REQUEST['investor_email'];
+            $investor_address1 = $this->request->data['investor_address1'];
+            $investor_postCode = $this->request->data['investor_postCode'];
+            $investor_city = $this->request->data['investor_city'];
+            $investor_country = $this->request->data['investor_country'];
+            $investor_email = $this->request->data['investor_email'];
 
-            $datosInvestor = array(
+            $dataInvestor = array(
                 'id' => $this->Session->read('Auth.User.id'),
                 'investor_name' => $investor_name,
                 'investor_surname' => $investor_surname,
@@ -162,77 +159,77 @@ class ocrsController extends AppController {
                 'investor_email' => $investor_email,
             );
 
-            $result1 = $this->Investor->investorDataSave($datosInvestor);
 
-            $id = $this->Session->read('Auth.User.investor_id');
+
+            $result1 = $this->Investor->investorDataSave($dataInvestor); //Save the investor data
             $status = $this->Ocr->checkStatus($id);
+
 
             //Ocr data          
             $datosOcr = array(
                 'investor_id' => $id,
-                'ocr_investmentVehicle' => $_REQUEST['investmentVehicle'],
-                'investor_cif' => $_REQUEST['cif'],
-                'investor_businessName' => $_REQUEST['businessName'],
-                'investor_iban' => $_REQUEST['iban'],
+                'ocr_investmentVehicle' => $this->request->data['investmentVehicle'],
+                'investor_cif' => $this->request->data['cif'],
+                'investor_businessName' => $this->request->data['businessName'],
+                'investor_iban' => $this->request->data['iban'],
                 'ocr_status' => $status,
             );
-            $result2 = $this->Ocr->ocrDataSave($datosOcr);
+            $result2 = $this->Ocr->ocrDataSave($datosOcr); //Save ocr info
             $ocrArray = json_decode("[" . $result2 . "]", true);
 
             //Update the companies status
-            $idOcr = $ocrArray[1]["id"];
+            $idOcr = $ocrArray[1]["id"]; //Update companies_ocrs table
             $result3 = $this->Ocr->updateCompaniesStatus($idOcr);
 
+
+            //Set ajax response
             $this->set('result1', $result1);
             $this->set('result2', $result2);
             $this->set('result3', $result3);
-            /* } else {
-              $this->set('result1', false);
-              } */
         }
     }
 
     /**
      * Select platform actions
+     * Save selected companies
      */
-    function oneClickInvestorI() {
+    function oneClickInvestorPlatformSelectionAction() {
         if (!$this->request->is('ajax')) {
             $this->set('result', false);
         } else {
             $id = $this->Session->read('Auth.User.investor_id');
             $this->layout = 'ajax';
             $this->disableCache();
-
-            $companyNumber = $_REQUEST['numberCompanies'];
+            $companyNumber = $this->request->data['numberCompanies']; //Request the number of selected companies
 
             if ($companyNumber != 0) {
                 $companies = array(
                     'investorId' => $id,
                     'number' => $companyNumber,
-                    'idCompanies' => $_REQUEST['idCompany']
+                    'idCompanies' => $this->request->data['idCompany'] //Array containing the id of the selected companies
                 );
 
                 //Save the comapnies
-                $result = $this->Ocr->saveCompaniesOcr($companies);
-                $this->set('result', $result);
+                $result = $this->Ocr->saveCompaniesOcr($companies); //Update companies_ocrs table
+                $this->set('result', [$result, $this->request->data['idCompany'], $id = $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
             } else {
-                $this->set('result', false);
+                $this->set('result', false); //Ajax response
             }
         }
     }
 
     /**
-     * delete the selected company
+     * Delete the selected company
      */
     function deleteCompanyOcr() {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            $id = $this->Session->read('Auth.User.investor_id');
+            $id = $this->Session->read('Auth.User.investor_id'); //Investor id
             $this->layout = 'ajax';
             $this->disableCache();
 
-            $companyId = $_REQUEST['id_company'];
+            $companyId = $this->request->data['id_company']; //Seledted company id
 
             $delComp = array(
                 'investorId' => $id,
@@ -241,19 +238,19 @@ class ocrsController extends AppController {
 
             //Delete the companies
             $result = $this->Ocr->deleteCompanyOcr($delComp);
-            $this->set('result', $result);
+            $this->set('result', $result); //Ajax response
         }
     }
-    
+
     /**
-     * Delete all NOT_SENT companies_ocrs of a investor
+     * Delete all NOT_SENT companies_ocrs of a investor at cancel
      */
-    function deleteCompanyOcrAll(){
-         $ocrId = $this->Session->read('Auth.User.Investor.ocr_id');
-         $result = $this->Ocr->deleteCompanyOcrAll($ocrId);
-         $this->set('result', $result);
+    function deleteCompanyOcrAll() {
+        $ocrId = $this->Session->read('Auth.User.Investor.ocr_id'); //Investor ocr_id
+        $result = $this->Ocr->deleteCompanyOcrAll($ocrId); //Delete all companies
+        $this->set('result', $result); //Ajax response
     }
-    
+
     /**
      * Company filter
      * Send the filter conditions and return a companies list
@@ -290,12 +287,21 @@ class ocrsController extends AppController {
             //Investor id
             $id = $this->Session->read('Auth.User.investor_id');
 
-            //Ocr infe
+            //Ocr info
             $data2 = $this->Ocr->ocrGetData($id);
 
             //Selected Companies info
             $companies = array();
             $companies = array_merge($this->Ocr->getSelectedCompanies($id), $this->Ocr->getRegisterSentCompanies($id));
+
+
+            $companiesId = array(); //Set selected companies for GA event
+            foreach ($companies as $companyId) {
+                if ($companyId['ocrInfo']['company_status'] == NOT_SENT) {
+                    array_push($companiesId, $companyId['ocrInfo']['company_id']);
+                }
+            };
+            $this->set('companies', $companiesId);
 
             //Required  files
             $requiredFiles = $this->Ocrfile->readRequiredFiles($companies);
@@ -311,19 +317,21 @@ class ocrsController extends AppController {
             $this->set('requiredFiles', $filesData);
             $this->set('existingFiles', $existingFiles);
             Configure::load('countryCodes.php', 'default');
+
+            //Country select
             $countryData = Configure::read('countrycodes');
             $this->set('countryData', $countryData);
 
-            //Type set
+            //File type set
             $fileConfig = Configure::read('files');
             $typeString = null;
             foreach (array_unique($fileConfig['permittedFiles']) as $files) {
-                $file = explode('/',$files)[1];
+                $file = explode('/', $files)[1];
                 $typeString = $typeString . " ." . $file;
             }
             $this->set('filesType', $typeString);
 
-            //Check data set
+            //Check data set,disable checked data
             $checkData = $this->Investor->readCheckData($id);
             $this->set('checkData', $checkData);
 
@@ -341,19 +349,19 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', false);
         } else {
-            //Companies with ocr
+            //Companies with ocr actived
             $this->set('companies', $this->Company->companiesDataOCR());
 
-            //Types
+            //Company types
             $this->set('CompanyType', $this->crowdlendingTypesLong);
 
             //Investor id
             $id = $this->Session->read('Auth.User.investor_id');
 
-            //Set selected companies(not sent)
+            //Set selected companies(NOT_SENT)
             $this->set('selected', $this->Ocr->getSelectedCompanies($id));
 
-            //Selected companies(sent)(Not show)
+            //Selected companies(SENT)(Not show)
             $registeredList = $this->Ocr->getRegisterSentCompanies($id);
             $filter = array('investor_id' => $id);
 
@@ -362,7 +370,7 @@ class ocrsController extends AppController {
             $notShow = array();
 
 
-            //Filter
+            //Filter-->Array with SENT companies and Linked companies
             foreach ($registeredList as $registered) {
                 array_push($notShow, $registered["ocrInfo"]["company_id"]);
             }
@@ -370,9 +378,11 @@ class ocrsController extends AppController {
             foreach ($linkedList as $linked) {
                 array_push($notShow, $linked["Linkedaccount"]["company_id"]);
             }
+
             $notShowList = array_unique($notShow);
             $filterList = array('id' => $notShowList);
 
+            //Get pfp infos
             $companyInfo = $this->Company->getCompanyDataList($filterList);
             $result = array();
             foreach ($companyInfo as $info) {
@@ -402,6 +412,7 @@ class ocrsController extends AppController {
 
         //Set info
         $this->set("companies", $companyId);
+        $this->set("number", count($companyId));
         $this->set("status", $status);
     }
 
@@ -415,17 +426,7 @@ class ocrsController extends AppController {
     //Activated Service VIEW
     function activatedService() {
         $this->layout = 'azarus_private_layout';
-        $this->render("/Layouts/activated_service");
-    }
-
-    /**
-     * 
-     */
-    public function resetInvestorDemo() {
-        $ocrId = $this->Session->read('Auth.User.Investor.ocr_id');
-        $this->Ocr->resetOcr($ocrId);
-        $this->Ocrfile->ocrAllFileDelete($this->Session->read('Auth.User.Investor.id'));
-        $this->Ocr->resetCompaniesOcr($ocrId);
+        $this->render("/Layouts/activated_service"); //Load modal
     }
 
 }
