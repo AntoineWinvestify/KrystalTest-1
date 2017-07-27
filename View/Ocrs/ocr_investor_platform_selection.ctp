@@ -93,7 +93,7 @@ if ($result) {
 
                 }
                 params["idCompany"] = idCompany;
-                link = "/Ocrs/oneClickInvestorI";
+                link = "/Ocrs/oneClickInvestorPlatformSelectionAction";
                 var data = jQuery.param(params);
                 getServerData(link, data, successSentCompanies, errorSentCompanies);
                 params = {};

@@ -136,7 +136,7 @@ class ocr extends AppModel {
             if ($this->save($data)) {
                 $idOcr = $this->findOcrId($id);
                 //Insert ocr_id in investors table
-                $data = array('id' => $id, 'ocr_id' => $idOcr); 
+                $data = array('id' => $id, 'ocr_id' => $idOcr);
                 $this->Investor->save($data);
                 return true; //Ajax response
             } else {
@@ -163,55 +163,69 @@ class ocr extends AppModel {
                 'investor_id' => $dataParam['investor_id']),
             'recursive' => -1,));
 
-
-
+        
+        $checks = $this->Investor->readCheckData($dataParam['investor_id']);
         //Ocr data
+        
+        if (count($id) > 0) {
+            $time = date('Y-m-d H:i:s', time());
 
-            if (count($id) > 0) {
-                $time = date('Y-m-d H:i:s', time());
-
-                //Status control
-                if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
-                    $status = FIXED;
-                } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT || $dataParam['ocr_status'][0]['Ocr']['ocr_status'] == FINISHED) {
-                    $status = SENT;
-                }
-
-                //If  investment vehicle is CHECKED save cif and business name
-                if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
-                    $data = array(
-                        'id' => $id['Ocr']['id'],
-                        'investor_id' => $dataParam['investor_id'],
-                        'ocr_investmentVehicle' => 1,
-                        'investor_cif' => $dataParam['investor_cif'],
-                        'investor_businessName' => $dataParam['investor_businessName'],
-                        'investor_iban' => $dataParam['investor_iban'],
-                        'ocr_status' => $status,
-                        'ocr_sent' => $time,
-                    );
-                } else {
-                    $data = array( // If is UNCHEKED , don't save cif and business name
-                        'id' => $id['Ocr']['id'],
-                        'investor_id' => $dataParam['investor_id'],
-                        'ocr_investmentVehicle' => 0,
-                        'investor_iban' => $dataParam['investor_iban'],
-                        'ocr_status' => $status,
-                        'ocr_sent' => $time,
-                    );
-                }
-
-                $result = json_encode($data); //Data for ajax
-                if ($this->save($data, $validate = true)) { //Save ok
-                    return true . "," . $result;  //Return for a json 
-                } else {
-                    return false . ",";
-                }
-            } else {
-                /*
-                 * SAVE ERROR
-                 */
-                return false . ","; //Save failed
+            //Status control
+            if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == ERROR) {
+                $status = FIXED;
+            } else if ($dataParam['ocr_status'][0]['Ocr']['ocr_status'] == NOT_SENT || $dataParam['ocr_status'][0]['Ocr']['ocr_status'] == FINISHED) {
+                $status = SENT;
             }
+
+            //If  investment vehicle is CHECKED save cif and business name
+            if ($dataParam['ocr_investmentVehicle'] == CHECKED) {
+                $data = array(
+                    'id' => $id['Ocr']['id'],
+                    'investor_id' => $dataParam['investor_id'],
+                    'ocr_investmentVehicle' => 1,
+                    'investor_cif' => $dataParam['investor_cif'],
+                    'investor_businessName' => $dataParam['investor_businessName'],
+                    'investor_iban' => $dataParam['investor_iban'],
+                    'ocr_status' => $status,
+                    'ocr_sent' => $time,
+                );
+            } else {
+                $data = array(// If is UNCHEKED , don't save cif and business name
+                    'id' => $id['Ocr']['id'],
+                    'investor_id' => $dataParam['investor_id'],
+                    'ocr_investmentVehicle' => 0,
+                    'investor_iban' => $dataParam['investor_iban'],
+                    'ocr_status' => $status,
+                    'ocr_sent' => $time,
+                );
+            }
+
+
+            //Checks control, if check is 1 can't change the field in db
+            foreach ($checks[0]['Check'] as $keyCheck => $check) {
+                $checkField = strtolower(explode('_', $keyCheck)[1]);   //Get the check field name  check_name ----> name
+                foreach ($data as $keyData => $dataOcr) {
+                    $dataField = strtolower(explode('_', $keyData)[1]); //Get data field name  investor_name ---> name
+                    if ($checkField == $dataField && $check == CHECKED) {  //Compare names and unset array if data is CHECKED
+                        unset($data[$keyData]);
+                        unset($this->validate[$keyData]); //Unset field validation, cant validate with a null field;
+                    }
+                }
+            }
+
+
+            $result = json_encode($data); //Data for ajax
+            if ($this->save($data, $validate = true)) { //Save ok
+                return true . "," . $result;  //Return for a json 
+            } else {
+                return false . ",";
+            }
+        } else {
+            /*
+             * SAVE ERROR
+             */
+            return false . ","; //Save failed
+        }
     }
 
     /**
@@ -332,8 +346,8 @@ class ocr extends AppModel {
         $data = array(
             'id' => $id,
             'company_status' => $status
-        ); 
-        
+        );
+
         if ($this->CompaniesOcr->save($data)) { //Update status
             return true;
         } else {
@@ -370,12 +384,12 @@ class ocr extends AppModel {
         /* Delete company */
         return $this->CompaniesOcr->deleteAll(array('company_id' => $data['companyId'], 'ocr_id' => $ocrId));
     }
-    
+
     /**
      * Delete all NOT_SENT companies_ocrs of a investor
      * @param type $ocrId
      */
-    public function deleteCompanyOcrAll($ocrId){
+    public function deleteCompanyOcrAll($ocrId) {
         return $this->CompaniesOcr->deleteAll(array('ocr_id' => $ocrId, 'company_status' => NOT_SENT));
     }
 
@@ -386,7 +400,7 @@ class ocr extends AppModel {
      * @return array
      */
     public function getAllCompanies($id) {
-        $companiesArray = $this->find('all', array('recursive' => 1, 'conditions' => array('investor_id' => $id))); 
+        $companiesArray = $this->find('all', array('recursive' => 1, 'conditions' => array('investor_id' => $id)));
         $companies_ocrs = array(); //All companies_ocrs related with the investor
         foreach ($companiesArray as $company) {
             foreach ($company["Company"] as $companyOcr) {
@@ -474,26 +488,24 @@ class ocr extends AppModel {
         }
     }
 
-    
-    
-    
-    /********/
-    /**DEMO**/
-    /********/
-    public function resetOcr($id){
+    /*     * ***** */
+    /*     * DEMO* */
+    /*     * ***** */
+
+    public function resetOcr($id) {
         $this->validator()->remove('investor_iban');
         $this->validator()->remove('investor_cif');
         $this->validator()->remove('investor_businessName');
-        $this->save(array('id'=> $id, 'ocr_status' => 0, 'ocr_investmentVehicle' => 0, 'investor_cif' => '', 'investor_businessName' => '', 'investor_iban' => ''));
+        $this->save(array('id' => $id, 'ocr_status' => 0, 'ocr_investmentVehicle' => 0, 'investor_cif' => '', 'investor_businessName' => '', 'investor_iban' => ''));
     }
-    public function resetCompaniesOcr($id){
-        $companyOcr = $this->CompaniesOcr->find('all',array('conditions' => array('ocr_id' => $id)));
-        foreach($companyOcr as $ocr){
-            $this->CompaniesOcr->deleteAll(array( 'id' => $ocr['CompaniesOcr']['id']));
+
+    public function resetCompaniesOcr($id) {
+        $companyOcr = $this->CompaniesOcr->find('all', array('conditions' => array('ocr_id' => $id)));
+        foreach ($companyOcr as $ocr) {
+            $this->CompaniesOcr->deleteAll(array('id' => $ocr['CompaniesOcr']['id']));
         }
     }
-    
-    
+
     /**
      *
      * 	Callback Function

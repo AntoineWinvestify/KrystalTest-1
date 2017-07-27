@@ -122,7 +122,7 @@ class ocrsController extends AppController {
      * Data panel actions
      * Save investor data and update companies_ocrs status
      */
-    function oneClickInvestorII() {
+    function oneClickInvestorSentAction() {
 
         App::import("Vendor", "ibanhandler/oophp-iban");
         if (!$this->request->is('ajax')) {
@@ -145,7 +145,7 @@ class ocrsController extends AppController {
             $investor_country = $this->request->data['investor_country'];
             $investor_email = $this->request->data['investor_email'];
 
-            $datosInvestor = array(
+            $dataInvestor = array(
                 'id' => $this->Session->read('Auth.User.id'),
                 'investor_name' => $investor_name,
                 'investor_surname' => $investor_surname,
@@ -160,7 +160,8 @@ class ocrsController extends AppController {
             );
 
 
-            $result1 = $this->Investor->investorDataSave($datosInvestor); //Save the investor data
+
+            $result1 = $this->Investor->investorDataSave($dataInvestor); //Save the investor data
             $status = $this->Ocr->checkStatus($id);
 
 
@@ -192,7 +193,7 @@ class ocrsController extends AppController {
      * Select platform actions
      * Save selected companies
      */
-    function oneClickInvestorI() {
+    function oneClickInvestorPlatformSelectionAction() {
         if (!$this->request->is('ajax')) {
             $this->set('result', false);
         } else {
@@ -426,16 +427,6 @@ class ocrsController extends AppController {
     function activatedService() {
         $this->layout = 'azarus_private_layout';
         $this->render("/Layouts/activated_service"); //Load modal
-    }
-
-    /**
-     * FOR DEMO ONLY
-     */
-    public function resetInvestorDemo() {
-        $ocrId = $this->Session->read('Auth.User.Investor.ocr_id');
-        $this->Ocr->resetOcr($ocrId);
-        $this->Ocrfile->ocrAllFileDelete($this->Session->read('Auth.User.Investor.id'));
-        $this->Ocr->resetCompaniesOcr($ocrId);
     }
 
 }
