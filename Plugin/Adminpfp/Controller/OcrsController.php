@@ -88,7 +88,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Ocrfile');
+    var $uses = array('Ocr', 'Company', 'Ocrfile', 'Investor');
     var $error;
 
     function beforeFilter() {
@@ -103,7 +103,7 @@ class ocrsController extends AppController {
 
         //Read all company bills
         $bills = $this->Ocrfile->billCompanyFilter($this->Session->read('Auth.User.Adminpfp.company_id'));
-        $this->set('bills', $bills);
+        $this->set('bills', $bills); //Set the bills
 
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
@@ -114,17 +114,17 @@ class ocrsController extends AppController {
 
     function ocrPfpUsersPanel() {
 
-        $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));
+        $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));//Check ocr servecie status, block the view if isnt active.
 
         if ($status[0]) {
-            //Read and accepted relations
+            //Read accepted relations
             $ocrList = $this->Ocr->getAllOcrRelations($this->Session->read('Auth.User.Adminpfp.company_id'));
             $this->set('ocrList', $ocrList);
 
-            //PFP  status
+            //Set PFP  status
             $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
 
-            //Status name
+            //Set status names
             $this->set('statusName', $this->pfpStatus);
         } else {
             //You can't access to this page
@@ -143,7 +143,7 @@ class ocrsController extends AppController {
      * 
      */
     public function readtallymandata() {
-        
+
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
@@ -198,7 +198,6 @@ class ocrsController extends AppController {
                 $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
                 $resultTallymanData = $this->Investorglobaldata->readInvestorData($userIdentification, $platformId);
 
-                // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
                     $error = NO_DATA_AVAILABLE;
                 } 
@@ -207,7 +206,7 @@ class ocrsController extends AppController {
                     $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
                     $chargeThisEvent = $this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman");                
 /*
- * Table:
+ * Truth-Table:
  * $chargingConfirmed $chargeThisEvent  Result
  *          0               0           Continue without Charging
  *          0               1           Send Confirmation Modal
@@ -244,51 +243,4 @@ class ocrsController extends AppController {
         $this->set("error", $error);
         $this->render('tallymanErrorPage');
     }
-
- 
-    
-    public function uploadStatusInvestorPfp($idInv) {
-        if (!$this->request->is('ajax')) {
-            $result = false;
-        } else {
-            $id = $idInv;           //$this->request->params['id'];
-            $status = DOWNLOADED;
-            $companyId = $this->Session->read('Auth.User.Adminpfp.company_id');
-
-            $result = $this->Ocr->updateInvestorStatus($id, $status, $companyId);
-            $this->set('result', [$result, $id]);
-        }
-    }
-
-    /**
-     * 
-     * Shows the initial, basic screen of the Tallyman service with the three input fields
-     * 
-     */
-    public function showTallymanPanel() {
-        $this->layout = 'Adminpfp.azarus_private_layout';
-    }
-
-  
-/**
- * 
- * Shows the initial, basic screen of the Tallyman service
- * 
- */
-public function startTallyman($investorEmail, $investorTelephone) {
- 
-    $this->layout = 'Adminpfp.azarus_private_layout';
-    
-    $this->set("investorEmail", $investorEmail);
-    $this->set("investorDNI", $investorDNI);
-    $this->set("investorTelephone", $investorTelephone);            
-            
-
-    $filterconditions = array('investor_identity', $investorIdentification);
-    $this->set('result', $result);
-}
-  
-    
-    
-    
 }
