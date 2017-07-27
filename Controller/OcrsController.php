@@ -208,12 +208,16 @@ class ocrsController extends AppController {
                     'number' => $companyNumber,
                     'idCompanies' => $this->request->data['idCompany'] //Array containing the id of the selected companies
                 );
-
+               
                 //Save the comapnies
                 $result = $this->Ocr->saveCompaniesOcr($companies); //Update companies_ocrs table
-                $this->set('result', [$result, $this->request->data['idCompany'], $id = $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
+                           
+                $number = count($this->Ocr->getSelectedCompanies($id)); //Company numbur for GA
+                $this->set('result', [$result, $number, $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
+                
             } else {
-                $this->set('result', false); //Ajax response
+                $number = count($this->Ocr->getSelectedCompanies($id)); //Company numbur for GA
+                $this->set('result', [false, $number, $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
             }
         }
     }
