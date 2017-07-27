@@ -112,38 +112,42 @@ class ocrfile extends AppModel {
 
     /**
      * Upload investor file
-     * @param type $data
-     * @param type $identity
-     * @param type $id
-     * @param type $type
-     * @return string|int
+     * @param type $fileInfo THe file to upload.
+     * @param type $folder Folder where the file is uploaded.
+     * @param type $id Investor or company id.
+     * @param type $extraInfo Info like file id for investor files or bill numer,concept and amount for bills.
+     * @param type $type Bill or investor file.
+     * @return type
      */
-    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $path) {
+    public function ocrFileSave($fileInfo, $folder, $id, $extraInfo, $type) {
 
         //Load files config
         $fileConfig = Configure::read('files');
-        
-        if ($path == "file") {
+
+        //Type control
+        if ($type == "file") {
             $fileId = $extraInfo;
-            $up = $fileConfig['investorPath'] . $folder;     
+            $up = $fileConfig['investorPath'] . $folder;
+        } else if ($type == "bill") {
+            $fileId = 50;
+            $up = $fileConfig['billsPath'] . $folder;
+            $fileId = 50;
         }
 
-        foreach ($fileInfo as $file) {    
-            
+        foreach ($fileInfo as $file) {
+
             //Error filter
             if ($file['size'] == 0 || $file['error'] !== 0) {
                 continue;
             }
-            
-            
+
+
             $fileOpened = new File($file['tmp_name']); //Open the file
             $fileMime = $fileOpened->mime(); //Get mime type
-
-
             //Type and size filter
             if (in_array($fileMime, $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $name = $this->find('first', array('conditions' => array('id' => $fileId), 'recursive' => -1))['Ocrfile']['file_type'];
-                $filename = date("Y-m-d_H:i:s", time()) . "_" . $name;
+                $name = $this->find('first', array('conditions' => array('id' => $fileId), 'recursive' => -1))['Ocrfile']['file_type'] . '.' . explode('/',$fileMime)[1];
+                $filename = date("Y-m-d_H:i:s", time()) . "_" . $name . '.' . explode('/',$fileMime)[1];
                 $uploadFolder = $up;
                 $uploadPath = $uploadFolder . DS . $filename;
                 //Create the dir if not exist
@@ -157,7 +161,7 @@ class ocrfile extends AppModel {
                 }
 
                 //Save in db
-                if ($path == "file") {
+                if ($type == "file") {
 
                     //Array to save
                     $investorFileData = array(
@@ -167,19 +171,46 @@ class ocrfile extends AppModel {
                         'file_url' => $folder . DS . $filename,
                         'file_status' => 0
                     );
-                    if ($this->FilesInvestor->save($investorFileData)) {
+                    
+                    if ($this->FilesInvestor->save($investorFileData)) { //Save
                         $result = array($name, $folder . DS . $filename, $extraInfo);
-                        return [true, __('Upload ok'), $result];
+                        return [true, __('Upload ok'), $result]; //Feedback
                     } else {
-                        return [false, __('Upload fail')];
+                        return [false, __('Upload fail')]; //Feedback
                     }
+                    
+                } else if ($type == "bill") {
+                    $result = array(basename($file['name']), $folder . DS . $filename, $extraInfo);
+
+                    //Array to save
+                    $bill = array(
+                        'CompaniesFile' => Array(
+                            'company_id' => $id,
+                            'file_id' => 50,
+                            'bill_number' => $extraInfo['number'],
+                            'bill_amount' => str_replace(",", ".", $extraInfo['amount']) * 100,
+                            'bill_concept' => $extraInfo['concept'],
+                            'bill_currency' => $extraInfo['currency'],
+                            'bill_url' => $folder . DS . $filename
+                        )
+                    );
+
+                    if ($this->validates($this->CompaniesFile->save($bill))) {  //Save
+                        $mail = $this->Investor->User->getPfpAdminMail($id); //Get all pfp mails
+ 
+                        $event = new CakeEvent("billMailEvent", $this, $mail);  //Mail event
+                        $this->getEventManager()->dispatch($event);
+
+                        return [true, __('Upload ok')]; //Feedback
+                    } else {
+                        return [false, __("Upload failed. Incorrect type or file too big.")]; //Feedback
+                    }
+                }
             } else {
-                return [false, __("Upload failed. Incorrect type or file too big.")];
+                return [false, __("Upload failed. Incorrect type or file too big.")]; //Feedback
             }
         }
     }
-    
-            }
 
     /**
      * Generate a json with the $data passed in the $path
@@ -187,11 +218,11 @@ class ocrfile extends AppModel {
      * @param type $path
      */
     public function generateJson($data, $path) {
-        
-        $fp = fopen($path . DS . 'dataInvestor.json', 'w+');
 
-        if (fwrite($fp, json_encode($data))) {
-            fclose($fp);
+        $fp = fopen($path . DS . 'dataInvestor.json', 'w+'); //Open json, if doesnt exist create it
+
+        if (fwrite($fp, json_encode($data))) { //Write the json
+            fclose($fp); //Close the json
             return true;
         } else {
             return false;
@@ -200,7 +231,7 @@ class ocrfile extends AppModel {
 
     /**
      * Delete investor file
-     * @param string $url
+     * @param string $url File path
      * @param type $file_id
      * @param type $investor_id
      * @return int
@@ -209,12 +240,10 @@ class ocrfile extends AppModel {
         $fileConfig = Configure::read('files');
         $url = $fileConfig['investorPath'] . $url;
 
-        $filesInvestorId = $this->FilesInvestor->find('first', array('conditions' => array('file_id' => $file_id, 'investor_id' => $investor_id)));
-
-        if (unlink($url)) {
-            return $this->FilesInvestor->delete($filesInvestorId['FilesInvestor']['id']);
-            //$query = "DELETE FROM `files_investors` WHERE `file_id`=" . $file_id . " and `investor_id`=" . $investor_id . ";";
-            // $this->query($query);
+        $filesInvestorId = $this->FilesInvestor->find('first', array('conditions' => array('file_id' => $file_id, 'investor_id' => $investor_id))); //Search the file
+        
+        if (unlink($url)) { //delete the file from the server
+            return $this->FilesInvestor->delete($filesInvestorId['FilesInvestor']['id']); //Delete de file from db
         }
         return false;
     }
@@ -226,32 +255,32 @@ class ocrfile extends AppModel {
      */
     public function ocrAllFileDelete($id) {
 
-        $files = $this->FilesInvestor->find('all',array('conditons' => array('investor_id' => $id , 'file_status' => UNCHECKED)));
+        $files = $this->FilesInvestor->find('all', array('conditons' => array('investor_id' => $id, 'file_status' => UNCHECKED))); //Serach all UNCHECKED files.
 
-        
+
         if (count($files) == 0) {
-            return [1, "There is not files to delete"];
+            return [1, "There is not files to delete"]; //If no files, dont delete anything.
         }
 
 
         $fileConfig = Configure::read('files');
 
-        foreach ($files as $file) {
+        foreach ($files as $file) { //File loop
             $url = $file['FilesInvestor']['file_url'];
-            $path = $fileConfig['investorPath'] . $url;
+            $path = $fileConfig['investorPath'] . $url; //File complete path
 
-            if (unlink($path)) {
-                if ($this->FilesInvestor->delete($file['FilesInvestor']['id'])) {
+            if (unlink($path)) { //Delete file from the server
+                if ($this->FilesInvestor->delete($file['FilesInvestor']['id'])) { //Delete file from db
                     continue;
                 } else {
-                    return [0, "Can't delete"];
+                    return [0, "Can't delete"]; //feedback
                 }
             } else {
-                return [0, "Can't delete"];
+                return [0, "Can't delete"]; //feedback
             }
         }
 
-        return [1, "Delete ok"];
+        return [1, "Delete ok"]; //feedback
     }
 
     /**
@@ -279,7 +308,6 @@ class ocrfile extends AppModel {
         $requiredFileIdList = array();
 
         foreach ($allCompanyFiles as $allFiles) {
-            // print_r($allFiles);
             foreach ($allFiles["requiredFiles"] as $requiredFiles) {
                 //Filter selected companies required files
                 if (in_array($requiredFiles["id"], $selectedList)) {
@@ -290,7 +318,7 @@ class ocrfile extends AppModel {
         }
 
         //Delete duplicates
-        $requiredFileResult = array_unique($requiredFileIdList, SORT_REGULAR);
+        $requiredFileResult = array_unique($requiredFileIdList, SORT_REGULAR); //Delete duplicates
         return $requiredFileResult;
     }
 

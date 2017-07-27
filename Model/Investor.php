@@ -357,28 +357,28 @@ class Investor extends AppModel {
         return $resultInvestor['Investor']['id'];
     }
 
-    public function investorDataSave($datos) {
+    public function investorDataSave($data) {
         $id = $this->find('first', array(
             'fields' => array(
                 'Investor.id',
             ),
             'conditions' => array(
-                'Investor.user_id' => $datos['id']),
+                'Investor.user_id' => $data['id']),
             'recursive' => -1,));
 
         $data = array(
             'id' => $id['Investor']['id'],
-            'user_id' => $datos['id'],
-            'investor_name' => $datos['investor_name'],
-            'investor_surname' => $datos['investor_surname'],
-            'investor_DNI' => $datos['investor_DNI'],
-            'investor_dateOfBirth' => $datos['investor_dateOfBirth'],
-            'investor_telephone' => $datos['investor_telephone'],
-            'investor_address1' => $datos['investor_address1'],
-            'investor_postCode' => $datos['investor_postCode'],
-            'investor_city' => $datos['investor_city'],
-            'investor_country' => $datos['investor_country'],
-            'investor_email' => $datos['investor_email'],
+            'user_id' => $data['id'],
+            'investor_name' => $data['investor_name'],
+            'investor_surname' => $data['investor_surname'],
+            'investor_DNI' => $data['investor_DNI'],
+            'investor_dateOfBirth' => $data['investor_dateOfBirth'],
+            'investor_telephone' => $data['investor_telephone'],
+            'investor_address1' => $data['investor_address1'],
+            'investor_postCode' => $data['investor_postCode'],
+            'investor_city' => $data['investor_city'],
+            'investor_country' => $data['investor_country'],
+            'investor_email' => $data['investor_email'],
         );
         $this->set($data);
         if ($this->validates()) {  //validation ok     
@@ -463,7 +463,7 @@ class Investor extends AppModel {
             'conditions' => array('Investor.id' => $investorId),
             'recursive' => -1,
         ));
-        print_r($data);
+
         $id = $data[0]['Investor']['user_id'];
         return $id;
     }
@@ -495,7 +495,7 @@ class Investor extends AppModel {
     
     /**
      * Create a check line in the checks table for the user
-     * @param type $id
+     * @param type $id  id of related User table
      * @return boolean
      */
     public function createCheckdata($id) {
@@ -506,8 +506,8 @@ class Investor extends AppModel {
             'check_surname' => 0,
             'check_dni' => 0,
             'check_dateOfBirth' => 0,
-            'check_email' => 1,
-            'check_telephone' => 1,
+            'check_email' => 1,                 // Cannot be changed directly by user
+            'check_telephone' => 1,             // Cannot be changed directly by user
             'check_postCode' => 0,
             'check_address' => 0,
             'check_city' => 0,
@@ -527,7 +527,7 @@ class Investor extends AppModel {
     /**
      * Update the check data
      * @param type $checks
-     * @param type $invesorId
+     * @param type $investorId
      * @return int
      */
     public function updateCheckData($checks) {
@@ -596,8 +596,7 @@ class Investor extends AppModel {
             }
         }
 
-
-        //If we click approve, change the status
+echo false;        //If we click approve, change the status
         if ($checks['type'] == 'approve') {
 
             //Json path
@@ -606,7 +605,7 @@ class Investor extends AppModel {
             $path = $fileConfig['investorPath'] . $folder;
 
             //Find investor info for the json
-            $investorData = $this->find('first', array(array('conditions' => array('id' => $checks['investorId'])), 'recursive' => -1));
+            $investorData = $this->find('first', array('conditions' => array('id' => $checks['investorId']), 'recursive' => -1));
 
             //Find ocr info for the json
             $ocrData = $this->Ocr->ocrGetData($checks['investorId']);
@@ -617,7 +616,7 @@ class Investor extends AppModel {
                 'check_nameTime' => $checks['nameCheck'],
                 'surname' => $investorData['Investor']['investor_surname'],
                 'check_surnameTime' => $checks['surnameCheck'],
-                'dni' => $investorData['Investor']['investor_dni'],
+                'dni' => $investorData['Investor']['investor_DNI'],
                 'check_dniTime' => $checks['dniCheck'],
                 'dateOfBirth' => $investorData['Investor']['investor_dateOfBirth'],
                 'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
@@ -627,7 +626,7 @@ class Investor extends AppModel {
                 'check_telephoneTime' => $checks['telephoneCheck'],
                 'postCode' => $investorData['Investor']['investor_postCode'],
                 'check_postCodeTime' => $checks['postCodeCheck'],
-                'address' => $investorData['Investor']['investor_address'],
+                'address' => $investorData['Investor']['investor_address1'],
                 'check_addressTime' => $checks['addressCheck'],
                 'city' => $investorData['Investor']['investor_city'],
                 'check_cityTime' => $checks['cityCheck'],

@@ -149,13 +149,11 @@ print_r($userinvestmentdataResult);
                     }               
                     $platformglobalData[$index]['userplatformglobaldata_moneyInWallet'] += $result['Userinvestmentdata']['userinvestmentdata_myWallet']; 
                     $platformglobalData[$index]['userplatformglobaldata_currency'] = 1;
-            //      $investorglobalData['userplatformglobaldata_reservedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
-            //      $investorglobalData['userplatformglobaldata_finishedInvestments'] += xxx;    // NOT YET IMPLEMENTED IN THE ORIGINAL RAW DATA
                     $platformglobalData[$index]['userplatformglobaldata_companyId'] = $companyId;            
                     $platformglobalData[$index]['userplatformglobaldata_companyName'] = $companyResult['Company']['company_name'];
                     $platformglobalData[$index]['userplatformglobaldata_PFPType'] = $companyResult['Company']['company_PFPType'];
                     $platformglobalData[$index]['userplatformglobaldata_PFPCountry'] = $companyResult['Company']['company_country']; 
-                    $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;               
+                    $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;      // This is a temporary dummy value  
         //               $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];             
                 }    
                 if ($activeInvestments) {
@@ -168,12 +166,10 @@ print_r($userinvestmentdataResult);
             $index++;
             $tempCount = count($userinvestmentdataResult);     
         }  
-        
-        $dataFin = array(
+        $data1[] = array(
             'Investorglobaldata' => $investorglobalData,
             'Userplatformglobaldata' => $platformglobalData
            ); 
-        $data1[] = $dataFin;
      
     $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
 							  'conditions'  => array(// sort by queueid
@@ -188,13 +184,20 @@ echo "FINALIZED<br>";
 print_r($data1);
 
     foreach ($data1 as $tempData){
-        $this->writeArray($tempData, "Investorglobaldata");
-// update the data in the mlqueues table
-        $this->Mlqueue->id = 1;
-        $savedQueueId = $tempData['Investorglobaldata']['queueId'];      
-        $dataArray = array('mlqueue_actualQueueId' => $savedQueueId,
-                            'mlqueue_lastIdDate' => $currentDate);
-        $this->Mlqueue->save($dataArray);
+        $this->Mlqueue->id = 1;         // only one instance exists
+        $savedQueueId = $tempData['Investorglobaldata']['queueId'];  
+        echo "savedQueueId = $savedQueueId";
+        
+        if ($this->writeArray($tempData, "Investorglobaldata")) {
+            // update the data in the mlqueues table
+            $dataArray = array('mlqueue_actualQueueId' => $savedQueueId,
+                                'mlqueue_lastIdDate' => $currentDate);
+            $this->Mlqueue->save($dataArray);        
+        }
+        else {
+            echo "error happened";
+            
+        }  
     }
 } 
 
@@ -251,7 +254,8 @@ private function resetInvestorsArray(& $investorArray) {
 /**
  * 
  * Writes an array of data to its corresponding model(s). This is done using transaction support of
- * the database
+ * the database.
+ * The array is MODIFIED by this routine
  * 
  * @param 	$investorArray  Array to be reset
  * @param       $masterModel    String  Name of "master" model, of the hasOne or hasMany relationships
@@ -280,7 +284,7 @@ private function writeArray(& $array, $masterModel) {
             }
         }                          
     }
-    if($saved){
+    if ($saved) {
     $this->$masterModel->transaction(true);
         return true;
     }
