@@ -78,7 +78,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile', 'Linkedaccount');
+    var $uses = array('Ocr', 'Company', 'Investor');
     var $error;
 
     function beforeFilter() {
@@ -285,6 +285,10 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', false);
         } else {
+            
+            
+            $this->Ocrfile = ClassRegistry::init('Ocrfile');
+             
             //Investor info
             $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
 
@@ -353,6 +357,9 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', false);
         } else {
+            
+            $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+            
             //Companies with ocr actived
             $this->set('companies', $this->Company->companiesDataOCR());
 
