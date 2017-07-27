@@ -145,7 +145,7 @@ class ocrsController extends AppController {
             $investor_country = $this->request->data['investor_country'];
             $investor_email = $this->request->data['investor_email'];
 
-            $datosInvestor = array(
+            $dataInvestor = array(
                 'id' => $this->Session->read('Auth.User.id'),
                 'investor_name' => $investor_name,
                 'investor_surname' => $investor_surname,
@@ -160,7 +160,8 @@ class ocrsController extends AppController {
             );
 
 
-            $result1 = $this->Investor->investorDataSave($datosInvestor); //Save the investor data
+
+            $result1 = $this->Investor->investorDataSave($dataInvestor); //Save the investor data
             $status = $this->Ocr->checkStatus($id);
 
 
@@ -427,7 +428,5 @@ class ocrsController extends AppController {
         $this->layout = 'azarus_private_layout';
         $this->render("/Layouts/activated_service"); //Load modal
     }
-
-
 
 }

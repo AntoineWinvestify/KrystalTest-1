@@ -356,33 +356,51 @@ class Investor extends AppModel {
         return $resultInvestor['Investor']['id'];
     }
 
-    public function investorDataSave($datos) {
+    public function investorDataSave($data) {
         $id = $this->find('first', array(
             'fields' => array(
                 'Investor.id',
             ),
             'conditions' => array(
-                'Investor.user_id' => $datos['id']),
+                'Investor.user_id' => $data['id']),
             'recursive' => -1,));
 
-        $data = array(
+        $checks = $this->readCheckData($id['Investor']['id']);
+        
+        $infoInvestor = array(
             'id' => $id['Investor']['id'],
-            'user_id' => $datos['id'],
-            'investor_name' => $datos['investor_name'],
-            'investor_surname' => $datos['investor_surname'],
-            'investor_DNI' => $datos['investor_DNI'],
-            'investor_dateOfBirth' => $datos['investor_dateOfBirth'],
-            'investor_telephone' => $datos['investor_telephone'],
-            'investor_address1' => $datos['investor_address1'],
-            'investor_postCode' => $datos['investor_postCode'],
-            'investor_city' => $datos['investor_city'],
-            'investor_country' => $datos['investor_country'],
-            'investor_email' => $datos['investor_email'],
+            'user_id' => $data['id'],
+            'investor_name' => $data['investor_name'],
+            'investor_surname' => $data['investor_surname'],
+            'investor_DNI' => $data['investor_DNI'],
+            'investor_dateOfBirth' => $data['investor_dateOfBirth'],
+            'investor_telephone' => $data['investor_telephone'],
+            'investor_address1' => $data['investor_address1'],
+            'investor_postCode' => $data['investor_postCode'],
+            'investor_city' => $data['investor_city'],
+            'investor_country' => $data['investor_country'],
+            'investor_email' => $data['investor_email'],
         );
-        $this->set($data);
+
+         
+         //Checks control, if check is 1 can't change the field in db
+        foreach ($checks[0]['Check'] as $keyCheck => $check) {
+            $checkField = strtolower(explode('_', $keyCheck)[1]);   //Get the check field name  check_name ----> name
+            foreach ($infoInvestor as $keyData => $dataInvestor) {
+                $dataField = strtolower(explode('_', $keyData)[1]); //Get data field name  investor_name ---> name
+                if ($checkField == $dataField && $check == CHECKED) {  //Compare names and unset array if data is CHECKED
+                    unset($infoInvestor[$keyData]);
+                    unset($this->validate[$keyData]); //Unset field validation, cant validate with a null field;
+                }
+            }
+        }
+
+        
+        
+        $this->set($infoInvestor);
         if ($this->validates()) {  //validation ok     
-            $this->save($data);
-            $data = JSON_encode($data);
+            $this->save($infoInvestor);
+            $data = JSON_encode($infoInvestor);
             return 1 . "[" . 1 . "," . $data . ",";
         } else {                     // validation false
             $errors = array('errors' => 'Form error', $this->validationErrors);
