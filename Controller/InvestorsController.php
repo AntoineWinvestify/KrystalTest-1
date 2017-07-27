@@ -112,9 +112,22 @@ public function readCheckData($investorId) {
 public function editUserProfileData() {
 
         if (!$this->request->is('ajax')) {
-            throw new
-            FatalErrorException(__('You cannot access this page directly'));
+            $this->layout = 'azarus_private_layout';
+            
+            $investorId = $this->Auth->user('Investor.id');
+            $userId = $this->Auth->user('id');
+            
+            $resultInvestor = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
+                'recursive' => -1,
+            ));
+
+            $this->set('initialLoad', true);
+            $this->set('resultUserData', $resultInvestor);
+            return;
+            /*throw new
+            FatalErrorException(__('You cannot access this page directly'));*/
         }
+        else {
         $error = false;
         $this->layout = 'ajax';
         $this->disableCache();
@@ -176,6 +189,7 @@ public function editUserProfileData() {
 
         $receivedDataTemp[0]['Investor'] = $receivedData;
         $this->set('resultUserData', $receivedDataTemp);
+        }
     }
 
     

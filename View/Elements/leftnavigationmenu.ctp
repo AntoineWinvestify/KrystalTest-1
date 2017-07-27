@@ -95,6 +95,8 @@ $(document).ready(function() {
           </a>
           <ul class="treeview-menu">
             <li><a href="/investors/userProfileDataPanel"><i class="fa fa-circle-o"></i> <?php echo __('Personal Data')?></a></li>
+            <li><a href="/investors/editUserProfileData"><i class="fa fa-circle-o"></i> <?php echo __('Personal Data_No ajax')?></a></li>
+            <li><a href="/investors/readLinkedAccounts"><i class="fa fa-circle-o"></i> <?php echo __('Link accounts_No ajax')?></a></li>
           </ul>
         </li>
        <?php /*DELETE AFTER THIS COMMENT TO DISABLE ONE CLICK REGISTRATION LINKS!!!!!!!!!!!!*/?>
