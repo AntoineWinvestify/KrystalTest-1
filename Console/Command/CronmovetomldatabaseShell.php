@@ -71,7 +71,8 @@ public function cronMove() {
     $this->Mlqueue = ClassRegistry::init('Adminpfp.Mlqueue'); 
     $this->Userplatformglobaldata = ClassRegistry::init('Adminpfp.Userplatformglobaldata'); 
     $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata'); 
- 
+    $this->Applicationerror = ClassRegistry::init('Applicationerror'); 
+
 // Get the information of the previous readout    
     $resultMlqueue = $this->Mlqueue->find("all",$params = array('recursive' => -1,
                                                'conditions'  => array('id' => 1))); 
@@ -121,12 +122,11 @@ print_r($userinvestmentdataResult);
                 $oldQueueId = $queueId;
                 $index = 0;
 
-                $dataFin = array(
+                $totalData[] = array(
                     'Investorglobaldata' => $investorglobalData,
                     'Userplatformglobaldata' => $platformglobalData
                    );
-                $data1[] = $dataFin;
-                unset($dataFin);
+                
                 unset ($investorglobalData);
                 unset ($platformglobalData);   
                 $this->resetInvestorsArray($investorglobalData);
@@ -168,7 +168,7 @@ print_r($userinvestmentdataResult);
             $index++;
             $tempCount = count($userinvestmentdataResult);     
         }  
-        $data1[] = array(
+        $totalData[] = array(
             'Investorglobaldata' => $investorglobalData,
             'Userplatformglobaldata' => $platformglobalData
            ); 
@@ -181,15 +181,15 @@ print_r($userinvestmentdataResult);
 //        $userinvestmentdataResult = null;   // Only needed for doing tests in a controlled environment
     }       // end of while      
 
-    unset($data1[0]);       // Remove first index as it contains only dummy data
-print_r($data1);
+    unset($totalData[0]);       // Remove first index as it contains only dummy data
+print_r($totalData);
 
 // Copy the data to the MLData tables and confirm that copy was succesfull
-    foreach ($data1 as $tempData){
+    foreach ($totalData as $tempData){
         $this->Mlqueue->id = 1;         // only one instance exists
         $savedQueueId = $tempData['Investorglobaldata']['queueId'];  
         echo "savedQueueId = $savedQueueId";
-        
+       
         if ($this->writeArray($tempData, "Investorglobaldata")) {
             // update the data in the mlqueues table
             $dataArray = array('mlqueue_actualQueueId' => $savedQueueId,
@@ -197,8 +197,16 @@ print_r($data1);
             $this->Mlqueue->save($dataArray);        
         }
         else {      // Error, store it in error database
-            echo "error happened";
-            
+            echo "error happened\n";
+            // Start collecting as much data as possible related to the error 
+
+            $printTempData = print_r($tempData, $return = true);
+            $printDataArray = print_r($dataArray, $return = true);
+            $par1 = "Error while saving data to MLDATA database";
+            $par2 = "saveQueeuId = $savedQueueId, tempData = $printTempData, dataArray = $printDataArray ";
+            $par3 = __LINE__;   
+            $par4 = __FILE__;
+            $this->Applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
         }  
     }
 } 
@@ -220,7 +228,7 @@ print_r($data1);
 private function resetInvestmentArray(& $investmentArray) {
 
     $investmentArray['userplatformglobaldata_companyId'] = 0;
-    $investmentArray['userplatformglobaldata_companyName'] = "Error";
+    $investmentArray['userplatformglobaldata_companyName'] = "Default Company Name";
     $investmentArray['userplatformglobaldata_PFPType'] = 0;
     $investmentArray['userplatformglobaldata_moneyInWallet'] = 0;
     $investmentArray['userplatformglobaldata_activeInInvestments'] = 0;
@@ -247,7 +255,8 @@ private function resetInvestorsArray(& $investorArray) {
     $investorArray['investorglobaldata_activePFPs'] = 0;
     $investorArray['investorglobaldata_totalPFPs'] = 0;
     $investorArray['investorglobaldata_globalIndicator'] = 0;
-
+    
+    $investorArray['investorglobaldata_totalActiveInInvestments'] = 0;
     return ($investorArray);
 }
 
