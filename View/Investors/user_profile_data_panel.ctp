@@ -132,15 +132,6 @@ console.log("Loading all the profile data of my Social network");
 							<li>
 								<a href = "/investors/readLinkedAccounts" id="linkedAccountsData"  rel="tooltip" data-target="#linkedAccountsTab" data-toggle="tabajax"><h4><?php echo __('Linked Accounts')?></h4></a>
 							</li>
-							<li class = "disabled" style="opacity: 0.5;">
-								<a id="socialNetworkUserData"  rel="tooltip" data-target="#socialNetworkTab" data-toggle=""><h4><?php echo __('Social Network')?></h4></a>
-							</li>
-                                                       <?php /* <li>
-								<a href = "/investors/ocrUserData" id="ocr1"  rel="tooltip" data-target="#OCR1Tab" data-toggle="tabajax"><h4><?php echo __('OCR1')?></h4></a>
-							</li>
-                                                        <li>
-								<a href = "/investors/ocrDataPanel" id="ocr2"  rel="tooltip" data-target="#OCR2Tab" data-toggle="tabajax"><h4><?php echo __('OCR2')?></h4></a>
-							</li>*/?>
 						</ul>
 					</div>
  
@@ -161,24 +152,6 @@ console.log("Loading all the profile data of my Social network");
 						</div>
 						<!-- /.tab-pane -->
 <!-- ------------------------------------------------------------------------------------------------------------- -->				
-						<div class = "tab-pane fade" id="socialNetworkTab">
-						<!-- here goes the content of the "socialNetwork" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
-                                                <div class = "tab-pane fade" id="OCR1Tab">
-						<!-- here goes the content of the "socialNetwork" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
-                                                <div class = "tab-pane fade" id="OCR2Tab">
-						<!-- here goes the content of the "socialNetwork" tab   -->
-					
-						</div>	
-						<!-- /.tab-pane -->
-<!-- ------------------------------------------------------------------------------------------------------------- -->
 
 					</div>
 				</div>	

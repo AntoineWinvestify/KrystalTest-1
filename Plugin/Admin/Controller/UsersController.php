@@ -57,7 +57,7 @@ class UsersController extends AdminAppController
 
 
 function beforeFilter() {
-	Configure::write('debug', 2);
+//	Configure::write('debug', 2);
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 
@@ -66,16 +66,16 @@ function beforeFilter() {
 
 
 //	$this->Security->requireSecure(	'login'	);
-//	$this->Security->csrfCheck = false;
-//	$this->Security->validatePost = false;	
+	$this->Security->csrfCheck = false;
+	$this->Security->validatePost = false;	
 // Allow only the following actions.
-	$this->Security->requireAuth();
+//	$this->Security->requireAuth();
 	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
    echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
-var_dump($_REQUEST);
-var_dump($this->request);
+//var_dump($_REQUEST);
+//var_dump($this->request);
       echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
 
 }
@@ -220,22 +220,24 @@ echo "<br/>";
 
 public function loginAction() {
     echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-$this->print_r2($this->request->data);
- echo "Antoine";
+//$this->print_r2($this->request->data);
 $this->autoRender = false;
 	 
         if ($this->Auth->login()) {
             echo "SESSION1 <br>";
             echo "We have logged in <br>";
-          
+            print_r($this->Session->read()) ."<br>";
+            echo "<br>" . $this->Auth->redirectUrl()."<br>"."<br>";
+  echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";        
         }
         else {
-            echo"User not logged on<br>";
+            echo "User is not logged on<br>";
+            echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
         }
         
   exit;  
         if ($this->Auth->loggedIn()){
-		echo "user is logged on";	
+		echo "user has logged on";	
 	}
 	else {
 		echo "User not logged on";
