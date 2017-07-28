@@ -39,7 +39,8 @@ Added Google Analytics
 2017-04-17      version 0.3                                                                         [Ok]
 only execute Google Analytics if ga class exists.
 
-
+2017-07-28 version 0.4
+ * Updated complete View to new looking field.
 
 Pending:
 -
@@ -87,22 +88,21 @@ function ga_deleteAccountClick(companyId, companyName){
 
 function successDelete(data){
 	console.log("successDelete function is called");
-	$("#accountList").empty();
-	$('#accountList').html(data).show();
+	$(".allAccounts").empty();
+	$('.allAccounts').html(data).show();
 	console.log("Account successfully deleted");	
 }
 
 
 function errorDelete(data){
 	console.log("errorDelete function is called");	
-	
 }
 
 
 function successAdd(data){
 	console.log("successAdd function is called");
-	$("#accountList").empty();
-	$('#accountList').html(data).show();
+	$(".allAccounts").empty();
+	$('.allAccounts').html(data).show();
 	$('.addLinkedAccount').addClass("hide");
 	console.log("Assigning spaces to username");
 	$("#ContentPlaceHolder_userName").val("");
@@ -126,7 +126,7 @@ function errorAdd(data){
 	
 $(document).ready(function() {
 
-$("#linkNewAccount").on("click", function(event) {
+$(document).on("click", "#linkNewAccount", function(event) {
 	console.log("try to link a new account, link this account btn pressed");	
 	var link = $(this).attr( "href" );	
 	var username = $("#ContentPlaceHolder_userName").val(); 	
@@ -146,7 +146,7 @@ $("#linkNewAccount").on("click", function(event) {
 });
 
 
-$("#addNewAccount").bind("click", function(event) {
+$(document).on("click", "#addNewAccount", function(event) {
 	console.log("addNewAccount, show new panel");
 
 	$('.addLinkedAccount').removeClass('hide');
@@ -176,216 +176,25 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
 	getServerData(link, data, successDelete, errorDelete);
 });
 
-//tooltip
-$(document).on('click', '#tooltipLA', function() {
-	$('#linkAccountTooltip').toggle();
-});
+    //tooltip
+    $(document).on('click', '#tooltipLA', function() {
+            $('#linkAccountTooltip').toggle();
+    });
 
+    //Hide alert element after 5 seconds
+    $(document).bind('DOMSubtreeModified',function(){
+        fadeOutElement(".row-to-fade", 5000);
+    });
+        
 
 });
 </script>
-
-
-
-<?php /*
-<?php
-	echo '<div id="accountList">';
-	if (!empty($linkedAccountResult)) {
-		foreach ($linkedAccountResult as $account) {		
-?>
-    <div class="box-body">
-        <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                <div class="form-group">
-                    <label><?php echo __('CrowdLending Company')?></label>
-<?php
-											echo $this->Form->input('name', array(
-												'label' 		=> false,
-												'class' 		=> 'form-control blue',
-												'disabled'		=> 'disabled',
-												'value'			=> $companyResults[$account['Linkedaccount']['company_id']]['company_name'],						
-								));
-?>
-                </div>					
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                <div class="form-group">
-                    <label><?php echo __('Your User')?></label>
-<?php
-										echo $this->Form->input('name', array(
-											'label' 		=> false,
-											'class' 		=> 'form-control blue',
-											'disabled'		=> 'disabled',
-											'value'			=> $account['Linkedaccount']['linkedaccount_username'],						
-							)); 
-?>										
-                </div> 					
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                <div class="form-group">
-                    <label><?php echo __('Your Password')?></label>
-<?php
-										echo $this->Form->input('password', array(
-											'label' 		=> false,
-											'type'			=> 'password',
-											'class' 		=> 'form-control blue',
-											'disabled'		=> 'disabled',
-											'value'			=> $account['Linkedaccount']['linkedaccount_password'],						
-								)); 
-?>									
-                </div>					
-            </div>	
-
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                <div class="form-group">
-                    <label>&nbsp;</label><br/>
-                    <button type="button" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
-                    id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
-                    onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
-                    "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
-                    class="btn btn-primary form submitButton deleteLinkedAccount btn-invest btnRounded"><?php echo __('Delete')?>
-                    </button>	
-                </div>					
-            </div>						
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.box-body  -->
-<?php
-		}
-	}
-	else {
-?>
-    <div class="box box-warning fade in alert-win-success">
-        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>
-        </button>
-        <strong><?php echo __("You currently don't have any account defined. By adding your crowdlending accounts
-                            you will be able see all your global investment position in our global
-                            dashboard")?>
-        </strong>
-    </div>
-<?php	
-	}
-	echo '</div>';		//	accountList
-?>
-    <div class="box-body">
-	<div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                <div class="form-group">
-                    <button type="submit" id="addNewAccount" class="btn btn-primary btn-invest line-btn btnRounded"
-                    onclick='ga_addNewAccountClick()'><?php echo __('Add New Account')?></button>
-		</div>
-            </div>	
-	</div>
-    </div>
-    <!-- /.box-body -->
-						
-    <div class="addLinkedAccount11 hide">
-							
-	<div class="box box-warning fade in alert-win-success">
-        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>
-        </button>
-            <strong>
-                <?php echo __("Both the 'Username' and 'Password' of a linked account are encrypted before they are stored on our servers")?>
-            </strong>
-	</div>
-<?php    
-			echo $this->Form->create('Linkedaccount', array('inputDefaults' => array(
-									 # define error defaults for the form
-										'error' => false,		// CakePHP Model errors will not be shown
-										'label'	=> false,
-												),
-									));
-?>
-	<div class="box-body">
-            <div class="overlay" style="display:none;">
-		<div class="fa fa-spinner fa-spin" style="color:green;"></div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                    <div class="form-group">
-                        <label><?php echo __('CrowdLending Company')?></label>
-                        <i class="fa fa-exclamation-circle" id="tooltipLA1111"></i>	
-<?php   	
-												echo $this->Form->input('linkedaccount_companyId', array(
-												'options' => $companyList,
-												'empty' => '(choose one)',
-												'id'   	=> 'linkedaccount_companyId',
-												'class' => 'form-control blue'
-			));
-		?>
-                    </div>
-		</div>	
-		<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                    <div class="form-group">
-                        <label for="ContentPlaceHolder_userName"><?php echo __('Your User')?></label>
-		<?php			
-			echo $this->Form->input('Linkedaccount.linkedaccount_username', array(
-													'id' 			=> 'ContentPlaceHolder_userName',
-													'label' 		=> false,
-													'placeholder' 	=> __("Username"),
-													'class' 		=> 'form-control blue userName',
-													));
-?>
-                    </div>
-                </div>	
-		<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                    <div class="form-group">
-			<label for="ContentPlaceHolder_password"><?php echo __('Your Password')?></label>
-<?php	
-			echo $this->Form->input('Linkedaccount.linkedaccount_password', array(
-													'id' 			=> 'ContentPlaceHolder_password',
-													'type'			=> 'password',
-													'label' 		=> false,
-													'placeholder' 	=> __("Password"),
-													'class' 		=> 'form-control blue userPassword',
-													));								
-?>
-                    </div>
-		</div>						
-                <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                    <div class="form-group">
-                        <label>&nbsp;</label><br/>
-                        <button type="button" id="linkNewAccount" href="/investors/linkAccount" class="btn btn-primary btn-invest btnRounded">
-                            <?php echo __('Link this Account')?>
-                        </button>
-                        <img src="/img/gif_carga.gif" class="imagenCargando guardarUserData" style="display: none;" />
-                        <div class="cssload-squeeze hide"></div>
-                    </div>				
-                </div>
-            </div>
-            <!-- /.row -->
-            <div class="row" id="linkAccountTooltip11" style="display:none">
-		<div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                    <small><?php echo __('Los datos de acceso se corresponden con la plataforma a enlazar');?></small>
-		</div>
-            </div>
-            <div class="errorInputMessage ErrorUserName col-xs-offset-1">
-		<i class="fa fa-exclamation-circle"></i>
-		<span id="ContentPlaceHolder_ErrorUserName" class="errorMessage">Error</span>
-            </div>
-					
-            <div class="errorInputMessage ErrorPassword col-xs-offset-1">
-		<i class="fa fa-exclamation-circle"></i>
-		<span id="ContentPlaceHolder_ErrorPassword" class="errorMessage">Error</span>
-            </div>
-					
-            <div class="errorInputMessage ErrorPlatform col-xs-offset-1">
-		<i class="fa fa-exclamation-circle"></i>
-		<span id="ContentPlaceHolder_ErrorPlatform" class="errorMessage">Error</span>
-            </div>						
-        </div>
-        <!-- /.box-body -->
-    </div>	
-    <!-- /.addLinkedAccount -->
-					
-*/?>
-<div id="linkedAccounts">
+<div id="accountList">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="blue">
-                    <h4 class="title"><?php echo __('Account Linking')?></h4>
+                    <h4 class="title"><strong><?php echo __('Account Linking')?></strong></h4>
                 </div>
                 <div class="card-content table-responsive">
                     <div class="row firstParagraph">
@@ -395,12 +204,12 @@ $(document).on('click', '#tooltipLA', function() {
                                 ?></p>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row allAccounts">
                         <?php
                             if (!empty($linkedAccountResult)) {
                                 foreach ($linkedAccountResult as $account) {	
                         ?>
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 accountLinkingPadding">
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"> <!-- Crowdlending Company Logo -->
                                     <div class="form-group">
@@ -458,10 +267,9 @@ $(document).on('click', '#tooltipLA', function() {
                         else {
                     ?>
                         <div class="row">
-                            <div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
-                                <div class="box box-warning fade in alert-win-success">
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>
-                                    </button>
+                            <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+                                <div class="alert bg-success alert-dismissible alert-win-success fade in">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px; margin-top: 5px;"><span aria-hidden="true">&times;</span></button>
                                     <strong><?php echo __("You currently don't have any account defined. By adding your crowdlending accounts
                                                         you will be able see all your global investment position in our global
                                                         dashboard")?>
@@ -488,84 +296,81 @@ $(document).on('click', '#tooltipLA', function() {
                                                                                                                     ),
                                                                                             ));
                     ?>
-                            <div class="box-body">
-                                <div class="overlay" style="display:none;">
-                                    <div class="fa fa-refresh fa-spin"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                                        <div class="form-group">
-                                            <label><?php echo __('CrowdLending Company')?></label>
-                                            <i class="fa fa-exclamation-circle" id="tooltipLA"></i>	
-                    <?php   	
-                                                                                                                    echo $this->Form->input('linkedaccount_companyId', array(
-                                                                                                                    'options' => $companyList,
-                                                                                                                    'empty' => '(choose one)',
-                                                                                                                    'id'   	=> 'linkedaccount_companyId',
-                                                                                                                    'class' => 'form-control blue_noborder2'
-                                            ));
-                                    ?>
-                                        </div>
-                                    </div>	
-                                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_userName"><?php echo __('Your User')?></label>
-                                    <?php			
-                                            echo $this->Form->input('Linkedaccount.linkedaccount_username', array(
-                                                                                                                            'id' 			=> 'ContentPlaceHolder_userName',
-                                                                                                                            'label' 		=> false,
-                                                                                                                            'placeholder' 	=> __("Username"),
-                                                                                                                            'class' 		=> 'form-control blue_noborder2 userName',
-                                                                                                                            ));
-                    ?>
-                                        </div>
-                                    </div>	
-                                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                                        <div class="form-group">
-                                            <label for="ContentPlaceHolder_password"><?php echo __('Your Password')?></label>
-                    <?php	
-                                            echo $this->Form->input('Linkedaccount.linkedaccount_password', array(
-                                                                                                                            'id' 			=> 'ContentPlaceHolder_password',
-                                                                                                                            'type'			=> 'password',
-                                                                                                                            'label' 		=> false,
-                                                                                                                            'placeholder' 	=> __("Password"),
-                                                                                                                            'class' 		=> 'form-control blue_noborder2 userPassword',
-                                                                                                                            ));								
-                    ?>
-                                        </div>
-                                    </div>						
-                                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                                        <div class="form-group">
-                                            <label>&nbsp;</label><br/>
-                                            <button type="button" id="linkNewAccount" href="/investors/linkAccount" class="btn btn-primary btn1CR btnRounded">
-                                                <?php echo __('Link this Account')?>
-                                            </button>
-                                        </div>				
-                                    </div>
-                                </div>
-                                <!-- /.row -->
-                                <div class="row" id="linkAccountTooltip" style="display:none">
-                                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                                        <small><?php echo __('Los datos de acceso se corresponden con la plataforma a enlazar');?></small>
-                                    </div>
-                                </div>
-                                <div class="errorInputMessage ErrorUserName col-xs-offset-1">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <span id="ContentPlaceHolder_ErrorUserName" class="errorMessage">Error</span>
-                                </div>
-
-                                <div class="errorInputMessage ErrorPassword col-xs-offset-1">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage">Error</span>
-                                </div>
-
-                                <div class="errorInputMessage ErrorPlatform col-xs-offset-1">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <span id="ContentPlaceHolder_ErrorPlatform" class="errorMessage">Error</span>
-                                </div>						
+                            <div class="overlay" style="display:none;">
+                                <div class="fa fa-spinner fa-spin" style="color:green;"></div>
                             </div>
-                            <!-- /.box-body -->
-                        </div>	
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label><?php echo __('CrowdLending Company')?></label>
+                                        <i class="fa fa-exclamation-circle" id="tooltipLA"></i>	
+                <?php   	
+                                                                                                                echo $this->Form->input('linkedaccount_companyId', array(
+                                                                                                                'options' => $companyList,
+                                                                                                                'empty' => '(choose one)',
+                                                                                                                'id'   	=> 'linkedaccount_companyId',
+                                                                                                                'class' => 'form-control blue_noborder2'
+                                        ));
+                                ?>
+                                    </div>
+                                </div>	
+                                <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_userName"><?php echo __('Your User')?></label>
+                                <?php			
+                                        echo $this->Form->input('Linkedaccount.linkedaccount_username', array(
+                                                                                                                        'id' 			=> 'ContentPlaceHolder_userName',
+                                                                                                                        'label' 		=> false,
+                                                                                                                        'placeholder' 	=> __("Username"),
+                                                                                                                        'class' 		=> 'form-control blue_noborder2 userName',
+                                                                                                                        ));
+                ?>
+                                    </div>
+                                </div>	
+                                <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="ContentPlaceHolder_password"><?php echo __('Your Password')?></label>
+                <?php	
+                                        echo $this->Form->input('Linkedaccount.linkedaccount_password', array(
+                                                                                                                        'id' 			=> 'ContentPlaceHolder_password',
+                                                                                                                        'type'			=> 'password',
+                                                                                                                        'label' 		=> false,
+                                                                                                                        'placeholder' 	=> __("Password"),
+                                                                                                                        'class' 		=> 'form-control blue_noborder2 userPassword',
+                                                                                                                        ));								
+                ?>
+                                    </div>
+                                </div>						
+                                <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label><br/>
+                                        <button type="button" id="linkNewAccount" href="/investors/linkAccount" class="btn btn-primary btn1CR btnRounded pull-right">
+                                            <?php echo __('Link this Account')?>
+                                        </button>
+                                    </div>				
+                                </div>
+                            </div>
+                            <!-- /.row -->
+                            <div class="row" id="linkAccountTooltip" style="display:none">
+                                <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                                    <small><?php echo __('Los datos de acceso se corresponden con la plataforma a enlazar');?></small>
+                                </div>
+                            </div>
+                            <div class="errorInputMessage ErrorUserName col-xs-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span id="ContentPlaceHolder_ErrorUserName" class="errorMessage">Error</span>
+                            </div>
+
+                            <div class="errorInputMessage ErrorPassword col-xs-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage">Error</span>
+                            </div>
+
+                            <div class="errorInputMessage ErrorPlatform col-xs-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span id="ContentPlaceHolder_ErrorPlatform" class="errorMessage">Error</span>
+                            </div>						
+                        </div>
                         <!-- /.addLinkedAccount -->
                     </div>
                 </div>
