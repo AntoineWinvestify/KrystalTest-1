@@ -48,6 +48,11 @@ Basic version
 2017-05-25
  * There is an array_shift to delete the first url of urlsequence on case 0 of the switch
  * We would need to delete the urlsequence on DB for Circulantis to work
+ * 
+2017-07-26
+ * Urlseuqnces fix marketplace
+ * $attr class fix col-xs-12 col-sm-6 col-md-3 col-lg-3 line 113
+ * 
 Pending:
 
 
@@ -105,7 +110,7 @@ class circulantis extends p2pCompany {
         $dom->preserveWhiteSpace = false;
         $tag = "div";
         $attr = "class";
-        $value = "col-xs-12 col-sm-12 col-md-3 col-lg-3";
+        $value = "col-xs-12 col-sm-6 col-md-3 col-lg-3";
 
         $divs1 = $this->getElements($dom, $tag, $attr, $value);
         foreach ($divs1 as $div1) {
@@ -117,7 +122,15 @@ class circulantis extends p2pCompany {
                     $this->print_r2($tempArray);
                     unset($tempArray);
                     $onClick = $newdiv->getAttribute('onclick');
-                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick));
+                    $onClick = explode("-", $onClick);
+                    
+                    $name = "";
+                    for ($i = 4 ; $i < count($onClick)-1 ; $i++ ){                      
+                            $name = $name . " " . $onClick[$i];
+                    }
+                    
+                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick[count($onClick)-1]));
+                    $tempArray['marketplace_purpose'] = $name;
                 }
                 if ($class == "titulo-subasta") {
                     $sector = explode('Importe', trim($div1->nodeValue));
