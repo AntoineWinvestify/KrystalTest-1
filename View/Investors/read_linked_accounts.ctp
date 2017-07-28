@@ -189,6 +189,16 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
 
 });
 </script>
+<style>
+    .togetoverlay .overlay  {
+        z-index: 50;
+        background: rgba(255, 255, 255, 0);
+        border-radius: 3px;
+    }
+    .togetoverlay .overlay > .fa {
+        font-size: 50px;
+    }
+</style>
 <div id="accountList">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -196,7 +206,10 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                 <div class="card-header" data-background-color="blue">
                     <h4 class="title"><strong><?php echo __('Account Linking')?></strong></h4>
                 </div>
-                <div class="card-content table-responsive">
+                <div class="card-content table-responsive togetoverlay">
+                    <div class="overlay" style="display:none;">
+                        <div class="fa fa-spinner fa-spin" style="color:green;"></div>
+                    </div>
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
@@ -296,9 +309,6 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                                                                                                     ),
                                                                                             ));
                     ?>
-                            <div class="overlay" style="display:none;">
-                                <div class="fa fa-spinner fa-spin" style="color:green;"></div>
-                            </div>
                             <div class="row">
                                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
                                     <div class="form-group">
