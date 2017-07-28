@@ -113,17 +113,6 @@ public function editUserProfileData() {
 
         if (!$this->request->is('ajax')) {
             $this->layout = 'azarus_private_layout';
-            
-            $investorId = $this->Auth->user('Investor.id');
-            $userId = $this->Auth->user('id');
-            
-            $resultInvestor = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
-                'recursive' => -1,
-            ));
-
-            $this->set('initialLoad', true);
-            $this->set('resultUserData', $resultInvestor);
-            return;
             /*throw new
             FatalErrorException(__('You cannot access this page directly'));*/
         }
@@ -131,6 +120,7 @@ public function editUserProfileData() {
         $error = false;
         $this->layout = 'ajax';
         $this->disableCache();
+        }
 
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');
@@ -175,7 +165,7 @@ public function editUserProfileData() {
             $investorValidationErrors = $this->Investor->validationErrors;
         }
 
-// Validation passed, so time to save the data
+        // Validation passed, so time to save the data
         if (($investorValidationErrors == NULL) AND ( $userValidationErrors == NULL)) {
             if (!empty($receivedData['password'])) {
                 $this->User->id = $userId;
@@ -189,7 +179,7 @@ public function editUserProfileData() {
 
         $receivedDataTemp[0]['Investor'] = $receivedData;
         $this->set('resultUserData', $receivedDataTemp);
-        }
+        //}
     }
 
     
@@ -316,15 +306,16 @@ function linkAccount() {
  *
  */
 function readLinkedAccounts() {
-
-        if (!$this->request->is('ajax')) {
-            throw new
-            FatalErrorException(__('You cannot access this page directly'));
-        }
-
         $error = false;
-        $this->layout = 'ajax';
-        $this->disableCache();
+        if (!$this->request->is('ajax')) {
+            $this->layout = "azarus_private_layout";
+            /*throw new
+            FatalErrorException(__('You cannot access this page directly'));*/
+        }
+        else {
+            $this->layout = 'ajax';
+            $this->disableCache();
+        }
 
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');    // Load the "Company" model
 
