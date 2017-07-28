@@ -547,7 +547,6 @@ function getCompanyWebpage($url) {
 
     function doCompanyLoginMultiCurl(array $loginCredentials) {
         
-        //$this->generateCookiesFile();
         $url = array_shift($this->urlSequence);
         echo $url;
         $this->errorInfo = $url;
@@ -670,7 +669,6 @@ function getCompanyWebpage($url) {
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir. '/' . $this->cookies_name);
 
         $this->marketplaces->addRequetsToQueueCurls($request);
-        //$this->deleteCookiesFile();
     }
     
     
@@ -687,8 +685,8 @@ function getCompanyWebpage($url) {
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
             echo $url;
-            $this->errorInfo = $url;
         }
+         $this->errorInfo = $url;
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -1019,7 +1017,8 @@ function getMonetaryValue($inputValue, $separating = null)  {
 *	@param 		string	$inputPercentage in string format like 5,4% or 5,43% or 5%. Note that 1,23% generates 123 and 33% -> 3300
 *															5,5% TAE -> 550
 *															7,02% -> 702
-*															8,5 % -> 850
+*                                                                                                                   	8,5 % -> 850
+ * º                                                            format like 'This is a string 54%' -> 5400
 *	@return 	int		$outputPercentage
 *	
 */
@@ -1337,16 +1336,30 @@ function print_r2($val){
      * Function to show and save error if there is any when taking data of userInvestmentData
      * @param int $line It is the line where the error occurred
      * @param string $file It is the reference of the file where the error occurred
+     * @param int $id It is the type of request (WEBPAGE, LOGIN, LOGOUT)
+     * @param object $error It is the error that pass the plugin of multicurl
      * @return array It is the principal array with only the error variable
      */
-    public function getError($line, $file) {
+    public function getError($line, $file, $id = null, $error = null) {
         $newLine = "\n";
+        $type_sequence = null;
+        if (!empty($id)) {
+            $type_sequence = "$newLine The sequence is " . $id;
+        }
+        $error_request = null;
+        if (!empty($error)) {
+            $error_request = "$newLine The error code of the request: " . $error->getCode()
+                    . "$newLine The error message of the request: " . $error->getMessage();
+        }
         $this->tempArray['global']['error'] = "ERROR START $newLine"
                 . "An error has ocurred with the data on the line " . $line . $newLine." and the file " . $file
-                . "$newLine The queueId is" . $this->queueId
+                . "$newLine The queueId is " . $this->queueId['Queue']['id']
                 . "$newLine The error was caused in the urlsequence: " . $this->errorInfo 
+                . $type_sequence
+                . $error_request
+                . "$newLine The time is : " . date("Y-m-d H:i:s")
                 . "$newLine ERROR FINISHED<br>";
-        $dirFile = $_SERVER["DOCUMENT_ROOT"] . "/app/companyCodeFiles";
+        $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         return $this->tempArray;
     }
