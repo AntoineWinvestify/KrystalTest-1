@@ -99,47 +99,50 @@ class lendix extends p2pCompany {
 * 	@return array	Each open investment option as an element of an array
 *
 */	
-function collectCompanyMarketplaceData() {
+    /**
+     *
+     * 	Collects the marketplace data
+     * 	@return array	Each open investment option as an element of an array
+     *
+     */
+    function collectCompanyMarketplaceData() {
+        $tempArray = array();
+        $totalArray = array();
 
-	$tempArray = array();
-	$totalArray = array();
-	
-	$str = $this->getCompanyWebpage();		// load Webpage into a string variable so it can be parsed
- 
-	$dom = new DOMDocument;
-	$dom->loadHTML($str);
-	$dom->preserveWhiteSpace = false; 
-
-	$divs = $this->getElements($dom, "div", "class", "card online");  
+        $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        
+        $dom->preserveWhiteSpace = false;
+        $divs = $this->getElements($dom, "li", "class", "card clickable project");
     
         foreach ($divs as $key2 => $div2) {
             echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
         }
                 
                 
-                
 	foreach ($divs as $key => $div) {
 		$projectDivs = $this->getElements($div, "div");
-                
-                
+
                 foreach ($projectDivs as $key11 => $div11) {
-                    echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . "<br>";
+                    echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . "and attr" . $projectDivs[$key11]->getAttribute('title'). "<br>";
                 }
+
+                    $progress = explode(' ',$projectDivs[12]->getAttribute('title'));
                 
-                
-		$tempArray['marketplace_rating'] = trim($projectDivs[2]->nodeValue);
-		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage( $projectDivs[8]->nodeValue);	
-		$tempArray['marketplace_name'] = trim($projectDivs[13]->nodeValue);
-                $tempArray['marketplace_purpose'] = trim($projectDivs[13]->nodeValue);
-		$tempArray['marketplace_amount'] = $this->getMonetaryValue( $projectDivs[14]->nodeValue);
-		$tempArray['marketplace_interestRate'] = $this->getPercentage( $projectDivs[20]->nodeValue);
-		list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($projectDivs[26]->nodeValue);
+		$tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
+		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage( $projectDivs[12]->getAttribute('title') );	
+		$tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
+                $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
+		$tempArray['marketplace_amount'] = $this->getMonetaryValue( $projectDivs[16]->nodeValue);
+		$tempArray['marketplace_interestRate'] = $this->getPercentage( $projectDivs[2]->nodeValue);
+		list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($projectDivs[4]->nodeValue);
 /*******************************************************/															
 /* HARD CODED AS PREVIOUS STATEMENT GENERATES AN ERROR */
 		$tempArray['marketplace_durationUnit'] = 2;
 /*******************************************************/
-		$tempArray['marketplace_requestorLocation'] = trim($projectDivs[32]->nodeValue);
-		$tempArray['marketplace_sector'] = trim($projectDivs[38]->nodeValue);
+		$tempArray['marketplace_requestorLocation'] = trim($projectDivs[9]->nodeValue);
+		$tempArray['marketplace_sector'] = trim($projectDivs[22]->nodeValue);
 
 		$as = $this->getElements($div, "a");
 		$loanId = explode(":", $as[0]->getAttribute("title"));
