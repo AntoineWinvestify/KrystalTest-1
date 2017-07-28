@@ -1336,6 +1336,8 @@ function print_r2($val){
      * Function to show and save error if there is any when taking data of userInvestmentData
      * @param int $line It is the line where the error occurred
      * @param string $file It is the reference of the file where the error occurred
+     * @param int $id It is the type of request (WEBPAGE, LOGIN, LOGOUT)
+     * @param object $error It is the error that pass the plugin of multicurl
      * @return array It is the principal array with only the error variable
      */
     public function getError($line, $file, $id = null, $error = null) {
