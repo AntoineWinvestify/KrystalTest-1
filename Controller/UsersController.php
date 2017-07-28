@@ -215,6 +215,7 @@ public function logout() {
 	$this->Session->destroy();						// NOT NEEDED?
 	$this->Session->delete('Auth');
         $this->Session->delete('Acl');
+        $this->Session->delete('sectorsMenu');
         
 	return $this->redirect($this->Auth->logout());
 }
