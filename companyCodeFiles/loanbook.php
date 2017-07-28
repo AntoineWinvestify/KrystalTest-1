@@ -109,19 +109,18 @@ function collectCompanyMarketplaceData() {
 	$dom->loadHTML($str);
 	$dom->preserveWhiteSpace = false; 
 
-	$sections = $dom->getElementsByTagName ('section');
+	$sections = $dom->getElementsByTagName ('tbody');
 	foreach( $sections as $section) {
-
+			
 		$trs = $section->getElementsByTagName('tr');
 		foreach ($trs as $tr) {
 			$tempAttribute = $tr->getAttribute('class');
-			if ($tempAttribute == 'fila_subasta') {
+			if ($tempAttribute == 'fila_subasta' || $tempAttribute == 'fila_subasta tablesorter-childRow') {
 
 				$tds = $tr->getElementsByTagName('td');
 				$index = -1;
 				foreach ($tds as $td)	{
 					$index++;
-					
 					switch ($index) {
 						case 0:	
 							break;	
@@ -176,7 +175,9 @@ function collectCompanyMarketplaceData() {
 				}		
 			}
 			$totalArray[] = $tempArray;
-			$this->print_r2($tempArray);
+
+                        $this->print_r2($tempArray);
+
 			unset($tempArray);
 		}
 		return $totalArray;

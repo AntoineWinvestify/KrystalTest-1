@@ -329,8 +329,13 @@ class MarketPlacesController extends AppController {
             $this->Marketplace->clear();
             $this->print_r2($listing);
 
-            if ($listing['marketplace_subscriptionProgress'] == 10000) { // company maintains this entry in their marketplace
+            if ($listing['marketplace_subscriptionProgress'] == 10000) { // company maintains this entry in their marketplace (?)
                 echo __FUNCTION__ . " " . __LINE__ . " Loan with 100% detected<br>";
+                
+                 /************/
+                 /*** 100% ***/  //Hacer backup, borrar del marketplace.
+                 /************/
+                
                 continue;             // eventhough you can no longer invest in this option
             }
 
@@ -341,7 +346,7 @@ class MarketPlacesController extends AppController {
                     CakeLog::write('cronLog.txt', "Error saving following data: " . json_encode($listing));
                     echo __FUNCTION__ . " " . __LINE__ . " " . "ERROR while trying to save a new listing in DB<br>";
                 }
-            } else { // already existing entry, so just update some of the data (if aplicable) for this listing like "daysLeft
+            } else { // already existing entry, so just update some of the data (if aplicable) for this listing like "daysLeft and save backup
                 echo __FUNCTION__ . " " . __LINE__ . " check if something has changed<br>";
                 $dataChangeDetected = false;
                 foreach ($listing as $key => $item) {
