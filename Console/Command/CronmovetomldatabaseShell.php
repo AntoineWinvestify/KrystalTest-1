@@ -25,7 +25,9 @@ added methods cronMoveToMLDatabase(), writeArray, resetInvestmentArray() and res
 
 
 Pending:
-
+Read the constants from a application system wide file
+  
+ 
 */
 
 
@@ -171,18 +173,18 @@ print_r($userinvestmentdataResult);
             'Userplatformglobaldata' => $platformglobalData
            ); 
      
-    $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
-							  'conditions'  => array(// sort by queueid
-                                                                  'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                                                                            'queue_id > ' => $newMaxQueueId),
-                                                              'limit' => $limit ));  
-    $userinvestmentdataResult = null;
+        $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
+                                                              'conditions'  => array(// sort by queueid
+                                                                      'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                                                'queue_id > ' => $newMaxQueueId),
+                                                                  'limit' => $limit ));  
+//        $userinvestmentdataResult = null;   // Only needed for doing tests in a controlled environment
     }       // end of while      
-    
-echo "FINALIZED<br>";
+
     unset($data1[0]);       // Remove first index as it contains only dummy data
 print_r($data1);
 
+// Copy the data to the MLData tables and confirm that copy was succesfull
     foreach ($data1 as $tempData){
         $this->Mlqueue->id = 1;         // only one instance exists
         $savedQueueId = $tempData['Investorglobaldata']['queueId'];  
@@ -194,7 +196,7 @@ print_r($data1);
                                 'mlqueue_lastIdDate' => $currentDate);
             $this->Mlqueue->save($dataArray);        
         }
-        else {
+        else {      // Error, store it in error database
             echo "error happened";
             
         }  
