@@ -146,7 +146,7 @@ print_r($userinvestmentdataResult);
                     if ($data['investment_amount'] > 0) {
                         $platformglobalData[$index]['userplatformglobaldata_activeInInvestments'] += $data['investment_amount'];
                         $platformglobalData[$index]['userplatformglobaldata_numberOfInvestments']++;
-                        $investorglobalData['investorglobaldata_activeInInvestments'] += $data['investment_amount'];
+                        $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data['investment_amount'];
                         $activeInvestments = true;
                     }               
                     $platformglobalData[$index]['userplatformglobaldata_moneyInWallet'] += $result['Userinvestmentdata']['userinvestmentdata_myWallet']; 
@@ -156,7 +156,7 @@ print_r($userinvestmentdataResult);
                     $platformglobalData[$index]['userplatformglobaldata_PFPType'] = $companyResult['Company']['company_PFPType'];
                     $platformglobalData[$index]['userplatformglobaldata_PFPCountry'] = $companyResult['Company']['company_country']; 
                     $platformglobalData[$index]['userplatformglobaldata_globalIndicator'] = 3;      // This is a temporary dummy value  
-        //               $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data[$index]['userinvestmentdata_activeInInvestments'];             
+      //???              $investorglobalData[$index]['userplatformglobaldata_totalActiveInInvestments'] += $data['userinvestmentdata_activeInInvestments'];             
                 }    
                 if ($activeInvestments) {
                     $investorglobalData['investorglobaldata_activePFPs'] += 1;
@@ -178,13 +178,13 @@ print_r($userinvestmentdataResult);
                                                                       'userinvestmentdata_updateType' => SYSTEM_GENERATED,
                                                                                 'queue_id > ' => $newMaxQueueId),
                                                                   'limit' => $limit ));  
-//        $userinvestmentdataResult = null;   // Only needed for doing tests in a controlled environment
+       $userinvestmentdataResult = null;  
     }       // end of while      
 
     unset($totalData[0]);       // Remove first index as it contains only dummy data
 print_r($totalData);
 
-// Copy the data to the MLData tables and confirm that copy was succesfull
+// Copy the data to the MLData tables and confirm that it was succesfull
     foreach ($totalData as $tempData){
         $this->Mlqueue->id = 1;         // only one instance exists
         $savedQueueId = $tempData['Investorglobaldata']['queueId'];  
@@ -197,9 +197,7 @@ print_r($totalData);
             $this->Mlqueue->save($dataArray);        
         }
         else {      // Error, store it in error database
-            echo "error happened\n";
             // Start collecting as much data as possible related to the error 
-
             $printTempData = print_r($tempData, $return = true);
             $printDataArray = print_r($dataArray, $return = true);
             $par1 = "Error while saving data to MLDATA database";
@@ -251,7 +249,7 @@ private function resetInvestmentArray(& $investmentArray) {
 private function resetInvestorsArray(& $investorArray) {
 
     $investorArray['investorglobaldata_totalMoneyInWallets'] = 0;
-    $investorArray['investorglobaldata_activeInInvestments'] = 0;
+ //   $investorArray['investorglobaldata_activeInInvestments'] = 0;
     $investorArray['investorglobaldata_activePFPs'] = 0;
     $investorArray['investorglobaldata_totalPFPs'] = 0;
     $investorArray['investorglobaldata_globalIndicator'] = 0;
