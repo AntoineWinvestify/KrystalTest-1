@@ -47,10 +47,12 @@ Added loading of ALL investments
 
 2017-05-16          version 2017_0.3
  * Added parallelization
- * Addde dom verification
+ * Added dom verification
 
 
-
+2017-07-24          version 2017_0.4
+ * Added two urlsequences for marketplaces to get investment of next pages
+ * Added code for marketplaces to verify if there is more investments in the next page
 
 
 
@@ -122,20 +124,30 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
     function collectCompanyMarketplaceData() {
 
         $totalArray = array();
-
+        $subscriptionComplete = false;
+        $pageNumber = 1;
+        $url = null;
+        $urlNextPage = null;
         for ($i = 0; $i < 2; $i++) {
-            $str = $this->getCompanyWebpage();
+            $numberOfInvestmentInPage = 0;
+            $str = $this->getCompanyWebpage($url);
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             if ($i == 0) {
                 //pymeList
                 $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
-                $listing = $dom->getElementById("pymeList");
-                if (count($listing) == 0) {
-                    return totalArray;
+                if (empty($url)) {
+                    $listing = $dom->getElementById("pymeList");
+                    $rows = $listing->getElementsByTagName('article');
+                    if (count($listing) == 0) {
+                        return totalArray;
+                    }
+                }
+                else if (!empty($url)) {
+                    $rows = $dom->getElementsByTagName('article');
                 }
 
-                $rows = $listing->getElementsByTagName('article');
+                //$rows = $listing->getElementsByTagName('article');
             }
             
             else if($i == 1) {
@@ -195,12 +207,37 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
                         } else {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;  // completed, retrasado orr amortización ..
+                            $subscriptionComplete = true;
                         }
                     }
-                }
-
+                }  
+                $numberOfInvestmentInPage++;
                 $totalArray[] = $tempArray;
                 unset($tempArray);
+                //If subscription of the investment is not complete and the number of investment is the 15th in the page
+                //We need to go to the next page to verify if there are investments or not
+                if (!$subscriptionComplete && $numberOfInvestmentInPage == 15) {
+                    if (empty($urlNextPage)) {
+                        $urlNextPage =  array_shift($this->urlSequence);
+                    }
+                    $numberOfInvestmentInPage = 0;
+                    $pageNumber++;
+                    $url = $urlNextPage . $pageNumber;
+                    $i--;
+                }
+                else if($subscriptionComplete) {
+                    $subscriptionComplete = false;
+                    $url = null;
+                    $urlNextPage = null;
+                    $pageNumber = 1;
+                    $numberOfInvestmentInPage = 0;
+                    break;
+                }
+                //If there is a complete investment in the first page
+                //We need to delete the urlSequence for the nextPage
+                else if ($subscriptionComplete && $pageNumber == 1) {
+                    array_shift($this->urlSequence);
+                }
             }
         }
         return $totalArray;
