@@ -562,28 +562,24 @@ app.visual = {
         var cif = $("#ContentPlaceHolder_cif").val();
         var businessName = $("#ContentPlaceHolder_businessName").val();
         if (name === "") {
-            console.log("empty name");
             $(".investorName").addClass("redBorder");
             $(".ErrorName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorName").fadeIn();
             correctForm = false;
         }
         if (surname === "") {
-            console.log("empty surname");
             $(".investorSurname").addClass("redBorder");
             $(".ErrorId").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorId").fadeIn();
             correctForm = false;
         }
         if (identificationId === "") {
-            console.log("empty dni");
             $(".investorDni").addClass("redBorder");
             $(".ErrorSurname").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorSurname").fadeIn();
             correctForm = false;
         }
         if (dateOfBirth === "") {
-            console.log("empty date of birth");
             $(".investorDateOfBirth").addClass("redBorder");
             $(".ErrorDateOfBirth").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorDateOfBirth").fadeIn();
@@ -603,28 +599,24 @@ app.visual = {
             }
         }
         if (postCode === "") {
-            console.log("empty post code");
             $(".investorPostCode").addClass("redBorder");
             $(".ErrorPostCode").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorPostCode").fadeIn();
             correctForm = false;
         }
         if (address === "") {
-            console.log("empty address");
             $(".investorAddress").addClass("redBorder");
             $(".ErrorAddress").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorAddress").fadeIn();
             correctForm = false;
         }
         if (city === "") {
-            console.log("empty city");
             $(".investorCity").addClass("redBorder");
             $(".ErrorCity").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorCity").fadeIn();
             correctForm = false;
         }
         if (country === "") {
-            console.log("empty country");
             $(".investorCountry").addClass("redBorder");
             $(".ErrorCountry").find(".errorMessage").html(TEXTOS.T15); // "you have to select an option" warning
             $(".ErrorCountry").fadeIn();
@@ -644,7 +636,6 @@ app.visual = {
             }
         }
         if (iban === "") {
-            console.log("empty IBAN");
             $(".investorIban").addClass("redBorder");
             $(".ErrorIban").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorIban").fadeIn();
@@ -661,7 +652,6 @@ app.visual = {
         }
         //If is selected 'I use my company as investment vehicle', validate CIF & Business Name
         if ((cif === "") && ($("#investmentVehicle").prop("checked"))) {
-            console.log("empty CIF");
             $(".investorCif").addClass("redBorder");
             $(".ErrorCif").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorCif").fadeIn();
@@ -677,7 +667,6 @@ app.visual = {
          }
          }*/
         if ((businessName === "") && ($("#investmentVehicle").prop("checked"))) {
-            console.log("empty business name");
             $(".investorBusinessName").addClass("redBorder");
             $(".ErrorBusinessName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorBusinessName").fadeIn();
@@ -685,7 +674,6 @@ app.visual = {
         }
         $(".uploaded").each(function () {
             if ($(this).val() == 0) {
-                console.log("required files");
                 $(".ErrorFiles").find(".errorMessage").html(TEXTOS.T96); // "update all required files" warning
                 $(".ErrorFiles").fadeIn();
                 correctForm = false;
@@ -704,21 +692,18 @@ app.visual = {
         var amount = $("#ContentPlaceHolder_amount").val();
         var currency = $("#ContentPlaceHolder_currency").val();
         if (pfp == 0) {
-            console.log("pfp not selected");
             $(".billPFP").addClass("redBorder");
             $(".ErrorPFP").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorPFP").fadeIn();
             correctForm = false;
         }
         if (number === "") {
-            console.log("empty bill number");
             $(".billNumber").addClass("redBorder");
             $(".ErrorNumber").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorNumber").fadeIn();
             correctForm = false;
         }
         if (concept === "") {
-            console.log("empty bill concept");
             $(".billConcept").addClass("redBorder");
             $(".ErrorConcept").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorConcept").fadeIn();
@@ -727,20 +712,17 @@ app.visual = {
         var regexp = /^(?=.)(\d{1,3})?(\,\d+)?(\d{1,2})$/g;
         result = regexp.test(amount);
         if (amount === "") {
-            console.log("empty bill amount");
             $(".billAmount").addClass("redBorder");
             $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorAmount").fadeIn();
             correctForm = false;
         } else if (!result) {
-            console.log("incorrect bill amount");
             $(".billAmount").addClass("redBorder");
             $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T72); // "introduce quantity > 0" warning
             $(".ErrorAmount").fadeIn();
             correctForm = false;
         }
         if (currency == 0) {
-            console.log("not selected currency");
             $(".billCurrency").addClass("redBorder");
             $(".ErrorCurrency").find(".errorMessage").html(TEXTOS.T97); // "select currency" warning
             $(".ErrorCurrency").fadeIn();
@@ -786,14 +768,12 @@ app.visual = {
 
         //ERROR SHOWING
         if (!correctNIF && !correctEmail && !correctTelephone) {
-            console.log("all fields are empty");
             $(".tallymanGeneral").addClass("redBorder");
             $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T98); // "at least 2 fields" warning
             $(".ErrorTallyman").fadeIn();
             correctForm = false;
         }
         if (correctNIF && !correctEmail && !correctTelephone) {
-            console.log("email & telephone empty");
             $(".tallymanTelephone").addClass("redBorder");
             $(".tallymanEmail").addClass("redBorder");
             $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
@@ -801,7 +781,6 @@ app.visual = {
             correctForm = false;
         }
         if (!correctNIF && correctEmail && !correctTelephone) {
-            console.log("nif & telephone empty");
             $(".tallymanTelephone").addClass("redBorder");
             $(".tallymanID").addClass("redBorder");
             $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
@@ -809,7 +788,6 @@ app.visual = {
             correctForm = false;
         }
         if (!correctNIF && !correctEmail && correctTelephone) {
-            console.log("nif & email empty");
             $(".tallymanEmail").addClass("redBorder");
             $(".tallymanID").addClass("redBorder");
             $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
@@ -817,35 +795,30 @@ app.visual = {
             correctForm = false;
         }
         if (correctNIF && !correctFormatEmail && !correctTelephone) {
-            console.log("name correct, email incorrect format, telephone empty");
             $(".tallymanEmail").addClass("redBorder");
             $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
             $(".ErrorEmail").fadeIn();
             correctForm = false;
         }
         if (correctNIF && !correctEmail && !correctFormatTelephone) {
-            console.log("name correct, email empty, telephone incorrect format");
             $(".tallymanTelephone").addClass("redBorder");
             $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
             $(".ErrorTelephone").fadeIn();
             correctForm = false;
         }
         if (!correctNIF && !correctEmail && !correctFormatTelephone) {
-            console.log("name empty, email empty, telephone empty");
             $(".tallymanEmail").addClass("redBorder");
             $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
             $(".ErrorEmail").fadeIn();
             correctForm = false;
         }
         if (!correctNIF && !correctFormatEmail && !correctTelephone) {
-            console.log("name correct, email empty, telephone incorrect format");
             $(".tallymanTelephone").addClass("redBorder");
             $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
             $(".ErrorTelephone").fadeIn();
             correctForm = false;
         }
         if (!correctNIF && !correctFormatEmail && !correctFormatTelephone) {
-            console.log("name empty, email incorrect format, telephone incorrect format");
             $(".tallymanTelephone").addClass("redBorder");
             $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
             $(".ErrorTelephone").fadeIn();
@@ -855,14 +828,12 @@ app.visual = {
             correctForm = false;
         }
         if (!correctNIF && correctFormatEmail && !correctFormatTelephone) {
-            console.log("name empty, email correct format, telephone incorrect format");
             $(".tallymanTelephone").addClass("redBorder");
             $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
             $(".ErrorTelephone").fadeIn();
             correctForm = false;
         }
         if (!correctNIF && !correctFormatEmail && correctFormatTelephone) {
-            console.log("name empty, email incorrect format, telephone correct format");
             $(".tallymanEmail").addClass("redBorder");
             $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
             $(".ErrorEmail").fadeIn();
@@ -884,35 +855,30 @@ app.visual = {
 
         //Error showing
         if (selectedPFP == 0) {
-            console.log("pfp not selected");
             $(".selectedPFP").addClass("redBorder");
             $(".ErrorPFP").find(".errorMessage").html(TEXTOS.T100); // "select PFP" warning
             $(".ErrorPFP").fadeIn();
             correctForm = false;
         }
         if (termsOfService === "") {
-            console.log("empty terms of service");
             $(".pfpTermsOfService").addClass("redBorder");
             $(".ErrorTermsOfService").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorTermsOfService").fadeIn();
             correctForm = false;
         }
         if (privacyPolicy === "") {
-            console.log("empty privacy policy");
             $(".pfpPrivacyPolicy").addClass("redBorder");
             $(".ErrorPrivacyPolicy").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
             $(".ErrorPrivacyPolicy").fadeIn();
             correctForm = false;
         }
         if (modality == 0) {
-            console.log("modality not selected");
             $(".pfpModality").addClass("redBorder");
             $(".ErrorModality").find(".errorMessage").html(TEXTOS.T101); // "select modality" warning
             $(".ErrorModality").fadeIn();
             correctForm = false;
         }
         if (status == 0) {
-            console.log("status not selected");
             $(".pfpStatus").addClass("redBorder");
             $(".ErrorStatus").find(".errorMessage").html(TEXTOS.T101); // "select modality" warning
             $(".ErrorStatus").fadeIn();

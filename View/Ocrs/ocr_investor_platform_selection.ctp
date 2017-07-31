@@ -46,8 +46,8 @@
 echo $result;
 if ($result) {
     ?>
-<script src="/js/dateFormat.js"></script>
-<script src="/js/jquery-dateFormat.js"></script>
+    <script src="/js/dateFormat.js"></script>
+    <script src="/js/jquery-dateFormat.js"></script>
     <script>
         total = <?php echo count($selected) ?>;
         var numberCompanies = 0;
@@ -93,7 +93,7 @@ if ($result) {
 
                 }
                 params["idCompany"] = idCompany;
-                link = "/Ocrs/oneClickInvestorI";
+                link = "/Ocrs/oneClickInvestorPlatformSelectionAction";
                 var data = jQuery.param(params);
                 getServerData(link, data, successSentCompanies, errorSentCompanies);
                 params = {};
@@ -120,12 +120,18 @@ if ($result) {
 
 
         function successSentCompanies(result) {
-           
+            result = JSON.parse(result);
+            for (i = 0; i < max; i++) {
+                ga_1CRConfirmCompanies(result[1], result[2]);
+            }
         }
-        
+
 
         function errorSentCompanies(result) {
-
+            result = JSON.parse(result);
+            for (i = 0; i < max; i++) {
+                ga_1CRConfirmCompanies(result[1], result[2]);
+            }
         }
 
 
@@ -248,6 +254,18 @@ if ($result) {
             }
 
         }
+
+
+        //Google Analytics
+        function ga_1CRConfirmCompanies(number, email) {
+            //Use INVESTOR ID
+            console.log("ga 'send' 'event' '1ClickRegistration'  'serviceContracted' " + email + " " + number);
+            if (typeof ga === 'function') {
+                ga('send', 'event', '1ClickRegistration', 'serviceContracted', email, number);
+            }
+        }
+
+
 
 
 

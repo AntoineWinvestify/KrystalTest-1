@@ -114,7 +114,6 @@
             resultJson = JSON.parse(result);
 <?php } ?>
 
-        console.log(resultJson);
         if (resultJson[0] == 1 && resultJson[2] == 1) {
             email = $('#ContentPlaceHolder_email').val();
             ga_1CRConfirmCompanies(<?php echo $number ?>, email);
@@ -147,7 +146,6 @@
 
     function error(result) {
 <?php //Server validation Error             ?>
-        console.log("validation error");
         $(".errorMsg").fadeIn();
     }
 
@@ -159,8 +157,6 @@
         
     //Google Analytics
     function ga_1CRConfirmCompanies(number,email) {
-        //Use INVESTOR ID
-        console.log("ga 'send' 'event' '1ClickRegistration'  'serviceContracted' " + email + " " + number);
         if (typeof ga === 'function') { 
             ga('send', 'event', '1ClickRegistration', 'serviceContracted', email ,number);
         }

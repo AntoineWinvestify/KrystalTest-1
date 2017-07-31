@@ -132,7 +132,6 @@ if ($result) {
 
 
             $(document).on("click", "#activateOCR", function () {
-                console.log("validate 1CR data");
                 var result; //link = $(this).attr("href");
 
     <?php //Javascript validation                                ?>
@@ -323,8 +322,6 @@ if ($result) {
 
         //Google Analytics
         function ga_1CRConfirmCompanies(id, email) {
-            //Generate timestamp       
-            console.log("ga 'send' 'event' '1ClickRegistration'" + email + id);
             if (typeof ga === 'function') {
                 ga('send', 'event', '1ClickRegistration','confirmCompanies', email, id);
             }
@@ -941,9 +938,9 @@ if ($result) {
                 <div id="btn1CR" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="form-group">
                         <?php if ($ocr[0]['Ocr']['ocr_status'] != ERROR) { ?>
-                            <button type="submit" href="/ocrs/oneClickInvestorI" id="backOCR" class="btn btn-lg btn1CR btnRounded pull-left"><?php echo __('Back') ?></button>
+                            <button type="submit" href="/ocrs/oneClickInvestorPlatformSelectionAction" id="backOCR" class="btn btn-lg btn1CR btnRounded pull-left"><?php echo __('Back') ?></button>
                         <?php } ?>
-                        <button type="submit" href="/ocrs/oneClickInvestorII" id="activateOCR" class="btn btn-lg btn1CR btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
+                        <button type="submit" href="/ocrs/oneClickInvestorSentAction" id="activateOCR" class="btn btn-lg btn1CR btnRounded pull-right"><?php echo __('Activate 1CR') ?></button>
                     </div>
                 </div>	
             </div>
