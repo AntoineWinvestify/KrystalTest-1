@@ -49,7 +49,7 @@ class MarketPlacesController extends AppController {
 
     var $name = 'Marketplaces';
     var $helpers = array('Html', 'Form', 'Js');
-    var $uses = array('Marketplace', 'Company', 'Urlsequence');
+    var $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
     var $components = array('Security', 'Session');
     
     private $queueCurls;
@@ -289,8 +289,22 @@ class MarketPlacesController extends AppController {
         pr($result);
         echo "<br>____ Checking Company " . $result[$companyId]['company_name'] . " ____<br>";
 
-        $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
-        $newComp->defineConfigParms($result[$companyId]);
+        $companyMarketplace = $this->Marketplace->find('all',array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+        echo 'inversiones';
+        foreach($companyMarketplace as $inversion){
+            print_r($inversion);
+            echo '</br>';
+        };
+        
+        $companyBackup = $this->Marketplacebackup->find('all',array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+                echo 'backup';
+        foreach($companyBackup as $backup){
+            print_r($backup);
+            echo '</br>';
+        };
+        
+        $newComp = $this->companyClass($result[$companyId]['company_codeFile'],$companyMarketplace,$companyBackup); // create a new instance of class zank, comunitae, etc.	
+        /*$newComp->defineConfigParms($result[$companyId]);
 
         $companyId = $result[$companyId]['id'];
         $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MARKETPLACE_SEQUENCE);
@@ -336,7 +350,7 @@ class MarketPlacesController extends AppController {
                  /*** 100% ***/  //Hacer backup, borrar del marketplace.
                  /************/
                 
-                continue;             // eventhough you can no longer invest in this option
+              /*  continue;             // eventhough you can no longer invest in this option
             }
 
             if (empty($existingCompanyMarketListing)) {   // New entry found, save it 
@@ -393,7 +407,7 @@ class MarketPlacesController extends AppController {
         }  // foreach ($marketplaceArray as $listing) {
 // move the records that were *NOT* modified to the backup database. These records indicate an loan entry which was
 // fully subscribed or which did not reach the fully subscribed status during the publication phase
-        echo __FUNCTION__ . " " . __LINE__ . " Check if records must be deleted <br>";
+        /*echo __FUNCTION__ . " " . __LINE__ . " Check if records must be deleted <br>";
         pr($allCompanyMarketListings);
         foreach ($allCompanyMarketListings as $key => $companyListing) {
             echo __FUNCTION__ . " " . __LINE__ . " " . "Move a non referenced DB record " .
@@ -406,7 +420,7 @@ class MarketPlacesController extends AppController {
                         $resultBackup['Company']['company_name'] . ' and loanReference =  ' .
                         $listing['marketplace_loanReference']);
             }
-        }
+        }*/
     }
 
     /**
