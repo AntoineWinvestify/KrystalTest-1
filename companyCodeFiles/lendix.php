@@ -125,7 +125,7 @@ class lendix extends p2pCompany {
 		$projectDivs = $this->getElements($div, "div");
 
                 foreach ($projectDivs as $key11 => $div11) {
-                    echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . "and attr" . $projectDivs[$key11]->getAttribute('title'). "<br>";
+                    echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title'). "<br>";
                 }
 
                     $progress = explode(' ',$projectDivs[12]->getAttribute('title'));
