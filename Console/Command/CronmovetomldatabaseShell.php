@@ -57,8 +57,7 @@ class CronmovetomldatabaseShell extends AppShell
  */
 public function cronMove() {
     $this->autoRender = false; 
-    Configure::write('debug', 2);
-    
+     
     $currentDate = date("Y-m-d", time());     
     
     Configure::load('p2pGestor.php', 'default');
