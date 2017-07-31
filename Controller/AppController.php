@@ -1,7 +1,8 @@
 <?php
+
 /*
  * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://winvestify.com                             |
+ * | Copyright (C) 2017, http://www.winvestify.com                         |
  * +-----------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify     |
  * | it under the terms of the GNU General Public License as published by  |
@@ -29,21 +30,37 @@
  *
  * App Controller
  *
+
+  2017-06-11      version 0.2
+  Corrected test for language cookie
+
+
+  2017-06-14      version 0.21
+  loginRedirect has changed to global market place
+
+
+ * 2017-06-11      version 0.2
+ * Corrected test for language cookie
  *
- *  2016-08-02		version 0.1
- *  Simple first version
- *
+ * 
+ * 2017-06-19      version 0.22
+  Added a new crowdlending type and defined its "string" values globally.
+  Added type of dashboard record
 
 
-2017-06-11      version 0.2
-Corrected test for language cookie 
-
-
+ * 2017-06-23     version 0.3
+ * OCr status defined
  * 
+ * [2017-06-28] Version 0.4
+ * Defined currencyName
+ * Defined pfpStatus
  * 
+ * [2017-06-29] Version 0.5
+ * Defined new status for ocr and files 
  * 
+ * [2017-07-03] Version 0.6
+ * Defined checks
  * 
- *
  *  PENDING:
  * -
  *
@@ -162,6 +179,7 @@ define('P2P', 1);
 define('P2B', 2);
 define('INVOICE_TRADING', 4);
 define('CROWD_REAL_ESTATE', 8);
+define('SOCIAL', 16);
 
 
 // REGISTRATION PROGRESS WHEN USERS REGISTERS	
@@ -171,8 +189,59 @@ define('REGISTRATION_PROGRESS_3', 3);
 define('REGISTRATION_PROGRESS_4', 4);
 define('REGISTRATION_PROGRESS_5', 5);
 
-//CURL ERRORS TO TAKE IN ACCOUNT
+
+//COMPANY SERVICE STATUS
+define('SER_INACTIVE', 1);
+define('SER_ACTIVE', 2);
+define('SER_SUSPENDED', 3);
+
+//OCR STATUS
+define('NOT_SENT', 0);
+define('SENT', 1);
+define('ERROR', 2);
+define('OCR_PENDING', 3);
+define('OCR_FINISHED', 4);
+define('FIXED', 5);
+
+//OCR COMPANY STATUS
+define('SELECTED', 0);
+define('SENT', 1);
+define('ACCEPTED', 2);
+define('DENIED', 3);
+define('DOWNLOADED', 4);
+
+//CHECK DATA & FILES STATUS
+define('UNCHECKED', 0);
+define('CHECKED', 1);
+define('ERROR', 2);
+
+//FILE OPTIONAL OR REQUIRED
+define('OPTIONAL', 1);
+define('REQUIRED', 0);
+
+//CHECK STATUS(for winadmin invcestor data)
+define('YES', 1);
+define('NO', 2);
+define('PENDING', 0);
+
+
+// CURL ERRORS
 define('CURL_ERROR_TIMEOUT', 28);
+
+// TYPES OF DASHBOARD RECORDS	
+define('USER_GENERATED', 2);
+define('SYSTEM_GENERATED', 1);
+
+
+// DEFINED CURRENCIES
+define('EUR', 1);           // Euro
+define('GBP', 2);           // UK Pound Sterling
+define('USD', 3);           // US Dollar
+
+// APPLICATION THAT CAN PRODUCE BILLING DATA
+define('TALLYMAN_APP', 1);
+
+
 
 class AppController extends Controller {
 
@@ -180,6 +249,7 @@ class AppController extends Controller {
         'RequestHandler',
         'Security',
         'Session',
+        'Acl',
         'Auth' => array(
             /* 				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller */
             'loginRedirect' => array('controller' => 'marketplaces',
@@ -221,15 +291,40 @@ class AppController extends Controller {
             4 => "Horas",
         );
 
+        // TRANSLATE CURRENCY NAME
+        $this->currencyName = array(0 => "(select)", 1 => "€", 2 => "£", 3 => "$");
+
+        //Investor Status to PFP Admin
+        $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
+
+        //Investor Ocr Status
+        $this->ocrStatus = array(1 => __("Unchecked"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
+
+        //Company ocr service status
+        $this->serviceStatus = array(0 => __('Choose One'), 1 => __("Inactive"), 2 => __("Active"), 3 => __("Suspended"));
+
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
-        $this->crowdlendingTypes = array(P2P => __('P2P Crowdlending'),
+        $this->crowdlendingTypesLong = array(
+            P2P => __('P2P Crowdlending'),
             P2B => __('P2B Crowdlending'),
             INVOICE_TRADING => __('P2P Invoice Trading'),
             CROWD_REAL_ESTATE => __('Crowd Real Estate'),
+            SOCIAL => __('Social')
         );
- 
+        $this->set('crowdlendingTypesLong', $this->crowdlendingTypesLong);
+
+
+        $this->crowdlendingTypesShort = array(
+            P2P => __('P2P'),
+            P2B => __('P2B'),
+            INVOICE_TRADING => __('I.T.'),
+            CROWD_REAL_ESTATE => __('R.E.'),
+            SOCIAL => __('SOCIAL')
+        );
+        $this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
+
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
@@ -237,13 +332,13 @@ class AppController extends Controller {
         } else {
             $ourLanguage[0] = $this->Cookie->read('p2pManager.language');
         }
-        $this->Session->write('Config.language', $ourLanguage[0]);        
-        
-        $subjectContactForm = array('Choose one...', 
-                                'general' => __('General'), 
-                                'billing' => __('Billing Dept'), 
-                                'improvement' => __('Functional Improvement'), 
-                                'feature' => __('New Feature'));
+        $this->Session->write('Config.language', $ourLanguage[0]);
+
+        $subjectContactForm = array('Choose one...',
+            'general' => __('General'),
+            'billing' => __('Billing Dept'),
+            'improvement' => __('Functional Improvement'),
+            'feature' => __('New Feature'));
         $this->set('subjectContactForm', $subjectContactForm);
 
 
@@ -251,6 +346,19 @@ class AppController extends Controller {
         $filterCompanies2 = array(__('Type filter'), 'P2P (Peer-to-Peer)' => __('P2P (Peer-to-Peer)'));
         $this->set('filterCompanies1', $filterCompanies1);
         $this->set('filterCompanies2', $filterCompanies2);
+
+        //Use $this->params['controller'] to get the current controller.
+        //Use $this->action to verify the current controller/action
+        $action = $this->action;
+        $controller = $this->params['controller'];
+        $action2 = $this->params['action'];
+        //Here we verify if this user has authorization to acces the page
+        //$resultAcl = $this->isAuthorized($action);
+        /* if (!$resultAcl) {
+          //In contructions, we use this now before we create a error page
+          throw new
+          FatalErrorException(__('You cannot access this page directly'));
+          } */
     }
 
     /**
@@ -333,7 +441,6 @@ class AppController extends Controller {
     }
 
     public function session() {
-        Configure::write('debug', 2);
         $this->autoRender = FALSE;
 
         $test1 = "apple " . "peer";
@@ -554,6 +661,18 @@ class AppController extends Controller {
             $this->Session->write("locationData." . $key, $element);
         }
         return $geoData;
+    }
+
+    /**
+     * Function to verify is an user has access to the controller or function
+     * @param string $controller It is the route to the controller
+     * @param string $access It is the access that the user has
+     * @return boolean It is the access, it can be true or false
+     */
+    function isAuthorized($controller, $access = '*') {
+        //$userId = $this->Auth->user('id');
+        $aro = $this->Auth->user('role_id');
+        return $this->Acl->check($aro, $controller, $access);
     }
 
 }

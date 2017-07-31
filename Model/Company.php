@@ -23,24 +23,36 @@
   function getCompanyList()															[OK, tested]
   function readExtendedData()															[not OK, not tested]
 
+  [2017-06-23] Version 1.0 (for ocr)
+  companiesDataOCR                                    [OK, tested]
+  db relation
 
-  Pending:
+  [2017-06-28] Version 1.1 (for ocr)
+  Check status
 
-
+  [2017-06-29] Version 1.1 (for ocr)
+  Update pfp added
 
  */
 class Company extends AppModel {
 
     var $name = 'Company';
-
-    /*
-      public $hasOne = array(	);
-
-     */
+    public $hasOne = array(
+        'Serviceocr' => array(
+            'joinTable' => 'Serviceocrs',
+            'foreignKey' => 'company_id',
+        ),
+    );
     var $hasMany = array(
         'Marketplace' => array(
             'className' => 'Marketplace',
             'foreignKey' => 'company_id',
+        ),
+        'requiredfiles' => array(
+            'className' => 'Ocrfile',
+            'joinTable' => 'requiredfiles',
+            'foreignKey' => 'company_id',
+            'associationForeignKey' => 'file_id',
         )
     );
     public $hasAndBelongsToMany = array(
@@ -50,8 +62,8 @@ class Company extends AppModel {
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'ocr_id',
         ),
-        'File' => array(
-            'className' => 'File',
+        'Ocrfile' => array(
+            'className' => 'Ocrfile',
             'joinTable' => 'companies_files',
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'file_id',
@@ -63,7 +75,24 @@ class Company extends AppModel {
      * 	have to map to a existing field in the database. Very useful for automatic checks
      * 	provided by framework
      */
-    var $validate = array();
+    var $validate = array(
+        'company_termsUrl' => array(
+            'rule' => array('minLength', 1),
+            'message' => 'Too short.'
+        ),
+        'company_privacyUrl' => array(
+            'rule' => array('minLength', 1),
+            'message' => 'Too short.'
+        ),
+        'company_PFPType' => array(
+            'rule' => array('notBlank'),
+            'message' => 'Select one type.'
+        ),
+        'company_country' => array(
+            'rule' => array('notBlank'),
+            'message' => 'Select one country.'
+        ),
+    );
 
     /*     * STILL TO BE DONE
      *
@@ -96,6 +125,7 @@ class Company extends AppModel {
      * 			
      */
     public function getCompanyDataList($filterConditions) {
+
         $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
             'Company.company_state' => ACTIVE);
 
@@ -118,7 +148,14 @@ class Company extends AppModel {
      */
     public function companiesDataOCR($filter = null) {
 
-        $conditions = array('Company.company_OCRisActive' => 1);
+        $ocrServices = $this->Serviceocr->find('all', array('conditions' => array('serviceocr_status' => SER_ACTIVE)));
+    
+        $idList = array();
+        foreach ($ocrServices as $ocrService) {
+            array_push($idList, $ocrService['Serviceocr']['company_id']);
+        }
+
+        $conditions = array('Company.id' => $idList);
 
         //Platform selection filters
         if ($filter['country_filter']) {
@@ -127,18 +164,38 @@ class Company extends AppModel {
         }
 
         if ($filter['type_filter']) {
-            $filtro = array('Company.Company_type' => $filter['type_filter']);
+            $filtro = array('Company.company_PFPType' => $filter['type_filter']);
             $conditions = array_merge($conditions, $filtro);
         }
-
+       
         $data = $this->find("all", array(
             'fields' => array('id', 'Company.company_name', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
-                'Company.Company_privacityUrl', 'Company.Company_type'),
+                'Company.Company_privacyUrl', 'Company.company_PFPType'),
             'recursive' => -1,
             'conditions' => $conditions,
         ));
-
+        
         return $data;
+    }
+
+    /*     * Check the service status for the company
+     * 
+     * @param type $id
+     * @return type
+     */
+
+    public function checkOcrServiceStatus($id) {
+
+        //Search the company only if ocr service is active or suspended
+        $status = $this->Serviceocr->find("first", array(
+            'conditions' => array('company_id' => $id, 'serviceocr_status' => array(SER_INACTIVE, SER_ACTIVE, SER_SUSPENDED)),
+        ));
+        //If found, return true and the status
+        if (count($status) > 0) {
+            return [true, $status];
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -161,6 +218,19 @@ class Company extends AppModel {
             $companyResults[$value['Company']['id']] = $value['Company'];
         }
         return $companyResults;
+    }
+
+    public function UpdateCompany($data, $status) {
+        if ($this->validates($this->save($data))) {
+
+            if ($this->Serviceocr->save($status)) {
+                return [true, __("Company updated correctly")];
+            } else {
+                return [false, __("Failed saving status")];
+            }
+        } else {
+            return [false, __("Failed update")];
+        }
     }
 
 }

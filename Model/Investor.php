@@ -1,9 +1,7 @@
 <?php
-
 /**
-  // @(#) $Id$
   // +-----------------------------------------------------------------------+
-  // | Copyright (C) 2009, http://yoursite                                   |
+  // | Copyright (C) 2017, http://www.winvestify.com                         |
   // +-----------------------------------------------------------------------+
   // | This file is free software; you can redistribute it and/or modify     |
   // | it under the terms of the GNU General Public License as published by  |
@@ -19,23 +17,47 @@
   //
 
   2016-10-18	  version 0.1
-  function updateAccountCreationStatus										[Not OK, Not tested]
+  function updateAccountCreationStatus						[Not OK, Not tested]
 
-
+  2017-07-05
+ * modified the rules in the $validate variable, mixing it 
+ 
   2017-01-17	  version 0.2
-  function investmentInformationUpdate added									[OK]
+  function investmentInformationUpdate added					[OK]
 
   2017-06-06 version 0.3
   getInvestorId									[OK]
-  getInvestorIdentity									[OK]
+  getInvestorIdentity								[OK]
+
+  2017-06-23 version 0.4
+  db relation
+
+ * [2017-07-03] Version 0.5
+ * Update check data
+ * File relation
+ * 
+ * [2017-07-04] Version 0.6
+ * Create check data
+ * 
+ * [2017-07-10] Version 0.7
+ *New Json array
+
+
+2017-07-05
+ * modified the rules in the $validate variable, making it more flexible
+
+
 
 
   Pending:
-  function generateGUIDs(). 													[not Ok, not tested]
+  function generateGUIDs(). 							[not Ok, not tested]
+
 
 
 
  */
+App::uses('CakeEvent', 'Event');
+
 class Investor extends AppModel {
 
     var $name = 'Investor';
@@ -58,6 +80,19 @@ class Investor extends AppModel {
             'joinTable' => 'checks',
             'foreignKey' => 'investor_id',
         ),
+        'Ocr' => array(
+            'className' => 'Ocr',
+            'ForeignKey' => 'investor_id',
+            'associationForeignKey' => 'ocr_id',
+        )
+    );
+    public $hasAndBelongsToMany = array(
+        'Ocrfile' => array(
+            'className' => 'Ocrfile',
+            'joinTable' => 'files_investors',
+            'associationForeignKey' => 'file_id',
+            'foreignKey' => 'investor_id',
+        ),
     );
 
     /**
@@ -65,9 +100,10 @@ class Investor extends AppModel {
      * 	have to map to a existing field in the database. Very useful for automatic checks
      * 	provided by framework
      */
+    
     var $validate = array(
         'investor_name' => array(
-            'rule1' => array('rule' => array('minLength', 1),
+            'rule1' => array('rule' => array('minLength', 2),
                 'allowEmpty' => false,
                 'message' => 'Name validation error'),
         /* 'rule2' => array('rule' => 'alphaNumeric',
@@ -75,45 +111,45 @@ class Investor extends AppModel {
           'message' => 'Name validation error'), */
         ),
         'investor_surname' => array(
-            'rule1' => array('rule' => array('minLength', 1),
+            'rule1' => array('rule' => array('minLength', 2),
                 'allowEmpty' => false,
                 'message' => 'Surname validation error'),
-            'rule2' => array('rule' => 'alphaNumeric',
+         /*   'rule2' => array('rule' => 'alphaNumeric',
                 'allowEmpty' => false,
-                'message' => 'Surname validation error'),
+                'message' => 'Surname validation error'),*/
         ),
         'investor_DNI' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 3),
             'allowEmpty' => false,
             'message' => 'Id validation error',
         ),
         'investor_dateOfBirth' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 6),
             'allowEmpty' => false,
             'message' => 'Date validation error',
         ),
         'investor_telephone' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 4),
             'allowEmpty' => false,
             'message' => 'Telephone validation error',
         ),
         'investor_address1' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 2),
             'allowEmpty' => false,
             'message' => 'Address validation error',
         ),
         'investor_postCode' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 2),
             'allowEmpty' => false,
             'message' => 'Postcode validation error',
         ),
         'investor_city' => array(
-            'rule' => array(array('minLength', 1), 'alphaNumeric'),
+            'rule' => array(array('minLength', 2), 'alphaNumeric'),
             'allowEmpty' => false,
             'message' => 'City validation error',
         ),
         'investor_country' => array(
-            'rule' => array('minLength', 1),
+            'rule' => array('minLength', 2),
             'allowEmpty' => false,
             'message' => 'Country validation error',
         ),
@@ -123,7 +159,6 @@ class Investor extends AppModel {
             'message' => 'Email validation error',
         ),
     );
-
 
     /**
      *
@@ -190,10 +225,11 @@ class Investor extends AppModel {
         $data = array('id' => $investorReference,
             'investor_accountStatus' => $newStatus,
         );
-        print_r($data);
         $this->save($data, $validate = true);
         echo __FILE__ . " " . __LINE__ . "<br>";
-        return true;
+        if ($this->createCheckdata($currentStatus['Investor']['id'])) {
+            return true;
+        }
     }
 
     /** NOT YET FINISHED
@@ -253,6 +289,21 @@ class Investor extends AppModel {
         return true;
     }
 
+    
+    
+    
+    /**
+ * Read the cheack data
+ * @param type $investorId
+ * @return type
+ */
+public function readCheckData($investorId) {
+    $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+    return $checkData;
+}
+
+
+    
     /**
      *
      * 	Checks if current stored investment information of the user is recent enough
@@ -346,6 +397,11 @@ class Investor extends AppModel {
         }
     }
 
+    /**
+     * Get all data of a investor
+     * @param type $id
+     * @return type
+     */
     public function investorGetInfo($id) {
 
         $info = $this->find("all", array(
@@ -354,19 +410,286 @@ class Investor extends AppModel {
         ));
         return $info;
     }
+    
+    /**
+     * Get all data of a investor by investor.id
+     * @param int $id It is the investor's id
+     * @return array $info It is all the investor's data
+     */
+    public function getInvestorIdentityByInvestorId($id) {
 
+        $info = $this->find("all", array(
+            'conditions' => array('Investor.id' => $id),
+            'recursive' => -1,
+        ));
+        return $info;
+    }
+    
+    public function getJsonDataForPFP($id) {
+        /*$options['joins'] = array(
+            array('table' => 'ocrs',
+                'alias' => 'Ocr',
+                'type' => 'inner',
+                'conditions' => array(
+                    'Investor.id = Ocr.investor_id'
+                )
+            )
+        );*/
+
+        $options['conditions'] = array(
+            'Investor.id' => $id
+        );
+        $investorData = $this->find("all", $options);
+        return $investorData;
+    }
+
+    /**
+     * Get investor id
+     * @param type $userid
+     * @return type
+     */
     public function getInvestorId($userid) {
         $data = $this->investorGetInfo($userid);
         $id = $data[0]['Investor']['id'];
         return $id;
     }
 
+    /**
+     * Get investor identification code
+     * @param type $userid
+     * @return type
+     */
     public function getInvestorIdentity($userid) {
         $data = $this->investorGetInfo($userid);
         $identity = $data[0]['Investor']['investor_identity'];
         return $identity;
     }
 
+    /**
+     * Create a check line in the checks table for the user
+     * @param type $id
+     * @return boolean
+     */
+    public function createCheckdata($id) {
+        //Checks data
+        $checksArray = Array(
+            'investor_id' => $id,
+            'check_name' => 0,
+            'check_surname' => 0,
+            'check_dni' => 0,
+            'check_dateOfBirth' => 0,
+            'check_email' => 1,
+            'check_telephone' => 1,
+            'check_postCode' => 0,
+            'check_address' => 0,
+            'check_city' => 0,
+            'check_country' => 0,
+            'check_iban' => 0,
+            'check_ibanTime' => 0,
+            'check_cif' => 0,
+            'check_businessName' => 0,
+        );
+        if ($this->Check->save($checksArray)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Update the check data
+     * @param type $checks
+     * @param type $invesorId
+     * @return int
+     */
+    public function updateCheckData($checks) {
+        //Company id for mailing
+        $compMail = array();
+        //Get ocr id
+        $ocr = $this->Ocr->findOcrId($checks['investorId']);
+
+        //Get user id
+        $userId = $this->find('first', array('fields' => 'user_id', 'conditions' => array('Investor.id' => $checks['investorId'])))['Investor']['user_id'];
+
+        //Checks data
+        $checksArray = Array(
+            'id' => $checks['id'],
+            'investor_id' => $checks['investorId'],
+            'check_name' => ($checks['name']),
+            'check_nameTime' => $checks['nameCheck'],
+            'check_surname' => ($checks['surname']),
+            'check_surnameTime' => $checks['surnameCheck'],
+            'check_dni' => ($checks['dni']),
+            'check_dniTime' => $checks['dniCheck'],
+            'check_dateOfBirth' => ($checks['dateOfBirth']),
+            'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
+            'check_email' => ($checks['email']),
+            'check_emailTime' => $checks['emailCheck'],
+            'check_telephone' => ($checks['telephone']),
+            'check_telephoneTime' => $checks['telephoneCheck'],
+            'check_postCode' => ($checks['postCode']),
+            'check_postCodeTime' => $checks['postCodeCheck'],
+            'check_address' => ($checks['address']),
+            'check_addressTime' => $checks['addressCheck'],
+            'check_city' => ($checks['city']),
+            'check_cityTime' => $checks['cityCheck'],
+            'check_country' => ($checks['country']),
+            'check_countryTime' => $checks['countryCheck'],
+            'check_iban' => ($checks['iban']),
+            'check_ibanTime' => $checks['ibanCheck'],
+            'check_cif' => ($checks['cif']),
+            'check_cifTime' => $checks['cifCheck'],
+            'check_businessName' => ($checks['businessName']),
+            'check_businessNameTime' => $checks['businessNameCheck'],
+        );
+        //Change status, at least one NO, status => ERROR, all YES status => OCR_PENDING
+        //OCR_PENDING -> Default status change
+        $statusFinal = OCR_PENDING;
+        $statusArray = Array(
+            'check_name' => ($checks['name']),
+            'check_surname' => ($checks['surname']),
+            'check_dni' => ($checks['dni']),
+            'check_dateOfBirth' => ($checks['dateOfBirth']),
+            'check_email' => ($checks['email']),
+            'check_telephone' => ($checks['telephone']),
+            'check_postCode' => ($checks['postCode']),
+            'check_address' => ($checks['address']),
+            'check_city' => ($checks['city']),
+            'check_country' => ($checks['country']),
+            'check_iban' => ($checks['iban']),
+            'check_cif' => ($checks['cif']),
+            'check_businessName' => ($checks['businessName']),
+        );
+
+        foreach ($statusArray as $status) {
+            //If we find a NO, change the status
+            if ($status == NO) {
+                $statusFinal = ERROR;
+            }
+        }
+
+
+        //If we click approve, change the status
+        if ($checks['type'] == 'approve') {
+
+            //Json path
+            $fileConfig = Configure::read('files');
+
+            $folder = $this->getInvestorIdentity($userId);
+            $path = $fileConfig['investorPath'] . $folder;
+
+            
+            
+        //Json array, hte json file is generated with this data.
+        $jsonArray = Array(
+            'check_name' => ($checks['name']),
+            'check_nameTime' => $checks['nameCheck'],
+            'check_surname' => ($checks['surname']),
+            'check_surnameTime' => $checks['surnameCheck'],
+            'check_dni' => ($checks['dni']),
+            'check_dniTime' => $checks['dniCheck'],
+            'check_dateOfBirth' => ($checks['dateOfBirth']),
+            'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
+            'check_email' => ($checks['email']),
+            'check_emailTime' => $checks['emailCheck'],
+            'check_telephone' => ($checks['telephone']),
+            'check_telephoneTime' => $checks['telephoneCheck'],
+            'check_postCode' => ($checks['postCode']),
+            'check_postCodeTime' => $checks['postCodeCheck'],
+            'check_address' => ($checks['address']),
+            'check_addressTime' => $checks['addressCheck'],
+            'check_city' => ($checks['city']),
+            'check_cityTime' => $checks['cityCheck'],
+            'check_country' => ($checks['country']),
+            'check_countryTime' => $checks['countryCheck'],
+            'check_iban' => ($checks['iban']),
+            'check_ibanTime' => $checks['ibanCheck'],
+            'check_cif' => ($checks['cif']),
+            'check_cifTime' => $checks['cifCheck'],
+            'check_businessName' => ($checks['businessName']),
+            'check_businessNameTime' => $checks['businessNameCheck'],
+        );
+            //Generate Json
+            $created = $this->Ocrfile->generateJson($jsonArray, $path); //$JsonArray -> data for json, $path-> path where the json is created
+            if ($created) {
+                $statusFinal = OCR_FINISHED;
+
+                //Change companies_ocr status
+                foreach ($checks['company'] as $company) {
+
+                    //Get id of the table
+                    $companyOcrsId = $this->Ocr->getCompaniesOcrId($company['id'], $ocr);
+
+                    //If company_ocr is accepted, send a mail
+                    if ($company['status'] == ACCEPTED) {
+                        $mail = $this->User->getPfpAdminMail($company['id']);
+                    }
+
+                    //Save company_ocr status
+                    if ($this->Ocr->updateOcrCompanyStatus($companyOcrsId, $company['status'], $mail)) {
+                        continue;
+                    } else {
+                        //error feedback
+                        return [0, __("Error updating companies status.")];
+                    }
+                }
+            } else {
+                return [0, __("Error generating JSON.")];
+            }
+        }
+
+        //Change files status
+        foreach ($checks['file'] as $file) {
+            if ($this->FilesInvestor->save(array('id' => $file['id'], 'file_status' => $file['status']))) {
+                continue;
+            } else {
+                //error feedback
+                return [0, __("Error updating files status.")];
+            }
+        }
+
+
+        //Save the data
+        if ($this->Check->save($checksArray)) {
+            //Change ocr status
+
+            if ($this->Ocr->save(array("id" => $ocr, "investor_id" => $checks['investorId'], "ocr_status" => $statusFinal))) {
+                //Feedback
+                return [1, __("Saved correctly.")];
+            } else {
+                //Feedback
+                return [0, __("Error updating investor status.")];
+            }
+        } else {
+            //Feedback
+            return [0, __("Error saving.")];
+        }
+    }
+
+    
+
+    
+    
+    
+    /**
+     *
+     * 	Get information of all investors according to the conditions as defined
+     *  in $filterConditions.
+     * 
+     * 	@param 		string	$filterConditions     conditions of the investor
+     * 	@return 	array	data of the investor
+     * 					
+     */    
+    public function getInvestorData($filterConditions) {
+
+        $info = $this->find("all", array(
+            'conditions' => array($filterConditions),
+            'recursive' => -1,
+        ));
+        return $info;         
+     }  
+    
+    
     /*
      * **** CALLBACK FUNCTIONS *****
      */
@@ -391,7 +714,7 @@ class Investor extends AppModel {
                 ));
                 $this->getEventManager()->dispatch($event);
             }
-        }
+        }    
     }
 
     /**
@@ -409,49 +732,6 @@ class Investor extends AppModel {
             }
         }
         return $results;
-    }
-
-    /**
-     * Read the cheack data
-     * @param type $investorId
-     * @return type
-     */
-    public function readCheckData($investorId) {
-        $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
-        return $checkData;
-    }
-
-    /**
-     * Update the check data
-     * @param type $checks
-     * @param type $invesorId
-     * @return int
-     */
-    public function updateCheckData($checks, $invesorId) {
-
-        $checksArray = Array(
-            'id' => $checks['id'],
-            'investor_id' => $invesorId,
-            'check_name' => $checks['name'],
-            'check_surname' => $checks['surname'],
-            'check_dni' => $checks['dni'],
-            'check_dateOfBirth' => $checks['dateOfBirth'],
-            'check_email' => $checks['email'],
-            'check_telephone' => $checks['telephone'],
-            'check_postCode' => $checks['postCode'],
-            'check_address' => $checks['address'],
-            'check_city' => $checks['city'],
-            'check_country' => $checks['country'],
-            'check_iban' => $checks['iban'],
-            'check_cif' => $checks['cif'],
-            'check_bussinesName' => $checks['bussinesName']
-        );
-
-        if ($this->Check->save($checksArray)) {
-            return 1;
-        } else {
-            return 0;
-        }
     }
 
     /**

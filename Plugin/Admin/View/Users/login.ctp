@@ -2,38 +2,30 @@
 /**
  *
  *
- * Simple login screen for administrators
+ * Simple login screen for winvestify administrators
  *
  * @author Antoine de Poorter
  * @version 0.1
- * @date 2016-02-13
+ * @date 2017-06-21
  * @package
-
- 
- 
-
- 
- 
+ * 
 */
 	
-	
-	
+
 ?>
-
-<form method="post" action="admin/users/loginAction" id="ctl00">
-
-    <div class="container">
-        <div class="card card-container">
-			<div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
-            <img id="profile-img" class="profile-img-card" src="../img/logo-text-right.png" />
-				<p id="profile-name" class="profile-name-card"><?php echo __("ACCESS a la administración")?></p>
-     <!--       <form class="form-signin">         -->
-                <span id="reauth-email" class="reauth-email"></span>
-                <input name="data[User][username]" type="text" id="inputEmail" class="form-control" placeholder="<?php echo __("usuario");?>" required="" autofocus="" />
-                <input name="data[User][password]" type="password" id="inputPassword" class="form-control" placeholder="Password" required="" />
-                <input type="submit" name="btLogin" value="Acceder" id="btLogin" class="btn btn-lg btn-green" />
-                <span id="lbAviso" class="displayBlock" style="color:Red;"></span>
-			</div>
-        </div><!-- /card-container -->
-    </div><!-- /container -->
-</form>
+<div class="loginContainer">
+    <div class="loginBox">
+        <div class="row">    
+            <div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+                <form method="post" action="/admin/users/loginAction" id="ctl00">
+                   <p id="profile-name" class="profile-name-card"><?php echo __("ACCESS a PFP Admin")?></p>
+                   <span id="reauth-email" class="reauth-email"></span>
+                   <input name="data[User][username]" type="text" id="inputEmail" class="form-control blue_noborder" placeholder="<?php echo __("usuario");?>" required="" autofocus="" />
+                   <input name="data[User][password]" type="password" id="inputPassword" class="form-control blue_noborder" style="margin-top: 20px;" placeholder="Password" required="" />
+                   <input type="submit" name="btLogin" value="Acceder" id="btLogin" class="btn btn-default center-block" style="margin-top: 20px;" />
+                   <span id="lbAviso" class="displayBlock" style="color:Red;"></span>
+                </form>
+            </div>   
+        </div>  
+    </div>
+</div>
