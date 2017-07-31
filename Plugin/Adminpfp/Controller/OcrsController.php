@@ -133,7 +133,7 @@ class ocrsController extends AppController {
     }
 
     //PFPAdmin View #3
-    function ocrPfpTallyman() {
+    function showTallymanPanel() {
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
 

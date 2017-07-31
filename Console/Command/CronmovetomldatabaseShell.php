@@ -78,12 +78,13 @@ public function cronMove() {
                                                'conditions'  => array('id' => 1))); 
 
     $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
-							  'conditions'  => array(// sort by queueid
-                                                                           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                                                                            'queue_id >' => $resultMlqueue[0]['Mlqueue']['mlqueue_actualQueueId'] ),
+							  'conditions'  => array(               // sort by queueid
+                                                              'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                              'queue_id >' => $resultMlqueue[0]['Mlqueue']['mlqueue_actualQueueId'] ),
                                                               'limit' => $limit ));    
     $tempCount = 0;
     $actualQueueId = 0;
+print_r($userinvestmentdataResult);
 
     while (!empty($userinvestmentdataResult)) {
         // Make sure that records belonging to the same queueId do not spill over into two reading.
@@ -109,7 +110,7 @@ public function cronMove() {
         unset($platformglobalData);  
         $oldQueueId = 0;
        
-print_r($userinvestmentdataResult);
+//print_r($userinvestmentdataResult);
         foreach ($userinvestmentdataResult as $key => $result) {
             $companyId = $result['Userinvestmentdata']['company_id'];
             $companyResult = $this->Company->find("first", $params = array('recursive' => -1,
@@ -146,7 +147,7 @@ print_r($userinvestmentdataResult);
                     if ($data['investment_amount'] > 0) {
                         $platformglobalData[$index]['userplatformglobaldata_activeInInvestments'] += $data['investment_amount'];
                         $platformglobalData[$index]['userplatformglobaldata_numberOfInvestments']++;
-                        $investorglobalData['investorglobaldata_totalActiveInInvestments'] += $data['investment_amount'];
+                        $investorglobalData['investorglobaldata_activeInInvestments'] += $data['investment_amount'];
                         $activeInvestments = true;
                     }               
                     $platformglobalData[$index]['userplatformglobaldata_moneyInWallet'] += $result['Userinvestmentdata']['userinvestmentdata_myWallet']; 
@@ -175,10 +176,9 @@ print_r($userinvestmentdataResult);
      
         $userinvestmentdataResult = $this->Userinvestmentdata->find("all", $params = array('recursive' => 1,
                                                               'conditions'  => array(// sort by queueid
-                                                                      'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                                                                                'queue_id > ' => $newMaxQueueId),
-                                                                  'limit' => $limit ));  
-       $userinvestmentdataResult = null;  
+                                                               'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                                                               'queue_id > ' => $newMaxQueueId),
+                                                               'limit' => $limit ));  
     }       // end of while      
 
     unset($totalData[0]);       // Remove first index as it contains only dummy data
@@ -188,7 +188,6 @@ print_r($totalData);
     foreach ($totalData as $tempData){
         $this->Mlqueue->id = 1;         // only one instance exists
         $savedQueueId = $tempData['Investorglobaldata']['queueId'];  
-        echo "savedQueueId = $savedQueueId";
        
         if ($this->writeArray($tempData, "Investorglobaldata")) {
             // update the data in the mlqueues table
@@ -201,7 +200,7 @@ print_r($totalData);
             $printTempData = print_r($tempData, $return = true);
             $printDataArray = print_r($dataArray, $return = true);
             $par1 = "Error while saving data to MLDATA database";
-            $par2 = "saveQueeuId = $savedQueueId, tempData = $printTempData, dataArray = $printDataArray ";
+            $par2 = "saveQueueId = $savedQueueId, tempData = $printTempData, dataArray = $printDataArray ";
             $par3 = __LINE__;   
             $par4 = __FILE__;
             $this->Applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
@@ -249,7 +248,7 @@ private function resetInvestmentArray(& $investmentArray) {
 private function resetInvestorsArray(& $investorArray) {
 
     $investorArray['investorglobaldata_totalMoneyInWallets'] = 0;
- //   $investorArray['investorglobaldata_activeInInvestments'] = 0;
+    $investorArray['investorglobaldata_activeInInvestments'] = 0;
     $investorArray['investorglobaldata_activePFPs'] = 0;
     $investorArray['investorglobaldata_totalPFPs'] = 0;
     $investorArray['investorglobaldata_globalIndicator'] = 0;
