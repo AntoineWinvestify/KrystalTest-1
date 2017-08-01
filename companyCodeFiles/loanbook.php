@@ -45,7 +45,7 @@ Duration fixed
  * 
 
 2017-08-01      version 0.3
- * Fixed error to take more than one investment
+ * Fixed error to take more than one investment on lines 364 and 395
 
 PENDING:
 
