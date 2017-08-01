@@ -360,7 +360,7 @@ function collectCompanyMarketplaceData() {
                 }
                 // Get information about each individual transaction
                 $this->numberOfInvestments = 0;
-                for ($key = 0 ; $key < count($trs); $key++) {
+                for ($key = 0 ; $key < $trs->length; $key++) {
                     if ($trs[$key]->getAttribute("class") <> "expander") {
                         continue;
                     }
@@ -387,7 +387,9 @@ function collectCompanyMarketplaceData() {
                     $this->data1[$key]['interest'] = $this->getPercentage($tds[6]->nodeValue);
 
                     // Get amortization table. first get base URL for amortization table
-                    $baseUrl = array_shift($this->urlSequence);
+                    if (empty($baseUrl)) {
+                        $baseUrl = array_shift($this->urlSequence);
+                    }
                     $as = $tds[0]->getElementsByTagName('a');   // only 1 will be found
                     $this->verifyNodeHasElements($as);
                     if (!$this->hasElements) {
