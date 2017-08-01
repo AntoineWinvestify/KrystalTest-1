@@ -42,6 +42,10 @@ Duration fixed
  * Added parallelization
  * Added logout
  * Added verification of dom elements
+ * 
+
+2017-08-01      version 0.3
+ * Fixed error to take more than one investment
 
 PENDING:
 
