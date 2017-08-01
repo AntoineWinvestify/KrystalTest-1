@@ -111,7 +111,9 @@ function showUserData($userIdentity, $number) {
     }
 }
 
-    
+    function showInitialPanel(){
+        $this->layout('azarus_private_layout');
+    }
     
     
 }
