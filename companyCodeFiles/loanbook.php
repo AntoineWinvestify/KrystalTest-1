@@ -42,6 +42,10 @@ Duration fixed
  * Added parallelization
  * Added logout
  * Added verification of dom elements
+ * 
+
+2017-08-01      version 0.3
+ * Fixed error to take more than one investment on lines 364 and 395
 
 PENDING:
 
@@ -360,7 +364,7 @@ function collectCompanyMarketplaceData() {
                 }
                 // Get information about each individual transaction
                 $this->numberOfInvestments = 0;
-                for ($key = 0 ; $key < count($trs); $key++) {
+                for ($key = 0 ; $key < $trs->length; $key++) {
                     if ($trs[$key]->getAttribute("class") <> "expander") {
                         continue;
                     }
@@ -387,7 +391,9 @@ function collectCompanyMarketplaceData() {
                     $this->data1[$key]['interest'] = $this->getPercentage($tds[6]->nodeValue);
 
                     // Get amortization table. first get base URL for amortization table
-                    $baseUrl = array_shift($this->urlSequence);
+                    if (empty($baseUrl)) {
+                        $baseUrl = array_shift($this->urlSequence);
+                    }
                     $as = $tds[0]->getElementsByTagName('a');   // only 1 will be found
                     $this->verifyNodeHasElements($as);
                     if (!$this->hasElements) {
