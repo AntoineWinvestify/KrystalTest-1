@@ -148,7 +148,7 @@ public function loginAction()
 {
 	if ($this->request->is('post')) {
 		$this->Session->delete('Auth');		//start with a clean session
-                //$this->Session->delete('sectorsMenu');
+                $this->Session->delete('sectorsMenu');
 		if ($this->Auth->login()) {
 			echo "SESSION1 = " . $this->Session->read('Auth.User.Investor.investor_accountStatus') ."<br>";			
 			if ($this->Session->read('Auth.User.Investor.investor_accountStatus') < QUESTIONAIRE_FILLED_OUT) {
