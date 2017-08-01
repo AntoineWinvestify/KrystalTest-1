@@ -46,8 +46,8 @@
 echo $result;
 if ($result) {
     ?>
-<script src="/js/dateFormat.js"></script>
-<script src="/js/jquery-dateFormat.js"></script>
+    <script src="/js/dateFormat.js"></script>
+    <script src="/js/jquery-dateFormat.js"></script>
     <script>
         total = <?php echo count($selected) ?>;
         var numberCompanies = 0;
@@ -120,12 +120,18 @@ if ($result) {
 
 
         function successSentCompanies(result) {
-           
+            result = JSON.parse(result);
+            for (i = 0; i < max; i++) {
+                ga_1CRConfirmCompanies(result[1], result[2]);
+            }
         }
-        
+
 
         function errorSentCompanies(result) {
-
+            result = JSON.parse(result);
+            for (i = 0; i < max; i++) {
+                ga_1CRConfirmCompanies(result[1], result[2]);
+            }
         }
 
 
@@ -250,6 +256,15 @@ if ($result) {
         }
 
 
+        //Google Analytics
+        function ga_1CRConfirmCompanies(number, email) {
+            //Use INVESTOR ID
+            console.log("ga 'send' 'event' '1ClickRegistration'  'serviceContracted' " + email + " " + number);
+            if (typeof ga === 'function') {
+                ga('send', 'event', '1ClickRegistration', 'serviceContracted', email, number);
+            }
+        }
+
 
 
     </script>
@@ -270,14 +285,14 @@ if ($result) {
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <h4>
-    <?php echo __("Winvestify pone a su disposición la posibilidad darse de alta mediante un único registro, accediendo a  cualquiera de las plataformas que tenemos actualmente habilitadas.
+                    <?php echo __("Winvestify pone a su disposición la posibilidad darse de alta mediante un único registro, accediendo a  cualquiera de las plataformas que tenemos actualmente habilitadas.
 Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuentas* antes de iniciar One Click Registration, así evitaremos que se muestren en el proceso de selección. "); ?>
                 </h4>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-    <?php
-    /* DIV 1: Selected platforms */
-    ?>
+                <?php
+                /* DIV 1: Selected platforms */
+                ?>
                 <div id="sel" style="display: none;">
                     <h4 class="header1CR"><?php echo __('Sus plataformas seleccionadas:') ?></h4>
 
@@ -304,7 +319,7 @@ Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuenta
                                     <div class="fa fa-spin fa-spinner" style="color:green">	
                                     </div>
                                 </div>
-    <?php echo __('Go!') ?>
+                                <?php echo __('Go!') ?>
                             </button>
                         </div>
                         <hr width="100%">
@@ -350,18 +365,18 @@ Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuenta
                   </div>
                   </div>
                   <hr class="nomargin" width="100%"/> */ ?>
-    <?php /* Div 3: Platforms Selection */ ?>
+                <?php /* Div 3: Platforms Selection */ ?>
                 <h4 class="header1CR"><?php echo __('Seleccione las plataformas en las que registrarse:') ?></h4>
                 <div id="platformSelection" class="row">
                     <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                         <p>
-                    <?php echo __("Para poder seleccionar cualquiera de las plataformas, es necesario "); ?>
+                            <?php echo __("Para poder seleccionar cualquiera de las plataformas, es necesario "); ?>
                             <strong><?php echo __("aceptar su política de privacidad y sus términos  y condiciones de uso ") ?></strong>
                         </p>
                     </div>
-    <?php
-    foreach ($companies as $company) {
-        ?>
+                    <?php
+                    foreach ($companies as $company) {
+                        ?>
 
                         <div id = "<?php echo $company['Company']['company_name'] ?>" class="companyDiv col-xs-12 col-sm-6 col-md-3 col-lg-3 <?php echo $company['Company']['id'] ?>">
                             <div class="box box-widget widget-user-2">
@@ -392,9 +407,9 @@ Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuenta
                             </div>
                         </div>
 
-        <?php
-    }
-    ?>
+                        <?php
+                    }
+                    ?>
                 </div>
             </div> <!-- /.col 9 -->
         </div> <!-- /.row general -->

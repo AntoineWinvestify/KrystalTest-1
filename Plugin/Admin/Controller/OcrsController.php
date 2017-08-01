@@ -78,7 +78,7 @@ class ocrsController extends AdminAppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile', 'Linkedaccount');
+    var $uses = array('Ocr', 'Company', 'Ocrfile');
     var $error;
 
     function beforeFilter() {
@@ -177,6 +177,9 @@ class ocrsController extends AdminAppController {
             $result = array(false, __('Error updating data check.'));
             $this->set("result", $result);
         } else {
+            
+            $this->Investor = ClassRegistry::init('Investor');
+            
             $this->layout = 'ajax';
             $this->disableCache();
             //Request the data

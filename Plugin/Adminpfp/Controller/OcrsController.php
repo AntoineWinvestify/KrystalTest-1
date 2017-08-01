@@ -86,7 +86,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Ocrfile', 'Investor');
+    var $uses = array('Ocr', 'Investor');
     var $error;
 
     function beforeFilter() {
@@ -98,7 +98,9 @@ class ocrsController extends AppController {
     //One Click Registration - PFPAdmin Views
     //PFPAdmin View #2
     function ocrPfpBillingPanel() {
-
+        
+        $this->Ocrfile = ClassRegistry::init('Ocrfile');
+        
         //Read all company bills
         $bills = $this->Ocrfile->billCompanyFilter($this->Session->read('Auth.User.Adminpfp.company_id'));
         $this->set('bills', $bills); //Set the bills
@@ -112,6 +114,8 @@ class ocrsController extends AppController {
 
     function ocrPfpUsersPanel() {
 
+        $this->Company = ClassRegistry::init('Company'); 
+        
         $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));//Check ocr servecie status, block the view if isnt active.
 
         if ($status[0]) {

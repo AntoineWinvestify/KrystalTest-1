@@ -78,7 +78,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Investor', 'Ocrfile', 'Linkedaccount');
+    var $uses = array('Ocr', 'Company', 'Investor');
     var $error;
 
     function beforeFilter() {
@@ -208,12 +208,16 @@ class ocrsController extends AppController {
                     'number' => $companyNumber,
                     'idCompanies' => $this->request->data['idCompany'] //Array containing the id of the selected companies
                 );
-
+               
                 //Save the comapnies
                 $result = $this->Ocr->saveCompaniesOcr($companies); //Update companies_ocrs table
-                $this->set('result', [$result, $this->request->data['idCompany'], $id = $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
+                           
+                $number = count($this->Ocr->getSelectedCompanies($id)); //Company numbur for GA
+                $this->set('result', [$result, $number, $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
+                
             } else {
-                $this->set('result', false); //Ajax response
+                $number = count($this->Ocr->getSelectedCompanies($id)); //Company numbur for GA
+                $this->set('result', [false, $number, $this->Session->read('Auth.User.Investor.investor_email')]); //Ajax response
             }
         }
     }
@@ -281,6 +285,10 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', false);
         } else {
+            
+            
+            $this->Ocrfile = ClassRegistry::init('Ocrfile');
+             
             //Investor info
             $data = $this->Investor->investorGetInfo($this->Session->read('Auth.User.id'));
 
@@ -349,6 +357,9 @@ class ocrsController extends AppController {
             //Ajax result
             $this->set('result', false);
         } else {
+            
+            $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+            
             //Companies with ocr actived
             $this->set('companies', $this->Company->companiesDataOCR());
 
