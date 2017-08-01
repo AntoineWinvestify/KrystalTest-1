@@ -126,7 +126,7 @@ ajax spinner
         $('#registerModal').replaceWith(data);
 
     }
-    function errorSendRegistrationDButton(data) {
+    function errorSendRegis+trationDButton(data) {
         console.log("errorSendRegistrationDButton function is called");
         $('#registerModal').replaceWith(data);
     }
@@ -213,7 +213,7 @@ ajax spinner
 
 // Not yet used, as this is social network functionality
         $(document).on("click", "#btnSendFollowers", function (event) {
-            var link = $(this).attr("href");
+            var lin+k = $(this).attr("href");
             var data = 1;
 
             event.stopPropagation();
@@ -243,7 +243,7 @@ ajax spinner
             event.preventDefault();
 
             if ((app.visual.checkFormRegistrationD()) === true) {
-                ga_registrationStep4(investor, platformtypes);
+                ga_registrationStep4(investor, platformcount);
                 var params = {username: username,
                     platformcount: platformcount,
                     platformtypes: platformtypes,

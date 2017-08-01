@@ -26,24 +26,36 @@
  * @package
   2017-04-12	  version 2017_0.3
   Updated according to new structure of web of Lendix
+  
+function calculateLoanCost()										[Not OK, not tested]
+function collectCompanyMarketplaceData(): write the same value in the fields       			[OK, tested]
+ * $tempArray['marketplace_purpose'] and $tempArray['marketplace_name']
+function companyUserLogin()										[OK, tested]
+function collectUserInvestmentData()									[OK, tested]
+function companyUserLogout()                                                                            [OK, tested]
+parallelization                                                                                         [OK, tested]
 
-  function calculateLoanCost()									[Not OK, not tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()									[OK, tested]
-  function collectUserInvestmentData()								[Not OK]
-  function companyUserLogout()									[Not OK, not tested]
-
-
-  function collectUserInvestmentData(): write the same value in the fields                        [OK, tested]
-  $tempArray['marketplace_purpose'] and $tempArray['marketplace_name']
-
-  2017-04-24
-  collectUserInvestmentData fixed partial
+2016-11-06	  version 2016_0.2
+Updated according to new structure of web of Lendix
  
- 2017-04-24
- collectUserInvestmentData fixed total
+2017-04-24
+* collectUserInvestmentData fixed partial
+ 
+2017-04-24
+* collectUserInvestmentData fixed total
+ 
+2017-05-16      version 2017_0.4
+ * Added parallelization
+ * Added dom verification
+ 
   Pending
   Date
+ * 
+ * 
+2017-06-13	  version 2017_0.4"
+Rectified double function "collectCompanyMarketplaceData". Deleted one of them
+ * 
+ * 
  * 
  * 
   TODO
@@ -54,6 +66,8 @@
  */
 
 class lendix extends p2pCompany {
+    
+    private $session;
 
     function __construct() {
         parent::__construct();
@@ -79,6 +93,12 @@ class lendix extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
+/**
+*
+*	Collects the marketplace data
+* 	@return array	Each open investment option as an element of an array
+*
+*/	
     /**
      *
      * 	Collects the marketplace data
@@ -90,69 +110,39 @@ class lendix extends p2pCompany {
         $totalArray = array();
 
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
-
         $dom = new DOMDocument;
         $dom->loadHTML($str);
+        
         $dom->preserveWhiteSpace = false;
-        $divs = $this->getElements($dom, "div", "class", "card online");
-
-        foreach ($divs as $key2 => $div2) {
-            echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-        }
-
-
-
-        foreach ($divs as $key => $div) {
-            $projectDivs = $this->getElements($div, "div");
-
-
-/**
-*
-*	Collects the marketplace data
-* 	@return array	Each open investment option as an element of an array
-*
-*/	
-function collectCompanyMarketplaceData() {
-
-	$tempArray = array();
-	$totalArray = array();
-	
-	$str = $this->getCompanyWebpage();		// load Webpage into a string variable so it can be parsed
- 
-	$dom = new DOMDocument;
-	$dom->loadHTML($str);
-	$dom->preserveWhiteSpace = false; 
-
-	$divs = $this->getElements($dom, "div", "class", "card online");  
+        $divs = $this->getElements($dom, "li", "class", "card clickable project");
     
         foreach ($divs as $key2 => $div2) {
             echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
         }
                 
                 
-                
 	foreach ($divs as $key => $div) {
 		$projectDivs = $this->getElements($div, "div");
-                
-                
+
                 foreach ($projectDivs as $key11 => $div11) {
-                    echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . "<br>";
+                    echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . "and attr" . $projectDivs[$key11]->getAttribute('title'). "<br>";
                 }
+
+                    $progress = explode(' ',$projectDivs[12]->getAttribute('title'));
                 
-                
-		$tempArray['marketplace_rating'] = trim($projectDivs[2]->nodeValue);
-		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage( $projectDivs[8]->nodeValue);	
-		$tempArray['marketplace_name'] = trim($projectDivs[13]->nodeValue);
-                $tempArray['marketplace_purpose'] = trim($projectDivs[13]->nodeValue);
-		$tempArray['marketplace_amount'] = $this->getMonetaryValue( $projectDivs[14]->nodeValue);
-		$tempArray['marketplace_interestRate'] = $this->getPercentage( $projectDivs[20]->nodeValue);
-		list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($projectDivs[26]->nodeValue);
+		$tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
+		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage( $projectDivs[12]->getAttribute('title') );	
+		$tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
+                $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
+		$tempArray['marketplace_amount'] = $this->getMonetaryValue( $projectDivs[16]->nodeValue);
+		$tempArray['marketplace_interestRate'] = $this->getPercentage( $projectDivs[2]->nodeValue);
+		list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($projectDivs[4]->nodeValue);
 /*******************************************************/															
 /* HARD CODED AS PREVIOUS STATEMENT GENERATES AN ERROR */
 		$tempArray['marketplace_durationUnit'] = 2;
 /*******************************************************/
-		$tempArray['marketplace_requestorLocation'] = trim($projectDivs[32]->nodeValue);
-		$tempArray['marketplace_sector'] = trim($projectDivs[38]->nodeValue);
+		$tempArray['marketplace_requestorLocation'] = trim($projectDivs[9]->nodeValue);
+		$tempArray['marketplace_sector'] = trim($projectDivs[22]->nodeValue);
 
 		$as = $this->getElements($div, "a");
 		$loanId = explode(":", $as[0]->getAttribute("title"));
@@ -165,32 +155,88 @@ function collectCompanyMarketplaceData() {
 	$this->print_r2($totalArray);
 	return $totalArray;	
 }
+    
+    /**
+    *
+    * 	Collects the investment data of the user
+    * 	@return array	Data of each investment of the user as an element of an array
+    * 	also do logout
+    * 	
+    */
+    function collectUserInvestmentDataParallel($str) {
+        // user: inigo.iturburua@gmail.com
+        // password: Ap_94!56
+        // $this->config['appDebug'] = true;
+        switch ($this->idForSwitch) {
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            case 1:
+                $credentials = array();
+                $credentials['email'] = $this->user;
+                $credentials['password'] = $this->password;
+                $credentials['user'] = null;
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($credentials);
+                break;
+            case 2:
+                $this->mainPortalPage = $str;
+                $result = json_decode($this->mainPortalPage, $assoc = true);
+        // check if user actually has entered the portal of the company
+                $resultLendix = false;
+                if (!empty($result['session']['user']['id'])) {
+                    $resultLendix = true;
+                }
+                if (!$resultLendix) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Lendix login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->session = json_decode($this->mainPortalPage, $assoc = true);
+        //$this->print_r2($session);
+                $lendixSessionId = $this->session['session']['id'];
+                $lendixSessionToken = $this->session['session']['token'];
+                $userId = $this->session['session']['user']['id'];
+                $header1 = "sessionToken: $lendixSessionToken";
+                $header2 = "userId: $userId";
+        // construct extra headers for next http message
+                $this->defineHeaderParms(array($header1, $header2));
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // https://api.lendix.com/transactions/summary?finsquare=true
+                break;
+            case 3:
+                $summaryData = json_decode($str, $assoc = true);
+                $this->print_r2($summaryData);
+                foreach ($summaryData['investments'] as $key => $item) {
+                    $this->data1[$key]['name'] = $item['project']['name'];
+                    $this->data1[$key]['loanId'] = $item['project']['name'];
+                    $this->data1[$key]['date'] = $date;
+                    $this->data1[$key]['duration'] = $item['investment']['monthsLeft'] . " Meses";
+                    $this->data1[$key]['invested'] = (int) (preg_replace('/\D/', '', $item['investment']['total'])) * 100;
+                    $this->data1[$key]['commission'] = 0;//(int) (preg_replace('/\D/', '', $item['investment']['taxes'])) * 100;
+                    $this->data1[$key]['interest'] = $this->getPercentage($item['project']['rate']);
+                    $this->data1[$key]['amortized'] = $item['investment']['received'] *100;
+                    $this->data1[$key]['profitGained'] = $item['investment']['interests']*100;
 
-	
+                    $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] + $this->data1[$key]['profitGained'];
+                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$key]['invested'];
+                    $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] + ($this->data1[$key]['invested'] - $this->data1[$key]['amortized'] );
+                    $this->tempArray['global']['totalInvestments'] = $this->tempArray['global']['totalInvestments'] + $this->data1[$key]['invested'];
 
-
-            $tempArray['marketplace_rating'] = trim($projectDivs[2]->nodeValue);
-            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[8]->nodeValue);
-            $tempArray['marketplace_name'] = trim($projectDivs[13]->nodeValue);
-            $tempArray['marketplace_purpose'] = trim($projectDivs[13]->nodeValue);
-            $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[14]->nodeValue);
-            $tempArray['marketplace_interestRate'] = $this->getPercentage($projectDivs[20]->nodeValue);
-            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($projectDivs[26]->nodeValue);
-            /*             * **************************************************** */
-            /* HARD CODED AS PREVIOUS STATEMENT GENERATES AN ERROR */
-            $tempArray['marketplace_durationUnit'] = 2;
-            /*             * **************************************************** */
-            $tempArray['marketplace_requestorLocation'] = trim($projectDivs[32]->nodeValue);
-            $tempArray['marketplace_sector'] = trim($projectDivs[38]->nodeValue);
-            $as = $this->getElements($div, "a");
-            $loanId = explode(":", $as[0]->getAttribute("title"));
-            $tempArray['marketplace_loanReference'] = trim($loanId[1]);
-            $totalArray[] = $tempArray;
-            $this->print_r2($tempArray);
-            unset($tempArray);
+                }         
+                $this->tempArray['global']['profitibility'] = $this->getPercentage($summaryData['averageRate']);
+                $this->tempArray['global']['investments'] = count($summaryData['investments']);
+                $this->tempArray['investments'] = $this->data1;
+                $this->tempArray['global']['myWallet'] = $this->session['session']['user']['credit'];
+                $this->print_r2($this->tempArray);
+                return $this->tempArray;
         }
-        $this->print_r2($totalArray);
-        return $totalArray;
     }
 
     /**
@@ -234,7 +280,7 @@ function collectCompanyMarketplaceData() {
 
             $data1[$key]['name'] = $item['project']['name'];
             $data1[$key]['loanId'] = $item['project']['name'];         
-            $data1[$key]['date'] = $date;
+//            $data1[$key]['date'] = $date; So far we cannot deal with the date
             $data1[$key]['duration'] = $item['investment']['monthsLeft'] . " Meses";
             $data1[$key]['invested'] = (int) (preg_replace('/\D/', '', $item['investment']['total'])) * 100;
             $data1[$key]['commission'] = 0; //(int) (preg_replace('/\D/', '', $item['investment']['taxes']))*10;

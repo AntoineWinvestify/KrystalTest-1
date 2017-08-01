@@ -51,10 +51,10 @@ function getServerData(methodWS, data, success, error) {
 
 
 /**Elements to Fade Out
-*
-* @param {String} element - element to fadeout (class/id)
-* @param {Number} time - time to fadeout (milliseconds)
-*/
+ *
+ * @param {String} element - element to fadeout (class/id)
+ * @param {Number} time - time to fadeout (milliseconds)
+ */
 function fadeOutElement($element, $time) {
     setTimeout(function () {
         $($element).each(function (index) {
@@ -170,19 +170,19 @@ function contactForm() {
         $(".errorCaptcha").css('display', 'none');
         $("#ContactFormCaptcha").removeClass('redBorder');
         var data = jQuery.param(params);
-        getServerData(link, data, contactFormSuccess,contactFormError);
+        getServerData(link, data, contactFormSuccess, contactFormError);
     }
 
 
 }
 
 function contactFormSuccess(data) {
-     $("#overlay").removeClass("overlay");
-     $("#spinner").removeClass("fa fa-spin fa-refresh");
+    $("#overlay").removeClass("overlay");
+    $("#spinner").removeClass("fa fa-spin fa-refresh");
     if (data.includes('error envio') || data.includes('rror envio')) {
         alert('error al enviar email');
         $("#send").prop('disabled', false);
-        
+
     } else {
         data = JSON.parse(data);
         //Captcha Error
@@ -201,7 +201,7 @@ function contactFormSuccess(data) {
             console.log("antoine" + data[1]);
             $("#reporting").html(data[1]);
             console.log("OK");
-        } 
+        }
         //Fields errors
         else if (data[0] == 0) {
             $("#send").prop('disabled', false);
@@ -544,6 +544,476 @@ app.visual = {
         }
         return correctForm;
     },
+    checkForm1CRInvestorData: function () {
+        var correctForm = true;
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#1CR_investor_2_investorDataPanel input").removeClass("redBorder"); // remove ALL redborders
+        var name = $("#ContentPlaceHolder_name").val();
+        var surname = $("#ContentPlaceHolder_surname").val();
+        var identificationId = $("#dni").val();
+        var dateOfBirth = $("#ContentPlaceHolder_dateOfBirth").val();
+        var email = $("#ContentPlaceHolder_email").val();
+        var telephone = $("#ContentPlaceHolder_telephone").val();
+        var postCode = $("#ContentPlaceHolder_postCode").val();
+        var address = $("#ContentPlaceHolder_address1").val();
+        var city = $("#ContentPlaceHolder_city").val();
+        var country = $("#ContentPlaceHolder_country").val();
+        var iban = $("#ContentPlaceHolder_iban").val();
+        var cif = $("#ContentPlaceHolder_cif").val();
+        var businessName = $("#ContentPlaceHolder_businessName").val();
+        if (name === "") {
+            console.log("empty name");
+            $(".investorName").addClass("redBorder");
+            $(".ErrorName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorName").fadeIn();
+            correctForm = false;
+        }
+        if (surname === "") {
+            console.log("empty surname");
+            $(".investorSurname").addClass("redBorder");
+            $(".ErrorId").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorId").fadeIn();
+            correctForm = false;
+        }
+        if (identificationId === "") {
+            console.log("empty dni");
+            $(".investorDni").addClass("redBorder");
+            $(".ErrorSurname").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorSurname").fadeIn();
+            correctForm = false;
+        }
+        if (dateOfBirth === "") {
+            console.log("empty date of birth");
+            $(".investorDateOfBirth").addClass("redBorder");
+            $(".ErrorDateOfBirth").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorDateOfBirth").fadeIn();
+            correctForm = false;
+        }
+        if (email === "") {
+            $(".investorEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        } else {
+            if (!app.utils.validEmail(email)) {
+                $(".investorEmail").addClass("redBorder");
+                $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email not valid" warning
+                $(".ErrorEmail").fadeIn();
+                correctForm = false;
+            }
+        }
+        if (postCode === "") {
+            console.log("empty post code");
+            $(".investorPostCode").addClass("redBorder");
+            $(".ErrorPostCode").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPostCode").fadeIn();
+            correctForm = false;
+        }
+        if (address === "") {
+            console.log("empty address");
+            $(".investorAddress").addClass("redBorder");
+            $(".ErrorAddress").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorAddress").fadeIn();
+            correctForm = false;
+        }
+        if (city === "") {
+            console.log("empty city");
+            $(".investorCity").addClass("redBorder");
+            $(".ErrorCity").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorCity").fadeIn();
+            correctForm = false;
+        }
+        if (country === "") {
+            console.log("empty country");
+            $(".investorCountry").addClass("redBorder");
+            $(".ErrorCountry").find(".errorMessage").html(TEXTOS.T15); // "you have to select an option" warning
+            $(".ErrorCountry").fadeIn();
+            correctForm = false;
+        }
+        if (telephone === "") {
+            $(".telephoneNumber").addClass("redBorder");
+            $(".ErrorPhoneNumber").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPhoneNumber").fadeIn();
+            correctForm = false;
+        } else {
+            if (!app.utils.checkPhoneNumber(telephone)) {
+                $(".investorTelephone").addClass("redBorder");
+                $(".ErrorPhoneNumber").find(".errorMessage").html(TEXTOS.T10); // "The telephone number is not valid" warning
+                $(".ErrorPhoneNumber").fadeIn();
+                correctForm = false;
+            }
+        }
+        if (iban === "") {
+            console.log("empty IBAN");
+            $(".investorIban").addClass("redBorder");
+            $(".ErrorIban").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorIban").fadeIn();
+            correctForm = false;
+        } else {
+            //Needed testing algorithm. (IBAN Format)
+            //var IBAN = required('iban');
+            if (!window.IBAN.isValid(iban)) {
+                $(".investorIban").addClass("redBorder");
+                $(".ErrorIban").find(".errorMessage").html(TEXTOS.T95); // "The IBAN is not valid" warning
+                $(".ErrorIban").fadeIn();
+                correctForm = false;
+            }
+        }
+        //If is selected 'I use my company as investment vehicle', validate CIF & Business Name
+        if ((cif === "") && ($("#investmentVehicle").prop("checked"))) {
+            console.log("empty CIF");
+            $(".investorCif").addClass("redBorder");
+            $(".ErrorCif").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorCif").fadeIn();
+            correctForm = false;
+        }
+        /*else {
+         //Needed testing algorithm. (CIF Format)
+         if (!app.utils.checkCif(cif)) {
+         $(".investorCif").addClass("redBorder");
+         $(".ErrorCif").find(".errorMessage").html(TEXTOS.T24); // "The cif is not valid" warning
+         $(".ErrorCif").fadeIn();
+         correctForm = false;
+         }
+         }*/
+        if ((businessName === "") && ($("#investmentVehicle").prop("checked"))) {
+            console.log("empty business name");
+            $(".investorBusinessName").addClass("redBorder");
+            $(".ErrorBusinessName").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorBusinessName").fadeIn();
+            correctForm = false;
+        }
+        $(".uploaded").each(function () {
+            if ($(this).val() == 0) {
+                console.log("required files");
+                $(".ErrorFiles").find(".errorMessage").html(TEXTOS.T96); // "update all required files" warning
+                $(".ErrorFiles").fadeIn();
+                correctForm = false;
+            }
+        });
+        return correctForm;
+    },
+    checkFormWinadminBilling: function () {
+        var correctForm = true;
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#uploadBill input").removeClass("redBorder"); // remove ALL redborders
+        $("#uploadBill select").removeClass("redBorder"); // remove ALL redborders
+        var pfp = $("#ContentPlaceHolder_pfp").val();
+        var number = $("#ContentPlaceHolder_number").val();
+        var concept = $("#ContentPlaceHolder_concept").val();
+        var amount = $("#ContentPlaceHolder_amount").val();
+        var currency = $("#ContentPlaceHolder_currency").val();
+        if (pfp == 0) {
+            console.log("pfp not selected");
+            $(".billPFP").addClass("redBorder");
+            $(".ErrorPFP").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPFP").fadeIn();
+            correctForm = false;
+        }
+        if (number === "") {
+            console.log("empty bill number");
+            $(".billNumber").addClass("redBorder");
+            $(".ErrorNumber").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorNumber").fadeIn();
+            correctForm = false;
+        }
+        if (concept === "") {
+            console.log("empty bill concept");
+            $(".billConcept").addClass("redBorder");
+            $(".ErrorConcept").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorConcept").fadeIn();
+            correctForm = false;
+        }
+        var regexp = /^(?=.)(\d{1,3})?(\,\d+)?(\d{1,2})$/g;
+        result = regexp.test(amount);
+        if (amount === "") {
+            console.log("empty bill amount");
+            $(".billAmount").addClass("redBorder");
+            $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorAmount").fadeIn();
+            correctForm = false;
+        } else if (!result) {
+            console.log("incorrect bill amount");
+            $(".billAmount").addClass("redBorder");
+            $(".ErrorAmount").find(".errorMessage").html(TEXTOS.T72); // "introduce quantity > 0" warning
+            $(".ErrorAmount").fadeIn();
+            correctForm = false;
+        }
+        if (currency == 0) {
+            console.log("not selected currency");
+            $(".billCurrency").addClass("redBorder");
+            $(".ErrorCurrency").find(".errorMessage").html(TEXTOS.T97); // "select currency" warning
+            $(".ErrorCurrency").fadeIn();
+            correctForm = false;
+        }
+        return correctForm;
+    },
+    checkFormPFPAdminTallyman: function () {
+        var correctForm = true;
+        var correctNIF = true;
+        var correctEmail = true;
+        var correctTelephone = true;
+        var correctFormatEmail = true;
+        var correctFormatTelephone = true;
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#investorFilters input").removeClass("redBorder"); // remove ALL redborders
+        var nif = $("#tallymanInputId").val();
+        var email = $("#tallymanInputEmail").val();
+        var telephone = $("#tallymanInputTelephone").val();
+
+        //NIF validation
+        if (nif === "") {
+            correctNIF = false;
+        }
+
+        //Email validation
+        if (email === "") {
+            correctEmail = false;
+        } else {
+            if (!app.utils.validEmail(email)) {
+                correctFormatEmail = false;
+            }
+        }
+
+        //Telephone validation
+        if (telephone === "") {
+            correctTelephone = false;
+        } else {
+            if (!app.utils.checkPhoneNumber(telephone)) {
+                correctFormatTelephone = false;
+            }
+        }
+
+        //ERROR SHOWING
+        if (!correctNIF && !correctEmail && !correctTelephone) {
+            console.log("all fields are empty");
+            $(".tallymanGeneral").addClass("redBorder");
+            $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T98); // "at least 2 fields" warning
+            $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
+        if (correctNIF && !correctEmail && !correctTelephone) {
+            console.log("email & telephone empty");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
+            $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && correctEmail && !correctTelephone) {
+            console.log("nif & telephone empty");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".tallymanID").addClass("redBorder");
+            $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
+            $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctEmail && correctTelephone) {
+            console.log("nif & email empty");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".tallymanID").addClass("redBorder");
+            $(".ErrorTallyman").find(".errorMessage").html(TEXTOS.T99); // "at least 1 field more" warning
+            $(".ErrorTallyman").fadeIn();
+            correctForm = false;
+        }
+        if (correctNIF && !correctFormatEmail && !correctTelephone) {
+            console.log("name correct, email incorrect format, telephone empty");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        }
+        if (correctNIF && !correctEmail && !correctFormatTelephone) {
+            console.log("name correct, email empty, telephone incorrect format");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
+            $(".ErrorTelephone").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctEmail && !correctFormatTelephone) {
+            console.log("name empty, email empty, telephone empty");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctFormatEmail && !correctTelephone) {
+            console.log("name correct, email empty, telephone incorrect format");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
+            $(".ErrorTelephone").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctFormatEmail && !correctFormatTelephone) {
+            console.log("name empty, email incorrect format, telephone incorrect format");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
+            $(".ErrorTelephone").fadeIn();
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && correctFormatEmail && !correctFormatTelephone) {
+            console.log("name empty, email correct format, telephone incorrect format");
+            $(".tallymanTelephone").addClass("redBorder");
+            $(".ErrorTelephone").find(".errorMessage").html(TEXTOS.T10); // "telephone incorrect" warning
+            $(".ErrorTelephone").fadeIn();
+            correctForm = false;
+        }
+        if (!correctNIF && !correctFormatEmail && correctFormatTelephone) {
+            console.log("name empty, email incorrect format, telephone correct format");
+            $(".tallymanEmail").addClass("redBorder");
+            $(".ErrorEmail").find(".errorMessage").html(TEXTOS.T02); // "email incorrect" warning
+            $(".ErrorEmail").fadeIn();
+            correctForm = false;
+        }
+        return correctForm;
+    },
+    checkFormWinadminUpdatePFP: function () {
+        var correctForm = true;
+        var selectedPFP = $("#ContentPlaceHolder_pfp").val();
+        var termsOfService = $("#ContentPlaceHolder_terms").val();
+        var privacyPolicy = $("#ContentPlaceHolder_privacyPolicy").val();
+        var modality = $("#ContentPlaceHolder_modality").val();
+        var status = $("#ContentPlaceHolder_status").val();
+
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#modifyPFPData input").removeClass("redBorder"); // remove ALL redborders on input
+        $("#modifyPFPData select").removeClass("redBorder"); // remove ALL redborders on select
+
+        //Error showing
+        if (selectedPFP == 0) {
+            console.log("pfp not selected");
+            $(".selectedPFP").addClass("redBorder");
+            $(".ErrorPFP").find(".errorMessage").html(TEXTOS.T100); // "select PFP" warning
+            $(".ErrorPFP").fadeIn();
+            correctForm = false;
+        }
+        if (termsOfService === "") {
+            console.log("empty terms of service");
+            $(".pfpTermsOfService").addClass("redBorder");
+            $(".ErrorTermsOfService").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorTermsOfService").fadeIn();
+            correctForm = false;
+        }
+        if (privacyPolicy === "") {
+            console.log("empty privacy policy");
+            $(".pfpPrivacyPolicy").addClass("redBorder");
+            $(".ErrorPrivacyPolicy").find(".errorMessage").html(TEXTOS.T01); // "empty field" warning
+            $(".ErrorPrivacyPolicy").fadeIn();
+            correctForm = false;
+        }
+        if (modality == 0) {
+            console.log("modality not selected");
+            $(".pfpModality").addClass("redBorder");
+            $(".ErrorModality").find(".errorMessage").html(TEXTOS.T101); // "select modality" warning
+            $(".ErrorModality").fadeIn();
+            correctForm = false;
+        }
+        if (status == 0) {
+            console.log("status not selected");
+            $(".pfpStatus").addClass("redBorder");
+            $(".ErrorStatus").find(".errorMessage").html(TEXTOS.T101); // "select modality" warning
+            $(".ErrorStatus").fadeIn();
+            correctForm = false;
+        }
+        return correctForm;
+    },
+    checkFormWinadminInvestorData: function () {
+        var correctForm = true;
+        //MINIMUM FIELDS
+        var name = $("input[name=checkName]:checked").val();
+        var surname = $("input[name=checkSurname]:checked").val();
+        var id = $("input[name=checkId]:checked").val();
+        var dateOfBirth = $("input[name=checkDateOfBirth]:checked").val();
+        var postCode = $("input[name=checkPostCode]:checked").val();
+        var address = $("input[name=checkAddress]:checked").val();
+        var city = $("input[name=checkCity]:checked").val();
+        var country = $("input[name=checkCountry]:checked").val();
+        var iban = $("input[name=checkIban]:checked").val();
+        var arrayChecking = [name, surname, id, dateOfBirth, postCode, address, city, country, iban];
+        var countChecking = 0;
+        var correctChecking = false;
+
+        //Checking Minimum
+        for (var i = 0; i < arrayChecking.length; i++) {
+            if (arrayChecking[i] == 1) {
+                countChecking++;
+            }
+        }
+        var limitChecking = arrayChecking.length;
+        if (countChecking == limitChecking) {
+            correctChecking = true;
+        }
+
+        //OPTIONAL FIELDS
+        if ($("#cifOptional").length) {
+            var cif = $("input[name=checkCIF]:checked").val();
+            var businessName = $("input[name=checkBusinessName]:checked").val();
+            var arrayCheckingOptional = [cif, businessName];
+            var countCheckingOptional = 0;
+            var correctCheckingOptional = false;
+
+            //Checking Optionals
+            for (var i = 0; i < arrayCheckingOptional.length; i++) {
+                if (arrayCheckingOptional[i] == 1) {
+                    countCheckingOptional++;
+                }
+            }
+            var limitCheckingOptional = arrayCheckingOptional.length;
+            if (countCheckingOptional == limitCheckingOptional) {
+                correctCheckingOptional = true;
+            }
+        }
+
+        //DOCUMENTS
+        //Checking Docs
+        var countDocs = 0;
+        var countCheckingDocs = 0;
+        var correctCheckingDocs = false;
+
+        $(".file :checked").each(function () {
+            if ($(this).val() == 1) {            
+                countCheckingDocs++;
+            }
+            countDocs++;
+        });
+
+        if (countCheckingDocs == countDocs) {
+            correctCheckingDocs = true;
+        }
+
+        //PFPs
+        //Checking PFPs
+        var countPFPs = 0;
+        var countCheckingPFPs = 0;
+        var correctCheckingPFPs = false;
+
+        $(".company :checked").each(function () {
+            if (($(this).val() == 2) || $(this).val() == 3) {          
+                countCheckingPFPs++;
+            }
+            countPFPs++;
+        });
+
+        if (countCheckingPFPs == countPFPs) {
+            correctCheckingPFPs = true;
+        }
+
+        //FINAL TESTING!!!
+        if ($("#cifOptional").length) {
+            if (!correctChecking || !correctCheckingOptional || !correctCheckingDocs || !correctCheckingPFPs) {
+                correctForm = false;
+            }
+        }
+        else {
+            if (!correctChecking || !correctCheckingDocs || !correctCheckingPFPs) {
+                correctForm = false;
+            }
+        }
+        return correctForm;
+    }
 };
 app.utils = {
 
@@ -616,7 +1086,7 @@ var TEXTOS = {
     T21: 'Please enter your alias',
     T22: 'Please introduce your date of birth',
     T23: 'Please select a crowdlending platform.',
-//    T24: "El CIF introducido no es válido.",
+    T24: "The CIF is not valid.",
     //   T25: "Por favor, introduzca el nombre de su empresa.",
     T26: 'Please introduce the code which was sent to your mobile phone',
 //    T27: "Por favor, introduzca la marca de su empresa.",
@@ -664,7 +1134,7 @@ var TEXTOS = {
     //   T69: "Por favor, suba un documento con su DNI",
     //   T70: "Por favor, suba un documento con su titularidad bancaria",
     //   T71: "Por favor, suba un documento con sus tres últimas nominas",
-    T72: 'Por favor, introduzca una cantidad mayor que cero',
+    T72: 'Please, Introduce a quantity higher than 0',
     //   T73: "Por favor, introduzca su contraseña actual",
     //   T74: "Por favor, introduzca su nueva contraseña",
     //   T75: "El código postal introducido no es válido.",
@@ -686,6 +1156,13 @@ var TEXTOS = {
     T91: "Una nueva contraseña ha sido enviado al email indicado",
     T92: "Por favor, introduzca el nombre",
     T93: "Por favor, introduzca los apellidos",
-    T94: "Por favor, introduzca su mensaje"
+    T94: "Por favor, introduzca su mensaje",
+    T95: "The IBAN is not valid",
+    T96: "You must upload all the required files",
+    T97: "You must select the currency",
+    T98: "To use this service you must provide at least 2 fields",
+    T99: "To use this service you must provide at least 1 field more",
+    T100: "Select PFP",
+    T101: "Select modality",
+    T102: "Select service status"
 };
-

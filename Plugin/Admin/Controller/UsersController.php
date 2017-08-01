@@ -1,7 +1,7 @@
 <?php
 /*
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2014, http://beyond-language-skills.com                 |
+// | Copyright (C) 2017, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -16,16 +16,22 @@
 // +-----------------------------------------------------------------------+
 //
 
-Version 0.1
-Basic version with simple user authentication
 
-2014-09-01	  version 2014_0.2
-Changed the logout routine. Also introduced events for "User logged on"
-and "User logged off"
-Optimization of code
+
+Functions for the Winadmin role
+
+
+2017-07-08	  version 0.1
+Initial version. 
+ * All methods are "protected" using the "isAuthorized" function
+ *
+ * 
+
 
 
 Pending
+
+
 
 */
 
@@ -37,27 +43,14 @@ class UsersController extends AdminAppController
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Js');
 	var $uses = array('User');	
-	var $components = array('Security',
-/*
-							'Auth' => array('authorize' => 'Controller',
-												'loginRedirect'	=> array('plugin' 		=> 'admin',
-																		 'controller' 	=> 'investments',
-																		 'action' 		=> 'readInvestmentsList'
-																	 ),
-												'logoutRedirect' => array('controller' 	=> 'users',
-																		 'action' 		=> 'login'
-																		 ),
-												),
-*/
-							);
+	var $components = array('Security');
 
   	var $error;
-	var $layout = 'zastac_admin_layout';		// use of "flan template" for intranet access
+	var $layout = 'winvestify_admin_login_layout';		// use of "flan template" for intranet access
 
 
 
 function beforeFilter() {
-	Configure::write('debug', 2);
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 
@@ -66,21 +59,45 @@ function beforeFilter() {
 
 
 //	$this->Security->requireSecure(	'login'	);
-//	$this->Security->csrfCheck = false;
-//	$this->Security->validatePost = false;	
+	$this->Security->csrfCheck = false;
+	$this->Security->validatePost = false;	
 // Allow only the following actions.
-	$this->Security->requireAuth();
-	$this->Auth->allow('login','session', 'loginAction');    // allow the actions without logon
-//$this->Security->unlockedActions('login');
-   echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
-
-var_dump($_REQUEST);
-var_dump($this->request);
-      echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";     
+//	$this->Security->requireAuth();
+	$this->Auth->allow('login','session', 'loginAction', 'testmodal');    // allow the actions without logon
+    
 
 }
 
 
+
+/**
+ * 
+ * Shows a list of investors, using dataTable, in order to select/view/modifiy the data of 1 
+ * investor
+ * 
+ */
+public function showInvestorList() {
+    
+    
+}
+
+/**
+ * 
+ * Shows the data of an individual investor. This section is divided into personal data,
+ * investment data etc,
+ * 
+ */
+public function showInvestorDataPanel() {
+    
+    
+}
+
+public function testmodal() {
+ 
+    
+
+}
+    
 
 /**
 *	must eventually be moved to the admin section. After action this user does no longer exist
@@ -93,13 +110,13 @@ public function deleteUser($email) {
 	$conditions = array("AND" => array(array('investor_email' => $email),
 						));
 
-	$resultInvestor = $this->Investor->find("all", $params = array('recursive'		=> -1,
-																	'conditions'	=> $conditions,
-																	)
-											);
+	$resultInvestor = $this->Investor->find("all", $params = array('recursive'  => -1,
+									'conditions'	=> $conditions,
+									)
+						);
 	if (!empty($resultInvestor)) {
 		$result = $this->Investor->delete($resultInvestor[0]['Investor']['id'],$cascade = true);
-	}
+	} 
 }
 
 
@@ -219,65 +236,12 @@ echo "<br/>";
 
 
 public function loginAction() {
-    echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-$this->print_r2($this->request->data);
- echo "Antoine";
-$this->autoRender = false;
-	 
         if ($this->Auth->login()) {
-            echo "SESSION1 <br>";
-            echo "We have logged in <br>";
-          
+            $this->redirect($this->Auth->redirectUrl());
         }
         else {
-            echo"User not logged on<br>";
+            echo "User is not logged on<br>";
         }
-        
-  exit;  
-        if ($this->Auth->loggedIn()){
-		echo "user is logged on";	
-	}
-	else {
-		echo "User not logged on";
-	}
-
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";	
-//	echo $this->Auth->authError();
-exit;	
-	$this->layout = 'zastac_admin_login_layout';
-//echo $this->Session->flash();
-//echo $this->Session->flash('auth');	
-	
-
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-echo $this->Auth->user('id');
-debug($this->request->data);
-echo  $this->Auth->loggedIn();
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-//var_dump($this->request);	
-	if ($this->request->is('post')) {
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-	
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-
-		if ($this->Auth->login()) {
-		echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-		pr($this->request);
-			$user = $this->Auth->user();		// get all the data of the authenticated user
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-			exit;
-			return $this->redirect($this->Auth->redirectUrl());
-		}
-		else {
-		echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";			
-			$this->Session->setFlash(__('Username or password is incorrect'),
-											'default',array(),	'auth');
-			echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-			exit;
-		}
-	}
-	echo __FILE__ . " " .  __METHOD__ . " " .  __LINE__  ."<br>";
-	exit;
 }
 
 
@@ -294,7 +258,7 @@ public function login()
 		$this->disableCache();
 	}
 	else {
-		$this->layout = 'zastac_admin_login_layout';
+		$this->layout = 'winvestify_admin_login_layout';
 	}
 	$error = false;
 	$this->set("error", $error);
@@ -305,9 +269,8 @@ public function login()
 
 public function logout() {
 	$user = $this->Auth->user();		// get all the data of the authenticated user
-	$event = new CakeEvent('Controller.User_logout', $this, array(
-										'data' => $user,
-										));
+	$event = new CakeEvent('Controller.User_logout', $this, array('data' => $user,
+				));
 	$this->getEventManager()->dispatch($event);
 	return $this->redirect($this->Auth->logout());
 }

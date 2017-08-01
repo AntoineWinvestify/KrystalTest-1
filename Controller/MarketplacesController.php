@@ -43,6 +43,7 @@
 
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
+require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
 
 class MarketPlacesController extends AppController {
 
@@ -50,6 +51,11 @@ class MarketPlacesController extends AppController {
     var $helpers = array('Html', 'Form', 'Js');
     var $uses = array('Marketplace', 'Company', 'Urlsequence');
     var $components = array('Security', 'Session');
+    
+    private $queueCurls;
+    private $newComp = array();
+    private $tempArray = array();
+    private $companyId = array();
 
     function beforeFilter() {
 
@@ -70,8 +76,8 @@ class MarketPlacesController extends AppController {
          */
 //	$this->Security->requireAuth();
         $this->Auth->allow(array('cronMarketStart', 'listMarketPlace', 'getGlobalMarketPlaceData',
-            'readInvestmentData', 'readGlobalDashboardData', 'cronQueueEvent',
-            'test_linkingAccount'));
+					 'readInvestmentData', 'readGlobalDashboardData', 'cronQueueEvent',
+					 'test_linkingAccount', 'cronQueueEventParallel'));
     }
 
     /**
@@ -473,6 +479,232 @@ class MarketPlacesController extends AppController {
         }
         return $companyIdLinkedList;
     }
+    
+    /**
+     *
+     * 	Initiates the collection of the investment data in parallel of all linked accounts of the investor. The result is stored
+     * 	as a JSON object in databasetable "datas"
+     *
+     */
+    function cronQueueEventParallel() {
+
+        $this->autoRender = false;
+        Configure::write('debug', 2);
+
+        $this->queueCurls = new \cURL\RequestsQueue;
+        //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
+        $this->Data = ClassRegistry::init('Data');     // needed for storing 
+
+
+        $userInvestment = array();
+        $result = array();
+
+        $this->Queue = ClassRegistry::init('Queue');
+        $resultQueue = $this->Queue->getNextFromQueue(FIFO);
+
+        if (empty($resultQueue)) {  // Nothing in the queue
+            echo "empty queue<br>";
+            echo __FILE__ . " " . __FUNCTION__ . " " . __LINE__ . "<br>";
+            exit;
+        }
+
+// Get internal database reference of the investor
+        $this->Investor = ClassRegistry::init('Investor');
+        $resultInvestor = $this->Investor->find("first", array('conditions' =>
+            array('Investor.investor_identity' => $resultQueue['Queue']['queue_userReference']),
+            'fields' => 'id',
+            'recursive' => -1,
+        ));
+        $investorId = $resultInvestor['Investor']['id'];
+
+//	***************************************************************************
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+
+        $filterConditions = array('investor_id' => $investorId);
+        $linkedaccountsResults = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+        $index = 0;
+        $i = 0;
+        foreach ($linkedaccountsResults as $linkedaccount) {
+            echo "<br>******** Executing the loop **********<br>";
+            $index++;
+            $this->companyId[$i] = $linkedaccount['Linkedaccount']['company_id'];
+            echo "companyId = ".$this->companyId[$i]." <br>";
+            $companyConditions = array('Company.id' => $this->companyId[$i]);
+            $result[$i] = $this->Company->getCompanyDataList($companyConditions);
+            $this->newComp[$i] = $this->companyClass($result[$i][$this->companyId[$i]]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
+            $this->newComp[$i]->defineConfigParms($result[$i][$this->companyId[$i]]);  // Is this really needed??
+            $this->newComp[$i]->setMarketPlaces($this);
+            $this->newComp[$i]->setQueueId($resultQueue);
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], MY_INVESTMENTS_SEQUENCE);
+            $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+            $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
+            //$this->newComp[$i]->generateCookiesFile();
+            $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
+            $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
+            $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class
+            $this->newComp[$i]->setPassword($linkedaccount['Linkedaccount']['linkedaccount_password']); //Set the pass on the class
+            $configurationParameters = array('tracingActive' => true,
+                'traceID' => $resultQueue['Queue']['queue_userReference'],
+            );
+            $this->newComp[$i]->defineConfigParms($configurationParameters);
+            $i++;
+        }
+        
+        $companyNumber = 0;
+        echo "MICROTIME_START = " . microtime() . "<br>";
+        //We start at the same time the queue on every company
+        foreach ($linkedaccountsResults as $linkedaccount) {
+            $this->newComp[$companyNumber]->collectUserInvestmentDataParallel();
+            $companyNumber++;
+        }
+        
+        /*
+         * This is the callback's queue for the companies cURLs, when one request is processed
+         * Another enters the queue until finishes
+         */
+        $this->queueCurls->addListener('complete', function (\cURL\Event $event) {
+            echo "<br>";
+            // The ids[0] is the company id
+            // The ids[1] is the switch id
+            // The ids[2] is the type of request (WEBPAGE, LOGIN, LOGOUT)
+            $ids = explode(";",$event->request->_page);
+            //We get the response of the request
+            $response = $event->response;
+            //We get the web page string
+            $str = $response->getContent();
+            $error = "";
+            //if (!empty($this->testConfig['active']) == true) {
+            echo 'CompanyId:'.$this->companyId[$ids[0]].
+                    '   HTTPCODE:'. $response->getInfo(CURLINFO_HTTP_CODE)
+                    .'<br>';
+            
+            if ($response->hasError()) {
+                $this->errorCurl($response->getError(), $ids, $response);
+                $error = $response->getError();
+            }
+            else {
+                echo "<br>";
+                //}
+                //if ($this->config['tracingActive'] == true) {
+                   // $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
+                //}
+                if ($ids[2] != "LOGOUT") {
+                    $this->newComp[$ids[0]]->setIdForSwitch($ids[1]);
+                    $this->tempArray[$ids[0]] = $this->newComp[$ids[0]]->collectUserInvestmentDataParallel($str);
+                }
+            }
+            
+            if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT &&  $this->newComp[$ids[0]]->getTries() == 0) {
+                $this->logoutOnCompany($ids, $str);
+                $this->newComp[$ids[0]]->setIdForSwitch(0); //Set the id for the switch of the function company
+                $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
+                $this->newComp[$ids[0]]->setTries(1);
+                $this->newComp[$ids[0]]->deleteCookiesFile();
+                //$this->newComp[$ids[0]]->generateCookiesFile();
+                $this->newComp[$ids[0]]->collectUserInvestmentDataParallel();
+            }
+            else if ($ids[2] == "LOGOUT") {
+                echo "LOGOUT FINISHED <br>";
+                //$this->newComp[$ids[0]]->deleteCookiesFile();
+            }
+            else if ((!empty($this->tempArray[$ids[0]]) || ($response->hasError()) && $ids[2] != "LOGOUT")) {
+                if ($response->hasError()) {
+                     //$this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
+                     $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2], $error);
+                }
+                $this->logoutOnCompany($ids, $str);
+                if ($ids[2] == "LOGOUT") {
+                    unset($this->tempArray['global']['error']);
+                }
+            }
+            
+        });
+
+        //This is the queue. It is working until there are requests
+        while ($this->queueCurls->socketPerform()) {
+            echo '*';
+            $this->queueCurls->socketSelect();
+        }
+            
+        echo "FINISHED MICROTIME_STOP = " . microtime() . "<br>";
+        for ($i = 0; $i < count($this->tempArray); $i++) {
+            if (!empty($this->tempArray[$i]['global']['error'])) {
+                echo $this->tempArray[$i]['global']['error'];
+                unset($this->tempArray[$i]);
+            }
+        }
+        $companyNumber = 0;
+        for ($i = 0; $i < count($this->tempArray); $i++) {
+            
+            //$tempArray = $this->newComp[$i]->collectUserInvestmentData($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
+
+            /*$urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
+            $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+            $newComp->companyUserLogout();*/
+            /***************************************/
+            echo "PHOTO MICROTIME_START = " . microtime() . "<br>";
+            if (empty($this->tempArray[$i]['global']['error'])) {
+                $this->tempArray[$i]['companyData'] = $result[$i][$this->companyId[$i]];
+
+                $userInvestments = $this->tempArray[$i];
+                $result1 = array_merge($userInvestment['investments'], $this->tempArray[$i]);
+                echo "RESULT1 = ";
+                $this->print_r2($result1);
+    //prepare all globals on total dashboard level	
+    //			$dashboardGlobals['amountInvested']	= $dashboardGlobals['amountInvested'] + $userInvestments['global']['activeInInvestments'];
+                $dashboardGlobals['amountInvested'] = $dashboardGlobals['amountInvested'] + $userInvestments['global']['totalInvestment'];
+                $dashboardGlobals['wallet'] = $dashboardGlobals['wallet'] + $userInvestments['global']['myWallet'];
+                $dashboardGlobals['totalEarnedInterest'] = $dashboardGlobals['totalEarnedInterest'] + $userInvestments['global']['totalEarnedInterest'];
+                $dashboardGlobals['profitibilityAccumulative'] = $dashboardGlobals['profitibilityAccumulative'] + $userInvestments['global']['profitibility'];
+
+    // Amount that was invested totally in all the currently active investments
+                $dashboardGlobals['totalInvestments'] = $dashboardGlobals['totalInvestments'] + $userInvestments['global']['totalInvestments'];
+
+    // The number of active investments in all companies:
+                $dashboardGlobals['activeInvestments'] = $dashboardGlobals['activeInvestments'] + count($userInvestments['investments']);
+
+                $dashboardGlobals['investments'][$result[$i][$this->companyId[$i]]['company_name']] = $userInvestments;
+
+    // *********************************************************************************************************		
+    // Save "intermediate photos", so investor will always see something. The result is that for a user who has
+    // investments in 4 platforms, the system will generate 4 photos, with each photo including the previous one
+    // *********************************************************************************************************
+
+                $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
+                if ($this->Data->save(array('data_investorReference' => $resultQueue['Queue']['queue_userReference'],
+                            'data_JSONdata' => JSON_encode($dashboardGlobals),
+                            $validate = true))) {
+                    $companyNumber++;
+                    echo "WRITE AN INTERMEDIATE PHOTO OF INVESTMENTS OF USER <br>";
+                } else {
+                    // log error
+                }
+            }
+            else {
+                echo $this->tempArray[$i];
+                unset($this->tempArray[$i]);
+            }
+            
+            echo "<br>******* End of Loop ****** <br>";
+        }
+
+        $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
+        echo __FILE__ . " " . __FUNCTION__ . " " . __LINE__ . "<br>";
+        $this->print_r2($dashboardGlobals);
+
+// Store the dashboard data for 
+        $this->Data = ClassRegistry::init('Data');
+        if ($this->Data->save(array('data_investorReference' => $resultQueue['Queue']['queue_userReference'],
+                    'data_JSONdata' => JSON_encode($dashboardGlobals),
+                    $validate = true))) {
+            if (count($linkedaccountsResults) == $companyNumber) {
+                return true;
+            }
+        } else {
+            // log error
+            return false;
+        }
+    }
 
     /**
      *
@@ -647,6 +879,57 @@ class MarketPlacesController extends AppController {
         $this->set(compact('files'));
         $this->layout = 'ajax';
         echo "cache eliminada";
+    }
+    
+    /**
+     * Function to do logout of company
+     * @param array $ids They are the ids of the company
+     * @param string $str It is the webpage on string format
+     */
+    function logoutOnCompany($ids, $str) {
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$ids[0]], LOGOUT_SEQUENCE);
+        //echo "Company = $this->companyId[$ids[0]]";
+        $this->newComp[$ids[0]]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+        $this->newComp[$ids[0]]->companyUserLogoutMultiCurl($str);
+    }
+    
+    /**
+     * Function to process if there is an error with the request on parallel
+     * @param object $error It is the curl error
+     * @param array $ids They are the ids of the company
+     * @param object $response It is the curl response from the request on parallel
+     */
+    function errorCurl($error, $ids, $response) {
+        echo
+            'Error code: '.$error->getCode()."<br>".
+            'Message: "'.$error->getMessage().'" <br>';
+        echo 'CompanyId:'.$this->companyId[$ids[0]].'<br>';
+        $testConfig = $this->newComp[$ids[0]]->getTestConfig();
+        if (!empty($testConfig['active']) == true) {
+            print_r($response->getInfo());
+            echo "<br>";
+        }
+        $config = $this->newComp[$ids[0]]->getConfig();
+        if ($config['tracingActive'] == true) {
+            $this->newComp[$ids[0]]->doTracing($config['traceID'], $ids[2], $str);
+        }
+    }
+    
+    /*
+     * 
+     * Get the variable queueCurls
+     */
+    public function getQueueCurls() {
+        return $this->queueCurls;
+    }
+    
+    /**
+     * 
+     * Add a request to the queue to initiate the multi_curl
+     * @param type $request It's the request to process
+     */
+    public function addRequetsToQueueCurls($request) {
+        $this->queueCurls->attach($request);
     }
 
 }

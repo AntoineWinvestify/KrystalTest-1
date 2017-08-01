@@ -28,7 +28,10 @@
 
   Pending:
   Generate a miniview for the extended notification of the event "newAccountLinked"     [OK, not yet tested]
-
+  User cannot modify his mobile phone number.
+ * A more consistent andpermanent solution will be implemented with 1CR for all "confirmed" data items,
+ * like name, surname, telephone, dni, ....
+ * 
  */
 
 
@@ -36,7 +39,7 @@ class InvestorsController extends AppController {
 
     var $name = 'Investors';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Investor', 'Linkedaccount', 'Company', 'Urlsequence');
+    var $uses = array('Investor', 'Linkedaccount', 'Company', 'Urlsequence','Ocr');
     var $error;
 
     
@@ -89,6 +92,15 @@ function deleteLinkedAccount() {
 }
 
     
+/**
+ * Read the cheack data
+ * @param type $investorId
+ * @return type
+ */
+public function readCheckData($investorId) {
+    $checkData = $this->Investor->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+    return $checkData;
+}
     
     
     
@@ -201,12 +213,11 @@ function linkAccount() {
 
         $newComp = $this->companyClass($companyResults[$companyId]['company_codeFile']);
         $newComp->setUrlSequence($urlSequenceList);
-
         $configurationParameters = array('tracingActive' => true,
             'traceID' => $this->Auth->user('Investor.investor_identity'),
         );
         $newComp->defineConfigParms($configurationParameters);
-
+        //$newComp->generateCookiesFile();
         $userInvestment = $newComp->companyUserLogin($_REQUEST['userName'], $_REQUEST['password']);
 
         if (!$userInvestment) {                                                 // authentication error
@@ -216,7 +227,7 @@ function linkAccount() {
 
             $linkedaccountFilterConditions = array('investor_id' => $investorId);
             $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
-            
+            //$newComp->deleteCookiesFile();
             $this->set('linkedAccountResult', $linkedAccountResult);
             $this->set('companyResults', $companyResults);
             $this->set('action', "error");      // add a new account
@@ -227,8 +238,9 @@ function linkAccount() {
         } else {
             if ($this->Linkedaccount->createNewLinkedAccount($_REQUEST['companyId'], $this->Auth->user('Investor.id'), $_REQUEST['userName'], $_REQUEST['password'])) {
                 $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
+                $newComp->setUrlSequence($urlSequenceList);
                 $newComp->companyUserLogout();
-
+                //$newComp->deleteCookiesFile();
 // load the list of all companies for display purposes
                 $companyFilterConditions = array('id >' => 0);  // Load ALL company data as array
                 $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
@@ -348,29 +360,7 @@ function userProfileDataPanel() {
         $this->layout = 'azarus_private_layout';
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    function ocrUserData(){
-        echo " ";
-    }
-    
-    function ocrDataPanel(){
-        echo " ";
-    }
-    
+
     
     
 }
