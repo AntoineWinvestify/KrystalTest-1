@@ -53,7 +53,6 @@ $(document).ready(function() {
             <?php 
             //This is the variable to get the sectors of the user
             //It depends on the role that the user has
-            
             echo $sectorsMenu[0]['sectors_name']; 
             $sectorActual = 0;
             $sectorHasChildren = false;
