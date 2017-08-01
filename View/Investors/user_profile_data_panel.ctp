@@ -118,7 +118,7 @@ console.log("Loading all the profile data of my Social network");
 	<div class="row">
 		<!-- left column -->
 		<div class="col-md-12">
-			<div class="box box-success">
+			<div class="box" style="background-color: transparent; box-shadow: none; border: none;">
 				<div class="overlay" style="display:none">
 					<div class="fa fa-spin fa-spinner" style="color:green">	
 					</div>

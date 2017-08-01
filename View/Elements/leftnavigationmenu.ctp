@@ -57,7 +57,8 @@ $(document).ready(function() {
             $sectorsName = [
                 [__("Dashboard")],
                 [__("Global Marketplace"), __("My Marketplace") ],
-                [__("Link Account"), __("Personal Data") ],
+                [__("Personal Data")],
+                [__("Link Account")],
                 [__("One Click Registration")],
                 [__("New Users")],
                 [__("Bills")],
@@ -147,6 +148,8 @@ $(document).ready(function() {
           </a>
           <ul class="treeview-menu">
             <li><a href="/investors/userProfileDataPanel"><i class="fa fa-circle-o"></i> <?php echo __('Personal Data')?></a></li>
+            <li><a href="/investors/editUserProfileData"><i class="fa fa-circle-o"></i> <?php echo __('Personal Data_No ajax')?></a></li>
+            <li><a href="/investors/readLinkedAccounts"><i class="fa fa-circle-o"></i> <?php echo __('Link accounts_No ajax')?></a></li>
           </ul>
         </li>
         <li class="treeview">
