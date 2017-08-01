@@ -49,6 +49,21 @@ $(document).ready(function() {
     <ul class="sidebar-menu">
         <li class="header"><?php echo __('WINADMIN NAVIGATION')?></li>
         <?php 
+        
+            //The names are on an array with a tree structure like the database
+            //We do this to have the names on the PO file
+            /*$sectorsName = [
+                [__("Dashboard")],
+                [__("Global Marketplace"), __("My Marketplace") ],
+                [__("Link Account"), __("Personal Data") ],
+                [__("One Click Registration")],
+                [__("New Users")],
+                [__("Bills")],
+                [__("Tallyman")],
+                [__("Bills")],
+                [__("Investor Checking")],
+                [__("Logout")]
+            ];*/
             //This is the variable to get the sectors of the user
             //It depends on the role that the user has
             /*echo $sectorsMenu[0]['sectors_name']; 
