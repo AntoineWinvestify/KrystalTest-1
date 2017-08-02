@@ -39,24 +39,15 @@ Simple first version
 
 
 PENDING:
-Put authorization table in the acl.php config file
-isAuthorised: Does not seem to work for AJAX actions
-APROBADO is missing in global constants
-
-// used in investmentState
-	define("UNDEFINED", 1);
-	define("CANCELED", 3);
-	define("PAID_IMMEDIATELY", 32);	
-	define("WAITING_FOR_PAYMENT", 31);
-	define("DELAYED_PAYMENT", 33);					
-	define("WAITING_FOR_PAYMENT_AFTER_WARNING", 34);	
-	define("DELAYED_PAYMENT_AFTER_WARNING", 35);
-
-
+---
+ * 
+ * 
+ * 
+ * 
 */
-
-class AdminAppController extends AppController {
  
+class AdminAppController extends AppController {
+  
     public $components = array('DebugKit.Toolbar',
 				'RequestHandler',
 				'Session',
@@ -66,17 +57,16 @@ class AdminAppController extends AppController {
 				'Auth' => array('authorize' => 'Controller',
                                                 'loginRedirect'	=> array(
 									'plugin' => 'admin',
-									'controller' 	=> 'investments',
-									'action' 	=> 'readInvestmentsList'
+									'controller' 	=> 'ocrs',
+									'action' 	=> 'ocrWinadminInvestorChecking'
 									),
-						'logoutRedirect' => array('controller' 	=> 'users',
+						'logoutRedirect' => array(
+                                                                        'plugin' => 'admin',
+                                                                        'controller' => 'users',
 									 'action' => 'login'
 										 ),
 									),								
 								);
-		
-    var $uses = array('Administrators');	
-
 
 /**
 *	This code is common to all the classes that actively define a method for the beforeFilter
@@ -88,14 +78,12 @@ class AdminAppController extends AppController {
 */
 public function beforeFilter() {
 
-    $this->Cookie->name = 'zastac_equity_admin';
-    $this->layout = "zastac_admin_layout";
+    parent::beforeFilter();
+   
+    $this->Cookie->name = 'equity';
 
     $this->Security->blackHoleCallback = 'blackhole';
  
-    $this->set('investmentStates', $investmentStates);
-    $this->investmentStates = $investmentStates;
-	
 /*	
 
 
@@ -159,18 +147,6 @@ function deleteDir($dir) {
    }
    rmdir($dir);
 }
-
-
-
-
-
-public function session()  {
-	$this->autoRender = FALSE;
-	$this->print_r2($this->Session->read());
-}
-
-
-
 
 
 

@@ -32,6 +32,7 @@ Pending:
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="http://www.winvestify.com"><?php echo __('Home') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/aboutUs"><?php echo __('About Us') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/Contactforms/form"><?php echo __('Contact') ?></a></li>
+                                <li><a class="g-font-size-15--xs g-color--white-opacity" href="/Contactforms/login"><?php echo __('Private Login') ?></a></li>
                             </ul>
                         </div>
                         <div class="col-sm-2 g-margin-b-20--xs g-margin-b-0--md footerLinks">

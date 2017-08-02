@@ -46,35 +46,88 @@ $(document).ready(function() {
 });		
 </script>
 
-
-
-
-
 	<ul class="sidebar-menu">
-    <li class="header">
-        <strong>Investor Menu</strong>
-    </li>
+            <li class="header">
+                <strong><?php echo __('Investor Menu')?></strong>
+            </li>
+            <?php
+            
+            //The names are on an array with a tree structure like the database
+            //We do this to have the names on the PO file
+            $sectorsName = [
+                [__("Dashboard")],
+                [__("Global Marketplace"), __("My Marketplace") ],
+                [__("Personal Data")],
+                [__("Link Account")],
+                [__("One Click Registration")],
+                [__("New Users")],
+                [__("Bills")],
+                [__("Tallyman")],
+                [__("Bills")],
+                [__("Investor Checking")],
+                [__("Logout")]
+            ];
+            
+            
+            //echo $sectorsMenu[0]['sectors_name'];
+            //This is the variable to get the sectors of the user
+            //It depends on the role that the user has
+            $sectorActual = 0;
+            $sectorHasChildren = false;
+            foreach ($sectorsMenu as $sector) {
+                if ($sectorActual != $sector["Sector"]["sectors_father"]) {
+                    if ($sectorHasChildren) {
+                        echo "</ul>";
+                        $sectorHasChildren = false;
+                    }
+                    if ($sectorActual != 0) {
+                        echo "</li>";
+                    }
+                    echo "<li class='treeview'>";
+                    $sectorActual = $sector["Sector"]["sectors_father"];
+                }
+                if ($sector["Sector"]["sectors_subSectorSequence"] == 1) {
+                    $name_col = $sector["Sector"]["sectors_father"]-1;
+                    $name_row = $sector["Sector"]["sectors_subSectorSequence"]-1;
+                    echo "<a href='". __($sector["Sector"]["sectors_licontent"]) . "'>";
+                    echo "<i class='". __($sector["Sector"]["sectors_class"])  . "'></i>";
+                    echo "<span>". $sectorsName[$name_col][$name_row] ."</span>";
+                    if ($sector["Sector"]["sectors_licontent"] == "#") {
+                        $sectorHasChildren = true;
+                        ?>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                            </a>
+                            <ul class="treeview-menu">
+                        <?php
+                    }
+                    else {
+                        echo "</a></li>";
+                    }
+                }
+                else {
+                    $name_col = $sector["Sector"]["sectors_father"]-1;
+                    $name_row = $sector["Sector"]["sectors_subSectorSequence"]-1;
+                    echo "<li><a href='". $sector["Sector"]["sectors_licontent"] . "'>";
+                    echo "<i class='". $sector["Sector"]["sectors_class"]  . "'></i>";
+                    echo $sectorsName[$name_col][$name_row];
+                    echo "</a></li>";
+                }
+            }
+        /*
+        ?>
 	  <li class="treeview">
       <a href="/dashboards/getDashboardData">
-        <i class="fa fa-dashboard"></i> <span><?php echo __('Dashboard')?></span>
+        <i class="fa fa-dashboard"></i> <span>
+            <?php 
+            $i = 0;
+            
+            echo __('Dashboard');
+            ?>
+        </span>
       </a>
     </li>
-        <?php  
-        /*<li class="treeview">
-          <a href="#">
-            <i class="fa fa-users"></i>
-            <span class="disabled" style="opacity:0.5"><?php echo __('Investor Comunity')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Mi perfil</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Mi muro</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Mis Notificaciones</a></li>
-          </ul>
-        </li>*/
-        ?>
        <li class="treeview">
           <a href="#">
             <i class="fa fa-globe"></i>
@@ -86,55 +139,6 @@ $(document).ready(function() {
           <ul class="treeview-menu">
             <li><a href="/marketplaces/showMarketPlace"><i class="fa fa-circle-o"></i> <?php echo __('My Marketplace')?></a></li>
           </ul>
-            <?php  
-            /*<li class="disabled" style="opacity:0.5"><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> <?php echo __('Spain')?></a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/charts/flot.html"><i class="fa fa-circle-o"></i> <?php echo __('France')?></a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/charts/inline.html"><i class="fa fa-circle-o"></i> <?php echo __('Germany')?></a></li>-->
-          </ul>
-        </li>
-        <li class="treeview">
-          <a href="#">
-            <i class="fa fa-pie-chart"></i>
-            <span class="disabled" style="opacity:0.5"><?php echo __('Loan Control')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-      </a>
-          <ul class="treeview-menu">
-            <li class="disabled" style="opacity:0.5"><a href="pages/charts/chartjs.html"><i class="fa fa-circle-o"></i> Mis Incidencias</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> Buscador de incidencias</a></li>
-          </ul>
-        </li>
-        <li class="treeview">
-          <a href="#">
-            <i class="fa fa-bank"></i>
-            <span class="disabled" style="opacity:0.5"><?php echo __('Companies')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/general.html"><i class="fa fa-circle-o"></i> General</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/icons.html"><i class="fa fa-circle-o"></i> Icons</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/buttons.html"><i class="fa fa-circle-o"></i> Buttons</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/sliders.html"><i class="fa fa-circle-o"></i> Sliders</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/timeline.html"><i class="fa fa-circle-o"></i> Timeline</a></li>
-            <li class="disabled" style="opacity:0.5"><a href="pages/UI/modals.html"><i class="fa fa-circle-o"></i> Modals</a></li>
-          </ul>
-        </li>
-        <li class="treeview">
-          <a href="#">
-            <i class="fa fa-edit"></i> <span><?php echo __('Suggestion Box')?></span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="pages/forms/general.html"><i class="fa fa-circle-o"></i> General Elements</a></li>
-            <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> Advanced Elements</a></li>
-            <li><a href="pages/forms/editors.html"><i class="fa fa-circle-o"></i> Editors</a></li>
-          </ul>
-        </li>*/?>
         <li class="treeview">
           <a href="#">
             <i class="fa fa-user-secret"></i> <span><?php echo __('Link Account')?></span>
@@ -144,75 +148,17 @@ $(document).ready(function() {
           </a>
           <ul class="treeview-menu">
             <li><a href="/investors/userProfileDataPanel"><i class="fa fa-circle-o"></i> <?php echo __('Personal Data')?></a></li>
-            <?php /*<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>*/?>
+            <li><a href="/investors/editUserProfileData"><i class="fa fa-circle-o"></i> <?php echo __('Personal Data_No ajax')?></a></li>
+            <li><a href="/investors/readLinkedAccounts"><i class="fa fa-circle-o"></i> <?php echo __('Link accounts_No ajax')?></a></li>
           </ul>
         </li>
-        <?php 
-        /*
         <li class="treeview">
             <a href="/ocrs/ocrInvestorView">
               <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
             </a>
         </li>
-    <li class="header">
-            <strong>PFP Admin Menu</strong>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrPfpUsersPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('New Users')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrPfpBillingPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrPfpTallyman">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
-            </a>
-        </li>
-        <li class="header">
-            <strong>WinAdmin Menu</strong>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminBillingPanel">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Bills')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminInvestorChecking">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Investor Checking')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminUpdatePfpData">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Update PFP data')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminSoldUsers">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Sold Users')?></span>
-            </a>
-        </li>
-        <li class="treeview">
-            <a href="/ocrs/ocrWinadminTallyman">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('Tallyman')?></span>
-            </a>
-        </li>
-        
- 
-<li class="treeview">
-			<a href="/invitations/recommend"><i class="fa fa-power-off"></i><span><?php //echo __('Recommend to a friend')?></a></span>
-        </li>*/?>
         <li class="treeview">
           <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
-        <li class="treeview">
-<?php /*      <a>
-<button type="button" href="/usererrors/getErrorModal" class="btn btn-primary errorBtn">  
-          <?php // echo __('Report Error')?>
-        </button>
-      </a>*/ ?>
-        </li>
-	</ul>
+        <li class="treeview">*/?>
+    </ul>

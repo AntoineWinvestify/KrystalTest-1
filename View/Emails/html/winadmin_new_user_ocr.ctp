@@ -28,9 +28,8 @@
             <!-- 1 Column Text : BEGIN --> 
             <tr>
                 <td bgcolor="#ffffff" style="padding: 40px; text-align: center; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
-                    <p><?php echo __('Dear') . " " . $nameWinAdmin ?></p>
-                    <p><?php echo __('A new user from 1CR service whose investment info & documents need to be checked.') ?></p>                    
-                    <p><?php echo __('data about that new user') ?></p>  
+                    <p><?php echo __('Dear Winadmin,') ?></p>
+                    <p><?php echo __('A new user has requested the use of 1CR.') ?></p>                    
                 </td>
             </tr>
             <!-- 1 Column Text : BEGIN -->
