@@ -53,8 +53,7 @@ function successTallymanData(data) {
  
 function errorTallymanData(data) {
 
-        var temp = data.search("chargingConfirmationModal");
-    console.log ("errorTallymanData; temp = " + temp);
+    var temp = data.search("chargingConfirmationModal");
     if (temp != -1) {
         $("#TallymanResult").html(data); 
         console.log("errorTallymanData:modal detected");
@@ -111,6 +110,79 @@ $(document).ready(function() {
         $("#telephoneTooltip").toggle();
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    $(function () {
+
+        $(document).on('click', '.close', function () {
+            $('#chargingConfirmationModal').removeClass("show");
+        });   
+
+        $(document).on("click", '.closeBtn', function () {
+            $("#chargingConfirmationModal").remove();
+        });
+
+        $(document).on("click", 'ul > li > a', function () {
+            return false;
+        });
+
+        $(document).on("click", '#tooltip1', function () {
+            $('#passwordTooltip').toggle();
+        });
+
+
+
+        $(document).on("click", "#btnConfirm", function (event) {
+
+            $("#chargingConfirmationModal").removeClass("show");
+            var link = $(this).attr("href");
+ /*           
+            var inputid = "<?php echo $userid ?>";
+            var useremail = "<?php echo $email ?>";
+            var usertelephone = "<?php echo $phone ?>";
+            var chargingconfirmed = 1;
+    */        
+            var inputid = $("#tallymanInputId").val();
+            var useremail = $("#tallymanInputEmail").val();
+            var usertelephone = $("#tallymanInputTelephone").val(); 
+            var chargingconfirmed = 1;
+            var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
+            var data = jQuery.param( params );           
+            event.stopPropagation();
+            event.preventDefault();     
+
+            var data = jQuery.param(params);
+            getServerData(link, data, successTallymanData, errorTallymanData);
+            return false;
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 

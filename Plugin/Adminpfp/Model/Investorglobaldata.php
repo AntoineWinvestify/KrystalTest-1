@@ -38,7 +38,7 @@ class Investorglobaldata extends AppModel
 
 	var $hasMany = array(
 		'Userplatformglobaldata' => array(
-			'className' => 'Userplatformglobaldata',
+			'className' => 'Adminpfp.Userplatformglobaldata',
 			'foreignKey' => 'investorglobaldata_id',
 		)
 	);
@@ -74,6 +74,20 @@ var $validate = array();
      */
 public function readInvestorData($investorIdentity, $platformId) {
 
+    Configure::load('p2pGestor.php', 'default');
+    $serviceData = Configure::read('Tallyman'); 
+    $limitDays = $serviceData['maxHistoryLengthDays'];
+    $limitNumber = $serviceData['maxHistoryLengthNumber'];
+
+    $cutoffDate = date("Y-m-d H:i:s", time() - $limitDays * 3600 * 7 * 24);
+
+    $resultTallyman = $this->find("all", $params = array('recursive' => 1,
+							  'conditions'  => array(
+                                                              'created >' => $cutoffDate ),
+                                                              'limit' => $limitNumber )); 
+
+    
+/*
 $resultTallyman[0]['Investorglobaldata']['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[0]['Investorglobaldata']['investorglobaldata_activePFPs'] = 4;
 $resultTallyman[0]['Investorglobaldata']['investorglobaldata_totalPFPs'] = 5;
@@ -341,7 +355,7 @@ $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'
 $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCountry'] = "IT";
 $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
 $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOfActiveInvestments'] = 41;
-
+*/
 // Do some simple calculations to get extra "new" values so they can be displayed
 // enrich the information to be provided to the PFPAdmin user
   

@@ -136,11 +136,6 @@ class ocrsController extends AppController {
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
 
-    //PFPAdmin View #3
-    function showTallymanPanel() {
-        $this->layout = 'Adminpfp.azarus_private_layout';
-    }
-
     /**
      * 
      * Shows the Tallyman data of a user in a graphical manner
@@ -202,7 +197,6 @@ class ocrsController extends AppController {
                 $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
                 $resultTallymanData = $this->Investorglobaldata->readInvestorData($userIdentification, $platformId);
 
-//print_r($resulyTallyManData);
                 // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
                     $error = NO_DATA_AVAILABLE;
@@ -254,7 +248,7 @@ class ocrsController extends AppController {
      *
      *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
      * 
-     *  @param 		$reference      parameter to be checked
+     *  @param 	    $reference      parameter to be checked
      *  @param      string      transparent parameter 2 to be checked
      *  @param      string      transparent parameter 3 to be checked
      *  @param      string      transparent parameter 4 to be checked
@@ -323,13 +317,6 @@ class ocrsController extends AppController {
     public function startTallyman($investorEmail, $investorTelephone) {
 
         $this->layout = 'Adminpfp.azarus_private_layout';
-
-        $investorDNI = "";
-        $investorTelephone = "";
-        $investorEmail = "";
-
-        $investorEmail = "antoine.de.poorter@gmail.com";
-        $investorTelephone = "+34675546946";
 
         $this->set("investorEmail", $investorEmail);
         $this->set("investorDNI", $investorDNI);
