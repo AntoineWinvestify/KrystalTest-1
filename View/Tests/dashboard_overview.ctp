@@ -41,35 +41,35 @@
             <div class="card card-stats">
                 <div class="card-content">
                     <h4 class="category"><?php echo __('Total Volume')?></h4>
-                    <h3 class="title">76.125,11€</h3>
+                    <h3 class="title">76.125,11 €</h3>
                 </div>
                 <div class="card-footer">
                     <div class="stats">
                         <table id="box1Table" class="table">
                             <tbody>
                                 <tr>
-                                    <td><?php echo __('Invested Assets')?></td>
-                                    <td><?php echo __('')?></td>
+                                    <td width="70%"><?php echo __('Invested Assets')?></td>
+                                    <td><?php echo __('76.125,00 €')?></td>
                                 </tr>
                                 <tr>
                                     <td><?php echo __('Reserved Funds')?></td>
-                                    <td><?php echo __('')?></td>
+                                    <td><?php echo __('32.000,00 €')?></td>
                                 </tr>
                                 <tr>
                                     <td><?php echo __('Cash')?></td>
-                                    <td><?php echo __('')?></td>
+                                    <td><?php echo __('25.252,00 €')?></td>
                                 </tr>
                                 <tr>
                                     <td><?php echo __('Cash Drag')?></td>
-                                    <td><?php echo __('')?></td>
+                                    <td><?php echo __('25%')?></td>
                                 </tr>
                                 <tr>
                                     <td><?php echo __('Net Deposits')?></td>
-                                    <td><?php echo __('')?></td>
+                                    <td><?php echo __('13.000,00 €')?></td>
                                 </tr>
                                 <tr>
                                     <td><?php echo __('Number of Investments')?></td>
-                                    <td><?php echo __('')?></td>
+                                    <td><?php echo __('1254')?></td>
                                 </tr>
                             </tbody>
                         </table>
