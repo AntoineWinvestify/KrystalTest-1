@@ -352,9 +352,10 @@ function companyUserLogout($url = null) {
         $casper_logout->start("$url");
         $casper_logout->wait(2000);
         $casper_logout->run();
+        /*These lines are for debug purpose
         echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
         var_dump($casper_logout->getOutput());
-        echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>";
+        echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>";*/
 	return true;
 }
 
