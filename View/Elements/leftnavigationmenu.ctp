@@ -83,8 +83,8 @@ $(document).ready(function() {
           </ul>
         </li>
         <li class="treeview">
-          <a href="/tests/showInitialPanel">
-            <i class="fa fa-user-secret"></i> <span><?php echo __('Dasboard')?></span>
+          <a href="#">
+            <i class="fa fa-user-secret"></i> <span><?php echo __('Dashboard')?></span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
