@@ -1351,30 +1351,6 @@ hr.nomargin {
 /* Winvestify Login Styling*/
 .loginContainer {
     margin: 0 auto;
-    background-image: url("/img/login.png");
-    background-repeat: no-repeat;
-    max-width: 1280px;
-    height: 787px;
-}
-.loginBox {
-    background-color: white;
-    border: 1px solid gray;
-    height: 250px;
-    width: 350px;
-    float: right;
-    border-radius: 5px;
-    margin: 250px 150px 0px 0px;
-    padding-top: 20px;
-}
-.paragraph {
-    margin: 300px 0 0 50px;
-    position: absolute;
-}
-
-
-/* Winvestify Login Styling*/
-.loginContainer {
-    margin: 0 auto;
     background-image: url("/img/admin/login.png");
     background-repeat: no-repeat;
     height: 780px;
