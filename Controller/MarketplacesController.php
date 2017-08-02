@@ -43,7 +43,7 @@
 
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
-require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
+require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 
 class MarketPlacesController extends AppController {
 
@@ -51,7 +51,6 @@ class MarketPlacesController extends AppController {
     var $helpers = array('Html', 'Form', 'Js');
     var $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
     var $components = array('Security', 'Session');
-    
     private $queueCurls;
     private $newComp = array();
     private $tempArray = array();
@@ -76,8 +75,8 @@ class MarketPlacesController extends AppController {
          */
 //	$this->Security->requireAuth();
         $this->Auth->allow(array('cronMarketStart', 'listMarketPlace', 'getGlobalMarketPlaceData',
-					 'readInvestmentData', 'readGlobalDashboardData', 'cronQueueEvent',
-					 'test_linkingAccount', 'cronQueueEventParallel'));
+            'readInvestmentData', 'readGlobalDashboardData', 'cronQueueEvent',
+            'test_linkingAccount', 'cronQueueEventParallel'));
     }
 
     /**
@@ -228,7 +227,7 @@ class MarketPlacesController extends AppController {
      *
      */
 // start the cronjob
-    function cronMarketStart() {
+    function cronMarketStart($type = 1) {
 
         $this->autoRender = false;
         Configure::write('debug', 2);
@@ -269,7 +268,11 @@ class MarketPlacesController extends AppController {
         foreach ($companyList as $companyId) {
             $this->Configuration->writeConfigParameter('lastScannedCompany', $companyId);
             echo "companyId = $companyId <br>";
-            $this->cronMarketPlaceLoop($companyId);
+            if ($type == 1) {
+                $this->cronMarketPlaceLoop($companyId);
+            } else if ($type == 2) {
+                $this->cronMarketPlaceHistorical($companyId);
+            }
         }
     }
 
@@ -281,7 +284,7 @@ class MarketPlacesController extends AppController {
      */
     function cronMarketPlaceLoop($companyId) {
         $this->autoRender = false;
-        Configure::write('debug', 2);
+        //Configure::write('debug', 2);
 
         $companyConditions = array('Company.id' => $companyId);
         $result = $this->Company->getCompanyDataList($companyConditions);
@@ -289,138 +292,125 @@ class MarketPlacesController extends AppController {
         pr($result);
         echo "<br>____ Checking Company " . $result[$companyId]['company_name'] . " ____<br>";
 
-        $companyMarketplace = $this->Marketplace->find('all',array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
-        echo 'inversiones';
-        foreach($companyMarketplace as $inversion){
-            print_r($inversion);
-            echo '</br>';
-        };
-        
-        $companyBackup = $this->Marketplacebackup->find('all',array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
-                echo 'backup';
-        foreach($companyBackup as $backup){
-            print_r($backup);
-            echo '</br>';
-        };
-        
-        $newComp = $this->companyClass($result[$companyId]['company_codeFile'],$companyMarketplace,$companyBackup); // create a new instance of class zank, comunitae, etc.	
-        /*$newComp->defineConfigParms($result[$companyId]);
+        $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+        $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+
+        $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
+        $newComp->defineConfigParms($result[$companyId]);
 
         $companyId = $result[$companyId]['id'];
         $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MARKETPLACE_SEQUENCE);
 
         $this->print_r2($urlSequenceList);
         $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $marketplaceArray = $newComp->collectCompanyMarketplaceData();
+        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyMarketplace, $companyBackup);
 
-// read all existing entries for company
-        $companyFilterConditions = array('company_id' => $result[$companyId]['id']);
-//echo  __FUNCTION__ . " " . __LINE__ . "company filtering condition = ";
-//$this->print_r2($companyFilterConditions);
-        $allCompanyMarketListings = $this->Marketplace->find("list", $params = array('recursive' => -1,
-            'fields' => array('Marketplace.company_id'),
-            'conditions' => $companyFilterConditions,
-                )
-        );
-        echo __FUNCTION__ . " " . __LINE__ . "<br>";
-//		$this->print_r2($allCompanyMarketListings);
 
-        foreach ($marketplaceArray as $listing) {
-            $conditions = array('marketplace_loanReference' => $listing['marketplace_loanReference']);
-//			echo "<br>" . __FUNCTION__ . " " . __LINE__ . " Conditions<br>";
-//			$this->print_r2($conditions);
-            $existingCompanyMarketListing = $this->Marketplace->find("all", $params = array('recursive' => -1,
-                'conditions' => $conditions,
-                'limit' => 1,
-                'order' => 'Marketplace.id DESC',
-                    )
-            );
-            echo __FUNCTION__ . " " . __LINE__ . "<br>";
-            $this->print_r2($existingCompanyMarketListing);
 
-            $listing['company_id'] = $result[$companyId]['id'];
-            echo __FUNCTION__ . " " . __LINE__ . " Company_id = " . $result[$companyId]['id'];
-            $this->Marketplace->clear();
-            $this->print_r2($listing);
+        foreach ($marketplaceArray as $investment) {
+            $DontExist = true;
+            $investment['company_id'] = $companyId;
+            echo __FUNCTION__ . __LINE__ . "PFP Investment reading:<br>";
+            $this->print_r2($investment);
+            foreach ($companyMarketplace as $marketplaceInvestment) {
+                $DontExist = false;
+                if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
+                    echo "Investment alreadty exist<br>";
+                    if ($investment['marketplace_loanReference'] == 10000) { //If is completed
+                        echo "Investment completed<br>";
 
-            if ($listing['marketplace_subscriptionProgress'] == 10000) { // company maintains this entry in their marketplace (?)
-                echo __FUNCTION__ . " " . __LINE__ . " Loan with 100% detected<br>";
-                
-                 /************/
-                 /*** 100% ***/  //Hacer backup, borrar del marketplace.
-                 /************/
-                
-              /*  continue;             // eventhough you can no longer invest in this option
-            }
+                        //Delete from maketplace
+                        $this->Marketplace->delete($marketplaceInvestment['Marketplace']['id']);
 
-            if (empty($existingCompanyMarketListing)) {   // New entry found, save it 
-                if ($this->Marketplace->save($listing, $validate == true)) {
-                    echo __FUNCTION__ . " " . __LINE__ . " " . "New listing found and saved in DB<br>";
-                } else {
-                    CakeLog::write('cronLog.txt', "Error saving following data: " . json_encode($listing));
-                    echo __FUNCTION__ . " " . __LINE__ . " " . "ERROR while trying to save a new listing in DB<br>";
-                }
-            } else { // already existing entry, so just update some of the data (if aplicable) for this listing like "daysLeft and save backup
-                echo __FUNCTION__ . " " . __LINE__ . " check if something has changed<br>";
-                $dataChangeDetected = false;
-                foreach ($listing as $key => $item) {
-                    $this->print_r2($item);
-                    echo __FILE__ . " " . __LINE__ . "   key = $key <br>";
-                    echo "comp1 = " . $existingCompanyMarketListing[0]['Marketplace'][$key] . " and comp2 = " . $item . "<br>";
-                    if (trim($existingCompanyMarketListing[0]['Marketplace'][$key]) <> trim($item)) {
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "A change detected <br>";
-                        $dataChangeDetected = true;
-                        break;
-                    }
-                }
-                if ($dataChangeDetected == true) {
-                    echo __FILE__ . " " . __LINE__ . "  Make a backup of DB record " . $existingCompanyMarketListing[0]['Marketplace']['id'] . "<br>";
-                    $resultBackup = $this->backupRecord($existingCompanyMarketListing[0]['Marketplace']['id']);
-                    if ($resultBackup == false) {
-                        CakeLog::write('cronLog.txt', 'Error saving backing up DB table: company_id = ' .
-                                $result[$companyId]['company_name'] . 'and loanReference =  ' .
-                                $listing['marketplace_loanReference']);
-                    }
-                    if ($this->Marketplace->save($listing, $validate == true)) {
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "A CHANGE of existing listing was detected <br>";
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "An updated listing saved as new entry in the DB<br>";
-                    } else {
-                        CakeLog::write('cronLog.txt', "Error saving following data: " . json_encode($listing));
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "ERROR while trying to save a new listing in DB<br>";
-                    }
-                } else {
-                    $listing['id'] = $existingCompanyMarketListing[0]['Marketplace']['id'];
-                    unset($allCompanyMarketListings[$listing['id']]);
-                    echo __FUNCTION__ . " " . __LINE__ . " " . "Nothing has changed so the existing listing will be updated in DB<br>";
-                    echo __FUNCTION__ . " " . __LINE__ . " " . "listingID = " . $listing['id'] . " <br>";
-//					write a 'dummy' field so that the "modified" field gets updated
-                    $listing['marketplace_loanReference'] = $existingCompanyMarketListing[0]['Marketplace']['marketplace_loanReference'];
-                    if ($this->Marketplace->save($listing, $validate == true)) {
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "Modified field has been updated <br>";
-                    } else {
-                        CakeLog::write('cronLog.txt', "Error saving following data: " . json_encode($listing));
-                        // error while saving data, log this and inform admin
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "ERROR while trying to update an exiting listing in DB<br>";
+                        //Save complete in backup
+                        $this->Marketplacebackup->create();
+                        $this->Marketplacebackup->save($investment);
+                        continue;
+                    } else { //If isn't completed
+                        echo "Investment incompleted<br>";
+                        //Save in backup
+                        $this->Marketplacebackup->create();
+                        $this->Marketplacebackup->save($investment);
+
+                        //Replace in marketplace
+                        $investment['id'] = $marketplaceInvestment['Marketplace']['id'];
+                        $this->Marketplace->save($investment);
+                        continue;
                     }
                 }
             }
-        }  // foreach ($marketplaceArray as $listing) {
-// move the records that were *NOT* modified to the backup database. These records indicate an loan entry which was
-// fully subscribed or which did not reach the fully subscribed status during the publication phase
-        /*echo __FUNCTION__ . " " . __LINE__ . " Check if records must be deleted <br>";
-        pr($allCompanyMarketListings);
-        foreach ($allCompanyMarketListings as $key => $companyListing) {
-            echo __FUNCTION__ . " " . __LINE__ . " " . "Move a non referenced DB record " .
-            $existingCompanyMarketListing[0]['Marketplace']['id'] .
-            " key = $key to backup<br>";
-//			$result = $this->backupRecord($existingCompanyMarketListing[0]['Marketplace']['id']);
-            $resultBackup = $this->backupRecord($key);
-            if ($resultBackup == false) {
-                CakeLog::write('cronLog.txt', 'Error saving backing up DB table: company_id = ' .
-                        $resultBackup['Company']['company_name'] . ' and loanReference =  ' .
-                        $listing['marketplace_loanReference']);
+
+            if ($DontExist) {//If not exist in winvestify marketplace
+                if ($investment['marketplace_loanReference'] == 10000) { //If it is completed
+                    echo "Investment completed<br>";
+                    foreach ($companyBackup as $investmentBackup) {
+                        if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplace']['marketplace_loanReference']) { //If it exist in winvestify backup
+                            if ($investment['marketplace_status'] == $investmentBackup['Marketplace']['marketplace_status']) { //Same status
+                                //Ignore
+                                continue;
+                            }
+                        } else { //If it not exist in winvestify backup
+                            //Save in backup
+                            $this->Marketplacebackup->create();
+                            $this->Marketplacebackup->save($investment);
+                            continue;
+                        }
+                    }
+                } else {  //If isn't completed
+                    echo "Investment incompleted<br>";
+
+                    //Add to marketplace
+                    $this->Marketplace->create();
+                    $this->Marketplace->save($investment);
+
+                    //Add to Backup   
+                    $this->Marketplacebackup->create();
+                    $this->Marketplacebackup->save($investment);
+                    continue;
+                }
             }
-        }*/
+        }
+    }
+
+    function cronMarketPlaceHistorical($companyId) {
+        $this->autoRender = false;
+        //Configure::write('debug', 2);
+        $repeat = true; //Read another page
+
+        $companyConditions = array('Company.id' => $companyId);
+        $result = $this->Company->getCompanyDataList($companyConditions);
+
+        pr($result);
+        echo "<br>____ Checking Company " . $result[$companyId]['company_name'] . " ____<br>";
+
+        $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+        $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+
+        $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
+        $newComp->defineConfigParms($result[$companyId]);
+
+        $companyId = $result[$companyId]['id'];
+
+
+        while ($repeat != false) {
+
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MARKETPLACE_SEQUENCE);
+            $this->print_r2($urlSequenceList);
+            $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+
+
+            $marketplaceArray = $newComp->collectHistorical($start); //$start is for zank
+            foreach ($marketplaceArray[0] as $investment) {
+                $investment['company_id'] = $companyId;
+                echo __FUNCTION__ . __LINE__ . "PFP Backup Saving:<br>";
+                $this->print_r2($investment);
+                $this->Marketplacebackup->create();
+                $this->Marketplacebackup->save($investment);
+            }
+
+            $start = $marketplaceArray[1];
+            $repeat = $marketplaceArray[1];
+        }
     }
 
     /**
@@ -498,7 +488,7 @@ class MarketPlacesController extends AppController {
         }
         return $companyIdLinkedList;
     }
-    
+
     /**
      *
      * 	Initiates the collection of the investment data in parallel of all linked accounts of the investor. The result is stored
@@ -547,7 +537,7 @@ class MarketPlacesController extends AppController {
             echo "<br>******** Executing the loop **********<br>";
             $index++;
             $this->companyId[$i] = $linkedaccount['Linkedaccount']['company_id'];
-            echo "companyId = ".$this->companyId[$i]." <br>";
+            echo "companyId = " . $this->companyId[$i] . " <br>";
             $companyConditions = array('Company.id' => $this->companyId[$i]);
             $result[$i] = $this->Company->getCompanyDataList($companyConditions);
             $this->newComp[$i] = $this->companyClass($result[$i][$this->companyId[$i]]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
@@ -568,7 +558,7 @@ class MarketPlacesController extends AppController {
             $this->newComp[$i]->defineConfigParms($configurationParameters);
             $i++;
         }
-        
+
         $companyNumber = 0;
         echo "MICROTIME_START = " . microtime() . "<br>";
         //We start at the same time the queue on every company
@@ -576,7 +566,7 @@ class MarketPlacesController extends AppController {
             $this->newComp[$companyNumber]->collectUserInvestmentDataParallel();
             $companyNumber++;
         }
-        
+
         /*
          * This is the callback's queue for the companies cURLs, when one request is processed
          * Another enters the queue until finishes
@@ -586,34 +576,33 @@ class MarketPlacesController extends AppController {
             // The ids[0] is the company id
             // The ids[1] is the switch id
             // The ids[2] is the type of request (WEBPAGE, LOGIN, LOGOUT)
-            $ids = explode(";",$event->request->_page);
+            $ids = explode(";", $event->request->_page);
             //We get the response of the request
             $response = $event->response;
             //We get the web page string
             $str = $response->getContent();
             $error = "";
             //if (!empty($this->testConfig['active']) == true) {
-            echo 'CompanyId:'.$this->companyId[$ids[0]].
-                    '   HTTPCODE:'. $response->getInfo(CURLINFO_HTTP_CODE)
-                    .'<br>';
-            
+            echo 'CompanyId:' . $this->companyId[$ids[0]] .
+            '   HTTPCODE:' . $response->getInfo(CURLINFO_HTTP_CODE)
+            . '<br>';
+
             if ($response->hasError()) {
                 $this->errorCurl($response->getError(), $ids, $response);
                 $error = $response->getError();
-            }
-            else {
+            } else {
                 echo "<br>";
                 //}
                 //if ($this->config['tracingActive'] == true) {
-                   // $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
+                // $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
                 //}
                 if ($ids[2] != "LOGOUT") {
                     $this->newComp[$ids[0]]->setIdForSwitch($ids[1]);
                     $this->tempArray[$ids[0]] = $this->newComp[$ids[0]]->collectUserInvestmentDataParallel($str);
                 }
             }
-            
-            if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT &&  $this->newComp[$ids[0]]->getTries() == 0) {
+
+            if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$ids[0]]->getTries() == 0) {
                 $this->logoutOnCompany($ids, $str);
                 $this->newComp[$ids[0]]->setIdForSwitch(0); //Set the id for the switch of the function company
                 $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
@@ -621,22 +610,19 @@ class MarketPlacesController extends AppController {
                 $this->newComp[$ids[0]]->deleteCookiesFile();
                 //$this->newComp[$ids[0]]->generateCookiesFile();
                 $this->newComp[$ids[0]]->collectUserInvestmentDataParallel();
-            }
-            else if ($ids[2] == "LOGOUT") {
+            } else if ($ids[2] == "LOGOUT") {
                 echo "LOGOUT FINISHED <br>";
                 //$this->newComp[$ids[0]]->deleteCookiesFile();
-            }
-            else if ((!empty($this->tempArray[$ids[0]]) || ($response->hasError()) && $ids[2] != "LOGOUT")) {
+            } else if ((!empty($this->tempArray[$ids[0]]) || ($response->hasError()) && $ids[2] != "LOGOUT")) {
                 if ($response->hasError()) {
-                     //$this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
-                     $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2], $error);
+                    //$this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
+                    $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2], $error);
                 }
                 $this->logoutOnCompany($ids, $str);
                 if ($ids[2] == "LOGOUT") {
                     unset($this->tempArray['global']['error']);
                 }
             }
-            
         });
 
         //This is the queue. It is working until there are requests
@@ -644,7 +630,7 @@ class MarketPlacesController extends AppController {
             echo '*';
             $this->queueCurls->socketSelect();
         }
-            
+
         echo "FINISHED MICROTIME_STOP = " . microtime() . "<br>";
         for ($i = 0; $i < count($this->tempArray); $i++) {
             if (!empty($this->tempArray[$i]['global']['error'])) {
@@ -654,13 +640,13 @@ class MarketPlacesController extends AppController {
         }
         $companyNumber = 0;
         for ($i = 0; $i < count($this->tempArray); $i++) {
-            
+
             //$tempArray = $this->newComp[$i]->collectUserInvestmentData($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
 
-            /*$urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
-            $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-            $newComp->companyUserLogout();*/
-            /***************************************/
+            /* $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
+              $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+              $newComp->companyUserLogout(); */
+            /*             * ************************************ */
             echo "PHOTO MICROTIME_START = " . microtime() . "<br>";
             if (empty($this->tempArray[$i]['global']['error'])) {
                 $this->tempArray[$i]['companyData'] = $result[$i][$this->companyId[$i]];
@@ -669,25 +655,25 @@ class MarketPlacesController extends AppController {
                 $result1 = array_merge($userInvestment['investments'], $this->tempArray[$i]);
                 echo "RESULT1 = ";
                 $this->print_r2($result1);
-    //prepare all globals on total dashboard level	
-    //			$dashboardGlobals['amountInvested']	= $dashboardGlobals['amountInvested'] + $userInvestments['global']['activeInInvestments'];
+                //prepare all globals on total dashboard level	
+                //			$dashboardGlobals['amountInvested']	= $dashboardGlobals['amountInvested'] + $userInvestments['global']['activeInInvestments'];
                 $dashboardGlobals['amountInvested'] = $dashboardGlobals['amountInvested'] + $userInvestments['global']['totalInvestment'];
                 $dashboardGlobals['wallet'] = $dashboardGlobals['wallet'] + $userInvestments['global']['myWallet'];
                 $dashboardGlobals['totalEarnedInterest'] = $dashboardGlobals['totalEarnedInterest'] + $userInvestments['global']['totalEarnedInterest'];
                 $dashboardGlobals['profitibilityAccumulative'] = $dashboardGlobals['profitibilityAccumulative'] + $userInvestments['global']['profitibility'];
 
-    // Amount that was invested totally in all the currently active investments
+                // Amount that was invested totally in all the currently active investments
                 $dashboardGlobals['totalInvestments'] = $dashboardGlobals['totalInvestments'] + $userInvestments['global']['totalInvestments'];
 
-    // The number of active investments in all companies:
+                // The number of active investments in all companies:
                 $dashboardGlobals['activeInvestments'] = $dashboardGlobals['activeInvestments'] + count($userInvestments['investments']);
 
                 $dashboardGlobals['investments'][$result[$i][$this->companyId[$i]]['company_name']] = $userInvestments;
 
-    // *********************************************************************************************************		
-    // Save "intermediate photos", so investor will always see something. The result is that for a user who has
-    // investments in 4 platforms, the system will generate 4 photos, with each photo including the previous one
-    // *********************************************************************************************************
+                // *********************************************************************************************************		
+                // Save "intermediate photos", so investor will always see something. The result is that for a user who has
+                // investments in 4 platforms, the system will generate 4 photos, with each photo including the previous one
+                // *********************************************************************************************************
 
                 $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
                 if ($this->Data->save(array('data_investorReference' => $resultQueue['Queue']['queue_userReference'],
@@ -698,12 +684,11 @@ class MarketPlacesController extends AppController {
                 } else {
                     // log error
                 }
-            }
-            else {
+            } else {
                 echo $this->tempArray[$i];
                 unset($this->tempArray[$i]);
             }
-            
+
             echo "<br>******* End of Loop ****** <br>";
         }
 
@@ -853,7 +838,7 @@ class MarketPlacesController extends AppController {
             echo "<h1>            aqui";
             $this->print_r2($dashboardGlobals);
             echo "</h1>";
-            
+
             echo "<br>******* End of Loop ****** <br>";
         }
 
@@ -899,7 +884,7 @@ class MarketPlacesController extends AppController {
         $this->layout = 'ajax';
         echo "cache eliminada";
     }
-    
+
     /**
      * Function to do logout of company
      * @param array $ids They are the ids of the company
@@ -911,7 +896,7 @@ class MarketPlacesController extends AppController {
         $this->newComp[$ids[0]]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
         $this->newComp[$ids[0]]->companyUserLogoutMultiCurl($str);
     }
-    
+
     /**
      * Function to process if there is an error with the request on parallel
      * @param object $error It is the curl error
@@ -920,9 +905,9 @@ class MarketPlacesController extends AppController {
      */
     function errorCurl($error, $ids, $response) {
         echo
-            'Error code: '.$error->getCode()."<br>".
-            'Message: "'.$error->getMessage().'" <br>';
-        echo 'CompanyId:'.$this->companyId[$ids[0]].'<br>';
+        'Error code: ' . $error->getCode() . "<br>" .
+        'Message: "' . $error->getMessage() . '" <br>';
+        echo 'CompanyId:' . $this->companyId[$ids[0]] . '<br>';
         $testConfig = $this->newComp[$ids[0]]->getTestConfig();
         if (!empty($testConfig['active']) == true) {
             print_r($response->getInfo());
@@ -933,15 +918,16 @@ class MarketPlacesController extends AppController {
             $this->newComp[$ids[0]]->doTracing($config['traceID'], $ids[2], $str);
         }
     }
-    
+
     /*
      * 
      * Get the variable queueCurls
      */
+
     public function getQueueCurls() {
         return $this->queueCurls;
     }
-    
+
     /**
      * 
      * Add a request to the queue to initiate the multi_curl
