@@ -91,9 +91,9 @@ $(document).ready(function() {
           </a>
           <ul class="treeview-menu">
               <li><a href="/tests/showInitialPanel"><i class="fa fa-circle-o"></i> <?php echo __('Initial Panel')?></a></li>
-            <li><a href="/tests/overview"><i class="fa fa-circle-o"></i> <?php echo __('Overview')?></a></li>
-            <li><a href="/tests/myInvestments"><i class="fa fa-circle-o"></i> <?php echo __('My Investment')?></a></li>
-            <li><a href="/tests/stats"><i class="fa fa-circle-o"></i> <?php echo __('Stats')?></a></li>
+            <li><a href="/tests/dashboardOverview"><i class="fa fa-circle-o"></i> <?php echo __('Overview')?></a></li>
+            <li><a href="/tests/dashboardMyInvestments"><i class="fa fa-circle-o"></i> <?php echo __('My Investment')?></a></li>
+            <li><a href="/tests/dashboardStats"><i class="fa fa-circle-o"></i> <?php echo __('Stats')?></a></li>
           </ul>
         </li>
         <li class="treeview">

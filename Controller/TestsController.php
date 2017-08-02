@@ -113,7 +113,15 @@ function showUserData($userIdentity, $number) {
 
     function showInitialPanel(){
         $this->layout = 'azarus_private_layout';
-        echo " ";
+    }
+    function dashboardOverview(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardMyInvestments(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardStats(){
+        $this->layout = 'azarus_private_layout';
     }
     
     
