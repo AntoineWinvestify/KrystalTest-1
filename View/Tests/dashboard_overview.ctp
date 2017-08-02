@@ -14,14 +14,20 @@
  * +--------------------------------------------------------------------------------------------+
  * 
  * @author
- * @version 0.1
+ * @version 0.2
  * @date 2017-08-02
  * @package
  * 
  * DASHBOARD 2.0 - Dashboard overview
- *  * 
+ * 
  * [2017-08-01] version 0.1
  * Initial view
+ * 
+ * [2017-08-02] version 0.2
+ * Added plugins
+ * Added style
+ * Added Js
+ * Added all content
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -35,6 +41,10 @@
         });
     });
 </script>
+<style>
+    td { width: 50%; }
+    td.right { text-align: right; }
+</style>
 <div class="dashboardOverview">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
@@ -44,36 +54,34 @@
                     <h3 class="title">76.125,11 €</h3>
                 </div>
                 <div class="card-footer">
-                    <div class="stats">
-                        <table id="box1Table" class="table">
-                            <tbody>
-                                <tr>
-                                    <td width="70%"><?php echo __('Invested Assets')?></td>
-                                    <td><?php echo __('76.125,00 €')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Reserved Funds')?></td>
-                                    <td><?php echo __('32.000,00 €')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Cash')?></td>
-                                    <td><?php echo __('25.252,00 €')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Cash Drag')?></td>
-                                    <td><?php echo __('25%')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Net Deposits')?></td>
-                                    <td><?php echo __('13.000,00 €')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Number of Investments')?></td>
-                                    <td><?php echo __('1254')?></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table id="box1Table" class="table">
+                        <tbody>
+                            <tr>
+                                <td><?php echo __('Invested Assets')?></td>
+                                <td class="right"><?php echo __('76.125,00 €')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Reserved Funds')?></td>
+                                <td class="right"><?php echo __('32.000,00 €')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Cash')?></td>
+                                <td class="right"><?php echo __('25.252,00 €')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Cash Drag')?></td>
+                                <td class="right"><?php echo __('25%')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Net Deposits')?></td>
+                                <td class="right"><?php echo __('13.000,00 €')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Number of Investments')?></td>
+                                <td class="right"><?php echo __('1254')?></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -84,36 +92,33 @@
                     <h3 class="title">12,25%</h3>
                 </div>
                 <div class="card-footer">
-                    <div class="stats">
-                        <table id="box2Table" class="table">
-                            <tbody>
-                                <tr>
-                                    <td><?php echo __('Return Past 12 Months')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Return Year to date')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Return Past Months')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __(' ')?></td>
-                                    <td><?php echo __(' ')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Net Return')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Net Return Past Months')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table id="box2Table" class="table" width="100%" cellspacing="0">
+                        <tbody>
+                            <tr>
+                                <td><?php echo __('Return Past 12 Months')?></td>
+                                <td class="right"><?php echo __('12,15%')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Return Year to date')?></td>
+                                <td class="right"><?php echo __('11,33%')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Return Past Months')?></td>
+                                <td class="right"><?php echo __('9,22%')?></td>
+                            </tr>
+                            <tr>
+                                <td><br/></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Net Return')?></td>
+                                <td class="right"><?php echo __('995,00 €')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Net Return Past Months')?></td>
+                                <td class="right"><?php echo __('935,00 €')?></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -124,32 +129,34 @@
                     <h3 class="title">2,25%</h3>
                 </div>
                 <div class="card-footer">
-                    <div class="stats">
-                        <table id="box3Table" class="table">
-                            <tbody>
-                                <tr>
-                                    <td><?php echo __('Current')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('8-30 DPD')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('31-61 DPD')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('60-90 DPD')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo __('Written Off')?></td>
-                                    <td><?php echo __('')?></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table id="box3Table" class="table">
+                        <tbody>
+                            <tr>
+                                <td><?php echo __('Current')?></td>
+                                <td class="right"><?php echo __('2,25%')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('8-30 DPD')?></td>
+                                <td class="right"><?php echo __('2,99%')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('31-61 DPD')?></td>
+                                <td class="right"><?php echo __('2,25%')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('60-90 DPD')?></td>
+                                <td class="right"><?php echo __('1,99%')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('90 - DPD')?></td>
+                                <td class="right"><?php echo __('1,22%')?></td>
+                            </tr>
+                            <tr>
+                                <td><?php echo __('Written Off')?></td>
+                                <td class="right"><?php echo __('3.678,00 €')?></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
