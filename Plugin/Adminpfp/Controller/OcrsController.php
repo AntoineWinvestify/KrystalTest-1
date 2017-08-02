@@ -195,8 +195,9 @@ class ocrsController extends AppController {
                 $error = USER_DOES_NOT_EXIST;
             } else {
                 $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
-                $resultTallymanData = $this->Investorglobaldata->readInvestorData($userIdentification, $platformId);
+                $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
 
+//print_r($resulyTallyManData);
                 // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
                     $error = NO_DATA_AVAILABLE;

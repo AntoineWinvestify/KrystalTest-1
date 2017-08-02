@@ -148,13 +148,7 @@
                     <li style="float:left"><a href="https://www.linkedin.com/company-beta/11000640/"><small><i class="g-padding-r-5--xs ti-linkedin"></i></small></a></li>
                     <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                 </ul>
-                <ul class="nav navbar-nav navbar-left">
-                    <li><a href="#mark_features"><?php echo __('Features') ?></a></li>
-                    <li><a href="#mark_ftb"><?php echo __('Investor Toolbox') ?></a></li>
-                    <li><a href="#mark_platforms"><?php echo __('Platforms') ?></a></li>
-                    <li><a href="#mark_statistics"><?php echo __('Statistics') ?></a></li>
-                    <li><a href="/Contactforms/form"><?php echo __('Contact') ?></a></li>
-                </ul>
+
             </div><!-- /.navbar-collapse -->
         </div> <!--/container-fluid-->
     </nav>

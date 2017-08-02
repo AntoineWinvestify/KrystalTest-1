@@ -268,6 +268,18 @@ if ($result) {
 
 
 
+        //Google Analytics
+        function ga_1CRConfirmCompanies(number, email) {
+            //Use INVESTOR ID
+            console.log("ga 'send' 'event' '1ClickRegistration'  'serviceContracted' " + email + " " + number);
+            if (typeof ga === 'function') {
+                ga('send', 'event', '1ClickRegistration', 'serviceContracted', email, number);
+            }
+        }
+
+
+
+
 
 
     </script>

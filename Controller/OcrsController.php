@@ -160,7 +160,8 @@ class ocrsController extends AppController {
             );
 
 
-            $result1 = $this->Investor->investorDataSave($datosInvestor); //Save the investor data
+
+            $result1 = $this->Investor->investorDataSave($dataInvestor); //Save the investor data
             $status = $this->Ocr->checkStatus($id);
 
 
