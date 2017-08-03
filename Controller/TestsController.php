@@ -123,6 +123,9 @@ function showUserData($userIdentity, $number) {
     function dashboardStats(){
         $this->layout = 'azarus_private_layout';
     }
+    function modal(){
+        $this->layout = 'azarus_private_layout';
+    }
     
     
 }

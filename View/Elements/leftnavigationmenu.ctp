@@ -94,6 +94,7 @@ $(document).ready(function() {
             <li><a href="/tests/dashboardOverview"><i class="fa fa-circle-o"></i> <?php echo __('Overview')?></a></li>
             <li><a href="/tests/dashboardMyInvestments"><i class="fa fa-circle-o"></i> <?php echo __('My Investments')?></a></li>
             <li><a href="/tests/dashboardStats"><i class="fa fa-circle-o"></i> <?php echo __('Stats')?></a></li>
+            <li><a href="/tests/modal"><i class="fa fa-circle-o"></i> <?php echo __('NEW MODAL')?></a></li>
           </ul>
         </li>
         <li class="treeview">
