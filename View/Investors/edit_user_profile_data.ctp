@@ -131,7 +131,7 @@ $(document).ready(function() {
             return false;
         }
         else {	
-            console.log("second edit of personal data has been checked locally using Javascript");	
+            console.log("second edit of personal data has been checked locally using Javascript");
             var params = {	
                 password: $("#ContentPlaceHolder_password_confirm").val(),
                 investor_name: $("#ContentPlaceHolder_name").val(),
@@ -181,8 +181,8 @@ $(document).ready(function() {
                     }
                 ?>
 
-                <div class="card-content table-responsive">
-                    <div class="overlay">
+                <div class="card-content table-responsive togetoverlay">
+                    <div class="overlay" style="display:none;">
                         <div class="fa fa-spin fa-spinner" style="color:green">	
                         </div>
                     </div>
