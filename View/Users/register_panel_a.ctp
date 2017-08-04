@@ -126,7 +126,7 @@ ajax spinner
         $('#registerModal').replaceWith(data);
 
     }
-    function errorSendRegis+trationDButton(data) {
+    function errorSendRegistrationDButton(data) {
         console.log("errorSendRegistrationDButton function is called");
         $('#registerModal').replaceWith(data);
     }
@@ -213,7 +213,7 @@ ajax spinner
 
 // Not yet used, as this is social network functionality
         $(document).on("click", "#btnSendFollowers", function (event) {
-            var lin+k = $(this).attr("href");
+            var link = $(this).attr("href");
             var data = 1;
 
             event.stopPropagation();
