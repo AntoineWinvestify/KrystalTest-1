@@ -56,6 +56,10 @@
     .headerBox {
         font-size: large;
     }
+    hr {
+        margin: 8px !important;
+        color: white;
+    }
 </style>
 <div class="dashboardOverview">
     <div class="row">
@@ -155,6 +159,7 @@
                                                     <td><?php echo __('Return Past Months')?></td>
                                                     <td class="right"><?php echo __('9,22%')?></td>
                                                 </tr>
+                                                <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 <tr>
                                                     <td><?php echo __('Net Return')?></td>
                                                     <td class="right"><?php echo __('995,00 €')?></td>
