@@ -59,7 +59,8 @@ $(document).ready(function() {
             $sectorsName = [
                 [__("Dashboard")],
                 [__("Global Marketplace"), __("My Marketplace") ],
-                [__("Link Account"), __("Personal Data") ],
+                [__("Personal Data")],
+                [__("Link Account")],
                 [__("One Click Registration")],
                 [__("New Users")],
                 [__("Bills")],
