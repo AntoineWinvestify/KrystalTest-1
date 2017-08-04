@@ -248,6 +248,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
 										echo $this->Form->input('name', array(
 											'label' 		=> false,
 											'class' 		=> 'form-control blue_noborder22',
+                                                                                        'type'                  => 'text',
 											'disabled'		=> 'disabled',
 											'value'			=> $account['Linkedaccount']['linkedaccount_username'],						
 							)); 
@@ -330,6 +331,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                 <?php			
                                         echo $this->Form->input('Linkedaccount.linkedaccount_username', array(
                                                                                                                         'id' 			=> 'ContentPlaceHolder_userName',
+                                                                                                                        'type'                  => 'text',
                                                                                                                         'label' 		=> false,
                                                                                                                         'placeholder' 	=> __("Username"),
                                                                                                                         'class' 		=> 'form-control blue_noborder2 userName',
