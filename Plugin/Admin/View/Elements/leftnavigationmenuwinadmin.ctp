@@ -76,10 +76,11 @@ $(document).ready(function() {
                         echo "</ul>";
                         $sectorHasChildren = false;
                     }
-                    if ($sectorActual != 0) {
+                    /* If this is active, it will repeat a close tag li
+                    * if ($sectorActual != 0) {
                         echo "</li>";
-                    }
-                    echo "<li class='treeview'>";
+                    }*/
+                    /*echo "<li class='treeview'>";
                     $sectorActual = $sector["Sector"]["sectors_father"];
                 }
                 if ($sector["Sector"]["sectors_subSectorSequence"] == 1) {
