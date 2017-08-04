@@ -80,9 +80,6 @@ $(document).ready(function() {
                         echo "</ul>";
                         $sectorHasChildren = false;
                     }
-                    if ($sectorActual != 0) {
-                        echo "</li>";
-                    }
                     echo "<li class='treeview'>";
                     $sectorActual = $sector["Sector"]["sectors_father"];
                 }
