@@ -135,7 +135,6 @@ foreach ($dashboardGlobals['investments'] as $key => $companyGlobal) {
         getServerData(link, data, successGetDashboardData, errorGetDashboardData);
 
 
-        $(function () {
 
             Chart.defaults.global.legend.display = false;
 
@@ -265,8 +264,6 @@ foreach ($dashboardGlobals['investments'] as $key => $companyGlobal) {
             });
 
         });	// function
-
-    });
 </script>
 
 
