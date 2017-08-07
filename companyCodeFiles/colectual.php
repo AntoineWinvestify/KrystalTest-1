@@ -118,7 +118,7 @@ function collectCompanyMarketplaceData() {
             'ignore-ssl-errors' => 'yes'
         ]);
         // navigate to login web page
-        $casper->start("$url[0]");
+        $casper->start($url[0]);
         // or wait for selector
         $casper->waitForSelector('form[name="loginForm"]', 5000);
         $casper->fillForm(
@@ -135,10 +135,12 @@ casper.waitUntilVisible(".step-instructions", function() {
 FRAGMENT
         );
         //$casper->click('a[href*="proyectosLista"]');
-        $casper->wait(2000);
+        // or wait for selector
+        $casper->waitForSelector('.proyecto', 5000);
         // run the casper script
         $casper->run();
         $str = $casper->getCurrentPageContent();
+        //echo $str;
         var_dump($casper->getOutput());
         echo __FUNCTION__ . __LINE__ . " END MARKETPLACE<br>";
         $casper_logout = new Casper();
@@ -146,7 +148,7 @@ FRAGMENT
             'ignore-ssl-errors' => 'yes'
         ]);
         // navigate to make logout
-        $casper_logout->start("$url[2]");
+        $casper_logout->start($url[2]);
         $casper_logout->wait(2000);
         $casper_logout->run();
         echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
