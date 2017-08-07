@@ -58,10 +58,6 @@ $userid = $parameters[0];
             $("#chargingConfirmationModal").remove();
         });
 
-        $(document).on("click", 'ul > li > a', function () {
-            return false;
-        });
-
         $(document).on("click", '#tooltip1', function () {
             $('#passwordTooltip').toggle();
         });

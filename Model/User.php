@@ -47,7 +47,7 @@
 
  */
 App::uses('CakeEvent', 'Event');
-
+App::uses("AppModel", "Model");
 class User extends AppModel {
 
     var $name = 'User';
@@ -64,13 +64,21 @@ class User extends AppModel {
             'fields' => '',
             'order' => '',
         ),
-            /*       'Winadmin' => array(
-              'className' => 'Admin.Winadmin',
-              'foreignKey' => 'user_id',
-              'fields' => '',
-              'order' => '',
-              )
-             */
+        
+ /*       'Winadmin' => array(
+            'className' => 'Admin.Winadmin',
+            'foreignKey' => 'user_id',
+            'fields' => '',
+            'order' => '',
+        )
+*/
+    );
+    
+    public $belongsTo = array(
+        'Role' => array(
+            'className' => 'Role',
+            'foreignKey' =>  'role_id'
+        )
     );
 
     /**
@@ -122,6 +130,7 @@ class User extends AppModel {
         $data = array('username' => $username,
             'password' => $userPassword,
             'email' => $username,
+            'role_id' => ROLE_INVESTOR,
         );
 
 

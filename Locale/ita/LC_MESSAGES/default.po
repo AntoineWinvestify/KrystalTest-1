@@ -4,14 +4,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"PO-Revision-Date: 2017-04-26 20:42+0200\n"
+"PO-Revision-Date: 2017-08-07 13:36+0200\n"
 "Language-Team: EMAIL@ADDRESS\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "POT-Creation-Date: \n"
-"X-Generator: Poedit 1.8.4\n"
+"X-Generator: Poedit 2.0.1\n"
 "Last-Translator: \n"
 "Language: it\n"
 
@@ -573,8 +573,7 @@ msgstr "Informazioni sull'Investimento"
 msgid "Account Created"
 msgstr "Account Creato"
 
-#: View/Elements/publicfooter.ctp:32
-#: View/Layouts/azarus_private_layout.ctp:111
+#: View/Elements/publicfooter.ctp:32 View/Layouts/azarus_private_layout.ctp:111
 msgid "Home"
 msgstr "Pagina principale"
 
@@ -1769,7 +1768,7 @@ msgstr "condizioni del servizio"
 
 #: View/Users/register_panel_a.ctp:470
 msgid " and the "
-msgstr "*** e il/la?"
+msgstr " e la "
 
 #: View/Users/register_panel_a.ctp:470
 msgid "privacy policy"

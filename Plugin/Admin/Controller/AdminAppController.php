@@ -78,6 +78,8 @@ class AdminAppController extends AppController {
 */
 public function beforeFilter() {
 
+    parent::beforeFilter();
+   
     $this->Cookie->name = 'equity';
 
     $this->Security->blackHoleCallback = 'blackhole';

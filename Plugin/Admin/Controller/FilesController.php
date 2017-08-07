@@ -27,7 +27,7 @@
  */
 App::uses('CakeEvent', 'Event');
 
-class filesController extends AppController {
+class filesController extends AdminAppController {
 
     var $name = 'Files';
     var $helpers = array('Session');
@@ -43,7 +43,7 @@ class filesController extends AppController {
     /**
      * Upload a document
      */
-    function upload() {
+    function uploadWinadmin() {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
@@ -65,7 +65,7 @@ class filesController extends AppController {
     /**
      * Download documents and bills
      */
-    function downloadDocument($type, $id) {
+    function downloadDocumentWinadmin($type, $id) {
         //Request data
         $data = $this->request['data'];
         //Load files config
@@ -85,10 +85,10 @@ class filesController extends AppController {
         }
 
         //Download
-         $this->download($pathToFile, $name);
+         $this->downloadWinadmin($pathToFile, $name);
     }
 
-    function download($path, $name) {
+    function downloadWinadmin($path, $name) {
 
         $this->autoLayout = false;
 

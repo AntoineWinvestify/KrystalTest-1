@@ -74,7 +74,7 @@
  */
 App::uses('CakeEvent', 'Event');
 
-class ocrsController extends AppController {
+class ocrsController extends AdminAppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');

@@ -1348,8 +1348,6 @@ hr.nomargin {
     top: 20px;
 }
 
-
-
 /* Winvestify Login Styling*/
 .loginContainer {
     margin: 0 auto;
@@ -2075,4 +2073,10 @@ hr.nomargin {
 
 .wizard-card-small .wizard-footer {
     padding: 0 15px 5px !important;
+}
+
+#errorBox {
+    background-color: #e6e6e6;
+    padding: 20px 50px;
+    margin-top: 20px;
 }

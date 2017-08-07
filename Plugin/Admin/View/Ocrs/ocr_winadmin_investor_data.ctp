@@ -818,7 +818,7 @@
                                             ?>               <div class="time"> <?php echo $file['file']['FilesInvestor']['modified'] ?></div>
                                             <li>
 
-                                                <form action="/admin/files/downloadDocument/ocrfile/<?php echo $file['file']['FilesInvestor']['id'] ?>">
+                                                <form action="/admin/files/downloadDocumentWinadmin/ocrfile/<?php echo $file['file']['FilesInvestor']['id'] ?>">
                                                     <button  type="submit" class="download" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></button> 
                                                 </form>
 

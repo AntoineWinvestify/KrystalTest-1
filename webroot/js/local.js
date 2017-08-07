@@ -344,7 +344,7 @@ app.visual = {
         var telephone = $(".telephoneNumber").val();
         var isCheckedPrivacyPolicy = $("#ContentPlaceHolder_registerPrivacyPolicy").is(':checked');
         $(".errorInputMessage").hide(); // remove all error texts
-        $(".editRegistrationData input").removeClass("redBorder"); // remove ALL redborders
+        $("#registerModal input").removeClass("redBorder"); // remove ALL redborders
 
         if (email === "") {
             $(".userName").addClass("redBorder");
@@ -991,18 +991,12 @@ app.utils = {
         return re.test(email);
     },
     checkPassword: function (password) {
-
-        console.log("jkjkj" + password);
-        var strength = false;
-        return true;
         //if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/) && password.length >= 10 || password.match(/([a-zA-Z])/) && password.match(/([0-9])/) && password.match(/([!,%,&,@,#,$,^,*,?,_,~])/) && password.length >= 8) {
-        console.log("checkPassword function ");
 //	if (password.match(/([A-Z])/) && password.match(/([a-z])/) && password.match(/([0-9])/) && password.match(/([!,%,&,@,#,$,^,*,?,_,~,.,+,-,€])/) && password.length >= 8) {
         if (password.match(/([A-Z])/) && password.match(/([a-z])/) && password.match(/([0-9])/) && password.length >= 8) {
             return true;
         }
-        return true;
-        return strength;
+        return false;
         ////if password contains both lower and uppercase characters, increase strength value
         //if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/))
         ////if it has numbers and characters, increase strength value
