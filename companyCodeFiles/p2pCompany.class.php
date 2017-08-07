@@ -940,6 +940,19 @@ public function verifyNodeHasElements($elements, $limit = null) {
     }
 }
 
+/*
+ * Get a list of dom elements searching by class
+ * @param dom element $dom It is the dom element of a website
+ * @param string $class It is the class which is used to search the elements
+ * @return node It is all the elements that coincide with the class
+ */
+public function getElementsByClass ($dom, $class) {
+    $dom_xpath = new DOMXPath($dom);
+    $login = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class ')]");
+    return $login;
+}
+
+
 
 
 	

@@ -76,6 +76,8 @@
         margin-left: 15px !important;
     }
 </style>
+<script src="/js/dateFormat.js"></script>
+<script src="/js/jquery-dateFormat.js"></script>
 <script>
     $(function () {
 
@@ -217,7 +219,7 @@
         $(document).on('change', "input", function () {
             id = $(this).attr('name');
             timeStamp = new Date($.now());
-            $("#" + id).html(timeStamp);
+             $("#" + id).html(DateFormat.format.date(timeStamp, "yyyy-MM-dd HH:mm:ss"));
         });
     });
     function success(data) {
@@ -239,7 +241,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - Investor Data Checking') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('Investor Data Checking') ?></strong></h4>
                 </div>
                 <div class="card-content togetoverlay">
                     <!--<div class="overlay">
@@ -723,7 +725,7 @@
                         <!-- /Investor complete data -->
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="investmentVehicle">
 
-                            <?php if ($userData[0]['Ocr']['ocr_invesmentVehicle'] == CHECKED) { ?>
+                            <?php if ($userData[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) { ?>
                                 <div id="cifOptional" class="row">
                                     <!-- CIF -->
                                     <div class="col-xs-12 col-sm-4 col-md-6 col-lg-6">
@@ -816,7 +818,7 @@
                                             ?>               <div class="time"> <?php echo $file['file']['FilesInvestor']['modified'] ?></div>
                                             <li>
 
-                                                <form action="/files/downloadDocument/ocrfile/<?php echo $file['file']['FilesInvestor']['id'] ?>">
+                                                <form action="/admin/files/downloadDocumentWinadmin/ocrfile/<?php echo $file['file']['FilesInvestor']['id'] ?>">
                                                     <button  type="submit" class="download" target="_blank"><?php echo $file['file']['FilesInvestor']['file_name'] . "(" . $file['type']['file_type'] . ")" ?></button> 
                                                 </form>
 
@@ -844,7 +846,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <button type="button" id="saveBtn" href = 'admin/ocrs/updateChecks' class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save') ?></button>
+                                    <button type="button" id="saveBtn" href = '/admin/ocrs/updateChecks' class="btn btn-default btn-lg btn-win1 btnRounded pull-left" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Save') ?></button>
                                     <button type="button" id="approveBtn" class="btn btn-default btn-lg btn-win1 btnRounded pull-right" style="padding: 10px 50px; margin-bottom: 25px"><?php echo __('Approve') ?></button>
                                 </div>
                             </div>

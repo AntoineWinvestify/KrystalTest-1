@@ -69,7 +69,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - Investor Checking') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('New Users') ?></strong></h4>
                 </div>
                 <div class="card-content togetoverlay">
                     <div class="row firstParagraph">
@@ -87,7 +87,7 @@
                             <h4 class="header1CR"><?php echo __('Investors registered on your platform') ?></h4>
                             <div class="table-responsive">  
                                 <table id="usersTable" class="table table-striped dataTable display" width="100%" cellspacing="0"
-                                                                                data-order='[[0, "asc"], [ 5, "asc" ]]' data-page-length='20'>
+                                                                                data-order='[[0, "desc"], [ 5, "desc" ]]' data-page-length='20'>
                                         <thead>
                                                 <tr>
                                                     <th width="10%"><?php echo __('Date')?></th>
@@ -116,16 +116,21 @@
                                                         $td_class = "statusNew";
                                                         break;
                                                     case "Pending":
-                                                        $icon = "fa fa-user";
+                                                        $icon = "fa fa-times";
                                                         $td_class = "statusPending";
                                                         break;
                                                     case "Error":
-                                                        $icon = "fa fa-user";
-                                                        $td_class = "statusNew";
+                                                        $icon = "fa fa-times";
+                                                        $td_class = "statusError";
                                                         break;
                                                     case "Finished":
-                                                        $icon = "fa fa-user";
+                                                        $icon = "fa fa-check";
                                                         $td_class = "statusFinished";
+                                                        break;
+                                                    case "Fixed":
+                                                        $icon = "fa fa-user";
+                                                        $td_class = "statusFixed";
+                                                        break;
                                                 }    
                                                 ?>
                                                 <td class="<?php echo $td_class ?>"><i class="<?php echo $icon ?>"></i> <?php echo __($status[$usersTable['Ocr']['ocr_status']]) ?></td>

@@ -95,23 +95,13 @@
             $(".btnCancel").prop("disabled", true);
         });
 
-        $(document).on("click", "#sureBtn", function () {
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            //Delete uploaded files
-            window.location.replace('/marketplaces/showMarketPlace');
-        });
 
-
-        /*$(document).on("click", "#btnConfirm", function () {
-            $("#1CR_investor_3_confirming").removeClass("show");
-            $("#1CR_investor_3_confirming").hide();
-            window.location.replace('/ocrs/ocrCompletedProcess');
-        });*/
-
+<?php //Delete files on cancel   ?>
         $(document).on("click", "#btnSure", function () {
-            link = "/files/deleteAll"
-            data = "null"
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
+            link = "/files/deleteAll";
+            data = "null";
             getServerData(link, data, successCancel, errorCancel);
         });
 
@@ -119,11 +109,17 @@
 
 
     function success(result) {
-<?php //Server validation Ok               ?>
-        resultJson = JSON.parse(result);
-        console.log(resultJson);
+<?php //Server validation Ok                 ?>
+<?php if ($status[0]['Ocr']['ocr_status'] == ERROR) { ?> result = result.slice(0, -1); resultJson = JSON.parse(result + '1]'); <?php } else { ?>
+            resultJson = JSON.parse(result);
+<?php } ?>
+
         if (resultJson[0] == 1 && resultJson[2] == 1) {
+            email = $('#ContentPlaceHolder_email').val();
+            ga_1CRConfirmCompanies(<?php echo $number ?>, email);
             //$(".successMsg").fadeIn();
+            $("#1CR_investor_3_confirming").removeClass("show");
+            $("#1CR_investor_3_confirming").hide();
             window.location.replace('/ocrs/ocrCompletedProcess');
             //User feedback(Status ocr control?)
         } else {
@@ -136,14 +132,20 @@
         }
     }
 
+<?php //If delete files is ok then ,delete companies_ocr NOT_SENT   ?>
     function successCancel() {
+        link = "/ocrs/deleteCompanyOcrAll";
+        data = "null";
+        getServerData(link, data, successDeleteAll, errorCancel);
+    }
+
+<?php //If you delete all files and companies_ocr, cancel is ok   ?>
+    function successDeleteAll() {
         window.location.replace('/marketplaces/showMarketPlace');
     }
 
-
     function error(result) {
-<?php //Server validation Error           ?>
-        console.log("validation error");
+<?php //Server validation Error             ?>
         $(".errorMsg").fadeIn();
     }
 
@@ -151,7 +153,14 @@
         $(".errorMsg").fadeIn();
     }
 
-
+            
+        
+    //Google Analytics
+    function ga_1CRConfirmCompanies(number,email) {
+        if (typeof ga === 'function') { 
+            ga('send', 'event', '1ClickRegistration', 'serviceContracted', email ,number);
+        }
+    }
 </script>
 <?php if ($status[0]['Ocr']['ocr_status'] == NOT_SENT || $status[0]['Ocr']['ocr_status'] == FINISHED) { ?>
     <div id="1CR_investor_3_confirming" class="modal show" role="dialog">
@@ -216,12 +225,7 @@
                             <div class="tab-content">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <p align="justify"><?php echo __('paragraph about investor giving Winvestify all his investment data to register on the next list of selected platforms.') ?></p>
-                                        <ul>
-                                            <?php foreach ($companies as $company) { ?>
-                                                <li><?php echo __($company["name"]) ?></li>
-                                            <?php } ?>
-                                        </ul>
+                                        <p align="justify"><?php echo __('Gracias por actualizar los datos erróneos que hemos detectado.') ?></p>
                                     </div>
                                     <div style="display:none;" class="errorMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">

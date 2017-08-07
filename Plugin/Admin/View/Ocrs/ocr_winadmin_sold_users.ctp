@@ -43,7 +43,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - Sold Users') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('Sold Users') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">
@@ -69,7 +69,7 @@
         <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - History of Sold Users') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('Sold Users History') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">
@@ -101,7 +101,7 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive">
                                 <table id="uploadedBills" class="table table-striped display dataTable"  width="100%" cellspacing="0"
-                                       data-order='[[ 3, "asc" ]]' data-page-length='25' rowspan='1' colspan='1'>
+                                       data-order='[[ 3, "desc" ]]' data-page-length='25' rowspan='1' colspan='1'>
                                     <tr>
                                         <th width="15%"><?php echo __('PFP') ?></th>
                                         <th><?php echo __('Number') ?></th>

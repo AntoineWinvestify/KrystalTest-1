@@ -122,11 +122,12 @@
         });
         $(document).on("click", "#sendBill", function () {
             console.log("validate Winadmin billing data");
+            $(".alert-to-fade").hide();
 
 <?php //Javascript validation                  ?>
             if ((result = app.visual.checkFormWinadminBilling()) === true) {
                 var formdatas = new FormData($("#bill")[0]);
-                link = '/Files/upload';
+                link = '/admin/files/uploadWinadmin';
                 $.ajax({
                     url: link,
                     dataType: 'json',
@@ -140,7 +141,6 @@
                         $(".feedbackText").html(data[1]);
                         $(".alert-to-fade").show();
                         $(".alert-to-fade").addClass("alert-win-success");
-                        fadeOutElement(".alert-to-fade", 10000);
 
                         $('#selected').html("");
                         $("#bill").trigger("reset");
@@ -148,8 +148,7 @@
                     } else {
                         $(".feedbackText").html(data[1]);
                         $(".alert-to-fade").show();
-                        $(".alert-to-fade").addClass("alert-win-success");
-                        fadeOutElement(".alert-to-fade", 10000);
+                        $(".alert-to-fade").addClass("alert-win-warning");
                        
                         $('#selected').html("");
                         $("#bill").trigger("reset");
@@ -164,7 +163,7 @@
     });
 
     function refreshTable() {
-        link = "../Ocrs/billsTable";
+        link = "/admin/Ocrs/billsTable";
         var data = null;
         getServerData(link, data, successRefesh, errorRefresh);
     }
@@ -374,10 +373,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="green">
-                    <h4 class="title"><strong><?php echo __('WinAdmin - History of Bills') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('Bills History') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">
@@ -394,7 +393,7 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="table-responsive" id="billsTable">
                                 <table id="billsHistory" class="table table-striped display dataTable" width="100%" cellspacing="0"
-                                       data-order='[[ 1, "asc" ]]' data-page-length='10' rowspan='1' colspan='1'>
+                                       data-order='[[ 1, "desc" ]]' data-page-length='10' rowspan='1' colspan='1'>
                                     <thead>
                                         <tr>
                                             <th><?php echo __('PFP') ?></th>

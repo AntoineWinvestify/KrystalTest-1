@@ -54,11 +54,8 @@ $userid = $parameters[0];
 
         $(document).on("click", '.closeBtn', function () {
             console.log("Antoin de Poorter");
-            $("#chargingConfirmationModal").removeClass("show");
-        });
-
-        $(document).on("click", 'ul > li > a', function () {
-            return false;
+   //         $("#chargingConfirmationModal").removeClass("show");
+            $("#chargingConfirmationModal").remove();
         });
 
         $(document).on("click", '#tooltip1', function () {

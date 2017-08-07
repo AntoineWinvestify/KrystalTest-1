@@ -56,7 +56,7 @@
                         <div class="tab-content">
                             <div class="row">
                                 <div class="cols-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <p align="justify"><?php echo __("Felicidades a finalizado existosamente todo su proceso de registro en las plataformas seleccionadas. En breve  se pondrán en contacto con usted para proceder a la activación de sus cuentas, facilitándole login y contraseña. El tiempo estimado está comprendido entre 24h y 48h hábiles")?></p>
+                                    <p align="justify"><?php echo __("Felicidades ha finalizado existosamente todo su proceso de registro en las plataformas seleccionadas. En breve  se pondrán en contacto con usted para proceder a la activación de sus cuentas, facilitándole login y contraseña. El tiempo estimado está comprendido entre 24h y 48h hábiles")?></p>
                                 </div>
                             </div>
                         </div> <!-- /tab-content -->

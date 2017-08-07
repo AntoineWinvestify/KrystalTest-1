@@ -46,6 +46,7 @@ Pending:
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/privacyPolicy"><?php echo __('Privacy Policy') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/termsOfService"><?php echo __('Terms &amp; Conditions') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/privacyPolicy#cookies"><?php echo __('Cookies Policy') ?></a></li>
+                                <?php /*<li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/contactEmailLayout">prueba</a></li>*/ ?>
                             </ul>
                         </div>
                         <div class="col-md-4 col-md-offset-2 col-sm-5 col-sm-offset-1 s-footer__logo g-padding-y-50--xs g-padding-y-0--md">

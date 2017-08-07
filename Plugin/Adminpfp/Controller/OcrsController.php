@@ -76,6 +76,9 @@
  * 2017-07-10
  * Copied only the relevant part of the adminpfp original Controlller to plugin "adminpfp" directory
  * 
+ * 
+ * Pending:
+ * Fix uploadStatusInvestorPfp id request.
  */
 App::uses('CakeEvent', 'Event');
 
@@ -83,7 +86,7 @@ class ocrsController extends AppController {
 
     var $name = 'Ocrs';
     var $helpers = array('Session');
-    var $uses = array('Ocr', 'Company', 'Ocrfile');
+    var $uses = array('Ocr', 'Investor');
     var $error;
 
     function beforeFilter() {
@@ -95,10 +98,12 @@ class ocrsController extends AppController {
     //One Click Registration - PFPAdmin Views
     //PFPAdmin View #2
     function ocrPfpBillingPanel() {
-
+        
+        $this->Ocrfile = ClassRegistry::init('Ocrfile');
+        
         //Read all company bills
         $bills = $this->Ocrfile->billCompanyFilter($this->Session->read('Auth.User.Adminpfp.company_id'));
-        $this->set('bills', $bills);
+        $this->set('bills', $bills); //Set the bills
 
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
@@ -109,17 +114,19 @@ class ocrsController extends AppController {
 
     function ocrPfpUsersPanel() {
 
-        $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));
+        $this->Company = ClassRegistry::init('Company'); 
+        
+        $status = $this->Company->checkOcrServiceStatus($this->Session->read('Auth.User.Adminpfp.company_id'));//Check ocr servecie status, block the view if isnt active.
 
         if ($status[0]) {
-            //Read and accepted relations
+            //Read accepted relations
             $ocrList = $this->Ocr->getAllOcrRelations($this->Session->read('Auth.User.Adminpfp.company_id'));
             $this->set('ocrList', $ocrList);
 
-            //PFP  status
+            //Set PFP  status
             $this->set('pfpStatus', $status[1]['Serviceocr']['serviceocr_status']);
 
-            //Status name
+            //Set status names
             $this->set('statusName', $this->pfpStatus);
         } else {
             //You can't access to this page
@@ -191,6 +198,7 @@ class ocrsController extends AppController {
                 $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
                 $resultTallymanData = $this->Investorglobaldata->readinvestorData($userIdentification, $platformId);
 
+//print_r($resulyTallyManData);
                 // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
                     $error = NO_DATA_AVAILABLE;
@@ -269,16 +277,18 @@ class ocrsController extends AppController {
         return false;
     }
 
+    //Update companies_ocr status when a company download a zip
     public function uploadStatusInvestorPfp() {
         if (!$this->request->is('ajax')) {
             $result = false;
         } else {
-            $id = $this->request->params['id'];
+            $this->layout = 'ajax';
+            $id = $this->request->data['id'];// Investor id
+            $userId = $this->Investor->getInvestorUserId($id); //User id
             $status = DOWNLOADED;
-            $companyId = $this->Session->read('Auth.User.Adminpfp.company_id');
-
-            $result = $this->Ocr->updateInvestorStatus($id, $status, $companyId);
-            $this->set('result', $result);
+            $companyId = $this->Session->read('Auth.User.Adminpfp.company_id'); //Company id
+            $result = $this->Ocr->updateInvestorStatus($id, $status, $companyId);//Update status
+            $this->set('result', [$result, $id, $userId]); //Ajax response, $result is true or false.
         }
     }
 
@@ -291,30 +301,29 @@ class ocrsController extends AppController {
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
 
-  
-/**
- * 
- * Shows the initial, basic screen of the Tallyman service
- * 
- */
-public function startTallyman($investorEmail, $investorTelephone) {
- 
-    $this->layout = 'Adminpfp.azarus_private_layout';
-  
-    $investorDNI = "";
-    $investorTelephone = ""; 
-    $investorEmail = "";
+    /**
+     * 
+     * Shows the initial, basic screen of the Tallyman service
+     * 
+     */
+    public function startTallyman($investorEmail, $investorTelephone) {
 
-    $this->set("investorEmail", $investorEmail);
-    $this->set("investorDNI", $investorDNI);
-    $this->set("investorTelephone", $investorTelephone);            
-            
+        $this->layout = 'Adminpfp.azarus_private_layout';
 
-    $filterconditions = array('investor_identity', $investorIdentification);
-    $this->set('result', $result);
-}
-  
-    
-    
-    
+        $investorDNI = "";
+        $investorTelephone = "";
+        $investorEmail = "";
+
+        $investorEmail = "antoine.de.poorter@gmail.com";
+        $investorTelephone = "+34675546946";
+
+        $this->set("investorEmail", $investorEmail);
+        $this->set("investorDNI", $investorDNI);
+        $this->set("investorTelephone", $investorTelephone);
+
+
+        $filterconditions = array('investor_identity', $investorIdentification);
+        $this->set('result', $result);
+    }
+
 }

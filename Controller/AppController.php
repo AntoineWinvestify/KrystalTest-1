@@ -48,6 +48,26 @@
   Added type of dashboard record
 
 
+2017-06-11      version 0.2
+Corrected test for language cookie 
+
+
+2017-06-14      version 0.21
+loginRedirect has changed to global market place 
+
+
+2017-06-19      version 0.22
+Added a new crowdlending type and defined its "string" values globally.
+Added type of dashboard record
+ 
+2017-06-22      version 0.23
+Added isAuthorized function to verify if a determinated role has access
+  
+2017-06-27      version 0.24  
+Added new function to get sectors of the leftnavigationmenu by role
+
+
+
  * 2017-06-23     version 0.3
  * OCr status defined
  * 
@@ -60,6 +80,10 @@
  * 
  * [2017-07-03] Version 0.6
  * Defined checks
+ * 
+ * [2017-07-14] Version 0.7
+ * Files type defined
+ * 
  * 
  *  PENDING:
  * -
@@ -241,7 +265,18 @@ define('USD', 3);           // US Dollar
 // APPLICATION THAT CAN PRODUCE BILLING DATA
 define('TALLYMAN_APP', 1);
 
+//DOCUMENT TYPE(Files table)
+define('DNI_FRONT', 1);
+define('DNI_BACK', 2);
+define('IBAN', 3);
+define('CIF', 4);
 
+//ROLES FOR USER
+define('ROLE_SUPERADMIN', 1);
+define('ROLE_WINADMIN', 2);
+define('ROLE_PFPADMIN', 3);
+define('ROLE_INVESTOR', 4);
+define('ROLE_WINADMINTECH', 5);
 
 class AppController extends Controller {
 
@@ -261,7 +296,7 @@ class AppController extends Controller {
         ),
         'Cookie',
     );
-    var $uses = array('User');
+    var $uses = array('User', 'Role', 'Sector');
 
     /**
      * 	This code is common to all the classes that actively define a method for the beforeFilter
@@ -298,7 +333,7 @@ class AppController extends Controller {
         $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
 
         //Investor Ocr Status
-        $this->ocrStatus = array(1 => __("Unchecked"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
+        $this->ocrStatus = array(1 => __("New"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
 
         //Company ocr service status
         $this->serviceStatus = array(0 => __('Choose One'), 1 => __("Inactive"), 2 => __("Active"), 3 => __("Suspended"));
@@ -341,6 +376,8 @@ class AppController extends Controller {
             'feature' => __('New Feature'));
         $this->set('subjectContactForm', $subjectContactForm);
 
+        //$this->documentTypes = array ('dni_front' => 1, 'dni_back' => 2, 'iban' => 3, 'cif' => 4);
+        //$this->set('documentTypes', $this->documentTypes);
 
         $filterCompanies1 = array(__('Country filter'), 'Spain' => __('Spain'), 'Italy' => __('Italy'));
         $filterCompanies2 = array(__('Type filter'), 'P2P (Peer-to-Peer)' => __('P2P (Peer-to-Peer)'));
@@ -349,16 +386,33 @@ class AppController extends Controller {
 
         //Use $this->params['controller'] to get the current controller.
         //Use $this->action to verify the current controller/action
-        $action = $this->action;
-        $controller = $this->params['controller'];
-        $action2 = $this->params['action'];
-        //Here we verify if this user has authorization to acces the page
-        //$resultAcl = $this->isAuthorized($action);
-        /* if (!$resultAcl) {
-          //In contructions, we use this now before we create a error page
-          throw new
-          FatalErrorException(__('You cannot access this page directly'));
-          } */
+        if ($this->Auth->user()) {
+
+            $action = $this->action;
+            $controller = $this->params['controller'];
+            $action2 = $this->params['action'];
+            //Here we verify if this user has authorization to acces the controller and the action
+            $resultAcl = $this->isAuthorized($controller,$action);
+            if (!$resultAcl) {
+                //In contructions, we use this now before we create a error page
+                throw new
+                            FatalErrorException(__('You cannot access this page directly'));
+            }
+        }
+        if ($this->Auth->user()) {
+            $sectorExist = $this->Session->read('sectorsMenu');
+            if (empty($sectorExist)) {
+                $roleId = $this->Auth->User('role_id');
+                /*$this->Role = ClassRegistry::init('Role');
+                $sectors = $this->Role->getSectorsByRole($roleId);*/
+                $sectors = $this->getSectorsByRole($roleId);
+                $this->Session->write('sectorsMenu', $sectors);
+            }
+
+        }
+       
+        
+        
     }
 
     /**
@@ -670,9 +724,55 @@ class AppController extends Controller {
      * @return boolean It is the access, it can be true or false
      */
     function isAuthorized($controller, $access = '*') {
-        //$userId = $this->Auth->user('id');
-        $aro = $this->Auth->user('role_id');
-        return $this->Acl->check($aro, $controller, $access);
+	//$userId = $this->Auth->user('id');
+	$aro = $this->Auth->user('Role.id');
+        // Get internal database reference of the investor
+        //$this->Role = ClassRegistry::init('Role');
+        //$aro = $this->Role->getRoleNameById($roleId);
+        
+	return $this->Acl->check($aro, $controller, $access);
+    }
+    
+    /**
+     * Function to get the sectors for the leftnavigationmenu by User's role
+     * We do a three table query using the joins option
+     * @param int $roleId It is the user's role id
+     * @return boolean|array Return false if there is not roleId or the array with the sectors
+     */
+    function getSectorsByRole($roleId = null){
+        if (empty($roleId)) {
+            return false;
+        }
+        $this->Sector = ClassRegistry::init('Sector');
+        $options['joins'] = array(
+            array('table' => 'roles_sectors',
+                'alias' => 'RolesSector',
+                'type' => 'inner',
+                'conditions' => array(
+                    'Sector.id = RolesSector.sector_id'
+                )
+            ),
+            array('table' => 'roles',
+                'alias' => 'Role',
+                'type' => 'inner',
+                'conditions' => array(
+                    'RolesSector.role_id = Role.id'
+                )
+            )
+        );
+
+        $options['conditions'] = array(
+            'Role.id' => $roleId
+        );
+        //$options['field'] = array('Sector.*');
+        $options['recursive'] = -1;
+        $options['order'] = array(
+            'Sector.sectors_father',
+            'Sector.sectors_subSectorSequence'
+        );
+
+        $sectors = $this->Sector->find('all', $options);
+        return $sectors;
     }
 
 }

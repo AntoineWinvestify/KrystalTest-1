@@ -81,7 +81,7 @@
 			<!-- User Account: style can be found in dropdown.less -->
 			<li class="dropdown user user-menu">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-					<img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" class="user-image" alt="Small User Image">
+					<?php /*<img src="<?php echo "/" .IMAGES_URL . "/logo/" . $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" class="user-image" height="auto" alt="Small User Image">*/?>
 					<span class="hidden-xs"  style="color: black !important;"><?php echo $sessionData['Auth']['User']['Adminpfp']['adminpfp_name']?></span>
 				</a>
 				
@@ -93,9 +93,8 @@
 		        <ul class="dropdown-menu">
 		        <!-- User image -->
 					<li class="user-header">
-					    <img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" alt="Big User Image">
-	
-					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Adminpfp']['adminpfp_name'] . " " . $sessionData['Auth']['User']['Adminpfp']['adminpfp_surname'] ?> - PFP Admin
+					    <img src="<?php echo "/" . IMAGES_URL . "logo/" .  $sessionData['Auth']['User']['Adminpfp']['adminpfp_photoChatGUID']?>" alt="Big User Image" style="display:block; width:100%;">
+					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Adminpfp']['adminpfp_name'] ?> - Admin
 							<small></small>
 					    </p>
 					</li>

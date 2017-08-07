@@ -144,23 +144,44 @@ var myChart = new Chart(ctx, {
     //chart doughnut
         var ctx = document.getElementById("pieChart1").getContext('2d');
         var myChart = new Chart(ctx, {
-         type: 'doughnut',
-          data: {
-     labels: <?php echo json_encode($resultTallyman[0]['labelsPieChart1'])?>,
-  datasets: [{
-      label: 'Volume',
-        backgroundColor: [
-                            "#5acc5a",
-                            "#55acee"
-                        ],
-        hoverBackgroundColor: [
-                            "#1acc5a",
-                            "#15acee"
-                        ],
-      data: <?php echo json_encode($resultTallyman[0]['dataPieChart1'])?>
-    }]      
+            type: 'doughnut',
+            data: {
+                labels: <?php echo json_encode($resultTallyman[0]['labelsPieChart1'])?>,
+                datasets: [{
+                    label: 'Volume',
+                    backgroundColor: [
+                                "#5acc5a",
+                                "#55acee"
+                            ],
+                    hoverBackgroundColor: [
+                                "#1acc5a",
+                                "#15acee"
+                            ],
+                    data: <?php echo json_encode($resultTallyman[0]['dataPieChart1'])?>
+                }]      
  
-          }
+            }
+        });
+        
+        var ctx = document.getElementById("pieChart2").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: <?php echo json_encode($resultTallyman[0]['labelsPieChart2'])?>,
+                datasets: [{
+                    label: 'Volume',
+                    backgroundColor: [
+                                "#5acc5a",
+                                "#55acee"
+                            ],
+                    hoverBackgroundColor: [
+                                "#1acc5a",
+                                "#15acee"
+                            ],
+                    data: <?php echo json_encode($resultTallyman[0]['dataPieChart2'])?>
+                }]      
+ 
+            }
         });
         
     <?php //Tooltip clicks ?>
@@ -196,6 +217,9 @@ var myChart = new Chart(ctx, {
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
+                                                <div class="card-header" data-background-color="blue">
+                                                        <i class="fa fa-signal"></i>
+                                                </div>
                                                 <div class="card-content" style="text-align: center;">
                                                     <p>
                                                         <?php echo __('% Total cartera')?>
@@ -204,8 +228,8 @@ var myChart = new Chart(ctx, {
                                                         </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
                                                     </p>
-                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?></h1>
-                                                    <p align="left" class="statusError">
+                                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?>%</h1>
+                                                    <p align="left" class="statusError" style="display:none">
                                                         <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
                                                         <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
                                                         <?php echo __('Text')?>
@@ -213,7 +237,7 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                                 <div class="card-footer" id="tooltip_totalPortfolioTendency" style="display:none">
                                                     <div class="stats" style="text-align: center;">
-                                                        <div class="stats" style="text-align: center;">
+                                                        <div class="stats" style="text-align: left;">
                                                                 <?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>
                                                         </div>
                                                     </div>
@@ -232,6 +256,9 @@ var myChart = new Chart(ctx, {
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="card card-stats">
+                                                <div class="card-header" data-background-color="blue">
+                                                        <i class="fa fa-bar-chart"></i>
+                                                </div>
                                                 <div class="card-content" style="text-align: center;"> 
                                                     <p>
                                                         <?php echo __('% Total cartera')?>
@@ -240,15 +267,15 @@ var myChart = new Chart(ctx, {
                                                         </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalModalityTendency"></i>
                                                     </p>
-                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?></h1>
-                                                    <p align="left" class="statusDownloaded">
+                                                    <h1 style="text-align: center;"><?php echo $resultTallyman[0]['totalModality_Norm']  ?> %</h1>
+                                                    <p align="left" class="statusDownloaded" style="display:none">
                                                         <i class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i>
                                                         <i class="<?php echo $arrowClass[$resultTallyman[0]['totalModalityTendency']] ?> "></i>
                                                         <?php echo __('Text')?>
                                                     </p>
                                                 </div>
                                                 <div class="card-footer" id="tooltip_totalModalityTendency" style="display:none">
-                                                    <div class="stats" style="text-align: center;">
+                                                    <div class="stats" style="text-align: left;">
                                                         <?php echo __('The amount invested in the platformtype of the AdminPFP/total invested amount in platformtype[ in %]')?>
                                                     </div>
                                                 </div>
@@ -269,13 +296,16 @@ var myChart = new Chart(ctx, {
                                             <div class="row">
                                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                     <div class="card card-stats">
+                                                        <div class="card-header" data-background-color="blue">
+                                                                <i class="fa fa-university"></i>
+                                                        </div>
                                                         <div class="card-content" style="text-align:center">
-                                                            <p><?php echo __('Active PFPs')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
+                                                            <p><?php echo __('Active Investor Platforms')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
                                                             <!-- Number of linked accounts -->
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h2>
                                                         </div>
                                                         <div class="card-footer" style="display:none" id="tooltip_activePFP">
-                                                            <div class="stats" style="text-align: center;">
+                                                            <div class="stats" style="text-align: left;">
                                                                 <?php echo __('The number of platforms where the user has ACTIVE investments. Investment MAY have payment delays')?>
                                                             </div>
                                                         </div>
@@ -283,13 +313,16 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                     <div class="card card-stats">
+                                                        <div class="card-header" data-background-color="blue">
+                                                                <i class="fa fa-sitemap"></i>
+                                                        </div>
                                                         <div class="card-content" style="text-align:center">
-                                                            <p><?php echo __('Total PFP')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
+                                                            <p><?php echo __('Account Linking')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
                                                             <!-- total number of platforms -->
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h2>
                                                         </div>
                                                         <div class="card-footer" style="display:none" id="tooltip_totalPFP">
-                                                            <div class="stats" style="text-align: center;">
+                                                            <div class="stats" style="text-align: left;">
                                                                 <?php echo __('The number of platforms where the investor has an account')?>
                                                             </div>
                                                         </div>
@@ -297,10 +330,17 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                             <div class="card card-stats">
                                                 <div class="card-content">			
                                                     <canvas id="pieChart1" style="height: 100px;"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                            <div class="card card-stats">
+                                                <div class="card-content">			
+                                                    <canvas id="pieChart2" style="height: 100px;"></canvas>
                                                 </div>
                                             </div>
                                         </div>
