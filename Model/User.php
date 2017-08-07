@@ -130,6 +130,7 @@ class User extends AppModel {
         $data = array('username' => $username,
             'password' => $userPassword,
             'email' => $username,
+            'role_id' => ROLE_INVESTOR,
         );
 
 
