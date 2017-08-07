@@ -24,14 +24,139 @@
  * Initial view
  */
 ?>
+<link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
 <script>
     $(function (){
         
+        //polarChart1
+        new Chart(ctx, {
+            data: data,
+            type: 'polarArea',
+            options: options
+        });
+        data = {
+            datasets: [{
+                data: [10, 20, 30]
+            }],
+
+            // These labels appear in the legend and in the tooltips when hovering different arcs
+            labels: [
+                'Red',
+                'Yellow',
+                'Blue'
+            ]
+        };
     });
 </script>
 <style>
     
 </style>
 <div class="dashboardStats">
-    
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-header" data-background-color="gray">
+                    <h4 class="title"><strong><?php echo __('Stats') ?></strong></h4>
+                </div>
+                <div class="card-content">
+                    <div class='row'>
+                        <div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>
+                            <div class="card card-stats">
+                                <div class="card-content">			
+                                    <canvas id="polarChart1" style="height: 100px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>
+                            <div class="card card-stats">
+                                <div class="card-content">			
+                                    <canvas id="polarChart2" style="height: 100px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-xs-12 col-sm-12 col-md-6 col-lg-6'>
+                            <div class="card">
+                                <div class="card-content">
+                                    <h4 class="title"></h4>
+                                    <canvas id="lineChart1" style="height: 100px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>
+                            <div class="card card-stats">
+                                <div class="card-header" data-background-color="blue">
+                                        <i class="fa fa-signal"></i>
+                                </div>
+                                <div class="card-content" style="text-align: center;">
+                                    <p>
+                                        <?php echo __('% Total cartera')?>
+                                        <strong>
+                                            <?php echo __('invertida')?>
+                                        </strong>
+                                        <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
+                                    </p>
+                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?>%</h1>
+                                    <p align="left" class="statusError" style="display:none">
+                                        <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
+                                        <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
+                                        <?php echo __('Text')?>
+                                    </p>
+                                </div>
+                                <div class="card-footer" id="tooltip_totalPortfolioTendency" style="display:none">
+                                    <div class="stats" style="text-align: center;">
+                                        <div class="stats" style="text-align: left;">
+                                                <?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>
+                            <div class="card card-stats">
+                                <div class="card-header" data-background-color="blue">
+                                        <i class="fa fa-signal"></i>
+                                </div>
+                                <div class="card-content" style="text-align: center;">
+                                    <p>
+                                        <?php echo __('% Total cartera')?>
+                                        <strong>
+                                            <?php echo __('invertida')?>
+                                        </strong>
+                                        <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
+                                    </p>
+                                    <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?>%</h1>
+                                    <p align="left" class="statusError" style="display:none">
+                                        <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
+                                        <i class="<?php echo $arrowClass[$resultTallyman[0]['totalPortfolioTendency']] ?>"></i>
+                                        <?php echo __('Text')?>
+                                    </p>
+                                </div>
+                                <div class="card-footer" id="tooltip_totalPortfolioTendency" style="display:none">
+                                    <div class="stats" style="text-align: center;">
+                                        <div class="stats" style="text-align: left;">
+                                                <?php echo __('The amount invested in the platform of AdminPFP/ total invested amount[ in %]')?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-xs-12 col-sm-12 col-md-6 col-lg-6'>
+                            <div class="card card-stats">
+                                <div class="card-content">			
+                                    <canvas id="pieChart1" style="height: 100px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <input type='button' id="btnAccountLinking" class='btn btn-default pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
+                    <input type='button' id="btnStart" class='btn btn-default pull-left' name='accountLinking' value='<?php echo __('Go to One Click Registration')?>' />
+                    <br/><br/>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

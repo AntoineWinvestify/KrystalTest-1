@@ -880,34 +880,27 @@ textarea[name="error"] {
 }
 
 .btn1CR {
-    background-color: #47badf  !important;
-    border: 1px solid gray;
-    color: white;
+    background-color: white  !important;
+    border: 2px solid #47badf !important;
+    color: #47badf !important;
 }
-.btn1CR:hover{
-	border: 1px solid gray;
-	color: black;
-}
-.btn1CR:active{
-	background-color: #1f8aad  !important;
-	border: 1px solid gray;
-	color: black;
+.btn1CR:hover, .btn1CR:active {
+	border: 2px solid #47badf !important;
+        background-color: #47badf !important;
+	color: white !important;
 }
 
 .btnPFPAdmin {
-    background-color: #ff9933  !important;
-    border: 1px solid gray;
-    color: white;
+    background-color: white  !important;
+    border: 2px solid #ff9933 !important;
+    color: #ff9933 !important;
 }
-.btnPFPAdmin:hover{
-	border: 1px solid gray;
-	color: black;
+.btnPFPAdmin:hover, .btnPFPAdmin:active {
+	border: 2px solid #ff9933 !important;
+        background-color: #ff9933 !important;
+	color: white !important;
 }
-.btnPFPAdmin:active{
-	background-color: #cc6600  !important;
-	border: 1px solid gray;
-	color: black;
-}
+
 .btnDeleteFile {
     background-color:#990000 !important; 
     border: 1px solid gray;

@@ -58,7 +58,7 @@
     }
     hr {
         margin: 8px !important;
-        color: white;
+        border-color: white !important;
     }
 </style>
 <div class="dashboardOverview">
@@ -232,6 +232,11 @@
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <input type='button' id="btnAccountLinking" class='btn btn-default pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="gray">
                     <h4 class="title"><strong><?php echo __('Key Performance statistics of Individual Platforms') ?></strong></h4>
@@ -240,8 +245,8 @@
                     //Aquí va la tabla :D
                 </div>
                 <div class="card-footer">
-                    <input type='button' id="btnAccountLinking" class='btn btn-default pull-left' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
-                    <input type='button' id="btnStart" class='btn btn-default pull-right' name='accountLinking' value='<?php echo __('Go to One Click Registration')?>' />
+                    <input type='button' id="btnAccountLinking" class='btn btn-default pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
+                    <input type='button' id="btnStart" class='btn btn-default pull-left' name='accountLinking' value='<?php echo __('Go to One Click Registration')?>' />
                     <br/><br/>
                 </div>
             </div>

@@ -25,10 +25,21 @@
  */
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
+<script>
+    $(document).ready(function () {
+        $(document).on("click", ".btnClose", function() {
+            $("#dashboardInitialPanel").removeClass("show");
+            $("#dashboardInitialPanel").hide();
+        });
+    });
+</script>
 <style>
     .wizard-card-small {
         padding: 0px !important;
         border: 1px solid #87e14b;
+        -webkit-box-shadow: 7px 7px 5px 0px rgba(97,97,97,0.5);
+        -moz-box-shadow: 7px 7px 5px 0px rgba(97,97,97,0.5);
+        box-shadow: 7px 7px 5px 0px rgba(97,97,97,0.5);
     }
     .wizard-header {
         padding-top: 15px;
@@ -51,6 +62,7 @@
         right: 5px;
         position: absolute;
         cursor: pointer;
+        color: #a6a6a6;
     }
     p {
         color: #66615B;
@@ -68,7 +80,7 @@
                 <div class="wizard-container-small">
                     <div class="card wizard-card-small" data-color="green" id="wizardProfile2">
                         <div class="wizard-header text-center">
-                            <i class='ion ion-close-circled btnClose' style='color: #a6a6a6;'></i>
+                            <i class='ion ion-close-circled btnClose'></i>
                             <img src="/img/logo_winvestify/Logo.png" style="max-width:75px;"/>
                             <img src="/img/logo_winvestify/Logo_texto.png" style="max-width:250px;"/>
                             <p align="center"><?php echo __('subtitle if needed')?></p>
@@ -89,7 +101,7 @@
                         <div class="wizard-footer">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                    <input type='button' id="btnStart" class='btn btn-default marginbtn center-block' name='start' value='<?php echo __('Go to One Click Registration')?>' />
+                                    <input type='button' id="btnStart" class='btn marginbtn btnPFPAdmin center-block' name='start' value='<?php echo __('Go to One Click Registration')?>' />
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <input type='button' id="btnAccountLinking" class='btn btn-default marginbtn center-block' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
