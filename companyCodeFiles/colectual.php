@@ -169,17 +169,22 @@ FRAGMENT
             $labels = $project->getElementsByTagName('label');
             $tempArray["marketplace_durationUnit"] = 2;
             $span_fund = $project->getElementsByTagName('span');
-            if ($span_fund->length == 0) {
+            $subscriptionProgress = false;
+            if ($span_fund->length > 0) {
+                $class_name = $span_fund[0]->getAttribute('class');
+                if (strpos($class_name, "financiado") !== false) {
+                    $tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
+                    $tempArray["marketplace_status"] = 1;
+                    $subscriptionProgress = true;
+                }
+            }
+            if (!$subscriptionProgress) {
                 echo "Colectual: % found, so store in marketplace<br>";
                 $class_subscription_progress = 'progress';
                 $dom_xpath_progress = new DOMXPath($dom);
                 $progress = $dom_xpath_progress->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class_subscription_progress ')]");
                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($progress[$i]->nodeValue));
                 $tempArray["marketplace_status"] = 0;
-            }
-            else {
-                $tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
-                $tempArray["marketplace_status"] = 1;
             }
             foreach ($labels as $label) {
                 $value_per_attr = $label->getAttribute('class');
