@@ -32,7 +32,6 @@ Pending:
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="http://www.winvestify.com"><?php echo __('Home') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/aboutUs"><?php echo __('About Us') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/Contactforms/form"><?php echo __('Contact') ?></a></li>
-                                <li><a class="g-font-size-15--xs g-color--white-opacity" href="/Contactforms/login"><?php echo __('Private Login') ?></a></li>
                             </ul>
                         </div>
                         <div class="col-sm-2 g-margin-b-20--xs g-margin-b-0--md footerLinks">
@@ -47,7 +46,6 @@ Pending:
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/privacyPolicy"><?php echo __('Privacy Policy') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/termsOfService"><?php echo __('Terms &amp; Conditions') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/privacyPolicy#cookies"><?php echo __('Cookies Policy') ?></a></li>
-                                <?php /*<li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/contactEmailLayout">prueba</a></li>*/ ?>
                             </ul>
                         </div>
                         <div class="col-md-4 col-md-offset-2 col-sm-5 col-sm-offset-1 s-footer__logo g-padding-y-50--xs g-padding-y-0--md">
