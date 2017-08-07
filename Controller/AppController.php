@@ -271,6 +271,13 @@ define('DNI_BACK', 2);
 define('IBAN', 3);
 define('CIF', 4);
 
+//ROLES FOR USER
+define('ROLE_SUPERADMIN', 1);
+define('ROLE_WINADMIN', 2);
+define('ROLE_PFPADMIN', 3);
+define('ROLE_INVESTOR', 4);
+define('ROLE_WINADMINTECH', 5);
+
 class AppController extends Controller {
 
     public $components = array('DebugKit.Toolbar',
