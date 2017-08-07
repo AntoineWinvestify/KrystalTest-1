@@ -1,211 +1,163 @@
 <?php
 /*
-* +-----------------------------------------------------------------------+
-* | Copyright (C) 2016, http://beyond-language-skills.com                 |
-* +-----------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify     |
-* | it under the terms of the GNU General Public License as published by  |
-* | the Free Software Foundation; either version 2 of the License, or     |
-* | (at your option) any later version.                                   |
-* | This file is distributed in the hope that it will be useful           |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
-* | GNU General Public License for more details.                          |
-* +-----------------------------------------------------------------------+
-* | Author: Antoine de Poorter                                            |
-* +-----------------------------------------------------------------------+
-*
-*
-* @author Antoine de Poorter
-* @version 0.1
-* @date 2016-08-02	
-* @package
-* 
+ * +-----------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://beyond-language-skills.com                 |
+ * +-----------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify     |
+ * | it under the terms of the GNU General Public License as published by  |
+ * | the Free Software Foundation; either version 2 of the License, or     |
+ * | (at your option) any later version.                                   |
+ * | This file is distributed in the hope that it will be useful           |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
+ * | GNU General Public License for more details.                          |
+ * +-----------------------------------------------------------------------+
+ * | Author: Antoine de Poorter                                            |
+ * +-----------------------------------------------------------------------+
+ *
+ *
+ * @author Antoine de Poorter
+ * @version 0.1
+ * @date 2016-08-02	
+ * @package
+ * 
 
-2016-08-02	  version 2016_0.1
-
-
-
-
-
-Pending
+  2016-08-02	  version 2016_0.1
 
 
 
 
 
+  Pending
 
-*/
+
+
+
+
+
+ */
 
 //App::uses('CakeEvent', 'Event');
-class CompanysController extends AppController
-{
-	var $name = 'Companys';
-	var $helpers = array('Js', 'Session');
-	var $uses = array('Company', 'Poll');	
-  	var $error;
+class CompanysController extends AppController {
 
+    var $name = 'Companys';
+    var $helpers = array('Js', 'Session');
+    var $uses = array('Company', 'Poll');
+    var $error;
 
-
-function beforeFilter() {
-	parent::beforeFilter(); // only call if the generic code for all the classes is required.
-Configure::write('debug', 2);
+    function beforeFilter() {
+        parent::beforeFilter(); // only call if the generic code for all the classes is required.
+//Configure::write('debug', 2);
 //	$this->Security->requireAuth();
-
 //	$this->Security->blackHoleCallback = '_blackHole';
 //	$this->Security->unlockedFields = array('Student.sex', 'Pubform.sex'); // Pubform is correct
 //	$this->Security->requireSecure(
 //							'login'
 //							);
-
 //	$this->Security->validatePost = true;
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club1 field from CSRF protection
-															// as it is "dynamic" and would fail the CSRF test
-
+        // as it is "dynamic" and would fail the CSRF test
 // Allow only the following actions.
 //	$this->Auth->allow(listCompany);    // allow all actions as these are public pages
-}
+    }
 
+    /**
+     *
+     * 	Add a new company
+     * 	
+     */
+    function addCompany() {
 
+        $userId = $this->Auth->user('id');
+    }
 
-
-
-
-
-
-
-
-/**
-*
-*	Add a new company
-*	
-*/
-function addCompany() {
-
-	$userId = $this->Auth->user('id');	
-
-}
-
-
-
-
-
-/**
-*
-*	Modify one or more data of a company
-*	
-*	
-*/
-function changeCompany() {
+    /**
+     *
+     * 	Modify one or more data of a company
+     * 	
+     * 	
+     */
+    function changeCompany() {
 
 //	$userId = $this->Auth->user('id');	
+    }
 
-}
-
-
-
-
-
-/**
-*
-*	Deletes (make it "invisible" to normal admin) of a company
-*	
-*	
-*/
-function deleteCompany($companyId) {
+    /**
+     *
+     * 	Deletes (make it "invisible" to normal admin) of a company
+     * 	
+     * 	
+     */
+    function deleteCompany($companyId) {
 
 //	$userId = $this->Auth->user('id');	
+    }
 
-}
-
-
-
-
- 
-/**
-*  
-*	Get all the data of a company
-*	
-*/
-function readCompany() {
+    /**
+     *  
+     * 	Get all the data of a company
+     * 	
+     */
+    function readCompany() {
 
 //	$userId = $this->Auth->user('id');	
+    }
 
-}
+    /**
+     *  
+     * 	Get all the data of a company
+     * 	
+     */
+    function readCompanyListData() {
 
+        $companyFilterConditions = array('id >' => 0); // read all companies
+        $companyResult = getCompanyDataList($companyFilterConditions);
+        $this->set('companyResult', $companyResult);
+    }
 
+    /**
+     *  
+     * 	Show "public" data of the companies, some provided by our own users, some 'mined' from
+     * 	"public" sources and some generated by ourselves
+     * 	The RATE button is only active for the companies where the user has a linked account (AND? an investment??)
+     */
+    function showCompanyDataPanel() {
+        Configure::write('debug', 0);
 
+        $user = $this->Auth->user();
 
- 
-/**
-*  
-*	Get all the data of a company
-*	
-*/
-function readCompanyListData() {
+        $companyFilterConditions = array('Company.id >' => 0);   // read all companies
+        $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
 
-	$companyFilterConditions = array('id >' => 0);	// read all companies
-	$companyResult = getCompanyDataList($companyFilterConditions);
-	$this->set('companyResult', $companyResult);
-}
-
-
-
-
-
-/**
-*  
-*	Show "public" data of the companies, some provided by our own users, some 'mined' from
-*	"public" sources and some generated by ourselves
-*	The RATE button is only active for the companies where the user has a linked account (AND? an investment??)
-*/
-function showCompanyDataPanel() {
-Configure::write('debug', 0);
-
-	$user = $this->Auth->user();
-
-	$companyFilterConditions = array('Company.id >' => 0);			// read all companies
-	$companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
-
-	$this->set('companyResults', $companyResults);
+        $this->set('companyResults', $companyResults);
 
 
 //	 Get the data for the rating system
+    }
 
+    /**
+     *  
+     * 	Provides extra data about a company
+     *
+     */
+    function readCompanyExtendedData() {
 
-}
+        if (!$this->request->is('ajax')) {
+            throw new
+            FatalErrorException(__('You cannot access this page directly'));
+        }
 
+        $error = false;
+        $this->layout = 'ajax';
+        $this->disableCache();
 
+        $companyId = $_REQUEST['companyId'];
 
+        $companyExtendedDataResult = $this->Company->readExtendedData($companyId);
 
-
-/**
-*  
-*	Provides extra data about a company
-*
-*/
-function readCompanyExtendedData() {
-
-	if (! $this->request->is('ajax')) {
-		throw new
-			FatalErrorException(__('You cannot access this page directly'));
-	}
-
-	$error = false;	
-	$this->layout = 'ajax';
-	$this->disableCache();
-	
-	$companyId = $_REQUEST['companyId'];
-
-	$companyExtendedDataResult = $this->Company->readExtendedData($companyId);
-
-	$this->set('companyExtendedDataResult', $companyExtendedDataResult);
-	$this->set('companyId', $companyId);
-	$this->set('error', $error);	
-}
-
-
-
-
+        $this->set('companyExtendedDataResult', $companyExtendedDataResult);
+        $this->set('companyId', $companyId);
+        $this->set('error', $error);
+    }
 
 }

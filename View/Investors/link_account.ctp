@@ -76,42 +76,62 @@ Re-use!!
 	$index = 0;
 	foreach ($linkedaccountsResult as $account) {
 ?>  
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-3 text-center">
-						
-							<?php echo $this->Form->input('', array('name'	=> 'userId',
-										'value'	=> $companyResults[$account['Linkedaccount']['company_id']]['company_name'] ,
-										'id'		=> 'linkedaccountCompanyName-' . $index,
-										'type'	=> 'hidden'
-										));
-							?>
-							<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name'] ?>
-						
-						</div>
-						
-						<div class="col-xs-12 col-sm-6 col-md-3 text-center">
-						
-							<?php echo $this->Form->input('', array(	'name'	=> 'userId',
-										'value'	=> $account['Linkedaccount']['linkedaccount_username'],
-										'id'		=> 'linkedaccountUsername-' . $index,
-										'type'	=> 'hidden'
-										));
-							?>					
-							<?php echo $account['Linkedaccount']['linkedaccount_username'] ?>
-						
-						
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-3 text-center">
-						
-							<button type="button" value="<?php echo $index ?>" class="deleteLinkedAccount btn-invest btnRounded" id ="linkedaccountDeleteBtn-<?php echo $index ?>" href="/investors/deleteLinkedAccount" class="form submitButton">Delete</button>
- 						
-						</div>
-					</div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"> <!-- Crowdlending Company Logo -->
+                <div class="form-group">
+                    <div class="box box-widget widget-user-2">
+                        <div class="widget-user-header">
+                            <img style="vertical-align: middle; max-height: 100px;" class="responsiveImg center-block platformLogo" src="/img/logo/<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_logoGUID'] ?>" alt="<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
+                id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
+                onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
+                "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
+        class="btn btn-default btnRounded form submitButton deleteLinkedAccount center-block"><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
+                </button>
+            </div> <!-- /crowdlending company -->
+            <div class="col-xs-12 col-md-12 col-md-7 col-lg-7">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-12 col-lg-12"> <!-- Username -->
+                        <div class="form-group">
+                            <label><small><?php echo __('Your User')?></small></label>
+                            <?php
+                                                            echo $this->Form->input('name', array(
+                                                                    'label' 		=> false,
+                                                                    'class' 		=> 'form-control blue_noborder22',
+                                                                    'disabled'		=> 'disabled',
+                                                                    'value'			=> $account['Linkedaccount']['linkedaccount_username'],						
+                                    )); 
+                            ?>					
+                        </div>					
+                    </div>
+                    <!-- /Username -->
+                    <!-- Password -->
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="form-group">
+                            <label><small><?php echo __('Your Password')?></small></label>
+                            <?php
+                                echo $this->Form->input('password', array(
+                                        'label' 		=> false,
+                                        'type'			=> 'password',
+                                        'class' 		=> 'form-control blue_noborder2',
+                                        'disabled'		=> 'disabled',
+                                        'value'			=> $account['Linkedaccount']['linkedaccount_password'],						
+                                )); 
+                            ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 							
 <?php
 	$index++;
 	}
-	echo "</table>";
 ?>
 
 </div>							

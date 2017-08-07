@@ -594,8 +594,6 @@ echo $str;
 	$url = array_shift($this->urlSequence);
 	$str = $this->getCompanyWebpage($url);			// https://www.comunitae.com/listarParticipaciones.html?method=mostrarBloques&_=1487322997347 
 
-echo $str;	
-
  	$dom = new DOMDocument;
 	$dom->loadHTML($str);
 	$dom->preserveWhiteSpace = false;
@@ -606,7 +604,7 @@ echo $str;
 	$random = $random + 1;	
 	$url = array_shift($this->urlSequence);		// https://www.comunitae.com/listarParticipaciones.html?method=irPestanaListado&id=1&PARAM_PAGINACION_PAGINA_ACTUAL=
 	$str = $this->getCompanyWebpage($url . "1");	
-echo "KKKKKKKKK" . $str;
+
 	$domAccount = new DOMDocument;
 	$domAccount->loadHTML($str);
 	$domAccount->preserveWhiteSpace = false;
@@ -634,8 +632,7 @@ echo "KKKKKKKKK" . $str;
 		$data1[$index]['invested'] = $this->getMonetaryValue($spans[0]->nodeValue);
 		$as = $this->getElements($investmentInfos[0], "a");			
 		$data1[$index]['status'] = $this->getLoanState($as[0]->getAttribute("title"));	// status of actual investment
-		$tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] +
-														$data1[$key]['profitGained'];
+		$tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] + $data1[$key]['profitGained'];
 		$tempArray['global']['totalAmortized'] = $tempArray['global']['totalAmortized'] + $data1[$index]['amortized'];			
 		$tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$index]['invested'];			
 		$tempArray['global']['totalPercentage'] = $tempArray['global']['totalPercentage'] + $data1[$index]['interest'];

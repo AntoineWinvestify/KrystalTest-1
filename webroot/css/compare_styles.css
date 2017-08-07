@@ -1348,9 +1348,46 @@ hr.nomargin {
     top: 20px;
 }
 
-
-
-
+/* Winvestify Login Styling*/
+.loginContainer {
+    margin: 0 auto;
+    background-image: url("/img/admin/login.png");
+    background-repeat: no-repeat;
+    height: 780px;
+    background-size: cover;
+}
+.loginBox {
+    background-color: white;
+    border: 1px solid gray;
+    height: 250px;
+    width: 350px;
+    float: right;
+    border-radius: 5px;
+    margin: 250px 150px 0px 0px;
+    padding-top: 20px;
+}
+.paragraph {
+    margin: 120px 0 0 50px;
+    position: absolute;
+    color: white !important;
+    text-align: right !important;
+    width: 600px;
+}
+.adminLogos{
+    margin: 250px auto;
+    height: 120px;
+    width: 600px;
+    float: left;
+}
+.logo1 {
+    height: 100px;
+    float: left;
+    margin-left: 50px;
+}
+.logo2 {
+    height: 100px;
+    float: right;
+}
 
 /*************************** MEDIA QUERIES ****************************/
                     /*MOBILE SWAP MEDIA QUERY >320*/
@@ -2002,4 +2039,44 @@ hr.nomargin {
     max-width: 25px;
     margin: 0 auto;
     margin-top: -5px;
+}
+/* STATUS COLORS */
+.statusNew, .statusFixed {
+    color: #47badf; /*blue*/
+}
+
+.statusDownloaded, .statusFinished {
+    color: #33cc33; /*green*/
+}
+
+.statusPending {
+    color: #ff9933; /*orange*/
+}
+
+.statusError {
+    color: #ff5886; /*red*/
+}
+
+/*PAPER BOOTSTRAP MODAL CUSTOMIZATION*/
+.wizard-container-small {
+    padding-top: 50px;
+}
+
+.wizard-card-small {
+    min-height: 200px;
+}
+
+.wizard-card-small .tab-content {
+    min-height: 200px;
+    padding: 30px;
+}
+
+.wizard-card-small .wizard-footer {
+    padding: 0 15px 5px !important;
+}
+
+#errorBox {
+    background-color: #e6e6e6;
+    padding: 20px 50px;
+    margin-top: 20px;
 }
