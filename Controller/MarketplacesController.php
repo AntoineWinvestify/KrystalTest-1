@@ -30,8 +30,9 @@
   2017-05-02      version 0.3                                                                     [OK, tested]
   Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
 
-
-
+   2017-08-01
+    cronMarketPlaceLoop remake
+    cronMarketPlaceHistorical new function
 
   Pending:
   Checking for "country of residence" and show only marketplace for that country				[Not OK]
@@ -303,34 +304,41 @@ class MarketPlacesController extends AppController {
 
         $this->print_r2($urlSequenceList);
         $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyMarketplace, $companyBackup);
+        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup);
 
-
+        $this->print_r2($marketplaceArray);
 
         foreach ($marketplaceArray as $investment) {
             $DontExist = true;
+            $backup = true;
             $investment['company_id'] = $companyId;
-            echo __FUNCTION__ . __LINE__ . "PFP Investment reading:<br>";
-            $this->print_r2($investment);
+
             foreach ($companyMarketplace as $marketplaceInvestment) {
-                $DontExist = false;
                 if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
+                    $DontExist = false;
                     echo "Investment alreadty exist<br>";
-                    if ($investment['marketplace_loanReference'] == 10000) { //If is completed
+                    if ($investment['marketplace_subscriptionProgress'] == 10000) { //If is completed
                         echo "Investment completed<br>";
 
                         //Delete from maketplace
                         $this->Marketplace->delete($marketplaceInvestment['Marketplace']['id']);
 
                         //Save complete in backup
+                        $investment['marketplace_origCreated'] = $marketplaceInvestment['Marketplace']['created'];
                         $this->Marketplacebackup->create();
                         $this->Marketplacebackup->save($investment);
+                        echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
+                        $this->print_r2($investment);
                         continue;
                     } else { //If isn't completed
                         echo "Investment incompleted<br>";
                         //Save in backup
+                        $investment['marketplace_origCreated'] = $marketplaceInvestment['Marketplace']['created'];
                         $this->Marketplacebackup->create();
                         $this->Marketplacebackup->save($investment);
+                        echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
+                        $this->print_r2($investment);
+                        unset($investment['marketplace_origCreated']);
 
                         //Replace in marketplace
                         $investment['id'] = $marketplaceInvestment['Marketplace']['id'];
@@ -341,20 +349,24 @@ class MarketPlacesController extends AppController {
             }
 
             if ($DontExist) {//If not exist in winvestify marketplace
-                if ($investment['marketplace_loanReference'] == 10000) { //If it is completed
+                if ($investment['marketplace_subscriptionProgress'] == 10000) { //If it is completed
                     echo "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
+                        $backup = false;
                         if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplace']['marketplace_loanReference']) { //If it exist in winvestify backup
                             if ($investment['marketplace_status'] == $investmentBackup['Marketplace']['marketplace_status']) { //Same status
+                                echo 'Ignore<br>';
                                 //Ignore
                                 continue;
                             }
-                        } else { //If it not exist in winvestify backup
-                            //Save in backup
-                            $this->Marketplacebackup->create();
-                            $this->Marketplacebackup->save($investment);
-                            continue;
                         }
+                    } if ($backup) { //If it not exist in winvestify backup
+                        //Save in backup
+                        $this->Marketplacebackup->create();
+                        $this->Marketplacebackup->save($investment);
+                        echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
+                        $this->print_r2($investment);
+                        continue;
                     }
                 } else {  //If isn't completed
                     echo "Investment incompleted<br>";
@@ -363,19 +375,28 @@ class MarketPlacesController extends AppController {
                     $this->Marketplace->create();
                     $this->Marketplace->save($investment);
 
-                    //Add to Backup   
+                    //Add to Backup
                     $this->Marketplacebackup->create();
                     $this->Marketplacebackup->save($investment);
+                    echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
+                    $this->print_r2($investment);
                     continue;
                 }
             }
         }
     }
 
+    /*Collect all invesment of the user, open and closed*/
     function cronMarketPlaceHistorical($companyId) {
         $this->autoRender = false;
         //Configure::write('debug', 2);
         $repeat = true; //Read another page
+        $start = 0; //For pagination
+        if ($companyId == 2) {
+            $type = 1; //For comunitae
+        } else {
+            $type = null;
+        }
 
         $companyConditions = array('Company.id' => $companyId);
         $result = $this->Company->getCompanyDataList($companyConditions);
@@ -394,12 +415,14 @@ class MarketPlacesController extends AppController {
 
         while ($repeat != false) {
 
-            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MARKETPLACE_SEQUENCE);
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, HISTORICAL_SEQUENCE);
             $this->print_r2($urlSequenceList);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
 
 
-            $marketplaceArray = $newComp->collectHistorical($start); //$start is for zank
+            $marketplaceArray = $newComp->collectHistorical($start, $type); //$start is for pfp with paginations, $type is for comunitae.
+            echo 'RESULTADO: ';
+            $this->print_r2($marketplaceArray);
             foreach ($marketplaceArray[0] as $investment) {
                 $investment['company_id'] = $companyId;
                 echo __FUNCTION__ . __LINE__ . "PFP Backup Saving:<br>";
@@ -410,6 +433,9 @@ class MarketPlacesController extends AppController {
 
             $start = $marketplaceArray[1];
             $repeat = $marketplaceArray[1];
+            if ($companyId == 2) {
+                $type = $marketplaceArray[2];
+            }
         }
     }
 
