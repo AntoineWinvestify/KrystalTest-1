@@ -2,7 +2,7 @@
 
 /*
   // +-----------------------------------------------------------------------+
-  // | Copyright (C) 2016, http://beyond-language-skills.com                 |
+  // | Copyright (C) 2016, http://winvestify.com                             |
   // +-----------------------------------------------------------------------+
   // | This file is free software; you can redistribute it and/or modify     |
   // | it under the terms of the GNU General Public License as published by  |
@@ -22,7 +22,7 @@
 
  *
  * @author Antoine de Poorter
- * @version 0.4
+ * @version 0.5
  * @date 2017-08-05
  * @package
  *
@@ -39,13 +39,13 @@
 
   PENDING:
 
-  2017-05-15  Version 0.3                                                                     [OK, tested]
+  2017-05-15  Version 0.3                                                     [OK, tested]
   Removed unused methods
 
-  2017-07-04
+  2017-07-04   Version 0.4 
   pfp mailing
  
-  2017-08-05
+  2017-08-05         Version 0.5
   Sending email when an application error has been logged
  
  */
@@ -272,7 +272,7 @@ class GlobalEmailListener implements CakeEventListener {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($adminData['systemAdmin'] => __("Admin")));
-            $Email->subject($event->data['subject']);
+            $Email->subject(__("An application error has been logged."));
             $Email->template('applicationError', 'standard_email_layout');
             $Email->viewVars(array('applicationerrorFile' => $event->data['Applicationerror']['applicationerror_file'],
                                            'id' => $event->data['Applicationerror']['id']));

@@ -196,10 +196,10 @@ public function errorTesting() {
      
     $par2 = "details";
     $par3 = "line 333";
-    $par4 = "filename";
+    $par4 = "filenameaAAAA";
     $par5 = "sequences";           
     
-    $Applicationerror = $this->saveAppError($par1, $par2, $par3, $par4, $par5);
+    $Applicationerror = $this->Applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
     
     
     
