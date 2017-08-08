@@ -240,7 +240,7 @@ class growly extends p2pCompany {
 
     function collectHistorical($pageNumber) {
 
-        $pageNumber++; //Advance page
+        $pageNumber++; //Advance page, we sent 0, growly first page is 1.
         $investmentNumber = 0;
 
         $url = array_shift($this->urlSequence);

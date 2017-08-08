@@ -333,9 +333,10 @@ class zank extends p2pCompany {
             exit;
         }
 
+        /*Zank pagination must be done using curl, form are parameters sent in curl*/
         $form = [
-            "length" => 200,
-            "start" => $start,
+            "length" => 200, //Number of investment for page
+            "start" => $start, //First investment of the page
         ];
 
         $str = $this->getCompanyWebpageJson(null, $form); //Data reading
@@ -432,7 +433,7 @@ class zank extends p2pCompany {
         }
         //echo 'AQUI ES ' . $reading;
         $this->companyUserLogout();
-        return [$totalArray, $form['start']];
+        return [$totalArray, $form['start']]; //$total array is the rquested investment, $form['start'] is the next page, return false if is the last page
     }
 
     /**
