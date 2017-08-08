@@ -1,4 +1,5 @@
 <?php
+
 /**
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2017, http://www.winvestify.com                         |
@@ -21,7 +22,7 @@
 
   2017-07-05
  * modified the rules in the $validate variable, mixing it 
- 
+
   2017-01-17	  version 0.2
   function investmentInformationUpdate added					[OK]
 
@@ -40,10 +41,10 @@
  * Create check data
  * 
  * [2017-07-10] Version 0.7
- *New Json array
+ * New Json array
 
 
-2017-07-05
+  2017-07-05
  * modified the rules in the $validate variable, making it more flexible
 
 
@@ -100,7 +101,6 @@ class Investor extends AppModel {
      * 	have to map to a existing field in the database. Very useful for automatic checks
      * 	provided by framework
      */
-    
     var $validate = array(
         'investor_name' => array(
             'rule1' => array('rule' => array('minLength', 2),
@@ -114,9 +114,9 @@ class Investor extends AppModel {
             'rule1' => array('rule' => array('minLength', 2),
                 'allowEmpty' => false,
                 'message' => 'Surname validation error'),
-         /*   'rule2' => array('rule' => 'alphaNumeric',
-                'allowEmpty' => false,
-                'message' => 'Surname validation error'),*/
+        /*   'rule2' => array('rule' => 'alphaNumeric',
+          'allowEmpty' => false,
+          'message' => 'Surname validation error'), */
         ),
         'investor_DNI' => array(
             'rule' => array('minLength', 3),
@@ -225,9 +225,8 @@ class Investor extends AppModel {
         $data = array('id' => $investorReference,
             'investor_accountStatus' => $newStatus,
         );
-        $this->save($data, $validate = true);
-        echo __FILE__ . " " . __LINE__ . "<br>";
-        if ($this->createCheckdata($currentStatus['Investor']['id'])) {
+        if ($this->save($data, $validate = true)) {
+            echo __FILE__ . " " . __LINE__ . "<br>";
             return true;
         }
     }
@@ -289,21 +288,16 @@ class Investor extends AppModel {
         return true;
     }
 
-    
-    
-    
     /**
- * Read the cheack data
- * @param type $investorId
- * @return type
- */
-public function readCheckData($investorId) {
-    $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
-    return $checkData;
-}
+     * Read the cheack data
+     * @param type $investorId
+     * @return type
+     */
+    public function readCheckData($investorId) {
+        $checkData = $this->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+        return $checkData;
+    }
 
-
-    
     /**
      *
      * 	Checks if current stored investment information of the user is recent enough
@@ -362,33 +356,51 @@ public function readCheckData($investorId) {
         return $resultInvestor['Investor']['id'];
     }
 
-    public function investorDataSave($datos) {
+    public function investorDataSave($data) {
         $id = $this->find('first', array(
             'fields' => array(
                 'Investor.id',
             ),
             'conditions' => array(
-                'Investor.user_id' => $datos['id']),
+                'Investor.user_id' => $data['id']),
             'recursive' => -1,));
 
-        $data = array(
+        $checks = $this->readCheckData($id['Investor']['id']);
+        
+        $infoInvestor = array(
             'id' => $id['Investor']['id'],
-            'user_id' => $datos['id'],
-            'investor_name' => $datos['investor_name'],
-            'investor_surname' => $datos['investor_surname'],
-            'investor_DNI' => $datos['investor_DNI'],
-            'investor_dateOfBirth' => $datos['investor_dateOfBirth'],
-            'investor_telephone' => $datos['investor_telephone'],
-            'investor_address1' => $datos['investor_address1'],
-            'investor_postCode' => $datos['investor_postCode'],
-            'investor_city' => $datos['investor_city'],
-            'investor_country' => $datos['investor_country'],
-            'investor_email' => $datos['investor_email'],
+            'user_id' => $data['id'],
+            'investor_name' => $data['investor_name'],
+            'investor_surname' => $data['investor_surname'],
+            'investor_DNI' => $data['investor_DNI'],
+            'investor_dateOfBirth' => $data['investor_dateOfBirth'],
+            'investor_telephone' => $data['investor_telephone'],
+            'investor_address1' => $data['investor_address1'],
+            'investor_postCode' => $data['investor_postCode'],
+            'investor_city' => $data['investor_city'],
+            'investor_country' => $data['investor_country'],
+            'investor_email' => $data['investor_email'],
         );
-        $this->set($data);
+
+         
+         //Checks control, if check is 1 can't change the field in db
+        foreach ($checks[0]['Check'] as $keyCheck => $check) {
+            $checkField = strtolower(explode('_', $keyCheck)[1]);   //Get the check field name  check_name ----> name
+            foreach ($infoInvestor as $keyData => $dataInvestor) {
+                $dataField = strtolower(explode('_', $keyData)[1]); //Get data field name  investor_name ---> name
+                if ($checkField == $dataField && $check == CHECKED) {  //Compare names and unset array if data is CHECKED
+                    unset($infoInvestor[$keyData]);
+                    unset($this->validate[$keyData]); //Unset field validation, cant validate with a null field;
+                }
+            }
+        }
+
+        
+        
+        $this->set($infoInvestor);
         if ($this->validates()) {  //validation ok     
-            $this->save($data);
-            $data = JSON_encode($data);
+            $this->save($infoInvestor);
+            $data = JSON_encode($infoInvestor);
             return 1 . "[" . 1 . "," . $data . ",";
         } else {                     // validation false
             $errors = array('errors' => 'Form error', $this->validationErrors);
@@ -410,7 +422,7 @@ public function readCheckData($investorId) {
         ));
         return $info;
     }
-    
+
     /**
      * Get all data of a investor by investor.id
      * @param int $id It is the investor's id
@@ -424,17 +436,17 @@ public function readCheckData($investorId) {
         ));
         return $info;
     }
-    
+
     public function getJsonDataForPFP($id) {
-        /*$options['joins'] = array(
-            array('table' => 'ocrs',
-                'alias' => 'Ocr',
-                'type' => 'inner',
-                'conditions' => array(
-                    'Investor.id = Ocr.investor_id'
-                )
-            )
-        );*/
+        /* $options['joins'] = array(
+          array('table' => 'ocrs',
+          'alias' => 'Ocr',
+          'type' => 'inner',
+          'conditions' => array(
+          'Investor.id = Ocr.investor_id'
+          )
+          )
+          ); */
 
         $options['conditions'] = array(
             'Investor.id' => $id
@@ -442,6 +454,10 @@ public function readCheckData($investorId) {
         $investorData = $this->find("all", $options);
         return $investorData;
     }
+
+    /*     * ************************* */
+    /*     * GET INVESTOR SINGLE DATA* */
+    /*     * ************************* */
 
     /**
      * Get investor id
@@ -455,6 +471,21 @@ public function readCheckData($investorId) {
     }
 
     /**
+     * Get investor user_id
+     * @param type $userid
+     * @return type
+     */
+    public function getInvestorUserId($investorId) {
+        $data = $info = $this->find("all", array(
+            'conditions' => array('Investor.id' => $investorId),
+            'recursive' => -1,
+        ));
+
+        $id = $data[0]['Investor']['user_id'];
+        return $id;
+    }
+
+    /**
      * Get investor identification code
      * @param type $userid
      * @return type
@@ -463,6 +494,17 @@ public function readCheckData($investorId) {
         $data = $this->investorGetInfo($userid);
         $identity = $data[0]['Investor']['investor_identity'];
         return $identity;
+    }
+
+    /**
+     * Get investor dni
+     * @param type $userid
+     * @return type
+     */
+    public function getInvestorDni($userid) {
+        $data = $this->investorGetInfo($userid);
+        $dni = $data[0]['Investor']['investor_DNI'];
+        return $dni;
     }
 
     /**
@@ -568,47 +610,53 @@ public function readCheckData($investorId) {
             }
         }
 
-
-        //If we click approve, change the status
+        echo false;        //If we click approve, change the status
         if ($checks['type'] == 'approve') {
 
             //Json path
             $fileConfig = Configure::read('files');
-
             $folder = $this->getInvestorIdentity($userId);
             $path = $fileConfig['investorPath'] . $folder;
 
-            
-            
-        //Json array, hte json file is generated with this data.
-        $jsonArray = Array(
-            'check_name' => ($checks['name']),
-            'check_nameTime' => $checks['nameCheck'],
-            'check_surname' => ($checks['surname']),
-            'check_surnameTime' => $checks['surnameCheck'],
-            'check_dni' => ($checks['dni']),
-            'check_dniTime' => $checks['dniCheck'],
-            'check_dateOfBirth' => ($checks['dateOfBirth']),
-            'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
-            'check_email' => ($checks['email']),
-            'check_emailTime' => $checks['emailCheck'],
-            'check_telephone' => ($checks['telephone']),
-            'check_telephoneTime' => $checks['telephoneCheck'],
-            'check_postCode' => ($checks['postCode']),
-            'check_postCodeTime' => $checks['postCodeCheck'],
-            'check_address' => ($checks['address']),
-            'check_addressTime' => $checks['addressCheck'],
-            'check_city' => ($checks['city']),
-            'check_cityTime' => $checks['cityCheck'],
-            'check_country' => ($checks['country']),
-            'check_countryTime' => $checks['countryCheck'],
-            'check_iban' => ($checks['iban']),
-            'check_ibanTime' => $checks['ibanCheck'],
-            'check_cif' => ($checks['cif']),
-            'check_cifTime' => $checks['cifCheck'],
-            'check_businessName' => ($checks['businessName']),
-            'check_businessNameTime' => $checks['businessNameCheck'],
-        );
+            //Find investor info for the json
+            $investorData = $this->find('first', array('conditions' => array('id' => $checks['investorId']), 'recursive' => -1));
+
+            //Find ocr info for the json
+            $ocrData = $this->Ocr->ocrGetData($checks['investorId']);
+
+            //Json array, the json file is generated with this data.
+            $jsonArray = Array(
+                'name' => $investorData['Investor']['investor_name'],
+                'check_nameTime' => $checks['nameCheck'],
+                'surname' => $investorData['Investor']['investor_surname'],
+                'check_surnameTime' => $checks['surnameCheck'],
+                'dni' => $investorData['Investor']['investor_DNI'],
+                'check_dniTime' => $checks['dniCheck'],
+                'dateOfBirth' => $investorData['Investor']['investor_dateOfBirth'],
+                'check_dateOfBirthTime' => $checks['dateOfBirthCheck'],
+                'email' => $investorData['Investor']['investor_email'],
+                'check_emailTime' => $checks['emailCheck'],
+                'telephone' => $investorData['Investor']['investor_telephone'],
+                'check_telephoneTime' => $checks['telephoneCheck'],
+                'postCode' => $investorData['Investor']['investor_postCode'],
+                'check_postCodeTime' => $checks['postCodeCheck'],
+                'address' => $investorData['Investor']['investor_address1'],
+                'check_addressTime' => $checks['addressCheck'],
+                'city' => $investorData['Investor']['investor_city'],
+                'check_cityTime' => $checks['cityCheck'],
+                'country' => $investorData['Investor']['investor_country'],
+                'check_countryTime' => $checks['countryCheck'],
+                'iban' => $ocrData[0]['Ocr']['investor_iban'],
+                'check_ibanTime' => $checks['ibanCheck']
+            );
+            if ($ocrData[0]['Ocr']['ocr_investmentVehicle'] == CHECKED) { //If we have investmentVehicle checked, write the cif and bussines name in the json
+                array_push($jsonArray, array(
+                    'cif' => $ocrData[0]['Ocr']['investor_cif'],
+                    'check_cifTime' => $checks['cifCheck'],
+                    'businessName' => $ocrData[0]['Ocr']['investor_businessName'],
+                    'check_businessNameTime' => $checks['businessNameCheck']));
+            }
+
             //Generate Json
             $created = $this->Ocrfile->generateJson($jsonArray, $path); //$JsonArray -> data for json, $path-> path where the json is created
             if ($created) {
@@ -666,11 +714,6 @@ public function readCheckData($investorId) {
         }
     }
 
-    
-
-    
-    
-    
     /**
      *
      * 	Get information of all investors according to the conditions as defined
@@ -679,17 +722,16 @@ public function readCheckData($investorId) {
      * 	@param 		string	$filterConditions     conditions of the investor
      * 	@return 	array	data of the investor
      * 					
-     */    
+     */
     public function getInvestorData($filterConditions) {
 
         $info = $this->find("all", array(
             'conditions' => array($filterConditions),
             'recursive' => -1,
         ));
-        return $info;         
-     }  
-    
-    
+        return $info;
+    }
+
     /*
      * **** CALLBACK FUNCTIONS *****
      */
@@ -714,7 +756,7 @@ public function readCheckData($investorId) {
                 ));
                 $this->getEventManager()->dispatch($event);
             }
-        }    
+        }
     }
 
     /**
@@ -729,6 +771,14 @@ public function readCheckData($investorId) {
             if (isset($val['Investor']['investor_dateOfBirth'])) {
                 $results[$key]['Investor']['investor_dateOfBirth'] = $this->formatDateAfterFind(
                         $val['Investor']['investor_dateOfBirth']);
+            }
+        }
+        return $results;
+
+        foreach ($results as $key => $val) {
+            if (isset($val['Ocr']['investor_iban'])) {
+                $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
+                        $val['Ocr']['investor_iban']);
             }
         }
         return $results;

@@ -46,7 +46,8 @@
 echo $result;
 if ($result) {
     ?>
-
+    <script src="/js/dateFormat.js"></script>
+    <script src="/js/jquery-dateFormat.js"></script>
     <script>
         total = <?php echo count($selected) ?>;
         var numberCompanies = 0;
@@ -85,7 +86,6 @@ if ($result) {
                 var params = {
                     numberCompanies: numberCompanies,
                 };
-
                 for (var j = 1; j <= z; j++) {
                     if ($("[name='company" + j + "']").length) {
                         idCompany.push($("[name='company" + j + "']").attr("value"));
@@ -93,17 +93,14 @@ if ($result) {
 
                 }
                 params["idCompany"] = idCompany;
-
-                link = "/Ocrs/oneClickInvestorI";
+                link = "/Ocrs/oneClickInvestorPlatformSelectionAction";
                 var data = jQuery.param(params);
                 getServerData(link, data, successSentCompanies, errorSentCompanies);
-
                 params = {};
                 link = "/Ocrs/ocrInvestorDataPanel";
                 var data = jQuery.param(params);
                 getServerData(link, data, successDataPanel, errorDataPanel);
             });
-
             $(document).on("click", ".btnSelectedPlatformDB", function () {
                 var params = {
                     id_company: $(this).parent().parent().parent().attr("value"),
@@ -111,12 +108,8 @@ if ($result) {
                 link = "../Ocrs/deleteCompanyOcr";
                 var data = jQuery.param(params);
                 getServerData(link, data, successDelete, errorDelete);
-
             });
         });
-
-
-
         /*function successFilter(result) {
          $("#platformSelection").html("<h5><?php echo __('Search results:'); ?></br></h5>" + result);
          addEnvent();
@@ -127,15 +120,24 @@ if ($result) {
 
 
         function successSentCompanies(result) {
-
+            result = JSON.parse(result);
+            for (i = 0; i < max; i++) {
+                ga_1CRConfirmCompanies(result[1], result[2]);
+            }
         }
-        function errorSentCompanies(result) {
 
+
+        function errorSentCompanies(result) {
+            result = JSON.parse(result);
+            for (i = 0; i < max; i++) {
+                ga_1CRConfirmCompanies(result[1], result[2]);
+            }
         }
 
 
 
         function successDataPanel(result) {
+
             $(document).off('click');
             $(document).off('change');
             $("#content").html(result);
@@ -163,7 +165,6 @@ if ($result) {
             $('input').iCheck({
                 checkboxClass: 'icheckbox_flat-blue'
             });
-
     <?php
     foreach ($notShow as $notShowCompany) {
         ?>
@@ -193,7 +194,6 @@ if ($result) {
                 company = $(this).attr("value");
                 $('#platformSelection').find("." + company).css("display", "none");
             });
-
             //Te pasa el seleccionado a su zona
             $(".btnSelect").click(function () {
                 id = $(this).attr("id");
@@ -205,8 +205,6 @@ if ($result) {
                 recount();
                 extraEvent();
             });
-
-
             //Te comprueba los dos checkbox de la plataforma y te habilita o desabilita el select
             $(".iCheck-helper").click(function () {
                 //Cada compañia tiene su propio array
@@ -234,7 +232,6 @@ if ($result) {
                 recount();
                 name = $("." + idDel).attr("id");
             });
-
         }
 
         function recount() {
@@ -257,6 +254,18 @@ if ($result) {
             }
 
         }
+
+
+        //Google Analytics
+        function ga_1CRConfirmCompanies(number, email) {
+            //Use INVESTOR ID
+            console.log("ga 'send' 'event' '1ClickRegistration'  'serviceContracted' " + email + " " + number);
+            if (typeof ga === 'function') {
+                ga('send', 'event', '1ClickRegistration', 'serviceContracted', email, number);
+            }
+        }
+
+
 
     </script>
     <style>
@@ -405,5 +414,5 @@ Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuenta
             </div> <!-- /.col 9 -->
         </div> <!-- /.row general -->
     </div>
-<?php
+    <?php
 }

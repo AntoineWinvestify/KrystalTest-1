@@ -52,7 +52,7 @@
             symbol : " &euro;",
             decimal : ",",
             thousand: ".",
-            precision : 0,
+            precision : 2,
             format: "%v%s"
             };
 
@@ -87,7 +87,7 @@
                                 <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
                                         <table id="billingTable" class="table table-striped dataTable display " width="100%" cellspacing="0"
-                                                                                        data-order='[[ 0, "asc" ]]' data-page-length='25'>
+                                                                                        data-order='[[ 0, "desc" ]]' data-page-length='25'>
                                                 <thead>
                                                         <tr>
                                                                 <th width="10%"><?php echo __('Date')?></th>
@@ -105,8 +105,8 @@
                                                         <td><?php echo __($bill['CompaniesFile']['bill_concept']); ?></td>
                                                         <td id="<?php echo __($bill['CompaniesFile']['id']) ?>" align="right"><script>formatMoney(<?php echo __($bill['CompaniesFile']['id']) ?>, <?php echo __($bill['CompaniesFile']['bill_amount']) ?>);</script></td>
                                                         <td>
-                                                            <form action = "/files/downloadDocument/bill/<?php echo __($bill['CompaniesFile']['id']) ?>">
-                                                            <button type="submit"  class="btn btn-default btnPFPAdmin btnRounded"><?php echo __('Download')?></button>
+                                                            <form action = "/adminpfp/files/downloadDocument/bill/<?php echo __($bill['CompaniesFile']['id']) ?>">
+                                                            <button type="submit"  class="btn btn-default btn1CR btnRounded"><?php echo __('Download')?></button>
                                                             </form>
                                                         </td>
                                                     </tr>

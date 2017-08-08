@@ -1348,15 +1348,13 @@ hr.nomargin {
     top: 20px;
 }
 
-
-
 /* Winvestify Login Styling*/
 .loginContainer {
     margin: 0 auto;
     background-image: url("/img/admin/login.png");
     background-repeat: no-repeat;
-    max-width: 1280px;
-    height: 787px;
+    height: 780px;
+    background-size: cover;
 }
 .loginBox {
     background-color: white;
@@ -1369,14 +1367,27 @@ hr.nomargin {
     padding-top: 20px;
 }
 .paragraph {
-    margin: 300px 0 0 50px;
+    margin: 120px 0 0 50px;
     position: absolute;
-}
-
-.paragraph p {
     color: white !important;
+    text-align: right !important;
+    width: 600px;
 }
-
+.adminLogos{
+    margin: 250px auto;
+    height: 120px;
+    width: 600px;
+    float: left;
+}
+.logo1 {
+    height: 100px;
+    float: left;
+    margin-left: 50px;
+}
+.logo2 {
+    height: 100px;
+    float: right;
+}
 
 /*************************** MEDIA QUERIES ****************************/
                     /*MOBILE SWAP MEDIA QUERY >320*/
@@ -2030,7 +2041,7 @@ hr.nomargin {
     margin-top: -5px;
 }
 /* STATUS COLORS */
-.statusNew {
+.statusNew, .statusFixed {
     color: #47badf; /*blue*/
 }
 
@@ -2062,4 +2073,10 @@ hr.nomargin {
 
 .wizard-card-small .wizard-footer {
     padding: 0 15px 5px !important;
+}
+
+#errorBox {
+    background-color: #e6e6e6;
+    padding: 20px 50px;
+    margin-top: 20px;
 }

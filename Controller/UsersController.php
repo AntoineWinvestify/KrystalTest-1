@@ -148,6 +148,7 @@ public function loginAction()
 {
 	if ($this->request->is('post')) {
 		$this->Session->delete('Auth');		//start with a clean session
+                $this->Session->delete('sectorsMenu');
 		if ($this->Auth->login()) {
 			echo "SESSION1 = " . $this->Session->read('Auth.User.Investor.investor_accountStatus') ."<br>";			
 			if ($this->Session->read('Auth.User.Investor.investor_accountStatus') < QUESTIONAIRE_FILLED_OUT) {
@@ -213,6 +214,8 @@ public function logout() {
 	$this->getEventManager()->dispatch($event);
 	$this->Session->destroy();						// NOT NEEDED?
 	$this->Session->delete('Auth');
+        $this->Session->delete('Acl');
+        $this->Session->delete('sectorsMenu');
         
 	return $this->redirect($this->Auth->logout());
 }

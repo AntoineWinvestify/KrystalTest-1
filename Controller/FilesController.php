@@ -54,6 +54,10 @@
  * 
  * 2017/07/13 version 0.9
  * File binary validation
+ * 
+ * 2017/07/13 version 0.10
+ * Zip now only contains the required files of the pfp
+ * 
  */
 App::uses('CakeEvent', 'Event');
 
@@ -83,122 +87,30 @@ class filesController extends AppController {
             //Bill|Investor document filter
             if (count($this->params['data']['Files']) > 0) {
                 $data = $this->params['data']['Files']; //File info
-
                 //binary data type
                 $finfo = finfo_open();
                 $fileinfo = finfo_file($finfo, $data['fileId' . $data['info']]['tmp_name'], FILEINFO_MIME);
                 finfo_close($finfo);
-               
-                
+
+
                 $extraInfo = $data['info']; //Extra info, in this case only the document type id
                 $id = $this->Session->read('Auth.User.Investor.id'); //Investor id
                 $identity = $this->Session->read('Auth.User.Investor.investor_identity'); //$Investor identity
-                
-                $data_json = $this->Ocrfile->ocrFileSave($data, $identity, $id, $extraInfo , "file" , $fileinfo); //Save the file and return a Json
-                $this->set("result", json_encode($data_json)); //Set info into the view
-                
-            } else if (count($this->params['data']['bill']) > 0) {
-                $data = $this->params['data']['bill'];
 
-                //binary data type
-                $finfo = finfo_open();
-                $fileinfo = finfo_file($finfo, $data['bill']['tmp_name'], FILEINFO_MIME);
-                finfo_close($finfo);
-                
+                $data_json = $this->Ocrfile->ocrFileSave($data, $identity, $id, $extraInfo, "file"); //Save the file and return a Json
+                $this->set("result", json_encode($data_json)); //Set info into the view
+            } else if (count($this->params['data']['bill']) > 0) {
+                $data = $this->params['data']['bill']; //File info
+
                 //Info about the bill like number, amount ...
                 $extraInfo = array('number' => $this->params['data']['number'], 'concept' => $this->params['data']['concept'], 'amount' => $this->params['data']['amount'], 'currency' => $this->params['data']['currency']);
-                $id = $this->params['data']['pfp'];
-                $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile'];
-                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $extraInfo, "bill", $fileinfo);
-                $this->set("result", $result);
+                $id = $this->params['data']['pfp']; //Pfp id
+                $company = $this->Company->getCompanyDataList(array('id' => $id))[$id]['company_codeFile']; //Get company codeFile, is the folder of the bill
+                $result = $this->Ocrfile->ocrFileSave($data, $company, $id, $extraInfo, "bill"); //Save the bill in db and return a result.
+                $this->set("result", $result); //Set result into the view.
             }
         }
     }
-
-    /**
-     * Upload investor file
-     * @param type $data
-     * @param type $identity
-     * @param type $id
-     * @param type $type Type of document (DNI, IBAN, CIF...) as defined in AppController
-     * @return string|int
-     */
-   /* public function ocrFileSave($fileInfo, $folder, $id, $type, $path) {
-        //Load files config
-        $fileConfig = Configure::read('files');
-        if ($path == "file") {
-            $up = $fileConfig['investorPath'] . $folder;
-        } else if ($path == "bill") {
-            $up = $fileConfig['billsPath'] . $folder;
-        }
-
-        foreach ($fileInfo as $file) {
-
-            //Error filter
-            if ($file['size'] == 0 || $file['error'] !== 0) {
-                continue;
-            }
-            //Type and size filter
-            if (in_array($file['type'], $fileConfig['permittedFiles']) && $file['size'] < $fileConfig['maxSize']) {
-                $name = basename($file['name']);
-                $filename = time() . "_" . $name;
-                $uploadFolder = $up;
-                $uploadPath = $uploadFolder . DS . $filename;
-                //Create the dir if not exist
-                if (!file_exists($uploadFolder)) {
-                    mkdir($uploadFolder, 0770, true);
-                }
-
-                //Move the uploaded file to the new dir
-                if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
-                    return [false, __("Upload failed. Incorrect type or file too big.")];
-                }
-
-                //Save in db
-                if ($path == "file") {
-
-                    $investorFileData = array(
-                        'investor_id' => $id,
-                        'file_id' => $type,
-                        'file_name' => $name,
-                        'file_url' => $folder . DS . $filename,
-                        'file_status' => 0
-                    );
-                    $result = $this->Ocrfile->FilesInvestor->save($investorFileData);
-                    $data_json = array(basename($file['name']), $folder . DS . $filename, $type);
-                    return [true, __('Upload ok'), $data_json];
-                } else if ($path == "bill") {
-                    $result = array(basename($file['name']), $folder . DS . $filename, $type);
-
-
-                    $bill = array(
-                        'CompaniesFile' => Array(
-                            'company_id' => $id,
-                            'file_id' => 50,
-                            'bill_number' => $type['number'],
-                            'bill_amount' => str_replace(",", ".", $type['amount']) * 100,
-                            'bill_concept' => $type['concept'],
-                            'bill_currency' => $type['currency'],
-                            'bill_url' => $folder . DS . $filename
-                        )
-                    );
-
-                    if ($this->validates($this->CompaniesFile->save($bill))) {
-                        $mail = $this->Investor->User->getPfpAdminMail($id);
-
-                        $event = new CakeEvent("billMailEvent", $this, $mail);
-                        $this->getEventManager()->dispatch($event);
-
-                        return [true, __('Upload ok')];
-                    } else {
-                        return [false, __("Upload failed. Incorrect type or file too big.")];
-                    }
-                }
-            } else {
-                return [false, __("Upload failed. Incorrect type or file too big.")];
-            }
-        }
-    }*/
 
     /**
      * Delete a document
@@ -212,7 +124,7 @@ class filesController extends AppController {
 
             $url = $this->request->data('url');
             $file_id = $this->request->data('id');
-            $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.id'));
+            $investor_id = $this->Session->read('Auth.User.Investor.id');
 
 
             $result = $this->Ocrfile->ocrFileDelete($url, $file_id, $investor_id);
@@ -230,101 +142,11 @@ class filesController extends AppController {
             $this->layout = 'ajax';
             $this->disableCache();
 
-            $investor_id = $this->Investor->getInvestorId($this->Session->read('Auth.User.Investor.id'));
+            $investor_id = $this->Session->read('Auth.User.Investor.id');
 
 
             $result = $this->Ocrfile->ocrAllFileDelete($investor_id);
             $this->set("result", $result);
         }
     }
-
-    /**
-     * Generate and download the zip
-     * @param type $id
-     * @param type $userId
-     * @return type
-     */
-    function generateZip($id, $userId) {
-
-        //Zip path
-        $fileConfig = Configure::read('files');
-        $folder = $this->Investor->getInvestorIdentity($userId);
-        $pathToZipFile = $fileConfig['investorPath'] . $folder . DS . 'investorData.Zip';
-
-        //Zip archives
-        $investorFiles = $this->Ocrfile->readExistingFiles($id);
-        $urlList = array();
-        //$investorData = $this->Investor->getJsonDataForPFP($id);
-        $jsonPath = $fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json';
-        /* $response = array();
-          $prefix = "investor_";
-          $values = [
-          $prefix . "name",
-          $prefix . "surname",
-          $prefix . "DNI",
-          $prefix . "dateOfBirth",
-          $prefix . "telephone"
-          ];
-          foreach ($values as $value) {
-          array_push($response, $investorData[0]["Investor"][$value]);
-          }
-
-          $fp = fopen($fileConfig['investorPath'] . $folder . DS . 'dataInvestor.json', 'w');
-          fwrite($fp, json_encode($response));
-          fclose($fp); */
-        foreach ($investorFiles as $investorFile) {
-
-            $url = $fileConfig['investorPath'] . $investorFile['file']['FilesInvestor']['file_url'];
-            array_push($urlList, $url);
-        }
-
-        //Create the zip
-        if ($this->Ocrfile->createZip($urlList, $pathToZipFile, true, $jsonPath)) {
-
-            $this->set('result', true);
-            $this->set('message', 'Zip downloaded');
-            $this->download($pathToZipFile, 'investorData.Zip');
-        } else {
-            $this->set('result', false);
-            $this->set('message', 'Zip download failed');
-        }
-    }
-
-    /**
-     * Download documents and bills
-     */
-    function downloadDocument($type, $id) {
-        //Request data
-        $data = $this->request['data'];
-        //Load files config
-        $fileConfig = Configure::read('files');
-        //Path and file name
-
-
-        if ($type == 'ocrfile') {
-            $data = $this->Ocrfile->readSimpleDocument($id);
-            print_r($data);
-            $pathToFile = $fileConfig['investorPath'] . $data['FilesInvestor']['file_url'];
-            $name = $data['FilesInvestor']['file_name'];
-        } else if ($type == 'bill') {
-            $data = $this->Ocrfile->readSimpleBill($id);
-            $pathToFile = $fileConfig['billsPath'] . $data['CompaniesFile']['bill_url'];
-            $name = $data['CompaniesFile']['bill_number'];
-        }
-
-        //Download
-        $this->download($pathToFile, $name);
-    }
-
-    function download($path, $name) {
-
-        $this->autoLayout = false;
-
-        $this->response->file($path, array(
-            'download' => true,
-            'name' => $name,
-        ));
-        return $this->response;
-    }
-
 }

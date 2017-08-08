@@ -6,4 +6,5 @@
  * and open the template in the editor.
  */
 
-echo $result; //Ajax response
+echo $result[0]; //Ajax response
+echo json_encode($result);

@@ -43,6 +43,10 @@
  * Added parallelization
  * Added logout
  * Added verification of dom elements
+ * 
+
+2017-08-01      version 0.3
+ * Fixed error to take more than one investment on lines 364 and 395
 
 2017-08-04
  * collectCompanyMarketplaceData - read completed investment
@@ -603,7 +607,9 @@ class loanbook extends p2pCompany {
                     $this->data1[$key]['interest'] = $this->getPercentage($tds[6]->nodeValue);
 
                     // Get amortization table. first get base URL for amortization table
-                    $baseUrl = array_shift($this->urlSequence);
+                    if (empty($baseUrl)) {
+                        $baseUrl = array_shift($this->urlSequence);
+                    }
                     $as = $tds[0]->getElementsByTagName('a');   // only 1 will be found
                     $this->verifyNodeHasElements($as);
                     if (!$this->hasElements) {
