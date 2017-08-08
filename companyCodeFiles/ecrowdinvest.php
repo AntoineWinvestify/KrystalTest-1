@@ -33,7 +33,9 @@
   function companyUserLogin()												[OK not tested]
   function collectUserInvestmentData()									[OK not tested]
 
-
+2017-08-04
+ *  collectCompanyMarketplaceData - Read completed investment
+ *  collectHistorical - Added
 
 
   PENDING:
@@ -74,12 +76,16 @@ class ecrowdinvest extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the marketplace data
-     * 	@return array	Each investment option as an element of an array
-     * 	
+     * Collects the marketplace data
+     * @param type $companyBackup
+     * @return string
      */
-    function collectCompanyMarketplaceData() {
+    function collectCompanyMarketplaceData($companyBackup) { //ecrown doesnt have pagination
+
+
+        $readController = 0;
+        $investmentController = false;
+
         $totalArray = array();
         $str = $this->getCompanyWebpage();
 
@@ -112,7 +118,9 @@ class ecrowdinvest extends p2pCompany {
 
             $tag5 = 'a';
             $as = $this->getElements($projectwidget, $tag5);
+            $timeLeft = explode(' ', trim($hs[0]->nodeValue))[1] . ' ' . explode(' ', trim($hs[0]->nodeValue))[2];
 
+            $tempArray['marketplace_country'] = 'ES';
             $tempArray['marketplace_purpose'] = trim($purposeLocation[0]);
             $tempArray['marketplace_requestorLocation'] = trim($purposeLocation[1]);
             $tempArray['marketplace_amount'] = $this->getMonetaryValue($ps[3]->nodeValue);
@@ -120,20 +128,120 @@ class ecrowdinvest extends p2pCompany {
             list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($ps[7]->nodeValue);
             $tempArray['marketplace_numberOfInvestors'] = $value2;
             $tempArray['marketplace_status'] = trim($hs[0]->nodeValue);
+            list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(intval($progress[0]->getAttribute('aria-valuenow')));
             $tempArray['marketplace_loanReference'] = preg_replace('/\D/', '', $as[0]->getAttribute('id'));
-            echo '<h1>' . $tempArray['marketplace_status'];
-            if ($tempArray['marketplace_status'] == 'En estudio' || $tempArray['marketplace_status'] == '100% financiado') {
-                unset($tempArray);
-                echo 'NO</h1>';
+
+
+            if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+
+                if ($tempArray['marketplace_status'] == '100% financiado') {
+                    $tempArray['marketplace_status'] = 'Completado/Sin Tiempo';
+                } else {
+                    $tempArray['marketplace_status'] = 'Completado/Con Tiempo';
+                }
+                foreach ($companyBackup as $inversionBackup) { //if completed and same status that in backup
+                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                        $readController++;
+                        $investmentController = true;
+                    }
+                }
+            } else if ($tempArray['marketplace_status'] == 'En estudio') {
+                $tempArray['marketplace_status'] = 'En estudio';
             } else {
-                echo 'SI</h1>';
-                $totalArray[] = $tempArray;
+                $tempArray['marketplace_status'] = 'En proceso';
+            }
+
+
+            if ($investmentController) { //Don't save a already existing investment
                 unset($tempArray);
+                $investmentController = false;
+            } else {
+                $totalArray[] = $tempArray;
+                $this->print_r2($totalArray);
+                unset($tempArray);
+            }
+
+            if ($readController > 2) {  //If we fin more than two completed investment existing in the backpup, stop reading
+                echo 'Stop reading';
+                break;
             }
         }
         $this->print_r2($totalArray);
         return $totalArray;
+    }
+
+    /**
+     * Collect all investments
+     * @return type
+     */
+    function collectHistorical() { //ecrown doesnt have pagination
+        $totalArray = array();
+        $str = $this->getCompanyWebpage();
+
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $tag = 'div';
+        $attribute = 'class';
+        $value = 'col-xs-12 col-md-4 col-sm-4 projectwidget';
+        $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
+        foreach ($projectwidgets as $projectwidget) {
+            $tag2 = 'p';
+            $ps = $this->getElements($projectwidget, $tag2);
+            $purposeLocation = explode('- ', trim($ps[0]->nodeValue)); //gets purpose & location separated by "- "
+
+            if (trim($ps[9]->nodeValue) == "-") {
+                $value2 = 0;
+            } else {
+                $value2 = trim($ps[9]->nodeValue);
+            }
+
+
+            $tag3 = 'h2';
+            $hs = $this->getElements($projectwidget, $tag3);
+
+            $tag4 = 'div';
+            $attribute4 = 'class';
+            $value4 = 'progress-bar';
+            $progress = $this->getElements($projectwidget, $tag4, $attribute4, $value4);
+
+            $tag5 = 'a';
+            $as = $this->getElements($projectwidget, $tag5);
+            $timeLeft = explode(' ', trim($hs[0]->nodeValue))[1] . ' ' . explode(' ', trim($hs[0]->nodeValue))[2];
+
+            $tempArray['marketplace_country'] = 'ES';
+            $tempArray['marketplace_purpose'] = trim($purposeLocation[0]);
+            $tempArray['marketplace_requestorLocation'] = trim($purposeLocation[1]);
+            $tempArray['marketplace_amount'] = $this->getMonetaryValue($ps[3]->nodeValue);
+            $tempArray['marketplace_interestRate'] = $this->getPercentage($ps[5]->nodeValue);
+            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($ps[7]->nodeValue);
+            $tempArray['marketplace_numberOfInvestors'] = $value2;
+            $tempArray['marketplace_status'] = trim($hs[0]->nodeValue);
+            list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
+            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(intval($progress[0]->getAttribute('aria-valuenow')));
+            $tempArray['marketplace_loanReference'] = preg_replace('/\D/', '', $as[0]->getAttribute('id'));
+
+
+            if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+
+                if ($tempArray['marketplace_status'] == '100% financiado') {
+                    $tempArray['marketplace_status'] = 'Completado/Sin Tiempo';
+                } else {
+                    $tempArray['marketplace_status'] = 'Completado/Con Tiempo';
+                }
+            } else if ($tempArray['marketplace_status'] == 'En estudio') {
+                $tempArray['marketplace_status'] = 'En estudio';
+            } else {
+                $tempArray['marketplace_status'] = 'En proceso';
+            }
+
+
+            $totalArray[] = $tempArray;
+            unset($tempArray);
+        }
+        $this->print_r2($totalArray);
+        return [$totalArray,false]; //$totaArray -> Investments / false -> ecrown doesnt have pagination
     }
 
     /**
