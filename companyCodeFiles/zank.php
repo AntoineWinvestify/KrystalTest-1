@@ -57,6 +57,8 @@
   2017/06/22
  * Added mechanism to take more than 100 investments by Json
 
+2017/08/02
+ zank code adaptation for 100%
   Pending:
   Fecha en duda
 
@@ -101,14 +103,14 @@ class zank extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
+
     /**
-     *
-     * 	Collects the marketplace data.
+     * Collects the marketplace data.
      * 	ZANK is special as one has to logon in order to see all the details of the offers in their marketplace
-     * 	@return array	Each investment option as an element of an array
-     *
+     * @param type $companyBackup
+     * @return array
      */
-    function collectCompanyMarketplaceData($companyMarketplace, $companyBackup) {
+    function collectCompanyMarketplaceData($companyBackup) {
         $reading = true; //Loop controller
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
         // echo __FUNCTION__ . __LINE__ . "<br>";
@@ -240,17 +242,15 @@ class zank extends p2pCompany {
                                 foreach ($companyBackup as $inversionBackup) {
                                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado') {
                                         $inversionReadController = 1;
-                                        echo 'Uno completado';
                                     }
                                 }
                             } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                                 $tempArray['marketplace_subscriptionProgress'] = 10000;
-                                $tempArray['marketplace_status'] = 'Amortizacion';
+                                $tempArray['marketplace_status'] = 'Formalizado';
                                 //Read inversions limiter controller
                                 foreach ($companyBackup as $inversionBackup) {
                                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && ($inversionBackup['Marketplacebackup']['marketplace_status'] == 'Amortizacion')) {
                                         $inversionReadController = 1;
-                                        echo 'Amortizacion';
                                     }
                                 }
                             } else if (!$div->nodeValue) {
@@ -286,18 +286,18 @@ class zank extends p2pCompany {
                 if ($inversionReadController == 1) {
                     echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe<br>";
                     $readControl++;
-                    echo 'avanzo contador';
+                    echo 'Advance';
                 } else if ($readControl > 2) {
                     echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida.<br>";
                     $reading = false;
-                    echo 'rompo';
+                    echo 'Break';
                     break;
                 } else {
-                    echo 'añado<br>';
+                    echo 'Add:<br>';
                     array_push($totalArray, $tempArray);
-                    echo 'total<br>';
+                    echo 'Total<br>';
                     $this->print_r2($totalArray);
-                    echo 'Se ha añadido : <br>';
+                    echo 'Added : <br>';
                     $this->print_r2($tempArray);
                     //echo __FILE__ . " " . __LINE__ . "<br>";
                 }
@@ -311,13 +311,12 @@ class zank extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the marketplace data.
-     * 	ZANK is special as one has to logon in order to see all the details of the offers in their marketplace
-     * 	@return array	Each investment option as an element of an array
-     *
+     * Collects ALLc the marketplace data.
+     * @param type $start
+     * @param type $type
+     * @return type
      */
-    function collectHistorical($start) {
+    function collectHistorical($start, $type = null) {
 
 
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
