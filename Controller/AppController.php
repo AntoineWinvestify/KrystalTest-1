@@ -88,12 +88,16 @@ define('FINANCING_TO_COMPANY', 8);
 define('ALLOW_LINKED_ACCOUNTS', 16);
 
 
+//Special Characters
+define('LINE_FEED', 10);
+
 // Sequences
 define('LOGIN_SEQUENCE', 1);
 define('LOGOUT_SEQUENCE', 2);
 define('MARKETPLACE_SEQUENCE', 3);
 define('MY_INVESTMENTS_SEQUENCE', 4);
 define('MY_VIRTUAL_WALLET_SEQUENCE', 5);
+define('HISTORICAL_SEQUENCE',6);
 
 define('CHAT_ACTIVE', 1);
 define('CHAT_TEMPORARY_NOT_ACTIVE', 2);
