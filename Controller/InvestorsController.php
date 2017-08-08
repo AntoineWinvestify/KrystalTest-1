@@ -28,7 +28,10 @@
 
   Pending:
   Generate a miniview for the extended notification of the event "newAccountLinked"     [OK, not yet tested]
-
+  User cannot modify his mobile phone number.
+ * A more consistent andpermanent solution will be implemented with 1CR for all "confirmed" data items,
+ * like name, surname, telephone, dni, ....
+ * 
  */
 
 
@@ -89,6 +92,15 @@ function deleteLinkedAccount() {
 }
 
     
+/**
+ * Read the cheack data
+ * @param type $investorId
+ * @return type
+ */
+public function readCheckData($investorId) {
+    $checkData = $this->Investor->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+    return $checkData;
+}
     
     
     
@@ -100,12 +112,15 @@ function deleteLinkedAccount() {
 public function editUserProfileData() {
 
         if (!$this->request->is('ajax')) {
-            throw new
-            FatalErrorException(__('You cannot access this page directly'));
+            $this->layout = 'azarus_private_layout';
+            /*throw new
+            FatalErrorException(__('You cannot access this page directly'));*/
         }
+        else {
         $error = false;
         $this->layout = 'ajax';
         $this->disableCache();
+        }
 
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');
@@ -150,7 +165,7 @@ public function editUserProfileData() {
             $investorValidationErrors = $this->Investor->validationErrors;
         }
 
-// Validation passed, so time to save the data
+        // Validation passed, so time to save the data
         if (($investorValidationErrors == NULL) AND ( $userValidationErrors == NULL)) {
             if (!empty($receivedData['password'])) {
                 $this->User->id = $userId;
@@ -164,6 +179,7 @@ public function editUserProfileData() {
 
         $receivedDataTemp[0]['Investor'] = $receivedData;
         $this->set('resultUserData', $receivedDataTemp);
+        //}
     }
 
     
@@ -290,15 +306,16 @@ function linkAccount() {
  *
  */
 function readLinkedAccounts() {
-
-        if (!$this->request->is('ajax')) {
-            throw new
-            FatalErrorException(__('You cannot access this page directly'));
-        }
-
         $error = false;
-        $this->layout = 'ajax';
-        $this->disableCache();
+        if (!$this->request->is('ajax')) {
+            $this->layout = "azarus_private_layout";
+            /*throw new
+            FatalErrorException(__('You cannot access this page directly'));*/
+        }
+        else {
+            $this->layout = 'ajax';
+            $this->disableCache();
+        }
 
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');    // Load the "Company" model
 

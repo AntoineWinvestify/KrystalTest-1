@@ -28,9 +28,8 @@
             <!-- 1 Column Text : BEGIN --> 
             <tr>
                 <td bgcolor="#ffffff" style="padding: 40px; text-align: center; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
-                    <p><?php echo __('Dear') . " " . $namePFPAdmin ?></p>
-                    <p><?php echo __('A new user from 1CR service.') ?></p>                    
-                    <p><?php echo __('data about that new user') ?></p>  
+                    <p><?php echo __('Dear PFP Admin,') ?></p>
+                    <p><?php echo __('A new user is available for incorporation in your database.') ?></p>                      
                     <p><?php echo __('Kind Regards,<br/><strong>The Winvestify Team</strong>.') ?></p>
                 </td>
             </tr>

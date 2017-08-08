@@ -20,18 +20,19 @@
  * @package
  * 
  */
-?>
 
+
+?>
 <script>
     $(document).ready(function () {
-        link = "../Ocrs/ocrInvestorPlatformSelection";
+        link = "<?php echo $link ?>";
         var data = null;
-        getServerData(link, data, successInvestoPlatform, errorInvestoPlatform);
+        getServerData(link, data, successInvestorPlatform, errorInvestorPlatform);
     });
-    function successInvestoPlatform(result) {
+    function successInvestorPlatform(result) {
         $("#content").html(result);
     }
-    function errorInvestoPlatform(result) {
+    function errorInvestorPlatform(result) {
         $("#content").html();
     }
     
