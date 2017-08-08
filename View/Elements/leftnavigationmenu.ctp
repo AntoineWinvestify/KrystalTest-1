@@ -65,7 +65,8 @@ $(document).ready(function() {
                 [__("Tallyman")],
                 [__("Bills")],
                 [__("Investor Checking")],
-                [__("Logout")]
+                [__("Logout")],
+                [__("Dashboard 2.0"), __("Overview"),__("Stats"),__("Initial Panel") ],
             ];
             
             
