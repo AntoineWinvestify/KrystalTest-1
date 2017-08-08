@@ -22,8 +22,8 @@
 
  *
  * @author Antoine de Poorter
- * @version 0.3
- * @date 2017-03-05
+ * @version 0.4
+ * @date 2017-08-05
  * @package
  *
 
@@ -42,8 +42,12 @@
   2017-05-15  Version 0.3                                                                     [OK, tested]
   Removed unused methods
 
-  2017/07/04
- * pfp mailing
+  2017-07-04
+  pfp mailing
+ 
+  2017-08-05
+  Sending email when an application error has been logged
+ 
  */
 
 
@@ -58,19 +62,21 @@ class GlobalEmailListener implements CakeEventListener {
     public function implementedEvents() {
         /*
           DEFINED EVENTS:
-          newUserCreated			 			A new user has successfully registered
+          newUserCreated                      A new user has successfully registered
           SendContacMessage                   Somebody contacted use via ContactForm
          */
 
+        
 // Determine which events have been selected in the config file
-
         $allImplementedEvents = array(
             'newUserCreated' => 'newUserCreatedEmail',
             'sendContactMessage' => 'contactEmail',
             'checkMessage' => 'checkData',
             'billMailEvent' => 'billMail',
             'pfpMail' => 'newUserMail',
+            'applicationErrorReported' => 'appErrorEmail',
         );
+        
         Configure::load('p2pGestor.php', 'default');
         $configuredEvents = Configure::read('event');
         foreach ($configuredEvents as $key => $value) {
@@ -164,7 +170,7 @@ class GlobalEmailListener implements CakeEventListener {
             $Email->emailFormat('html');
             $Email->send();
         } catch (Exception $e) {
-            $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
+            $infoString = __FILE__ . " " . __LINE__ . " Event: 'sendContactMessage. Caught email exception: " . $e->getMessage() . "\n";
             CakeLog::error($infoString);
             echo $infoString;
         }
@@ -183,12 +189,12 @@ class GlobalEmailListener implements CakeEventListener {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($adminData['winAdminCheck'] => __("Admin")));
-            $Email->subject("Nuevo usuario ocr");
+            $Email->subject("New user for your platform");
             $Email->template('winadminNewUserOcr', 'standard_email_layout');
             $Email->emailFormat('html');
             $Email->send();
         } catch (Exception $e) {
-            $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
+            $infoString = __FILE__ . " " . __LINE__ . " Event: 'checkMessage'. Caught email exception: " . $e->getMessage() . "\n";
             CakeLog::error($infoString);
             echo $infoString;
         }
@@ -215,7 +221,7 @@ class GlobalEmailListener implements CakeEventListener {
                 $Email->emailFormat('html');
                 $Email->send();
             } catch (Exception $e) {
-                $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
+                $infoString = __FILE__ . " " . __LINE__ . " Event: 'pfpMail'. Caught email exception: " . $e->getMessage() . "\n";
                 CakeLog::error($infoString);
                 echo $infoString;
             }
@@ -243,11 +249,41 @@ class GlobalEmailListener implements CakeEventListener {
                 $Email->emailFormat('html');
                 $Email->send();
             } catch (Exception $e) {
-                $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
+                $infoString = __FILE__ . " " . __LINE__ . " Event: 'billMailEvent'. Caught email exception: " . $e->getMessage() . "\n";
                 CakeLog::error($infoString);
                 echo $infoString;
             }
         }
     }
 
+    
+ 
+    
+    /** 
+     * Mail to admin after an application error was recorded.
+     * 
+     * @param CakeEvent $event
+     */  
+    public function appErrorEmail(CakeEvent $event) {
+        Configure::load('p2pGestor.php', 'default');
+        $adminData = Configure::read('admin');
+
+        try {
+            $Email = new CakeEmail('smtp_Winvestify');
+            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+            $Email->to(array($adminData['systemAdmin'] => __("Admin")));
+            $Email->subject($event->data['subject']);
+            $Email->template('applicationError', 'standard_email_layout');
+            $Email->viewVars(array('applicationerrorFile' => $event->data['Applicationerror']['applicationerror_file'],
+                                           'id' => $event->data['Applicationerror']['id']));
+            $Email->emailFormat('html');
+            $Email->send();
+        } catch (Exception $e) {
+            $infoString = __FILE__ . " " . __LINE__ . " Event: 'appErrorEmail'. Caught email exception: " . $e->getMessage() . "\n";
+            CakeLog::error($infoString);
+            echo $infoString;
+        }
+    }    
+    
+    
 }

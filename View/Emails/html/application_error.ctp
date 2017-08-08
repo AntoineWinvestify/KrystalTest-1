@@ -2,7 +2,8 @@
 /*
 
 Imported variables:
-$optionalText
+$id
+$applicationerrorFile
 
 
 
@@ -20,11 +21,11 @@ $optionalText
 
 			<p style="text-align: left; margin-bottom:0px; margin-top:0px;">
 
-			<br/>The following error report was sent<br>
+			<br/>The following error report was generated:<br>
 			</p>
 			
-			<p>The optional text added by the user was:<br>
-			<?php echo $optionalText;?>
+			<p>The error has occurred in file <?php echo $applicationerror_file ?> <br>
+                        <p>and the id of the application error is <?php echo $id ?><br>
 			</p>
 
 			<p style="text-align: left; margin-bottom:0px; margin-top:0px;">

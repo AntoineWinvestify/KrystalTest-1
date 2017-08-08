@@ -44,7 +44,7 @@
 <script src="/plugins/chartjs/Chartist.min.js"></script>
 
 <script type="text/javascript">
- 
+
 function successTallymanData(data) {
     $("#TallymanResult").html(data);
     
@@ -82,7 +82,7 @@ console.log("Error occured while checking the charging of the investorrequest");
 	
 }
  
- 
+
 $(document).ready(function() {
    
     $("#tallymanBtnSearch").bind("click", function(event) {
@@ -95,7 +95,7 @@ $(document).ready(function() {
             var inputid = $("#tallymanInputId").val();
             var useremail = $("#tallymanInputEmail").val();
             var usertelephone = $("#tallymanInputTelephone").val(); 
-            var chargingconfirmed = 0;
+            var chargingconfirmed = 1;
 
             var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
             var data = jQuery.param( params );
@@ -113,48 +113,25 @@ $(document).ready(function() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     $(function () {
-
+ 
         $(document).on('click', '.close', function () {
             $('#chargingConfirmationModal').removeClass("show");
         });   
-
+ 
         $(document).on("click", '.closeBtn', function () {
             $("#chargingConfirmationModal").remove();
-        });
-
-        $(document).on("click", 'ul > li > a', function () {
-            return false;
         });
 
         $(document).on("click", '#tooltip1', function () {
             $('#passwordTooltip').toggle();
         });
-
-
-
+ 
         $(document).on("click", "#btnConfirm", function (event) {
 
             $("#chargingConfirmationModal").removeClass("show");
             var link = $(this).attr("href");
- /*           
-            var inputid = "<?php echo $userid ?>";
-            var useremail = "<?php echo $email ?>";
-            var usertelephone = "<?php echo $phone ?>";
-            var chargingconfirmed = 1;
-    */        
+     
             var inputid = $("#tallymanInputId").val();
             var useremail = $("#tallymanInputEmail").val();
             var usertelephone = $("#tallymanInputTelephone").val(); 
@@ -168,19 +145,8 @@ $(document).ready(function() {
             getServerData(link, data, successTallymanData, errorTallymanData);
             return false;
         });
+
     });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

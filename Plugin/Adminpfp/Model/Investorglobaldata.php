@@ -81,13 +81,13 @@ public function readInvestorData($investorIdentity, $platformId) {
 
     $cutoffDate = date("Y-m-d H:i:s", time() - $limitDays * 3600 * 7 * 24);
 
-    $resultTallyman = $this->find("all", $params = array('recursive' => 1,
+    $resultTallyman1 = $this->find("all", $params = array('recursive' => 1,
 							  'conditions'  => array(
                                                               'created >' => $cutoffDate ),
                                                               'limit' => $limitNumber )); 
-
+//    print_r($resultTallyman);
     
-/*
+
 $resultTallyman[0]['Investorglobaldata']['investorglobaldata_investorIdentity'] = '39048098ab409be490A';
 $resultTallyman[0]['Investorglobaldata']['investorglobaldata_activePFPs'] = 4;
 $resultTallyman[0]['Investorglobaldata']['investorglobaldata_totalPFPs'] = 5;
@@ -355,7 +355,10 @@ $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPType'
 $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_PFPCountry'] = "IT";
 $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_globalIndicator'] = 112;
 $resultTallyman[5]['Userplatformglobaldata'][1]['userplatformglobaldata_numberOfActiveInvestments'] = 41;
-*/
+//echo "<br>____________________________<br>";
+    
+//   print_r($resultTallyman); 
+    
 // Do some simple calculations to get extra "new" values so they can be displayed
 // enrich the information to be provided to the PFPAdmin user
   

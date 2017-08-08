@@ -42,7 +42,7 @@ function beforeFilter() {
 
 	$this->Security->requireAuth();
         
- 	$this->Auth->allow('linkCheckRecords');        
+ 	$this->Auth->allow('linkCheckRecords', 'errorTesting');        
         
 }
 
@@ -185,9 +185,32 @@ $this->print_r2($userResults);
     }
 
 
-
-
-
-
+    
+    
+public function errorTesting() {
+    $this->autoRender = false;
+    Configure::write('debug', 2);   
+    $this->Applicationerror = ClassRegistry::init('Applicationerror'); 
+    
+    $par1 = "typeoferror";
+     
+    $par2 = "details";
+    $par3 = "line 333";
+    $par4 = "filename";
+    $par5 = "sequences";           
+    
+    $Applicationerror = $this->saveAppError($par1, $par2, $par3, $par4, $par5);
+    
+    
+    
+    
+}  
+    
+    
+    
+    
+   
+ 
+ 
     
 }
