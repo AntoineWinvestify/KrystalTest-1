@@ -25,35 +25,38 @@
  * @date 2016-11-10
  * @package
 
-function calculateLoanCost()										[not OK, not tested]
-function collectCompanyMarketplaceData()								[OK, tested]
-function companyUserLogin()										[OK, tested]
-function companyUserLogout										[OK, tested]
-function collectUserInvestmentData()									[OK, tested]
-parallelization                                                                                         [OK, tested]
+  function calculateLoanCost()										[not OK, not tested]
+  function collectCompanyMarketplaceData()								[OK, tested]
+  function companyUserLogin()										[OK, tested]
+  function companyUserLogout										[OK, tested]
+  function collectUserInvestmentData()									[OK, tested]
+  parallelization                                                                                         [OK, tested]
 
-2016-11-10	  version 2016_0.1
-Basic version
+  2016-11-10	  version 2016_0.1
+  Basic version
 
-2017/05/11
+  2017/05/11
  * OUTSTANDING PRINCIPAL
  * transaction id
  * period of investiment
 
-2017-05-16          version 2017_0.2
+  2017-05-16          version 2017_0.2
  * Added parallelization
  * Dom verification
  * 
 
-2017-05-25
+  2017-05-25
  * There is an array_shift to delete the first url of urlsequence on case 0 of the switch
  * We would need to delete the urlsequence on DB for Circulantis to work
  * 
-2017-07-26
+  2017-07-26
  * Urlseuqnces fix marketplace
  * $attr class fix col-xs-12 col-sm-6 col-md-3 col-lg-3 line 113
  * 
-Pending:
+ * 2017-08-07
+ * collectCompanyMarketplaceData - pagination loop added
+ * collectHistorical - added
+  Pending:
 
 
 
@@ -93,17 +96,137 @@ class circulantis extends p2pCompany {
     }
 
     /**
-     *
      * 	Collects the marketplace data.
-     *
-     * 	@return array	Each investment option as an element of an array
-     *
+     * @param type $companyBackup
+     * @return string
      */
-    function collectCompanyMarketplaceData() {
+    function collectCompanyMarketplaceData($companyBackup) {
 
         $totalArray = array();
 
-        $str = $this->getCompanyWebpage();
+        $page = 1;
+        $url = array_shift($this->urlSequence);
+        $reading = true;
+        $readController = 0;
+        $investmentController = false;
+
+        while ($reading) { //Pagination loop
+
+            $investmentNumber = 0;
+
+            $str = $this->getCompanyWebpage($url . $page);
+            $dom = new DOMDocument;
+            $dom->loadHTML($str);
+
+            $dom->preserveWhiteSpace = false;
+            $tag = "div";
+            $attr = "class";
+            $value = "col-xs-12 col-sm-6 col-md-3 col-lg-3";
+
+            $divs1 = $this->getElements($dom, $tag, $attr, $value);
+            foreach ($divs1 as $div1) {
+                $newdivs = $div1->getElementsByTagName("div");
+                foreach ($newdivs as $newdiv) {
+                    $class = $newdiv->getAttribute("class");
+                    if ($class == "imagen-cabecera-subasta") {
+                        $onClick = $newdiv->getAttribute('onclick');
+                        $onClick = explode("-", $onClick);
+
+                        $name = "";
+                        for ($i = 4; $i < count($onClick) - 1; $i++) {
+                            $name = $name . " " . $onClick[$i];
+                        }
+
+                        $tempArray['marketplace_country'] = 'ES';
+                        $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick[count($onClick) - 1]));
+                        $tempArray['marketplace_purpose'] = $name;
+                    }
+                    if ($class == "titulo-subasta") {
+                        $sector = explode('Importe', trim($div1->nodeValue));
+                        $tempArray['marketplace_sector'] = trim($sector[0]);
+                    }
+                    if ($class == "datos_subasta") {
+                        $tds = $div1->getElementsByTagName('td');
+                        $innerIndex = 0;
+
+                        foreach ($tds as $td) {
+                            switch ($innerIndex) {
+                                case 1:
+                                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
+                                    break;
+                                case 2:
+                                    $tempDuration = $td->nodeValue;
+                                    break;
+                                case 3:
+                                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue . $tempDuration);
+                                    break;
+                                case 5:
+                                    $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
+                                    break;
+                                case 7:
+                                    $tempArray['marketplace_rating'] = $td->nodeValue;
+                                    break;
+                                case 11:
+                                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
+                                    if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                                        $tempArray['marketplace_status'] = 'Completado';
+                                        foreach ($companyBackup as $inversionBackup) { //If completed investmet with same status in backup
+                                            if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                                                echo 'already exist';
+                                                $readController++;
+                                                $investmentController = true;
+                                            }
+                                        }
+                                    } else {
+                                        $tempArray['marketplace_status'] = 'En proceso';
+                                    }
+                                    break;
+
+                                default:
+                            }
+                            $innerIndex = $innerIndex + 1;
+                        }
+                    }
+                }
+                $investmentNumber++; //Advance investment
+                echo 'number : ' . $investmentNumber . '<br>';
+                $this->print_r2($tempArray);
+                if ($investmentController) { //Don't save a already existing investment
+                    unset($tempArray);
+                    $investmentController = false;
+                } else {
+                    if ($tempArray) {
+                        $totalArray[] = $tempArray;
+                        unset($tempArray);
+                    }
+                }
+            }
+
+            $page++; //Advance page
+            if ($readController > 2 || $investmentNumber < 8) {
+                echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $page;
+                $reading = false;
+            } //Stop reading
+        }
+
+        $this->print_r2($totalArray);
+        return $totalArray;
+    }
+
+    /**
+     * Collect historival
+     * @param boolean $pageNumber
+     * @return type
+     */
+    function collectHistorical($pageNumber) {
+
+        $totalArray = array();
+
+        $pageNumber++; //Advance page, first page is 1, we sent 0
+        $investmentNumber = 0;
+        $url = array_shift($this->urlSequence);
+
+        $str = $this->getCompanyWebpage($url . $pageNumber);
         $dom = new DOMDocument;
         $dom->loadHTML($str);
 
@@ -118,18 +241,16 @@ class circulantis extends p2pCompany {
             foreach ($newdivs as $newdiv) {
                 $class = $newdiv->getAttribute("class");
                 if ($class == "imagen-cabecera-subasta") {
-                    $totalArray[] = $tempArray;
-                    $this->print_r2($tempArray);
-                    unset($tempArray);
                     $onClick = $newdiv->getAttribute('onclick');
                     $onClick = explode("-", $onClick);
-                    
+
                     $name = "";
-                    for ($i = 4 ; $i < count($onClick)-1 ; $i++ ){                      
-                            $name = $name . " " . $onClick[$i];
+                    for ($i = 4; $i < count($onClick) - 1; $i++) {
+                        $name = $name . " " . $onClick[$i];
                     }
-                    
-                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick[count($onClick)-1]));
+
+                    $tempArray['marketplace_country'] = 'ES';
+                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick[count($onClick) - 1]));
                     $tempArray['marketplace_purpose'] = $name;
                 }
                 if ($class == "titulo-subasta") {
@@ -159,6 +280,17 @@ class circulantis extends p2pCompany {
                                 break;
                             case 11:
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
+                                if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                                    $tempArray['marketplace_status'] = 'Completado';
+                                    foreach ($companyBackup as $inversionBackup) {
+                                        if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado/Sin tiempo') {
+                                            $readController++;
+                                            $investmentController = true;
+                                        }
+                                    }
+                                } else {
+                                    $tempArray['marketplace_status'] = 'En proceso';
+                                }
                                 break;
 
                             default:
@@ -167,13 +299,24 @@ class circulantis extends p2pCompany {
                     }
                 }
             }
+            if ($tempArray) {
+                $investmentNumber++; //Advance invesment
+                $totalArray[] = $tempArray;
+                unset($tempArray);
+            }
         }
+        echo 'Page number: ' . $pageNumber . '<br>';
+        
+        if ($investmentNumber < 8) {
+            $pageNumber = false;
+        } //Stop reading
 
-        unset($totalArray[0]);
+
         $this->print_r2($totalArray);
-        return $totalArray;
+
+        return [$totalArray, $pageNumber]; //$totalArray-> Investments / $pageNumber-> next page numbr, false when last page
     }
-    
+
     /**
      *
      * 	Collects the investment data of the user
@@ -186,13 +329,13 @@ class circulantis extends p2pCompany {
         switch ($this->idForSwitch) {
             case 0:
                 echo __FILE__ . " " . __LINE__ . "<br>";
-                
+
                 $this->idForSwitch++;
                 //We need to delete a urlsequence on DB for Circulantis to work
                 array_shift($this->urlSequence);
-                //$this->getCompanyWebpage();
-                //$resultMicirculantis = $this->companyUserLogin($user, $password);
-                //break;
+            //$this->getCompanyWebpage();
+            //$resultMicirculantis = $this->companyUserLogin($user, $password);
+            //break;
             case 1:
                 $credentials = array();
                 /**
@@ -206,10 +349,10 @@ class circulantis extends p2pCompany {
                 $this->doCompanyLoginMultiCurl($credentials);
                 break;
             case 2:
-                /*$dom = new DOMDocument;
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;*/
+                /* $dom = new DOMDocument;
+                  libxml_use_internal_errors(true);
+                  $dom->loadHTML($str);
+                  $dom->preserveWhiteSpace = false; */
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
@@ -217,24 +360,24 @@ class circulantis extends p2pCompany {
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false; 
-                $divs = $this->getElements($dom, 'div', 'id', 'sub-menu');	
+                $dom->preserveWhiteSpace = false;
+                $divs = $this->getElements($dom, 'div', 'id', 'sub-menu');
                 if (empty($divs)) {
                     return $this->getError(__LINE__, __FILE__);
                 }
                 /*
                  * MAKE COMPROBATION
-                if (empty($divs)) {
-                        return 0;
-                }
-                */
+                  if (empty($divs)) {
+                  return 0;
+                  }
+                 */
                 $lis = $this->getElements($divs[0], 'li');
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
                 $resultMicirculantis = false;
-                if ($lis[0]->nodeValue === "Mis datos") {			// JSON response with wallet value
-                        $resultMicirculantis = true;		
+                if ($lis[0]->nodeValue === "Mis datos") {   // JSON response with wallet value
+                    $resultMicirculantis = true;
                 }
 
                 if (!$resultMicirculantis) {   // Error while logging in
@@ -472,7 +615,7 @@ class circulantis extends p2pCompany {
              */
 // map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED			
             $data1[$key]['status'] = OK;
-             $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + ($data1[$key]['invested'] /*- $data1[$key]['amortized']*/);
+            $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + ($data1[$key]['invested'] /* - $data1[$key]['amortized'] */);
             $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] + $data1[$key]['profitGained'];
             $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
         }
@@ -534,7 +677,7 @@ class circulantis extends p2pCompany {
             echo __FILE__ . " " . __LINE__ . "<br>";
             $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] + $data1[$key]['profitGained'];
             $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
-           
+
             echo __FILE__ . " " . __LINE__ . "<br>";
         }
 
@@ -554,7 +697,7 @@ class circulantis extends p2pCompany {
             echo "key = $key and " . $div->nodeValue . "<br>";
             echo __FILE__ . " " . __LINE__ . "<br>";
         }
-         $prof = $this->getElements($dom, "div", "class", "col-lg-2 total_fondos");
+        $prof = $this->getElements($dom, "div", "class", "col-lg-2 total_fondos");
         $tempArray['global']['profitibility'] = $this->getPercentage($prof[0]->nodeValue);
         $tempArray['global']['investments'] = $numberOfInvestments;
         $tempArray['investments'] = $data1;
