@@ -460,7 +460,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                     $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvestment'] - $this->tempArray['global']['totalAmortized'];
                     $this->tempArray['global']['profitibility'] = (int) ($this->tempArray['global']['totalPercentage'] / ($this->tempArray['global']['investments'] = $this->index + 1));
                     $this->print_r2($this->tempArray);
-                    $this->tempArray['global']['investments'] = $this->index++;
+                    $this->tempArray['global']['investments'] = $this->index + 1;
                     
                     $this->tempArray['investments'] = $this->data1;
                     //	$tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + $data1[$key]['amortized'];
@@ -529,7 +529,7 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                     $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvestment'] - $this->tempArray['global']['totalAmortized'];
                     $this->tempArray['global']['profitibility'] = (int) ($this->tempArray['global']['totalPercentage'] / ($this->tempArray['global']['investments'] = $this->index + 1));
                     $this->print_r2($this->tempArray);
-                    $this->tempArray['global']['investments'] = $this->index++;
+                    $this->tempArray['global']['investments'] = $this->index + 1;
                     $this->tempArray['investments'] = $this->data1;
                     //	$tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + $data1[$key]['amortized'];
                     //	$tempArray['global']['totalInvested'] = $tempArray['global']['totalInvested'] + $data1[$key]['invested'];
