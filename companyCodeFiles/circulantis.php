@@ -102,111 +102,133 @@ class circulantis extends p2pCompany {
      */
     function collectCompanyMarketplaceData($companyBackup) {
 
+        $user = "inigo.iturburua@gmail.com";
+        $password = "Ap_94!56";
+
+        $resultMicirculantis = $this->companyUserLogin($user, $password);   //We need login to see the status
+        echo __FILE__ . " " . __LINE__ . "<br>";
+
+        if (!$resultMicirculantis) {   // Error while logging in
+            $tracings = "Tracing:\n";
+            $tracings .= __FILE__ . " " . __LINE__ . " \n";
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+            $tracings .= " \n";
+            $msg = "Error while logging in user's portal. Wrong userid/password \n";
+            $msg = $msg . $tracings . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+
+
         $totalArray = array();
 
         $page = 1;
         $url = array_shift($this->urlSequence);
+
         $reading = true;
         $readController = 0;
         $investmentController = false;
 
-        while ($reading) { //Pagination loop
 
+        while ($reading) { //Pagination loop */
             $investmentNumber = 0;
 
             $str = $this->getCompanyWebpage($url . $page);
+            //echo $str;
             $dom = new DOMDocument;
             $dom->loadHTML($str);
-
             $dom->preserveWhiteSpace = false;
-            $tag = "div";
-            $attr = "class";
-            $value = "col-xs-12 col-sm-6 col-md-3 col-lg-3";
 
-            $divs1 = $this->getElements($dom, $tag, $attr, $value);
-            foreach ($divs1 as $div1) {
-                $newdivs = $div1->getElementsByTagName("div");
-                foreach ($newdivs as $newdiv) {
-                    $class = $newdiv->getAttribute("class");
-                    if ($class == "imagen-cabecera-subasta") {
-                        $onClick = $newdiv->getAttribute('onclick');
-                        $onClick = explode("-", $onClick);
+            $tables = $dom->getElementsByTagName("table"); //Get investment table
 
-                        $name = "";
-                        for ($i = 4; $i < count($onClick) - 1; $i++) {
-                            $name = $name . " " . $onClick[$i];
+            foreach ($tables as $table) {
+                $rows = $table->getElementsByTagName("tr"); //Get investment row
+
+                foreach ($rows as $key => $row) {
+
+                    if ($key % 2 == 0) {
+                        continue; //Even row are useless
+                    }
+
+                    echo 'Investment:  ' . $key . '<br>';
+
+                    $tempArray['marketplace_country'] = 'ES';
+
+                    $tds = $row->getElementsByTagName("td"); //Get investment data
+
+                    foreach ($tds as $key => $td) {
+                        echo $key . ': ' . $td->nodeValue . '<br>';
+
+
+                        switch ($key) {
+
+                            case 1:
+                                $tempArray['marketplace_name'] = $td->nodeValue;
+                                $tempArray['marketplace_purpose'] = $td->nodeValue;
+                                break;
+                            case 4:
+                                $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
+                                break;
+                            case 5:
+                                $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
+                                break;
+                            case 6:
+                                $tempArray['marketplace_rating'] = $td->nodeValue;
+                                break;
+                            case 8:
+                                $tempArray['marketplace_vencimiento'] = $td->nodeValue;
+                                break;
+                            case 9:
+                                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
+                                break;
                         }
 
-                        $tempArray['marketplace_country'] = 'ES';
-                        $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick[count($onClick) - 1]));
-                        $tempArray['marketplace_purpose'] = $name;
-                    }
-                    if ($class == "titulo-subasta") {
-                        $sector = explode('Importe', trim($div1->nodeValue));
-                        $tempArray['marketplace_sector'] = trim($sector[0]);
-                    }
-                    if ($class == "datos_subasta") {
-                        $tds = $div1->getElementsByTagName('td');
-                        $innerIndex = 0;
+                        $as = $td->getElementsByTagName("a"); //Get loanId
+                        foreach ($as as $key => $a) {
+                            echo $key . ' loan Id: ' . $a->getAttribute('href') . '<br>';
+                            $loanId = trim(preg_replace('/\D/', ' ', $a->getAttribute('href')));
+                            echo $loanId . '<br>';
+                            $tempArray['marketplace_loanReference'] = $loanId;
+                        }
 
-                        foreach ($tds as $td) {
-                            switch ($innerIndex) {
-                                case 1:
-                                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
-                                    break;
-                                case 2:
-                                    $tempDuration = $td->nodeValue;
-                                    break;
-                                case 3:
-                                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue . $tempDuration);
-                                    break;
-                                case 5:
-                                    $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
-                                    break;
-                                case 7:
-                                    $tempArray['marketplace_rating'] = $td->nodeValue;
-                                    break;
-                                case 11:
-                                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
-                                    if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-                                        $tempArray['marketplace_status'] = 'Completado';
-                                        foreach ($companyBackup as $inversionBackup) { //If completed investmet with same status in backup
-                                            if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
-                                                echo 'already exist';
-                                                $readController++;
-                                                $investmentController = true;
-                                            }
-                                        }
-                                    } else {
-                                        $tempArray['marketplace_status'] = 'En proceso';
+                        $buttons = $td->getElementsByTagName("button"); //Get status data
+                        foreach ($buttons as $key => $button) {
+                            echo $key . ' status: ' . $button->getAttribute('title') . '<br>';
+                            $tempArray['marketplace_status'] = $button->getAttribute('title');
+                            if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                                foreach ($companyBackup as $inversionBackup) { //If completed investmet with same status in backup
+                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                                        echo 'already exist';
+                                        $readController++;
+                                        $investmentController = true;
                                     }
-                                    break;
-
-                                default:
+                                }
                             }
-                            $innerIndex = $innerIndex + 1;
                         }
                     }
-                }
-                $investmentNumber++; //Advance investment
-                echo 'number : ' . $investmentNumber . '<br>';
-                $this->print_r2($tempArray);
-                if ($investmentController) { //Don't save a already existing investment
-                    unset($tempArray);
-                    $investmentController = false;
-                } else {
-                    if ($tempArray) {
-                        $totalArray[] = $tempArray;
-                        unset($tempArray);
-                    }
-                }
-            }
+                    $this->print_r2($tempArray);
 
-            $page++; //Advance page
-            if ($readController > 2 || $investmentNumber < 8) {
-                echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $page;
-                $reading = false;
-            } //Stop reading
+
+                    if ($investmentController) { //Don't save a already existing investment
+                        unset($tempArray);
+                        $investmentController = false;
+                    } else {
+                        if ($tempArray) {
+                            $totalArray[] = $tempArray;
+                            unset($tempArray);
+                        }
+                    }
+                    $investmentNumber++;
+                }
+
+                $page++; //Advance page
+                if ($readController > 2 || $investmentNumber < 15) {
+                    echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $page;
+                    $reading = false;
+                } //Stop reading
+                break;
+            }
         }
 
         $this->print_r2($totalArray);
@@ -220,101 +242,115 @@ class circulantis extends p2pCompany {
      */
     function collectHistorical($pageNumber) {
 
+        $user = "inigo.iturburua@gmail.com";
+        $password = "Ap_94!56";
+
+        $resultMicirculantis = $this->companyUserLogin($user, $password);   //We need login to see the status
+        echo __FILE__ . " " . __LINE__ . "<br>";
+
+        if (!$resultMicirculantis) {   // Error while logging in
+            $tracings = "Tracing:\n";
+            $tracings .= __FILE__ . " " . __LINE__ . " \n";
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+            $tracings .= " \n";
+            $msg = "Error while logging in user's portal. Wrong userid/password \n";
+            $msg = $msg . $tracings . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+
         $totalArray = array();
 
         $pageNumber++; //Advance page, first page is 1, we sent 0
         $investmentNumber = 0;
         $url = array_shift($this->urlSequence);
 
+
         $str = $this->getCompanyWebpage($url . $pageNumber);
+        //echo $str;
         $dom = new DOMDocument;
         $dom->loadHTML($str);
-
         $dom->preserveWhiteSpace = false;
-        $tag = "div";
-        $attr = "class";
-        $value = "col-xs-12 col-sm-6 col-md-3 col-lg-3";
 
-        $divs1 = $this->getElements($dom, $tag, $attr, $value);
-        foreach ($divs1 as $div1) {
-            $newdivs = $div1->getElementsByTagName("div");
-            foreach ($newdivs as $newdiv) {
-                $class = $newdiv->getAttribute("class");
-                if ($class == "imagen-cabecera-subasta") {
-                    $onClick = $newdiv->getAttribute('onclick');
-                    $onClick = explode("-", $onClick);
+        $tables = $dom->getElementsByTagName("table"); //Get investment table
 
-                    $name = "";
-                    for ($i = 4; $i < count($onClick) - 1; $i++) {
-                        $name = $name . " " . $onClick[$i];
+        foreach ($tables as $table) {
+            $rows = $table->getElementsByTagName("tr"); //Get investment row
+
+            foreach ($rows as $key => $row) {
+
+                if ($key % 2 == 0) {
+                    continue; //Even row are useless
+                }
+
+                echo 'Investment:  ' . $key . '<br>';
+
+                $tempArray['marketplace_country'] = 'ES';
+
+                $tds = $row->getElementsByTagName("td"); //Get investment data
+
+                foreach ($tds as $key => $td) {
+                    echo $key . ': ' . $td->nodeValue . '<br>';
+
+
+                    switch ($key) {
+
+                        case 1:
+                            $tempArray['marketplace_name'] = $td->nodeValue;
+                            $tempArray['marketplace_purpose'] = $td->nodeValue;
+                            break;
+                        case 4:
+                            $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
+                            break;
+                        case 5:
+                            $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
+                            break;
+                        case 6:
+                            $tempArray['marketplace_rating'] = $td->nodeValue;
+                            break;
+                        case 8:
+                            $tempArray['marketplace_vencimiento'] = $td->nodeValue;
+                            break;
+                        case 9:
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
+                            break;
                     }
 
-                    $tempArray['marketplace_country'] = 'ES';
-                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick[count($onClick) - 1]));
-                    $tempArray['marketplace_purpose'] = $name;
-                }
-                if ($class == "titulo-subasta") {
-                    $sector = explode('Importe', trim($div1->nodeValue));
-                    $tempArray['marketplace_sector'] = trim($sector[0]);
-                }
-                if ($class == "datos_subasta") {
-                    $tds = $div1->getElementsByTagName('td');
-                    $innerIndex = 0;
+                    $as = $td->getElementsByTagName("a"); //Get loanId
+                    foreach ($as as $key => $a) {
+                        echo $key . ' loan Id: ' . $a->getAttribute('href') . '<br>';
+                        $loanId = trim(preg_replace('/\D/', ' ', $a->getAttribute('href')));
+                        echo $loanId . '<br>';
+                        $tempArray['marketplace_loanReference'] = $loanId;
+                    }
 
-                    foreach ($tds as $td) {
-                        switch ($innerIndex) {
-                            case 1:
-                                $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
-                                break;
-                            case 2:
-                                $tempDuration = $td->nodeValue;
-                                break;
-                            case 3:
-                                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue . $tempDuration);
-                                break;
-                            case 5:
-                                $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
-                                break;
-                            case 7:
-                                $tempArray['marketplace_rating'] = $td->nodeValue;
-                                break;
-                            case 11:
-                                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
-                                if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-                                    $tempArray['marketplace_status'] = 'Completado';
-                                    foreach ($companyBackup as $inversionBackup) {
-                                        if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado/Sin tiempo') {
-                                            $readController++;
-                                            $investmentController = true;
-                                        }
-                                    }
-                                } else {
-                                    $tempArray['marketplace_status'] = 'En proceso';
-                                }
-                                break;
-
-                            default:
+                    $buttons = $td->getElementsByTagName("button"); //Get status data
+                    foreach ($buttons as $key => $button) {
+                        echo $key . ' status: ' . $button->getAttribute('title') . '<br>';
+                        $tempArray['marketplace_status'] = $button->getAttribute('title');
+                        if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                            
                         }
-                        $innerIndex = $innerIndex + 1;
                     }
                 }
-            }
-            if ($tempArray) {
-                $investmentNumber++; //Advance invesment
+                $this->print_r2($tempArray);
+
+
+
                 $totalArray[] = $tempArray;
                 unset($tempArray);
+                $investmentNumber++;
             }
+            if ($investmentNumber < 15) {
+                echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $pageNumber;
+                $pageNumber = false;
+            } //Stop reading
+            break; //Only read one table
         }
-        echo 'Page number: ' . $pageNumber . '<br>';
-        
-        if ($investmentNumber < 8) {
-            $pageNumber = false;
-        } //Stop reading
-
 
         $this->print_r2($totalArray);
-
-        return [$totalArray, $pageNumber]; //$totalArray-> Investments / $pageNumber-> next page numbr, false when last page
+        return [$totalArray, $pageNumber];
     }
 
     /**
