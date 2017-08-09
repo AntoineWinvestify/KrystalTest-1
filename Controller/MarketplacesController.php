@@ -317,7 +317,7 @@ class MarketPlacesController extends AppController {
                 if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
                     $DontExist = false;
                     echo "Investment alreadty exist<br>";
-                    if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == 'Completado') { //If is completed
+                    if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == 1 || $investment['marketplace_status'] == 2 || $investment['marketplace_status'] == 3) { //If is completed
                         echo "Investment completed<br>";
 
                         //Delete from maketplace
@@ -349,7 +349,7 @@ class MarketPlacesController extends AppController {
             }
 
             if ($DontExist) {//If not exist in winvestify marketplace
-                if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == 'Completado') { //If it is completed
+                if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == 1 || $investment['marketplace_status'] == 2 || $investment['marketplace_status'] == 3) { //If it is completed
                     echo "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
                         $backup = false;

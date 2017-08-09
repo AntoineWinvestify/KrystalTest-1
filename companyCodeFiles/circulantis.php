@@ -195,10 +195,40 @@ class circulantis extends p2pCompany {
                         $buttons = $td->getElementsByTagName("button"); //Get status data
                         foreach ($buttons as $key => $button) {
                             echo $key . ' status: ' . $button->getAttribute('title') . '<br>';
-                            $tempArray['marketplace_status'] = $button->getAttribute('title');
+
+                            switch ($button->getAttribute('title')) {
+                                case 'Abierta':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    break;
+                                case 'Formalizada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = 2;
+                                    break;
+                                case 'Finalizada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = 1;
+                                    break;
+                                case 'Atrasada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = 2;
+                                    break;
+                                case 'Cobrada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = 2;
+                                    break;
+                                case 'Cobrada parcialmente':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = 2;
+                                    break;
+                                case 'No formalizada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = 3;
+                            }
+
+
                             if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                                 foreach ($companyBackup as $inversionBackup) { //If completed investmet with same status in backup
-                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_statusLiteral'] == $tempArray['marketplace_statusLiteral']) {
                                         echo 'already exist';
                                         $readController++;
                                         $investmentController = true;
@@ -328,9 +358,33 @@ class circulantis extends p2pCompany {
                     $buttons = $td->getElementsByTagName("button"); //Get status data
                     foreach ($buttons as $key => $button) {
                         echo $key . ' status: ' . $button->getAttribute('title') . '<br>';
-                        $tempArray['marketplace_status'] = $button->getAttribute('title');
-                        if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-                            
+                        switch ($button->getAttribute('title')) {
+                            case 'Abierta':
+                                $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                break;
+                            case 'Formalizada':
+                                $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                $tempArray['marketplace_status'] = 2;
+                                break;
+                            case 'Finalizada':
+                                $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                $tempArray['marketplace_status'] = 1;
+                                break;
+                            case 'Atrasada':
+                                $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                $tempArray['marketplace_status'] = 2;
+                                break;
+                            case 'Cobrada':
+                                $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                $tempArray['marketplace_status'] = 2;
+                                break;
+                            case 'Cobrada parcialmente':
+                                $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                $tempArray['marketplace_status'] = 2;
+                                break;
+                            case 'No formalizada':
+                                $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                $tempArray['marketplace_status'] = 3;
                         }
                     }
                 }

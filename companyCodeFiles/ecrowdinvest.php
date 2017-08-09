@@ -33,7 +33,7 @@
   function companyUserLogin()												[OK not tested]
   function collectUserInvestmentData()									[OK not tested]
 
-2017-08-04
+  2017-08-04
  *  collectCompanyMarketplaceData - Read completed investment
  *  collectHistorical - Added
 
@@ -81,8 +81,6 @@ class ecrowdinvest extends p2pCompany {
      * @return string
      */
     function collectCompanyMarketplaceData($companyBackup) { //ecrown doesnt have pagination
-
-
         $readController = 0;
         $investmentController = false;
 
@@ -136,9 +134,11 @@ class ecrowdinvest extends p2pCompany {
             if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
 
                 if ($tempArray['marketplace_status'] == '100% financiado') {
-                    $tempArray['marketplace_status'] = 'Completado/Sin Tiempo';
+                    $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                    $tempArray['marketplace_status'] = 2;
                 } else {
-                    $tempArray['marketplace_status'] = 'Completado/Con Tiempo';
+                    $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
+                    $tempArray['marketplace_status'] = 1;
                 }
                 foreach ($companyBackup as $inversionBackup) { //if completed and same status that in backup
                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
@@ -147,9 +147,9 @@ class ecrowdinvest extends p2pCompany {
                     }
                 }
             } else if ($tempArray['marketplace_status'] == 'En estudio') {
-                $tempArray['marketplace_status'] = 'En estudio';
+                $tempArray['marketplace_statusLiteral'] = 'En estudio';
             } else {
-                $tempArray['marketplace_status'] = 'En proceso';
+                $tempArray['marketplace_statusLiteral'] = 'En proceso';
             }
 
 
@@ -226,14 +226,18 @@ class ecrowdinvest extends p2pCompany {
             if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
 
                 if ($tempArray['marketplace_status'] == '100% financiado') {
-                    $tempArray['marketplace_status'] = 'Completado/Sin Tiempo';
+                    $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                    $tempArray['marketplace_status'] = 2;
                 } else {
-                    $tempArray['marketplace_status'] = 'Completado/Con Tiempo';
+                    $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
+                    $tempArray['marketplace_status'] = 1;
                 }
             } else if ($tempArray['marketplace_status'] == 'En estudio') {
-                $tempArray['marketplace_status'] = 'En estudio';
+                $tempArray['marketplace_statusLiteral'] = 'En estudio';
+                $tempArray['marketplace_status'] = 3;
             } else {
-                $tempArray['marketplace_status'] = 'En proceso';
+                $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                $tempArray['marketplace_status'] = null;
             }
 
 
@@ -241,7 +245,7 @@ class ecrowdinvest extends p2pCompany {
             unset($tempArray);
         }
         $this->print_r2($totalArray);
-        return [$totalArray,false]; //$totaArray -> Investments / false -> ecrown doesnt have pagination
+        return [$totalArray, false]; //$totaArray -> Investments / false -> ecrown doesnt have pagination
     }
 
     /**

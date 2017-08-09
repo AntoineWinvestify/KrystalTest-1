@@ -42,7 +42,7 @@
   2017-05-16      version 2017_0.2
  * Added parallelization
 
-2017/08/04
+  2017/08/04
  * Code adaptation for 100%
  *      collectCompanyMarketplaceData   -   Pagination loop added
  *      collectHistorical       -       Added
@@ -99,7 +99,7 @@ class mytriplea extends p2pCompany {
 
         while ($reading) { //Pagination loop
             $investmentNumber = 0;
-            $form = [ //MyTripleA is like zank, need curl.
+            $form = [//MyTripleA is like zank, need curl.
                 'cargarMas' => true, //This must by true
                 'numeroPaginaMostrar' => $page, //Page number, first page is 0
             ];
@@ -199,9 +199,11 @@ class mytriplea extends p2pCompany {
                     if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPENDIENTE' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPRORROGADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoCOMPLETADA') {
 
                         if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA') {
-                            $tempArray['marketplace_status'] = 'Formalizado';
+                            $tempArray['marketplace_statusLiteral'] = 'Formalizado';
+                            $tempArray['marketplace_status'] = 2;
                         } else if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoCOMPLETADA') {
-                            $tempArray['marketplace_status'] = 'Completado';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado';
+                            $tempArray['marketplace_status'] = 1;
                         }
 
                         if (!$checkedAttribute) {
@@ -236,7 +238,7 @@ class mytriplea extends p2pCompany {
                 if (!empty($tempArray['marketplace_loanReference'])) {
 
                     if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
-                        $tempArray['marketplace_status'] = 'En proceso';
+                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
                         $pos = strpos($sequence, "/", 10);
                         $host = substr($sequence, 0, $pos);
 
@@ -300,7 +302,7 @@ class mytriplea extends p2pCompany {
         $max = 12;
 
 
-        $form = [ //MyTripleA is like zank, need curl.
+        $form = [//MyTripleA is like zank, need curl.
             'cargarMas' => true, //Must be true
             'numeroPaginaMostrar' => $pageNumber, //Start with 0 
         ];
@@ -395,9 +397,11 @@ class mytriplea extends p2pCompany {
                 if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPENDIENTE' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPRORROGADA') {
 
                     if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA') {
-                        $tempArray['marketplace_status'] = 'Formalizado';
+                        $tempArray['marketplace_statusLiteral'] = 'Formalizado';
+                        $tempArray['marketplace_status'] = 2;
                     } else if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoCOMPLETADA') {
-                        $tempArray['marketplace_status'] = 'Completado';
+                        $tempArray['marketplace_statusLiteral'] = 'Completado';
+                        $tempArray['marketplace_status'] = 1;
                     }
 
                     if (!$checkedAttribute) {
@@ -429,7 +433,7 @@ class mytriplea extends p2pCompany {
             }
 
             if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
-                $tempArray['marketplace_status'] = 'En proceso';
+                $tempArray['marketplace_statusLiteral'] = 'En proceso';
             }
 
             $investmentNumber++; //Add investmet

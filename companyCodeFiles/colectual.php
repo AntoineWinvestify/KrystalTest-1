@@ -42,8 +42,8 @@
  * Added login function to Colectual and urlsequences
  * Added logout function to Colectual
 
-* 2017-08-09      version 0.4
-* collectCompanyMarketplaceData -Completed investment read
+ * 2017-08-09      version 0.4
+ * collectCompanyMarketplaceData -Completed investment read
  * collectHistorical  - added
 
   PENDING:
@@ -170,7 +170,8 @@ FRAGMENT
                     $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($progress[$i]->nodeValue));
 
                     //$tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
-                    $tempArray["marketplace_status"] = 'Completado';
+                    $tempArray["marketplace_statusLiteral"] = 'Completado';
+                    $tempArray["marketplace_status"] = 1;
 
                     foreach ($companyBackup as $inversionBackup) { //If completed investment with same status in backup
                         if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
@@ -188,7 +189,7 @@ FRAGMENT
                 $dom_xpath_progress = new DOMXPath($dom);
                 $progress = $dom_xpath_progress->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class_subscription_progress ')]");
                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($progress[$i]->nodeValue));
-                $tempArray["marketplace_status"] = 0;
+                $tempArray["marketplace_statusLiteral"] = 'En proceso';
             }
             foreach ($labels as $label) {
                 $value_per_attr = $label->getAttribute('class');
@@ -200,16 +201,16 @@ FRAGMENT
                         $amount = str_replace(".", "", $label->nodeValue);
                         $amount = $this->getMonetaryValue(strstr($amount, ',', true));
 
-                        if ($tempArray["marketplace_status"] == 'Completado' && $tempArray['marketplace_subscriptionProgress'] < 10000) {
+                        if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
                             $amount = ($amount * $tempArray['marketplace_subscriptionProgress']) / 10000;
                         }
                         $tempArray["marketplace_amount"] = $amount;
                         break;
                     case "plazo":
-                        if (in_array("m",str_split($label->nodeValue))) {
+                        if (in_array("m", str_split($label->nodeValue))) {
                             $tempArray["marketplace_duration"] = trim(str_replace("m ", "", $label->nodeValue));
                             $tempArray["marketplace_durationUnit"] = 2;
-                        } else if (in_array("d",str_split($label->nodeValue))) {
+                        } else if (in_array("d", str_split($label->nodeValue))) {
                             $tempArray["marketplace_duration"] = trim(str_replace("d ", "", $label->nodeValue));
                             $tempArray["marketplace_durationUnit"] = 1;
                         }
@@ -346,7 +347,8 @@ FRAGMENT
                     $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($progress[$i]->nodeValue));
 
                     //$tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
-                    $tempArray["marketplace_status"] = 'Completado';
+                    $tempArray["marketplace_statusLiteral"] = 'Completado';
+                    $tempArray["marketplace_status"] = 1;
                     $subscriptionProgress = false;
                 }
             }
@@ -356,7 +358,7 @@ FRAGMENT
                 $dom_xpath_progress = new DOMXPath($dom);
                 $progress = $dom_xpath_progress->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class_subscription_progress ')]");
                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($progress[$i]->nodeValue));
-                $tempArray["marketplace_status"] = 0;
+                $tempArray["marketplace_statusLiteral"] = 'En proceso';
             }
             foreach ($labels as $label) {
                 $value_per_attr = $label->getAttribute('class');
@@ -370,7 +372,7 @@ FRAGMENT
 
                         if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
                             $amountTotal = ($amount * $tempArray['marketplace_subscriptionProgress']) / 10000;
-                        }else{
+                        } else {
                             $amountTotal = $amount;
                         }
                         $tempArray["marketplace_amount"] = $amount;
@@ -378,10 +380,10 @@ FRAGMENT
                         break;
                     case "plazo":
 
-                        if (in_array("m",str_split($label->nodeValue))) {
+                        if (in_array("m", str_split($label->nodeValue))) {
                             $tempArray["marketplace_duration"] = trim(str_replace("m ", "", $label->nodeValue));
                             $tempArray["marketplace_durationUnit"] = 2;
-                        } else if (in_array("d",str_split($label->nodeValue))) {
+                        } else if (in_array("d", str_split($label->nodeValue))) {
                             $tempArray["marketplace_duration"] = trim(str_replace("d ", "", $label->nodeValue));
                             $tempArray["marketplace_durationUnit"] = 1;
                         }

@@ -45,10 +45,10 @@
  * Added verification of dom elements
  * 
 
-2017-08-01      version 0.3
+  2017-08-01      version 0.3
  * Fixed error to take more than one investment on lines 364 and 395
 
-2017-08-04
+  2017-08-04
  * collectCompanyMarketplaceData - read completed investment
  * collectHistorical - added
   PENDING:
@@ -95,7 +95,6 @@ class loanbook extends p2pCompany {
      * 	
      */
     function collectCompanyMarketplaceData($companyBackup) { //loanbook doesnt have pagination, it uses one table
-
         $readController = 0;
         $investmentController = false;
 
@@ -215,9 +214,11 @@ class loanbook extends p2pCompany {
                     //$this->print_r2($tempArray);
                     if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                         if ($tempArray['marketplace_timeLeft']) {
-                            $tempArray['marketplace_status'] = 'Completado/Con tiempo';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                            $tempArray['marketplace_status'] = 1;
                         } else {
-                            $tempArray['marketplace_status'] = 'Completado/Sin tiempo';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                            $tempArray['marketplace_status'] = 2;
                             $tempArray['marketplace_timeLeft'] = 0;
                         }
 
@@ -228,7 +229,7 @@ class loanbook extends p2pCompany {
                             }
                         }
                     } else {
-                        $tempArray['marketplace_status'] = 'En proceso';
+                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
                     }
                 }
 
@@ -242,7 +243,7 @@ class loanbook extends p2pCompany {
                 }
 
                 if ($readController > 2) { //If we fin more than two completed investment existing in the backpup, stop reading
-                    echo 'Stop reading'; 
+                    echo 'Stop reading';
                     break;
                 }
             }
@@ -257,8 +258,6 @@ class loanbook extends p2pCompany {
      * @return type
      */
     function collectHistorical() { //loanbook doesnt have pagination
-
-
         $totalArray = array();
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
 
@@ -388,13 +387,15 @@ class loanbook extends p2pCompany {
 
                     if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                         if ($tempArray['marketplace_timeLeft']) {
-                            $tempArray['marketplace_status'] = 'Completado/Con tiempo';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                            $tempArray['marketplace_status'] = 1;
                         } else {
-                            $tempArray['marketplace_status'] = 'Completado/Sin tiempo';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                            $tempArray['marketplace_status'] = 2;
                             $tempArray['marketplace_timeLeft'] = 0;
                         }
                     } else {
-                        $tempArray['marketplace_status'] = 'En proceso';
+                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
                     }
                 }
                 if ($tempArray) {

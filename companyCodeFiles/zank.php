@@ -57,8 +57,8 @@
   2017/06/22
  * Added mechanism to take more than 100 investments by Json
 
-2017/08/02
- zank code adaptation for 100%
+  2017/08/02
+  zank code adaptation for 100%
   Pending:
   Fecha en duda
 
@@ -103,7 +103,6 @@ class zank extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
-
     /**
      * Collects the marketplace data.
      * 	ZANK is special as one has to logon in order to see all the details of the offers in their marketplace
@@ -145,7 +144,7 @@ class zank extends p2pCompany {
 
 //print_r($str);
             //echo __FUNCTION__ . __LINE__ . "<br>";
-            
+
             $pos1 = stripos($str, '[');
             $pos2 = stripos($str, ']');
             $resultPreJSON = substr($str, $pos1, ($pos2 - $pos1 + 1));
@@ -234,10 +233,11 @@ class zank extends p2pCompany {
                         case 1:
                             if (stristr(trim($div->nodeValue), "%") == true) {
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($div->nodeValue);
-                                $tempArray['marketplace_status'] = 'En Proceso';
+                                $tempArray['marketplace_statusLiteral'] = 'En Proceso';
                             } else if ($div->nodeValue == 'Completado') {
                                 $tempArray['marketplace_subscriptionProgress'] = 10000;
-                                $tempArray['marketplace_status'] = 'Completado';
+                                $tempArray['marketplace_statusLiteral'] = 'Completado';
+                                $tempArray['marketplace_status'] = 1;
                                 //Read inversions limiter controller
                                 foreach ($companyBackup as $inversionBackup) {
                                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado') {
@@ -246,16 +246,17 @@ class zank extends p2pCompany {
                                 }
                             } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                                 $tempArray['marketplace_subscriptionProgress'] = 10000;
-                                $tempArray['marketplace_status'] = 'Formalizado';
+                                $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
+                                $tempArray['marketplace_status'] = 2;
                                 //Read inversions limiter controller
                                 foreach ($companyBackup as $inversionBackup) {
-                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && ($inversionBackup['Marketplacebackup']['marketplace_status'] == 'Amortizacion')) {
+                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && ($inversionBackup['Marketplacebackup']['marketplace_statusLiteral'] == $tempArray['marketplace_statusLiteral'])) {
                                         $inversionReadController = 1;
                                     }
                                 }
                             } else if (!$div->nodeValue) {
                                 $tempArray['marketplace_subscriptionProgress'] = 0;
-                                $tempArray['marketplace_status'] = 'Cancelado';
+                                $tempArray['marketplace_statusLiteral'] = 'Cancelado';
                             }
                             break;
                         case 2:
@@ -333,7 +334,7 @@ class zank extends p2pCompany {
             exit;
         }
 
-        /*Zank pagination must be done using curl, form are parameters sent in curl*/
+        /* Zank pagination must be done using curl, form are parameters sent in curl */
         $form = [
             "length" => 200, //Number of investment for page
             "start" => $start, //First investment of the page
@@ -391,16 +392,19 @@ class zank extends p2pCompany {
                     case 1:
                         if (stristr(trim($div->nodeValue), "%") == true) {
                             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($div->nodeValue);
-                            $tempArray['marketplace_status'] = 'En Proceso';
+                            $tempArray['marketplace_statusLiteral'] = 'En Proceso';
                         } else if ($div->nodeValue == 'Completado') {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;
-                            $tempArray['marketplace_status'] = 'Completado';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado';
+                            $tempArray['marketplace_status'] = 1;
                         } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;
-                            $tempArray['marketplace_status'] = 'Amortizacion';
+                            $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
+                            $tempArray['marketplace_status'] = 2;
                         } else if (!$div->nodeValue) {
                             $tempArray['marketplace_subscriptionProgress'] = 0;
-                            $tempArray['marketplace_status'] = 'Cancelado';
+                            $tempArray['marketplace_statusLiteral'] = 'Cancelado';
+                            $tempArray['marketplace_status'] = 3;
                         }
                         break;
                     case 2:

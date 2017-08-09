@@ -193,10 +193,12 @@ class growly extends p2pCompany {
                             if ($tempArray['marketplace_subscriptionProgress'] == 10000) { //Completed
                                 if ($tempArray['marketplace_timeLeftUnit'] == -1) {
                                     //If we dont have time left    
-                                    $tempArray['marketplace_status'] = 'Completado/Sin tiempo';
+                                    $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                    $tempArray['marketplace_status'] = 2;
                                 } else {
                                     //If we have time left    
-                                    $tempArray['marketplace_status'] = 'Completado/Con tiempo';
+                                    $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                    $tempArray['marketplace_status'] = 1;
                                 }
 
                                 foreach ($companyBackup as $inversionBackup) { // If we have the completed inversion with the same status
@@ -206,7 +208,7 @@ class growly extends p2pCompany {
                                     }
                                 }
                             } else {
-                                $tempArray['marketplace_status'] = 'En proceso';
+                                $tempArray['marketplace_statusLiteral'] = 'En proceso';
                             }
                         }
                     }
@@ -223,13 +225,13 @@ class growly extends p2pCompany {
                 }
             }
             $page++; //Adance page
-            if ($readController > 2 || $investmentNumber < 10) { 
-                $reading = false; 
+            if ($readController > 2 || $investmentNumber < 10) {
+                $reading = false;
             } //Stop reading
         }
         return $totalArray;
     }
-    
+
     /**
      * Collect historical 
      * 
@@ -237,7 +239,6 @@ class growly extends p2pCompany {
      * @param type $type
      * @return type
      */
-
     function collectHistorical($pageNumber) {
 
         $pageNumber++; //Advance page, we sent 0, growly first page is 1.
@@ -344,13 +345,15 @@ class growly extends p2pCompany {
 
                             if ($tempArray['marketplace_timeLeftUnit'] == -1) {
                                 //If we dont have time left    
-                                $tempArray['marketplace_status'] = 'Completado/Sin tiempo';
+                                $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                $tempArray['marketplace_status'] = 2;
                             } else {
                                 //If we have time left    
-                                $tempArray['marketplace_status'] = 'Completado/Con tiempo';
+                                $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                $tempArray['marketplace_status'] = 1;
                             }
                         } else {
-                            $tempArray['marketplace_status'] = 'En proceso';
+                            $tempArray['marketplace_statusLiteral'] = 'En proceso';
                         }
                     }
                 }

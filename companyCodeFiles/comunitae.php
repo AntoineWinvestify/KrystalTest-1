@@ -55,9 +55,9 @@
  * Added two urlsequences for marketplaces to get investment of next pages
  * Added code for marketplaces to verify if there is more investments in the next page
 
-2017-08-03
- Comunitae code adaptation for 100%
-    collectCompanyMarketplaceData - Added pagination loop control
+  2017-08-03
+  Comunitae code adaptation for 100%
+  collectCompanyMarketplaceData - Added pagination loop control
  *  collectHistorical
 
 
@@ -197,10 +197,11 @@ class comunitae extends p2pCompany {
                         if (stristr(trim($span->nodeValue), "%") == true) {
                             echo "Comunitae: % found, so store in marketplace<br>";
                             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
-                            $tempArray['marketplace_status'] = 'En proceso';
+                            $tempArray['marketplace_statusLiteral'] = 'En proceso';
                         } else {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;  // completed, retrasado orr amortización ..
-                            $tempArray['marketplace_status'] = 'Completado';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado';
+                            $tempArray['marketplace_status'] = 1;
                             foreach ($companyBackup as $inversionBackup) {
                                 if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado') {
                                     $subscriptionComplete = true;
@@ -250,44 +251,70 @@ class comunitae extends p2pCompany {
     function collectHistorical($pageNumber, $type) {
 
         $totalArray = array();
-        $pageNumber++; //Advance page, start with 0
+        if ($pageNumber == 0) {
+            $pageNumber++;
+        } //Advance page, $pageNumber start with 0
 
         if ($type == 1) {//Start with 'Pagares'
-            $url = array_shift($this->urlSequence);
+            $url = array_shift($this->urlSequence); //Save 'Pagares' first url
+            echo 'Url: ' . $url;
+            $str = $this->getCompanyWebpage($url);
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = false; 
+            $dom->loadHTML($str);  //Load 'Pagares' 
+
+            $url = array_shift($this->urlSequence); //Save 'Pagares' pagination url
+            echo 'Url: ' . $url;
             $str = $this->getCompanyWebpage($url . $pageNumber);
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
 
+
+
             //pymeList
             $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
-
+            $pageNumber++; //Advance page
             $rows = $dom->getElementsByTagName('article');
-            $numberOfInvestmentInPage = count($rows);
-
+            $numberOfInvestmentInPage = $rows->length;
+            $this->print_r2($rows);
+            echo 'Count: ' . $numberOfInvestmentInPage;
 
             if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'pagares', go to 'Factoring'
+                echo 'Change type';
                 $type = 4;
-                $pageNumber = 0;
+                $pageNumber = 1; //MUST BE 1, IF IS 0 THE LOOP WILL END
                 print_r($type . " " . $pageNumber);
             }
         } else if ($type == 4) { //Next 'Factoring'
-            echo 'entro al factoring';
+            echo 'Enter factoring';
             //Factoring
-            array_shift($this->urlSequence); //Skip 'Pagares' url
-            $url = array_shift($this->urlSequence); //Save 'Factoring' url
-            $str = $this->getCompanyWebpage($url . $pageNumber);
-            $dom = new DOMDocument;
-            $dom->preserveWhiteSpace = false;
-
+            if ($pageNumber == 1) {
+                array_shift($this->urlSequence); //Skip 'Pagares' first url
+                array_shift($this->urlSequence); //Skip 'Pagares' pagination url
+                $url = array_shift($this->urlSequence); //Save 'Factoring' first url
+                echo 'Url: ' . $url;
+                $str = $this->getCompanyWebpage($url);
+                $dom = new DOMDocument;
+                $dom->preserveWhiteSpace = false;
+            } else {
+                array_shift($this->urlSequence); //Skip 'Pagares' first url
+                array_shift($this->urlSequence); //Skip 'Pagares' pagination url
+                array_shift($this->urlSequence); //Skip 'First page' url
+                $url = array_shift($this->urlSequence); //Save 'Factoring' url
+                echo 'Url: ' . $url;
+                $str = $this->getCompanyWebpage($url . $pageNumber);
+                $dom = new DOMDocument;
+                $dom->preserveWhiteSpace = false;
+            }
             //pymeList
             $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
-
+            $pageNumber++; //Advance page
             $rows = $dom->getElementsByTagName('article');
-            $numberOfInvestmentInPage = count($rows);
-
+            $numberOfInvestmentInPage = $rows->length;
+            $this->print_r2($rows);
+            echo 'Count: ' . $numberOfInvestmentInPage;
 
             if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'Factoring', stop search
-                $type = false;
                 $pageNumber = false;
             }
         }
@@ -340,16 +367,19 @@ class comunitae extends p2pCompany {
                     if (stristr(trim($span->nodeValue), "%") == true) {
                         echo "Comunitae: % found, so store in marketplace<br>";
                         $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
-                        $tempArray['marketplace_status'] = 'En proceso';
+                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
                     } else {
                         $tempArray['marketplace_subscriptionProgress'] = 10000;  // completed, retrasado orr amortización ..
-                        $tempArray['marketplace_status'] = 'Completado';
+                        $tempArray['marketplace_statusLiteral'] = 'Completado';
+                        $tempArray['marketplace_status'] = 1;
                     }
                 }
             }
             $totalArray[] = $tempArray;
             unset($tempArray);
         }
+
+
 
         return [$totalArray, $pageNumber, $type]; //Return an array and the page number, $pageNumber = false when we want end the loop
     }

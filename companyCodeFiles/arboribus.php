@@ -193,9 +193,11 @@ class arboribus extends p2pCompany {
 
                                         if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                                             if ($tableNumber == 1) {
-                                                $tempArray['marketplace_status'] = 'Completado/Con tiempo';
+                                                $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                                $tempArray['marketplace_status'] = 1;
                                             } else {
-                                                $tempArray['marketplace_status'] = 'Completado/Sin tiempo';
+                                                $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                                $tempArray['marketplace_status'] = 2;
                                             }
                                             foreach ($companyBackup as $inversionBackup) {
                                                 if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
@@ -206,7 +208,7 @@ class arboribus extends p2pCompany {
                                                 }
                                             }
                                         } else {
-                                            $tempArray['marketplace_status'] = 'En proceso';
+                                            $tempArray['marketplace_statusLiteral'] = 'En proceso';
                                         }
                                     }
                                     $innerIndex = $innerIndex + 1;
@@ -341,14 +343,16 @@ class arboribus extends p2pCompany {
 
                     if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                         if ($tableNumber == 1) {
-                            $tempArray['marketplace_status'] = 'Completado/Con tiempo';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                            $tempArray['marketplace_status'] = 1;
                         } else {
-                            $tempArray['marketplace_status'] = 'Completado/Sin tiempo';
+                            $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                            $tempArray['marketplace_status'] = 2;
                             $tempArray['marketplace_timeLeft'] = 0;
                             $tempArray['marketplace_timeLeftUnit'] = -1;
                         }
                     } else {
-                        $tempArray['marketplace_status'] = 'En proceso';
+                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
                     }
 
                     $this->print_r2($tempArray);

@@ -105,7 +105,6 @@ class lendix extends p2pCompany {
      *
      */
 
-
     /**
      * Collects the marketplace data
      * @param type $companyBackup
@@ -177,7 +176,8 @@ class lendix extends p2pCompany {
                 $tempArray['marketplace_loanReference'] = trim($loanId[1]);
 
                 if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-                    $tempArray['marketplace_status'] = 'Completado';
+                    $tempArray['marketplace_statusLiteral'] = 'Completado';
+                    $tempArray['marketplace_status'] = 1;
                     foreach ($companyBackup as $inversionBackup) {//If completed investment status is the same than backup
                         if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
                             echo 'Already exist';
@@ -186,7 +186,7 @@ class lendix extends p2pCompany {
                         }
                     }
                 } else {
-                    $tempArray['marketplace_status'] = 'En proceso';
+                    $tempArray['marketplace_statusLiteral'] = 'En proceso';
                 }
 
                 $investmentNumber++; //Add investment
@@ -211,7 +211,7 @@ class lendix extends p2pCompany {
 
 
         $this->print_r2($totalArray);
-        return $totalArray;	
+        return $totalArray;
     }
 
     /**
@@ -284,9 +284,10 @@ class lendix extends p2pCompany {
             $tempArray['marketplace_loanReference'] = trim($loanId[1]);
 
             if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-                $tempArray['marketplace_status'] = 'Completado';
+                $tempArray['marketplace_statusLiteral'] = 'Completado';
+                $tempArray['marketplace_status'] = 1;
             } else {
-                $tempArray['marketplace_status'] = 'En proceso';
+                $tempArray['marketplace_statusLiteral'] = 'En proceso';
             }
 
             $investmentNumber++; //Add invesment
