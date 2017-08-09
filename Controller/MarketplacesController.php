@@ -31,7 +31,11 @@
   Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
 
 
-
+  2017-08-09    version 0.31
+  Rectified Error 0009 as reported in Mantis.
+  "incorrect calculation of average yield in case one or more platforms don't have any active investment
+  Added new index counter variable $platformsZeroYield
+ 
 
   Pending:
   Checking for "country of residence" and show only marketplace for that country				[Not OK]
@@ -522,6 +526,7 @@ class MarketPlacesController extends AppController {
 
         $filterConditions = array('investor_id' => $investorId);
         $linkedaccountsResults = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+        $platformsZeroYield = 0;
         $index = 0;
         $i = 0;
         foreach ($linkedaccountsResults as $linkedaccount) {
@@ -655,9 +660,16 @@ class MarketPlacesController extends AppController {
                 $dashboardGlobals['amountInvested'] = $dashboardGlobals['amountInvested'] + $userInvestments['global']['totalInvestment'];
                 $dashboardGlobals['wallet'] = $dashboardGlobals['wallet'] + $userInvestments['global']['myWallet'];
                 $dashboardGlobals['totalEarnedInterest'] = $dashboardGlobals['totalEarnedInterest'] + $userInvestments['global']['totalEarnedInterest'];
+    
+// Note that we only take values of the platforms that have a yield <> 0. Yield = 0 means you have not (yet) invested in
+// any loan
                 $dashboardGlobals['profitibilityAccumulative'] = $dashboardGlobals['profitibilityAccumulative'] + $userInvestments['global']['profitibility'];
+                if ($userInvestments['global']['profitibility'] == 0) {
+                    $platformsZeroYield = $platformsZeroYield + 1;
+                }
 
     // Amount that was invested totally in all the currently active investments
+   
                 $dashboardGlobals['totalInvestments'] = $dashboardGlobals['totalInvestments'] + $userInvestments['global']['totalInvestments'];
 
     // The number of active investments in all companies:
@@ -670,7 +682,7 @@ class MarketPlacesController extends AppController {
     // investments in 4 platforms, the system will generate 4 photos, with each photo including the previous one
     // *********************************************************************************************************
 
-                $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
+                $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / ($index+ $platformsZeroYield));
                 if ($this->Data->save(array('data_investorReference' => $resultQueue['Queue']['queue_userReference'],
                             'data_JSONdata' => JSON_encode($dashboardGlobals),
                             $validate = true))) {
