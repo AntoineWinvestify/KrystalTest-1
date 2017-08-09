@@ -25,27 +25,45 @@
  */
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
+<script src="/plugins/chartjs/Chart.min.js"></script>
 <script>
     $(function (){
         
         //polarChart1
-        new Chart(ctx, {
-            data: data,
-            type: 'polarArea',
-            options: options
-        });
-        data = {
-            datasets: [{
-                data: [10, 20, 30]
-            }],
+        var birdsCanvas = document.getElementById("birdsChart");
 
-            // These labels appear in the legend and in the tooltips when hovering different arcs
-            labels: [
-                'Red',
-                'Yellow',
-                'Blue'
-            ]
+        Chart.defaults.global.defaultFontFamily = "Lato";
+        Chart.defaults.global.defaultFontSize = 18;
+
+        var birdsData = {
+          labels: ["Spring", "Summer", "Fall", "Winter"],
+          datasets: [{
+            data: [1200, 1700, 800, 200],
+            backgroundColor: [
+              "rgba(255, 0, 0, 0.6)",
+              "rgba(0, 255,200, 0.6)",
+              "rgba(200, 0, 200, 0.6)",
+              "rgba(0, 255, 0, 0.6)"
+            ],
+            borderColor: "rgba(0, 0, 0, 0.8)"
+          }]
         };
+
+        var chartOptions = {
+          startAngle: -Math.PI / 4,
+          legend: {
+            position: 'left'
+          },
+          animation: {
+            animateRotate: false
+          }
+        };
+
+        var polarAreaChart = new Chart(birdsCanvas, {
+          type: 'polarArea',
+          data: birdsData,
+          options: chartOptions
+        });
     });
 </script>
 <style>
@@ -63,7 +81,7 @@
                         <div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>
                             <div class="card card-stats">
                                 <div class="card-content">			
-                                    <canvas id="polarChart1" style="height: 100px;"></canvas>
+                                    <canvas id="birdsChart" width="400" height="300"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +104,7 @@
                     <div class='row'>
                         <div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>
                             <div class="card card-stats">
-                                <div class="card-header" data-background-color="blue">
+                                <div class="card-header" data-background-color="gray">
                                         <i class="fa fa-signal"></i>
                                 </div>
                                 <div class="card-content" style="text-align: center;">
@@ -115,7 +133,7 @@
                         </div>
                         <div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'>
                             <div class="card card-stats">
-                                <div class="card-header" data-background-color="blue">
+                                <div class="card-header" data-background-color="gray">
                                         <i class="fa fa-signal"></i>
                                 </div>
                                 <div class="card-content" style="text-align: center;">
@@ -150,11 +168,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer">
-                    <input type='button' id="btnAccountLinking" class='btn btn-default pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
-                    <input type='button' id="btnStart" class='btn btn-default pull-left' name='accountLinking' value='<?php echo __('Go to One Click Registration')?>' />
-                    <br/><br/>
                 </div>
             </div>
         </div>

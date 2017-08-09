@@ -40,6 +40,16 @@
         $(document).on("click", "#btnAccountLinking", function(){
             window.location.replace('/investors/readLinkedAccounts');
         });
+        
+        $(document).on("click", "#btnAccountLinkingB", function(){
+            $("#btnAccountLinkingB").hide();
+            $("#keyIndividualPlatforms").show();
+        });
+        
+        $(document).on("click", "#btnMyInvestments", function(){
+            $("#btnMyInvestments").hide();
+            $("#dashboardMyInvestments").show();
+        });
     });
 </script>
 <style>
@@ -62,7 +72,7 @@
     }
 </style>
 <div class="dashboardOverview">
-    <div class="row">
+    <div class="row" id="overview">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card card-nav-tabs">
                 <div class="card-header" data-background-color="gray">
@@ -230,12 +240,13 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" id="btnAL">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <input type='button' id="btnAccountLinking" class='btn btn-default pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
+            <input type='button' id="btnAccountLinkingB" class='btn btn-default pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
+            <input type='button' id="btnMyInvestments" class='btn btn-default pull-left' name='myInvestments' value='<?php echo __('My Investments')?>' />
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="display:none;" id="keyIndividualPlatforms">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="gray">
@@ -254,7 +265,7 @@
     </div>
 </div>
 
-<div id="dashboardMyInvestments">
+<div id="dashboardMyInvestments" style="display:none;">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card card-nav-tabs">
