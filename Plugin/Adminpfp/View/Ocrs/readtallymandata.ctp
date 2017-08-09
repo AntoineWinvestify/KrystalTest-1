@@ -227,9 +227,9 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                                 <div class="card-content" style="text-align: center;">
                                                     <p>
-                                                        <?php echo __('% Total cartera')?>
+                                                        <?php echo __('% Total Investment Portfolio')?>
                                                         <strong>
-                                                            <?php echo __('invertida')?>
+                                                            <?php echo __('')?>
                                                         </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
                                                     </p>
@@ -322,7 +322,7 @@ var myChart = new Chart(ctx, {
                                                                 <i class="fa fa-sitemap"></i>
                                                         </div>
                                                         <div class="card-content" style="text-align:center">
-                                                            <p><?php echo __('Account Linking')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
+                                                            <p><?php echo __('Linked Accounts')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
                                                             <!-- total number of platforms -->
                                                             <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['Investorglobaldata']['investorglobaldata_totalPFPs']?></h2>
                                                         </div>

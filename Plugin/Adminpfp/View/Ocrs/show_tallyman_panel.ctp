@@ -56,20 +56,16 @@ function errorTallymanData(data) {
     var temp = data.search("chargingConfirmationModal");
     if (temp != -1) {
         $("#TallymanResult").html(data); 
-        console.log("errorTallymanData:modal detected");
     }
     else {        
         $(".ErrorTallyman").show();
-	console.log("errorTallymanData: profile_data: LINE 60 CONFIRMATION REQUIRED");
-    
     }
 }
  
  
 
 function successTallymanCheckCharging(data) {
-    
-console.log("Charging check has been done, data string = " + data);    
+ 
     $("#TallymanResult").html(data);
 
 }
@@ -77,7 +73,6 @@ console.log("Charging check has been done, data string = " + data);
  
 function errorTallymanCheckCharging(data) {
     
-console.log("Error occured while checking the charging of the investorrequest");
     $("#TallymanResult").html(data);
 	
 }
@@ -95,7 +90,7 @@ $(document).ready(function() {
             var inputid = $("#tallymanInputId").val();
             var useremail = $("#tallymanInputEmail").val();
             var usertelephone = $("#tallymanInputTelephone").val(); 
-            var chargingconfirmed = 1;
+            var chargingconfirmed = 0;
 
             var params = { inputId: inputid, userEmail:useremail, userTelephone: usertelephone, chargingConfirmed:chargingconfirmed };
             var data = jQuery.param( params );
@@ -174,7 +169,7 @@ $(document).ready(function() {
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="blue">
-                    <h4 class="title"><strong><?php echo __('Tallyman Searching Panel') ?></strong></h4>
+                    <h4 class="title"><strong><?php echo __('Tallyman Search Panel') ?></strong></h4>
                 </div>
                 <div class="card-content table-responsive togetoverlay">
                     <!--<div class="overlay">
@@ -184,7 +179,7 @@ $(document).ready(function() {
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <p><?php
-                                echo __('Para activar la búsqueda de uno de sus inversores es necesario rellenar obligatoriamente dos campos por ejemplo: teléfono y email. ');
+                                echo __('Define at least 2 searchfields');
                                 ?>
                             </p>
                         </div>
@@ -246,7 +241,7 @@ $(document).ready(function() {
                                             <label class= "invisible pull-right"> </label>
                                             <button type="submit" id="tallymanBtnSearch" href="/adminpfp/ocrs/readtallymandata" class="btn btn1CR btn-sm pull-right btnRounded"><?php echo __('Search')?></button>
                                         </div>
-                                        <div class="col-md-10" id="telephoneTooltip" style="display:none; margin-top: 10px;"><?php echo __('El teléfono debe de contener el código internacional (EJ: España +34)')?></div>
+                                        <div class="col-md-10" id="telephoneTooltip" style="display:none; margin-top: 10px;"><?php echo __('The telephone number must be in international format: example United Kingdom +44 20 7946 0502)')?></div>
                                         <div class="col-md-10" style="margin-top: 10px;">
                                             <?php 
                                             $errorClassesText = "errorInputMessage ErrorTallyman";
