@@ -868,10 +868,10 @@ function companyUserLogout() {
 function getLoanState($actualState) {	
 
 	$loanStates = array("PENDIENTE" => PENDING,
-							"OK" => OK,
-							"AMORTIZADO" => TERMINATED_OK,
-							"ATRASADO" => PAYMENT_DELAYED,
-							"JUDICIAL" => DEFAULTED);
+				"OK"     => OK,
+				"AMORTIZADO" => TERMINATED_OK,
+				"ATRASADO" => PAYMENT_DELAYED,
+				"JUDICIAL" => DEFAULTED);
 
 	$actualState = trim($actualState);
 	foreach($loanStates as $key => $state) {

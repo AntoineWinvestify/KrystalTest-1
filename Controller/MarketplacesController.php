@@ -681,8 +681,7 @@ class MarketPlacesController extends AppController {
     // Save "intermediate photos", so investor will always see something. The result is that for a user who has
     // investments in 4 platforms, the system will generate 4 photos, with each photo including the previous one
     // *********************************************************************************************************
-
-                $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / ($index+ $platformsZeroYield));
+                
                 if ($this->Data->save(array('data_investorReference' => $resultQueue['Queue']['queue_userReference'],
                             'data_JSONdata' => JSON_encode($dashboardGlobals),
                             $validate = true))) {
@@ -700,7 +699,13 @@ class MarketPlacesController extends AppController {
             echo "<br>******* End of Loop ****** <br>";
         }
 
-        $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
+        if ($index == $platformsZeroYield) {                                    // User does not have any investment in any platform
+            $dashboardGlobals['meanProfitibility'] = 0;
+        }
+        else {
+            $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / ($index - $platformsZeroYield));
+        }
+        
         echo __FILE__ . " " . __FUNCTION__ . " " . __LINE__ . "<br>";
         $this->print_r2($dashboardGlobals);
 
