@@ -30,9 +30,9 @@
   2017-05-02      version 0.3                                                                     [OK, tested]
   Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
 
-   2017-08-01
-    cronMarketPlaceLoop remake
-    cronMarketPlaceHistorical new function
+  2017-08-01
+  cronMarketPlaceLoop remake
+  cronMarketPlaceHistorical new function
 
   Pending:
   Checking for "country of residence" and show only marketplace for that country				[Not OK]
@@ -230,8 +230,10 @@ class MarketPlacesController extends AppController {
 // start the cronjob
     function cronMarketStart($type = 1) {
 
+
         $this->autoRender = false;
         Configure::write('debug', 2);
+        $this->Structure = ClassRegistry::init('Structure');
 
         $country = "ES";
         echo "country = $country and ip = $ip<br>";
@@ -266,13 +268,17 @@ class MarketPlacesController extends AppController {
         $lastScannedCompany = $lastScanned['Configuration']['lastScannedCompany'];
         $companyList = $this->getNext($lastScannedCompany);
         $this->print_r2($companyList);
+
+
         foreach ($companyList as $companyId) {
             $this->Configuration->writeConfigParameter('lastScannedCompany', $companyId);
             echo "companyId = $companyId <br>";
+            $structure = $this->Structure->getStructure($companyId, 1);
+            print_r($structure);
             if ($type == 1) {
-                $this->cronMarketPlaceLoop($companyId);
+                $this->cronMarketPlaceLoop($companyId, $structure);
             } else if ($type == 2) {
-                $this->cronMarketPlaceHistorical($companyId);
+                $this->cronMarketPlaceHistorical($companyId, $structure);
             }
         }
     }
@@ -283,8 +289,9 @@ class MarketPlacesController extends AppController {
      * 
      *
      */
-    function cronMarketPlaceLoop($companyId) {
+    function cronMarketPlaceLoop($companyId, $structure) {
         $this->autoRender = false;
+        $this->Structure = ClassRegistry::init('Structure');
         //Configure::write('debug', 2);
 
         $companyConditions = array('Company.id' => $companyId);
@@ -304,11 +311,23 @@ class MarketPlacesController extends AppController {
 
         $this->print_r2($urlSequenceList);
         $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup);
+        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure);
 
+
+        echo 'Marketplace Result: ';
         $this->print_r2($marketplaceArray);
 
-        foreach ($marketplaceArray as $investment) {
+
+        if ($marketplaceArray[1] && $marketplaceArray[1] != 1) {
+            echo 'Saving new structure';
+            $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
+            if (!$marketplaceArray[0]) {
+                echo 'Sending error report';
+            }
+        }
+
+
+        foreach ($marketplaceArray[0] as $investment) {
             $DontExist = true;
             $backup = true;
             $investment['company_id'] = $companyId;
@@ -386,9 +405,11 @@ class MarketPlacesController extends AppController {
         }
     }
 
-    /*Collect all invesment of the user, open and closed*/
-    function cronMarketPlaceHistorical($companyId) {
+    /* Collect all invesment of the user, open and closed */
+
+    function cronMarketPlaceHistorical($companyId, $structure) {
         $this->autoRender = false;
+        $this->Structure = ClassRegistry::init('Structure');
         //Configure::write('debug', 2);
         $repeat = true; //Read another page
         $start = 0; //For pagination
@@ -420,7 +441,19 @@ class MarketPlacesController extends AppController {
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
 
 
-            $marketplaceArray = $newComp->collectHistorical($start, $type); //$start is for pfp with paginations, $type is for comunitae.
+            $marketplaceArray = $newComp->collectHistorical($structure, $start, $type); //$start is for pfp with paginations, $type is for comunitae.
+
+
+            if ($marketplaceArray[3] && $marketplaceArray[3] != 1) {
+                echo 'Saving new structure';
+                $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
+                if (!$marketplaceArray[0]) {
+                    echo 'Sending error report';
+                    break;
+                }
+            }
+
+
             echo 'RESULTADO: ';
             $this->print_r2($marketplaceArray);
             foreach ($marketplaceArray[0] as $investment) {

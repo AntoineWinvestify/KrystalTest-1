@@ -86,6 +86,7 @@ class p2pCompany {
 
     //Variable to use in this method
     // MarketplacesController
+
     protected $marketplaces;
     //Data for the queue
     protected $queueId;
@@ -1326,10 +1327,18 @@ class p2pCompany {
     //This variables are for scanning purpose, if you find this variable, you don't have to scan the node anymore
     protected $type_not_more_scanning = [];
     protected $value_not_more_scanning = [];
+    protected $same_structure = true;
 
     function verify_dom_structure($node1, $node2, $uniques_element = null, $limit = null) {
+        echo 'Begin comparation<br>';
         $this->same_structure;
         $repeated_structure_found = false;
+
+
+        if (!$node1 || !$node2) { //First we verify if node exist
+            echo 'Node doesnt exist';
+            $this->same_structure = false;
+        }
         //We verify if nodes has attributes
         if ($node1->hasAttributes() && $node2->hasAttributes()) {
             $node1_attr = $node1->attributes;
@@ -1341,15 +1350,20 @@ class p2pCompany {
                     $name_attr_node2 = $node2_attr[$i]->nodeName;
                     $value_attr_node1 = $node1_attr[$i]->nodeValue;
                     $value_attr_node2 = $node2_attr[$i]->nodeValue;
+
+                    echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                    echo $name_attr_node1 . '=>' . $value_attr_node1 . '<br>';
+                    echo $name_attr_node2 . '=>' . $value_attr_node2 . '<br>';
+
                     if ($name_attr_node1 != $name_attr_node2) {
-                        $same_structure = false;
-                        break;
+                        echo 'Node attr name error';
+                        $this->same_structure = false;
                     }
                     if ($value_attr_node1 != $value_attr_node2) {
-                        $same_structure = false;
-                        break;
+                        echo 'Node attr value error';
+                        $this->same_structure = false;
                     }
-                    if ($same_structure) {
+                    if ($this->same_structure) {
                         //We verify if the node is repeated with type_unique_elements
                         //If it is a repetitive structure, we don't verify if the node is the same more than once
                         $unique_structure_found = $this->node_repeated($name_attr_node1, $value_attr_node1);
@@ -1366,14 +1380,22 @@ class p2pCompany {
                       } */
                 }
             } else if ($node1_attr->length != $node2_attr->length) {
-                $same_structure = false;
+                echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                echo $name_attr_node1 . '=>' . $value_attr_node1 . $node1_attr->length . '<br>';
+                echo $name_attr_node2 . '=>' . $value_attr_node2 . $node2_attr->length . '<br>';
+                echo 'Node attr length error';
+                $this->same_structure = false;
             }
         } else if ($node1->hasAttributes() && !$node2->hasAttributes()) {
-            $same_structure = false;
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node has attr error';
+            $this->same_structure = false;
         } else if (!$node1->hasAttributes() && $node2->hasAttributes()) {
-            $same_structure = false;
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node has attr error';
+            $this->same_structure = false;
         }
-        if ($same_structure && !$repeated_structure_found) {
+        if ($this->same_structure && !$repeated_structure_found) {
             if ($node1->hasChildNodes() && $node2->hasChildNodes()) {
                 $limit = 0;
                 $children_node1 = $node1->childNodes;
@@ -1388,18 +1410,29 @@ class p2pCompany {
                 $limit_children = $children_node1->length;
                 //}
                 for ($i = 0; $i < $limit_children; $i++) {
-                    if (!$same_structure) {
+
+
+                    if (!$this->same_structure) {
                         break;
                     }
-                    verify_dom_structure($children_node1[$i], $children_node2[$i], $uniques_element, $limit);
+
+                    if (!$children_node1[$i] || !$children_node2[$i]) {
+                        echo 'Node children exist error';
+                        $this->same_structure = false;
+                    }
+
+
+                    $this->verify_dom_structure($children_node1[$i], $children_node2[$i], $uniques_element, $limit);
                 }
             } else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
-                $same_structure = false;
+                echo 'Node has attr error 2';
+                $this->same_structure = false;
             } else if ($node1->hasChildNodes() && !$node2->hasChildNodes()) {
-                $same_structure = false;
+                echo 'Node has attr error 2';
+                $this->same_structure = false;
             }
         }
-        //return $same_structure;
+        return $this->same_structure;
     }
 
     function node_repeated($name_attr_node1, $value_attr_node1) {
@@ -1419,16 +1452,23 @@ class p2pCompany {
     /**
       Function to delete unnecessary elements before we compared the two dom elements
      */
-    function clean_dom($dom, $elements_to_search, $elements_to_clean) {
+    function clean_dom($dom, $elements_to_search, $attributes_to_clean) {
         //https://stackoverflow.com/questions/35534654/php-domdocument-delete-elements
         //https://duckduckgo.com/?q=delete+attributes+dom+element+php+dom&t=canonical&ia=qa	
         //$dom = new DOMDocument;                 // init new DOMDocument
         //$dom->loadHTML($html);                  // load HTML into it
         //$xpath = new DOMXPath($dom);            // create a new XPath
         //$nodes = $xpath->query('//*[@style]');  // Find elements with a style attribute
+
+        /* $domDoc = new DomDocument;
+          $domDoc->appendChild($domDoc->importNode($dom, true)); */
+
         foreach ($elements_to_search as $element) {
+
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element["value"]);
+
             foreach ($nodes as $node) {              // Iterate over found elements
+                $this->print_r2($node);
                 foreach ($attributes_to_clean as $attr) {
                     if ($node->hasAttribute($attr)) {
                         $node->removeAttribute($attr);    // Remove style attribute
@@ -1436,7 +1476,7 @@ class p2pCompany {
                 }
             }
         }
-
+        return $dom;
         //echo $dom->saveHTML();                  // output cleaned HTML
         //If you want to remove all possible attributes from all possible tags, do
         /* $dom = new DOMDocument;
@@ -1450,8 +1490,9 @@ class p2pCompany {
     }
 
     public function getElementsToClean($dom, $typeSearch, $tag, $value = null) {
-        $list = array();
 
+        $list = array();
+        ;
         $attributeTrimmed = trim($attribute);
         $tagTrimmed = trim($tag);
         libxml_use_internal_errors(true);
@@ -1461,6 +1502,7 @@ class p2pCompany {
             $elements = $xpath->query("//*[contains(concat(' ', normalize-space(@$tagTrimmed), ' '), ' $value ')]");
             //$elements = $xpath->query('//*[@style]');  // Find elements with a style attribute
         } else if ($typeSearch == "element") {
+            
             $elements = $dom->getElementsByTagName($tagTrimmed);
         }
         return $elements;
