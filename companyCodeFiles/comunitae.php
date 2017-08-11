@@ -77,6 +77,7 @@ class comunitae extends p2pCompany{
     protected $urlListarParticipaciones = null;
     protected $urlVerifyInvestments = null;
     protected $tempUrlInvestments = [];
+    protected $numUrlInvestments;
     protected $listParticipation;
     protected $numberPage;
     protected $numMiCartera = 0;
@@ -429,7 +430,11 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                             $i++;
                         }
                     }
-                    if (!empty($this->tempUrlInvestments[$this->listParticipation])) {
+                    $this->numUrlInvestments = 0;
+                    if (!empty($this->tempUrlInvestments) ) {
+                        $this->numUrlInvestments = count($this->tempUrlInvestments);
+                    }
+                    if ($this->numUrlInvestments > 0) {
                         $emptyInvestments = false;
                         $url = $this->tempUrlInvestments[$this->listParticipation] . $this->numberPage;
                         $this->numberPage++;
@@ -490,17 +495,19 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                     }
 
                     $this->index++;
-                    $this->data1[$this->index]['status'] = $tempStatus; // status of actual investment
-                    $this->data1[$this->index]['loanId'] = trim($investmentInfos[1]->nodeValue);
-                    $this->data1[$this->index]['name'] = trim($investmentInfos[2]->nodeValue);
+                    //Changed index for numberOfInvestments variable because there are different investments on different urls
+                    //https://www.comunitae.com/mi_cartera/.......
+                    $this->data1[$this->numberOfInvestments]['status'] = $tempStatus; // status of actual investment
+                    $this->data1[$this->numberOfInvestments]['loanId'] = trim($investmentInfos[1]->nodeValue);
+                    $this->data1[$this->numberOfInvestments]['name'] = trim($investmentInfos[2]->nodeValue);
                     $tempData = explode("-", $investmentInfos[4]->nodeValue);
-                    $this->data1[$this->index]['date'] = $this->getSpanishMonthNumber(trim($tempData[0])) . "-" . trim($tempData[1]);
+                    $this->data1[$this->numberOfInvestments]['date'] = $this->getSpanishMonthNumber(trim($tempData[0])) . "-" . trim($tempData[1]);
                     $as = $this->getElements($investmentInfos[3], "a");
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $this->data1[$this->index]['duration'] = filter_var($as[2]->nodeValue, FILTER_SANITIZE_NUMBER_INT) . " D&iacute;as";
-                    $this->data1[$this->index]['interest'] = $this->getPercentage($as[1]->nodeValue);
+                    $this->data1[$this->numberOfInvestments]['duration'] = filter_var($as[2]->nodeValue, FILTER_SANITIZE_NUMBER_INT) . " D&iacute;as";
+                    $this->data1[$this->numberOfInvestments]['interest'] = $this->getPercentage($as[1]->nodeValue);
                     $as = $this->getElements($investmentInfos[4], "a");
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
@@ -509,17 +516,17 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $this->data1[$this->index]['invested'] = $this->getMonetaryValue($spans[0]->nodeValue);
+                    $this->data1[$this->numberOfInvestments]['invested'] = $this->getMonetaryValue($spans[0]->nodeValue);
                     $as = $this->getElements($investmentInfos[0], "a");
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $this->data1[$this->index]['status'] = $this->getLoanState($as[0]->getAttribute("title")); // status of actual investment
+                    $this->data1[$this->numberOfInvestments]['status'] = $this->getLoanState($as[0]->getAttribute("title")); // status of actual investment
                     $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
-                            $this->data1[$key]['profitGained'];
-                    $this->tempArray['global']['totalAmortized'] = $this->tempArray['global']['totalAmortized'] + $this->data1[$this->index]['amortized'];
-                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->index]['invested'];
-                    $this->tempArray['global']['totalPercentage'] = $this->tempArray['global']['totalPercentage'] + $this->data1[$this->index]['interest'];
+                            $this->data1[$this->numberOfInvestments]['profitGained'];
+                    $this->tempArray['global']['totalAmortized'] = $this->tempArray['global']['totalAmortized'] + $this->data1[$this->numberOfInvestments]['amortized'];
+                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->numberOfInvestments]['invested'];
+                    $this->tempArray['global']['totalPercentage'] = $this->tempArray['global']['totalPercentage'] + $this->data1[$this->numberOfInvestments]['interest'];
                     $this->numberOfInvestments++;
                 }
 
@@ -539,13 +546,21 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                 if ($this->numberOfPages > 1 && $this->numberPage <= $this->numberOfPages) {
                     $url = $this->tempUrlInvestments[$this->listParticipation] . $this->numberPage;
                     $this->numberPage++;
-                    $this->listParticipation++;
                     $this->idForSwitch = 7;
                     $this->getCompanyWebpageMultiCurl($url);
                     break;
                 }
                 else {
-                     if ($this->numMiCartera < 4) {
+                    if ($this->numUrlInvestments > $this->listParticipation) {
+                        $emptyInvestments = false;
+                        $this->numberPage = 1;
+                        $url = $this->tempUrlInvestments[$this->listParticipation] . $this->numberPage;
+                        $this->listParticipation++;
+                        $this->numberPage++;
+                        $this->idForSwitch = 7;
+                        $this->getCompanyWebpageMultiCurl($url);
+                    }
+                    else if ($this->numMiCartera < 4) {
                         $url = array_shift($this->urlSequence);
                         $this->numMiCartera++;
                         $this->idForSwitch = 5;
