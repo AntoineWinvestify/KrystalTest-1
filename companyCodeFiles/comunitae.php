@@ -493,7 +493,15 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                     if ($tempStatus == TERMINATED_OK) {
                         continue;         // skip this one as investment has finished
                     }
-
+                    switch($tempStatus) {
+                        case 2:
+                            $tempStatus = 1;
+                            break;
+                        case 3:
+                            $tempStatus = 1;
+                            break;
+                    }
+                    
                     $this->index++;
                     //Changed index for numberOfInvestments variable because there are different investments on different urls
                     //https://www.comunitae.com/mi_cartera/.......
@@ -506,7 +514,14 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $this->data1[$this->numberOfInvestments]['duration'] = filter_var($as[2]->nodeValue, FILTER_SANITIZE_NUMBER_INT) . " D&iacute;as";
+                    $duration  = $this->getDurationValue($as[2]->nodeValue);
+                    $this->data1[$this->numberOfInvestments]['durationUnit']  = $duration[1]; 
+                    switch ($duration[1]) {
+                        case 1: $this->data1[$this->numberOfInvestments]['duration'] = $duration[0] . " Días";
+                            break;
+                        case 2: $this->data1[$this->numberOfInvestments]['duration'] = $duration[0] . " Meses";
+                            break;
+                    }
                     $this->data1[$this->numberOfInvestments]['interest'] = $this->getPercentage($as[1]->nodeValue);
                     $as = $this->getElements($investmentInfos[4], "a");
                     if (!$this->hasElements) {
@@ -521,7 +536,6 @@ function calculateLoanCost($amount, $duration, $interestRate)  {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $this->data1[$this->numberOfInvestments]['status'] = $this->getLoanState($as[0]->getAttribute("title")); // status of actual investment
                     $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
                             $this->data1[$this->numberOfInvestments]['profitGained'];
                     $this->tempArray['global']['totalAmortized'] = $this->tempArray['global']['totalAmortized'] + $this->data1[$this->numberOfInvestments]['amortized'];
