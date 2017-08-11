@@ -814,8 +814,8 @@ function getCurrentAccumulativeRowValue($amortizationTable, $date, $dateFormat, 
 *	@param 		string	$inputValue in duration in format like '126d', '126 d', '3 meses', '100 días', ' 5 horas'
 *						'quedan 3 meses'
 *	@return 	array	[0] contains the number/value
-*						[1] contains duration unit as defined. DAY->1, MONTH->2, YEAR_CUARTER -> 3, HOUR -> 4
-*								or -1 if no unit defined
+*                               [1] contains duration unit as defined. DAY->1, MONTH->2, YEAR_CUARTER -> 3, HOUR -> 4
+*                                   or -1 if no unit defined
 *
 */
 function getDurationValue($inputValue) {
