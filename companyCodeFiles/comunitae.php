@@ -55,9 +55,11 @@
  * collectCompanyMarketplaceData - Added pagination loop control
  *  collectHistorical
  * 
- * 2017-08-11
+ * 2017-08-11 version 2017_0.5
  * Structure Revision added
  * Status definition added
+ * Added three urlsequences for userinvestment to get all the user's investment
+ * Fixed code to take into account these investments
  *
  * PENDING:
  * if subscriptionProgress = "finalizado" then write -1 in DB field
@@ -66,14 +68,30 @@
  *
  * have length indicator
  */
-class comunitae extends p2pCompany {
 
+
+class comunitae extends p2pCompany{
+    
     private $numberOfPages;
     private $index;
     private $random;
-
-    function __construct() {
-        parent::__construct();
+    protected $urlListarParticipaciones = null;
+    protected $urlVerifyInvestments = null;
+    protected $tempUrlInvestments = [];
+    protected $numUrlInvestments;
+    protected $listParticipation;
+    protected $numberPage;
+    protected $numMiCartera = 0;
+    protected $comunitaeStates = [       
+                    1, //OK
+                    2, //DUDOSO
+                    //3 AMORTIZADO
+                    4, //JUDICIAL
+                    5, //OK(1-2)
+                ];
+            		
+function __construct() {
+	parent::__construct();	
 // Do whatever is needed for this subsclass
     }
 
@@ -494,9 +512,8 @@ class comunitae extends p2pCompany {
                 $credentials['j_username'] = $this->user;
                 $credentials['j_password'] = $this->password;
                 $this->idForSwitch++;
-                $this->doCompanyLoginMultiCurl($credentials);
+                $this->doCompanyLoginMultiCurl($credentials); //wwww.comunitae.com/j_spring_security_check
                 break;
-
             case 1:
                 // Check if user actually has entered the portal of the company.
                 // by means of checking of 2 unique identifiers of the portal
@@ -561,7 +578,7 @@ class comunitae extends p2pCompany {
 
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();  // load Webpage into a string variable so it can be parsed
+                $this->getCompanyWebpageMultiCurl();  // wwww.comunitae.com/miPosicion.html?method=Posicion load Webpage into a string variable so it can be parsed
                 break;
 
             case 2:
@@ -596,21 +613,98 @@ class comunitae extends p2pCompany {
                 $this->random++;
                 $url = array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($url . time() . $this->random); // https://www.comunitae.com/www.comunitae.com/mi-cartera/pagares
+                $this->getCompanyWebpageMultiCurl($url . time() . $this->random); // https://www.comunitae.com/pastillaCartera.html?aleat=
                 break;
             case 4:
+                $this->numberOfInvestments = 0;
+                //We save the url that verify that there are investments on the "mi_cartera" link
+                $this->urlVerifyInvestments = array_shift($this->urlSequence);
+                //We save the url to save if there are investments
+                $this->urlListarParticipaciones = array_shift($this->urlSequence);
                 $url = array_shift($this->urlSequence);
+                $this->numMiCartera++;
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($url);   // https://www.comunitae.com/listarParticipaciones.html?method=mostrarBloques&_=1487322997347 
+                // We must go to this four url to take all the investment of a inversor
+                // https://www.comunitae.com/mi_cartera/personales
+                // https://www.comunitae.com/mi_cartera/pagares
+                // https://www.comunitae.com/mi_cartera/confirming
+                // https://www.comunitae.com/mi_cartera/factoring
+                $this->getCompanyWebpageMultiCurl($url);
                 break;
-
             case 5:
-                //echo $str;
-                $url = array_shift($this->urlSequence);  // https://www.comunitae.com/listarParticipaciones.html?method=irPestanaListado&id=1&PARAM_PAGINACION_PAGINA_ACTUAL=
+                $this->random = rand(111, 900);
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($url . "1");
+                $this->getCompanyWebpageMultiCurl($this->urlVerifyInvestments . time() . $this->random); //https://www.comunitae.com/listarParticipaciones.html?method=mostrarBloques&_=1502374083649
                 break;
             case 6:
+                //echo $str;
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                //echo $str;
+                $dom->preserveWhiteSpace = false;
+                // We verify if there is no investment on the url listarParticipaciones.html?method=mostrarBloques
+                // It will appear a message with "No hay inversiones"
+                $sections = $dom->getElementsByTagName("section");
+                $emptyInvestments = true;
+                if ($sections->length == 0) {
+                    $articles = $dom->getElementsByTagName("article");
+                    $i = 1;
+                    $this->listParticipation = 0;
+                    $this->numberPage = 1;
+                    foreach ($articles as $article) {
+                        $spans = $article->getElementsByTagName("span");
+                        $classSpan = $spans[0]->getAttribute('class');
+                        $pos = strpos($classSpan, 'label-state-');
+                        if ($pos !== false) {
+                            // " found after position 20
+                            $stateInvestments = substr($classSpan, $pos+12, 1);
+                            if (in_array($stateInvestments, $this->comunitaeStates)) {
+                                $this->tempUrlInvestments[] = $url = $this->urlListarParticipaciones . $i . "&PARAM_PAGINACION_PAGINA_ACTUAL=";
+                            }
+                            $i++;
+                        }
+                    }
+                    $this->numUrlInvestments = 0;
+                    if (!empty($this->tempUrlInvestments) ) {
+                        $this->numUrlInvestments = count($this->tempUrlInvestments);
+                    }
+                    if ($this->numUrlInvestments > 0) {
+                        $emptyInvestments = false;
+                        $url = $this->tempUrlInvestments[$this->listParticipation] . $this->numberPage;
+                        $this->numberPage++;
+                        $this->listParticipation++;
+                        $this->idForSwitch++;
+                        $this->getCompanyWebpageMultiCurl($url);
+                    }
+                    //$url = array_shift($this->urlSequence);  // https://www.comunitae.com/listarParticipaciones.html?method=irPestanaListado&id=1&PARAM_PAGINACION_PAGINA_ACTUAL=
+                }
+                if ($emptyInvestments) {
+                    if ($this->numMiCartera < 4) {
+                        $url = array_shift($this->urlSequence);
+                        $this->numMiCartera++;
+                        $this->idForSwitch = 5;
+                        // https://www.comunitae.com/mi_cartera/pagares
+                        // https://www.comunitae.com/mi_cartera/personales
+                        // https://www.comunitae.com/mi_cartera/confirming
+                        // https://www.comunitae.com/mi_cartera/factoring
+                        $this->getCompanyWebpageMultiCurl($url);
+                    }
+                    else {
+                        $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvestment'] - $this->tempArray['global']['totalAmortized'];
+                        $this->tempArray['global']['profitibility'] = (int) ($this->tempArray['global']['totalPercentage'] / ($this->tempArray['global']['investments'] = $this->numberOfInvestments));
+                        $this->print_r2($this->tempArray);
+                        ///FIX THIS
+                        $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+
+                        $this->tempArray['investments'] = $this->data1;
+                        //	$tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + $data1[$key]['amortized'];
+                        //	$tempArray['global']['totalInvested'] = $tempArray['global']['totalInvested'] + $data1[$key]['invested'];
+                        return $this->tempArray;
+                    }
+                }
+                break;
+            case 7:
                 //echo "KKKKKKKKK" . $str;
                 $domAccount = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -634,19 +728,36 @@ class comunitae extends p2pCompany {
                     if ($tempStatus == TERMINATED_OK) {
                         continue;         // skip this one as investment has finished
                     }
-
+                    switch($tempStatus) {
+                        case 2:
+                            $tempStatus = 1;
+                            break;
+                        case 3:
+                            $tempStatus = 1;
+                            break;
+                    }
+                    
                     $this->index++;
-                    $this->data1[$this->index]['status'] = $tempStatus; // status of actual investment
-                    $this->data1[$this->index]['loanId'] = trim($investmentInfos[1]->nodeValue);
-                    $this->data1[$this->index]['name'] = trim($investmentInfos[2]->nodeValue);
+                    //Changed index for numberOfInvestments variable because there are different investments on different urls
+                    //https://www.comunitae.com/mi_cartera/.......
+                    $this->data1[$this->numberOfInvestments]['status'] = $tempStatus; // status of actual investment
+                    $this->data1[$this->numberOfInvestments]['loanId'] = trim($investmentInfos[1]->nodeValue);
+                    $this->data1[$this->numberOfInvestments]['name'] = trim($investmentInfos[2]->nodeValue);
                     $tempData = explode("-", $investmentInfos[4]->nodeValue);
-                    $this->data1[$this->index]['date'] = $this->getSpanishMonthNumber(trim($tempData[0])) . "-" . trim($tempData[1]);
+                    $this->data1[$this->numberOfInvestments]['date'] = $this->getSpanishMonthNumber(trim($tempData[0])) . "-" . trim($tempData[1]);
                     $as = $this->getElements($investmentInfos[3], "a");
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $this->data1[$this->index]['duration'] = filter_var($as[2]->nodeValue, FILTER_SANITIZE_NUMBER_INT) . " D&iacute;as";
-                    $this->data1[$this->index]['interest'] = $this->getPercentage($as[1]->nodeValue);
+                    $duration  = $this->getDurationValue($as[2]->nodeValue);
+                    $this->data1[$this->numberOfInvestments]['durationUnit']  = $duration[1]; 
+                    switch ($duration[1]) {
+                        case 1: $this->data1[$this->numberOfInvestments]['duration'] = $duration[0] . " Días";
+                            break;
+                        case 2: $this->data1[$this->numberOfInvestments]['duration'] = $duration[0] . " Meses";
+                            break;
+                    }
+                    $this->data1[$this->numberOfInvestments]['interest'] = $this->getPercentage($as[1]->nodeValue);
                     $as = $this->getElements($investmentInfos[4], "a");
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
@@ -655,22 +766,22 @@ class comunitae extends p2pCompany {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $this->data1[$this->index]['invested'] = $this->getMonetaryValue($spans[0]->nodeValue);
+                    $this->data1[$this->numberOfInvestments]['invested'] = $this->getMonetaryValue($spans[0]->nodeValue);
                     $as = $this->getElements($investmentInfos[0], "a");
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $this->data1[$this->index]['status'] = $this->getLoanState($as[0]->getAttribute("title")); // status of actual investment
                     $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
-                            $this->data1[$key]['profitGained'];
-                    $this->tempArray['global']['totalAmortized'] = $this->tempArray['global']['totalAmortized'] + $this->data1[$this->index]['amortized'];
-                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->index]['invested'];
-                    $this->tempArray['global']['totalPercentage'] = $this->tempArray['global']['totalPercentage'] + $this->data1[$this->index]['interest'];
+                            $this->data1[$this->numberOfInvestments]['profitGained'];
+                    $this->tempArray['global']['totalAmortized'] = $this->tempArray['global']['totalAmortized'] + $this->data1[$this->numberOfInvestments]['amortized'];
+                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->numberOfInvestments]['invested'];
+                    $this->tempArray['global']['totalPercentage'] = $this->tempArray['global']['totalPercentage'] + $this->data1[$this->numberOfInvestments]['interest'];
+                    $this->numberOfInvestments++;
                 }
 
                 $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvested'] - $this->tempArray['global']['totalAmortized'];
                 $this->print_r2($this->data1);
-                // Check number of pages. It seems the investments are shown in pages of 15 at the time.
+        // Check number of pages. It seems the investments are shown in pages of 15 at the time.
                 $pages = $this->getElements($domAccount, "ul", "class", "pagination no-margin");
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 if (empty($pages)) {
@@ -680,95 +791,50 @@ class comunitae extends p2pCompany {
                     $this->numberOfPages = count($as);
                 }
                 echo __FILE__ . " " . __LINE__ . "number of pages = $this->numberOfPages<br>";
-                $numberOfPages = 0;
-                if ($this->numberOfPages > 1) {
-                    for ($i = 2; $i <= $this->numberOfPages; $i++) {
-                        $this->tempUrl[$numberOfPages] = $url . $i; // https://www.comunitae.com/listarParticipaciones.html?method=irPestanaListado&id=2&PARAM_PAGINACION_PAGINA_ACTUAL=
-                        $numberOfPages++;
-                    }
-                    $this->numberOfInvestments = $this->numberOfPages - 2;
-                    $this->idForSwitch++;
-                } else {
-                    $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvestment'] - $this->tempArray['global']['totalAmortized'];
-                    $this->tempArray['global']['profitibility'] = (int) ($this->tempArray['global']['totalPercentage'] / ($this->tempArray['global']['investments'] = $this->index + 1));
-                    $this->print_r2($this->tempArray);
-                    $this->tempArray['global']['investments'] = $this->index++;
-
-                    $this->tempArray['investments'] = $this->data1;
-                    //	$tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + $data1[$key]['amortized'];
-                    //	$tempArray['global']['totalInvested'] = $tempArray['global']['totalInvested'] + $data1[$key]['invested'];
-                    return $this->tempArray;
-                }
-            case 7:
-                $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]); // https://www.comunitae.com/listarParticipaciones.html?method=irPestanaListado&id=2&PARAM_PAGINACION_PAGINA_ACTUAL=
-                break;
-            case 8:
-                $domAccount = new DOMDocument;
-                libxml_use_internal_errors(true);
-                $domAccount->loadHTML($str);
-                $domAccount->preserveWhiteSpace = false;
-                $accountSummaries = $this->getElements($domAccount, "article", "class", "row panel-row prestamo");
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
-                }
-                foreach ($accountSummaries as $key => $account) {
-                    $this->index++;
-                    $investmentInfos = $this->getElements($account, "p", "class", "form-control-static");
-                    //			foreach ($investmentInfos as $summary){
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
-                    }
-                    $this->data1[$this->index]['loanId'] = trim($investmentInfos[1]->nodeValue);
-                    $this->data1[$this->index]['name'] = trim($investmentInfos[2]->nodeValue);
-                    $tempData = explode("-", $investmentInfos[4]->nodeValue);
-                    $this->data1[$this->index]['date'] = $this->getSpanishMonthNumber(trim($tempData[0])) . "-" . trim($tempData[1]);
-                    $as = $this->getElements($investmentInfos[3], "a");
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
-                    }
-                    $this->data1[$this->index]['duration'] = filter_var($as[2]->nodeValue, FILTER_SANITIZE_NUMBER_INT) . " D&iacute;as";
-                    $this->data1[$this->index]['interest'] = $this->getPercentage($as[1]->nodeValue);
-                    $as = $this->getElements($investmentInfos[4], "a");
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
-                    }
-                    $spans = $this->getElements($investmentInfos[5], "span");
-
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
-                    }
-                    $this->data1[$this->index]['invested'] = $this->getMonetaryValue($spans[0]->nodeValue);
-                    $as = $this->getElements($investmentInfos[0], "a");
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
-                    }
-                    $this->data1[$this->index]['status'] = $this->getLoanState($as[0]->getAttribute("title")); // status of actual investment
-                    //			}
-                    $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
-                            $this->data1[$key]['profitGained'];
-                    $this->tempArray['global']['totalAmortized'] = $this->tempArray['global']['totalAmortized'] + $this->data1[$this->index]['amortized'];
-                    $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->index]['invested'];
-                    $this->tempArray['global']['totalPercentage'] = $this->tempArray['global']['totalPercentage'] + $this->data1[$this->index]['interest'];
-                }
-                if ($this->numberOfPages - 1 != $this->accountPosition) {
+                //$numberOfPages = 0;
+                if ($this->numberOfPages > 1 && $this->numberPage <= $this->numberOfPages) {
+                    $url = $this->tempUrlInvestments[$this->listParticipation] . $this->numberPage;
+                    $this->numberPage++;
                     $this->idForSwitch = 7;
-                    $this->accountPosition++;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Load amortization Table
+                    $this->getCompanyWebpageMultiCurl($url);
                     break;
-                } else {
-                    $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvestment'] - $this->tempArray['global']['totalAmortized'];
-                    $this->tempArray['global']['profitibility'] = (int) ($this->tempArray['global']['totalPercentage'] / ($this->tempArray['global']['investments'] = $this->index + 1));
-                    $this->print_r2($this->tempArray);
-                    $this->tempArray['global']['investments'] = $this->index++;
-                    $this->tempArray['investments'] = $this->data1;
-                    //	$tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + $data1[$key]['amortized'];
-                    //	$tempArray['global']['totalInvested'] = $tempArray['global']['totalInvested'] + $data1[$key]['invested'];
-                    return $this->tempArray;
                 }
-                break;
+                else {
+                    if ($this->numUrlInvestments > $this->listParticipation) {
+                        $emptyInvestments = false;
+                        $this->numberPage = 1;
+                        $url = $this->tempUrlInvestments[$this->listParticipation] . $this->numberPage;
+                        $this->listParticipation++;
+                        $this->numberPage++;
+                        $this->idForSwitch = 7;
+                        $this->getCompanyWebpageMultiCurl($url);
+                    }
+                    else if ($this->numMiCartera < 4) {
+                        $url = array_shift($this->urlSequence);
+                        $this->numMiCartera++;
+                        $this->idForSwitch = 5;
+                        // https://www.comunitae.com/mi_cartera/personales
+                        // https://www.comunitae.com/mi_cartera/pagares
+                        // https://www.comunitae.com/mi_cartera/confirming
+                        // https://www.comunitae.com/mi_cartera/factoring
+                        $this->getCompanyWebpageMultiCurl($url);
+                    }
+                    else {
+                        $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvestment'] - $this->tempArray['global']['totalAmortized'];
+                        $this->tempArray['global']['profitibility'] = (int) ($this->tempArray['global']['totalPercentage'] / ($this->tempArray['global']['investments'] = $this->numberOfInvestments));
+                        $this->print_r2($this->tempArray);
+                        ///FIX THIS
+                        $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+
+                        $this->tempArray['investments'] = $this->data1;
+                        //	$tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + $data1[$key]['amortized'];
+                        //	$tempArray['global']['totalInvested'] = $tempArray['global']['totalInvested'] + $data1[$key]['invested'];
+                        return $this->tempArray;
+                    }
+                }
         }
     }
+
 
     /**
      *
