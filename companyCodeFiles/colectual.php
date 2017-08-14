@@ -202,9 +202,13 @@ FRAGMENT
                         $amount = $this->getMonetaryValue(strstr($amount, ',', true));
 
                         if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
-                            $amount = ($amount * $tempArray['marketplace_subscriptionProgress']) / 10000;
+                            $amountTotal = ($amount * $tempArray['marketplace_subscriptionProgress']) / 10000;
+                        } else {
+                            $amountTotal = $amount;
                         }
                         $tempArray["marketplace_amount"] = $amount;
+                        $tempArray["marketplace_amountTotal"] = $amountTotal;
+                        
                         break;
                     case "plazo":
                         if (in_array("m", str_split($label->nodeValue))) {
