@@ -1,75 +1,71 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
+/**
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+ * | the Free Software Foundation; either version 2 of the License, or 	|
+ * | (at your option) any later version.                                      		|
+ * | This file is distributed in the hope that it will be useful   		    	|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
+ * | GNU General Public License for more details.        			              	|
+ * +---------------------------------------------------------------------------------------------------------------+
  *
  *
- * Contains the code required for accessing the website of "Comunitae"
- *
- * 
- * @author Antoine de Poorter
+ * @author
  * @version 0.1
- * @date 2017-02-16
+ * @date 2016-10-25
  * @package
-
-
-  function calculateLoanCost()										[OK, tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()										[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
-  function isNewEntry()											[Not Done]
-  parallelization                                                                                         [OK, tested]
-
-  2016-08-29	  version 2016_0.1
-  Basic version
-
-  2017-02-16		version 2017_0.1
-
-  "Error" in collectCompanyMarketplaceData function. The Web of comunitae generates bad html for the
-  ['marketplace_name'] field, it contained  ...CONSTRUCCIONES ALVEDRO SL "SYCA" (extra "") in title		[OK, tested]
-
-  Added loading of ALL investments
-
-  2017-04-15          version 2017_0.2
+ *
+ *
+ * function calculateLoanCost()										[OK, tested]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * function isNewEntry()											[Not Done]
+ * parallelization                                                                                         [OK, tested]
+ *
+ * 2016-08-29	  version 2016_0.1
+ * Basic version
+ *
+ * 2017-02-16		version 2017_0.1
+ *
+ * "Error" in collectCompanyMarketplaceData function. The Web of comunitae generates bad html for the
+ * ['marketplace_name'] field, it contained  ...CONSTRUCCIONES ALVEDRO SL "SYCA" (extra "") in title		[OK, tested]
+ *
+ * Added loading of ALL investments
+ *
+ * 2017-04-15          version 2017_0.2
  * Added modification to collectCompanyMarketplaceData(), added factoring with new for
-
-  2017-05-16          version 2017_0.3
+ *
+ * 2017-05-16          version 2017_0.3
  * Added parallelization
  * Added dom verification
-
-
-  2017-07-24          version 2017_0.4
+ *
+ *
+ * 2017-07-24          version 2017_0.4
  * Added two urlsequences for marketplaces to get investment of next pages
  * Added code for marketplaces to verify if there is more investments in the next page
-
-  2017-08-03
-  Comunitae code adaptation for 100%
-  collectCompanyMarketplaceData - Added pagination loop control
+ *
+ * 2017-08-03
+ * Comunitae code adaptation for 100%
+ * collectCompanyMarketplaceData - Added pagination loop control
  *  collectHistorical
-
-
-
-  PENDING:
-  if subscriptionProgress = "finalizado" then write -1 in DB field
-  if (strcasecmp (trim($a->nodeValue), trim($user)) == 0) {   line 112 should also
-
-
-  have length indicator
+ * 
+ * 2017-08-11
+ * Structure Revision added
+ * Status definition added
+ *
+ * PENDING:
+ * if subscriptionProgress = "finalizado" then write -1 in DB field
+ * if (strcasecmp (trim($a->nodeValue), trim($user)) == 0) {   line 112 should also
+ *
+ *
+ * have length indicator
  */
-
 class comunitae extends p2pCompany {
 
     private $numberOfPages;
@@ -107,14 +103,16 @@ class comunitae extends p2pCompany {
     }
 
     /**
-     * Collects the marketplace data
-     * @param type $companyBackup
-     * @return string
+     * Collects the marketplace data.
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup) {
+    function collectCompanyMarketplaceData($companyBackup, $structure) {
 
         $totalArray = array();
         $subscriptionComplete = false;
+        $structureRevision = 1;
         $pageNumber = 1;
         $url = null;
         $urlNextPage = null;
@@ -131,7 +129,7 @@ class comunitae extends p2pCompany {
                     $listing = $dom->getElementById("pymeList");
                     $rows = $listing->getElementsByTagName('article');
                     if (count($listing) == 0) {
-                        return totalArray;
+                        return [$totalArray, $structureRevision];
                     }
                 } else if (!empty($url)) {
                     $rows = $dom->getElementsByTagName('article');
@@ -145,7 +143,274 @@ class comunitae extends p2pCompany {
                 $rows = $dom->getElementsByTagName('article');
             }
 
+
+            if ($totalArray !== false) { // If we find a structural error, dont read.
+                foreach ($rows as $key => $row) {
+
+
+                    if ($key == 0 && $structure) { //Compare structures, olny compare the first element
+                        $newStructure = new DOMDocument;
+                        $newStructure->loadHTML($structure['Structure']['structure_html']);
+                        $newStructure->preserveWhiteSpace = false;
+                        $trsNewStructure = $newStructure->getElementsByTagName('article');
+
+                        $saveStructure = new DOMDocument();
+                        $container = $this->getElements($dom, 'div', 'data-id', '4');
+                        $clone = $container[0]->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $saveStructure->saveHTML();
+                        $originalStructure = $newStructure->getElementsByTagName('article');
+
+                        $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
+
+                        echo 'structure: ' . $structureRevision . '<br>';
+
+                        if (!$structureRevision) { //Save new structure
+                            echo 'Structural error<br>';
+                            $saveStructure = new DOMDocument();
+                            $container = $this->getElements($dom, 'div', 'data-id', '4');
+                            $clone = $container[0]->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                            $structureRevision = $saveStructure->saveHTML();
+                            $totalArray = false;  //Structure control, don't read more tr 
+                            break; //Stop reading if we have a structural error
+                        }
+                        echo 'Structure good';
+                    }
+
+                    if ($key == 0 && !$structure) { //Save new structure if is first time
+                        echo 'no structure readed, saving structure <br>';
+                        $saveStructure = new DOMDocument();
+                        $container = $this->getElements($dom, 'div', 'data-id', '4');
+                        $clone = $container[0]->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $structureRevision = $saveStructure->saveHTML();
+                    }
+
+
+
+
+                    $loanId = $row->getAttribute('id');
+                    $tempArray['marketplace_loanReference'] = $loanId;
+                    $nameFound = false;
+
+                    $as = $row->getElementsByTagName('a');
+
+                    foreach ($as as $a) {
+                        $tempValue = $a->nodeValue;
+
+                        $tempArray['marketplace_country'] = 'ES';
+                        $tempArray['marketplace_productType'] = $type;
+                        if ($nameFound == false) {   // first <a> tag contains the name
+                            $tempArray['marketplace_name'] = $tempValue;
+                            $tempArray['marketplace_purpose'] = $tempValue;
+                            $nameFound = true;
+                        }
+
+                        //			if  (strcasecmp( trim($checkedAttribute), trim($tempValue)) == 0) {
+                        //				$tempArray['marketplace_name'] = $tempValue;
+                        //			}			
+
+                        $checkedAttribute = $a->getAttribute('data-risk');
+                        if (!empty(trim($checkedAttribute))) {
+                            $tempArray['marketplace_rating'] = trim($a->nodeValue);
+                        }
+
+                        $checkedAttribute = $a->getAttribute('title');
+                        if (strncasecmp(trim($checkedAttribute), 'Tipo de inter', 12) == 0) {
+                            $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($a->nodeValue));
+                        }
+
+                        $checkedAttribute = $a->getAttribute('title');
+                        if (strncasecmp(trim($checkedAttribute), 'Plazo del pr', 12) == 0) {
+                            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($a->nodeValue);
+                            //list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit']) = $this->getDurationValue($a->nodeValue);
+                        }
+
+                        $checkedAttribute = $a->getAttribute('title');
+                        if (strncasecmp(trim($checkedAttribute), 'Importe pr', 10) == 0) {
+                            $tempArray['marketplace_amount'] = $this->getMonetaryValue($a->nodeValue);
+                        }
+                    }
+
+                    $spans = $row->getElementsByTagName('span');
+                    foreach ($spans as $span) {
+                        $checkedAttribute = $span->getAttribute('class');
+                        if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
+
+                            if (stristr(trim($span->nodeValue), "%") == true) {
+                                echo "Comunitae: % found, so store in marketplace<br>";
+                                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
+                                $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                            } else {
+                                $tempArray['marketplace_subscriptionProgress'] = 10000;  // completed, retrasado orr amortización ..
+                                $tempArray['marketplace_statusLiteral'] = 'Completado';
+                                $tempArray['marketplace_status'] = PERCENT;
+                                foreach ($companyBackup as $inversionBackup) {
+                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado') {
+                                        $subscriptionComplete = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    if ($tempArray) {
+                        $totalArray[] = $tempArray;
+                    }
+                    unset($tempArray);
+
+                    $numberOfInvestmentInPage++;
+
+                    //If subscription of the investment is not complete and the number of investment is the 15th in the page
+                    //We need to go to the next page to verify if there are investments or not
+                    if (!$subscriptionComplete && $numberOfInvestmentInPage == 15) {
+                        if (empty($urlNextPage)) {
+                            $urlNextPage = array_shift($this->urlSequence);
+                        }
+                        $numberOfInvestmentInPage = 0;
+                        $pageNumber++;
+                        $url = $urlNextPage . $pageNumber;
+                        $i--;
+                    } else if ($subscriptionComplete) {
+                        $subscriptionComplete = false;
+                        $url = null;
+                        $urlNextPage = null;
+                        $pageNumber = 1;
+                        $numberOfInvestmentInPage = 0;
+                        break;
+                    }
+                    //If there is a complete investment in the first page
+                    //We need to delete the urlSequence for the nextPage
+                    else if ($subscriptionComplete && $pageNumber == 1) {
+                        array_shift($this->urlSequence);
+                    }
+                }
+            }
+        }
+        return [$totalArray, $structureRevision];
+    }
+
+    /**
+     * collect all investment
+     * @param Array $structure
+     * @param Int $page
+     * @param Int $type
+     * @return Array
+     */
+    function collectHistorical($structure, $pageNumber, $type) {
+
+        $totalArray = array();
+        if ($pageNumber == 0) {
+            $pageNumber++;
+        } //Advance page, $pageNumber start with 0
+
+        if ($type == 1) {//Start with 'Pagares'
+            $url = array_shift($this->urlSequence); //Save 'Pagares' first url
+            echo 'Url: ' . $url;
+            $str = $this->getCompanyWebpage($url);
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = false;
+            $dom->loadHTML($str);  //Load 'Pagares' 
+
+            $url = array_shift($this->urlSequence); //Save 'Pagares' pagination url
+            echo 'Url: ' . $url;
+            $str = $this->getCompanyWebpage($url . $pageNumber);
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = false;
+
+
+
+            //pymeList
+            $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
+            $pageNumber++; //Advance page
+            $rows = $dom->getElementsByTagName('article');
+            $numberOfInvestmentInPage = $rows->length;
+            //$this->print_r2($rows);
+            echo 'Count: ' . $numberOfInvestmentInPage;
+
+            if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'pagares', go to 'Factoring'
+                echo 'Change type';
+                $type = 4;
+                $pageNumber = 1; //MUST BE 1, IF IS 0 THE LOOP WILL END
+                //print_r($type . " " . $pageNumber);
+            }
+        } else if ($type == 4) { //Next 'Factoring'
+            echo 'Enter factoring';
+            //Factoring
+            if ($pageNumber == 1) {
+                array_shift($this->urlSequence); //Skip 'Pagares' first url
+                array_shift($this->urlSequence); //Skip 'Pagares' pagination url
+                $url = array_shift($this->urlSequence); //Save 'Factoring' first url
+                echo 'Url: ' . $url;
+                $str = $this->getCompanyWebpage($url);
+                $dom = new DOMDocument;
+                $dom->preserveWhiteSpace = false;
+            } else {
+                array_shift($this->urlSequence); //Skip 'Pagares' first url
+                array_shift($this->urlSequence); //Skip 'Pagares' pagination url
+                array_shift($this->urlSequence); //Skip 'First page' url
+                $url = array_shift($this->urlSequence); //Save 'Factoring' url
+                echo 'Url: ' . $url;
+                $str = $this->getCompanyWebpage($url . $pageNumber);
+                $dom = new DOMDocument;
+                $dom->preserveWhiteSpace = false;
+            }
+            //pymeList
+            $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
+            $pageNumber++; //Advance page
+            $rows = $dom->getElementsByTagName('article');
+            $numberOfInvestmentInPage = $rows->length;
+            //$this->print_r2($rows);
+            echo 'Count: ' . $numberOfInvestmentInPage;
+
+            if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'Factoring', stop search
+                $pageNumber = false;
+            }
+        }
+
+        if ($totalArray !== false) { // If we find a structural error, dont read.
             foreach ($rows as $row) {
+
+
+                if ($key == 0 && $structure) { //Compare structures, olny compare the first element
+                    $newStructure = new DOMDocument; //Load db html dom
+                    $newStructure->loadHTML($structure['Structure']['structure_html']);
+                    $newStructure->preserveWhiteSpace = false;
+                    $trsNewStructure = $newStructure->getElementsByTagName('article');
+                    $structureRevision = $this->structureRevision($trsNewStructure[1], $rows[0]);
+
+                    echo 'structure: ' . $structureRevision . '<br>';
+
+                    if (!$structureRevision) { //Save new structure
+                        echo 'Structural error<br>';
+                        $saveStructure = new DOMDocument();
+                        $container = $this->getElements($dom, 'div', 'data-id', '4');
+                        $clone = $container[0]->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                        $structureRevision = $saveStructure->saveHTML();
+                        $totalArray = false;  //Structure control, don't read more tr 
+
+                        break; //Stop reading if we have a structural error
+                    }
+                    echo 'Structure good';
+                }
+
+                if ($key == 0 && !$structure) { //Save new structure if is first time
+                    echo 'no structure readed, saving structure <br>';
+                    $saveStructure = new DOMDocument();
+                    $container = $this->getElements($dom, 'div', 'data-id', '4');
+                    $clone = $container[0]->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                    $structureRevision = $saveStructure->saveHTML();
+                }
+
+
+
                 $loanId = $row->getAttribute('id');
                 $tempArray['marketplace_loanReference'] = $loanId;
                 $nameFound = false;
@@ -162,10 +427,6 @@ class comunitae extends p2pCompany {
                         $tempArray['marketplace_purpose'] = $tempValue;
                         $nameFound = true;
                     }
-
-                    //			if  (strcasecmp( trim($checkedAttribute), trim($tempValue)) == 0) {
-                    //				$tempArray['marketplace_name'] = $tempValue;
-                    //			}			
 
                     $checkedAttribute = $a->getAttribute('data-risk');
                     if (!empty(trim($checkedAttribute))) {
@@ -201,187 +462,18 @@ class comunitae extends p2pCompany {
                         } else {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;  // completed, retrasado orr amortización ..
                             $tempArray['marketplace_statusLiteral'] = 'Completado';
-                            $tempArray['marketplace_status'] = 1;
-                            foreach ($companyBackup as $inversionBackup) {
-                                if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado') {
-                                    $subscriptionComplete = true;
-                                }
-                            }
+                            $tempArray['marketplace_status'] = PERCENT;
                         }
                     }
-                    $numberOfInvestmentInPage++;
-                    $totalArray[] = $tempArray;
-                    unset($tempArray);
-                    //If subscription of the investment is not complete and the number of investment is the 15th in the page
-                    //We need to go to the next page to verify if there are investments or not
-                    if (!$subscriptionComplete && $numberOfInvestmentInPage == 15) {
-                        if (empty($urlNextPage)) {
-                            $urlNextPage = array_shift($this->urlSequence);
-                        }
-                        $numberOfInvestmentInPage = 0;
-                        $pageNumber++;
-                        $url = $urlNextPage . $pageNumber;
-                        $i--;
-                    } else if ($subscriptionComplete) {
-                        $subscriptionComplete = false;
-                        $url = null;
-                        $urlNextPage = null;
-                        $pageNumber = 1;
-                        $numberOfInvestmentInPage = 0;
-                        break;
-                    }
-                    //If there is a complete investment in the first page
-                    //We need to delete the urlSequence for the nextPage
-                    else if ($subscriptionComplete && $pageNumber == 1) {
-                        array_shift($this->urlSequence);
-                    }
                 }
-            }
-
-            return $totalArray;
-        }
-    }
-
-    /**
-     * Collect historical
-     * @param type $pageNumber
-     * @param type $type
-     * @return type
-     */
-    function collectHistorical($pageNumber, $type) {
-
-        $totalArray = array();
-        if ($pageNumber == 0) {
-            $pageNumber++;
-        } //Advance page, $pageNumber start with 0
-
-        if ($type == 1) {//Start with 'Pagares'
-            $url = array_shift($this->urlSequence); //Save 'Pagares' first url
-            echo 'Url: ' . $url;
-            $str = $this->getCompanyWebpage($url);
-            $dom = new DOMDocument;
-            $dom->preserveWhiteSpace = false; 
-            $dom->loadHTML($str);  //Load 'Pagares' 
-
-            $url = array_shift($this->urlSequence); //Save 'Pagares' pagination url
-            echo 'Url: ' . $url;
-            $str = $this->getCompanyWebpage($url . $pageNumber);
-            $dom = new DOMDocument;
-            $dom->preserveWhiteSpace = false;
-
-
-
-            //pymeList
-            $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
-            $pageNumber++; //Advance page
-            $rows = $dom->getElementsByTagName('article');
-            $numberOfInvestmentInPage = $rows->length;
-            $this->print_r2($rows);
-            echo 'Count: ' . $numberOfInvestmentInPage;
-
-            if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'pagares', go to 'Factoring'
-                echo 'Change type';
-                $type = 4;
-                $pageNumber = 1; //MUST BE 1, IF IS 0 THE LOOP WILL END
-                print_r($type . " " . $pageNumber);
-            }
-        } else if ($type == 4) { //Next 'Factoring'
-            echo 'Enter factoring';
-            //Factoring
-            if ($pageNumber == 1) {
-                array_shift($this->urlSequence); //Skip 'Pagares' first url
-                array_shift($this->urlSequence); //Skip 'Pagares' pagination url
-                $url = array_shift($this->urlSequence); //Save 'Factoring' first url
-                echo 'Url: ' . $url;
-                $str = $this->getCompanyWebpage($url);
-                $dom = new DOMDocument;
-                $dom->preserveWhiteSpace = false;
-            } else {
-                array_shift($this->urlSequence); //Skip 'Pagares' first url
-                array_shift($this->urlSequence); //Skip 'Pagares' pagination url
-                array_shift($this->urlSequence); //Skip 'First page' url
-                $url = array_shift($this->urlSequence); //Save 'Factoring' url
-                echo 'Url: ' . $url;
-                $str = $this->getCompanyWebpage($url . $pageNumber);
-                $dom = new DOMDocument;
-                $dom->preserveWhiteSpace = false;
-            }
-            //pymeList
-            $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
-            $pageNumber++; //Advance page
-            $rows = $dom->getElementsByTagName('article');
-            $numberOfInvestmentInPage = $rows->length;
-            $this->print_r2($rows);
-            echo 'Count: ' . $numberOfInvestmentInPage;
-
-            if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'Factoring', stop search
-                $pageNumber = false;
+                $totalArray[] = $tempArray;
+                unset($tempArray);
             }
         }
 
-        foreach ($rows as $row) {
-            $loanId = $row->getAttribute('id');
-            $tempArray['marketplace_loanReference'] = $loanId;
-            $nameFound = false;
-
-            $as = $row->getElementsByTagName('a');
-
-            foreach ($as as $a) {
-                $tempValue = $a->nodeValue;
-
-                $tempArray['marketplace_country'] = 'ES';
-                $tempArray['marketplace_productType'] = $type;
-                if ($nameFound == false) {   // first <a> tag contains the name
-                    $tempArray['marketplace_name'] = $tempValue;
-                    $tempArray['marketplace_purpose'] = $tempValue;
-                    $nameFound = true;
-                }
-
-                $checkedAttribute = $a->getAttribute('data-risk');
-                if (!empty(trim($checkedAttribute))) {
-                    $tempArray['marketplace_rating'] = trim($a->nodeValue);
-                }
-
-                $checkedAttribute = $a->getAttribute('title');
-                if (strncasecmp(trim($checkedAttribute), 'Tipo de inter', 12) == 0) {
-                    $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($a->nodeValue));
-                }
-
-                $checkedAttribute = $a->getAttribute('title');
-                if (strncasecmp(trim($checkedAttribute), 'Plazo del pr', 12) == 0) {
-                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($a->nodeValue);
-                    //list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit']) = $this->getDurationValue($a->nodeValue);
-                }
-
-                $checkedAttribute = $a->getAttribute('title');
-                if (strncasecmp(trim($checkedAttribute), 'Importe pr', 10) == 0) {
-                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($a->nodeValue);
-                }
-            }
-
-            $spans = $row->getElementsByTagName('span');
-            foreach ($spans as $span) {
-                $checkedAttribute = $span->getAttribute('class');
-                if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
-
-                    if (stristr(trim($span->nodeValue), "%") == true) {
-                        echo "Comunitae: % found, so store in marketplace<br>";
-                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
-                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
-                    } else {
-                        $tempArray['marketplace_subscriptionProgress'] = 10000;  // completed, retrasado orr amortización ..
-                        $tempArray['marketplace_statusLiteral'] = 'Completado';
-                        $tempArray['marketplace_status'] = 1;
-                    }
-                }
-            }
-            $totalArray[] = $tempArray;
-            unset($tempArray);
-        }
 
 
-
-        return [$totalArray, $pageNumber, $type]; //Return an array and the page number, $pageNumber = false when we want end the loop
+        return [$totalArray, $pageNumber, $type, $structureRevision]; //Return an array and the page number, $pageNumber = false when we want end the loop
     }
 
     /**
@@ -1001,6 +1093,55 @@ class comunitae extends p2pCompany {
             }
         }
         return PAYMENT_DELAYED;    // Nothing found so I invent something
+    }
+
+    /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+
+        //We need remove this attribute directly from the article tag
+        $node1->removeAttribute('data-href');
+        $node1->removeAttribute('id');
+        $node2->removeAttribute('data-href');
+        $node2->removeAttribute('id');
+
+        $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('title', 'data-risk', 'id', 'style', 'aria-valuenow', 'data-toggle', 'data-placement'));
+
+
+        $node1 = $this->clean_dom_tag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'col-xs-5'),
+        ));
+
+        $node1 = $this->clean_dom($node1, array(//We only want delete class of the span tag, not class of the other tags
+            array('typeSearch' => 'element', 'tag' => 'span'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('class'));
+
+
+        $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('title', 'data-risk', 'id', 'style', 'aria-valuenow', 'data-toggle', 'data-placement'));
+
+        $node2 = $this->clean_dom_tag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'col-xs-5'),
+        ));
+
+        $node2 = $this->clean_dom($node2, array(//We only want delete class of the span tag, not class of the other tags
+            array('typeSearch' => 'element', 'tag' => 'span'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('class'));
+
+
+        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        return $structureRevision;
     }
 
 }
