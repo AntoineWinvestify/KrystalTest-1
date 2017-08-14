@@ -276,7 +276,25 @@ class ocrsController extends AdminAppController {
         $this->Ocr->resetCompaniesOcr($ocrId);
     }
     
-    
+    //WinAdmin View #7
+    function generateExcel() {
+        $this->layout = 'Admin.azarus_private_layout';
+        
+        // Country Codes
+        Configure::load('countryCodes.php', 'default');
+        $countryData = Configure::read('countrycodes');
+        $this->set('countryData', $countryData);
+
+        //Status selector
+        $this->set('serviceStatus', $this->serviceStatus);
+
+        //Modality selector
+        $this->set('type', $this->crowdlendingTypesLong);
+
+        //Get companies info for the selector
+        $companiesInfo = $this->Company->getCompanyDataList(null);
+        $this->set("companies", $companiesInfo);
+    }
     
     
 }
