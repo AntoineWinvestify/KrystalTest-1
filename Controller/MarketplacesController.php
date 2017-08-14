@@ -1,47 +1,64 @@
 <?php
 
-/*
-
- * MarketplacesController
- * Handles all functionality of the market place
+/**
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  |
+ * | the Free Software Foundation; either version 2 of the License, or 	|
+ * | (at your option) any later version.                                      		|
+ * | This file is distributed in the hope that it will be useful   		    	|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
+ * | GNU General Public License for more details.        			              	|
+ * +---------------------------------------------------------------------------------------------------------------+
+ *
+ *
+ * @author
+ * @version 0.1
+ * @date 2016-10-25
+ * @package
+ * 
+ *  2016-08-05		version 0.1
+ * basic version
+ *
+ * Remove all records which no longer appear in company market places, because they were		[OK, tested]
+ * fully subscribed or were not fully subscribed during the publication phase
+ *
+ * function getNext																			[OK, tested]
  *
  *
  *
-
-
-  2016-08-05		version 0.1
-  basic version
-
-  Remove all records which no longer appear in company market places, because they were		[OK, tested]
-  fully subscribed or were not fully subscribed during the publication phase
-
-  function getNext																			[OK, tested]
-
-
-
-  2016-12-12		version 0.2
-  Added new field: "marketplace_origCreated" in database backup. At the same time rectified error:
-  missing records in the marketplace_backup DB. -> added Model->clear in function "backupRecord"	[OK, tested]
-
-
-  2017-01-12
-  added functions xxx yyy zzz . These are AJAX functions which the browser sends for requesting Dashboard data
-
-  2017-05-02      version 0.3                                                                     [OK, tested]
-  Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
-
-  2017-08-01
-  cronMarketPlaceLoop remake
-  cronMarketPlaceHistorical new function
-
-  Pending:
-  Checking for "country of residence" and show only marketplace for that country				[Not OK]
-  Send an email in case of error while writing to the database in function cronMarketPlaceLoop
-  function cronMarketStart: check the issue of "country"
-  function "storeBetaTester": check the validility of email address using "mailgun.com" email verifier interface
+ * 2016-12-12		version 0.2
+ * Added new field: "marketplace_origCreated" in database backup. At the same time rectified error:
+ *  missing records in the marketplace_backup DB. -> added Model->clear in function "backupRecord"	[OK, tested]
+ *
+ *
+ * 2017-01-12
+ * added functions xxx yyy zzz . These are AJAX functions which the browser sends for requesting Dashboard data
+ *
+ * 2017-05-02      version 0.3                                                                     [OK, tested]
+ * Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
+ *
+ * 2017-08-01
+ * cronMarketPlaceLoop remake
+ * cronMarketPlaceHistorical new function
+ * 
+ * 2017-08-10
+ * Status fixing
+ * 
+ * 2017-08-11
+ * Status definition
+ * Type definition
+ * 
+ *
+ * Pending:
+ * Checking for "country of residence" and show only marketplace for that country				[Not OK]
+ * Send an email in case of error while writing to the database in function cronMarketPlaceLoop
+ * function cronMarketStart: check the issue of "country"
+ * function "storeBetaTester": check the validility of email address using "mailgun.com" email verifier interface
  */
-
-
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
@@ -278,7 +295,7 @@ class MarketPlacesController extends AppController {
             if ($type == 1) {
                 $this->cronMarketPlaceLoop($companyId, $structure);
             } else if ($type == 2) {
-                $this->cronMarketPlaceHistorical($companyId, $structure);
+                $this->cronMarketPlaceHistorical($companyId, $structure, $companyDataResult[$companyId]['company_hasMultiplePages']);
             }
         }
     }
@@ -301,7 +318,7 @@ class MarketPlacesController extends AppController {
         echo "<br>____ Checking Company " . $result[$companyId]['company_name'] . " ____<br>";
 
         $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
-        $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+        $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
 
         $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
         $newComp->defineConfigParms($result[$companyId]);
@@ -336,7 +353,7 @@ class MarketPlacesController extends AppController {
                 if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
                     $DontExist = false;
                     echo "Investment alreadty exist<br>";
-                    if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == 1 || $investment['marketplace_status'] == 2 || $investment['marketplace_status'] == 3) { //If is completed
+                    if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If is completed
                         echo "Investment completed<br>";
 
                         //Delete from maketplace
@@ -368,7 +385,7 @@ class MarketPlacesController extends AppController {
             }
 
             if ($DontExist) {//If not exist in winvestify marketplace
-                if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == 1 || $investment['marketplace_status'] == 2 || $investment['marketplace_status'] == 3) { //If it is completed
+                if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If it is completed
                     echo "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
                         $backup = false;
@@ -407,16 +424,14 @@ class MarketPlacesController extends AppController {
 
     /* Collect all invesment of the user, open and closed */
 
-    function cronMarketPlaceHistorical($companyId, $structure) {
+    function cronMarketPlaceHistorical($companyId, $structure, $hasMultplePages) {
         $this->autoRender = false;
         $this->Structure = ClassRegistry::init('Structure');
         //Configure::write('debug', 2);
         $repeat = true; //Read another page
         $start = 0; //For pagination
-        if ($companyId == 2) {
-            $type = 1; //For comunitae
-        } else {
-            $type = null;
+        if ($hasMultplePages) {
+            $type = PROMISSORY_NOTE;
         }
 
         $companyConditions = array('Company.id' => $companyId);
@@ -466,7 +481,7 @@ class MarketPlacesController extends AppController {
 
             $start = $marketplaceArray[1];
             $repeat = $marketplaceArray[1];
-            if ($companyId == 2) {
+            if ($hasMultplePages) {
                 $type = $marketplaceArray[2];
             }
         }

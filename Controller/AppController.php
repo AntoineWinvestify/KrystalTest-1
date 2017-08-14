@@ -282,6 +282,23 @@ define('ROLE_PFPADMIN', 3);
 define('ROLE_INVESTOR', 4);
 define('ROLE_WINADMINTECH', 5);
 
+//INVESTMENT TYPE
+define('PROMISSORY_NOTE', 1);
+define('LOAN', 2);
+define('FUNDING', 3);
+
+//CRON MARKETPLACE
+define('MARKETPLACELOOP', 1);
+define('HISTORICAL', 2);
+
+//MARKETPLACE INVESTMENT TYPE
+define('PERCENT', 1);
+define('CONFIRMED', 2);
+define('REJECTED', 3);
+
+//
+
+
 class AppController extends Controller {
 
     public $components = array('DebugKit.Toolbar',
