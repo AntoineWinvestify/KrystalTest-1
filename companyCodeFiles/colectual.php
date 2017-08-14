@@ -1,19 +1,17 @@
 <?php
-/*
-* +-----------------------------------------------------------------------+
-* | Copyright (C) 2016, http://beyond-language-skills.com                 |
-* +-----------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify     |
-* | it under the terms of the GNU General Public License as published by  |
-* | the Free Software Foundation; either version 2 of the License, or     |
-* | (at your option) any later version.                                   |
-* | This file is distributed in the hope that it will be useful           |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
-* | GNU General Public License for more details.                          |
-* +-----------------------------------------------------------------------+
-* | Author: Antoine de Poorter                                            |
-* +-----------------------------------------------------------------------+
+/**
+* +-----------------------------------------------------------------------------+
+* | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+* +-----------------------------------------------------------------------------+
+* | This file is free software; you can redistribute it and/or modify 		|
+* | it under the terms of the GNU General Public License as published by  	|
+* | the Free Software Foundation; either version 2 of the License, or 		|
+* | (at your option) any later version.                                      	|
+* | This file is distributed in the hope that it will be useful   		|
+* | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+* | GNU General Public License for more details.        			|
+* +-----------------------------------------------------------------------------+
 *
 *
 * Contains the code required for accessing the website of "Comunitae"
@@ -167,19 +165,24 @@ FRAGMENT
             $purpose = $project->getElementsByTagName('h3');
             $tempArray['marketplace_purpose'] = $purpose[0]->nodeValue;
             $labels = $project->getElementsByTagName('label');
-            $tempArray["marketplace_durationUnit"] = 2;
+            //$tempArray["marketplace_durationUnit"] = 2;
             $span_fund = $project->getElementsByTagName('span');
-            if ($span_fund->length == 0) {
+            $subscriptionProgress = false;
+            if ($span_fund->length > 0) {
+                $class_name = $span_fund[0]->getAttribute('class');
+                if (strpos($class_name, "financiado") !== false) {
+                    $tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
+                    $tempArray["marketplace_status"] = 1;
+                    $subscriptionProgress = true;
+                }
+            }
+            if (!$subscriptionProgress) {
                 echo "Colectual: % found, so store in marketplace<br>";
                 $class_subscription_progress = 'progress';
                 $dom_xpath_progress = new DOMXPath($dom);
                 $progress = $dom_xpath_progress->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class_subscription_progress ')]");
                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($progress[$i]->nodeValue));
                 $tempArray["marketplace_status"] = 0;
-            }
-            else {
-                $tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
-                $tempArray["marketplace_status"] = 1;
             }
             foreach ($labels as $label) {
                 $value_per_attr = $label->getAttribute('class');
@@ -188,12 +191,16 @@ FRAGMENT
                         $tempArray["marketplace_loanReference"] = $label->nodeValue;
                         break;
                     case "importe":
-                        $amount = str_replace(".", "", $label->nodeValue);
-                        $amount = strstr($amount, ',', true);
+                        $amount = $label->nodeValue;
+                        $amount = $this->getMonetaryValue($amount);
                         $tempArray["marketplace_amount"] = $amount;
                         break;
                     case "plazo":
-                        $tempArray["marketplace_duration"] = trim(str_replace("m ", "",$label->nodeValue ));
+                        $date = $this->getDurationValue($label->nodeValue);
+                        $tempArray["marketplace_duration"] = $date[0];
+                        $tempArray["marketplace_durationUnit"] = $date[1];
+                        break;
+
                         break;
                     //Regex to take the rating value, always come with a letter, b, or c, or d
                     case (preg_match('/^rating.*/', $value_per_attr) ? true : false) :
@@ -218,9 +225,6 @@ FRAGMENT
                         //$date2->diff($date1)->format("%a");
                         $tempArray["marketplace_timeLeft"] = $days;
                         $tempArray["marketplace_timeLeftUnit"] = 1;
-                        break;
-                    case "importe":
-                        $tempArray["marketplace_loandReference"] = $label->nodeValue;
                         break;
                     case "sector":
                         $tempArray["marketplace_sector"] = $label->nodeValue;
