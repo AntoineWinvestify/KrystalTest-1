@@ -464,7 +464,7 @@ ajax spinner
                                         <div class="col-xs-offset-1">
                                             <label>
                                                 <input name="privacyPolicy" id="ContentPlaceHolder_registerPrivacyPolicy" class="registerPrivacyPolicy" type="checkbox"/>
-													<?php echo __('I accept') ?>&nbsp;<a href="/pages/termsOfService" target="_blank"><?php echo __(' the terms of service') ?>
+													<?php echo __('I accept') ?>&nbsp;<a href="/pages/termsOfService" target="_blank">&nbsp;<?php echo __('the terms of service') ?>
                                                 </a><?php echo __(' and the ') ?><a href="/pages/privacyPolicy" target="_blank"><?php echo __('privacy policy') ?></a>   
                                             </label>
                                         </div>
