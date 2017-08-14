@@ -1,19 +1,17 @@
 <?php
-/*
-* +-----------------------------------------------------------------------+
-* | Copyright (C) 2016, http://beyond-language-skills.com                 |
-* +-----------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify     |
-* | it under the terms of the GNU General Public License as published by  |
-* | the Free Software Foundation; either version 2 of the License, or     |
-* | (at your option) any later version.                                   |
-* | This file is distributed in the hope that it will be useful           |
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
-* | GNU General Public License for more details.                          |
-* +-----------------------------------------------------------------------+
-* | Author: Antoine de Poorter                                            |
-* +-----------------------------------------------------------------------+
+/**
+* +-----------------------------------------------------------------------------+
+* | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+* +-----------------------------------------------------------------------------+
+* | This file is free software; you can redistribute it and/or modify 		|
+* | it under the terms of the GNU General Public License as published by  	|
+* | the Free Software Foundation; either version 2 of the License, or 		|
+* | (at your option) any later version.                                      	|
+* | This file is distributed in the hope that it will be useful   		|
+* | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+* | GNU General Public License for more details.        			|
+* +-----------------------------------------------------------------------------+
 *
 *
 * Contains the code required for accessing the website of "Comunitae"
@@ -167,7 +165,7 @@ FRAGMENT
             $purpose = $project->getElementsByTagName('h3');
             $tempArray['marketplace_purpose'] = $purpose[0]->nodeValue;
             $labels = $project->getElementsByTagName('label');
-            $tempArray["marketplace_durationUnit"] = 2;
+            //$tempArray["marketplace_durationUnit"] = 2;
             $span_fund = $project->getElementsByTagName('span');
             $subscriptionProgress = false;
             if ($span_fund->length > 0) {
@@ -193,12 +191,16 @@ FRAGMENT
                         $tempArray["marketplace_loanReference"] = $label->nodeValue;
                         break;
                     case "importe":
-                        $amount = str_replace(".", "", $label->nodeValue);
-                        $amount = strstr($amount, ',', true);
+                        $amount = $label->nodeValue;
+                        $amount = $this->getMonetaryValue($amount);
                         $tempArray["marketplace_amount"] = $amount;
                         break;
                     case "plazo":
-                        $tempArray["marketplace_duration"] = trim(str_replace("m ", "",$label->nodeValue ));
+                        $date = $this->getDurationValue($label->nodeValue);
+                        $tempArray["marketplace_duration"] = $date[0];
+                        $tempArray["marketplace_durationUnit"] = $date[1];
+                        break;
+
                         break;
                     //Regex to take the rating value, always come with a letter, b, or c, or d
                     case (preg_match('/^rating.*/', $value_per_attr) ? true : false) :
@@ -223,9 +225,6 @@ FRAGMENT
                         //$date2->diff($date1)->format("%a");
                         $tempArray["marketplace_timeLeft"] = $days;
                         $tempArray["marketplace_timeLeftUnit"] = 1;
-                        break;
-                    case "importe":
-                        $tempArray["marketplace_loandReference"] = $label->nodeValue;
                         break;
                     case "sector":
                         $tempArray["marketplace_sector"] = $label->nodeValue;
