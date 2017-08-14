@@ -1,68 +1,68 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
+/**
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+ * | the Free Software Foundation; either version 2 of the License, or 	|
+ * | (at your option) any later version.                                      		|
+ * | This file is distributed in the hope that it will be useful   		    	|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
+ * | GNU General Public License for more details.        			              	|
+ * +---------------------------------------------------------------------------------------------------------------+
  *
  *
- * Contains all the code required for accessing the website of "Circulantis"
- *
- * 
- * @author Antoine de Poorter
+ * @author
  * @version 0.1
- * @date 2016-11-10
+ * @date 2016-10-25
  * @package
-
-  function calculateLoanCost()										[not OK, not tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()										[OK, tested]
-  function companyUserLogout										[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
-  parallelization                                                                                         [OK, tested]
-
-  2016-11-10	  version 2016_0.1
-  Basic version
-
-  2017/05/11
+ *
+ * function calculateLoanCost()										[not OK, not tested]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function companyUserLogout										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * parallelization                                                                                         [OK, tested]
+ *
+ * 2016-11-10	  version 2016_0.1
+ * Basic version
+ *
+ * 2017/05/11
  * OUTSTANDING PRINCIPAL
  * transaction id
  * period of investiment
-
-  2017-05-16          version 2017_0.2
+ *
+ * 2017-05-16          version 2017_0.2
  * Added parallelization
  * Dom verification
  * 
-
-  2017-05-25
+ *
+ * 2017-05-25
  * There is an array_shift to delete the first url of urlsequence on case 0 of the switch
  * We would need to delete the urlsequence on DB for Circulantis to work
  * 
-  2017-07-26
+ * 2017-07-26
  * Urlseuqnces fix marketplace
  * $attr class fix col-xs-12 col-sm-6 col-md-3 col-lg-3 line 113
  * 
  * 2017-08-07
  * collectCompanyMarketplaceData - pagination loop added
  * collectHistorical - added
-  Pending:
-
-
-
-
+ * 
+ * 2017-10-2017
+ * Structure revision added
+ * 
+ * 2017-11-2017
+ * Status definition added
+ * Pending:
+ *
+ *
+ *
+ *
  */
-
 class circulantis extends p2pCompany {
 
     function __construct() {
@@ -94,11 +94,12 @@ class circulantis extends p2pCompany {
         $totalCost = $fixedCost + $interest + $amount;
         return $fixedCost + $interest + $amount;
     }
-
+    
     /**
-     * 	Collects the marketplace data.
-     * @param type $companyBackup
-     * @return string
+     * Collects the marketplace data.
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
     function collectCompanyMarketplaceData($companyBackup, $structure) {
 
@@ -154,11 +155,18 @@ class circulantis extends p2pCompany {
 
 
                         if ($key == 1 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
-                            $newStructure = new DOMDocument;
+                            $newStructure = new DOMDocument;  //Get the old structure in db
                             $newStructure->loadHTML($structure['Structure']['structure_html']);
                             $newStructure->preserveWhiteSpace = false;
                             $trsNewStructure = $newStructure->getElementsByTagName('tr');
-                            $structureRevision = $this->structureRevision($trsNewStructure[1], $row);
+
+                            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+                            $clone = $table->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                            $saveStructure->saveHTML();
+                            $originalStructure = $newStructure->getElementsByTagName('tr');
+
+                            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
                             echo 'structure: ' . $structureRevision . '<br>';
 
@@ -236,27 +244,27 @@ class circulantis extends p2pCompany {
                                         break;
                                     case 'Formalizada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = 2;
+                                        $tempArray['marketplace_status'] = CONFIRMED;
                                         break;
                                     case 'Finalizada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = 1;
+                                        $tempArray['marketplace_status'] = PERCENT;
                                         break;
                                     case 'Atrasada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = 2;
+                                        $tempArray['marketplace_status'] = CONFIRMED;
                                         break;
                                     case 'Cobrada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = 2;
+                                        $tempArray['marketplace_status'] = CONFIRMED;
                                         break;
                                     case 'Cobrada parcialmente':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = 2;
+                                        $tempArray['marketplace_status'] = CONFIRMED;
                                         break;
                                     case 'No formalizada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = 3;
+                                        $tempArray['marketplace_status'] = REJECTED;
                                 }
 
 
@@ -301,9 +309,11 @@ class circulantis extends p2pCompany {
     }
 
     /**
-     * Collect historival
-     * @param boolean $pageNumber
-     * @return type
+     * collect all investment
+     * @param Array $structure
+     * @param Int $page
+     * @param Int $type
+     * @return Array
      */
     function collectHistorical($structure, $pageNumber, $type = null) {
 
@@ -352,11 +362,18 @@ class circulantis extends p2pCompany {
 
 
                     if ($key == 1 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
-                        $newStructure = new DOMDocument;
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('tr');
-                        $structureRevision = $this->structureRevision($trsNewStructure[1], $row);
+                        $newStructure = new DOMDocument;  //Get the old structure in db
+                            $newStructure->loadHTML($structure['Structure']['structure_html']);
+                            $newStructure->preserveWhiteSpace = false;
+                            $trsNewStructure = $newStructure->getElementsByTagName('tr');
+
+                            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+                            $clone = $table->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                            $saveStructure->saveHTML();
+                            $originalStructure = $newStructure->getElementsByTagName('tr');
+
+                            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
                         echo 'structure: ' . $structureRevision . '<br>';
 
@@ -433,27 +450,27 @@ class circulantis extends p2pCompany {
                                     break;
                                 case 'Formalizada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = 2;
+                                    $tempArray['marketplace_status'] = CONFIRMED;
                                     break;
                                 case 'Finalizada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = 1;
+                                    $tempArray['marketplace_status'] = PERCENT;
                                     break;
                                 case 'Atrasada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = 2;
+                                    $tempArray['marketplace_status'] = CONFIRMED;
                                     break;
                                 case 'Cobrada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = 2;
+                                    $tempArray['marketplace_status'] = CONFIRMED;
                                     break;
                                 case 'Cobrada parcialmente':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = 2;
+                                    $tempArray['marketplace_status'] = CONFIRMED;
                                     break;
                                 case 'No formalizada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = 3;
+                                    $tempArray['marketplace_status'] = REJECTED;
                             }
                         }
                     }
@@ -931,9 +948,9 @@ class circulantis extends p2pCompany {
 
     /**
      * Dom clean for structure revision
-     * @param type $node1
-     * @param type $node2
-     * @return type
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
      */
     function structureRevision($node1, $node2) {
 
@@ -941,18 +958,20 @@ class circulantis extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'input'),
-                ), array('style', 'href', 'aria-valuenow', 'rel', 'id'));
+            array('typeSearch' => 'element', 'tag' => 'button'),
+                ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title'));
 
-        $node1 = $this->clean_dom($node1, array(  //We only want delete the class of td, no other classes
+        $node1 = $this->clean_dom($node1, array(//We only want delete the class of td, no other classes
             array('typeSearch' => 'element', 'tag' => 'td'),
-                ), array('class'));
-
+                ), array('class'));    
+        
 
         $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'input'),
-                ), array('style', 'href', 'aria-valuenow', 'rel', 'id'));
+            array('typeSearch' => 'element', 'tag' => 'button'),
+                ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title'));
 
         $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'td'),
