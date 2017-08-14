@@ -1,63 +1,62 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
+/**
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+ * | the Free Software Foundation; either version 2 of the License, or 	|
+ * | (at your option) any later version.                                      		|
+ * | This file is distributed in the hope that it will be useful   		    	|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
+ * | GNU General Public License for more details.        			              	|
+ * +---------------------------------------------------------------------------------------------------------------+
  *
  *
- * Contains the code required for accessing the website of "Comunitae"
- *
- * 
- * @author Antoine de Poorter
+ * @author
  * @version 0.1
- * @date 2016-11-05
+ * @date 2016-10-25
  * @package
-
-  function calculateLoanCost()										[Not OK]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()										[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
-  function companyUserLogout()										[Not OK, testing]
-  parallelization on collectUserInvestmentData                                                            [OK, tested]
-
-  2016-11-05	  version 2016_0.1
-  Basic version
-
-  2017-03-27
-  line 251 - changed parameter for url.
-
-  2017-03-18
-  Captured exceptions for table errors.
-
-  2017-4-18
-  Login error fixed always forcing login
-
-  2017-06-01
+ *
+ * function calculateLoanCost()										[Not OK]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * function companyUserLogout()										[Not OK, testing]
+ * parallelization on collectUserInvestmentData                                                            [OK, tested]
+ *
+ * 2016-11-05	  version 2016_0.1
+ * Basic version
+ *
+ * 2017-03-27
+ * line 251 - changed parameter for url.
+ *
+ * 2017-03-18
+ * Captured exceptions for table errors.
+ *
+ * 2017-4-18
+ * Login error fixed always forcing login
+ *
+ * 2017-06-01
  * Added new urlSequences for Arboribus, it changed because we had some errors
  * Fixed logout and login problem
-
-  2017-08-07
- * Arboribus 100% adaptation
+ *
+ *
+ *  2017-08-07
+ *  Arboribus 100% adaptation
  *  collectCompanyMarketplaceData - Read completed investment table
  *  collectHistorical - Added
-  They forced logout after a login
-  PENDING:
-  logout procedure
-
+ * 
+ * 2017-08-10
+ * Structure revision added
+ * 
+ * 2017-08-11
+ * Status definition added
+ * 
+ * 
  */
-
 class arboribus extends p2pCompany {
 
     private $credentials = array();
@@ -97,9 +96,10 @@ class arboribus extends p2pCompany {
     }
 
     /**
-     *  Collects the marketplace data, Arboribus don't need pagination.
-     * @param type $companyBackup
-     * @return string
+     * Collects the marketplace data, Arboribus don't need pagination.
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
     function collectCompanyMarketplaceData($companyBackup, $structure) {
 
@@ -132,11 +132,18 @@ class arboribus extends p2pCompany {
 
 
                         if ($key == 0 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
-                            $newStructure = new DOMDocument;
+                            $newStructure = new DOMDocument;  //Get the old structure in db
                             $newStructure->loadHTML($structure['Structure']['structure_html']);
                             $newStructure->preserveWhiteSpace = false;
                             $trsNewStructure = $newStructure->getElementsByTagName('tr');
-                            $structureRevision = $this->structureRevision($trsNewStructure[0], $tr);
+
+                            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+                            $clone = $table->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                            $saveStructure->saveHTML();
+                            $originalStructure = $newStructure->getElementsByTagName('tr');
+
+                            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
                             echo 'structure: ' . $structureRevision . '<br>';
 
@@ -228,10 +235,10 @@ class arboribus extends p2pCompany {
                                             if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                                                 if ($tableNumber == 1) {
                                                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-                                                    $tempArray['marketplace_status'] = 1;
+                                                    $tempArray['marketplace_status'] = PERCENT;
                                                 } else {
                                                     $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                                                    $tempArray['marketplace_status'] = 2;
+                                                    $tempArray['marketplace_status'] = CONFIRMED;
                                                 }
                                                 foreach ($companyBackup as $inversionBackup) {
                                                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
@@ -272,10 +279,11 @@ class arboribus extends p2pCompany {
     }
 
     /**
-     * 
-     * @param type $pageNumber
-     * @param type $type
-     * @return type
+     * collect all investment
+     * @param Array $structure
+     * @param Int $page
+     * @param Int $type
+     * @return Array
      */
     function collectHistorical($structure, $page = null, $type = null) { //Arboribus dont have paginaticon
         $totalArray = array();
@@ -304,11 +312,19 @@ class arboribus extends p2pCompany {
 
 
                         if ($key == 0 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element to read
-                            $newStructure = new DOMDocument;
+                            
+                            $newStructure = new DOMDocument;  //Get the old structure in db
                             $newStructure->loadHTML($structure['Structure']['structure_html']);
                             $newStructure->preserveWhiteSpace = false;
                             $trsNewStructure = $newStructure->getElementsByTagName('tr');
-                            $structureRevision = $this->structureRevision($trsNewStructure[0], $tr);
+
+                            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+                            $clone = $table->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                            $saveStructure->saveHTML();
+                            $originalStructure = $newStructure->getElementsByTagName('tr');
+
+                            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
                             echo 'structure: ' . $structureRevision . '<br>';
 
@@ -414,10 +430,10 @@ class arboribus extends p2pCompany {
                         if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                             if ($tableNumber == 1) {
                                 $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-                                $tempArray['marketplace_status'] = 1;
+                                $tempArray['marketplace_status'] = PERCENT;
                             } else {
                                 $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                                $tempArray['marketplace_status'] = 2;
+                                $tempArray['marketplace_status'] = CONFIRMED;
                                 $tempArray['marketplace_timeLeft'] = 0;
                                 $tempArray['marketplace_timeLeftUnit'] = -1;
                             }
@@ -1025,6 +1041,12 @@ class arboribus extends p2pCompany {
         return $normalizedState;
     }
 
+    /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
     function structureRevision($node1, $node2) {
 
         $node1 = $this->clean_dom($node1, array(
