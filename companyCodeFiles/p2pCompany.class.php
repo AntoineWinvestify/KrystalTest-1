@@ -23,43 +23,46 @@
  * Base class for all the p2p companies
  *
  * 
-
-
-  2016-08-11		version 2016_0.1
-  Basic version
-  function getMonetaryValue							[OK, tested]
-  function getPercentage								[OK, tested]
-  function getDurationValue							[OK, tested]
-  Testing system for "simulating" accesses to the different sites			[OK, tested]
-  Added UrlSequence array with all url's to be used for a particular sequence     [OK, tested]
-
-
-  2016-12-12		version 2016_0.2
-  Error rectified in function "getPercentage". 7,02% was not properly detected.	[OK, tested]
-
-
-  2017-01-28		version 0.3
-  Adding generic tracing capability 											[OK, NOT tested]
-
-
-  2017-02-14		version 0.4
-  function "getCurrentAccumulativeRowValue" was updated with the capability	[NOT OK, not tested]
-  of ONLY adding cuotas realmente pagados.
-
-  2017-05-16              version 0.5
-  Added parallelization to collectUserInvestmentData
-  Added dom verification to collectUserInvestmentData
-
-
-  2017-05-31              version 0.6
-  Function to save user investment data into DB
-
-
-  2017-06-30              version 0.7
-  Added function to create an individual cookies file for company when a request and delete after logout
-
-
-  PENDING
+ *
+ *
+ * 2016-08-11		version 2016_0.1
+ * Basic version
+ * function getMonetaryValue							[OK, tested]
+ * function getPercentage								[OK, tested]
+ *  function getDurationValue							[OK, tested]
+ * Testing system for "simulating" accesses to the different sites			[OK, tested]
+ * Added UrlSequence array with all url's to be used for a particular sequence     [OK, tested]
+ *
+ *
+ * 2016-12-12		version 2016_0.2
+ * Error rectified in function "getPercentage". 7,02% was not properly detected.	[OK, tested]
+ *
+ *
+ * 2017-01-28		version 0.3
+ * Adding generic tracing capability 											[OK, NOT tested]
+ *
+ *
+ * 2017-02-14		version 0.4
+ * function "getCurrentAccumulativeRowValue" was updated with the capability	[NOT OK, not tested]
+ * of ONLY adding cuotas realmente pagados.
+ *
+ * 2017-05-16              version 0.5
+ * Added parallelization to collectUserInvestmentData
+ * Added dom verification to collectUserInvestmentData
+ *
+ *
+ * 2017-05-31              version 0.6
+ * Function to save user investment data into DB
+ *
+ *
+ * 2017-06-30              version 0.7
+ * Added function to create an individual cookies file for company when a request and delete after logout
+ *
+ * 
+ * 2017-08-10              version 0.8
+ * Structure revision added
+ *
+ * PENDING
  * fix method  getMonetaryValue()
  */
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
@@ -1336,11 +1339,14 @@ class p2pCompany {
 
 
         if (!$node1 || !$node2) { //First we verify if node exist
-            echo 'Node doesnt exist';
+            echo 'Node doesnt exist: <br>';
+            echo $node1->parentNode->nodeName . ' ' . $node1->nodeName . ' is 1' . $node1->nodeValue . '<br>';
+            echo $node2->parentNode->nodeName . ' ' . $node2->nodeName . ' is 2' . $node2->nodeValue . '<br>';
+
             $this->same_structure = false;
         }
         //We verify if nodes has attributes
-        if ($node1->hasAttributes() && $node2->hasAttributes()) {
+        if ($node1->hasAttributes() && $node2->hasAttributes() && $this->same_structure) {
             $node1_attr = $node1->attributes;
             $node2_attr = $node2->attributes;
             //If there are attr, we have a foreach to verify if every attr is the same
@@ -1381,8 +1387,9 @@ class p2pCompany {
                 }
             } else if ($node1_attr->length != $node2_attr->length) {
                 echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-                echo $name_attr_node1 . '=>' . $value_attr_node1 . $node1_attr->length . '<br>';
-                echo $name_attr_node2 . '=>' . $value_attr_node2 . $node2_attr->length . '<br>';
+
+                echo $node1_attr->length . '<br>';
+                echo $node2_attr->length . '<br>';
                 echo 'Node attr length error';
                 $this->same_structure = false;
             }
@@ -1411,16 +1418,9 @@ class p2pCompany {
                 //}
                 for ($i = 0; $i < $limit_children; $i++) {
 
-
                     if (!$this->same_structure) {
                         break;
                     }
-
-                    if (!$children_node1[$i] || !$children_node2[$i]) {
-                        echo 'Node children exist error';
-                        $this->same_structure = false;
-                    }
-
 
                     $this->verify_dom_structure($children_node1[$i], $children_node2[$i], $uniques_element, $limit);
                 }
@@ -1452,7 +1452,7 @@ class p2pCompany {
     /**
       Function to delete unnecessary elements before we compared the two dom elements
      */
-    function clean_dom($dom, $elements_to_search, $attributes_to_clean) {
+    function clean_dom($dom, $elements_to_search, $attributes_to_clean) { //CLEAR ATTRIBUTES
         //https://stackoverflow.com/questions/35534654/php-domdocument-delete-elements
         //https://duckduckgo.com/?q=delete+attributes+dom+element+php+dom&t=canonical&ia=qa	
         //$dom = new DOMDocument;                 // init new DOMDocument
@@ -1468,7 +1468,8 @@ class p2pCompany {
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element["value"]);
 
             foreach ($nodes as $node) {              // Iterate over found elements
-                $this->print_r2($node);
+                //$this->print_r2($node);
+                //print_r($node->attributes);
                 foreach ($attributes_to_clean as $attr) {
                     if ($node->hasAttribute($attr)) {
                         $node->removeAttribute($attr);    // Remove style attribute
@@ -1489,11 +1490,32 @@ class p2pCompany {
           echo $dom->saveHTML(); */
     }
 
-    public function getElementsToClean($dom, $typeSearch, $tag, $value = null) {
+    /**
+      Function to delete unnecessary elements before we compared the two dom elements
+     */
+    function clean_dom_tag($dom, $elements_to_delete) { //CLEAR A TAG
+        foreach ($elements_to_delete as $element) {
 
-        $list = array();
-        ;
-        $attributeTrimmed = trim($attribute);
+            $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);
+            //echo 'Nodes: <br>';
+            //print_r($nodes);
+            foreach ($nodes as $node) {
+                //echo 'Delete: <br>';
+                //print_r($node);
+                    $node->parentNode->removeChild($node);
+            }
+        }
+        return $dom;
+    }
+
+    public function getElementsToClean($dom, $typeSearch, $tag, $attribute = null, $value = null) {
+       /* echo 'Type: ' . $typeSearch . '<br>';
+        echo 'Tag: ' . $tag . '<br>';
+        echo 'Attribute: ' . $attribute . '<br>';
+        echo 'Value: ' . $value . '<br>';*/
+
+        /* $list = array();
+          $attributeTrimmed = trim($attribute); */
         $tagTrimmed = trim($tag);
         libxml_use_internal_errors(true);
 
@@ -1502,8 +1524,12 @@ class p2pCompany {
             $elements = $xpath->query("//*[contains(concat(' ', normalize-space(@$tagTrimmed), ' '), ' $value ')]");
             //$elements = $xpath->query('//*[@style]');  // Find elements with a style attribute
         } else if ($typeSearch == "element") {
-            
             $elements = $dom->getElementsByTagName($tagTrimmed);
+        }
+        if ($typeSearch == "tagElement") {
+            //echo 'Elements: ';
+            $elements = $this->getElements($dom, $tag, $attribute, $value);
+            //print_r($elements);
         }
         return $elements;
     }
