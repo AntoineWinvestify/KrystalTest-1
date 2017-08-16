@@ -107,7 +107,7 @@ class zank extends p2pCompany {
 
     /**
      * Collects the marketplace data.
-     * 	ZANK is special as one has to logon in order to see all the details of the offers in their marketplace
+     * 	ZANK is special as one has to login in order to see all the details of the offers in their marketplace
      * @param type $companyBackup
      * @return array
      */
@@ -291,7 +291,7 @@ class zank extends p2pCompany {
                                 } else if ($div->nodeValue == 'Completado') {
                                     $tempArray['marketplace_subscriptionProgress'] = 10000;
                                     $tempArray['marketplace_statusLiteral'] = 'Completado';
-                                    $tempArray['marketplace_status'] = 1;
+                                    $tempArray['marketplace_status'] = PERCENT;
                                     //Read inversions limiter controller
                                     foreach ($companyBackup as $inversionBackup) {
                                         if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado') {
@@ -301,7 +301,7 @@ class zank extends p2pCompany {
                                 } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                                     $tempArray['marketplace_subscriptionProgress'] = 10000;
                                     $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
-                                    $tempArray['marketplace_status'] = 2;
+                                    $tempArray['marketplace_status'] = CONFIRMED;
                                     //Read inversions limiter controller
                                     foreach ($companyBackup as $inversionBackup) {
                                         if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && ($inversionBackup['Marketplacebackup']['marketplace_statusLiteral'] == $tempArray['marketplace_statusLiteral'])) {
@@ -311,6 +311,7 @@ class zank extends p2pCompany {
                                 } else if (!$div->nodeValue) {
                                     $tempArray['marketplace_subscriptionProgress'] = 0;
                                     $tempArray['marketplace_statusLiteral'] = 'Cancelado';
+                                    $tempArray['marketplace_status'] = REJECTED
                                 }
                                 break;
                             case 2:
@@ -366,11 +367,11 @@ class zank extends p2pCompany {
         return [$totalArray, $structureRevision];
     }
 
-    /**
-     * Collects ALLc the marketplace data.
-     * @param type $start
-     * @param type $type
-     * @return type
+/**
+     * collect all investment
+     * @param Array $structure
+     * @param Int $start
+     * @return Array
      */
     function collectHistorical($structure, $start) {
 
@@ -510,15 +511,15 @@ class zank extends p2pCompany {
                             } else if ($div->nodeValue == 'Completado') {
                                 $tempArray['marketplace_subscriptionProgress'] = 10000;
                                 $tempArray['marketplace_statusLiteral'] = 'Completado';
-                                $tempArray['marketplace_status'] = 1;
+                                $tempArray['marketplace_status'] = PERCENT;
                             } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                                 $tempArray['marketplace_subscriptionProgress'] = 10000;
                                 $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
-                                $tempArray['marketplace_status'] = 2;
+                                $tempArray['marketplace_status'] = CONFIRMED;
                             } else if (!$div->nodeValue) {
                                 $tempArray['marketplace_subscriptionProgress'] = 0;
                                 $tempArray['marketplace_statusLiteral'] = 'Cancelado';
-                                $tempArray['marketplace_status'] = 3;
+                                $tempArray['marketplace_status'] = REJECTED;
                             }
                             break;
                         case 2:
