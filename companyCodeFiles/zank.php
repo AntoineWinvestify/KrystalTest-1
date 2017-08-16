@@ -553,7 +553,7 @@ class zank extends p2pCompany {
         }
         //echo 'AQUI ES ' . $reading;
         $this->companyUserLogout();
-        return [$totalArray, $form['start']]; //$total array is the rquested investment, $form['start'] is the next page, return false if is the last page
+        return [$totalArray, $form['start'], null, $structureRevision]; //$total array is the rquested investment, $form['start'] is the next page, return false if is the last page
     }
 
     /**

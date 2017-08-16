@@ -308,7 +308,7 @@ class loanbook extends p2pCompany {
 
             $trs = $section->getElementsByTagName('tr');
             if ($totalArray !== false) {
-                foreach ($trs as $tr) {
+                foreach ($trs as $key => $tr) {
 
                     if ($key == 0 && $structure) { //Compare structures, olny compare the first element
                         $newStructure = new DOMDocument;
@@ -479,7 +479,7 @@ class loanbook extends p2pCompany {
                     unset($tempArray);
                 }
             }
-            return [$totalArray, false]; //$totalArray -> investments / false -> Loanbook doesnt have pagination
+            return [$totalArray, false, null, $structureRevision]; //$totalArray -> investments / false -> Loanbook doesnt have pagination
         }
     }
 

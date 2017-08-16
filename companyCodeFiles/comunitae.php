@@ -373,7 +373,7 @@ class comunitae extends p2pCompany {
         }
 
         if ($totalArray !== false) { // If we find a structural error, dont read.
-            foreach ($rows as $row) {
+            foreach ($rows as $key => $row) {
 
 
                 if ($key == 0 && $structure) { //Compare structures, olny compare the first element

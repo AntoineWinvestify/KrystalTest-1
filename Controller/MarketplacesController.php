@@ -431,7 +431,7 @@ class MarketPlacesController extends AppController {
         $repeat = true; //Read another page
         $start = 0; //For pagination
         if ($hasMultplePages) {
-            $type = PROMISSORY_NOTE;
+            $type = PROMISSORY_NOTE; //Is definead as 1
         }
 
         $companyConditions = array('Company.id' => $companyId);
