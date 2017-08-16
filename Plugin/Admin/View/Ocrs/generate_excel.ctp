@@ -44,6 +44,14 @@
     .input-group-addon, #excelDates {
         border: none;
     }
+    .vcenter {
+        float:none;
+        display:inline-block;
+        vertical-align:middle;
+    }
+    .aClass {
+        display: inline-block
+    }
 </style>
 
 <script>
@@ -73,88 +81,100 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <table class="table table-striped display dataTable" id="excelData">
-                                <thead>
-                                    <th><?php echo __('Date')?></th>
-                                    <th><?php echo __('Country')?></th>
-                                    <th><?php echo __('Platform')?></th>
-                                    <th><?php echo __('Status')?></th>
-                                    <th></th>
-                                </thead>
-                                <tbody>
-                                    <td>
-                                        <div class="form-group">
-                                            <label></label>
-                                            <div class="input-group blue_noborder">
-                                              <div class="input-group-addon">
-                                                <i class="fa fa-calendar"></i>
-                                              </div>
-                                              <input type="text" class="form-control pull-right" id="excelDates">
-                                            </div>
-                                            <!-- /.input group -->
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <?php
-                                            //Make a array for the select
-                                            $companiesSelectList = array();
-                                            $companiesSelectList[0] = __('Choose One');
-                                            foreach ($companies as $companyInfo) {
-                                                $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
-                                            }
-
-                                            $class = "form-control blue_noborder winadminPFP";
-
-                                            echo $this->Form->input('Ocr.id', array(
-                                                'name' => 'pfp',
-                                                'id' => 'ContentPlaceHolder_pfp',
-                                                'label' => false,
-                                                'options' => $companiesSelectList,
-                                                'class' => $class,
-                                                'value' => $resultUserData[0]['Ocr']['id'] /* this must be about PFP */
-                                            ));
-                                        ?>
-                                    </td>
-                                    <td>
-                                        <?php
-                                        $class = "form-control blue_noborder pfpCountry" . ' ' . $errorClass;
-                                        echo $this->Form->input('Company.company_countryName', array(
-                                            'name' => 'country',
-                                            'id' => 'ContentPlaceHolder_country',
-                                            'label' => false,
-                                            'options' => $countryData,
-                                            'placeholder' => __('Country'),
-                                            'class' => $class,
-                                            'value' => $investor[0]['Company']['company_countryName'],
-                                        ));
-                                        ?>
-                                    </td>
-                                    <td>
-                                        <?php
-                                        $errorClass = "";
-                                        if (array_key_exists('pfp_status', $pfpValidationErrors)) {
-                                            $errorClass = "redBorder";
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 aClass">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                    <label><?php echo __('Date range:')?></label>
+                                    <div class="input-group blue_noborder">
+                                      <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                      </div>
+                                      <input type="text" class="form-control pull-right" id="excelDates">
+                                    </div>
+                                    <!-- /.input group -->
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <label><?php echo __('Staus')?></label>
+                                    <?php
+                                    $errorClass = "";
+                                    if (array_key_exists('pfp_status', $pfpValidationErrors)) {
+                                        $errorClass = "redBorder";
+                                    }
+                                    $class = "form-control blue_noborder pfpStatus" . ' ' . $errorClass;
+                                    echo $this->Form->input('Company.company_OCRisActive', array(
+                                        'name' => 'status',
+                                        'id' => 'ContentPlaceHolder_status',
+                                        'label' => false,
+                                        'options' => $serviceStatus,
+                                        'placeholder' => __('Status'),
+                                        'class' => $class,
+                                        'value' => $investor[0]['Company']['company_OCRisActive'],
+                                    ));
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <label><?php echo __('Country')?></label>
+                                    <?php
+                                    $class = "form-control blue_noborder pfpCountry" . ' ' . $errorClass;
+                                    echo $this->Form->input('Company.company_countryName', array(
+                                        'name' => 'country',
+                                        'id' => 'ContentPlaceHolder_country',
+                                        'label' => false,
+                                        'options' => $countryData,
+                                        'placeholder' => __('Country'),
+                                        'class' => $class,
+                                        'value' => $investor[0]['Company']['company_countryName'],
+                                    ));
+                                    ?>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <label><?php echo __('PFP')?></label>
+                                    <?php
+                                        //Make a array for the select
+                                        $companiesSelectList = array();
+                                        $companiesSelectList[0] = __('Choose One');
+                                        foreach ($companies as $companyInfo) {
+                                            $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
                                         }
-                                        $class = "form-control blue_noborder pfpStatus" . ' ' . $errorClass;
-                                        echo $this->Form->input('Company.company_OCRisActive', array(
-                                            'name' => 'status',
-                                            'id' => 'ContentPlaceHolder_status',
+
+                                        $class = "form-control blue_noborder winadminPFP";
+
+                                        echo $this->Form->input('Ocr.id', array(
+                                            'name' => 'pfp',
+                                            'id' => 'ContentPlaceHolder_pfp',
                                             'label' => false,
-                                            'options' => $serviceStatus,
-                                            'placeholder' => __('Status'),
+                                            'options' => $companiesSelectList,
                                             'class' => $class,
-                                            'value' => $investor[0]['Company']['company_OCRisActive'],
+                                            'value' => $resultUserData[0]['Ocr']['id'] /* this must be about PFP */
                                         ));
-                                        ?>
-                                    </td>
-                                    <td>
-                                        <button id ="generateBtn" type="button" class="btn btn-default btnWinAdmin btnRounded">
-                                            <?php echo __('Generate Excel') ?> 
-                                        </button>
-                                    </td>
-                                </tbody>
-                            </table>
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <label><?php echo __('Free Search')?></label>
+                                    <?php
+                                        $class = "form-control blue_noborder winadminPFP";
+                                        echo $this->Form->input('Ocr.id', array(
+                                            'name' => 'pfp',
+                                            'id' => 'ContentPlaceHolder_pfp',
+                                            'label' => false,
+                                            'type' => 'text',
+                                            'class' => $class,
+                                            'value' => $resultUserData[0]['Ocr']['id'] /* this must be about PFP */
+                                        ));
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 aClass">
+                            <button id ="generateBtn" type="button" class="btn btn-default btnWinAdmin btnRounded vcenter">
+                                <?php echo __('Generate Excel') ?> 
+                            </button>
                         </div>
                     </div>
                 </div>
