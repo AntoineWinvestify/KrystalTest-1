@@ -1,73 +1,76 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+/**
+ * +-----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +-----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | GNU General Public License for more details.        			|
+ * +-----------------------------------------------------------------------------+
+ *
+ *
+ * @author 
+ * @version 0.3
+ * @date 2017-01-28
+ * @package
  *
  *
  * Contains the code required for accessing the website of "lendinx.com"
  *
- * 
- * @author Antoine de Poorter
- * @version 0.3
- * @date 2017-04-12
- * @package
-  2017-04-12	  version 2017_0.3
-  Updated according to new structure of web of Lendix
-
-  function calculateLoanCost()										[Not OK, not tested]
-  function collectCompanyMarketplaceData(): write the same value in the fields       			[OK, tested]
+*
+ * 2017-04-12	  version 2017_0.3
+  *Updated according to new structure of web of Lendix
+*
+ * function calculateLoanCost()										[Not OK, not tested]
+  *function collectCompanyMarketplaceData(): write the same value in the fields       			[OK, tested]
  * $tempArray['marketplace_purpose'] and $tempArray['marketplace_name']
-  function companyUserLogin()										[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
-  function companyUserLogout()                                                                            [OK, tested]
-  parallelization                                                                                         [OK, tested]
-
-  2016-11-06	  version 2016_0.2
-  Updated according to new structure of web of Lendix
-
-  2017-04-24
+  *function companyUserLogin()										[OK, tested]
+  *function collectUserInvestmentData()									[OK, tested]
+  *function companyUserLogout()                                                                            [OK, tested]
+  *parallelization                                                                                         [OK, tested]
+*
+ * 2016-11-06	  version 2016_0.2
+  *Updated according to new structure of web of Lendix
+*
+ * 2017-04-24
  * collectUserInvestmentData fixed partial
-
-  2017-04-24
+*
+ * 2017-04-24
  * collectUserInvestmentData fixed total
-
-  2017-05-16      version 2017_0.4
+*
+ * 2017-05-16      version 2017_0.4
  * Added parallelization
  * Added dom verification
  * 
  * 2017-08-07
  * collectCompanyMarketplaceData- added pagination loop
  * collectHistorical - added
-
-
-  Pending
-  Date
+*
+ * 2017-08-16
+ * Structure Revision added
+ * Status definition added
+*
+  *Pending
+  *Date
  * 
  * 
-  2017-06-13	  version 2017_0.4"
-  Rectified double function "collectCompanyMarketplaceData". Deleted one of them
+  *2017-06-13	  version 2017_0.4"
+  *Rectified double function "collectCompanyMarketplaceData". Deleted one of them
  * 
  * 
  * 
  * 
-  TODO
-  no real loanId exists in the public market place
-  GET https://api.lendix.com/projects?limit=10&offset=0 in order to get the marketplace list including loanId
-  This can only be done after logging . Result comes back as a JSON list
-  $tempArray['marketplace_durationUnit'] = 2; is hardcoded.
+  *TODO
+  *no real loanId exists in the public market place
+  *GET https://api.lendix.com/projects?limit=10&offset=0 in order to get the marketplace list including loanId
+  *This can only be done after logging . Result comes back as a JSON list
+ * $tempArray['marketplace_durationUnit'] = 2; is hardcoded.
  */
 
 class lendix extends p2pCompany {
@@ -99,18 +102,12 @@ class lendix extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the marketplace data
-     * 	@return array	Each open investment option as an element of an array
-     *
+     * Collect the marketplace data
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
-
-    /**
-     * Collects the marketplace data
-     * @param type $companyBackup
-     * @return string
-     */
-    function collectCompanyMarketplaceData($companyBackup) {
+    function collectCompanyMarketplaceData($companyBackup, $structure) {
         $tempArray = array();
         $totalArray = array();
 
@@ -129,17 +126,60 @@ class lendix extends p2pCompany {
             $dom->preserveWhiteSpace = false;
             $divs = $this->getElements($dom, "li", "class", "card clickable project");
 
-            foreach ($divs as $key2 => $div2) {
+            /*foreach ($divs as $key2 => $div2) {
                 echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-            }
+            }*/ //Debug
 
-
+            if ($totalArray !== false) {
             foreach ($divs as $key => $div) {
-                $projectDivs = $this->getElements($div, "div");
+                
+                
+                 if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                        $newStructure = new DOMDocument;  //Get the old structure in db
+                        $newStructure->loadHTML($structure['Structure']['structure_html']);
+                        $newStructure->preserveWhiteSpace = false;
+                        $trsNewStructure = $newStructure->getElementsByTagName('li');
 
-                foreach ($projectDivs as $key11 => $div11) {
+                        $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $saveStructure->saveHTML();
+                        $originalStructure = $saveStructure->getElementsByTagName('li');
+
+                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[0]);
+
+                        echo 'structure: ' . $structureRevision . '<br>';
+
+                        if (!$structureRevision) { //Save new structure
+                            echo 'Structural error<br>';
+                            $saveStructure = new DOMDocument();
+                            $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                            $clone = $container->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                            $structureRevision = $saveStructure->saveHTML();
+                            $totalArray = false;  //Structure control, don't read more investmnets 
+                            $reading = false; //Stop pagination in error
+                            break; //Stop reading if we have a structural error
+                        }
+                        echo 'Structure good';
+                    }
+
+                    if ($key == 0 && !$structure) { //Save new structure if is first time
+                        echo 'no structure readed, saving structure <br>';
+                        $saveStructure = new DOMDocument();
+                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $structureRevision = $saveStructure->saveHTML();
+                    }
+                
+                
+                $projectDivs = $this->getElements($div, "div");
+                /*foreach ($projectDivs as $key11 => $div11) {
                     echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
-                }
+                }*/ //Debug
 
                 $tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
                 $tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
@@ -177,7 +217,7 @@ class lendix extends p2pCompany {
 
                 if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                     $tempArray['marketplace_statusLiteral'] = 'Completado';
-                    $tempArray['marketplace_status'] = 1;
+                    $tempArray['marketplace_status'] = PERCENT;
                     foreach ($companyBackup as $inversionBackup) {//If completed investment status is the same than backup
                         if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
                             echo 'Already exist';
@@ -201,7 +241,7 @@ class lendix extends p2pCompany {
                         unset($tempArray);
                     }
                 }
-            }
+        }}
             $offset = $offset + 12; //We have 12 investment in each offset
             if ($readController > 2 || $investmentNumber < 12) {
                 echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $page;
@@ -211,15 +251,16 @@ class lendix extends p2pCompany {
 
 
         $this->print_r2($totalArray);
-        return $totalArray;
+        return [$totalArray, $structureRevision];
     }
 
     /**
      * Collect all investment
-     * @param type $offset - Lendix have offset of 12 investment
-     * @return type
+     * @param Array $structure
+     * @param Int $offset Lendix have offset of 12 investment
+     * @return Array
      */
-    function collectHistorical($offset) {
+    function collectHistorical($structure, $offset) {
         $tempArray = array();
         $totalArray = array();
 
@@ -235,17 +276,58 @@ class lendix extends p2pCompany {
         $dom->preserveWhiteSpace = false;
         $divs = $this->getElements($dom, "li", "class", "card clickable project");
 
-        foreach ($divs as $key2 => $div2) {
+        /*foreach ($divs as $key2 => $div2) {
             echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-        }
+        }*/ //DEBUG
 
+       if ($totalArray !== false) {
+         foreach ($divs as $key => $div) {
+            
+            if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                        $newStructure = new DOMDocument;  //Get the old structure in db
+                        $newStructure->loadHTML($structure['Structure']['structure_html']);
+                        $newStructure->preserveWhiteSpace = false;
+                        $trsNewStructure = $newStructure->getElementsByTagName('li');
 
-        foreach ($divs as $key => $div) {
+                        $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $saveStructure->saveHTML();
+                        $originalStructure = $saveStructure->getElementsByTagName('li');
+
+                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[0]);
+
+                        echo 'structure: ' . $structureRevision . '<br>';
+
+                        if (!$structureRevision) { //Save new structure
+                            echo 'Structural error<br>';
+                            $saveStructure = new DOMDocument();
+                            $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                            $clone = $container->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                            $structureRevision = $saveStructure->saveHTML();
+                            $totalArray = false;  //Structure control, don't read more investmnets 
+                            break; //Stop reading if we have a structural error
+                        }
+                        echo 'Structure good';
+                    }
+
+                    if ($key == 0 && !$structure) { //Save new structure if is first time
+                        echo 'no structure readed, saving structure <br>';
+                        $saveStructure = new DOMDocument();
+                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $structureRevision = $saveStructure->saveHTML();
+                    }
+                         
             $projectDivs = $this->getElements($div, "div");
 
-            foreach ($projectDivs as $key11 => $div11) {
+            /*foreach ($projectDivs as $key11 => $div11) {
                 echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
-            }
+            }*/ //DEBUG
 
 
 
@@ -285,7 +367,7 @@ class lendix extends p2pCompany {
 
             if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                 $tempArray['marketplace_statusLiteral'] = 'Completado';
-                $tempArray['marketplace_status'] = 1;
+                $tempArray['marketplace_status'] = PERCENT;
             } else {
                 $tempArray['marketplace_statusLiteral'] = 'En proceso';
             }
@@ -296,7 +378,7 @@ class lendix extends p2pCompany {
 
             $totalArray[] = $tempArray;
             unset($tempArray);
-        }
+    }}
 
         $offset = $offset + 12; //12 investment in the offset
         if ($investmentNumber < 12) {
@@ -307,7 +389,7 @@ class lendix extends p2pCompany {
 
 
         $this->print_r2($totalArray);
-        return [$totalArray, $offset]; //$totalArray -> Investment  / $offset -> Number of next first offset investment, false when it is the last offset.
+        return [$totalArray, $offset, null, $structureRevision]; //$totalArray -> Investment  / $offset -> Number of next first offset investment, false when it is the last offset.
     }
 
     /**
@@ -494,6 +576,42 @@ class lendix extends p2pCompany {
 // logout sequence is https://api.lendix.com/sessions/58a03f48b04a650016a7d72c with session-id, send as a DELETE msg
         $str = $this->doCompanyLogout();
         return true;
+    }
+    
+    
+        /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+
+        $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),      
+                ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
+        
+         $node1 = $this->clean_dom($node1, array(  
+            array('typeSearch' => 'element', 'tag' => 'div'),//the div class contains the rating
+             array('typeSearch' => 'element', 'tag' => 'li'),//the li class contains the status
+                ), array('class'));
+
+        $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('srcset', 'src', 'alt', 'href', 'style', 'title' , 'height'));
+        
+          $node2 = $this->clean_dom($node2, array(  //the div class contains the rating
+                   array('typeSearch' => 'element', 'tag' => 'div'),//the div class contains the rating
+                   array('typeSearch' => 'element', 'tag' => 'li'),//the li class contains the status
+                ), array('class'));
+
+
+        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        return $structureRevision;
     }
 
 }
