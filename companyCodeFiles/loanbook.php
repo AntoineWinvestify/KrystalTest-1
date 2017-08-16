@@ -330,22 +330,22 @@ function collectCompanyMarketplaceData() {
                 break;
             case 4:
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
+                //array_shift($this->urlSequence);
                 $this->getCompanyWebpageMultiCurl();  //str2 load Webpage into a string variable so it can be parsed
                 break;
             case 5:
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
+                //array_shift($this->urlSequence);
                 $this->getCompanyWebpageMultiCurl();  //str3 load Webpage into a string variable so it can be parsed	
                 break;
             case 6:
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
+                //array_shift($this->urlSequence);
                 $this->getCompanyWebpageMultiCurl();  //str4 load Webpage into a string variable so it can be parsed	
                 break;
             case 7:
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
+                //array_shift($this->urlSequence);
                 $this->getCompanyWebpageMultiCurl();  //str5 load Webpage into a string variable so it can be parsed	
                 break;
             case 8:
