@@ -29,9 +29,33 @@
  */
 
 class mintos extends p2pCompany {
+    
+    
     function __construct() {
 	parent::__construct();	
         // Do whatever is needed for this subsclass
 
     }
+    
+    
+    /**
+     *
+     * 	Collects the marketplace data. We must login first in order to obtain the marketplace data
+     * 	@return array	Each investment option as an element of an array
+     * 	
+     */
+    function collectCompanyMarketplaceData() {
+        
+    }
+
+    /**
+     *
+     * 	Collects the investment data of the user
+     * 	@return array	Data of each investment of the user as an element of an array
+     * 	
+     */
+    function collectUserInvestmentDataParallel() {
+        
+    }
+
 }
