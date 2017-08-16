@@ -331,23 +331,23 @@ function collectCompanyMarketplaceData() {
             case 4:
                 $this->idForSwitch++;
                 array_shift($this->urlSequence);
-                //$this->getCompanyWebpageMultiCurl();  //str2 load Webpage into a string variable so it can be parsed
-                //break;
+                $this->getCompanyWebpageMultiCurl();  //str2 load Webpage into a string variable so it can be parsed
+                break;
             case 5:
                 $this->idForSwitch++;
                 array_shift($this->urlSequence);
-                //$this->getCompanyWebpageMultiCurl();  //str3 load Webpage into a string variable so it can be parsed	
-                //break;
+                $this->getCompanyWebpageMultiCurl();  //str3 load Webpage into a string variable so it can be parsed	
+                break;
             case 6:
                 $this->idForSwitch++;
                 array_shift($this->urlSequence);
-                //$this->getCompanyWebpageMultiCurl();  //str4 load Webpage into a string variable so it can be parsed	
-                //break;
+                $this->getCompanyWebpageMultiCurl();  //str4 load Webpage into a string variable so it can be parsed	
+                break;
             case 7:
                 $this->idForSwitch++;
                 array_shift($this->urlSequence);
-                //$this->getCompanyWebpageMultiCurl();  //str5 load Webpage into a string variable so it can be parsed	
-                //break;
+                $this->getCompanyWebpageMultiCurl();  //str5 load Webpage into a string variable so it can be parsed	
+                break;
             case 8:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  //str6 load Webpage into a string variable so it can be parsed	
@@ -454,10 +454,11 @@ function collectCompanyMarketplaceData() {
                 $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
                         $this->data1[$this->accountPosition]['profitGained'];
                 $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->accountPosition]['invested'];
-                if ($this->accountPosition != ($this->numberOfInvestments-1)) {
+                $this->accountPosition++;
+                if ($this->accountPosition < $this->numberOfInvestments) {
                     $this->idForSwitch = 10;
-                    $this->accountPosition++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);
+                    $this->accountPosition++;
                     break;
                 }
                 else {
