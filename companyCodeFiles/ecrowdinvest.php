@@ -184,10 +184,10 @@ class ecrowdinvest extends p2pCompany {
 
                 if ($tempArray['marketplace_status'] == '100% financiado') {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                    $tempArray['marketplace_status'] = 2;
+                    $tempArray['marketplace_status'] = CONFIRMED;
                 } else {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
-                    $tempArray['marketplace_status'] = 1;
+                    $tempArray['marketplace_status'] = PERCENT;
                 }
                 foreach ($companyBackup as $inversionBackup) { //if completed and same status that in backup
                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
@@ -318,10 +318,10 @@ class ecrowdinvest extends p2pCompany {
 
                 if ($tempArray['marketplace_status'] == '100% financiado') {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                    $tempArray['marketplace_status'] = 2;
+                    $tempArray['marketplace_status'] = CONFIRMED;
                 } else {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
-                    $tempArray['marketplace_status'] = 1;
+                    $tempArray['marketplace_status'] = PERCENT;
                 }
             } else if ($tempArray['marketplace_status'] == 'En estudio') {
                 $tempArray['marketplace_statusLiteral'] = 'En estudio';

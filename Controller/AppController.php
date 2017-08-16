@@ -291,10 +291,11 @@ define('FUNDING', 3);
 define('MARKETPLACELOOP', 1);
 define('HISTORICAL', 2);
 
-//MARKETPLACE INVESTMENT TYPE
+//MARKETPLACE INVESTMENT TYPE STATUS
 define('PERCENT', 1);
 define('CONFIRMED', 2);
-define('REJECTED', 3);
+define('BEFORE_CONFIRMED', 3);
+define('REJECTED', 4);
 
 //
 

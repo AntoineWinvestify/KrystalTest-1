@@ -299,9 +299,16 @@ class zank extends p2pCompany {
                                         }
                                     }
                                 } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
+
                                     $tempArray['marketplace_subscriptionProgress'] = 10000;
                                     $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
-                                    $tempArray['marketplace_status'] = CONFIRMED;
+
+                                    if(strpos($div->nodeValue, 'mortiza') != false) {
+                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                    } else if ($div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                    }
+
                                     //Read inversions limiter controller
                                     foreach ($companyBackup as $inversionBackup) {
                                         if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && ($inversionBackup['Marketplacebackup']['marketplace_statusLiteral'] == $tempArray['marketplace_statusLiteral'])) {
@@ -367,7 +374,7 @@ class zank extends p2pCompany {
         return [$totalArray, $structureRevision];
     }
 
-/**
+    /**
      * collect all investment
      * @param Array $structure
      * @param Int $start
@@ -515,7 +522,11 @@ class zank extends p2pCompany {
                             } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                                 $tempArray['marketplace_subscriptionProgress'] = 10000;
                                 $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
-                                $tempArray['marketplace_status'] = CONFIRMED;
+                                if(strpos($div->nodeValue, 'mortiza') != false) {
+                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                } else if ($div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                }
                             } else if (!$div->nodeValue) {
                                 $tempArray['marketplace_subscriptionProgress'] = 0;
                                 $tempArray['marketplace_statusLiteral'] = 'Cancelado';
@@ -1281,8 +1292,7 @@ class zank extends p2pCompany {
         }
     }
 
-    
-        /**
+    /**
      * Dom clean for structure revision
      * @param Dom $node1
      * @param Dom $node2

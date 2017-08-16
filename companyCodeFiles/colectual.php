@@ -219,7 +219,7 @@ FRAGMENT
 
                     //$tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
                     $tempArray["marketplace_statusLiteral"] = 'Completado';
-                    $tempArray["marketplace_status"] = 1;
+                    $tempArray["marketplace_status"] = PERCENT;
 
                     foreach ($companyBackup as $inversionBackup) { //If completed investment with same status in backup
                         if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
@@ -436,7 +436,7 @@ FRAGMENT
 
                     //$tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
                     $tempArray["marketplace_statusLiteral"] = 'Completado';
-                    $tempArray["marketplace_status"] = 1;
+                    $tempArray["marketplace_status"] = PERCENT;
                     $subscriptionProgress = false;
                 }
             }

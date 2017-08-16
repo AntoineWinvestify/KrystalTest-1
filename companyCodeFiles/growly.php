@@ -440,11 +440,11 @@ class growly extends p2pCompany {
                             if ($tempArray['marketplace_timeLeftUnit'] == -1) {
                                 //If we dont have time left    
                                 $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                                $tempArray['marketplace_status'] = 2;
+                                $tempArray['marketplace_status'] = CONFIRMED;
                             } else {
                                 //If we have time left    
                                 $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-                                $tempArray['marketplace_status'] = 1;
+                                $tempArray['marketplace_status'] = PERCENT;
                             }
                         } else {
                             $tempArray['marketplace_statusLiteral'] = 'En proceso';

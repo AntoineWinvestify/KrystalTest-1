@@ -252,15 +252,15 @@ class circulantis extends p2pCompany {
                                         break;
                                     case 'Atrasada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                         break;
                                     case 'Cobrada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                         break;
                                     case 'Cobrada parcialmente':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                         break;
                                     case 'No formalizada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
@@ -458,15 +458,15 @@ class circulantis extends p2pCompany {
                                     break;
                                 case 'Atrasada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                     break;
                                 case 'Cobrada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                     break;
                                 case 'Cobrada parcialmente':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                     break;
                                 case 'No formalizada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
