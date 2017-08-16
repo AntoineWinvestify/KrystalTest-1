@@ -164,7 +164,7 @@ class circulantis extends p2pCompany {
                             $clone = $table->cloneNode(TRUE);
                             $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                             $saveStructure->saveHTML();
-                            $originalStructure = $newStructure->getElementsByTagName('tr');
+                            $originalStructure = $saveStructure->getElementsByTagName('tr');
 
                             $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
@@ -371,7 +371,7 @@ class circulantis extends p2pCompany {
                             $clone = $table->cloneNode(TRUE);
                             $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                             $saveStructure->saveHTML();
-                            $originalStructure = $newStructure->getElementsByTagName('tr');
+                            $originalStructure = $saveStructure->getElementsByTagName('tr');
 
                             $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 

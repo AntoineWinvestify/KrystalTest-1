@@ -20,7 +20,6 @@
  * @date 2017-01-28
  * @package
  *
- * Base class for all the p2p companies
  *
  *
  *
@@ -108,7 +107,8 @@ class zank extends p2pCompany {
     /**
      * Collects the marketplace data.
      * 	ZANK is special as one has to login in order to see all the details of the offers in their marketplace
-     * @param type $companyBackup
+     * @param Array $companyBackup
+     * @param Array $structure
      * @return array
      */
     function collectCompanyMarketplaceData($companyBackup, $structure) {
@@ -151,7 +151,7 @@ class zank extends p2pCompany {
                     $clone = $table->cloneNode(TRUE);
                     $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                     $saveStructure->saveHTML();
-                    $originalStructure = $newStructure->getElementsByTagName('tr');
+                    $originalStructure = $saveStructure->getElementsByTagName('tr');
 
                     $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
 
@@ -413,7 +413,7 @@ class zank extends p2pCompany {
                     $clone = $table->cloneNode(TRUE);
                     $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                     $saveStructure->saveHTML();
-                    $originalStructure = $newStructure->getElementsByTagName('tr');
+                    $originalStructure = $saveStructure->getElementsByTagName('tr');
 
                     $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
 
@@ -1281,6 +1281,13 @@ class zank extends p2pCompany {
         }
     }
 
+    
+        /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
     function structureRevision($node1, $node2) {
         $node1 = $this->clean_dom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'img'),

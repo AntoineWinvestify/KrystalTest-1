@@ -89,7 +89,8 @@ class loanbook extends p2pCompany {
 
     /**
      * Collects the marketplace data.
-     * @param type $companyBackup
+    * @param Array $companyBackup
+     * @param Array $structure
      * @return array
      */
     function collectCompanyMarketplaceData($companyBackup, $structure) { //loanbook doesnt have pagination, it uses one table

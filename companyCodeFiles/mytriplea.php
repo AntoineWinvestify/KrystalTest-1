@@ -20,7 +20,6 @@
  * @date 2017-01-28
  * @package
  *
- * Base class for all the p2p companies
 *
 *
  * function calculateLoanCost()										[Not OK]
@@ -86,10 +85,12 @@ class mytriplea extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
+
     /**
      * 
-     * @pCollects param type $companyBackup
-     * @return type
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
     function collectCompanyMarketplaceData($companyBackup, $structure) {
 
@@ -129,7 +130,7 @@ class mytriplea extends p2pCompany {
                         $clone = $container->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                         $saveStructure->saveHTML();
-                        $originalStructure = $newStructure->getElementsByTagName('article');
+                        $originalStructure = $saveStructure->getElementsByTagName('article');
 
                         $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
@@ -334,11 +335,12 @@ class mytriplea extends p2pCompany {
         return [$totalArray, $structureRevision];
     }
 
+
     /**
-     * Collect all investment
-     * @param boolean $pageNumber
-     * @param type $type
-     * @return type
+     * 
+     * @param Array $structure
+     * @param Int $pageNumber
+     * @return Array
      */
     function collectHistorical($structure, $pageNumber) {
 
@@ -376,7 +378,7 @@ class mytriplea extends p2pCompany {
                         $clone = $container->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                         $saveStructure->saveHTML();
-                        $originalStructure = $newStructure->getElementsByTagName('article');
+                        $originalStructure = $saveStructure->getElementsByTagName('article');
 
                         $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
@@ -391,7 +393,6 @@ class mytriplea extends p2pCompany {
 
                             $structureRevision = $saveStructure->saveHTML();
                             $totalArray = false;  //Structure control, don't read more investmnets 
-                            $reading = false; //Stop pagination in error
                             break; //Stop reading if we have a structural error
                         }
                         echo 'Structure good';
@@ -1090,6 +1091,12 @@ class mytriplea extends p2pCompany {
         return $normalizedState;
     }
 
+        /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
     function structureRevision($node1, $node2) {
 
         $node1 = $this->clean_dom($node1, array(

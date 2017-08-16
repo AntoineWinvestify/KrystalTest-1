@@ -177,7 +177,7 @@ function __construct() {
                         $clone = $container[0]->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                         $saveStructure->saveHTML();
-                        $originalStructure = $newStructure->getElementsByTagName('article');
+                        $originalStructure = $saveStructure->getElementsByTagName('article');
 
                         $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
