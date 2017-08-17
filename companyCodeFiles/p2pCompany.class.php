@@ -63,6 +63,8 @@ PENDING
 */
 
 require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
+App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
+App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
 
 class p2pCompany{
 	const DAY 		= 1;
@@ -1401,7 +1403,113 @@ function print_r2($val){
             return $uuid;
         }
     }
-
+    
+    /**
+     * Function to convert an Spreadsheet to array with PHPExcel
+     * @param string $nameSpreadsheet It is the name of the spreadsheet
+     * @param string $folderSpreadsheet It is the folder where the spreadsheet is
+     */
+    function convertExcelToArray($nameSpreadsheet, $folderSpreadsheet) {
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load("/var/www/html/cake_branch/mintos.xlsx");
+        $loadedSheetNames = $spreadsheet->getSheetNames();
+        foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
+            echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
+            $spreadsheet->setActiveSheetIndexByName($loadedSheetName);
+            $sheetData = $spreadsheet->getActiveSheet()->toArray(null, false, false, true);
+            //var_dump($sheetData);
+            echo '<br />';
+        }
+        $values = [
+            "A" => "TransactionId",
+            "B" => "date",
+            "C" => [
+                [
+                    "name" => "interest",
+                    "regex" => "Interest income"
+                ],
+                [
+                    "name" => "repayment",
+                    "regex" => "Investment principal repayment"
+                ],
+                [
+                    "type" => "loanId",
+                    "regex" => "Loan ID",
+                    "initPos" => 9,
+                    "finalPos" => null
+                ]
+            ],
+            "D" => "turnover",
+            "E" => "balance",
+            "F" => "currency"
+        ];
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values);
+        var_dump($datas);
+    }
+    
+    /**
+     * Function to convert from an array with PHPExcel structure to a more manipulable structure
+     * @param array $rowDatas It is the array with PHPExcel structure
+     * @param array $values They are the variables that will have the new array structure
+     * @return array $tempArray It is the array with the new structure
+     */
+    function saveExcelArrayToTemp($rowDatas, $values) {
+        $i = 0;
+        $tempArray = [];
+        foreach ($rowDatas as $rowData) {
+            foreach ($values as $key => $value) {
+                if (is_array($value)) {
+                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
+                }
+                else {
+                    $tempArray[$i][$value] = $rowData[$key];
+                }
+            }
+            $i++;
+        }
+        return $tempArray;
+    }
+    
+    
+    /**
+     * Function to take more values from cell that could be more than one type of variable
+     * @param string $rowData It is the cell  
+     * @param array $values It is the possible results that can be on the cell
+     * @param array $tempArray It is the temporal array with all the data
+     * @return array $tempArray with all the data inserted
+     */
+    function getValueFromDynamicCell($rowData, $values, $tempArray) {
+        foreach ($values as $key => $value) {
+            $pos = strpos($rowData, $value["regex"]);
+            if ($pos !== false) {
+                // " found after position X
+                //$tempArray["loanId"] = substr($value, $pos + $variable["initPos"], $variable["finalPos"]);
+                if (!empty($value["name"])) {
+                    $tempArray["type"] = $value["name"];
+                }
+                else {
+                    $tempArray[$value["type"]] = $this->getValueBySubstring($rowData, $value, $pos);
+                }
+            }
+        }
+        return $tempArray;
+    }
+    
+    /**
+     * Function to get the necessary value with substring function
+     * @param string $rowData It is the cell  
+     * @param array $value It is an array with the initial position from we must take the value and the final position
+     * @param int $pos It is the position from we take the value
+     * @return string It is the value
+     */
+    function getValueBySubstring($rowData, $value, $pos) {
+        if (empty($value["finalPos"])) {
+            $data = substr($rowData, $pos + $value["initPos"]);
+        }
+        else {
+            $data = substr($rowData, $pos + $value["initPos"], $value["finalPos"]);
+        }
+        return $data;
+    }
 
 }
 ?>
