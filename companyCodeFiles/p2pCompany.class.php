@@ -66,26 +66,27 @@
  * fix method  getMonetaryValue()
  */
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
+//Configure::load('constants'); //Load all global constants
 
 class p2pCompany {
 
-    const DAY = 1;
+    /*const DAY = 1;
     const MONTH = 2;
     const YEAR_CUARTER = 3;
-    const HOUR = 4;
+    const HOUR = 4;*/
 // type of financial product
-    const PAGARE = 1;
+    /*const PAGARE = 1;
     const LOAN = 2;
-    const FINANCING = 3;
+    const FINANCING = 3;*/
 // http message type for method "getCompanyWebpage"
-    const GET = 1; // GET a webpage
+    /*const GET = 1; // GET a webpage
     const POST = 2; // POST some parameters, typically used for login procedure
     const PUT = 3; // Not implemented yet)
     const DELETE = 4; // DELETE a resource on the server typically used for logging out
     const OPTIONS = 5; // Not implemented yet)
     const TRACE = 6; // Not implemented yet)
     const CONNECT = 7; // Not implemented yet)
-    const HEAD = 8; // Not implemented yet)
+    const HEAD = 8; // Not implemented yet)*/
 
     //Variable to use in this method
     // MarketplacesController

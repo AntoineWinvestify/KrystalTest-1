@@ -256,7 +256,6 @@ class MarketPlacesController extends AppController {
         $this->Structure = ClassRegistry::init('Structure');
 
         $country = "ES";
-        echo "country = $country and ip = $ip<br>";
 
         $filterConditions = array('Company.company_country' => $country);
         $companyDataResult = $this->Company->getCompanyDataList($filterConditions);
@@ -342,12 +341,13 @@ class MarketPlacesController extends AppController {
             echo 'Saving new structure';
             $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
             if (!$marketplaceArray[0]) {
+                
                 echo 'Sending error report';
             }
         }
 
 
-        foreach ($marketplaceArray[0] as $investment) {
+        foreach ($marketplaceArray[0] as $investment) { //Read the investment
             $DontExist = true;
             $backup = true;
             $investment['company_id'] = $companyId;
@@ -404,7 +404,8 @@ class MarketPlacesController extends AppController {
                         }
                     } if ($backup) { //If it not exist in winvestify backup
 
-                        $investment['marketplace_investmentCreationDate'] = date('Y-m-d_H:i:s');
+                        $date = new DateTime();
+                        $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
                         
                         //Save in backup
                         $this->Marketplacebackup->create();
@@ -416,7 +417,8 @@ class MarketPlacesController extends AppController {
                 } else {  //If isn't completed
                     echo "Investment incompleted<br>";
 
-                    $investment['marketplace_investmentCreationDate'] = date('Y-m-d_H:i:s');
+                      $date = new DateTime();
+                        $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
                     
                     //Add to marketplace
                     $this->Marketplace->create();
@@ -484,6 +486,8 @@ class MarketPlacesController extends AppController {
             $this->print_r2($marketplaceArray);
             foreach ($marketplaceArray[0] as $investment) {
                 $investment['company_id'] = $companyId;
+                                      $date = new DateTime();
+                        $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
                 echo __FUNCTION__ . __LINE__ . "PFP Backup Saving:<br>";
                 $this->print_r2($investment);
                 $this->Marketplacebackup->create();
