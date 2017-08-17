@@ -357,7 +357,7 @@ class MarketPlacesController extends AppController {
                 if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
                     $DontExist = false;
                     echo "Investment already exist<br>";
-                     $investment['marketplace_InvestmentCreationDate'] = $marketplaceInvestment['marketplace_InvestmentCreationDate'];
+                     $investment['marketplace_investmentCreationDate'] = $marketplaceInvestment['marketplace_investmentCreationDate'];
                     if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If is completed
                         echo "Investment completed<br>";
 
@@ -394,7 +394,7 @@ class MarketPlacesController extends AppController {
                     echo "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
                         $backup = false;
-                        $investment['marketplace_InvestmentCreationDate'] = $investmentBackup['marketplace_InvestmentCreationDate'];
+                        $investment['marketplace_investmentCreationDate'] = $investmentBackup['marketplace_investmentCreationDate'];
                         if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplace']['marketplace_loanReference']) { //If it exist in winvestify backup
                             if ($investment['marketplace_status'] == $investmentBackup['Marketplace']['marketplace_status']) { //Same status
                                 echo 'Ignore<br>';
@@ -404,7 +404,7 @@ class MarketPlacesController extends AppController {
                         }
                     } if ($backup) { //If it not exist in winvestify backup
 
-                        $investment['marketplace_InvestmentCreationDate'] = date('Y-m-d_H:i:s');
+                        $investment['marketplace_investmentCreationDate'] = date('Y-m-d_H:i:s');
                         
                         //Save in backup
                         $this->Marketplacebackup->create();
@@ -416,7 +416,7 @@ class MarketPlacesController extends AppController {
                 } else {  //If isn't completed
                     echo "Investment incompleted<br>";
 
-                    $investment['marketplace_InvestmentCreationDate'] = date('Y-m-d_H:i:s');
+                    $investment['marketplace_investmentCreationDate'] = date('Y-m-d_H:i:s');
                     
                     //Add to marketplace
                     $this->Marketplace->create();
