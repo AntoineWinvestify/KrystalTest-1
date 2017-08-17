@@ -20,24 +20,24 @@
  * @date 2017-01-28
  * @package
  *
-*
-*
+ *
+ *
  * function calculateLoanCost()										[Not OK]
-  *function collectCompanyMarketplaceData()								[OK, tested]
-  *function companyUserLogin()										[OK, tested]
-  *function collectUserInvestmentData()									[OK, tested]
-  *introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK]
-  *function companyUserLogout()                                                                            [OK, tested]
-  *parallelization                                                                                         [OK, tested]
-*
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK]
+ * function companyUserLogout()                                                                            [OK, tested]
+ * parallelization                                                                                         [OK, tested]
+ *
  * 2016-08-04	  version 2016_0.1
-  *Basic version
+ * Basic version
  * introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK] 
-  *2017-04-18
+ * 2017-04-18
  * Rating fixed
-  *2017-05-16      version 2017_0.2
+ * 2017-05-16      version 2017_0.2
  * Added parallelization
-*
+ *
  * 2017/08/04
  * Code adaptation for 100%
  *      collectCompanyMarketplaceData   -   Pagination loop added
@@ -47,11 +47,10 @@
  * Structure Revision added
  * Status definition added
  * 
-  *Pending
-  *More Ratings
-*
+ * Pending
+ * More Ratings
+ *
  */
-
 class mytriplea extends p2pCompany {
 
     function __construct() {
@@ -85,7 +84,6 @@ class mytriplea extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
-
     /**
      * 
      * @param Array $companyBackup
@@ -99,6 +97,55 @@ class mytriplea extends p2pCompany {
         $readController = 0;
         $investmentController = false;
         $totalArray = array();
+        $url = array_shift($this->urlSequence);
+
+        $str = $this->getCompanyWebpage($url);  // load Webpage into a string variable so it can be parsed;
+
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        //Structure comparation, not in the same place where we colect the data because we get the mytriplea data from ajax response.
+        if ($structure) { //Compare structures, only compare the first element
+            $newStructure = new DOMDocument;  //Get the old structure in db
+            $newStructure->loadHTML($structure['Structure']['structure_html']);
+            $newStructure->preserveWhiteSpace = false;
+            $trsNewStructure = $newStructure->getElementsByTagName('article');
+
+            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
+            $clone = $container->cloneNode(TRUE);
+            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+            $saveStructure->saveHTML();
+            $originalStructure = $saveStructure->getElementsByTagName('article');
+
+            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
+
+            echo 'structure: ' . $structureRevision . '<br>';
+
+            if (!$structureRevision) { //Save new structure
+                echo 'Structural error<br>';
+                $saveStructure = new DOMDocument();
+                $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                $structureRevision = $saveStructure->saveHTML();
+                $totalArray = false;  //Structure control, don't read more investmnets 
+                $reading = false; //Stop pagination in error          
+            }
+            echo 'Structure good';
+        }
+
+        if (!$structure) { //Save new structure if is first time
+            echo 'no structure readed, saving structure <br>';
+            $saveStructure = new DOMDocument();
+            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
+            $clone = $container->cloneNode(TRUE);
+            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+            $structureRevision = $saveStructure->saveHTML();
+        }
+
 
         while ($reading) { //Pagination loop
             $investmentNumber = 0;
@@ -107,7 +154,7 @@ class mytriplea extends p2pCompany {
                 'numeroPaginaMostrar' => $page, //Page number, first page is 0
             ];
 
-            $str = $this->getCompanyWebpage(null, $form);  // load Webpage into a string variable so it can be parsed;
+            $str = $this->getCompanyWebpageAjax($url, $form);  // load Webpage into a string variable so it can be parsed;
 
             $dom = new DOMDocument;
             $dom->loadHTML($str);
@@ -118,48 +165,6 @@ class mytriplea extends p2pCompany {
 
             if ($totalArray !== false) {
                 foreach ($rows as $key => $row) {
-
-                    if ($key == 0 && $structure) { //Compare structures, only compare the first element
-                        $newStructure = new DOMDocument;  //Get the old structure in db
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('article');
-
-                        $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                        $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $saveStructure->getElementsByTagName('article');
-
-                        $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
-
-                        echo 'structure: ' . $structureRevision . '<br>';
-
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
-                            $saveStructure = new DOMDocument();
-                            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-                            $clone = $container->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more investmnets 
-                            $reading = false; //Stop pagination in error
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good';
-                    }
-
-                    if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
-                        $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
-                    }
-
 
                     $h3 = $row->getElementsByTagName('h3');  // Only 1 'h3' will be encountered
                     foreach ($h3 as $item) {
@@ -335,7 +340,6 @@ class mytriplea extends p2pCompany {
         return [$totalArray, $structureRevision];
     }
 
-
     /**
      * 
      * @param Array $structure
@@ -349,188 +353,197 @@ class mytriplea extends p2pCompany {
         $investmentNumber = 0;
         $max = 12;
 
+        $url = array_shift($this->urlSequence);
+
+        $str = $this->getCompanyWebpage($url);  // load Webpage into a string variable so it can be parsed;
+
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        //Structure comparation, not in the same place where we colect the data because we get the mytriplea data from ajax response.
+        if ($structure) { //Compare structures, only compare the first element
+            $newStructure = new DOMDocument;  //Get the old structure in db
+            $newStructure->loadHTML($structure['Structure']['structure_html']);
+            $newStructure->preserveWhiteSpace = false;
+            $trsNewStructure = $newStructure->getElementsByTagName('article');
+
+            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
+            $clone = $container->cloneNode(TRUE);
+            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+            $saveStructure->saveHTML();
+            $originalStructure = $saveStructure->getElementsByTagName('article');
+
+            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
+
+            echo 'structure: ' . $structureRevision . '<br>';
+
+            if (!$structureRevision) { //Save new structure
+                echo 'Structural error<br>';
+                $saveStructure = new DOMDocument();
+                $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                $structureRevision = $saveStructure->saveHTML();
+                $totalArray = false;  //Structure control, don't read more investmnets 
+                $reading = false; //Stop pagination in error          
+            }
+            echo 'Structure good';
+        }
+
+        if (!$structure) { //Save new structure if is first time
+            echo 'no structure readed, saving structure <br>';
+            $saveStructure = new DOMDocument();
+            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
+            $clone = $container->cloneNode(TRUE);
+            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+            $structureRevision = $saveStructure->saveHTML();
+        }
+        
+        
+        
 
         $form = [//MyTripleA is like zank, need curl.
             'cargarMas' => true, //Must be true
             'numeroPaginaMostrar' => $pageNumber, //Start with 0 
         ];
 
-        $str = $this->getCompanyWebpageAjax(null, $form);  // load Webpage into a string variable so it can be parsed;
-        echo 'hola' . $str;
+        $str = $this->getCompanyWebpageAjax($url, $form);  // load ajax reponse
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
         $rows = $dom->getElementsByTagName('article');
-        
-     if ($totalArray !== false) {
-        foreach ($rows as $key => $row) {
 
-            
-             if ($key == 0 && $structure) { //Compare structures, only compare the first element
-                        $newStructure = new DOMDocument;  //Get the old structure in db
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('article');
+        if ($totalArray !== false) {
+            foreach ($rows as $key => $row) {
 
-                        $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                        $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $saveStructure->getElementsByTagName('article');
+                $tempArray['marketplace_country'] = 'ES';
+                $a = $row->getElementsByTagName('a');  // Get loanId. Only 1 'a' is required
+                foreach ($a as $item) {
+                    $tempLoanId = $item->getAttribute('href');
+                    $temp = explode("-", $tempLoanId);
+                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', '', $temp[count($temp) - 1]));
+                    $tempArray['marketplace_href'] = $tempLoanId;   // contains the href with more details about loanrequest
+                    break;
+                }
 
-                        $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
+                $headers = $row->getElementsByTagName('header');
+                foreach ($headers as $header) {
+                    $tempArray['marketplace_purpose'] = trim($header->nodeValue);
+                }
 
-                        echo 'structure: ' . $structureRevision . '<br>';
+                $li = $row->getElementsByTagName('li');
 
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
-                            $saveStructure = new DOMDocument();
-                            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-                            $clone = $container->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                foreach ($li as $item) {
+                    $checkedAttribute = trim($item->nodeValue);
+                    echo "<br>___checkedAttribute = $checkedAttribute<br>";
+                    $is = $item->getElementsByTagNAme('i');
 
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more investmnets 
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good';
+                    $contentCheckedAttribute = "";
+                    foreach ($is as $subItem) {
+                        $contentCheckedAttribute = trim($subItem->nodeValue);
                     }
 
-                    if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
-                        $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
+                    if (strncasecmp($checkedAttribute, 'Sector', 6) == 0) {
+                        $tempArray['marketplace_sector'] = $contentCheckedAttribute;
                     }
-            
-            
-            $tempArray['marketplace_country'] = 'ES';
-            $a = $row->getElementsByTagName('a');  // Get loanId. Only 1 'a' is required
-            foreach ($a as $item) {
-                $tempLoanId = $item->getAttribute('href');
-                $temp = explode("-", $tempLoanId);
-                $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', '', $temp[count($temp) - 1]));
-                $tempArray['marketplace_href'] = $tempLoanId;   // contains the href with more details about loanrequest
-                break;
-            }
 
-            $headers = $row->getElementsByTagName('header');
-            foreach ($headers as $header) {
-                $tempArray['marketplace_purpose'] = trim($header->nodeValue);
-            }
+                    if (strncasecmp($checkedAttribute, 'Lugar', 5) == 0) {
+                        $tempArray['marketplace_requestorLocation'] = $contentCheckedAttribute;
+                    }
 
-            $li = $row->getElementsByTagName('li');
+                    if (strncasecmp($checkedAttribute, 'Importe', 7) == 0) {
+                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($contentCheckedAttribute);
+                    }
 
-            foreach ($li as $item) {
-                $checkedAttribute = trim($item->nodeValue);
-                echo "<br>___checkedAttribute = $checkedAttribute<br>";
-                $is = $item->getElementsByTagNAme('i');
+                    if (strncasecmp($checkedAttribute, 'Tipo', 4) == 0) {
+                        $tempArray['marketplace_interestRate'] = $this->getPercentage($contentCheckedAttribute);
+                    }
 
-                $contentCheckedAttribute = "";
-                foreach ($is as $subItem) {
-                    $contentCheckedAttribute = trim($subItem->nodeValue);
-                }
+                    if (strncasecmp($checkedAttribute, 'Plazo', 5) == 0) {
+                        list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($contentCheckedAttribute);
+                    }
+                    if (strncasecmp($checkedAttribute, 'Durac', 5) == 0) {
+                        list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($item->nodeValue));
+                    }
 
-                if (strncasecmp($checkedAttribute, 'Sector', 6) == 0) {
-                    $tempArray['marketplace_sector'] = $contentCheckedAttribute;
-                }
+                    if (strncasecmp($checkedAttribute, 'Completado', 10) == 0) {
+                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($checkedAttribute);
+                    }
 
-                if (strncasecmp($checkedAttribute, 'Lugar', 5) == 0) {
-                    $tempArray['marketplace_requestorLocation'] = $contentCheckedAttribute;
-                }
-
-                if (strncasecmp($checkedAttribute, 'Importe', 7) == 0) {
-                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($contentCheckedAttribute);
-                }
-
-                if (strncasecmp($checkedAttribute, 'Tipo', 4) == 0) {
-                    $tempArray['marketplace_interestRate'] = $this->getPercentage($contentCheckedAttribute);
-                }
-
-                if (strncasecmp($checkedAttribute, 'Plazo', 5) == 0) {
-                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($contentCheckedAttribute);
-                }
-                if (strncasecmp($checkedAttribute, 'Durac', 5) == 0) {
-                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($item->nodeValue));
-                }
-
-                if (strncasecmp($checkedAttribute, 'Completado', 10) == 0) {
-                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($checkedAttribute);
-                }
-
-                if (strncasecmp($checkedAttribute, 'Forma pago', 10) == 0) {
+                    if (strncasecmp($checkedAttribute, 'Forma pago', 10) == 0) {
 //				echo "contentsChecked6 = $contentCheckedAttribute <br>";
 //				$tempArray['marketplace_interestRate4'] = $this->getPercentage(trim($item->nodeValue));
-                }
-
-                if (stripos($checkedAttribute, 'inversores')) {
-                    $tempArray['marketplace_inversores'] = $contentCheckedAttribute;
-                }
-            }
-
-            $cols = $row->getElementsByTagName('span');
-            foreach ($cols as $span) {
-                $checkedAttribute = $span->getAttribute('class');
-                if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
-                    echo "contentsChecked10 = $CheckedAttribute <br>";
-                    //		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
-                }
-            }
-
-            $rating = $row->getElementsByTagName('div');
-            foreach ($rating as $rating) {
-                $checkedClass = $rating->getAttribute('class');
-                $checkedAttribute = $rating->getAttribute('style');
-                if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPENDIENTE' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPRORROGADA') {
-
-                    if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA') {
-                        $tempArray['marketplace_statusLiteral'] = 'Formalizado';
-                        $tempArray['marketplace_status'] = CONFIRMED;
-                    } else if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoCOMPLETADA') {
-                        $tempArray['marketplace_statusLiteral'] = 'Completado';
-                        $tempArray['marketplace_status'] = PERCENT;
                     }
 
-                    if (!$checkedAttribute) {
-                        $tempArray['marketplace_rating'] = 'SGR';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionA.png');") {
-                        $tempArray['marketplace_rating'] = 'A';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionA_MAS.png');") {
-                        $tempArray['marketplace_rating'] = 'A+';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionB.png');") {
-                        $tempArray['marketplace_rating'] = 'B';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionB_MAS.png');") {
-                        $tempArray['marketplace_rating'] = 'B+';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionC.png');") {
-                        $tempArray['marketplace_rating'] = 'C';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionC_MAS.png');") {
-                        $tempArray['marketplace_rating'] = 'C+';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD.png');") {
-                        $tempArray['marketplace_rating'] = 'D';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD_MAS.png');") {
-                        $tempArray['marketplace_rating'] = 'D+';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionE.png');") {
-                        $tempArray['marketplace_rating'] = 'E';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionE_MAS.png');") {
-                        $tempArray['marketplace_rating'] = 'E+';
-                    } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracion.png');") {
-                        $tempArray['marketplace_rating'] = 'Vacio';
+                    if (stripos($checkedAttribute, 'inversores')) {
+                        $tempArray['marketplace_inversores'] = $contentCheckedAttribute;
                     }
                 }
-            }
 
-            if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
-                $tempArray['marketplace_statusLiteral'] = 'En proceso';
-            }
+                $cols = $row->getElementsByTagName('span');
+                foreach ($cols as $span) {
+                    $checkedAttribute = $span->getAttribute('class');
+                    if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
+                        echo "contentsChecked10 = $CheckedAttribute <br>";
+                        //		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
+                    }
+                }
 
-            $investmentNumber++; //Add investmet
-            $totalArray[] = $tempArray;
-            unset($tempArray);
-    }}
+                $rating = $row->getElementsByTagName('div');
+                foreach ($rating as $rating) {
+                    $checkedClass = $rating->getAttribute('class');
+                    $checkedAttribute = $rating->getAttribute('style');
+                    if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPENDIENTE' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPRORROGADA') {
+
+                        if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA') {
+                            $tempArray['marketplace_statusLiteral'] = 'Formalizado';
+                            $tempArray['marketplace_status'] = CONFIRMED;
+                        } else if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoCOMPLETADA') {
+                            $tempArray['marketplace_statusLiteral'] = 'Completado';
+                            $tempArray['marketplace_status'] = PERCENT;
+                        }
+
+                        if (!$checkedAttribute) {
+                            $tempArray['marketplace_rating'] = 'SGR';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionA.png');") {
+                            $tempArray['marketplace_rating'] = 'A';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionA_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'A+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionB.png');") {
+                            $tempArray['marketplace_rating'] = 'B';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionB_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'B+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionC.png');") {
+                            $tempArray['marketplace_rating'] = 'C';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionC_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'C+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD.png');") {
+                            $tempArray['marketplace_rating'] = 'D';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'D+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionE.png');") {
+                            $tempArray['marketplace_rating'] = 'E';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionE_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'E+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracion.png');") {
+                            $tempArray['marketplace_rating'] = 'Vacio';
+                        }
+                    }
+                }
+
+                if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
+                    $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                }
+
+                $investmentNumber++; //Add investmet
+                $totalArray[] = $tempArray;
+                unset($tempArray);
+            }
+        }
         echo 'Aqui ' . $investmentNumber;
         if ($investmentNumber < $max) {
             $pageNumber = false;
@@ -541,7 +554,7 @@ class mytriplea extends p2pCompany {
             echo 'to ' . $pageNumber;
         }
         $this->print_r2($totalArray);
-        return [$totalArray, $pageNumber, null ,$structureRevision]; //$totalArray are the investment, $pageNumber is the next page, false when we read the last page
+        return [$totalArray, $pageNumber, null, $structureRevision]; //$totalArray are the investment, $pageNumber is the next page, false when we read the last page
     }
 
     /**
@@ -1091,7 +1104,7 @@ class mytriplea extends p2pCompany {
         return $normalizedState;
     }
 
-        /**
+    /**
      * Dom clean for structure revision
      * @param Dom $node1
      * @param Dom $node2
@@ -1106,10 +1119,13 @@ class mytriplea extends p2pCompany {
                 ), array('src', 'href', 'style'));
 
 
-        $node1 = $this->clean_dom($node1, array(//We only want delete class of the div and li tag because contain the status
+        $node1 = $this->clean_dom($node1, array(//We only want delete class of the div  tag because contain the status
             array('typeSearch' => 'element', 'tag' => 'div'),
-            array('typeSearch' => 'element', 'tag' => 'li'),
                 ), array('class'));
+
+        $node1 = $this->clean_dom_tag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'li'), //li lenght can change
+        ));
 
         $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
@@ -1119,9 +1135,12 @@ class mytriplea extends p2pCompany {
 
         $node2 = $this->clean_dom($node2, array(//We only want delete class of the div tag because contain the status
             array('typeSearch' => 'element', 'tag' => 'div'),
-            array('typeSearch' => 'element', 'tag' => 'li'),
                 ), array('class'));
 
+        $node2 = $this->clean_dom_tag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'li'), //li lenght can change
+        ));
+        
         $structureRevision = $this->verify_dom_structure($node1, $node2);
         return $structureRevision;
     }
