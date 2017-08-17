@@ -362,7 +362,7 @@ class mytriplea extends p2pCompany {
         $dom->preserveWhiteSpace = false;
 
         //Structure comparation, not in the same place where we colect the data because we get the mytriplea data from ajax response.
-        if ($structure) { //Compare structures, only compare the first element
+        if ($pageNumber == 0 && $structure) { //Compare structures, only compare the first element
             $newStructure = new DOMDocument;  //Get the old structure in db
             $newStructure->loadHTML($structure['Structure']['structure_html']);
             $newStructure->preserveWhiteSpace = false;
@@ -393,7 +393,7 @@ class mytriplea extends p2pCompany {
             echo 'Structure good';
         }
 
-        if (!$structure) { //Save new structure if is first time
+        if ($pageNumber == 0 && !$structure) { //Save new structure if is first time
             echo 'no structure readed, saving structure <br>';
             $saveStructure = new DOMDocument();
             $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
