@@ -65,6 +65,7 @@ PENDING
 require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
+App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
 class p2pCompany{
 	const DAY 		= 1;
@@ -1410,15 +1411,24 @@ function print_r2($val){
      * @param string $folderSpreadsheet It is the folder where the spreadsheet is
      */
     function convertExcelToArray($nameSpreadsheet, $folderSpreadsheet) {
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load("/var/www/html/cake_branch/mintos.xlsx");
-        $loadedSheetNames = $spreadsheet->getSheetNames();
+        if (empty($nameSpreadsheet)) {
+            $nameSpreadsheet = "mintos.xlsx";
+        }
+        if (empty($folderSpreadsheet)) {
+            $folderSpreadsheet = "/var/www/html/cake_branch/";
+        }
+        
+        
+        $objPHPExcel = PHPExcel_IOFactory::load($folderSpreadsheet . $nameSpreadsheet);
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        /*$loadedSheetNames = $objPHPExcel->getSheetNames();
         foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
             echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
-            $spreadsheet->setActiveSheetIndexByName($loadedSheetName);
-            $sheetData = $spreadsheet->getActiveSheet()->toArray(null, false, false, true);
+            $objPHPExcel->setActiveSheetIndexByName($loadedSheetName);
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, false, false, true);
             //var_dump($sheetData);
             echo '<br />';
-        }
+        }*/
         $values = [
             "A" => "TransactionId",
             "B" => "date",
