@@ -164,7 +164,7 @@ class circulantis extends p2pCompany {
                             $clone = $table->cloneNode(TRUE);
                             $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                             $saveStructure->saveHTML();
-                            $originalStructure = $newStructure->getElementsByTagName('tr');
+                            $originalStructure = $saveStructure->getElementsByTagName('tr');
 
                             $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
@@ -252,15 +252,15 @@ class circulantis extends p2pCompany {
                                         break;
                                     case 'Atrasada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                         break;
                                     case 'Cobrada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                         break;
                                     case 'Cobrada parcialmente':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                         break;
                                     case 'No formalizada':
                                         $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
@@ -371,7 +371,7 @@ class circulantis extends p2pCompany {
                             $clone = $table->cloneNode(TRUE);
                             $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                             $saveStructure->saveHTML();
-                            $originalStructure = $newStructure->getElementsByTagName('tr');
+                            $originalStructure = $saveStructure->getElementsByTagName('tr');
 
                             $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
@@ -458,15 +458,15 @@ class circulantis extends p2pCompany {
                                     break;
                                 case 'Atrasada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                     break;
                                 case 'Cobrada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                     break;
                                 case 'Cobrada parcialmente':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
-                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                                     break;
                                 case 'No formalizada':
                                     $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');

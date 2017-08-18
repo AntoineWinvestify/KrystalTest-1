@@ -1,48 +1,50 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+/**
+ * +-----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +-----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | GNU General Public License for more details.        			|
+ * +-----------------------------------------------------------------------------+
+ *
+ *
+ * @author 
+ * @version 0.3
+ * @date 2017-01-28
+ * @package
  *
  *
  * Contains the code required for accessing the website of "Comunitae"
  *
- * 
- * @author Antoine de Poorter
- * @version 0.1
- * @date 2016-10-05
- * @package
-
-
-  2016-10-05	  version 2016_0.1
-  Basic version
-  function calculateLoanCost()											[OK not tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()												[OK not tested]
-  function collectUserInvestmentData()									[OK not tested]
-
-  2017-08-04
+ *
+ *
+ *
+ * 2016-10-05	  version 2016_0.1
+ * Basic version
+ * function calculateLoanCost()											[OK not tested]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()												[OK not tested]
+ * function collectUserInvestmentData()									[OK not tested]
+ *
+ * 2017-08-04
  *  collectCompanyMarketplaceData - Read completed investment
  *  collectHistorical - Added
-
-
-  PENDING:
-
-
+ *
+ * 2017-08-16
+ * Structure Revision added
+ * Status definition added
+ * 
+ * PENDING:
+ *
+ *
  */
-
 class ecrowdinvest extends p2pCompany {
 
     function __construct() {
@@ -75,12 +77,14 @@ class ecrowdinvest extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
+
     /**
      * Collects the marketplace data
-     * @param type $companyBackup
-     * @return string
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup) { //ecrown doesnt have pagination
+    function collectCompanyMarketplaceData($companyBackup, $structure) { //ecrown doesnt have pagination
         $readController = 0;
         $investmentController = false;
 
@@ -94,7 +98,52 @@ class ecrowdinvest extends p2pCompany {
         $attribute = 'class';
         $value = 'col-xs-12 col-md-4 col-sm-4 projectwidget';
         $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
-        foreach ($projectwidgets as $projectwidget) {
+        
+
+          foreach ($projectwidgets as $key => $projectwidget) {
+            
+            if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                $newStructure = new DOMDocument;  //Get the old structure in db
+                $newStructure->loadHTML($structure['Structure']['structure_html']);
+                $newStructure->preserveWhiteSpace = false;
+                $trsNewStructure = $this->getElements($newStructure ,'div' , 'class', 'col-xs-12');
+
+                $saveStructure = new DOMDocument(); //CLone original structure in pfp page
+                $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                $saveStructure->saveHTML();
+                $originalStructure = $this->getElements($saveStructure ,'div' , 'class', 'col-xs-12');
+
+                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
+
+                echo 'structure: ' . $structureRevision . '<br>';
+
+                if (!$structureRevision) { //Save new structure
+                    echo 'Structural error<br>';
+                    $saveStructure = new DOMDocument();
+                    $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
+                    $clone = $container->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                    $structureRevision = $saveStructure->saveHTML();
+                    $totalArray = false;  //Structure control.
+                    break; //Stop reading if we have a structural error
+                }
+                echo 'Structure good';
+            }
+
+            if ($key == 0 && !$structure) { //Save new structure if is first time
+                echo 'no structure readed, saving structure <br>';
+                $saveStructure = new DOMDocument();
+                $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                $structureRevision = $saveStructure->saveHTML();
+            }
+
+
+
             $tag2 = 'p';
             $ps = $this->getElements($projectwidget, $tag2);
             $purposeLocation = explode('- ', trim($ps[0]->nodeValue)); //gets purpose & location separated by "- "
@@ -135,10 +184,10 @@ class ecrowdinvest extends p2pCompany {
 
                 if ($tempArray['marketplace_status'] == '100% financiado') {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                    $tempArray['marketplace_status'] = 2;
+                    $tempArray['marketplace_status'] = CONFIRMED;
                 } else {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
-                    $tempArray['marketplace_status'] = 1;
+                    $tempArray['marketplace_status'] = PERCENT;
                 }
                 foreach ($companyBackup as $inversionBackup) { //if completed and same status that in backup
                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
@@ -166,16 +215,17 @@ class ecrowdinvest extends p2pCompany {
                 echo 'Stop reading';
                 break;
             }
-        }
+    }
         $this->print_r2($totalArray);
-        return $totalArray;
+        return [$totalArray, $structureRevision];
     }
 
     /**
-     * Collect all investments
-     * @return type
+     *  Collect all investments
+     * @param Array $structure
+     * @return Array 
      */
-    function collectHistorical() { //ecrown doesnt have pagination
+    function collectHistorical($structure) { //ecrown doesnt have pagination
         $totalArray = array();
         $str = $this->getCompanyWebpage();
 
@@ -186,7 +236,48 @@ class ecrowdinvest extends p2pCompany {
         $attribute = 'class';
         $value = 'col-xs-12 col-md-4 col-sm-4 projectwidget';
         $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
-        foreach ($projectwidgets as $projectwidget) {
+        foreach ($projectwidgets as $key => $projectwidget) {
+            
+             if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                $newStructure = new DOMDocument;  //Get the old structure in db
+                $newStructure->loadHTML($structure['Structure']['structure_html']);
+                $newStructure->preserveWhiteSpace = false;
+                $trsNewStructure = $this->getElements($newStructure ,'div' , 'class', 'col-xs-12');
+
+                $saveStructure = new DOMDocument(); //CLone original structure in pfp page
+                $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                $saveStructure->saveHTML();
+                $originalStructure = $this->getElements($saveStructure ,'div' , 'class', 'col-xs-12');
+
+                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
+
+                echo 'structure: ' . $structureRevision . '<br>';
+
+                if (!$structureRevision) { //Save new structure
+                    echo 'Structural error<br>';
+                    $saveStructure = new DOMDocument();
+                    $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
+                    $clone = $container->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                    $structureRevision = $saveStructure->saveHTML();
+                    $totalArray = false;  //Structure control, don't read more investmnets 
+                    break; //Stop reading if we have a structural error
+                }
+                echo 'Structure good';
+            }
+
+            if ($key == 0 && !$structure) { //Save new structure if is first time
+                echo 'no structure readed, saving structure <br>';
+                $saveStructure = new DOMDocument();
+                $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                $structureRevision = $saveStructure->saveHTML();
+            }
+            
+            
             $tag2 = 'p';
             $ps = $this->getElements($projectwidget, $tag2);
             $purposeLocation = explode('- ', trim($ps[0]->nodeValue)); //gets purpose & location separated by "- "
@@ -227,10 +318,10 @@ class ecrowdinvest extends p2pCompany {
 
                 if ($tempArray['marketplace_status'] == '100% financiado') {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                    $tempArray['marketplace_status'] = 2;
+                    $tempArray['marketplace_status'] = CONFIRMED;
                 } else {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
-                    $tempArray['marketplace_status'] = 1;
+                    $tempArray['marketplace_status'] = PERCENT;
                 }
             } else if ($tempArray['marketplace_status'] == 'En estudio') {
                 $tempArray['marketplace_statusLiteral'] = 'En estudio';
@@ -245,7 +336,7 @@ class ecrowdinvest extends p2pCompany {
             unset($tempArray);
         }
         $this->print_r2($totalArray);
-        return [$totalArray, false]; //$totaArray -> Investments / false -> ecrown doesnt have pagination
+        return [$totalArray, false, null, $structureRevision]; //$totaArray -> Investments / false -> ecrown doesnt have pagination
     }
 
     /**
@@ -384,5 +475,55 @@ class ecrowdinvest extends p2pCompany {
         $str = $this->doCompanyLogout();
         return true;
     }
+    
+     /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+
+                //We need remove this attribute directly from the div tag(the father)
+        $node1->removeAttribute('class');
+        $node1->removeAttribute('Style');
+        $node2->removeAttribute('class');
+        $node2->removeAttribute('Style');
+
+        
+        $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'img'),
+                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset'));
+
+                
+        $node1 = $this->clean_dom($node1, array( //Clear progress div
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
+
+        $node1 = $this->clean_dom_tag($node1, array(  
+            array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
+            array('typeSearch' => 'tagElement', 'tag' => 'span'), //Span tag causes problems
+        ));
+        
+        $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'a'),
+             array('typeSearch' => 'element', 'tag' => 'img'),
+                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset'));
+        
+        $node2 = $this->clean_dom($node2, array( //Clear progress div
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
+        
+        $node2 = $this->clean_dom_tag($node2, array(   
+            array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
+            array('typeSearch' => 'tagElement', 'tag' => 'span'), //Span tag causes problems
+        ));
+        
+        
+        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        return $structureRevision;
+    }
+    
 
 }

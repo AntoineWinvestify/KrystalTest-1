@@ -42,6 +42,12 @@
  * 2017-08-09      version 0.4
  * collectCompanyMarketplaceData -Completed investment read
  * collectHistorical  - added
+ * 
+ * 
+ * 2017-08-16
+ * Structure Revision added
+ * Status definition added
+ * 
 
   PENDING:
   Install dependencies of casperjs and phantomjs
@@ -84,14 +90,15 @@ class colectual extends p2pCompany {
          */
     }
 
+
     /**
-     *
      * 	Collects the marketplace data. We must login first in order to obtain the marketplace data
-     *       Colectual use casperjs to get the information
-     * 	@return array	Each investment option as an element of an array
-     * 	
+     *  Colectual use casperjs to get the information
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup) {
+    function collectCompanyMarketplaceData($companyBackup,$structure) {
 
         $readController = 0;
         $investmentController = false;
@@ -149,7 +156,50 @@ FRAGMENT
         $dom_xpath = new DOMXPath($dom);
         $projects = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
         $i = 0;
-        foreach ($projects as $project) {
+        foreach ($projects as $key => $project) {
+            
+            
+             if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                $newStructure = new DOMDocument;  //Get the old structure in db
+                $newStructure->loadHTML($structure['Structure']['structure_html']);
+                $newStructure->preserveWhiteSpace = false;
+                $trsNewStructure = $this->getElements($newStructure ,'div' , 'class', 'col-lg-4');
+
+                $saveStructure = new DOMDocument(); //CLone original structure in pfp page
+                $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                $saveStructure->saveHTML();
+                $originalStructure = $this->getElements($saveStructure ,'div' , 'class', 'col-lg-4');
+
+                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[3]);
+
+                echo 'structure: ' . $structureRevision . '<br>';
+
+                if (!$structureRevision) { //Save new structure
+                    echo 'Structural error<br>';
+                    $saveStructure = new DOMDocument();
+                    $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                    $clone = $container->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                    $structureRevision = $saveStructure->saveHTML();
+                    $totalArray = false;  //Structure control.
+                    break; //Stop reading if we have a structural error
+                }
+                echo 'Structure good';
+            }
+
+            if ($key == 0 && !$structure) { //Save new structure if is first time
+                echo 'no structure readed, saving structure <br>';
+                $saveStructure = new DOMDocument();
+                $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                $structureRevision = $saveStructure->saveHTML();
+            }
+            
+            
             $name = $project->getElementsByTagName('h2');
             $tempArray['marketplace_name'] = $name[0]->nodeValue;
             $purpose = $project->getElementsByTagName('h3');
@@ -169,7 +219,7 @@ FRAGMENT
 
                     //$tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
                     $tempArray["marketplace_statusLiteral"] = 'Completado';
-                    $tempArray["marketplace_status"] = 1;
+                    $tempArray["marketplace_status"] = PERCENT;
 
                     foreach ($companyBackup as $inversionBackup) { //If completed investment with same status in backup
                         if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
@@ -262,7 +312,7 @@ FRAGMENT
                 break;
             }
         }
-        return $totalArray;
+        return [$totalArray, $structureRevision];
     }
 
     /**
@@ -325,6 +375,49 @@ FRAGMENT
         $projects = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
         $i = 0;
         foreach ($projects as $project) {
+            
+            
+                         if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                $newStructure = new DOMDocument;  //Get the old structure in db
+                $newStructure->loadHTML($structure['Structure']['structure_html']);
+                $newStructure->preserveWhiteSpace = false;
+                $trsNewStructure = $this->getElements($newStructure ,'div' , 'class', 'col-lg-4');
+
+                $saveStructure = new DOMDocument(); //CLone original structure in pfp page
+                $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                $saveStructure->saveHTML();
+                $originalStructure = $this->getElements($saveStructure ,'div' , 'class', 'col-lg-4');
+
+                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[3]);
+
+                echo 'structure: ' . $structureRevision . '<br>';
+
+                if (!$structureRevision) { //Save new structure
+                    echo 'Structural error<br>';
+                    $saveStructure = new DOMDocument();
+                    $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                    $clone = $container->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                    $structureRevision = $saveStructure->saveHTML();
+                    $totalArray = false;  //Structure control.
+                    break; //Stop reading if we have a structural error
+                }
+                echo 'Structure good';
+            }
+
+            if ($key == 0 && !$structure) { //Save new structure if is first time
+                echo 'no structure readed, saving structure <br>';
+                $saveStructure = new DOMDocument();
+                $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                $clone = $container->cloneNode(TRUE);
+                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                $structureRevision = $saveStructure->saveHTML();
+            }
+                  
+            
             $name = $project->getElementsByTagName('h2');
             $tempArray['marketplace_name'] = $name[0]->nodeValue;
             $purpose = $project->getElementsByTagName('h3');
@@ -343,7 +436,7 @@ FRAGMENT
 
                     //$tempArray['marketplace_subscriptionProgress'] = 10000;		// completed, retrasado orr amortización ..
                     $tempArray["marketplace_statusLiteral"] = 'Completado';
-                    $tempArray["marketplace_status"] = 1;
+                    $tempArray["marketplace_status"] = PERCENT;
                     $subscriptionProgress = false;
                 }
             }
@@ -428,7 +521,7 @@ FRAGMENT
 
             $i++;
         }
-        return [$totalArray, false];
+        return [$totalArray, false, null, $structureRevision];
     }
 
     /**
@@ -535,6 +628,39 @@ FRAGMENT
           echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>"; */
         return true;
     }
+    
+         /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+
+
+         $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'img'),
+                ), array('src', 'ng-src'));
+         
+        $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'label'), //label class contain rating
+                ), array('class'));
+                  
+        $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'img'),
+                ), array('src', 'ng-src'));
+         
+       $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'label'), //label class contain rating
+                ), array('class'));
+        
+        
+        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        return $structureRevision;
+    }
+    
 
 }
 

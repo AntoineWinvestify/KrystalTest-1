@@ -109,7 +109,7 @@ class MarketPlacesController extends AppController {
         $geoData = $this->getGeoLocationData($userIp);          // Where is the user?
 
         $countryCode = $geoData['country_code'];
-        $filterConditions = array('Company.company_country' => $countryCode);
+        $filterConditions = array('Company.company_country' => $countryCode, 'company_showInGlobalMarketplace' => 1);
 
         $results = $this->Company->getCompanyList($filterConditions);
         $filterConditions = array('company_id' => $results);
@@ -200,13 +200,16 @@ class MarketPlacesController extends AppController {
 
         $locationData = $this->Session->read('locationData');
         $locationData['country_code'] = "ES";
-        $filterConditions = array('Company.company_country' => $locationData['country_code']);
+        $filterConditions = array('Company.company_country' => $locationData['country_code'], 'company_showInGlobalMarketplace' => 1);
 
-        $companyResults = $this->Company->getCompanyDataList($filterConditions);
-
+        $companyResults = $this->Company->getCompanyDataList($filterConditions); 
         $this->set('companyResults', $companyResults);
-        $marketPlaceResults = $this->Marketplace->getMarketplaceDataList();
-
+        
+        $filterConditions = array('company_showInGlobalMarketplace' => 1);
+        $CompanyIdresults = $this->Company->getCompanyList($filterConditions);
+        
+        $filterConditions = array('company_id' => $CompanyIdresults);
+        $marketPlaceResults = $this->Marketplace->getMarketplaceDataList($filterConditions);
         $this->set('marketPlaceResults', $marketPlaceResults);
     }
 
@@ -223,7 +226,7 @@ class MarketPlacesController extends AppController {
         $this->pageTitle = "MarketPlace";
 
         $country_code = $this->Session->read('locationData.country_code');
-        $filterConditions = array('Company.company_country' => $country_code);
+        $filterConditions = array(/*'Company.company_country' => $country_code,*/ 'company_showInGlobalMarketplace' => 1);
         $results = $this->Company->getCompanyList($filterConditions);
 
         $filterConditions = array('company_id' => $results);
@@ -253,7 +256,6 @@ class MarketPlacesController extends AppController {
         $this->Structure = ClassRegistry::init('Structure');
 
         $country = "ES";
-        echo "country = $country and ip = $ip<br>";
 
         $filterConditions = array('Company.company_country' => $country);
         $companyDataResult = $this->Company->getCompanyDataList($filterConditions);
@@ -339,20 +341,23 @@ class MarketPlacesController extends AppController {
             echo 'Saving new structure';
             $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
             if (!$marketplaceArray[0]) {
+                
                 echo 'Sending error report';
             }
         }
 
 
-        foreach ($marketplaceArray[0] as $investment) {
+        foreach ($marketplaceArray[0] as $investment) { //Read the investment
             $DontExist = true;
             $backup = true;
             $investment['company_id'] = $companyId;
 
             foreach ($companyMarketplace as $marketplaceInvestment) {
+
                 if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
                     $DontExist = false;
-                    echo "Investment alreadty exist<br>";
+                    echo "Investment already exist<br>";
+                     $investment['marketplace_investmentCreationDate'] = $marketplaceInvestment['marketplace_investmentCreationDate'];
                     if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If is completed
                         echo "Investment completed<br>";
 
@@ -389,6 +394,7 @@ class MarketPlacesController extends AppController {
                     echo "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
                         $backup = false;
+                        $investment['marketplace_investmentCreationDate'] = $investmentBackup['marketplace_investmentCreationDate'];
                         if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplace']['marketplace_loanReference']) { //If it exist in winvestify backup
                             if ($investment['marketplace_status'] == $investmentBackup['Marketplace']['marketplace_status']) { //Same status
                                 echo 'Ignore<br>';
@@ -397,6 +403,10 @@ class MarketPlacesController extends AppController {
                             }
                         }
                     } if ($backup) { //If it not exist in winvestify backup
+
+                        $date = new DateTime();
+                        $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
+                        
                         //Save in backup
                         $this->Marketplacebackup->create();
                         $this->Marketplacebackup->save($investment);
@@ -407,6 +417,9 @@ class MarketPlacesController extends AppController {
                 } else {  //If isn't completed
                     echo "Investment incompleted<br>";
 
+                      $date = new DateTime();
+                        $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
+                    
                     //Add to marketplace
                     $this->Marketplace->create();
                     $this->Marketplace->save($investment);
@@ -431,7 +444,7 @@ class MarketPlacesController extends AppController {
         $repeat = true; //Read another page
         $start = 0; //For pagination
         if ($hasMultplePages) {
-            $type = PROMISSORY_NOTE;
+            $type = PROMISSORY_NOTE; //Is definead as 1
         }
 
         $companyConditions = array('Company.id' => $companyId);
@@ -473,6 +486,8 @@ class MarketPlacesController extends AppController {
             $this->print_r2($marketplaceArray);
             foreach ($marketplaceArray[0] as $investment) {
                 $investment['company_id'] = $companyId;
+                                      $date = new DateTime();
+                        $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
                 echo __FUNCTION__ . __LINE__ . "PFP Backup Saving:<br>";
                 $this->print_r2($investment);
                 $this->Marketplacebackup->create();
@@ -1009,6 +1024,52 @@ class MarketPlacesController extends AppController {
      */
     public function addRequetsToQueueCurls($request) {
         $this->queueCurls->attach($request);
+    }
+
+    public function importBackupExcel() {
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+            
+        $currentDateTime = date('Y-m-d_H:i:s');
+
+        // $filter = $this->request->params['filters'];
+        $filter = null;
+        $backup = $this->Marketplacebackup->getBackup($filter);
+
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getProperties()->setTitle("BackupExcel");
+
+        $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'id')
+                ->setCellValue('B1', 'company_id')
+                ->setCellValue('C1', 'marketplace_amount')
+                ->setCellValue('D1', 'marketplace_amountTotal')
+                ->setCellValue('E1', 'marketplace_duration')
+                ->setCellValue('F1', 'marketplace_durationUnit')
+                ->setCellValue('G1', 'marketplace_category')
+                ->setCellValue('H1', 'marketplace_rating')
+                ->setCellValue('I1', 'marketplace_interestRate')
+                ->setCellValue('J1', 'marketplace_purpose')
+                ->setCellValue('K1', 'marketplace_status')
+                ->setCellValue('L1', 'marketplace_statusLiteral')
+                ->setCellValue('M1', 'marketplace_timeLeft')
+                ->setCellValue('N1', 'marketplace_timeLeftUnit')
+                ->setCellValue('O1', 'marketplace_name')
+                ->setCellValue('P1', 'marketplace_loanReference')
+                ->setCellValue('Q1', 'marketplace_subscriptionProgress')
+                ->setCellValue('R1', 'marketplace_sector')
+                ->setCellValue('S1', 'marketplace_requestorLocation')
+                ->setCellValue('T1', 'marketplace_numberOfInvestors')
+                ->setCellValue('U1', 'marketplace_origCreated')
+                ->setCellValue('V1', 'marketplace_productType')
+                ->setCellValue('W1', 'marketplace_country')
+                ->setCellValue('X1', 'created');
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="BackupMarketplace_' . $currentDateTime . '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
     }
 
 }

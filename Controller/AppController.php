@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                         |
  * +-----------------------------------------------------------------------+
@@ -84,6 +84,8 @@ Added new function to get sectors of the leftnavigationmenu by role
  * [2017-07-14] Version 0.7
  * Files type defined
  * 
+ * 2017/08/17
+ * All constant moved.
  * 
  *  PENDING:
  * -
@@ -97,7 +99,7 @@ App::uses('Controller', 'Controller');
 
 //Global constants for all the controllers, models and views
 
-define("NOT_ACTIVE", 0);
+/*define("NOT_ACTIVE", 0);
 define("ACTIVE", 1);
 define("HOUR", 4);
 define("DAY", 1);
@@ -291,10 +293,11 @@ define('FUNDING', 3);
 define('MARKETPLACELOOP', 1);
 define('HISTORICAL', 2);
 
-//MARKETPLACE INVESTMENT TYPE
+//MARKETPLACE INVESTMENT TYPE STATUS
 define('PERCENT', 1);
 define('CONFIRMED', 2);
-define('REJECTED', 3);
+define('BEFORE_CONFIRMED', 3);
+define('REJECTED', 4);*/
 
 //
 

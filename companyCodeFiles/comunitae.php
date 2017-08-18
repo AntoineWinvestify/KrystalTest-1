@@ -177,7 +177,7 @@ function __construct() {
                         $clone = $container[0]->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                         $saveStructure->saveHTML();
-                        $originalStructure = $newStructure->getElementsByTagName('article');
+                        $originalStructure = $saveStructure->getElementsByTagName('article');
 
                         $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
@@ -391,7 +391,7 @@ function __construct() {
         }
 
         if ($totalArray !== false) { // If we find a structural error, dont read.
-            foreach ($rows as $row) {
+            foreach ($rows as $key => $row) {
 
 
                 if ($key == 0 && $structure) { //Compare structures, olny compare the first element

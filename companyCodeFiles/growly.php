@@ -1,53 +1,57 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+/**
+ * +-----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +-----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | GNU General Public License for more details.        			|
+ * +-----------------------------------------------------------------------------+
+ *
+ *
+ * @author 
+ * @version 0.3
+ * @date 2017-01-28
+ * @package
  *
  *
  * Contains the code required for accessing the website of "grow.ly"
  *
- * 
- * @author Antoine de Poorter
- * @version 0.1
- * @date 2016-08-12
- * @package
-
-  function calculateLoanCost()										[Not OK]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()										[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
-  parallelization                                                                                         [OK, tested]
-
-
-  2016-08-12	  version 2016_0.1
-  Basic version
-
-  2017-05-24
+ *
+ *
+ * function calculateLoanCost()										[Not OK]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * parallelization                                                                                         [OK, tested]
+ *
+ *
+ * 2016-08-12	  version 2016_0.1
+ * Basic version
+ *
+ * 2017-05-24
  * Added parallelization 
  * Added dom verification
-
-  2017-08-03
+ *
+ * 2017-08-03
  * Growly adaptation 100%
  *  collectCompanyMarketplaceData - Pagination loop added
  *  collectHistorical   -   Added
-  TODO
-
-
+ *
+ * 
+ * 2017-08-16
+ * Structure Revision added
+ * Status definition added
+ * 
+ *
+ *
  */
-
 class growly extends p2pCompany {
 
     function __construct() {
@@ -76,15 +80,16 @@ class growly extends p2pCompany {
     }
 
     /**
-     *  	Collects the marketplace data
+     * Collects the marketplace data
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      * 
-     * @param type $companyBackup
-     * @return string
-     * 	SHOULD also use getMonetaryValue, getPercentage and getDurationValue functions
-     * 	add check for "dìas" and marketplace_daysLeft (not tested yet)
-      redo marketplace_duration and use methods in base class  (not tested yet)
+     * SHOULD also use getMonetaryValue, getPercentage and getDurationValue functions
+     * add check for "dìas" and marketplace_daysLeft (not tested yet)
+     * redo marketplace_duration and use methods in base class  (not tested yet)
      */
-    function collectCompanyMarketplaceData($companyBackup) {
+    function collectCompanyMarketplaceData($companyBackup, $structure) {
 
         $page = 1;
         $url = array_shift($this->urlSequence);
@@ -107,121 +112,166 @@ class growly extends p2pCompany {
             $rows = $table->item(0)->getElementsByTagName('tr');
             echo 'contar ' . count($rows);
             $index = -1;
-            foreach ($rows as $row) {
-                $index++;
+            if ($totalArray !== false) {
+                foreach ($rows as $key => $row) {
 
-                if ($index == 0) {
-                    continue;  // don't check contents of first "tr"
-                }
 
-                $loanId = preg_replace('/\D/', '', $row->getAttribute('id'));
-                $tempArray['marketplace_loanReference'] = $loanId;
-                $tempArray['marketplace_country'] = 'ES'; //Growly is from Spain
-                $tds = $row->getElementsByTagName('td');
-                foreach ($tds as $td) {
+                    if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                        $newStructure = new DOMDocument;  //Get the old structure in db
+                        $newStructure->loadHTML($structure['Structure']['structure_html']);
+                        $newStructure->preserveWhiteSpace = false;
+                        $trsNewStructure = $newStructure->getElementsByTagName('tr');
 
-                    $checkedAttribute = $td->getAttribute('class');
-                    if (strcasecmp(trim($checkedAttribute), 'intro') == 0) {
-                        $as = $td->getElementsByTagName('a');
-                        foreach ($as as $item) {   // only 1 <strong> exists
-                            $tempArray['marketplace_purpose'] = $item->nodeValue;
+                        $saveStructure = new DOMDocument(); //CLone original structure in pfp page
+                        $container = $dom->getElementsByTagName('tbody')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $saveStructure->saveHTML();
+                        $originalStructure = $saveStructure->getElementsByTagName('tr');
+
+                        $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
+
+                        echo 'structure: ' . $structureRevision . '<br>';
+
+                        if (!$structureRevision) { //Save new structure
+                            echo 'Structural error<br>';
+                            $saveStructure = new DOMDocument();
+                            $container = $dom->getElementsByTagName('tbody')[0];
+                            $clone = $container->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                            $structureRevision = $saveStructure->saveHTML();
+                            $totalArray = false;  //Structure control, don't read more investmnets 
+                            $reading = false; //Stop pagination in error
+                            break; //Stop reading if we have a structural error
                         }
-
-                        $ps = $td->getElementsByTagName('p');
-                        foreach ($ps as $item) {   // only 1 <strong> exists
-                            $tempArray['marketplace_vencimiento'] = $item->nodeValue;
-                        }
+                        echo 'Structure good';
                     }
 
-                    $checkedAttribute = $td->getAttribute('data-meta');
-                    if (strcasecmp(trim($checkedAttribute), 'interest') == 0) {
-                        $strongs = $td->getElementsByTagName('strong');
-                        foreach ($strongs as $strong) { // only 1 <strong> exists
-                            $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($strong->nodeValue));
-                        }
+                    if ($key == 0 && !$structure) { //Save new structure if is first time
+                        echo 'no structure readed, saving structure <br>';
+                        $saveStructure = new DOMDocument();
+                        $container = $dom->getElementsByTagName('tbody')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $structureRevision = $saveStructure->saveHTML();
                     }
 
-                    $checkedAttribute = $td->getAttribute('data-meta');
-                    if (strcasecmp(trim($checkedAttribute), 'rating') == 0) {
-                        $tempArray['marketplace_rating'] = trim($td->nodeValue);
+                    $index++;
+
+                    if ($index == 0) {
+                        continue;  // don't check contents of first "tr"
                     }
 
-                    $checkedAttribute = $td->getAttribute('data-meta');
-                    if (strcasecmp(trim($checkedAttribute), 'term') == 0) {
+                    $loanId = preg_replace('/\D/', '', $row->getAttribute('id'));
+                    $tempArray['marketplace_loanReference'] = $loanId;
+                    $tempArray['marketplace_country'] = 'ES'; //Growly is from Spain
+                    $tds = $row->getElementsByTagName('td');
+                    foreach ($tds as $td) {
 
-                        $strongs = $td->getElementsByTagName('strong');
-                        foreach ($strongs as $strong) { // only 1 <strong> exists
-                            if (is_numeric(trim($strong->nodeValue))) {
-                                $tempDuration = trim($strong->nodeValue);
+                        $checkedAttribute = $td->getAttribute('class');
+                        if (strcasecmp(trim($checkedAttribute), 'intro') == 0) {
+                            $as = $td->getElementsByTagName('a');
+                            foreach ($as as $item) {   // only 1 <strong> exists
+                                $tempArray['marketplace_purpose'] = $item->nodeValue;
+                            }
+
+                            $ps = $td->getElementsByTagName('p');
+                            foreach ($ps as $item) {   // only 1 <strong> exists
+                                $tempArray['marketplace_vencimiento'] = $item->nodeValue;
                             }
                         }
-                        $spans = $td->getElementsByTagName('span');
-                        foreach ($spans as $span) { // only 1 <span> exists	
-                            $duration = $tempDuration . " " . trim($span->nodeValue);
-                        }
-                        list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($duration);
-                    }
 
-                    $checkedAttribute = $td->getAttribute('data-meta');
-                    if (strcasecmp(trim($checkedAttribute), 'time') == 0) {
-
-                        $strongs = $td->getElementsByTagName('strong');
-                        foreach ($strongs as $strong) { // only 1 <strong> exists
-                            if (is_numeric(trim($strong->nodeValue))) {
-                                $tempTimeLeft = trim($strong->nodeValue);
+                        $checkedAttribute = $td->getAttribute('data-meta');
+                        if (strcasecmp(trim($checkedAttribute), 'interest') == 0) {
+                            $strongs = $td->getElementsByTagName('strong');
+                            foreach ($strongs as $strong) { // only 1 <strong> exists
+                                $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($strong->nodeValue));
                             }
                         }
 
-                        $spans = $td->getElementsByTagName('span');
-                        foreach ($spans as $span) { // only 1 <span> exists	
-                            $timeLeft = $tempTimeLeft . " " . trim($span->nodeValue);
-                            $timeStatus = trim($span->nodeValue);
-                        }
-                        list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
-                    }
-
-                    $checkedAttribute = $td->getAttribute('data-meta');
-                    if (strcasecmp(trim($checkedAttribute), 'funding') == 0) {
-                        $strongs = $td->getElementsByTagName('strong');
-                        foreach ($strongs as $strong) { // only 1 <strong> exists
-                            $tempArray['marketplace_amount'] = $this->getMonetaryValue(trim($strong->nodeValue));
+                        $checkedAttribute = $td->getAttribute('data-meta');
+                        if (strcasecmp(trim($checkedAttribute), 'rating') == 0) {
+                            $tempArray['marketplace_rating'] = trim($td->nodeValue);
                         }
 
-                        $spans = $td->getElementsByTagName('span');
-                        foreach ($spans as $span) {  // only 1 <span> exists
-                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
-                            if ($tempArray['marketplace_subscriptionProgress'] == 10000) { //Completed
-                                if ($tempArray['marketplace_timeLeftUnit'] == -1) {
-                                    //If we dont have time left    
-                                    $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                                    $tempArray['marketplace_status'] = 2;
-                                } else {
-                                    //If we have time left    
-                                    $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-                                    $tempArray['marketplace_status'] = 1;
+                        $checkedAttribute = $td->getAttribute('data-meta');
+                        if (strcasecmp(trim($checkedAttribute), 'term') == 0) {
+
+                            $strongs = $td->getElementsByTagName('strong');
+                            foreach ($strongs as $strong) { // only 1 <strong> exists
+                                if (is_numeric(trim($strong->nodeValue))) {
+                                    $tempDuration = trim($strong->nodeValue);
                                 }
+                            }
+                            $spans = $td->getElementsByTagName('span');
+                            foreach ($spans as $span) { // only 1 <span> exists	
+                                $duration = $tempDuration . " " . trim($span->nodeValue);
+                            }
+                            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($duration);
+                        }
 
-                                foreach ($companyBackup as $inversionBackup) { // If we have the completed inversion with the same status
-                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
-                                        $readController++;
-                                        $investmentController = true;
+                        $checkedAttribute = $td->getAttribute('data-meta');
+                        if (strcasecmp(trim($checkedAttribute), 'time') == 0) {
+
+                            $strongs = $td->getElementsByTagName('strong');
+                            foreach ($strongs as $strong) { // only 1 <strong> exists
+                                if (is_numeric(trim($strong->nodeValue))) {
+                                    $tempTimeLeft = trim($strong->nodeValue);
+                                }
+                            }
+
+                            $spans = $td->getElementsByTagName('span');
+                            foreach ($spans as $span) { // only 1 <span> exists	
+                                $timeLeft = $tempTimeLeft . " " . trim($span->nodeValue);
+                                $timeStatus = trim($span->nodeValue);
+                            }
+                            list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
+                        }
+
+                        $checkedAttribute = $td->getAttribute('data-meta');
+                        if (strcasecmp(trim($checkedAttribute), 'funding') == 0) {
+                            $strongs = $td->getElementsByTagName('strong');
+                            foreach ($strongs as $strong) { // only 1 <strong> exists
+                                $tempArray['marketplace_amount'] = $this->getMonetaryValue(trim($strong->nodeValue));
+                            }
+
+                            $spans = $td->getElementsByTagName('span');
+                            foreach ($spans as $span) {  // only 1 <span> exists
+                                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
+                                if ($tempArray['marketplace_subscriptionProgress'] == 10000) { //Completed
+                                    if ($tempArray['marketplace_timeLeftUnit'] == -1) {
+                                        //If we dont have time left    
+                                        $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                    } else {
+                                        //If we have time left    
+                                        $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                        $tempArray['marketplace_status'] = PERCENT;
                                     }
+
+                                    foreach ($companyBackup as $inversionBackup) { // If we have the completed inversion with the same status
+                                        if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                                            $readController++;
+                                            $investmentController = true;
+                                        }
+                                    }
+                                } else {
+                                    $tempArray['marketplace_statusLiteral'] = 'En proceso';
                                 }
-                            } else {
-                                $tempArray['marketplace_statusLiteral'] = 'En proceso';
                             }
                         }
                     }
-                }
 
-                $investmentNumber++; //Add investment
+                    $investmentNumber++; //Add investment
 
-                if ($investmentController) { //Don't save a already existing investment
-                    unset($tempArray);
-                    $investmentController = false;
-                } else {
-                    $totalArray[] = $tempArray;
-                    unset($tempArray);
+                    if ($investmentController) { //Don't save a already existing investment
+                        unset($tempArray);
+                        $investmentController = false;
+                    } else {
+                        $totalArray[] = $tempArray;
+                        unset($tempArray);
+                    }
                 }
             }
             $page++; //Adance page
@@ -229,18 +279,19 @@ class growly extends p2pCompany {
                 $reading = false;
             } //Stop reading
         }
-        return $totalArray;
+        return [$totalArray, $structureRevision];
     }
 
-    /**
-     * Collect historical 
-     * 
-     * @param boolean $pageNumber
-     * @param type $type
-     * @return type
-     */
-    function collectHistorical($pageNumber) {
+    
+  /**
+   * Collect historical
+   * @param Array $structure
+   * @param Int $pageNumber
+   * @return Array
+   */
+    function collectHistorical($structure, $pageNumber) {
 
+        $totalArray = array();
         $pageNumber++; //Advance page, we sent 0, growly first page is 1.
         $investmentNumber = 0;
 
@@ -257,7 +308,50 @@ class growly extends p2pCompany {
         $rows = $table->item(0)->getElementsByTagName('tr');
 
         $index = -1;
-        foreach ($rows as $row) {
+         if ($totalArray !== false) {
+           foreach ($rows as $key => $row) {
+            
+            
+            if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                        $newStructure = new DOMDocument;  //Get the old structure in db
+                        $newStructure->loadHTML($structure['Structure']['structure_html']);
+                        $newStructure->preserveWhiteSpace = false;
+                        $trsNewStructure = $newStructure->getElementsByTagName('tr');
+
+                        $saveStructure = new DOMDocument(); //CLone original structure in pfp page
+                        $container = $dom->getElementsByTagName('tbody')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $saveStructure->saveHTML();
+                        $originalStructure = $saveStructure->getElementsByTagName('tr');
+
+                        $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
+
+                        echo 'structure: ' . $structureRevision . '<br>';
+
+                        if (!$structureRevision) { //Save new structure
+                            echo 'Structural error<br>';
+                            $saveStructure = new DOMDocument();
+                            $container = $dom->getElementsByTagName('tbody')[0];
+                            $clone = $container->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                            $structureRevision = $saveStructure->saveHTML();
+                            $totalArray = false;  //Structure control, don't read more investmnets 
+                            break; //Stop reading if we have a structural error
+                        }
+                        echo 'Structure good';
+                    }
+
+                    if ($key == 0 && !$structure) { //Save new structure if is first time
+                        echo 'no structure readed, saving structure <br>';
+                        $saveStructure = new DOMDocument();
+                        $container = $dom->getElementsByTagName('tbody')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $structureRevision = $saveStructure->saveHTML();
+                    }
+              
             $index++;
 
             if ($index == 0) {
@@ -346,11 +440,11 @@ class growly extends p2pCompany {
                             if ($tempArray['marketplace_timeLeftUnit'] == -1) {
                                 //If we dont have time left    
                                 $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                                $tempArray['marketplace_status'] = 2;
+                                $tempArray['marketplace_status'] = CONFIRMED;
                             } else {
                                 //If we have time left    
                                 $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-                                $tempArray['marketplace_status'] = 1;
+                                $tempArray['marketplace_status'] = PERCENT;
                             }
                         } else {
                             $tempArray['marketplace_statusLiteral'] = 'En proceso';
@@ -362,13 +456,13 @@ class growly extends p2pCompany {
             $totalArray[] = $tempArray;
             unset($tempArray);
             $investmentNumber++;
-        }
+    }}
 
         echo 'Aqui ' . $investmentNumber;
         if ($investmentNumber < 10) {
             $pageNumber = false;
         } //Stop reading when we dont find investmet
-        return [$totalArray, $pageNumber]; //$total array is the rquested investment, $pageNumber is the next page, return false if is the last page
+        return [$totalArray, $pageNumber, null, $structureRevision]; //$total array is the rquested investment, $pageNumber is the next page, return false if is the last page
     }
 
     /**
@@ -765,6 +859,39 @@ class growly extends p2pCompany {
             }
         }
         return PAYMENT_DELAYED;    // Nothing found so I invent something
+    }
+
+    /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+
+
+        //We need remove this attribute directly from the td tag(the father)
+        $node1->removeAttribute('class');
+        $node1->removeAttribute('id');
+        $node2->removeAttribute('class');
+        $node2->removeAttribute('id');
+
+
+        $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('href', 'src', 'alt', 'title', 'aria-valuenow', 'style'));
+
+        $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('href', 'src', 'alt', 'title', 'aria-valuenow', 'style'));
+
+
+        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        return $structureRevision;
     }
 
 }

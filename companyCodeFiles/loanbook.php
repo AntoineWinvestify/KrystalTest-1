@@ -1,61 +1,60 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+/**
+ * +-----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +-----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | GNU General Public License for more details.        			|
+ * +-----------------------------------------------------------------------------+
  *
  *
- * Contains the code required for accessing the website of "Comunitae"
- *
- * 
- * @author Antoine de Poorter
- * @version 0.1
- * @date 2016-10-05
+ * @author 
+ * @version 0.3
+ * @date 2017-01-28
  * @package
-
-
-  function calculateLoanCost()										[OK not tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()										[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
-  function companyUserLogout()										[OK, tested]
-  parallelization                                                                                         [OK, tested]
-
-  2016-10-05	  version 2016_0.1
-  Basic version
-
-  2017-04-27
-  Duration fixed
-
-  2017-05-16       version 2017_0.2
+ *
+ *
+ * function calculateLoanCost()										[OK not tested]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * function companyUserLogout()										[OK, tested]
+ * parallelization                                                                                         [OK, tested]
+ *
+ * 2016-10-05	  version 2016_0.1
+ * Basic version
+ *
+ * 2017-04-27
+ * Duration fixed
+ *
+ * 2017-05-16       version 2017_0.2
  * Added parallelization
  * Added logout
  * Added verification of dom elements
  * 
-
-  2017-08-01      version 0.3
+ *
+ * 2017-08-01      version 0.3
  * Fixed error to take more than one investment on lines 364 and 395
-
-  2017-08-04
+ *
+ * 2017-08-04
  * collectCompanyMarketplaceData - read completed investment
  * collectHistorical - added
-  PENDING:
-
-
+ * 
+ * 2017-08-16
+ * Structure Revision added
+ * Status definition added
+ * 
+ * PENDING:
+ *
+ *
  */
-
 class loanbook extends p2pCompany {
 
     function __construct() {
@@ -89,12 +88,12 @@ class loanbook extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the marketplace data
-     * 	@return array	Each investment option as an element of an array
-     * 	
+     * Collects the marketplace data.
+    * @param Array $companyBackup
+     * @param Array $structure
+     * @return array
      */
-    function collectCompanyMarketplaceData($companyBackup) { //loanbook doesnt have pagination, it uses one table
+    function collectCompanyMarketplaceData($companyBackup, $structure) { //loanbook doesnt have pagination, it uses one table
         $readController = 0;
         $investmentController = false;
 
@@ -109,155 +108,195 @@ class loanbook extends p2pCompany {
         foreach ($sections as $section) {
 
             $trs = $section->getElementsByTagName('tr');
-            foreach ($trs as $tr) {
+            if ($totalArray !== false) {
+                foreach ($trs as $key => $tr) {
 
-                $tempAttribute = $tr->getAttribute('class');
-                if ($tempAttribute == 'fila_subasta' || $tempAttribute == 'fila_subasta tablesorter-childRow') {
 
-                    $tds = $tr->getElementsByTagName('td');
-                    $index = -1;
-                    foreach ($tds as $td) {
-                        $index++;
-                        // $this->print_r2($td);
-                        switch ($index) {
-                            case 0:
-                                $tempArray['marketplace_country'] = 'ES';
-                                break;
-                            case 1:
-                                $divs = $td->getElementsByTagName('div');
-                                foreach ($divs as $div) {
+                    if ($key == 0 && $structure) { //Compare structures, olny compare the first element
+                        $newStructure = new DOMDocument;
+                        $newStructure->loadHTML($structure['Structure']['structure_html']);
+                        $newStructure->preserveWhiteSpace = false;
+                        $trsNewStructure = $this->getElements($newStructure, 'tr', 'class', 'fila_subasta');
 
-                                    $tempData = explode(",", $div->nodeValue);
-                                    $tempDataAmount = explode(" ", $tempData[count($tempData) - 1]);
+                        $saveStructure = new DOMDocument();
+                        $clone = $section->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $saveStructure->saveHTML();
+                        $originalStructure = $this->getElements($saveStructure, 'tr', 'class', 'fila_subasta');
 
-                                    if (count($tempData) == 3) { //If the purpose have a ',' we need fix our array.
-                                        $tempData[0] = $tempData[0] . $tempData[1];
-                                        $tempData[1] = $tempData[2];
-                                    }
-                                    $loanReference = explode("€", str_replace(" ", "", $tempData[1]));
+                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[1]);
 
-                                    //print_r($tempData);
-                                    $tempDataAux = explode(" ", $tempData[0]);
+                        echo 'structure: ' . $structureRevision . '<br>';
 
-                                    $max = count($tempDataAux);
-                                    foreach ($tempDataAux as $key => $tmp) {
-                                        //echo 'Ascii ' .$key . " :". ord($locationArray) . '/';
-                                        if (!$tmp) {
-                                            unset($tempDataAux[$key]);
+                        if (!$structureRevision) { //Save new structure
+                            echo 'Structural error<br>';
+                            $saveStructure = new DOMDocument();
+                            $clone = $section->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                            $structureRevision = $saveStructure->saveHTML();
+                            $totalArray = false;  //Structure control, don't read more tr 
+                            break; //Stop reading if we have a structural error
+                        }
+                        echo 'Structure good';
+                    }
+
+                    if ($key == 0 && !$structure) { //Save new structure if is first time
+                        echo 'no structure readed, saving structure <br>';
+                        $saveStructure = new DOMDocument();
+                        $clone = $section->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $structureRevision = $saveStructure->saveHTML();
+                    }
+
+
+                    $tempAttribute = $tr->getAttribute('class');
+                    if ($tempAttribute == 'fila_subasta' || $tempAttribute == 'fila_subasta tablesorter-childRow') {
+
+                        $tds = $tr->getElementsByTagName('td');
+                        $index = -1;
+                        foreach ($tds as $td) {
+                            $index++;
+                            // $this->print_r2($td);
+                            switch ($index) {
+                                case 0:
+                                    $tempArray['marketplace_country'] = 'ES';
+                                    break;
+                                case 1:
+                                    $divs = $td->getElementsByTagName('div');
+                                    foreach ($divs as $div) {
+
+                                        $tempData = explode(",", $div->nodeValue);
+                                        $tempDataAmount = explode(" ", $tempData[count($tempData) - 1]);
+
+                                        if (count($tempData) == 3) { //If the purpose have a ',' we need fix our array.
+                                            $tempData[0] = $tempData[0] . $tempData[1];
+                                            $tempData[1] = $tempData[2];
                                         }
-                                    }
-                                    unset($tempDataAux[0]);
+                                        $loanReference = explode("€", str_replace(" ", "", $tempData[1]));
 
-                                    $sector = '';
-                                    $auxKey = 0;
+                                        //print_r($tempData);
+                                        $tempDataAux = explode(" ", $tempData[0]);
 
-                                    foreach ($tempDataAux as $key => $sectorArray) {
-                                        if (ord($sectorArray) == LINE_FEED) {
-                                            $auxKey = $key;
-                                            break;
+                                        $max = count($tempDataAux);
+                                        foreach ($tempDataAux as $key => $tmp) {
+                                            //echo 'Ascii ' .$key . " :". ord($locationArray) . '/';
+                                            if (!$tmp) {
+                                                unset($tempDataAux[$key]);
+                                            }
+                                        }
+                                        unset($tempDataAux[0]);
+
+                                        $sector = '';
+                                        $auxKey = 0;
+
+                                        foreach ($tempDataAux as $key => $sectorArray) {
+                                            if (ord($sectorArray) == LINE_FEED) {
+                                                $auxKey = $key;
+                                                break;
+                                            }
+
+                                            $sector = $sector . $sectorArray . ' ';
                                         }
 
-                                        $sector = $sector . $sectorArray . ' ';
-                                    }
-
-                                    $location = '';
-                                    for ($i = $auxKey + 1; $i <= $max; $i++) {
-                                        echo $i . ': ' . $tempDataAux[$i];
-                                        if ($tempDataAux[$i]) {
-                                            $location = $location . $tempDataAux[$i] . ' ';
+                                        $location = '';
+                                        for ($i = $auxKey + 1; $i <= $max; $i++) {
+                                            echo $i . ': ' . $tempDataAux[$i];
+                                            if ($tempDataAux[$i]) {
+                                                $location = $location . $tempDataAux[$i] . ' ';
+                                            }
                                         }
-                                    }
 
 
 
-                                    //$tempArray['marketplace_sector'] = $sector;
-                                    $tempArray['marketplace_requestorLocation'] = $location;
-                                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($tempDataAmount[1]);
-                                    $tempArray['marketplace_loanReference'] = trim($loanReference[1]);
-                                    $as = $div->getElementsByTagName('a');  //just one is found
-                                    foreach ($as as $a) {
-                                        $tempArray['marketplace_purpose'] = trim($a->nodeValue);
+                                        //$tempArray['marketplace_sector'] = $sector;
+                                        $tempArray['marketplace_requestorLocation'] = $location;
+                                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($tempDataAmount[1]);
+                                        $tempArray['marketplace_loanReference'] = trim($loanReference[1]);
+                                        $as = $div->getElementsByTagName('a');  //just one is found
+                                        foreach ($as as $a) {
+                                            $tempArray['marketplace_purpose'] = trim($a->nodeValue);
+                                        }
+                                        break;
                                     }
                                     break;
-                                }
-                                break;
-                            case 2:
-                                $tempProductType = trim($td->nodeValue);
-                                if (stripos($tempProductType, "stamo")) {  // LOAN
-                                    $tempArray['marketplace_productType'] = LOAN;
-                                }
-                                if (stripos($tempProductType, "agar")) {  // PAGARÉ
-                                    $tempArray['marketplace_productType'] = PAGARE;
-                                }
-                                break;
-                            case 3:
-                                $tempArray['marketplace_rating'] = trim($td->nodeValue);
-                                break;
-                            case 4:
-                                break;
-                            case 5:
-                                $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
-                                break;
-                            case 7:
-                                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
-                                break;
-                            case 6:
-                                break;
-                            case 8:
-                                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
-                                break;
-                            case 9:
-                                list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($td->nodeValue);
-                                break;
-                        }
-                    }
-                    //$this->print_r2($tempArray);
-                    if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-                        if ($tempArray['marketplace_timeLeft']) {
-                            $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-                            $tempArray['marketplace_status'] = 1;
-                        } else {
-                            $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                            $tempArray['marketplace_status'] = 2;
-                            $tempArray['marketplace_timeLeft'] = 0;
-                        }
-
-                        foreach ($companyBackup as $inversionBackup) { //If completed with same status in backup
-                            if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
-                                $readController++;
-                                $investmentController = true;
+                                case 2:
+                                    $tempProductType = trim($td->nodeValue);
+                                    if (stripos($tempProductType, "stamo")) {  // LOAN
+                                        $tempArray['marketplace_productType'] = LOAN;
+                                    }
+                                    if (stripos($tempProductType, "agar")) {  // PAGARÉ
+                                        $tempArray['marketplace_productType'] = PAGARE;
+                                    }
+                                    break;
+                                case 3:
+                                    $tempArray['marketplace_rating'] = trim($td->nodeValue);
+                                    break;
+                                case 4:
+                                    break;
+                                case 5:
+                                    $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
+                                    break;
+                                case 7:
+                                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
+                                    break;
+                                case 6:
+                                    break;
+                                case 8:
+                                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
+                                    break;
+                                case 9:
+                                    list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($td->nodeValue);
+                                    break;
                             }
                         }
+                        //$this->print_r2($tempArray);
+                        if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                            if ($tempArray['marketplace_timeLeft']) {
+                                $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                $tempArray['marketplace_status'] = PERCENT;
+                            } else {
+                                $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                $tempArray['marketplace_status'] = CONFIRMED;
+                                $tempArray['marketplace_timeLeft'] = 0;
+                            }
+
+                            foreach ($companyBackup as $inversionBackup) { //If completed with same status in backup
+                                if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                                    $readController++;
+                                    $investmentController = true;
+                                }
+                            }
+                        } else {
+                            $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                        }
+                    }
+
+                    if ($investmentController) { //Don't save a already existing investment
+                        unset($tempArray);
+                        $investmentController = false;
                     } else {
-                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                        $totalArray[] = $tempArray;
+                        $this->print_r2($totalArray);
+                        unset($tempArray);
+                    }
+
+                    if ($readController > 2) { //If we fin more than two completed investment existing in the backpup, stop reading
+                        echo 'Stop reading';
+                        break;
                     }
                 }
-
-                if ($investmentController) { //Don't save a already existing investment
-                    unset($tempArray);
-                    $investmentController = false;
-                } else {
-                    $totalArray[] = $tempArray;
-                    $this->print_r2($totalArray);
-                    unset($tempArray);
-                }
-
-                if ($readController > 2) { //If we fin more than two completed investment existing in the backpup, stop reading
-                    echo 'Stop reading';
-                    break;
-                }
             }
-            return $totalArray;
+            return [$totalArray, $structureRevision];
         }
     }
 
     /**
-     * Collect all investments
-     * @param type $pageNumber
-     * @param type $type
-     * @return type
+     * collect all investment
+     * @param Array $structure
+     * @return Array
      */
-    function collectHistorical() { //loanbook doesnt have pagination
+    function collectHistorical($structure) { //loanbook doesnt have pagination
         $totalArray = array();
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
 
@@ -269,141 +308,179 @@ class loanbook extends p2pCompany {
         foreach ($sections as $section) {
 
             $trs = $section->getElementsByTagName('tr');
-            foreach ($trs as $tr) {
+            if ($totalArray !== false) {
+                foreach ($trs as $key => $tr) {
+
+                    if ($key == 0 && $structure) { //Compare structures, olny compare the first element
+                        $newStructure = new DOMDocument;
+                        $newStructure->loadHTML($structure['Structure']['structure_html']);
+                        $newStructure->preserveWhiteSpace = false;
+                        $trsNewStructure = $this->getElements($newStructure, 'tr', 'class', 'fila_subasta');
+
+                        $saveStructure = new DOMDocument();
+                        $clone = $section->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $saveStructure->saveHTML();
+                        $originalStructure = $this->getElements($saveStructure, 'tr', 'class', 'fila_subasta');
+
+                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[1]);
+
+                        echo 'structure: ' . $structureRevision . '<br>';
+
+                        if (!$structureRevision) { //Save new structure
+                            echo 'Structural error<br>';
+                            $saveStructure = new DOMDocument();
+                            $clone = $section->cloneNode(TRUE);
+                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                            $structureRevision = $saveStructure->saveHTML();
+                            $totalArray = false;  //Structure control, don't read more tr 
+                            break; //Stop reading if we have a structural error
+                        }
+                        echo 'Structure good';
+                    }
+
+                    if ($key == 0 && !$structure) { //Save new structure if is first time
+                        echo 'no structure readed, saving structure <br>';
+                        $saveStructure = new DOMDocument();
+                        $clone = $section->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $structureRevision = $saveStructure->saveHTML();
+                    }
 
 
+                    $tempAttribute = $tr->getAttribute('class');
+                    if ($tempAttribute == 'fila_subasta' || $tempAttribute == 'fila_subasta tablesorter-childRow') {
 
-                $tempAttribute = $tr->getAttribute('class');
-                if ($tempAttribute == 'fila_subasta' || $tempAttribute == 'fila_subasta tablesorter-childRow') {
-
-                    $tds = $tr->getElementsByTagName('td');
-                    $index = -1;
-                    foreach ($tds as $td) {
-                        $index++;
-                        switch ($index) {
-                            case 0:
-                                $tempArray['marketplace_country'] = 'ES';
-                                break;
-                            case 1:
-                                $divs = $td->getElementsByTagName('div');
-                                foreach ($divs as $div) {
-
-                                    $tempData = explode(",", $div->nodeValue);
-                                    $tempDataAmount = explode(" ", $tempData[count($tempData) - 1]);
-
-                                    for ($i = 1; $i < count($tempData); $i++) { //If the purpose have one or more ',' we need fix our array.
-                                        if ($i != count($tempData) - 1) {
-                                            $tempData[0] = $tempData[0] . $tempData[$i];
-                                        }
-                                        if ($i == count($tempData) - 1) {
-                                            $tempData[1] = $tempData[count($tempData) - 1];
-                                        }
-                                    }
-
-                                    $loanReference = explode("€", str_replace(" ", "", $tempData[1]));
-
-                                    echo 'loan id : <br>';
-                                    /* $this->print_r2($tempData);
-                                      $this->print_r2($tempData[1]);
-                                      $this->print_r2($loanReference); */
-
-                                    //print_r($tempData);
-                                    $tempDataAux = explode(" ", $tempData[0]);
-
-                                    $max = count($tempDataAux);
-                                    foreach ($tempDataAux as $key => $tmp) {
-                                        //echo 'Ascii ' .$key . " :". ord($locationArray) . '/';
-                                        if (!$tmp) {
-                                            unset($tempDataAux[$key]);
-                                        }
-                                    }
-                                    unset($tempDataAux[0]);
-
-                                    $sector = '';
-                                    $auxKey = 0;
-
-                                    foreach ($tempDataAux as $key => $sectorArray) {
-                                        if (ord($sectorArray) == LINE_FEED) {
-                                            $auxKey = $key;
-                                            break;
-                                        }
-
-                                        $sector = $sector . $sectorArray . ' ';
-                                    }
-
-                                    $location = '';
-                                    for ($i = $auxKey + 1; $i <= $max; $i++) {
-                                        echo $i . ': ' . $tempDataAux[$i];
-                                        if ($tempDataAux[$i]) {
-                                            $location = $location . $tempDataAux[$i] . ' ';
-                                        }
-                                    }
-
-
-
-                                    //$tempArray['marketplace_sector'] = $sector;
-                                    $tempArray['marketplace_requestorLocation'] = $location;
-                                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($tempDataAmount[1]);
-                                    $tempArray['marketplace_loanReference'] = trim($loanReference[1]);
-
-                                    $as = $div->getElementsByTagName('a');  //just one is found
-                                    foreach ($as as $a) {
-                                        $tempArray['marketplace_purpose'] = trim($a->nodeValue);
-                                    }
-
+                        $tds = $tr->getElementsByTagName('td');
+                        $index = -1;
+                        foreach ($tds as $td) {
+                            $index++;
+                            switch ($index) {
+                                case 0:
+                                    $tempArray['marketplace_country'] = 'ES';
                                     break;
-                                }
-                                break;
-                            case 2:
-                                $tempProductType = trim($td->nodeValue);
-                                if (stripos($tempProductType, "stamo")) {  // LOAN
-                                    $tempArray['marketplace_productType'] = LOAN;
-                                }
-                                if (stripos($tempProductType, "agar")) {  // PAGARÉ
-                                    $tempArray['marketplace_productType'] = PAGARE;
-                                }
-                                break;
-                            case 3:
-                                $tempArray['marketplace_rating'] = trim($td->nodeValue);
-                                break;
-                            case 4:
-                                break;
-                            case 5:
-                                $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
-                                break;
-                            case 7:
-                                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
-                                break;
-                            case 6:
-                                break;
-                            case 8:
-                                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
-                                break;
-                            case 9:
-                                list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($td->nodeValue);
-                                break;
-                        }
-                    }
+                                case 1:
+                                    $divs = $td->getElementsByTagName('div');
+                                    foreach ($divs as $div) {
 
-                    if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-                        if ($tempArray['marketplace_timeLeft']) {
-                            $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-                            $tempArray['marketplace_status'] = 1;
-                        } else {
-                            $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                            $tempArray['marketplace_status'] = 2;
-                            $tempArray['marketplace_timeLeft'] = 0;
+                                        $tempData = explode(",", $div->nodeValue);
+                                        $tempDataAmount = explode(" ", $tempData[count($tempData) - 1]);
+
+                                        for ($i = 1; $i < count($tempData); $i++) { //If the purpose have one or more ',' we need fix our array.
+                                            if ($i != count($tempData) - 1) {
+                                                $tempData[0] = $tempData[0] . $tempData[$i];
+                                            }
+                                            if ($i == count($tempData) - 1) {
+                                                $tempData[1] = $tempData[count($tempData) - 1];
+                                            }
+                                        }
+
+                                        $loanReference = explode("€", str_replace(" ", "", $tempData[1]));
+
+                                        echo 'loan id : <br>';
+                                        /* $this->print_r2($tempData);
+                                          $this->print_r2($tempData[1]);
+                                          $this->print_r2($loanReference); */
+
+                                        //print_r($tempData);
+                                        $tempDataAux = explode(" ", $tempData[0]);
+
+                                        $max = count($tempDataAux);
+                                        foreach ($tempDataAux as $key => $tmp) {
+                                            //echo 'Ascii ' .$key . " :". ord($locationArray) . '/';
+                                            if (!$tmp) {
+                                                unset($tempDataAux[$key]);
+                                            }
+                                        }
+                                        unset($tempDataAux[0]);
+
+                                        $sector = '';
+                                        $auxKey = 0;
+
+                                        foreach ($tempDataAux as $key => $sectorArray) {
+                                            if (ord($sectorArray) == LINE_FEED) {
+                                                $auxKey = $key;
+                                                break;
+                                            }
+
+                                            $sector = $sector . $sectorArray . ' ';
+                                        }
+
+                                        $location = '';
+                                        for ($i = $auxKey + 1; $i <= $max; $i++) {
+                                            echo $i . ': ' . $tempDataAux[$i];
+                                            if ($tempDataAux[$i]) {
+                                                $location = $location . $tempDataAux[$i] . ' ';
+                                            }
+                                        }
+
+
+
+                                        //$tempArray['marketplace_sector'] = $sector;
+                                        $tempArray['marketplace_requestorLocation'] = $location;
+                                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($tempDataAmount[1]);
+                                        $tempArray['marketplace_loanReference'] = trim($loanReference[1]);
+
+                                        $as = $div->getElementsByTagName('a');  //just one is found
+                                        foreach ($as as $a) {
+                                            $tempArray['marketplace_purpose'] = trim($a->nodeValue);
+                                        }
+
+                                        break;
+                                    }
+                                    break;
+                                case 2:
+                                    $tempProductType = trim($td->nodeValue);
+                                    if (stripos($tempProductType, "stamo")) {  // LOAN
+                                        $tempArray['marketplace_productType'] = LOAN;
+                                    }
+                                    if (stripos($tempProductType, "agar")) {  // PAGARÉ
+                                        $tempArray['marketplace_productType'] = PAGARE;
+                                    }
+                                    break;
+                                case 3:
+                                    $tempArray['marketplace_rating'] = trim($td->nodeValue);
+                                    break;
+                                case 4:
+                                    break;
+                                case 5:
+                                    $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
+                                    break;
+                                case 7:
+                                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
+                                    break;
+                                case 6:
+                                    break;
+                                case 8:
+                                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
+                                    break;
+                                case 9:
+                                    list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($td->nodeValue);
+                                    break;
+                            }
                         }
-                    } else {
-                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
+
+                        if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                            if ($tempArray['marketplace_timeLeft']) {
+                                $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                $tempArray['marketplace_status'] = PERCENT;
+                            } else {
+                                $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                $tempArray['marketplace_status'] = CONFIRMED;
+                                $tempArray['marketplace_timeLeft'] = 0;
+                            }
+                        } else {
+                            $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                        }
                     }
+                    if ($tempArray) {
+                        $totalArray[] = $tempArray;
+                    }
+                    unset($tempArray);
                 }
-                if ($tempArray) {
-                    $totalArray[] = $tempArray;
-                }
-                unset($tempArray);
             }
-            return [$totalArray, false]; //$totalArray -> investments / false -> Loanbook doesnt have pagination
+            return [$totalArray, false, null, $structureRevision]; //$totalArray -> investments / false -> Loanbook doesnt have pagination
         }
     }
 
@@ -910,6 +987,32 @@ class loanbook extends p2pCompany {
                 return $state;
             }
         }
+    }
+
+    /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+
+        $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'td'),
+                ), array('src', 'href', 'contracttypeid', 'style', 'data-value', 'title', 'data-original-title'));
+
+        $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'td'),
+                ), array('src', 'href', 'contracttypeid', 'style', 'data-value', 'title', 'data-original-title'));
+
+        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        return $structureRevision;
     }
 
 }
