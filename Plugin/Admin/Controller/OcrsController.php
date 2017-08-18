@@ -300,6 +300,8 @@ class ocrsController extends AdminAppController {
         App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
         App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 
+     print_r($this->request);
+        
         $this->Marketplace = ClassRegistry::init('Marketplace');
         $this->Urlsequence = ClassRegistry::init('Urlsequence');
         $this->Marketplacebackup = ClassRegistry::init('Marketplacebackup');
@@ -311,7 +313,8 @@ class ocrsController extends AdminAppController {
         $backup = $this->Marketplacebackup->getBackup($filter);
         //$this->print_r2($backup);
 
-        $objPHPExcel = new PHPExcel();
+        
+        /*$objPHPExcel = new PHPExcel();
         $objPHPExcel->getProperties()->setTitle("BackupExcel");
 
 
@@ -386,7 +389,7 @@ class ocrsController extends AdminAppController {
         header('Cache-Control: max-age=0');
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
-        exit;
+        exit;*/
     }
 
 }

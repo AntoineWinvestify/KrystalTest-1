@@ -47,49 +47,59 @@
 </style>
 
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         //Date range picker default empty & updated value after applying
         $('#ContentPlaceholder_daterange').daterangepicker({
-                locale: {
+            locale: {
                 cancelLabel: 'Clear'
             }
         });
         //Update initial value to empty
         $("#ContentPlaceholder_daterange").val(" ");
+        $("#dateRangePickerStart").val("");
+        $("#dateRangePickerEnd").val("");
+        $("#ContentPlaceHolder_freeSearch").val("");
         //Update start & end hidden input
-        $("#ContentPlaceholder_daterange").change(function(){
+        $("#ContentPlaceholder_daterange").change(function () {
             $("#dateRangePickerStart").val($("#ContentPlaceholder_daterange").data('daterangepicker').startDate.format('DD/MM/YYYY'));
             $("#dateRangePickerEnd").val($("#ContentPlaceholder_daterange").data('daterangepicker').endDate.format('DD/MM/YYYY'));
-         });
-         //Update value to empty at clear btn to not to select date on input
-         $(document).on("click", ".cancelBtn", function(){
-             $("#dateRangePickerStart").val("");
-             $("#dateRangePickerEnd").val("");
-         });
-         
+        });
+        //Update value to empty at clear btn to not to select date on input
+        $(document).on("click", ".cancelBtn", function () {
+            $("#dateRangePickerStart").val("");
+            $("#dateRangePickerEnd").val("");
+        });
+
         //Validation form
         $(document).on("click", "#generateBtn", function () {
+
             if ((app.visual.checkFormWinadminGenerateExcel()) === true) {
-                
-                
+
                 //getserverdata!!!!
-               params = {
-                    daterange: $("#ContentPlaceHolder_daterange").val(),
-                    state: $("#ContentPlaceHolder_state").val(),
-                    country: $("#ContentPlaceHolder_country").val(),
-                    pfp: $("#ContentPlaceHolder_pfp").val(),
-                    freeSearch: $("#ContentPlaceHolder_freeSearch").val(),
-                };
+                    daterangestart = $("#dateRangePickerStart").val();
+                    daterangeend = $("#dateRangePickerEnd").val();
+                    state = $("#ContentPlaceHolder_state").val();
+                    country = $("#ContentPlaceHolder_country").val();
+                    pfp = $("#ContentPlaceHolder_pfp").val();
+                    freeSearch = $("#ContentPlaceHolder_freeSearch").val();
+                    
                 link = $("#generateBtn").attr('href');
-                var data = jQuery.param(params);
-                getServerData(link, data, success, error);
+                
+                window.location = link + '?' + 'daterangestart=' + daterangestart + '&daterangeend=' + daterangeend + '&state=' + state + '&country=' + country + '&pfp=' + pfp + '&freeSearch=' + freeSearch ;
+                /*var data = jQuery.param(params);   
+                getServerData(link, data, success, error);   */          
+                
+                
+                
+            } else {
+                alert('hola');
             }
         });
     });
-    
-    
-    function success(){}
-    function error(){}
+
+
+    function success() {}
+    function error() {}
 </script>
 <div id="winAdmin_100PercentData">
     <div class="row">
@@ -111,48 +121,48 @@
                             </p>
                         </div>
                     </div>
-                    
-                    
+
+
                     <div class="row">
-                        
-                        
+
+
                         <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <div class="form-group">
-                                    <label><?php echo __('Date range:')?></label>
-                                    <?php 
-                                    $errorClass = "";
-                                    if (array_key_exists('generateExcel_dates', $generateExcelErrors)) {
-                                        $errorClass = "redBorder";
-                                    }
-                                    $classOne = "blue_noborder generateExcelState generateExcelGeneral" . ' ' . $errorClass;
-                                    $errorClassesText = "errorInputMessage ErrorDates";
-                                    if (array_key_exists('generateExcel_date', $generateExcelErrors)) {
-                                        $errorClassesText .= " " . "actived";
-                                    }
-                                    ?>
-                                    <div class="input-group <?php echo $classOne ?>">
-                                      <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                      </div>
-                                      <input type="text" class="form-control pull-right" id="ContentPlaceholder_daterange">
-                                      <input type="hidden" id="dateRangePickerStart"/>
-                                      <input type="hidden" id="dateRangePickerEnd"/>
-                                    </div>
-                                    <div class="<?php echo $errorClassesText ?>">
-                                        <i class="fa fa-exclamation-circle"></i>
-                                        <span class="errorMessage">
-                                            <?php echo $generateExcelErrors['generateExcel_dates'][0] ?>
-                                        </span>
-                                    </div>
-                                    <!-- /.input group -->
+                                        <label><?php echo __('Date range:') ?></label>
+                                        <?php
+                                        $errorClass = "";
+                                        if (array_key_exists('generateExcel_dates', $generateExcelErrors)) {
+                                            $errorClass = "redBorder";
+                                        }
+                                        $classOne = "blue_noborder generateExcelState generateExcelGeneral" . ' ' . $errorClass;
+                                        $errorClassesText = "errorInputMessage ErrorDates";
+                                        if (array_key_exists('generateExcel_date', $generateExcelErrors)) {
+                                            $errorClassesText .= " " . "actived";
+                                        }
+                                        ?>
+                                        <div class="input-group <?php echo $classOne ?>">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            <input type="text" class="form-control pull-right" id="ContentPlaceholder_daterange">
+                                            <input type="hidden" id="dateRangePickerStart"/>
+                                            <input type="hidden" id="dateRangePickerEnd"/>
+                                        </div>
+                                        <div class="<?php echo $errorClassesText ?>">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                            <span class="errorMessage">
+                                                <?php echo $generateExcelErrors['generateExcel_dates'][0] ?>
+                                            </span>
+                                        </div>
+                                        <!-- /.input group -->
                                     </div>
                                 </div>
-                                
-                                
+
+
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                    <label><?php echo __('State')?></label>
+                                    <label><?php echo __('State') ?></label>
                                     <?php
                                     $errorClass = "";
                                     if (array_key_exists('generateExcel_state', $generateExcelErrors)) {
@@ -180,11 +190,11 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            
+
+
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                    <label><?php echo __('Country')?></label>
+                                    <label><?php echo __('Country') ?></label>
                                     <?php
                                     $errorClass = "";
                                     if (array_key_exists('generateExcel_country', $generateExcelErrors)) {
@@ -211,11 +221,11 @@
                                         </span>
                                     </div>
                                 </div>
-                                
-                                
-                                
+
+
+
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                    <label><?php echo __('PFP')?></label>
+                                    <label><?php echo __('PFP') ?></label>
                                     <?php
                                     //Make a array for the select
                                     $companiesSelectList = array();
@@ -227,7 +237,7 @@
                                     if (array_key_exists('generateExcel_pfp', $generateExcelErrors)) {
                                         $errorClass = "redBorder";
                                     }
-                                    $class = "form-control blue_noborder generateExcelPFP generateExcelGeneral"  . ' ' . $errorClass;
+                                    $class = "form-control blue_noborder generateExcelPFP generateExcelGeneral" . ' ' . $errorClass;
 
                                     echo $this->Form->input('Ocr.id', array(
                                         'name' => 'pfp',
@@ -249,11 +259,11 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            
+
+
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <label><?php echo __('Free Search')?></label>
+                                    <label><?php echo __('Free Search') ?></label>
                                     <?php
                                     $errorClass = "";
                                     if (array_key_exists('generateExcel_freeSearch', $generateExcelErrors)) {
@@ -280,10 +290,10 @@
                                     </span>
                                 </div>
                             </div>
-                            
-                            
+
+
                             <div class="col-md-10" style="margin-top: 10px;">
-                                <?php 
+                                <?php
                                 $errorClassesText = "errorInputMessage ErrorExcelGeneral";
                                 if (array_key_exists('generateExcel_general', $billValidationErrors)) {
                                     $errorClassesText .= " " . "actived";
@@ -297,13 +307,13 @@
                                 </div>
                             </div>     
                         </div>
-                        
+
                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
                             <button id ="generateBtn" href ="/admin/ocrs/importBackupExcel/" type="button" class="btn btn-default btnWinAdmin btnRounded">
                                 <?php echo __('Generate Excel') ?> 
                             </button>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
