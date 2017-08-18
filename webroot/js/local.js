@@ -981,7 +981,7 @@ app.visual = {
         return correctForm;
     },
     checkFormWinadminGenerateExcel: function() {
-        var correctForm = true;
+        var contactForm = true;
 
         $(".errorInputMessage").hide(); // remove all error texts
         $("#winAdmin_100PercentData input-group").removeClass("redBorder"); // remove ALL redborders on input

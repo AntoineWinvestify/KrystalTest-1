@@ -61,11 +61,11 @@ class Marketplacebackup extends AppModel {
 
     public function getBackup($filters) {
         //$conditions = array($filters);
-
-        $backup = $this->find('all',array(
-            'conditions' => array( 'company_id' => 6, 'marketplace_status' => 2),
+        print_r($filters);
+        $backup = $this->find('all', array(
+            'conditions' => $filters,
             'recursive' => -1,
-            ));
+        ));
 
         return $backup;
     }

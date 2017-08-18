@@ -295,14 +295,14 @@
                             <div class="col-md-10" style="margin-top: 10px;">
                                 <?php
                                 $errorClassesText = "errorInputMessage ErrorExcelGeneral";
-                                if (array_key_exists('generateExcel_general', $billValidationErrors)) {
+                                if (array_key_exists('generateExcel_general', $generateExcelErrors)) {
                                     $errorClassesText .= " " . "actived";
                                 }
                                 ?>
                                 <div class="<?php echo $errorClassesText ?>">
                                     <i class="fa fa-exclamation-circle"></i>
-                                    <span class="errorMessage" id="tallymanGeneral">
-                                        <?php echo $billValidationErrors['generateExcel_general'][0] ?>
+                                    <span class="errorMessage" id="excelGeneral">
+                                        <?php echo $generateExcelErrors['generateExcel_general'][0] ?>
                                     </span>
                                 </div>
                             </div>     
