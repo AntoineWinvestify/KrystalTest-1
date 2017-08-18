@@ -44,15 +44,15 @@
         </div>
         <?php echo $this->Html->script(array('local')); ?>
         <!--========== HEADER ==========-->
-        <header class="navbar-fixed-top s-header js__header-sticky js__header-overlay">
+        <header class="s-header js__header-sticky js__header-overlay">
             <!-- Navbar -->
-            <nav class="navbar navbar-default">
+            <nav class="navbar navbar-default navbar-fixed-top">
                 <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header navbar-right">
                         <ul class="nav pull-left navbar-nav collapse-tablet">
-                            <li id="liLogin" style="float:left; display:inline-block" class="dropdown pull-left"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
-                                <div id="loginDropdown" class="dropdown-menu">
+                            <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
+                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
                                     <div class="row">
                                         <div class="col-sm-offset-1 col-sm-10 col-xs-12" style="margin-top:10px;">
                                             <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
@@ -153,7 +153,7 @@
                                     <?php echo __('Register')?>
                                 </a>
                             </li>
-                            <li class="dropdown pull-left" style="margin-top:-3px; display:inline-block">
+                            <li class="dropdown" style="margin-top:-3px; display:inline-block">
                                 <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
