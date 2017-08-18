@@ -71,7 +71,7 @@ Pending:
         <div class="row row-to-fade"> 
             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                 <div id="messageErrorLinkAccount" role="alert" class="alert bg-success alert-dismissible <?php echo $class_message ?> fade in">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px; margin-top:5px;"><span aria-hidden="true">&times;</span></button>
                     <strong><?php echo $message ?></strong>
                 </div>
             </div> 
