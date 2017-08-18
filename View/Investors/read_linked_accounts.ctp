@@ -284,9 +284,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                                 <div class="alert bg-success alert-dismissible alert-win-success fade in">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px; margin-top: 5px;"><span aria-hidden="true">&times;</span></button>
-                                    <strong><?php echo __("You currently don't have any account defined. By adding your crowdlending accounts
-                                                        you will be able see all your global investment position in our global
-                                                        dashboard")?>
+                                    <strong><?php echo __("You currently don't have any account defined. By adding your crowdlending accounts you will be able see all your global investment position in our global dashboard.")?>
                                     </strong>
                                 </div>
                             </div>	

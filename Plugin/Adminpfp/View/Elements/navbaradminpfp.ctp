@@ -24,18 +24,9 @@
     <!-- Navbar -->
     <nav class="navbar navbar-default">
         <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header navbar-right">
-                <button type="button" style="margin-top:12px; margin-left: 20px; float:right;" class="navbar-toggle" data-toggle="collapse" data-target="#principal_navbar" aria-expanded="false">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div> <!-- /navbar-header-->
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="visible-xs-block clearfix"></div>
             <div class="collapse navbar-collapse" id="principal_navbar">
                 <ul class="nav navbar-nav navbar-right">
+                    <li style="float:left"><a href="/"><small><i class="g-padding-r-5--xs ti-home"></i></small></a></li>
                     <li style="float:left"><a href="http://www.facebook.com/winvestify/"><small><i class="g-padding-r-5--xs ti-facebook"></i></small></a></li>
                     <li style="float:left"><a href="https://www.linkedin.com/company-beta/11000640/"><small><i class="g-padding-r-5--xs ti-linkedin"></i></small></a></li>
                     <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
