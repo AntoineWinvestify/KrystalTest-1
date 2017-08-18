@@ -979,6 +979,29 @@ app.visual = {
             }
         }
         return correctForm;
+    },
+    checkFormWinadminGenerateExcel: function() {
+        var correctForm = true;
+
+        $(".errorInputMessage").hide(); // remove all error texts
+        $("#winAdmin_100PercentData input-group").removeClass("redBorder"); // remove ALL redborders on input
+        $("#winAdmin_100PercentData input").removeClass("redBorder"); // remove ALL redborders on input
+        $("#winAdmin_100PercentData select").removeClass("redBorder"); // remove ALL redborders on select
+
+        var dateRangeStart = $("#dateRangePickerStart").val();
+        var dateRangeEnd = $("#dateRangePickerEnd").val();
+        var state = $("#ContentPlaceHolder_state").val();
+        var country = $("#ContentPlaceHolder_country").val();
+        var pfp = $("#ContentPlaceHolder_pfp").val();
+        var freeSearch = $("#ContentPlaceHolder_freeSearch").val();
+        
+        if (dateRangeStart === "" && dateRangeEnd === "" && state === 0 && country === 0 && pfp === 0 && freeSearch === "") {
+            $(".generateExcelGeneral").addClass("redBorder");
+            $(".ErrorExcelGeneral").find(".errorMessage").html(TEXTOS.T103); // "provide at least 1" warning
+            $(".ErrorExcelGeneral").fadeIn();
+            contactForm = false;
+        }
+        return contactForm;
     }
 };
 app.utils = {
@@ -1130,5 +1153,6 @@ var TEXTOS = {
     T99: "To use this service you must provide at least 1 field more",
     T100: "Select PFP",
     T101: "Select modality",
-    T102: "Select service status"
+    T102: "Select service status",
+    T103: "Provide at least 1 field"
 };
