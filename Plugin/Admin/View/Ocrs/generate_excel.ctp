@@ -41,23 +41,49 @@
     .togetoverlay .overlay > .fa {
         font-size: 50px;
     }
-    .input-group-addon, #excelDates {
+    .input-group-addon, #ContentPlaceholder_daterange {
         border: none;
-    }
-    .vcenter {
-        float:none;
-        display:inline-block;
-        vertical-align:middle;
-    }
-    .aClass {
-        display: inline-block
     }
 </style>
 
 <script>
     $(document).ready(function(){
-        //Date range picker
-        $('#excelDates').daterangepicker();
+        //Date range picker default empty & updated value after applying
+        $('#ContentPlaceholder_daterange').daterangepicker({
+                locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        //Update initial value to empty
+        $("#ContentPlaceholder_daterange").val(" ");
+        //Update start & end hidden input
+        $("#ContentPlaceholder_daterange").change(function(){
+            $("#dateRangePickerStart").val($("#ContentPlaceholder_daterange").data('daterangepicker').startDate.format('DD/MM/YYYY'));
+            $("#dateRangePickerEnd").val($("#ContentPlaceholder_daterange").data('daterangepicker').endDate.format('DD/MM/YYYY'));
+         });
+         //Update value to empty at clear btn to not to select date on input
+         $(document).on("click", ".cancelBtn", function(){
+             $("#dateRangePickerStart").val("");
+             $("#dateRangePickerEnd").val("");
+         });
+         
+        //Validation form
+        $(document).on("click", "#generateBtn", function () {
+            if ((result = app.visual.checkFormWinadminGenerateExcel()) === true) {
+                alert("patata");
+                //getserverdata!!!!
+               /* params = {
+                    daterange: $("#ContentPlaceHolder_daterange").val(),
+                    state: $("#ContentPlaceHolder_state").val(),
+                    country: $("#ContentPlaceHolder_country").val(),
+                    pfp: $("#ContentPlaceHolder_pfp").val(),
+                    freeSearch: $("#ContentPlaceHolder_freeSearch").val(),
+                };
+                link = $("#generateBtn").attr('href');
+                var data = jQuery.param(params);
+                getServerData(link, data, success, error);*/
+            }
+        });
     });
 </script>
 <div id="winAdmin_100PercentData">
@@ -81,45 +107,77 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 aClass">
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <div class="form-group">
                                     <label><?php echo __('Date range:')?></label>
-                                    <div class="input-group blue_noborder">
+                                    <?php 
+                                    $errorClass = "";
+                                    if (array_key_exists('generateExcel_dates', $generateExcelErrors)) {
+                                        $errorClass = "redBorder";
+                                    }
+                                    $classOne = "blue_noborder generateExcelState generateExcelGeneral" . ' ' . $errorClass;
+                                    $errorClassesText = "errorInputMessage ErrorDates";
+                                    if (array_key_exists('generateExcel_date', $generateExcelErrors)) {
+                                        $errorClassesText .= " " . "actived";
+                                    }
+                                    ?>
+                                    <div class="input-group <?php echo $classOne ?>">
                                       <div class="input-group-addon">
                                         <i class="fa fa-calendar"></i>
                                       </div>
-                                      <input type="text" class="form-control pull-right" id="excelDates">
+                                      <input type="text" class="form-control pull-right" id="ContentPlaceholder_daterange">
+                                      <input type="hidden" id="dateRangePickerStart"/>
+                                      <input type="hidden" id="dateRangePickerEnd"/>
+                                    </div>
+                                    <div class="<?php echo $errorClassesText ?>">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        <span class="errorMessage">
+                                            <?php echo $generateExcelErrors['generateExcel_dates'][0] ?>
+                                        </span>
                                     </div>
                                     <!-- /.input group -->
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                    <label><?php echo __('Staus')?></label>
+                                    <label><?php echo __('State')?></label>
                                     <?php
                                     $errorClass = "";
-                                    if (array_key_exists('pfp_status', $pfpValidationErrors)) {
+                                    if (array_key_exists('generateExcel_state', $generateExcelErrors)) {
                                         $errorClass = "redBorder";
                                     }
-                                    $class = "form-control blue_noborder pfpStatus" . ' ' . $errorClass;
+                                    $class = "form-control blue_noborder generateExcelState generateExcelGeneral" . ' ' . $errorClass;
                                     echo $this->Form->input('Company.company_OCRisActive', array(
                                         'name' => 'status',
-                                        'id' => 'ContentPlaceHolder_status',
+                                        'id' => 'ContentPlaceHolder_state',
                                         'label' => false,
                                         'options' => $serviceStatus,
                                         'placeholder' => __('Status'),
                                         'class' => $class,
-                                        'value' => $investor[0]['Company']['company_OCRisActive'],
                                     ));
+                                    $errorClassesText = "errorInputMessage ErrorState";
+                                    if (array_key_exists('generateExcel_state', $generateExcelErrors)) {
+                                        $errorClassesText .= " " . "actived";
+                                    }
                                     ?>
+                                    <div class="<?php echo $errorClassesText ?>">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        <span class="errorMessage">
+                                            <?php echo $generateExcelErrors['generateExcel_state'][0] ?>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <label><?php echo __('Country')?></label>
                                     <?php
-                                    $class = "form-control blue_noborder pfpCountry" . ' ' . $errorClass;
+                                    $errorClass = "";
+                                    if (array_key_exists('generateExcel_country', $generateExcelErrors)) {
+                                        $errorClass = "redBorder";
+                                    }
+                                    $class = "form-control blue_noborder generateExcelCountry generateExcelGeneral" . ' ' . $errorClass;
                                     echo $this->Form->input('Company.company_countryName', array(
                                         'name' => 'country',
                                         'id' => 'ContentPlaceHolder_country',
@@ -127,52 +185,100 @@
                                         'options' => $countryData,
                                         'placeholder' => __('Country'),
                                         'class' => $class,
-                                        'value' => $investor[0]['Company']['company_countryName'],
                                     ));
+                                    $errorClassesText = "errorInputMessage ErrorCountry";
+                                    if (array_key_exists('generateExcel_country', $generateExcelErrors)) {
+                                        $errorClassesText .= " " . "actived";
+                                    }
                                     ?>
+                                    <div class="<?php echo $errorClassesText ?>">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        <span class="errorMessage">
+                                            <?php echo $generateExcelErrors['generateExcel_country'][0] ?>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <label><?php echo __('PFP')?></label>
                                     <?php
-                                        //Make a array for the select
-                                        $companiesSelectList = array();
-                                        $companiesSelectList[0] = __('Choose One');
-                                        foreach ($companies as $companyInfo) {
-                                            $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
-                                        }
+                                    //Make a array for the select
+                                    $companiesSelectList = array();
+                                    $companiesSelectList[0] = __('Choose One');
+                                    foreach ($companies as $companyInfo) {
+                                        $companiesSelectList += array($companyInfo["id"] => $companyInfo["company_name"]);
+                                    }
+                                    $errorClass = "";
+                                    if (array_key_exists('generateExcel_pfp', $generateExcelErrors)) {
+                                        $errorClass = "redBorder";
+                                    }
+                                    $class = "form-control blue_noborder generateExcelPFP generateExcelGeneral"  . ' ' . $errorClass;
 
-                                        $class = "form-control blue_noborder winadminPFP";
-
-                                        echo $this->Form->input('Ocr.id', array(
-                                            'name' => 'pfp',
-                                            'id' => 'ContentPlaceHolder_pfp',
-                                            'label' => false,
-                                            'options' => $companiesSelectList,
-                                            'class' => $class,
-                                            'value' => $resultUserData[0]['Ocr']['id'] /* this must be about PFP */
-                                        ));
+                                    echo $this->Form->input('Ocr.id', array(
+                                        'name' => 'pfp',
+                                        'id' => 'ContentPlaceHolder_pfp',
+                                        'label' => false,
+                                        'options' => $companiesSelectList,
+                                        'class' => $class,
+                                    ));
+                                    $errorClassesText = "errorInputMessage ErrorPFP";
+                                    if (array_key_exists('generateExcel_pfp', $generateExcelErrors)) {
+                                        $errorClassesText .= " " . "actived";
+                                    }
                                     ?>
+                                    <div class="<?php echo $errorClassesText ?>">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        <span class="errorMessage">
+                                            <?php echo $generateExcelErrors['generateExcel_pfp'][0] ?>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <label><?php echo __('Free Search')?></label>
                                     <?php
-                                        $class = "form-control blue_noborder winadminPFP";
-                                        echo $this->Form->input('Ocr.id', array(
-                                            'name' => 'pfp',
-                                            'id' => 'ContentPlaceHolder_pfp',
-                                            'label' => false,
-                                            'type' => 'text',
-                                            'class' => $class,
-                                            'value' => $resultUserData[0]['Ocr']['id'] /* this must be about PFP */
-                                        ));
+                                    $errorClass = "";
+                                    if (array_key_exists('generateExcel_freeSearch', $generateExcelErrors)) {
+                                        $errorClass = "redBorder";
+                                    }
+                                    $class = "form-control blue_noborder generateExcelFreeSearch generateExcelGeneral" . ' ' . $errorClass;
+                                    echo $this->Form->input('Ocr.id', array(
+                                        'name' => 'pfp',
+                                        'id' => 'ContentPlaceHolder_freeSearch',
+                                        'label' => false,
+                                        'type' => 'text',
+                                        'class' => $class,
+                                    ));
+                                    $errorClassesText = "errorInputMessage ErrorFreeSearch";
+                                    if (array_key_exists('generateExcel_freeSearch', $generateExcelErrors)) {
+                                        $errorClassesText .= " " . "actived";
+                                    }
                                     ?>
+                                </div>
+                                <div class="<?php echo $errorClassesText ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span class="errorMessage">
+                                        <?php echo $generateExcelErrors['generateExcel_freeSearch'][0] ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-10" style="margin-top: 10px;">
+                                <?php 
+                                $errorClassesText = "errorInputMessage ErrorExcelGeneral";
+                                if (array_key_exists('generateExcel_general', $billValidationErrors)) {
+                                    $errorClassesText .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesText ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span class="errorMessage" id="tallymanGeneral">
+                                        <?php echo $billValidationErrors['generateExcel_general'][0] ?>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 aClass">
-                            <button id ="generateBtn" type="button" class="btn btn-default btnWinAdmin btnRounded vcenter">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                            <button id ="generateBtn" type="button" class="btn btn-default btnWinAdmin btnRounded">
                                 <?php echo __('Generate Excel') ?> 
                             </button>
                         </div>
