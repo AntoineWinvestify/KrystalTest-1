@@ -67,7 +67,11 @@
 		console.log("errorUpdateNotifications function is called");	
 	}
 </script>
-
+<style>
+    .blackImportant {
+       color: black !important;
+    }
+</style>
 
       <!-- Navbar Right Menu -->
 	<div class="navbar-custom-menu">
@@ -75,14 +79,14 @@
 			<!-- Notifications -->
                         <li class="dropdown notifications-menu" id="notifications-list" href="/notifications/getNotifications">
                             <a id="bell" class="dropdown-toggle" data-toggle="dropdown">
-								<i class="fa fa-bell-o"  style="color: black;"></i>
+								<i class="fa fa-bell-o blackImportant"></i>
                             </a>
                         </li>
 			<!-- User Account: style can be found in dropdown.less -->
 			<li class="dropdown user user-menu">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 					<img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Investor']['investor_photoChatGUID']?>" class="user-image" alt="Small User Image">
-					<span class="hidden-xs"  style="color: black !important;"><?php echo $sessionData['Auth']['User']['Investor']['investor_name'] . " " .
+					<span class="hidden-xs blackImportant"><?php echo $sessionData['Auth']['User']['Investor']['investor_name'] . " " .
 														$sessionData['Auth']['User']['Investor']['investor_surname'] ?>
 					</span>
 				</a>
@@ -93,7 +97,7 @@
 					<li class="user-header">
 					    <img src="<?php echo '../' . IMAGES_URL . $sessionData['Auth']['User']['Investor']['investor_photoChatGUID']?>" class="img-circle" alt="Big User Image">
 	
-					    <p style="color: black !important;"><?php echo $sessionData['Auth']['User']['Investor']['investor_name'] . " " . $sessionData['Auth']['User']['Investor']['investor_surname'] ?> - Inversor
+					    <p class="blackImportant"><?php echo $sessionData['Auth']['User']['Investor']['investor_name'] . " " . $sessionData['Auth']['User']['Investor']['investor_surname'] ?> - Inversor
 							<small></small>
 					    </p>
 					</li>
