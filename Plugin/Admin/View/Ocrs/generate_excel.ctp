@@ -70,9 +70,10 @@
         //Validation form
         $(document).on("click", "#generateBtn", function () {
             if ((result = app.visual.checkFormWinadminGenerateExcel()) === true) {
-                alert("patata");
+                
+                
                 //getserverdata!!!!
-               /* params = {
+               params = {
                     daterange: $("#ContentPlaceHolder_daterange").val(),
                     state: $("#ContentPlaceHolder_state").val(),
                     country: $("#ContentPlaceHolder_country").val(),
@@ -81,10 +82,14 @@
                 };
                 link = $("#generateBtn").attr('href');
                 var data = jQuery.param(params);
-                getServerData(link, data, success, error);*/
+                getServerData(link, data, success, error);
             }
         });
     });
+    
+    
+    function success(){}
+    function error(){}
 </script>
 <div id="winAdmin_100PercentData">
     <div class="row">
@@ -106,7 +111,11 @@
                             </p>
                         </div>
                     </div>
+                    
+                    
                     <div class="row">
+                        
+                        
                         <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -140,6 +149,8 @@
                                     <!-- /.input group -->
                                     </div>
                                 </div>
+                                
+                                
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <label><?php echo __('State')?></label>
                                     <?php
@@ -148,11 +159,11 @@
                                         $errorClass = "redBorder";
                                     }
                                     $class = "form-control blue_noborder generateExcelState generateExcelGeneral" . ' ' . $errorClass;
-                                    echo $this->Form->input('Company.company_OCRisActive', array(
+                                    echo $this->Form->input('Marketplace.marketplace_status', array(
                                         'name' => 'status',
                                         'id' => 'ContentPlaceHolder_state',
                                         'label' => false,
-                                        'options' => $serviceStatus,
+                                        'options' => $status,
                                         'placeholder' => __('Status'),
                                         'class' => $class,
                                     ));
@@ -169,6 +180,8 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <label><?php echo __('Country')?></label>
@@ -198,6 +211,9 @@
                                         </span>
                                     </div>
                                 </div>
+                                
+                                
+                                
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                                     <label><?php echo __('PFP')?></label>
                                     <?php
@@ -233,6 +249,8 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <label><?php echo __('Free Search')?></label>
@@ -242,7 +260,7 @@
                                         $errorClass = "redBorder";
                                     }
                                     $class = "form-control blue_noborder generateExcelFreeSearch generateExcelGeneral" . ' ' . $errorClass;
-                                    echo $this->Form->input('Ocr.id', array(
+                                    echo $this->Form->input('marketplace_.loanId', array(
                                         'name' => 'pfp',
                                         'id' => 'ContentPlaceHolder_freeSearch',
                                         'label' => false,
@@ -262,6 +280,8 @@
                                     </span>
                                 </div>
                             </div>
+                            
+                            
                             <div class="col-md-10" style="margin-top: 10px;">
                                 <?php 
                                 $errorClassesText = "errorInputMessage ErrorExcelGeneral";
@@ -275,13 +295,15 @@
                                         <?php echo $billValidationErrors['generateExcel_general'][0] ?>
                                     </span>
                                 </div>
-                            </div>
+                            </div>     
                         </div>
+                        
                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
-                            <button id ="generateBtn" type="button" class="btn btn-default btnWinAdmin btnRounded">
+                            <button id ="generateBtn" href ="/admin/ocrs/importBackupExcel/" type="button" class="btn btn-default btnWinAdmin btnRounded">
                                 <?php echo __('Generate Excel') ?> 
                             </button>
                         </div>
+                        
                     </div>
                 </div>
             </div>

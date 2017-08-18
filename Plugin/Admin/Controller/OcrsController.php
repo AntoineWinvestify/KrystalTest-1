@@ -87,8 +87,6 @@ class ocrsController extends AdminAppController {
         $this->Auth->allow(); //allow these actions without login
     }
 
-   
-
     //One Click Registration - Winvestify Admin Views
 
 
@@ -177,9 +175,9 @@ class ocrsController extends AdminAppController {
             $result = array(false, __('Error updating data check.'));
             $this->set("result", $result);
         } else {
-            
+
             $this->Investor = ClassRegistry::init('Investor');
-            
+
             $this->layout = 'ajax';
             $this->disableCache();
             //Request the data
@@ -265,8 +263,7 @@ class ocrsController extends AdminAppController {
         $this->layout = 'Admin.azarus_private_layout';
     }
 
-    
-        /**
+    /**
      * FOR DEMO ONLY
      */
     public function resetInvestorDemo($investorId) {
@@ -275,18 +272,21 @@ class ocrsController extends AdminAppController {
         $this->Ocrfile->ocrAllFileDelete($investorId);
         $this->Ocr->resetCompaniesOcr($ocrId);
     }
-    
+
     //WinAdmin View #7
     function generateExcel() {
         $this->layout = 'Admin.azarus_private_layout';
-        
+
         // Country Codes
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');
-        $this->set('countryData', $countryData);
+        
+        
+        //Set countrys
+        $this->set('countryData', $this->countryArray);
 
         //Status selector
-        $this->set('serviceStatus', $this->serviceStatus);
+        $this->set('status', $this->marketpalceStatus);
 
         //Modality selector
         $this->set('type', $this->crowdlendingTypesLong);
@@ -295,6 +295,98 @@ class ocrsController extends AdminAppController {
         $companiesInfo = $this->Company->getCompanyDataList(null);
         $this->set("companies", $companiesInfo);
     }
-    
-    
+
+    public function importBackupExcel() {
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+
+        $this->Marketplace = ClassRegistry::init('Marketplace');
+        $this->Urlsequence = ClassRegistry::init('Urlsequence');
+        $this->Marketplacebackup = ClassRegistry::init('Marketplacebackup');
+        
+        $currentDateTime = date('Y-m-d_H:i:s');
+
+        // $filter = $this->request->params['filters'];
+        $filter = null;
+        $backup = $this->Marketplacebackup->getBackup($filter);
+        //$this->print_r2($backup);
+
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getProperties()->setTitle("BackupExcel");
+
+
+        $objPHPExcel->setActiveSheetIndex(0)->getColumnDimension('B')->setWidth(13);
+        $objPHPExcel->setActiveSheetIndex(0)->getColumnDimension('C')->setWidth(25);
+        $objPHPExcel->setActiveSheetIndex(0)->getColumnDimension('D')->setWidth(28);
+        $objPHPExcel->setActiveSheetIndex(0)->getColumnDimension('E')->setWidth(25);
+
+        $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'id')
+                ->setCellValue('B1', 'company_id')
+                ->setCellValue('C1', 'marketplace_amount')
+                ->setCellValue('D1', 'marketplace_amountTotal')
+                ->setCellValue('E1', 'marketplace_duration')
+                ->setCellValue('F1', 'marketplace_durationUnit')
+                ->setCellValue('G1', 'marketplace_category')
+                ->setCellValue('H1', 'marketplace_rating')
+                ->setCellValue('I1', 'marketplace_interestRate')
+                ->setCellValue('J1', 'marketplace_purpose')
+                ->setCellValue('K1', 'marketplace_status')
+                ->setCellValue('L1', 'marketplace_statusLiteral')
+                ->setCellValue('M1', 'marketplace_timeLeft')
+                ->setCellValue('N1', 'marketplace_timeLeftUnit')
+                ->setCellValue('O1', 'marketplace_name')
+                ->setCellValue('P1', 'marketplace_loanReference')
+                ->setCellValue('Q1', 'marketplace_subscriptionProgress')
+                ->setCellValue('R1', 'marketplace_sector')
+                ->setCellValue('S1', 'marketplace_requestorLocation')
+                ->setCellValue('T1', 'marketplace_numberOfInvestors')
+                ->setCellValue('U1', 'marketplace_origCreated')
+                ->setCellValue('V1', 'marketplace_productType')
+                ->setCellValue('W1', 'marketplace_country')
+                ->setCellValue('X1', 'marketplace_investmentCreationDate')
+                ->setCellValue('Y1', 'created');
+
+
+        $i = 2;
+        foreach ($backup as $row) {
+
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A' . $i, $row['Marketplacebackup']['id'])
+                    ->setCellValue('B' . $i, $row['Marketplacebackup']['company_id'])
+                    ->setCellValue('C' . $i, $row['Marketplacebackup']['marketplace_amount'])
+                    ->setCellValue('D' . $i, $row['Marketplacebackup']['marketplace_amountTotal'])
+                    ->setCellValue('E' . $i, $row['Marketplacebackup']['marketplace_duration'])
+                    ->setCellValue('F' . $i, $row['Marketplacebackup']['marketplace_durationUnit'])
+                    ->setCellValue('G' . $i, $row['Marketplacebackup']['marketplace_category'])
+                    ->setCellValue('H' . $i, $row['Marketplacebackup']['marketplace_rating'])
+                    ->setCellValue('I' . $i, $row['Marketplacebackup']['marketplace_interestRate'])
+                    ->setCellValue('J' . $i, $row['Marketplacebackup']['marketplace_purpose'])
+                    ->setCellValue('K' . $i, $row['Marketplacebackup']['marketplace_status'])
+                    ->setCellValue('L' . $i, $row['Marketplacebackup']['marketplace_statusLiteral'])
+                    ->setCellValue('M' . $i, $row['Marketplacebackup']['marketplace_timeLeft'])
+                    ->setCellValue('N' . $i, $row['Marketplacebackup']['marketplace_timeLeftUnit'])
+                    ->setCellValue('O' . $i, $row['Marketplacebackup']['marketplace_name'])
+                    ->setCellValue('P' . $i, $row['Marketplacebackup']['marketplace_loanReference'])
+                    ->setCellValue('Q' . $i, $row['Marketplacebackup']['marketplace_subscriptionProgress'])
+                    ->setCellValue('R' . $i, $row['Marketplacebackup']['marketplace_sector'])
+                    ->setCellValue('S' . $i, $row['Marketplacebackup']['marketplace_requestorLocation'])
+                    ->setCellValue('T' . $i, $row['Marketplacebackup']['marketplace_numberOfInvestors'])
+                    ->setCellValue('U' . $i, $row['Marketplacebackup']['marketplace_origCreated'])
+                    ->setCellValue('V' . $i, $row['Marketplacebackup']['marketplace_productType'])
+                    ->setCellValue('W' . $i, $row['Marketplacebackup']['marketplace_country'])
+                    ->setCellValue('X' . $i, $row['Marketplacebackup']['marketplace_investmentCreationDate'])
+                    ->setCellValue('Y' . $i, $row['Marketplacebackup']['created']);
+
+            $i++;
+        }
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="BackupMarketplace_' . $currentDateTime . '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+        exit;
+    }
+
 }
