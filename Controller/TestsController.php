@@ -28,6 +28,16 @@
 
  */
 
+/** Include path **/
+require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
+/** PHPExcel_IOFactory */
+App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
+App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
+App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
+
+/*use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell;*/
+
 
 class TestsController extends AppController {
 
@@ -41,6 +51,8 @@ function beforeFilter() {
         parent::beforeFilter();
 
 	$this->Security->requireAuth();
+        
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf"));
 }
 
    
@@ -111,7 +123,131 @@ function showUserData($userIdentity, $number) {
     }
 }
 
+    function convertExcelToArray() {
+        $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/cake_branch/mintos.xlsx");
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        /*$loadedSheetNames = $objPHPExcel->getSheetNames();
+        foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
+            echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
+            $objPHPExcel->setActiveSheetIndexByName($loadedSheetName);
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, false, false, true);
+            //var_dump($sheetData);
+            echo '<br />';
+        }*/
+        $values = [
+            "A" => "TransactionId",
+            "B" => "date",
+            "C" => [
+                [
+                    "name" => "interest",
+                    "regex" => "Interest income"
+                ],
+                [
+                    "name" => "repayment",
+                    "regex" => "Investment principal repayment"
+                ],
+                [
+                    "type" => "loanId",
+                    "regex" => "Loan ID",
+                    "initPos" => 9,
+                    "finalPos" => null
+                ]
+            ],
+            "D" => "turnover",
+            "E" => "balance",
+            "F" => "currency"
+        ];
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values);
+        var_dump($datas);
+    }
+    
+    function convertExcelByParts($chunkInit, $chunkSize, $inputFileType, $values) {
+        if (empty($inputFileType)) {
+            $inputFileType = "Excel2007";
+        }
+        if (empty($chunkInit)) {
+            $chunkInit = 1;
+        }
+        if (empty($chunkSize)) {
+            $chunkSize = 500;
+        }
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        
+        /**  Create a new Instance of our Read Filter  **/
+        $chunkFilter = new readFilterWinvestify();
+        /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
+        $chunkFilter->setRows($chunkInit,$chunkSize);
+        /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
+        $objReader->setReadFilter($chunkFilter);
+        
+        $objPHPExcel = $objReader->load("/var/www/html/cake_branch/mintos.xlsx");
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values);
+        var_dump($datas);
+    }
+    
+    function saveExcelArrayToTemp($rowDatas, $values) {
+        $i = 0;
+        $tempArray = [];
+        foreach ($rowDatas as $rowData) {
+            foreach ($values as $key => $value) {
+                if (is_array($value)) {
+                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
+                }
+                else {
+                    $tempArray[$i][$value] = $rowData[$key];
+                }
+            }
+            $i++;
+        }
+        return $tempArray;
+    }
     
     
     
+    function getValueExcelFromArray($rowData, $values, $tempArray) {
+        foreach ($values as $key => $value) {
+            $pos = strpos($rowData, $value["regex"]);
+            if ($pos !== false) {
+                // " found after position X
+                //$tempArray["loanId"] = substr($value, $pos + $variable["initPos"], $variable["finalPos"]);
+                if (!empty($value["name"])) {
+                    $tempArray["type"] = $value["name"];
+                }
+                else {
+                    $tempArray[$value["type"]] = $this->getValueBySubstring($rowData, $value, $pos);
+                }
+            }
+        }
+        return $tempArray;
+    }
+    
+    function getValueBySubstring($rowData, $value, $pos) {
+        if (empty($value["finalPos"])) {
+            $data = substr($rowData, $pos + $value["initPos"]);
+        }
+        else {
+            $data = substr($rowData, $pos + $value["initPos"], $value["finalPos"]);
+        }
+        return $data;
+    }
+    
+    function convertPdf () {
+        // Parse pdf file and build necessary objects.
+        $parser = new \Smalot\PdfParser\Parser();
+        $pdf    = $parser->parseFile('/var/www/html/cake_branch/circulantis.pdf');
+        // Retrieve all pages from the pdf file.
+        $pages  = $pdf->getPages();
+        // Loop over each page to extract text.
+        foreach ($pages as $page) {
+            echo "<br>";
+            $page_string = $page->getText();
+            echo "<br>";
+            
+        }
+        
+        echo $page_string;
+        //$text = $pdf->getText();
+        //echo $text;
+    }
 }
