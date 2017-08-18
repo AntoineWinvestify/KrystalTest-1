@@ -995,7 +995,7 @@ app.visual = {
         var pfp = $("#ContentPlaceHolder_pfp").val();
         var freeSearch = $("#ContentPlaceHolder_freeSearch").val();
         
-        if (dateRangeStart === "" && dateRangeEnd === "" && state === 0 && country === 0 && pfp === 0 && freeSearch === "") {
+        if (dateRangeStart === "" && dateRangeEnd === "" && state == 0 && country == 0 && pfp == 0 && freeSearch === "") {
             $(".generateExcelGeneral").addClass("redBorder");
             $(".ErrorExcelGeneral").find(".errorMessage").html(TEXTOS.T103); // "provide at least 1" warning
             $(".ErrorExcelGeneral").fadeIn();
