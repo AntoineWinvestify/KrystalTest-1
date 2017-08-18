@@ -367,18 +367,17 @@ class AppController extends Controller {
         
         //Country for excel export
         $this->countryArray = array(0 => __('Choose One'),
-            'Europa' => array(
-                'Países Bálticos' => array(
+                '-Países Bálticos' => array(
                     'LV' => 'Letonia',
                     'LT' => 'Lituania'
                 ),
-                'Resto Europa' => array(
+                '-Resto Europa' => array(
                     'ES' => 'España',
                     'IT' => 'Italia',
                     'FR' => 'Francia',
                     'DE' => 'Alemania',
                     'NL' => 'Países Bajos')
-        ));
+        );
 
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;

@@ -69,7 +69,7 @@
          
         //Validation form
         $(document).on("click", "#generateBtn", function () {
-            if ((result = app.visual.checkFormWinadminGenerateExcel()) === true) {
+            if ((app.visual.checkFormWinadminGenerateExcel()) === true) {
                 
                 
                 //getserverdata!!!!
