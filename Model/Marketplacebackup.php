@@ -61,7 +61,6 @@ class Marketplacebackup extends AppModel {
 
     public function getBackup($filters) {
         //$conditions = array($filters);
-        print_r($filters);
         $backup = $this->find('all', array(
             'conditions' => $filters,
             'recursive' => -1,
