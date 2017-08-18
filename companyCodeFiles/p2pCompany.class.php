@@ -1456,6 +1456,31 @@ function print_r2($val){
         var_dump($datas);
     }
     
+    function convertExcelByParts($chunkInit, $chunkSize, $inputFileType, $values) {
+        if (empty($inputFileType)) {
+            $inputFileType = "Excel2007";
+        }
+        if (empty($chunkInit)) {
+            $chunkInit = 1;
+        }
+        if (empty($chunkSize)) {
+            $chunkSize = 500;
+        }
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        
+        /**  Create a new Instance of our Read Filter  **/
+        $chunkFilter = new readFilterWinvestify();
+        /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
+        $chunkFilter->setRows($chunkInit,$chunkSize);
+        /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
+        $objReader->setReadFilter($chunkFilter);
+        
+        $objPHPExcel = $objReader->load("/var/www/html/cake_branch/mintos.xlsx");
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values);
+        var_dump($datas);
+    }
+    
     /**
      * Function to convert from an array with PHPExcel structure to a more manipulable structure
      * @param array $rowDatas It is the array with PHPExcel structure
