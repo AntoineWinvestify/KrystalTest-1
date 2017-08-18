@@ -1676,6 +1676,10 @@ hr.nomargin {
                     #popUp {
                         width: 50%;
                     }
+                    .navbar-fixed-top {
+                        width: 1200px;
+                        position: fixed;
+                    }
                 }
         @media (min-width: 1200px) {
             .reestructure {
