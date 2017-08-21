@@ -119,20 +119,20 @@ class zank extends p2pCompany {
         //echo $result;
 
         if (!$result) {   // Error while logging in
-            echo __FUNCTION__ . __LINE__ . "<br>";
-            $tracings = "Tracing:\n";
-            $tracings .= __FILE__ . " " . __LINE__ . " \n";
-            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
-            $tracings .= " \n";
-            $msg = "Error while entering user's portal. Wrong userid/password \n";
-            $msg = $msg . $tracings . " \n";
+            echo __FUNCTION__ . __LINE__ . "login fail" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings = "Tracing: " . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= __FILE__ . " " . __LINE__ . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $msg = "Error while entering user's portal. Wrong userid/password" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $msg = $msg . $tracings . HTML_ENDOFLINE . SHELL_ENDOFLINE;
             $this->logToFile("Warning", $msg);
             exit;
         }
 
         //Structure comparation, not in the same place where we colect the data because we get the zank data from ajax response.
         $url = array_shift($this->urlSequence);
-        echo 'url: ' . $url;
+        echo 'url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
         $str = $this->getCompanyWebpage($url);
         $dom = new DOMDocument;
         $dom->loadHTML($str);
@@ -155,10 +155,10 @@ class zank extends p2pCompany {
 
                     $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
 
-                    echo 'structure: ' . $structureRevision . '<br>';
+                    echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
                     if (!$structureRevision) { //Save new structure
-                        echo 'Structural error<br>';
+                        echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $clone = $table->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
@@ -167,11 +167,11 @@ class zank extends p2pCompany {
                         $totalArray = false;  //Structure control, don't read more tr 
                         break; //Stop reading if we have a structural error
                     }
-                    echo 'Structure good';
+                    echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                 }
 
                 if ($key == 0 && !$structure) { //Save new structure if is first time
-                    echo 'no structure readed, saving structure <br>';
+                    echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $saveStructure = new DOMDocument();
                     $clone = $table->cloneNode(TRUE);
                     $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
@@ -347,28 +347,28 @@ class zank extends p2pCompany {
 
 
                     if ($inversionReadController == 1) {
-                        echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe<br>";
+                        //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $readControl++;
                         echo 'Advance';
                     } else if ($readControl > 2) {
-                        echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida.<br>";
+                        //echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
                         $reading = false;
-                        echo 'Break';
+                        //echo 'Break';
                         break;
                     } else {
-                        echo 'Add:<br>';
+                       // echo 'Add:<br>';
                         array_push($totalArray, $tempArray);
-                        echo 'Total<br>';
+                       /* echo 'Total<br>';
                         $this->print_r2($totalArray);
                         echo 'Added : <br>';
-                        $this->print_r2($tempArray);
+                        $this->print_r2($tempArray);*/
                         //echo __FILE__ . " " . __LINE__ . "<br>";
                     }
                 }
             }
         }
         //echo 'AQUI ES ' . $reading;
-        echo 'Se envia<br>';
+        //echo 'Se envia<br>';
         $this->print_r2($totalArray);
         $this->companyUserLogout();
         return [$totalArray, $structureRevision];
@@ -386,13 +386,13 @@ class zank extends p2pCompany {
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
 
         if (!$result) {   // Error while logging in
-            echo __FUNCTION__ . __LINE__ . "<br>";
-            $tracings = "Tracing:\n";
-            $tracings .= __FILE__ . " " . __LINE__ . " \n";
-            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
-            $tracings .= " \n";
-            $msg = "Error while entering user's portal. Wrong userid/password \n";
-            $msg = $msg . $tracings . " \n";
+            echo __FUNCTION__ . __LINE__ . "login fail" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings = "Tracing: " . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= __FILE__ . " " . __LINE__ . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $msg = "Error while entering user's portal. Wrong userid/password" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $msg = $msg . $tracings . HTML_ENDOFLINE . SHELL_ENDOFLINE;
             $this->logToFile("Warning", $msg);
             exit;
         }
@@ -401,7 +401,7 @@ class zank extends p2pCompany {
 
         //Structure comparation, not in the same place where we colect the data because we get the zank data from ajax response.
         $url = array_shift($this->urlSequence);
-        echo 'url: ' . $url;
+        echo 'url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
         $str = $this->getCompanyWebpage($url);
         $dom = new DOMDocument;
         $dom->loadHTML($str);
@@ -424,10 +424,10 @@ class zank extends p2pCompany {
 
                     $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
 
-                    echo 'structure: ' . $structureRevision . '<br>';
+                    echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
                     if (!$structureRevision) { //Save new structure
-                        echo 'Structural error<br>';
+                        echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $clone = $table->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
@@ -436,11 +436,11 @@ class zank extends p2pCompany {
                         $totalArray = false;  //Structure control, don't read more tr 
                         break; //Stop reading if we have a structural error
                     }
-                    echo 'Structure good';
+                    echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                 }
 
                 if ($start == 0 && $key == 0 && !$structure) { //Save new structure if is first time
-                    echo 'no structure readed, saving structure <br>';
+                    echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $saveStructure = new DOMDocument();
                     $clone = $table->cloneNode(TRUE);
                     $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
