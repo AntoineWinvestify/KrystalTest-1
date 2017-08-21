@@ -394,7 +394,7 @@ function __construct() {
             foreach ($rows as $key => $row) {
 
 
-                if ($key == 0 && $structure) { //Compare structures, olny compare the first element
+                if ($pageNumber == 1 && $key == 0 && $structure) { //Compare structures, olny compare the first element
                     $newStructure = new DOMDocument; //Load db html dom
                     $newStructure->loadHTML($structure['Structure']['structure_html']);
                     $newStructure->preserveWhiteSpace = false;
@@ -418,7 +418,7 @@ function __construct() {
                     echo 'Structure good';
                 }
 
-                if ($key == 0 && !$structure) { //Save new structure if is first time
+                if ($pageNumber == 1 && $key == 0 && !$structure) { //Save new structure if is first time
                     echo 'no structure readed, saving structure <br>';
                     $saveStructure = new DOMDocument();
                     $container = $this->getElements($dom, 'div', 'data-id', '4');

@@ -439,7 +439,7 @@ class zank extends p2pCompany {
                     echo 'Structure good';
                 }
 
-                if ($key == 0 && !$structure) { //Save new structure if is first time
+                if ($start == 0 && $key == 0 && !$structure) { //Save new structure if is first time
                     echo 'no structure readed, saving structure <br>';
                     $saveStructure = new DOMDocument();
                     $clone = $table->cloneNode(TRUE);
