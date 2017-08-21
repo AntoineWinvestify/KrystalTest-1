@@ -131,7 +131,7 @@ class zank extends p2pCompany {
         }
 
         //Structure comparation, not in the same place where we colect the data because we get the zank data from ajax response.
-        $url = array_shift($this->urlSequence);
+        /*$url = array_shift($this->urlSequence);
         echo 'url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
         $str = $this->getCompanyWebpage($url);
         $dom = new DOMDocument;
@@ -179,10 +179,10 @@ class zank extends p2pCompany {
                 }
             }
             break;
-        }
+        }*/
 
 
-        if ($totalArray !== false) {
+        //if ($totalArray !== false) {
             $form = [
                 "length" => 200,
                 "start" => $this->start
@@ -303,7 +303,7 @@ class zank extends p2pCompany {
                                     $tempArray['marketplace_subscriptionProgress'] = 10000;
                                     $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
 
-                                    if(strpos($div->nodeValue, 'mortiza') != false) {
+                                    if (strpos($div->nodeValue, 'mortiza') != false) {
                                         $tempArray['marketplace_status'] = CONFIRMED;
                                     } else if ($div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                                         $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
@@ -356,22 +356,22 @@ class zank extends p2pCompany {
                         //echo 'Break';
                         break;
                     } else {
-                       // echo 'Add:<br>';
+                        // echo 'Add:<br>';
                         array_push($totalArray, $tempArray);
-                       /* echo 'Total<br>';
-                        $this->print_r2($totalArray);
-                        echo 'Added : <br>';
-                        $this->print_r2($tempArray);*/
+                        /* echo 'Total<br>';
+                          $this->print_r2($totalArray);
+                          echo 'Added : <br>';
+                          $this->print_r2($tempArray); */
                         //echo __FILE__ . " " . __LINE__ . "<br>";
                     }
                 }
             }
-        }
+        //}
         //echo 'AQUI ES ' . $reading;
         //echo 'Se envia<br>';
         $this->print_r2($totalArray);
         $this->companyUserLogout();
-        return [$totalArray, $structureRevision];
+        return [$totalArray, 1];
     }
 
     /**
@@ -382,7 +382,7 @@ class zank extends p2pCompany {
      */
     function collectHistorical($structure, $start) {
 
-
+        $totalArray = array();
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
 
         if (!$result) {   // Error while logging in
@@ -400,7 +400,7 @@ class zank extends p2pCompany {
 
 
         //Structure comparation, not in the same place where we colect the data because we get the zank data from ajax response.
-        $url = array_shift($this->urlSequence);
+       /* $url = array_shift($this->urlSequence);
         echo 'url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
         $str = $this->getCompanyWebpage($url);
         $dom = new DOMDocument;
@@ -408,6 +408,7 @@ class zank extends p2pCompany {
         $dom->preserveWhiteSpace = false;
         $tables = $dom->getElementsByTagName('tbody');
         foreach ($tables as $table) {
+            echo 'entro tabla';
             $trs = $table->getElementsByTagName('tr');
             foreach ($trs as $key => $tr) {
                 if ($start == 0 && $key == 0 && $structure) { //Compare structures, olny compare the first element
@@ -448,21 +449,26 @@ class zank extends p2pCompany {
                 }
             }
             break;
-        }
+        }*/
 
 
 
+        $url = array_shift($this->urlSequence);
+        echo 'url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+        $str = $this->getCompanyWebpage($url);
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
 
-
-
-        if ($totalArray !== false) {
+       // if ($totalArray !== false) {
             /* Zank pagination must be done using curl, form are parameters sent in curl */
+
             $form = [
                 "length" => 200, //Number of investment for page
                 "start" => $start, //First investment of the page
             ];
 
-            $str = $this->getCompanyWebpageJson(null, $form); //Data reading
+            $str = $this->getCompanyWebpageJson($url, $form); //Data reading
 
             $totalArray = array();
             $pos1 = stripos($str, '[');
@@ -522,7 +528,7 @@ class zank extends p2pCompany {
                             } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                                 $tempArray['marketplace_subscriptionProgress'] = 10000;
                                 $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
-                                if(strpos($div->nodeValue, 'mortiza') != false) {
+                                if (strpos($div->nodeValue, 'mortiza') != false) {
                                     $tempArray['marketplace_status'] = CONFIRMED;
                                 } else if ($div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
                                     $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
@@ -561,10 +567,10 @@ class zank extends p2pCompany {
                 $this->print_r2($tempArray);
                 unset($tempArray);
             }
-        }
+        //}
         //echo 'AQUI ES ' . $reading;
         $this->companyUserLogout();
-        return [$totalArray, $form['start'], null, $structureRevision]; //$total array is the rquested investment, $form['start'] is the next page, return false if is the last page
+        return [$totalArray, $form['start'], null, 1]; //$total array is the rquested investment, $form['start'] is the next page, return false if is the last page
     }
 
     /**
