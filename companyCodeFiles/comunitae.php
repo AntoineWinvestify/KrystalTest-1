@@ -166,7 +166,7 @@ function __construct() {
                 foreach ($rows as $key => $row) {
 
 
-                    if ($key == 0 && $structure) { //Compare structures, olny compare the first element
+                    if ($pageNumber == 1 && $key == 0 && $structure) { //Compare structures, olny compare the first element
                         $newStructure = new DOMDocument;
                         $newStructure->loadHTML($structure['Structure']['structure_html']);
                         $newStructure->preserveWhiteSpace = false;

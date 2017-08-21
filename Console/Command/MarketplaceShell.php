@@ -77,7 +77,7 @@ class MarketplaceShell extends AppShell {
         $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
         $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
 
-        $this->out(print_r($result[$companyId]['company_codeFile']) . " ");
+        $this->out(print_r($result[$companyId]['company_codeFile']) . " " . SHELL_ENDOFLINE);
         $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
         $newComp->defineConfigParms($result[$companyId]);
 
@@ -89,11 +89,11 @@ class MarketplaceShell extends AppShell {
 
 
         if ($marketplaceArray[1] && $marketplaceArray[1] != 1) {
-            $this->out('Saving new structure');
+            $this->out('Saving new structure' . SHELL_ENDOFLINE);
             $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
             if (!$marketplaceArray[0]) {
 
-                $this->out('Sending error report');
+                $this->out('Sending error report' . SHELL_ENDOFLINE);
             }
         }
 

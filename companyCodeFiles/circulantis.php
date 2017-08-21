@@ -361,7 +361,7 @@ class circulantis extends p2pCompany {
                     }
 
 
-                    if ($key == 1 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
+                    if ($pageNumber == 0 && $key == 1 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
                         $newStructure = new DOMDocument;  //Get the old structure in db
                             $newStructure->loadHTML($structure['Structure']['structure_html']);
                             $newStructure->preserveWhiteSpace = false;

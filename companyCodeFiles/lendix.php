@@ -283,7 +283,7 @@ class lendix extends p2pCompany {
        if ($totalArray !== false) {
          foreach ($divs as $key => $div) {
             
-            if ($key == 0 && $structure) { //Compare structures, only compare the first element
+            if ($offset == 0 && $key == 0 && $structure) { //Compare structures, only compare the first element
                         $newStructure = new DOMDocument;  //Get the old structure in db
                         $newStructure->loadHTML($structure['Structure']['structure_html']);
                         $newStructure->preserveWhiteSpace = false;

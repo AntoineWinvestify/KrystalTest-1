@@ -312,7 +312,7 @@ class growly extends p2pCompany {
            foreach ($rows as $key => $row) {
             
             
-            if ($key == 0 && $structure) { //Compare structures, only compare the first element
+            if ($pageNumber == 0 && $key == 0 && $structure) { //Compare structures, only compare the first element
                         $newStructure = new DOMDocument;  //Get the old structure in db
                         $newStructure->loadHTML($structure['Structure']['structure_html']);
                         $newStructure->preserveWhiteSpace = false;

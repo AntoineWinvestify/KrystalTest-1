@@ -410,7 +410,7 @@ class zank extends p2pCompany {
         foreach ($tables as $table) {
             $trs = $table->getElementsByTagName('tr');
             foreach ($trs as $key => $tr) {
-                if ($key == 0 && $structure) { //Compare structures, olny compare the first element
+                if ($start == 0 && $key == 0 && $structure) { //Compare structures, olny compare the first element
                     $newStructure = new DOMDocument;
                     $newStructure->loadHTML($structure['Structure']['structure_html']);
                     $newStructure->preserveWhiteSpace = false;
