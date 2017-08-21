@@ -110,7 +110,8 @@ class growly extends p2pCompany {
 
 //get all rows from the table
             $rows = $table->item(0)->getElementsByTagName('tr');
-            echo 'contar ' . count($rows);
+            $number = count($rows);
+            echo 'Number of investment in page: ' . $number . HTML_ENDOFLINE . SHELL_ENDOFLINE;
             $index = -1;
             if ($totalArray !== false) {
                 foreach ($rows as $key => $row) {
@@ -131,10 +132,10 @@ class growly extends p2pCompany {
 
                         $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
 
-                        echo 'structure: ' . $structureRevision . '<br>';
+                        echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
                         if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
+                            echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                             $saveStructure = new DOMDocument();
                             $container = $dom->getElementsByTagName('tbody')[0];
                             $clone = $container->cloneNode(TRUE);
@@ -145,11 +146,11 @@ class growly extends p2pCompany {
                             $reading = false; //Stop pagination in error
                             break; //Stop reading if we have a structural error
                         }
-                        echo 'Structure good';
+                        echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     }
 
                     if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
+                        echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $container = $dom->getElementsByTagName('tbody')[0];
                         $clone = $container->cloneNode(TRUE);
@@ -282,13 +283,12 @@ class growly extends p2pCompany {
         return [$totalArray, $structureRevision];
     }
 
-    
-  /**
-   * Collect historical
-   * @param Array $structure
-   * @param Int $pageNumber
-   * @return Array
-   */
+    /**
+     * Collect historical
+     * @param Array $structure
+     * @param Int $pageNumber
+     * @return Array
+     */
     function collectHistorical($structure, $pageNumber) {
 
         $totalArray = array();
@@ -305,160 +305,164 @@ class growly extends p2pCompany {
         $table = $dom->getElementsByTagName('table');
 
 //get all rows from the table
-        $rows = $table->item(0)->getElementsByTagName('tr');
 
+        $rows = array();
+        if ($table) {
+            $rows = $table->item(0)->getElementsByTagName('tr');
+        }
         $index = -1;
-         if ($totalArray !== false) {
-           foreach ($rows as $key => $row) {
-            
-            
-            if ($pageNumber == 0 && $key == 0 && $structure) { //Compare structures, only compare the first element
-                        $newStructure = new DOMDocument;  //Get the old structure in db
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('tr');
+        if ($totalArray !== false) {
+            foreach ($rows as $key => $row) {
 
-                        $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                        $container = $dom->getElementsByTagName('tbody')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $saveStructure->getElementsByTagName('tr');
 
-                        $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
+                if ($pageNumber == 0 && $key == 0 && $structure) { //Compare structures, only compare the first element
+                    $newStructure = new DOMDocument;  //Get the old structure in db
+                    $newStructure->loadHTML($structure['Structure']['structure_html']);
+                    $newStructure->preserveWhiteSpace = false;
+                    $trsNewStructure = $newStructure->getElementsByTagName('tr');
 
-                        echo 'structure: ' . $structureRevision . '<br>';
+                    $saveStructure = new DOMDocument(); //CLone original structure in pfp page
+                    $container = $dom->getElementsByTagName('tbody')[0];
+                    $clone = $container->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                    $saveStructure->saveHTML();
+                    $originalStructure = $saveStructure->getElementsByTagName('tr');
 
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
-                            $saveStructure = new DOMDocument();
-                            $container = $dom->getElementsByTagName('tbody')[0];
-                            $clone = $container->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                    $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
 
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more investmnets 
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good';
-                    }
+                    echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
-                    if ($pageNumber == 0 && $key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
+                    if (!$structureRevision) { //Save new structure
+                        echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $container = $dom->getElementsByTagName('tbody')[0];
                         $clone = $container->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
                         $structureRevision = $saveStructure->saveHTML();
+                        $totalArray = false;  //Structure control, don't read more investmnets 
+                        break; //Stop reading if we have a structural error
                     }
-              
-            $index++;
-
-            if ($index == 0) {
-                continue;  // don't check contents of first "tr"
-            }
-
-            $loanId = preg_replace('/\D/', '', $row->getAttribute('id'));
-            $tempArray['marketplace_loanReference'] = $loanId;
-            $tempArray['marketplace_country'] = 'ES';
-            $tds = $row->getElementsByTagName('td');
-
-            foreach ($tds as $td) {
-                $checkedAttribute = $td->getAttribute('class');
-                if (strcasecmp(trim($checkedAttribute), 'intro') == 0) {
-                    $as = $td->getElementsByTagName('a');
-                    foreach ($as as $item) {   // only 1 <strong> exists
-                        $tempArray['marketplace_purpose'] = $item->nodeValue;
-                    }
-
-                    $ps = $td->getElementsByTagName('p');
-                    foreach ($ps as $item) {   // only 1 <strong> exists
-                        $tempArray['marketplace_vencimiento'] = $item->nodeValue;
-                    }
+                    echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                 }
 
-                $checkedAttribute = $td->getAttribute('data-meta');
-                if (strcasecmp(trim($checkedAttribute), 'interest') == 0) {
-                    $strongs = $td->getElementsByTagName('strong');
-                    foreach ($strongs as $strong) { // only 1 <strong> exists
-                        $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($strong->nodeValue));
-                    }
+                if ($pageNumber == 0 && $key == 0 && !$structure) { //Save new structure if is first time
+                    echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                    $saveStructure = new DOMDocument();
+                    $container = $dom->getElementsByTagName('tbody')[0];
+                    $clone = $container->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                    $structureRevision = $saveStructure->saveHTML();
                 }
 
-                $checkedAttribute = $td->getAttribute('data-meta');
-                if (strcasecmp(trim($checkedAttribute), 'rating') == 0) {
-                    $tempArray['marketplace_rating'] = trim($td->nodeValue);
+                $index++;
+
+                if ($index == 0) {
+                    continue;  // don't check contents of first "tr"
                 }
 
-                $checkedAttribute = $td->getAttribute('data-meta');
-                if (strcasecmp(trim($checkedAttribute), 'term') == 0) {
+                $loanId = preg_replace('/\D/', '', $row->getAttribute('id'));
+                $tempArray['marketplace_loanReference'] = $loanId;
+                $tempArray['marketplace_country'] = 'ES';
+                $tds = $row->getElementsByTagName('td');
 
-                    $strongs = $td->getElementsByTagName('strong');
-                    foreach ($strongs as $strong) { // only 1 <strong> exists
-                        if (is_numeric(trim($strong->nodeValue))) {
-                            $tempDuration = trim($strong->nodeValue);
+                foreach ($tds as $td) {
+                    $checkedAttribute = $td->getAttribute('class');
+                    if (strcasecmp(trim($checkedAttribute), 'intro') == 0) {
+                        $as = $td->getElementsByTagName('a');
+                        foreach ($as as $item) {   // only 1 <strong> exists
+                            $tempArray['marketplace_purpose'] = $item->nodeValue;
                         }
-                    }
-                    $spans = $td->getElementsByTagName('span');
-                    foreach ($spans as $span) { // only 1 <span> exists	
-                        $duration = $tempDuration . " " . trim($span->nodeValue);
-                        $timeStatus = trim($span->nodeValue);
-                    }
-                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($duration);
-                }
 
-                $checkedAttribute = $td->getAttribute('data-meta');
-                if (strcasecmp(trim($checkedAttribute), 'time') == 0) {
-
-                    $strongs = $td->getElementsByTagName('strong');
-                    foreach ($strongs as $strong) { // only 1 <strong> exists
-                        if (is_numeric(trim($strong->nodeValue))) {
-                            $tempTimeLeft = trim($strong->nodeValue);
+                        $ps = $td->getElementsByTagName('p');
+                        foreach ($ps as $item) {   // only 1 <strong> exists
+                            $tempArray['marketplace_vencimiento'] = $item->nodeValue;
                         }
                     }
 
-                    $spans = $td->getElementsByTagName('span');
-                    foreach ($spans as $span) { // only 1 <span> exists	
-                        $timeLeft = $tempTimeLeft . " " . trim($span->nodeValue);
-                    }
-                    list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
-                }
-
-                $checkedAttribute = $td->getAttribute('data-meta');
-                if (strcasecmp(trim($checkedAttribute), 'funding') == 0) {
-                    $strongs = $td->getElementsByTagName('strong');
-                    foreach ($strongs as $strong) { // only 1 <strong> exists
-                        $tempArray['marketplace_amount'] = $this->getMonetaryValue(trim($strong->nodeValue));
+                    $checkedAttribute = $td->getAttribute('data-meta');
+                    if (strcasecmp(trim($checkedAttribute), 'interest') == 0) {
+                        $strongs = $td->getElementsByTagName('strong');
+                        foreach ($strongs as $strong) { // only 1 <strong> exists
+                            $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($strong->nodeValue));
+                        }
                     }
 
-                    $spans = $td->getElementsByTagName('span');
-                    foreach ($spans as $span) {  // only 1 <span> exists
-                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
-                        if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                    $checkedAttribute = $td->getAttribute('data-meta');
+                    if (strcasecmp(trim($checkedAttribute), 'rating') == 0) {
+                        $tempArray['marketplace_rating'] = trim($td->nodeValue);
+                    }
 
+                    $checkedAttribute = $td->getAttribute('data-meta');
+                    if (strcasecmp(trim($checkedAttribute), 'term') == 0) {
 
-                            if ($tempArray['marketplace_timeLeftUnit'] == -1) {
-                                //If we dont have time left    
-                                $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                                $tempArray['marketplace_status'] = CONFIRMED;
-                            } else {
-                                //If we have time left    
-                                $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-                                $tempArray['marketplace_status'] = PERCENT;
+                        $strongs = $td->getElementsByTagName('strong');
+                        foreach ($strongs as $strong) { // only 1 <strong> exists
+                            if (is_numeric(trim($strong->nodeValue))) {
+                                $tempDuration = trim($strong->nodeValue);
                             }
-                        } else {
-                            $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                        }
+                        $spans = $td->getElementsByTagName('span');
+                        foreach ($spans as $span) { // only 1 <span> exists	
+                            $duration = $tempDuration . " " . trim($span->nodeValue);
+                            $timeStatus = trim($span->nodeValue);
+                        }
+                        list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($duration);
+                    }
+
+                    $checkedAttribute = $td->getAttribute('data-meta');
+                    if (strcasecmp(trim($checkedAttribute), 'time') == 0) {
+
+                        $strongs = $td->getElementsByTagName('strong');
+                        foreach ($strongs as $strong) { // only 1 <strong> exists
+                            if (is_numeric(trim($strong->nodeValue))) {
+                                $tempTimeLeft = trim($strong->nodeValue);
+                            }
+                        }
+
+                        $spans = $td->getElementsByTagName('span');
+                        foreach ($spans as $span) { // only 1 <span> exists	
+                            $timeLeft = $tempTimeLeft . " " . trim($span->nodeValue);
+                        }
+                        list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
+                    }
+
+                    $checkedAttribute = $td->getAttribute('data-meta');
+                    if (strcasecmp(trim($checkedAttribute), 'funding') == 0) {
+                        $strongs = $td->getElementsByTagName('strong');
+                        foreach ($strongs as $strong) { // only 1 <strong> exists
+                            $tempArray['marketplace_amount'] = $this->getMonetaryValue(trim($strong->nodeValue));
+                        }
+
+                        $spans = $td->getElementsByTagName('span');
+                        foreach ($spans as $span) {  // only 1 <span> exists
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
+                            if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+
+
+                                if ($tempArray['marketplace_timeLeftUnit'] == -1) {
+                                    //If we dont have time left    
+                                    $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                } else {
+                                    //If we have time left    
+                                    $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                    $tempArray['marketplace_status'] = PERCENT;
+                                }
+                            } else {
+                                $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                            }
                         }
                     }
                 }
+
+                $totalArray[] = $tempArray;
+                unset($tempArray);
+                $investmentNumber++;
             }
+        }
 
-            $totalArray[] = $tempArray;
-            unset($tempArray);
-            $investmentNumber++;
-    }}
-
-        echo 'Aqui ' . $investmentNumber;
+        echo 'Number of investment in page: ' . $investmentNumber . HTML_ENDOFLINE . SHELL_ENDOFLINE;
         if ($investmentNumber < 10) {
             $pageNumber = false;
         } //Stop reading when we dont find investmet
