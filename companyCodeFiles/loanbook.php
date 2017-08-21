@@ -280,12 +280,12 @@ class loanbook extends p2pCompany {
                         $this->print_r2($totalArray);
                         unset($tempArray);
                     }
-
-                    if ($readController > 2) { //If we fin more than two completed investment existing in the backpup, stop reading
+                   
+                }
+                 if ($readController > 2) { //If we fin more than two completed investment existing in the backpup, stop reading
                         echo 'Stop reading';
                         break;
                     }
-                }
             }
             return [$totalArray, $structureRevision];
         }

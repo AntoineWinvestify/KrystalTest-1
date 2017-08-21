@@ -68,10 +68,8 @@
  *
  * have length indicator
  */
+class comunitae extends p2pCompany {
 
-
-class comunitae extends p2pCompany{
-    
     private $numberOfPages;
     private $index;
     private $random;
@@ -82,16 +80,16 @@ class comunitae extends p2pCompany{
     protected $listParticipation;
     protected $numberPage;
     protected $numMiCartera = 0;
-    protected $comunitaeStates = [       
-                    1, //OK
-                    2, //DUDOSO
-                    //3 AMORTIZADO
-                    4, //JUDICIAL
-                    5, //OK(1-2)
-                ];
-            		
-function __construct() {
-	parent::__construct();	
+    protected $comunitaeStates = [
+        1, //OK
+        2, //DUDOSO
+        //3 AMORTIZADO
+        4, //JUDICIAL
+        5, //OK(1-2)
+    ];
+
+    function __construct() {
+        parent::__construct();
 // Do whatever is needed for this subsclass
     }
 
@@ -179,7 +177,7 @@ function __construct() {
                         $saveStructure->saveHTML();
                         $originalStructure = $saveStructure->getElementsByTagName('article');
 
-                        $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
+                        $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
 
                         echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
@@ -198,7 +196,7 @@ function __construct() {
                     }
 
                     if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure'. HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                        echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $container = $this->getElements($dom, 'div', 'data-id', '4');
                         $clone = $container[0]->cloneNode(TRUE);
@@ -211,6 +209,10 @@ function __construct() {
 
                     $loanId = $row->getAttribute('id');
                     $tempArray['marketplace_loanReference'] = $loanId;
+                    if ($tempArray['marketplace_loanReference'] == 'collapse_check') {
+                        break;
+                    }
+
                     $nameFound = false;
 
                     $as = $row->getElementsByTagName('a');
@@ -328,12 +330,12 @@ function __construct() {
 
         if ($type == 1) {//Start with 'Pagares'
             $url = array_shift($this->urlSequence); //Save 'Pagares' first url
-            echo 'Url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
+            echo 'Url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            ;
             $str = $this->getCompanyWebpage($url);
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             $dom->loadHTML($str);  //Load 'Pagares' 
-
             //pymeList
             $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
             $pageNumber++; //Advance page
@@ -343,7 +345,8 @@ function __construct() {
             echo 'Count: ' . $numberOfInvestmentInPage . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
             if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'pagares', go to 'Factoring'
-                echo 'Change type' . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
+                echo 'Change type' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                ;
                 $type = 4;
                 $pageNumber = 1; //MUST BE 1, IF IS 0 THE LOOP WILL END
                 //print_r($type . " " . $pageNumber);
@@ -375,7 +378,8 @@ function __construct() {
             $rows = $dom->getElementsByTagName('article');
             $numberOfInvestmentInPage = $rows->length;
             //$this->print_r2($rows);
-            echo 'Count: ' . $numberOfInvestmentInPage . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
+            echo 'Count: ' . $numberOfInvestmentInPage . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            ;
 
             if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'Factoring', stop search
                 $pageNumber = false;
@@ -391,9 +395,9 @@ function __construct() {
                     $newStructure->loadHTML($structure['Structure']['structure_html']);
                     $newStructure->preserveWhiteSpace = false;
                     $trsNewStructure = $newStructure->getElementsByTagName('article');
-                    $structureRevision = $this->structureRevision($trsNewStructure[1], $rows[0]);
+                    $structureRevision = $this->structureRevision($trsNewStructure[1], $rows[2]);
 
-                    echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
+                    echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
                     if (!$structureRevision) { //Save new structure
                         echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
@@ -407,7 +411,8 @@ function __construct() {
 
                         break; //Stop reading if we have a structural error
                     }
-                    echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
+                    echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                    ;
                 }
 
                 if ($pageNumber == 2 && $key == 0 && !$structure) { //Save new structure if is first time
@@ -423,6 +428,9 @@ function __construct() {
 
                 $loanId = $row->getAttribute('id');
                 $tempArray['marketplace_loanReference'] = $loanId;
+                if ($tempArray['marketplace_loanReference'] == 'collapse_check') {
+                    break;
+                }
                 $nameFound = false;
 
                 $as = $row->getElementsByTagName('a');
@@ -650,7 +658,7 @@ function __construct() {
                         $pos = strpos($classSpan, 'label-state-');
                         if ($pos !== false) {
                             // " found after position 20
-                            $stateInvestments = substr($classSpan, $pos+12, 1);
+                            $stateInvestments = substr($classSpan, $pos + 12, 1);
                             if (in_array($stateInvestments, $this->comunitaeStates)) {
                                 $this->tempUrlInvestments[] = $url = $this->urlListarParticipaciones . $i . "&PARAM_PAGINACION_PAGINA_ACTUAL=";
                             }
@@ -658,7 +666,7 @@ function __construct() {
                         }
                     }
                     $this->numUrlInvestments = 0;
-                    if (!empty($this->tempUrlInvestments) ) {
+                    if (!empty($this->tempUrlInvestments)) {
                         $this->numUrlInvestments = count($this->tempUrlInvestments);
                     }
                     if ($this->numUrlInvestments > 0) {
@@ -681,8 +689,7 @@ function __construct() {
                         // https://www.comunitae.com/mi_cartera/confirming
                         // https://www.comunitae.com/mi_cartera/factoring
                         $this->getCompanyWebpageMultiCurl($url);
-                    }
-                    else {
+                    } else {
                         $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvestment'] - $this->tempArray['global']['totalAmortized'];
                         $this->tempArray['global']['profitibility'] = (int) ($this->tempArray['global']['totalPercentage'] / ($this->tempArray['global']['investments'] = $this->numberOfInvestments));
                         $this->print_r2($this->tempArray);
@@ -720,7 +727,7 @@ function __construct() {
                     if ($tempStatus == TERMINATED_OK) {
                         continue;         // skip this one as investment has finished
                     }
-                    switch($tempStatus) {
+                    switch ($tempStatus) {
                         case 2:
                             $tempStatus = 1;
                             break;
@@ -728,7 +735,7 @@ function __construct() {
                             $tempStatus = 1;
                             break;
                     }
-                    
+
                     $this->index++;
                     //Changed index for numberOfInvestments variable because there are different investments on different urls
                     //https://www.comunitae.com/mi_cartera/.......
@@ -741,8 +748,8 @@ function __construct() {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__);
                     }
-                    $duration  = $this->getDurationValue($as[2]->nodeValue);
-                    $this->data1[$this->numberOfInvestments]['durationUnit']  = $duration[1]; 
+                    $duration = $this->getDurationValue($as[2]->nodeValue);
+                    $this->data1[$this->numberOfInvestments]['durationUnit'] = $duration[1];
                     switch ($duration[1]) {
                         case 1: $this->data1[$this->numberOfInvestments]['duration'] = $duration[0] . " Días";
                             break;
@@ -773,7 +780,7 @@ function __construct() {
 
                 $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvested'] - $this->tempArray['global']['totalAmortized'];
                 $this->print_r2($this->data1);
-        // Check number of pages. It seems the investments are shown in pages of 15 at the time.
+                // Check number of pages. It seems the investments are shown in pages of 15 at the time.
                 $pages = $this->getElements($domAccount, "ul", "class", "pagination no-margin");
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 if (empty($pages)) {
@@ -790,8 +797,7 @@ function __construct() {
                     $this->idForSwitch = 7;
                     $this->getCompanyWebpageMultiCurl($url);
                     break;
-                }
-                else {
+                } else {
                     if ($this->numUrlInvestments > $this->listParticipation) {
                         $emptyInvestments = false;
                         $this->numberPage = 1;
@@ -800,8 +806,7 @@ function __construct() {
                         $this->numberPage++;
                         $this->idForSwitch = 7;
                         $this->getCompanyWebpageMultiCurl($url);
-                    }
-                    else if ($this->numMiCartera < 4) {
+                    } else if ($this->numMiCartera < 4) {
                         $url = array_shift($this->urlSequence);
                         $this->numMiCartera++;
                         $this->idForSwitch = 5;
@@ -810,8 +815,7 @@ function __construct() {
                         // https://www.comunitae.com/mi_cartera/confirming
                         // https://www.comunitae.com/mi_cartera/factoring
                         $this->getCompanyWebpageMultiCurl($url);
-                    }
-                    else {
+                    } else {
                         $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['totalInvestment'] - $this->tempArray['global']['totalAmortized'];
                         $this->tempArray['global']['profitibility'] = (int) ($this->tempArray['global']['totalPercentage'] / ($this->tempArray['global']['investments'] = $this->numberOfInvestments));
                         $this->print_r2($this->tempArray);
@@ -826,7 +830,6 @@ function __construct() {
                 }
         }
     }
-
 
     /**
      *
@@ -1162,10 +1165,14 @@ function __construct() {
     function structureRevision($node1, $node2) {
 
         //We need remove this attribute directly from the article tag
-        $node1->removeAttribute('data-href');
-        $node1->removeAttribute('id');
-        $node2->removeAttribute('data-href');
-        $node2->removeAttribute('id');
+        if ($node1->hasAttributes()) {
+            $node1->removeAttribute('data-href');
+            $node1->removeAttribute('id');
+        }
+        if ($node2->hasAttributes()) {
+            $node2->removeAttribute('data-href');
+            $node2->removeAttribute('id');
+        }
 
         $node1 = $this->clean_dom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -1180,6 +1187,7 @@ function __construct() {
         $node1 = $this->clean_dom($node1, array(//We only want delete class of the span tag, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
             array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'article'),
                 ), array('class'));
 
 
@@ -1195,7 +1203,9 @@ function __construct() {
         $node2 = $this->clean_dom($node2, array(//We only want delete class of the span tag, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
             array('typeSearch' => 'element', 'tag' => 'div'),
+             array('typeSearch' => 'element', 'tag' => 'article'),
                 ), array('class'));
+
 
 
         $structureRevision = $this->verify_dom_structure($node1, $node2);

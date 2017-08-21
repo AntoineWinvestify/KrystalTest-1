@@ -194,7 +194,7 @@ class zank extends p2pCompany {
             while ($reading) {
                 $reading = false;
                 //echo __FUNCTION__ . __LINE__ . "start with first read<br>";
-                $str = $this->getCompanyWebpageJson($this->url, $form);
+                $str = $this->getCompanyWebpageJson($url, $form);
 
 //print_r($str);
                 //echo __FUNCTION__ . __LINE__ . "<br>";
