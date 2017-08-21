@@ -181,10 +181,10 @@ function __construct() {
 
                         $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
 
-                        echo 'structure: ' . $structureRevision . '<br>';
+                        echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
                         if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
+                            echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                             $saveStructure = new DOMDocument();
                             $container = $this->getElements($dom, 'div', 'data-id', '4');
                             $clone = $container[0]->cloneNode(TRUE);
@@ -194,11 +194,11 @@ function __construct() {
                             $totalArray = false;  //Structure control, don't read more tr 
                             break; //Stop reading if we have a structural error
                         }
-                        echo 'Structure good';
+                        echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     }
 
                     if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
+                        echo 'no structure readed, saving structure'. HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $container = $this->getElements($dom, 'div', 'data-id', '4');
                         $clone = $container[0]->cloneNode(TRUE);
@@ -258,7 +258,7 @@ function __construct() {
                         if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
 
                             if (stristr(trim($span->nodeValue), "%") == true) {
-                                echo "Comunitae: % found, so store in marketplace<br>";
+                                echo "Comunitae: % found, so store in marketplace" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
                                 $tempArray['marketplace_statusLiteral'] = 'En proceso';
                             } else {
@@ -328,19 +328,11 @@ function __construct() {
 
         if ($type == 1) {//Start with 'Pagares'
             $url = array_shift($this->urlSequence); //Save 'Pagares' first url
-            echo 'Url: ' . $url;
+            echo 'Url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
             $str = $this->getCompanyWebpage($url);
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             $dom->loadHTML($str);  //Load 'Pagares' 
-
-            $url = array_shift($this->urlSequence); //Save 'Pagares' pagination url
-            echo 'Url: ' . $url;
-            $str = $this->getCompanyWebpage($url . $pageNumber);
-            $dom = new DOMDocument;
-            $dom->preserveWhiteSpace = false;
-
-
 
             //pymeList
             $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
@@ -348,16 +340,16 @@ function __construct() {
             $rows = $dom->getElementsByTagName('article');
             $numberOfInvestmentInPage = $rows->length;
             //$this->print_r2($rows);
-            echo 'Count: ' . $numberOfInvestmentInPage;
+            echo 'Count: ' . $numberOfInvestmentInPage . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
             if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'pagares', go to 'Factoring'
-                echo 'Change type';
+                echo 'Change type' . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
                 $type = 4;
                 $pageNumber = 1; //MUST BE 1, IF IS 0 THE LOOP WILL END
                 //print_r($type . " " . $pageNumber);
             }
         } else if ($type == 4) { //Next 'Factoring'
-            echo 'Enter factoring';
+            echo 'Enter factoring' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
             //Factoring
             if ($pageNumber == 1) {
                 array_shift($this->urlSequence); //Skip 'Pagares' first url
@@ -383,7 +375,7 @@ function __construct() {
             $rows = $dom->getElementsByTagName('article');
             $numberOfInvestmentInPage = $rows->length;
             //$this->print_r2($rows);
-            echo 'Count: ' . $numberOfInvestmentInPage;
+            echo 'Count: ' . $numberOfInvestmentInPage . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
 
             if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'Factoring', stop search
                 $pageNumber = false;
@@ -394,17 +386,17 @@ function __construct() {
             foreach ($rows as $key => $row) {
 
 
-                if ($pageNumber == 1 && $key == 0 && $structure) { //Compare structures, olny compare the first element
+                if ($pageNumber == 2 && $key == 0 && $structure) { //Compare structures, olny compare the first element
                     $newStructure = new DOMDocument; //Load db html dom
                     $newStructure->loadHTML($structure['Structure']['structure_html']);
                     $newStructure->preserveWhiteSpace = false;
                     $trsNewStructure = $newStructure->getElementsByTagName('article');
                     $structureRevision = $this->structureRevision($trsNewStructure[1], $rows[0]);
 
-                    echo 'structure: ' . $structureRevision . '<br>';
+                    echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
 
                     if (!$structureRevision) { //Save new structure
-                        echo 'Structural error<br>';
+                        echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $container = $this->getElements($dom, 'div', 'data-id', '4');
                         $clone = $container[0]->cloneNode(TRUE);
@@ -415,11 +407,11 @@ function __construct() {
 
                         break; //Stop reading if we have a structural error
                     }
-                    echo 'Structure good';
+                    echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;;
                 }
 
-                if ($pageNumber == 1 && $key == 0 && !$structure) { //Save new structure if is first time
-                    echo 'no structure readed, saving structure <br>';
+                if ($pageNumber == 2 && $key == 0 && !$structure) { //Save new structure if is first time
+                    echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $saveStructure = new DOMDocument();
                     $container = $this->getElements($dom, 'div', 'data-id', '4');
                     $clone = $container[0]->cloneNode(TRUE);
@@ -474,7 +466,7 @@ function __construct() {
                     if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
 
                         if (stristr(trim($span->nodeValue), "%") == true) {
-                            echo "Comunitae: % found, so store in marketplace<br>";
+                            echo "Comunitae: % found, so store in marketplace" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
                             $tempArray['marketplace_statusLiteral'] = 'En proceso';
                         } else {
