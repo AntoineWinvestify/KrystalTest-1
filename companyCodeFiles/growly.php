@@ -885,12 +885,14 @@ class growly extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'p'),
                 ), array('href', 'src', 'alt', 'title', 'aria-valuenow', 'style'));
 
         $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'p'),
                 ), array('href', 'src', 'alt', 'title', 'aria-valuenow', 'style'));
 
 
