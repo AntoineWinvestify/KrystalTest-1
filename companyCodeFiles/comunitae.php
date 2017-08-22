@@ -200,9 +200,9 @@ class comunitae extends p2pCompany {
                         $saveStructure = new DOMDocument();
                         $container = $this->getElements($dom, 'div', 'id', 'pymeList');
                         print_r($container);
-                        $clone = $container[0]->cloneNode(TRUE);            
+                        $clone = $container[0]->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        
+
                         $structureRevision = $saveStructure->saveHTML();
                     }
 
@@ -331,23 +331,34 @@ class comunitae extends p2pCompany {
         } //Advance page, $pageNumber start with 0
 
         if ($type == 1) {//Start with 'Pagares'
-            $url = array_shift($this->urlSequence); //Save 'Pagares' first url
-            echo 'Url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $str = $this->getCompanyWebpage($url);
-            $dom = new DOMDocument;
-            $dom->preserveWhiteSpace = false;
-            $dom->loadHTML($str);  //Load 'Pagares' 
-            //pymeList
-            $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
+            if ($pageNumber == 1) {
+                $url = array_shift($url); //Save 'Pagares' first url
+                echo 'Url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                $str = $this->getCompanyWebpage($url);
+                $dom = new DOMDocument;
+                $dom->preserveWhiteSpace = false;
+                $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
+                $pagares = $this->getElements($dom, 'div', 'data-id', '4');
+                $this->print_r2($pagares);
+                $rows = $pagares[1]->getElementsByTagName('article');
+            } else {
+                array_shift($this->urlSequence); //skip 'Pagares' first url
+                $url = array_shift($this->urlSequence);  //save 'Pagares' pagination url
+                echo 'Url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                $str = $this->getCompanyWebpage($url . $pageNumber);
+                $dom = new DOMDocument;
+                $dom->preserveWhiteSpace = false;
+                $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
+                $rows = $dom->getElementsByTagName('article');
+            }
+
             $pageNumber++; //Advance page
-            $rows = $dom->getElementsByTagName('article');
             $numberOfInvestmentInPage = $rows->length;
             //$this->print_r2($rows);
             echo 'Count: ' . $numberOfInvestmentInPage . HTML_ENDOFLINE . SHELL_ENDOFLINE;
 
             if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'pagares', go to 'Factoring'
                 echo 'Change type' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                ;
                 $type = 4;
                 $pageNumber = 1; //MUST BE 1, IF IS 0 THE LOOP WILL END
                 //print_r($type . " " . $pageNumber);
@@ -363,20 +374,23 @@ class comunitae extends p2pCompany {
                 $str = $this->getCompanyWebpage($url);
                 $dom = new DOMDocument;
                 $dom->preserveWhiteSpace = false;
+                $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
+                $factoring = $this->getElements($dom, 'div', 'data-id', '6');
+                $rows = $factoring[0]->getElementsByTagName('article');
             } else {
                 array_shift($this->urlSequence); //Skip 'Pagares' first url
                 array_shift($this->urlSequence); //Skip 'Pagares' pagination url
-                array_shift($this->urlSequence); //Skip 'First page' url
+                array_shift($this->urlSequence); //Skip 'Factoring First page' url
                 $url = array_shift($this->urlSequence); //Save 'Factoring' url
                 echo 'Url: ' . $url;
                 $str = $this->getCompanyWebpage($url . $pageNumber);
                 $dom = new DOMDocument;
                 $dom->preserveWhiteSpace = false;
+                $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
+                $rows = $dom->getElementsByTagName('article');
             }
-            //pymeList
-            $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
-            $pageNumber++; //Advance page
-            $rows = $dom->getElementsByTagName('article');
+
+            $pageNumber++; //Advance page         
             $numberOfInvestmentInPage = $rows->length;
             //$this->print_r2($rows);
             echo 'Count: ' . $numberOfInvestmentInPage . HTML_ENDOFLINE . SHELL_ENDOFLINE;
@@ -386,9 +400,9 @@ class comunitae extends p2pCompany {
             }
         }
 
-        if ($totalArray !== false) { // If we find a structural error, dont read.
+        if ($totalArray !== false && !$pageNumber) { // If we find a structural error, dont read.
             foreach ($rows as $key => $row) {
-
+                $investmentNumberControler = 0;
 
                 if ($pageNumber == 2 && $key == 0 && $structure) { //Compare structures, olny compare the first element
                     $newStructure = new DOMDocument; //Load db html dom
@@ -412,7 +426,6 @@ class comunitae extends p2pCompany {
                         break; //Stop reading if we have a structural error
                     }
                     echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                    ;
                 }
 
                 if ($pageNumber == 2 && $key == 0 && !$structure) { //Save new structure if is first time
@@ -420,7 +433,7 @@ class comunitae extends p2pCompany {
                     $saveStructure = new DOMDocument();
                     $container = $this->getElements($dom, 'div', 'id', 'pymeList');
                     $clone = $container[0]->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));         
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                     $structureRevision = $saveStructure->saveHTML();
                 }
 
@@ -484,6 +497,8 @@ class comunitae extends p2pCompany {
                         }
                     }
                 }
+                $investmentNumberControler++;
+
                 $totalArray[] = $tempArray;
                 unset($tempArray);
             }
@@ -1166,13 +1181,13 @@ class comunitae extends p2pCompany {
 
         //We need remove this attribute directly from the article tag
 
-            $node1->removeAttribute('data-href');
-            $node1->removeAttribute('id');
+        $node1->removeAttribute('data-href');
+        $node1->removeAttribute('id');
 
-            $node2->removeAttribute('data-href');
-            $node2->removeAttribute('id');
+        $node2->removeAttribute('data-href');
+        $node2->removeAttribute('id');
 
-           
+
 
         $node1 = $this->clean_dom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -1203,7 +1218,7 @@ class comunitae extends p2pCompany {
         $node2 = $this->clean_dom($node2, array(//We only want delete class of the span tag, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
             array('typeSearch' => 'element', 'tag' => 'div'),
-             array('typeSearch' => 'element', 'tag' => 'article'),
+            array('typeSearch' => 'element', 'tag' => 'article'),
                 ), array('class'));
 
 

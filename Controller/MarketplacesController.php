@@ -390,10 +390,11 @@ class MarketPlacesController extends AppController {
                 if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If it is completed
                     echo "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
-                        if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplace']['marketplace_loanReference']) { //If it exist in winvestify backup
+                        print_r($investmentBackup);
+                        if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplacebackup']['marketplace_loanReference']) { //If it exist in winvestify backup
                             $backup = false;
-                            $investment['marketplace_investmentCreationDate'] = $investmentBackup['Marketplace']['marketplace_investmentCreationDate'];
-                            if ($investment['marketplace_status'] == $investmentBackup['Marketplace']['marketplace_status']) { //Same status
+                            $investment['marketplace_investmentCreationDate'] = $investmentBackup['Marketplacebackup']['marketplace_investmentCreationDate'];
+                            if ($investment['marketplace_status'] == $investmentBackup['Marketplacebackup']['marketplace_status']) { //Same status
                                 echo 'Ignore<br>';
                                 //Ignore
                                 continue;
