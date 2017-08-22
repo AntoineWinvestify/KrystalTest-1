@@ -105,10 +105,9 @@ class MarketplaceShell extends AppShell {
 
             foreach ($companyMarketplace as $marketplaceInvestment) {
 
-                if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
-                    $DontExist = false;
-                    // "Investment already exist";
-                    $investment['marketplace_investmentCreationDate'] = $marketplaceInvestment['marketplace_investmentCreationDate'];
+                if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace             
+                    $DontExist = false; // "Investment already exist";
+                    $investment['marketplace_investmentCreationDate'] = $marketplaceInvestment['Marketplace']['marketplace_investmentCreationDate'];
                     if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If is completed
                         // "Investment completed";
                         //Delete from maketplace
@@ -140,9 +139,9 @@ class MarketplaceShell extends AppShell {
                     // "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
                         $backup = false;
-                        $investment['marketplace_investmentCreationDate'] = $investmentBackup['marketplace_investmentCreationDate'];
-                        if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplace']['marketplace_loanReference']) { //If it exist in winvestify backup
-                            if ($investment['marketplace_status'] == $investmentBackup['Marketplace']['marketplace_status']) { //Same status
+                        $investment['marketplace_investmentCreationDate'] = $investmentBackup['Marketplacebackup']['marketplace_investmentCreationDate'];
+                        if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplacebackup']['marketplace_loanReference']) { //If it exist in winvestify backup
+                            if ($investment['marketplace_status'] == $investmentBackup['Marketplacebackup']['marketplace_status']) { //Same status
                                 echo 'Ignore<br>';
                                 //Ignore
                                 continue;
@@ -207,7 +206,7 @@ class MarketplaceShell extends AppShell {
 
             if ($marketplaceArray[3] && $marketplaceArray[3] != 1) {
                 // 'Saving new structure';
-                $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
+                $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
                 if (!$marketplaceArray[0]) {
                     // 'Sending error report';
                     break;

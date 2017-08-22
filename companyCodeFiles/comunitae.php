@@ -202,13 +202,12 @@ class comunitae extends p2pCompany {
                         print_r($container);
                         $clone = $container[0]->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
                         $structureRevision = $saveStructure->saveHTML();
                     }
 
 
 
-
+                    $this->print_r($row);
                     $loanId = $row->getAttribute('id');
                     $tempArray['marketplace_loanReference'] = $loanId;
                     if ($tempArray['marketplace_loanReference'] == 'collapse_check') {
@@ -402,6 +401,7 @@ class comunitae extends p2pCompany {
 
         if ($totalArray !== false && !$pageNumber) { // If we find a structural error, dont read.
             foreach ($rows as $key => $row) {
+                echo 'Begining read: <br>';
                 $investmentNumberControler = 0;
 
                 if ($pageNumber == 2 && $key == 0 && $structure) { //Compare structures, olny compare the first element
