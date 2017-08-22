@@ -343,7 +343,7 @@ class MarketPlacesController extends AppController {
             echo 'Saving new structure';
             $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
             if (!$marketplaceArray[0]) {
-                $this->Applicationerror->saveAppError('Html Structure error','Html structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, null, 'Marketplace read');
+                $this->Applicationerror->saveAppError('Html Structure error','Html structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
                 echo 'Sending error report';
             }
         }
@@ -479,7 +479,7 @@ class MarketPlacesController extends AppController {
                 echo 'Saving new structure';
                 $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
                  if (!$marketplaceArray[0]) {
-                $this->Applicationerror->saveAppError('Html Structure error','Html structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, null, 'Historical read');
+                $this->Applicationerror->saveAppError('Html Structure error','Html structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
                 echo 'Sending error report';
             }
             }
