@@ -255,6 +255,7 @@ class MarketPlacesController extends AppController {
         Configure::write('debug', 2);
         $this->Structure = ClassRegistry::init('Structure');
 
+
         $country = "ES";
 
         $filterConditions = array('Company.company_country' => $country);
@@ -311,6 +312,7 @@ class MarketPlacesController extends AppController {
     function cronMarketPlaceLoop($companyId, $structure) {
         $this->autoRender = false;
         $this->Structure = ClassRegistry::init('Structure');
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
         //Configure::write('debug', 2);
 
         $companyConditions = array('Company.id' => $companyId);
@@ -340,7 +342,10 @@ class MarketPlacesController extends AppController {
         if ($marketplaceArray[1] && $marketplaceArray[1] != 1) {
             echo 'Saving new structure';
             $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
-            echo 'Sending error report';
+            if (!$marketplaceArray[0]) {
+                $this->Applicationerror->saveAppError('Html Structure error','Html structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, null, 'Marketplace read');
+                echo 'Sending error report';
+            }
         }
 
 
@@ -437,6 +442,7 @@ class MarketPlacesController extends AppController {
     function cronMarketPlaceHistorical($companyId, $structure, $hasMultplePages) {
         $this->autoRender = false;
         $this->Structure = ClassRegistry::init('Structure');
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
         //Configure::write('debug', 2);
         $repeat = true; //Read another page
         $start = 0; //For pagination
@@ -472,10 +478,10 @@ class MarketPlacesController extends AppController {
             if ($marketplaceArray[3] && $marketplaceArray[3] != 1) {
                 echo 'Saving new structure';
                 $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
-                if (!$marketplaceArray[0]) {
-                    echo 'Sending error report';
-                    break;
-                }
+                 if (!$marketplaceArray[0]) {
+                $this->Applicationerror->saveAppError('Html Structure error','Html structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, null, 'Historical read');
+                echo 'Sending error report';
+            }
             }
 
 
