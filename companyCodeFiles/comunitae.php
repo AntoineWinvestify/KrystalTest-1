@@ -171,7 +171,7 @@ class comunitae extends p2pCompany {
                         $trsNewStructure = $newStructure->getElementsByTagName('article');
 
                         $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'div', 'data-id', '4');
+                        $container = $this->getElements($dom, 'div', 'id', 'pymeList');
                         $clone = $container[0]->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                         $saveStructure->saveHTML();
@@ -184,7 +184,7 @@ class comunitae extends p2pCompany {
                         if (!$structureRevision) { //Save new structure
                             echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                             $saveStructure = new DOMDocument();
-                            $container = $this->getElements($dom, 'div', 'data-id', '4');
+                            $container = $this->getElements($dom, 'div', 'id', 'pymeList');
                             $clone = $container[0]->cloneNode(TRUE);
                             $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
 
@@ -198,9 +198,11 @@ class comunitae extends p2pCompany {
                     if ($key == 0 && !$structure) { //Save new structure if is first time
                         echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'div', 'data-id', '4');
-                        $clone = $container[0]->cloneNode(TRUE);
+                        $container = $this->getElements($dom, 'div', 'id', 'pymeList');
+                        print_r($container);
+                        $clone = $container[0]->cloneNode(TRUE);            
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        
                         $structureRevision = $saveStructure->saveHTML();
                     }
 
@@ -331,7 +333,6 @@ class comunitae extends p2pCompany {
         if ($type == 1) {//Start with 'Pagares'
             $url = array_shift($this->urlSequence); //Save 'Pagares' first url
             echo 'Url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            ;
             $str = $this->getCompanyWebpage($url);
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
@@ -379,7 +380,6 @@ class comunitae extends p2pCompany {
             $numberOfInvestmentInPage = $rows->length;
             //$this->print_r2($rows);
             echo 'Count: ' . $numberOfInvestmentInPage . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            ;
 
             if ($numberOfInvestmentInPage == 0) { //When we don't find ivestment in 'Factoring', stop search
                 $pageNumber = false;
@@ -402,7 +402,7 @@ class comunitae extends p2pCompany {
                     if (!$structureRevision) { //Save new structure
                         echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'div', 'data-id', '4');
+                        $container = $this->getElements($dom, 'div', 'id', 'pymeList');
                         $clone = $container[0]->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
 
@@ -418,9 +418,9 @@ class comunitae extends p2pCompany {
                 if ($pageNumber == 2 && $key == 0 && !$structure) { //Save new structure if is first time
                     echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $saveStructure = new DOMDocument();
-                    $container = $this->getElements($dom, 'div', 'data-id', '4');
+                    $container = $this->getElements($dom, 'div', 'id', 'pymeList');
                     $clone = $container[0]->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));         
                     $structureRevision = $saveStructure->saveHTML();
                 }
 
@@ -429,7 +429,7 @@ class comunitae extends p2pCompany {
                 $loanId = $row->getAttribute('id');
                 $tempArray['marketplace_loanReference'] = $loanId;
                 if ($tempArray['marketplace_loanReference'] == 'collapse_check') {
-                    break;
+                    continue;
                 }
                 $nameFound = false;
 
@@ -1165,14 +1165,14 @@ class comunitae extends p2pCompany {
     function structureRevision($node1, $node2) {
 
         //We need remove this attribute directly from the article tag
-        if ($node1->hasAttributes()) {
+
             $node1->removeAttribute('data-href');
             $node1->removeAttribute('id');
-        }
-        if ($node2->hasAttributes()) {
+
             $node2->removeAttribute('data-href');
             $node2->removeAttribute('id');
-        }
+
+           
 
         $node1 = $this->clean_dom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),

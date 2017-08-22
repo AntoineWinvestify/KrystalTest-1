@@ -340,10 +340,7 @@ class MarketPlacesController extends AppController {
         if ($marketplaceArray[1] && $marketplaceArray[1] != 1) {
             echo 'Saving new structure';
             $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
-            if (!$marketplaceArray[0]) {
-
-                echo 'Sending error report';
-            }
+            echo 'Sending error report';
         }
 
 
@@ -393,9 +390,9 @@ class MarketPlacesController extends AppController {
                 if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If it is completed
                     echo "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
-                        $backup = false;
-                        $investment['marketplace_investmentCreationDate'] = $investmentBackup['Marketplace']['marketplace_investmentCreationDate'];
                         if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplace']['marketplace_loanReference']) { //If it exist in winvestify backup
+                            $backup = false;
+                            $investment['marketplace_investmentCreationDate'] = $investmentBackup['Marketplace']['marketplace_investmentCreationDate'];
                             if ($investment['marketplace_status'] == $investmentBackup['Marketplace']['marketplace_status']) { //Same status
                                 echo 'Ignore<br>';
                                 //Ignore
@@ -473,7 +470,7 @@ class MarketPlacesController extends AppController {
 
             if ($marketplaceArray[3] && $marketplaceArray[3] != 1) {
                 echo 'Saving new structure';
-                $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
+                $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
                 if (!$marketplaceArray[0]) {
                     echo 'Sending error report';
                     break;
