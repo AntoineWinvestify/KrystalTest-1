@@ -164,7 +164,7 @@ class comunitae extends p2pCompany {
                 foreach ($rows as $key => $row) {
 
 
-                    if ($pageNumber == 1 && $key == 0 && $structure) { //Compare structures, olny compare the first element
+                    if ($pageNumber == 1 && $key == 0 && $structure && $type == 1) { //Compare structures, olny compare the first element
                         $newStructure = new DOMDocument;
                         $newStructure->loadHTML($structure['Structure']['structure_html']);
                         $newStructure->preserveWhiteSpace = false;
@@ -195,7 +195,7 @@ class comunitae extends p2pCompany {
                         echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     }
 
-                    if ($key == 0 && !$structure) { //Save new structure if is first time
+                    if ($key == 0 && !$structure && $type == 1) { //Save new structure if is first time
                         echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $container = $this->getElements($dom, 'div', 'id', 'pymeList');
@@ -337,14 +337,16 @@ class comunitae extends p2pCompany {
                 $dom = new DOMDocument;
                 $dom->preserveWhiteSpace = false;
                 $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
+                //echo $str;
                 $pagares = $this->getElements($dom, 'div', 'data-id', '4');
-                $this->print_r2($pagares);
+                //$this->print_r2($pagares);
                 $rows = $pagares[1]->getElementsByTagName('article');
             } else {
                 array_shift($this->urlSequence); //skip 'Pagares' first url
                 $url = array_shift($this->urlSequence);  //save 'Pagares' pagination url
                 echo 'Url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                 $str = $this->getCompanyWebpage($url . $pageNumber);
+
                 $dom = new DOMDocument;
                 $dom->preserveWhiteSpace = false;
                 $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
@@ -399,12 +401,12 @@ class comunitae extends p2pCompany {
             }
         }
 
-        if ($totalArray !== false && !$pageNumber) { // If we find a structural error, dont read.
+        if ($totalArray !== false && $pageNumber) { // If we find a structural error, dont read.
             foreach ($rows as $key => $row) {
                 echo 'Begining read: <br>';
                 $investmentNumberControler = 0;
 
-                if ($pageNumber == 2 && $key == 0 && $structure) { //Compare structures, olny compare the first element
+                if ($pageNumber == 2 && $key == 0 && $structure && $type == 1) { //Compare structures, olny compare the first element
                     $newStructure = new DOMDocument; //Load db html dom
                     $newStructure->loadHTML($structure['Structure']['structure_html']);
                     $newStructure->preserveWhiteSpace = false;
@@ -428,7 +430,7 @@ class comunitae extends p2pCompany {
                     echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                 }
 
-                if ($pageNumber == 2 && $key == 0 && !$structure) { //Save new structure if is first time
+                if ($pageNumber == 2 && $key == 0 && !$structure && $type == 1) { //Save new structure if is first time
                     echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $saveStructure = new DOMDocument();
                     $container = $this->getElements($dom, 'div', 'id', 'pymeList');
@@ -441,9 +443,6 @@ class comunitae extends p2pCompany {
 
                 $loanId = $row->getAttribute('id');
                 $tempArray['marketplace_loanReference'] = $loanId;
-                if ($tempArray['marketplace_loanReference'] == 'collapse_check') {
-                    continue;
-                }
                 $nameFound = false;
 
                 $as = $row->getElementsByTagName('a');
@@ -498,14 +497,13 @@ class comunitae extends p2pCompany {
                     }
                 }
                 $investmentNumberControler++;
-
+                echo 'Temp array: ';
+                print_r($tempArray);
                 $totalArray[] = $tempArray;
+
                 unset($tempArray);
             }
-        }
-
-
-
+        }   
         return [$totalArray, $pageNumber, $type, $structureRevision]; //Return an array and the page number, $pageNumber = false when we want end the loop
     }
 
