@@ -199,7 +199,7 @@ class comunitae extends p2pCompany {
                         echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                         $saveStructure = new DOMDocument();
                         $container = $this->getElements($dom, 'div', 'id', 'pymeList');
-                        print_r($container);
+                        //print_r($container);
                         $clone = $container[0]->cloneNode(TRUE);
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                         $structureRevision = $saveStructure->saveHTML();
@@ -207,7 +207,7 @@ class comunitae extends p2pCompany {
 
 
 
-                    $this->print_r($row);
+                    //$this->print_r($row);
                     $loanId = $row->getAttribute('id');
                     $tempArray['marketplace_loanReference'] = $loanId;
                     if ($tempArray['marketplace_loanReference'] == 'collapse_check') {
