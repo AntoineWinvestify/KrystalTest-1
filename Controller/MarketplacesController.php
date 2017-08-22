@@ -293,7 +293,7 @@ class MarketPlacesController extends AppController {
             $this->Configuration->writeConfigParameter('lastScannedCompany', $companyId);
             echo "companyId = $companyId <br>";
             $structure = $this->Structure->getStructure($companyId, 1);
-            print_r($structure);
+            //print_r($structure);
             if ($type == 1) {
                 $this->cronMarketPlaceLoop($companyId, $structure);
             } else if ($type == 2) {

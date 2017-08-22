@@ -89,7 +89,7 @@ class loanbook extends p2pCompany {
 
     /**
      * Collects the marketplace data.
-    * @param Array $companyBackup
+     * @param Array $companyBackup
      * @param Array $structure
      * @return array
      */
@@ -280,12 +280,11 @@ class loanbook extends p2pCompany {
                         $this->print_r2($totalArray);
                         unset($tempArray);
                     }
-                   
                 }
-                 if ($readController > 2) { //If we fin more than two completed investment existing in the backpup, stop reading
-                        echo 'Stop reading';
-                        break;
-                    }
+                if ($readController > 2) { //If we fin more than two completed investment existing in the backpup, stop reading
+                    echo 'Stop reading';
+                    break;
+                }
             }
             return [$totalArray, $structureRevision];
         }
@@ -1004,12 +1003,20 @@ class loanbook extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('src', 'href', 'contracttypeid', 'style', 'data-value', 'title', 'data-original-title'));
 
+        $node1 = $this->clean_dom($node1, array(//We only want delete class of the span div, not class of the other tags
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('class'));
+
         $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('src', 'href', 'contracttypeid', 'style', 'data-value', 'title', 'data-original-title'));
+
+        $node2 = $this->clean_dom($node2, array(//We only want delete class of the span div, not class of the other tags
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('class'));
 
         $structureRevision = $this->verify_dom_structure($node1, $node2);
         return $structureRevision;
