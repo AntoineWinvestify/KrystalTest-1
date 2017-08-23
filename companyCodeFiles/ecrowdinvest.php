@@ -159,12 +159,24 @@ class ecrowdinvest extends p2pCompany {
      */
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
+          FIELDS USED BY ECROWDINVEST DURING LOGIN PROCESS
           $credentials['signin']	 = 'Login';
           $credentials['csrf'] = "XXXXX";
          */
-        $credentials['username'] = $user;
-        $credentials['password'] = $password;
+
+        //First we need get the $csrf token
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+        $csrf = $input[0]->getAttribute('value'); //this is the csrf token
+
+        $credentials['_username'] = $user;
+        $credentials['_password'] = $password;
+        $credentials['_csrf_token'] = $csrf;
+        $credentials['_submit'] = '';
 
         if (!empty($options)) {
             foreach ($options as $key => $option) {
@@ -172,89 +184,29 @@ class ecrowdinvest extends p2pCompany {
             }
         }
 
-        /*
+        print_r($credentials);
 
-          The csrf token is sent in the /https://www.loanbook.es/webuser/login message
-          <div id="login-body" class="jumbotron" style="border: none !important;padding: 5px 5px 5px 5px;margin-bottom
-          :5px;">
-          <p style="font-size:13px;">Introduzca su login y password:</p>
-          <div class="alert alert-error">
-          <ul>
-          </ul>
-          </div>
-
-          <form action="/webuser/login-ajax" method="post" name="LoginForm" class="form-horizontal"
-          id="loginAjax">    <input type="hidden" name="csrf" value="55141da7b21d23187a5ba86f40766cc8" />
-          <div class="control-group row">
-          <div class="col-md-5 col-xs-12" style="padding-left:15px;padding-right
-          : 5px">
-          <input name="username" type="text" class="all-wide required active" id="username"
-          placeholder="Usuario" value="">                </div>
-          <div class="col-md-4 col-xs-12" style="padding-left:5px;padding-right: 5px;">
-          <input name="password" type="password" class="all-wide required" id="password" placeholder
-          ="Contraseña" onkeypress="capLock(event)" value="">                    <p class="size1" id="divMayus"
-          style="display:none;text-align: left;">Bloq Mayús está activado</p>
-          </div>
-          <div class="col-md-2 col-xs-2" style="/*width:18%; padding-left:5px;padding-right:15px
-          ;">
-          <input name="signin" class="btn btn-warning" type="submit" id="formSubHeader" value
-          ="Login">                </div>
-          </div>
-          </form>    <p class="size1"><a data-modal="modal" href="/user/forgotpassword">¿Olvid
-          ó su contraseña? No hay problema. Por favor, haga clic aquí para recuperarla.</a></p>
-          <div style="clear:both;"></div>
-          <p class="size1"><a data-modal="modal" onclick="" data-containerwidth="800" data-backdrop="static"
-          href="/contact/invest">
-          ¿Aún no tiene un nombre de usuario y una contraseña?&nbsp;Regístrese ahora.
-          </a></p>
-
-          </div>
-          </div>
-          <div class="modal-footer">
-          <div class="modal-footer-message">
-          <label id="modal-error" class="error"></label>
-          </div>
-
-
-          </div>
-
-
-
-
-         */
-
-
-        $str = $this->doCompanyLogin($credentials);
-
-// Check if user actually has entered the portal of the company.
-// by means of checking of 2 unique identifiers of the portal
-// This should be done by checking a field in the Webpage (button, link etc)
-// and the email of the user (if aplicable)
-        $dom = new DOMDocument;
+        $str = $this->doCompanyLogin($credentials); //do login
+        
+        
+        $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
+        // echo $str;
 
-        $confirm = 0;
-        $uls = $dom->getElementsByTagName('ul');
-        foreach ($uls as $ul) {
-            $as = $ul->getElementsByTagName('a');
-            foreach ($as as $a) {
-                if (strcasecmp(trim($a->nodeValue), trim($user)) == 0) {
-                    $confirm++;
-                    break 2;
-                }
+        $confirm = false;
+
+        $lis = $dom->getElementsByTagName('li');
+        foreach ($lis as $li) {
+            echo 'Entrando $li ' . 'href value; ' . $li->getAttribute('herf') . ' node value' . $li->nodeValue . HTML_ENDOFLINE;
+            if (trim($li->nodeValue) == 'resumen') {
+                echo 'Li encontrado' . HTML_ENDOFLINE;
+                $confirm = true;
             }
         }
 
-        $as = $dom->getElementsByTagName('a');
-        foreach ($as as $a) {
-            if (strncasecmp(trim($a->getAttribute('href')), "/mi-posicion", 12) == 0) {
-                $confirm++;
-                break;
-            }
-        }
-
-        if ($confirm == 2) {
+        $this->companyUserLogout();
+        if ($confirm) {
             return 1;
         }
         return 0;
