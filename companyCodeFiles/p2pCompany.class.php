@@ -66,6 +66,7 @@ require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
+require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
 
 class p2pCompany{
 	const DAY 		= 1;
