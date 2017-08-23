@@ -23,27 +23,27 @@
  *
  * Contains the code required for accessing the website of "lendinx.com"
  *
-*
+ *
  * 2017-04-12	  version 2017_0.3
-  *Updated according to new structure of web of Lendix
-*
+ * Updated according to new structure of web of Lendix
+ *
  * function calculateLoanCost()										[Not OK, not tested]
-  *function collectCompanyMarketplaceData(): write the same value in the fields       			[OK, tested]
+ * function collectCompanyMarketplaceData(): write the same value in the fields       			[OK, tested]
  * $tempArray['marketplace_purpose'] and $tempArray['marketplace_name']
-  *function companyUserLogin()										[OK, tested]
-  *function collectUserInvestmentData()									[OK, tested]
-  *function companyUserLogout()                                                                            [OK, tested]
-  *parallelization                                                                                         [OK, tested]
-*
+ * function companyUserLogin()										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * function companyUserLogout()                                                                            [OK, tested]
+ * parallelization                                                                                         [OK, tested]
+ *
  * 2016-11-06	  version 2016_0.2
-  *Updated according to new structure of web of Lendix
-*
+ * Updated according to new structure of web of Lendix
+ *
  * 2017-04-24
  * collectUserInvestmentData fixed partial
-*
+ *
  * 2017-04-24
  * collectUserInvestmentData fixed total
-*
+ *
  * 2017-05-16      version 2017_0.4
  * Added parallelization
  * Added dom verification
@@ -51,28 +51,27 @@
  * 2017-08-07
  * collectCompanyMarketplaceData- added pagination loop
  * collectHistorical - added
-*
+ *
  * 2017-08-16
  * Structure Revision added
  * Status definition added
-*
-  *Pending
-  *Date
+ *
+ * Pending
+ * Date
  * 
  * 
-  *2017-06-13	  version 2017_0.4"
-  *Rectified double function "collectCompanyMarketplaceData". Deleted one of them
+ * 2017-06-13	  version 2017_0.4"
+ * Rectified double function "collectCompanyMarketplaceData". Deleted one of them
  * 
  * 
  * 
  * 
-  *TODO
-  *no real loanId exists in the public market place
-  *GET https://api.lendix.com/projects?limit=10&offset=0 in order to get the marketplace list including loanId
-  *This can only be done after logging . Result comes back as a JSON list
+ * TODO
+ * no real loanId exists in the public market place
+ * GET https://api.lendix.com/projects?limit=10&offset=0 in order to get the marketplace list including loanId
+ * This can only be done after logging . Result comes back as a JSON list
  * $tempArray['marketplace_durationUnit'] = 2; is hardcoded.
  */
-
 class lendix extends p2pCompany {
 
     private $session;
@@ -126,15 +125,15 @@ class lendix extends p2pCompany {
             $dom->preserveWhiteSpace = false;
             $divs = $this->getElements($dom, "li", "class", "card clickable project");
 
-            /*foreach ($divs as $key2 => $div2) {
-                echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-            }*/ //Debug
+            /* foreach ($divs as $key2 => $div2) {
+              echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
+              } */ //Debug
 
             if ($totalArray !== false) {
-            foreach ($divs as $key => $div) {
-                
-                
-                 if ($key == 0 && $structure) { //Compare structures, only compare the first element
+                foreach ($divs as $key => $div) {
+
+
+                    if ($key == 0 && $structure) { //Compare structures, only compare the first element
                         $newStructure = new DOMDocument;  //Get the old structure in db
                         $newStructure->loadHTML($structure['Structure']['structure_html']);
                         $newStructure->preserveWhiteSpace = false;
@@ -147,7 +146,7 @@ class lendix extends p2pCompany {
                         $saveStructure->saveHTML();
                         $originalStructure = $saveStructure->getElementsByTagName('li');
 
-                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[0]);
+                        $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
 
                         echo 'structure: ' . $structureRevision . '<br>';
 
@@ -174,12 +173,163 @@ class lendix extends p2pCompany {
                         $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                         $structureRevision = $saveStructure->saveHTML();
                     }
-                
-                
+
+
+                    $projectDivs = $this->getElements($div, "div");
+                    /* foreach ($projectDivs as $key11 => $div11) {
+                      echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
+                      } */ //Debug
+
+                    $tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
+                    $tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
+                    $tempArray['marketplace_interestRate'] = $this->getPercentage($projectDivs[2]->nodeValue);
+                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($projectDivs[4]->nodeValue);
+                    /*                     * **************************************************** */
+                    /* HARD CODED AS PREVIOUS STATEMENT GENERATES AN ERROR */
+                    $tempArray['marketplace_durationUnit'] = 2;
+                    /*                     * **************************************************** */
+
+                    if (count($projectDivs) >= 27) {
+
+                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                        $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
+                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
+                        $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
+                        $tempArray['marketplace_requestorLocation'] = trim($projectDivs[19]->nodeValue);
+                        $tempArray['marketplace_sector'] = trim($projectDivs[22]->nodeValue);
+                    }
+                    if (count($projectDivs) <= 25) { //if we dont have country ( $projectDivs[9]), the array positions displace, we need to fix them.(Index -2)
+                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[10]->getAttribute('title'));
+                        $tempArray['marketplace_purpose'] = trim($projectDivs[19]->nodeValue);
+                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[14]->nodeValue);
+                        $tempArray['marketplace_country'] = 'N/A'; //We dont have country
+                        $tempArray['marketplace_requestorLocation'] = trim($projectDivs[17]->nodeValue);
+                        $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
+                    }
+
+
+
+
+                    $as = $this->getElements($div, "a");
+                    $loanId = explode(":", $as[0]->getAttribute("title"));
+                    $tempArray['marketplace_loanReference'] = trim($loanId[1]);
+
+                    if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                        $tempArray['marketplace_statusLiteral'] = 'Completado';
+                        $tempArray['marketplace_status'] = PERCENT;
+                        foreach ($companyBackup as $inversionBackup) {//If completed investment status is the same than backup
+                            if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                                echo 'Already exist';
+                                $readController++;
+                                $investmentController = true;
+                            }
+                        }
+                    } else {
+                        $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                    }
+
+                    $investmentNumber++; //Add investment
+                    echo 'number : ' . $investmentNumber . '<br>';
+                    $this->print_r2($tempArray);
+                    if ($investmentController) { //Don't save a already existing investment
+                        unset($tempArray);
+                        $investmentController = false;
+                    } else {
+                        if ($tempArray) {
+                            $totalArray[] = $tempArray;
+                            unset($tempArray);
+                        }
+                    }
+                }
+            }
+            $offset = $offset + 12; //We have 12 investment in each offset
+            if ($readController > 2 || $investmentNumber < 12) {
+                echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $page;
+                $reading = false;
+            } //Stop reading
+        }
+
+
+        $this->print_r2($totalArray);
+        return [$totalArray, $structureRevision];
+    }
+
+    /**
+     * Collect all investment
+     * @param Array $structure
+     * @param Int $offset Lendix have offset of 12 investment
+     * @return Array
+     */
+    function collectHistorical($structure, $offset) {
+        $tempArray = array();
+        $totalArray = array();
+
+
+        $url = array_shift($this->urlSequence);
+
+
+        $investmentNumber = 0;
+        $str = $this->getCompanyWebpage($url . $offset);  // load Webpage into a string variable so it can be parsed
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+
+        $dom->preserveWhiteSpace = false;
+        $divs = $this->getElements($dom, "li", "class", "card clickable project");
+
+        /* foreach ($divs as $key2 => $div2) {
+          echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
+          } */ //DEBUG
+
+        if ($totalArray !== false) {
+            foreach ($divs as $key => $div) {
+
+                if ($offset == 0 && $key == 0 && $structure) { //Compare structures, only compare the first element
+                    $newStructure = new DOMDocument;  //Get the old structure in db
+                    $newStructure->loadHTML($structure['Structure']['structure_html']);
+                    $newStructure->preserveWhiteSpace = false;
+                    $trsNewStructure = $newStructure->getElementsByTagName('li');
+
+                    $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+                    $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                    $clone = $container->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                    $saveStructure->saveHTML();
+                    $originalStructure = $saveStructure->getElementsByTagName('li');
+
+                    $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
+
+                    echo 'structure: ' . $structureRevision . '<br>';
+
+                    if (!$structureRevision) { //Save new structure
+                        echo 'Structural error<br>';
+                        $saveStructure = new DOMDocument();
+                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                        $clone = $container->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+
+                        $structureRevision = $saveStructure->saveHTML();
+                        $totalArray = false;  //Structure control, don't read more investmnets 
+                        break; //Stop reading if we have a structural error
+                    }
+                    echo 'Structure good';
+                }
+
+                if ($offset == 0 && $key == 0 && !$structure) { //Save new structure if is first time
+                    echo 'no structure readed, saving structure <br>';
+                    $saveStructure = new DOMDocument();
+                    $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
+                    $clone = $container->cloneNode(TRUE);
+                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                    $structureRevision = $saveStructure->saveHTML();
+                }
+
                 $projectDivs = $this->getElements($div, "div");
-                /*foreach ($projectDivs as $key11 => $div11) {
-                    echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
-                }*/ //Debug
+
+                /* foreach ($projectDivs as $key11 => $div11) {
+                  echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
+                  } */ //DEBUG
+
+
 
                 $tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
                 $tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
@@ -218,167 +368,18 @@ class lendix extends p2pCompany {
                 if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                     $tempArray['marketplace_statusLiteral'] = 'Completado';
                     $tempArray['marketplace_status'] = PERCENT;
-                    foreach ($companyBackup as $inversionBackup) {//If completed investment status is the same than backup
-                        if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
-                            echo 'Already exist';
-                            $readController++;
-                            $investmentController = true;
-                        }
-                    }
                 } else {
                     $tempArray['marketplace_statusLiteral'] = 'En proceso';
                 }
 
-                $investmentNumber++; //Add investment
+                $investmentNumber++; //Add invesment
                 echo 'number : ' . $investmentNumber . '<br>';
                 $this->print_r2($tempArray);
-                if ($investmentController) { //Don't save a already existing investment
-                    unset($tempArray);
-                    $investmentController = false;
-                } else {
-                    if ($tempArray) {
-                        $totalArray[] = $tempArray;
-                        unset($tempArray);
-                    }
-                }
-        }}
-            $offset = $offset + 12; //We have 12 investment in each offset
-            if ($readController > 2 || $investmentNumber < 12) {
-                echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $page;
-                $reading = false;
-            } //Stop reading
+
+                $totalArray[] = $tempArray;
+                unset($tempArray);
+            }
         }
-
-
-        $this->print_r2($totalArray);
-        return [$totalArray, $structureRevision];
-    }
-
-    /**
-     * Collect all investment
-     * @param Array $structure
-     * @param Int $offset Lendix have offset of 12 investment
-     * @return Array
-     */
-    function collectHistorical($structure, $offset) {
-        $tempArray = array();
-        $totalArray = array();
-
-
-        $url = array_shift($this->urlSequence);
-
-
-        $investmentNumber = 0;
-        $str = $this->getCompanyWebpage($url . $offset);  // load Webpage into a string variable so it can be parsed
-        $dom = new DOMDocument;
-        $dom->loadHTML($str);
-
-        $dom->preserveWhiteSpace = false;
-        $divs = $this->getElements($dom, "li", "class", "card clickable project");
-
-        /*foreach ($divs as $key2 => $div2) {
-            echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-        }*/ //DEBUG
-
-       if ($totalArray !== false) {
-         foreach ($divs as $key => $div) {
-            
-            if ($offset == 0 && $key == 0 && $structure) { //Compare structures, only compare the first element
-                        $newStructure = new DOMDocument;  //Get the old structure in db
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('li');
-
-                        $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $saveStructure->getElementsByTagName('li');
-
-                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[0]);
-
-                        echo 'structure: ' . $structureRevision . '<br>';
-
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
-                            $saveStructure = new DOMDocument();
-                            $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                            $clone = $container->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more investmnets 
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good';
-                    }
-
-                    if ($offset == 0 && $key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
-                        $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
-                    }
-                         
-            $projectDivs = $this->getElements($div, "div");
-
-            /*foreach ($projectDivs as $key11 => $div11) {
-                echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
-            }*/ //DEBUG
-
-
-
-            $tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
-            $tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
-            $tempArray['marketplace_interestRate'] = $this->getPercentage($projectDivs[2]->nodeValue);
-            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($projectDivs[4]->nodeValue);
-            /*             * **************************************************** */
-            /* HARD CODED AS PREVIOUS STATEMENT GENERATES AN ERROR */
-            $tempArray['marketplace_durationUnit'] = 2;
-            /*             * **************************************************** */
-
-            if (count($projectDivs) >= 27) {
-
-                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
-                $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
-                $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
-                $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
-                $tempArray['marketplace_requestorLocation'] = trim($projectDivs[19]->nodeValue);
-                $tempArray['marketplace_sector'] = trim($projectDivs[22]->nodeValue);
-            }
-            if (count($projectDivs) <= 25) { //if we dont have country ( $projectDivs[9]), the array positions displace, we need to fix them.(Index -2)
-                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[10]->getAttribute('title'));
-                $tempArray['marketplace_purpose'] = trim($projectDivs[19]->nodeValue);
-                $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[14]->nodeValue);
-                $tempArray['marketplace_country'] = 'N/A'; //We dont have country
-                $tempArray['marketplace_requestorLocation'] = trim($projectDivs[17]->nodeValue);
-                $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
-            }
-
-
-
-
-            $as = $this->getElements($div, "a");
-            $loanId = explode(":", $as[0]->getAttribute("title"));
-            $tempArray['marketplace_loanReference'] = trim($loanId[1]);
-
-            if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-                $tempArray['marketplace_statusLiteral'] = 'Completado';
-                $tempArray['marketplace_status'] = PERCENT;
-            } else {
-                $tempArray['marketplace_statusLiteral'] = 'En proceso';
-            }
-
-            $investmentNumber++; //Add invesment
-            echo 'number : ' . $investmentNumber . '<br>';
-            $this->print_r2($tempArray);
-
-            $totalArray[] = $tempArray;
-            unset($tempArray);
-    }}
 
         $offset = $offset + 12; //12 investment in the offset
         if ($investmentNumber < 12) {
@@ -577,9 +578,8 @@ class lendix extends p2pCompany {
         $str = $this->doCompanyLogout();
         return true;
     }
-    
-    
-        /**
+
+    /**
      * Dom clean for structure revision
      * @param Dom $node1
      * @param Dom $node2
@@ -587,27 +587,34 @@ class lendix extends p2pCompany {
      */
     function structureRevision($node1, $node2) {
 
+        //This class indicates status
+        $node1->removeAttribute('class');
+        $node2->removeAttribute('class');
+
         $node1 = $this->clean_dom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
-            array('typeSearch' => 'element', 'tag' => 'div'),      
+            array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
-        
-         $node1 = $this->clean_dom($node1, array(  
-            array('typeSearch' => 'element', 'tag' => 'div'),//the div class contains the rating
-             array('typeSearch' => 'element', 'tag' => 'li'),//the li class contains the status
+
+        $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'div'), //the div class contains the rating
+            array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
+
 
         $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
-                ), array('srcset', 'src', 'alt', 'href', 'style', 'title' , 'height'));
-        
-          $node2 = $this->clean_dom($node2, array(  //the div class contains the rating
-                   array('typeSearch' => 'element', 'tag' => 'div'),//the div class contains the rating
-                   array('typeSearch' => 'element', 'tag' => 'li'),//the li class contains the status
+                ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
+
+        $node2 = $this->clean_dom($node2, array(//the div class contains the rating
+            array('typeSearch' => 'element', 'tag' => 'div'), //the div class contains the rating
+            array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
+
+
 
 
         $structureRevision = $this->verify_dom_structure($node1, $node2);

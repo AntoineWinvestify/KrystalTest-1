@@ -1,26 +1,27 @@
 <?php
+
 /**
-* +-----------------------------------------------------------------------------+
-* | Copyright (C) 2017, http://www.winvestify.com                   	  	|
-* +-----------------------------------------------------------------------------+
-* | This file is free software; you can redistribute it and/or modify 		|
-* | it under the terms of the GNU General Public License as published by  	|
-* | the Free Software Foundation; either version 2 of the License, or 		|
-* | (at your option) any later version.                                      	|
-* | This file is distributed in the hope that it will be useful   		|
-* | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
-* | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
-* | GNU General Public License for more details.        			|
-* +-----------------------------------------------------------------------------+
-*
-*
-* Contains the code required for accessing the website of "Comunitae"
-*
-* 
-* @author Antoine de Poorter
-* @version 0.1
-* @date 2016-11-05
-* @package
+ * +-----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +-----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | GNU General Public License for more details.        			|
+ * +-----------------------------------------------------------------------------+
+ *
+ *
+ * Contains the code required for accessing the website of "Comunitae"
+ *
+ * 
+ * @author Antoine de Poorter
+ * @version 0.1
+ * @date 2016-11-05
+ * @package
 
   function calculateLoanCost()							[not OK, not tested]
   function collectCompanyMarketplaceData()					[OK, testing]
@@ -53,7 +54,6 @@
   Install dependencies of casperjs and phantomjs
 
  */
-
 //require_once "../../vendors/autoload.php";
 use Browser\Casper;
 
@@ -90,7 +90,6 @@ class colectual extends p2pCompany {
          */
     }
 
-
     /**
      * 	Collects the marketplace data. We must login first in order to obtain the marketplace data
      *  Colectual use casperjs to get the information
@@ -98,7 +97,7 @@ class colectual extends p2pCompany {
      * @param Array $structure
      * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup,$structure) {
+    function collectCompanyMarketplaceData($companyBackup, $structure) {
 
         $readController = 0;
         $investmentController = false;
@@ -157,29 +156,29 @@ FRAGMENT
         $projects = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
         $i = 0;
         foreach ($projects as $key => $project) {
-            
-            
-             if ($key == 0 && $structure) { //Compare structures, only compare the first element
+
+
+            if ($key == 0 && $structure) { //Compare structures, only compare the first element
                 $newStructure = new DOMDocument;  //Get the old structure in db
                 $newStructure->loadHTML($structure['Structure']['structure_html']);
                 $newStructure->preserveWhiteSpace = false;
-                $trsNewStructure = $this->getElements($newStructure ,'div' , 'class', 'col-lg-4');
+                $trsNewStructure = $this->getElements($newStructure, 'div', 'class', 'col-lg-4');
 
                 $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                $container = $this->getElements($dom, 'div', 'class', 'row')[0];
                 $clone = $container->cloneNode(TRUE);
                 $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                 $saveStructure->saveHTML();
-                $originalStructure = $this->getElements($saveStructure ,'div' , 'class', 'col-lg-4');
+                $originalStructure = $this->getElements($saveStructure, 'div', 'class', 'col-lg-4');
 
-                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[3]);
+                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[2]);
 
                 echo 'structure: ' . $structureRevision . '<br>';
 
                 if (!$structureRevision) { //Save new structure
                     echo 'Structural error<br>';
                     $saveStructure = new DOMDocument();
-                    $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                    $container = $this->getElements($dom, 'div', 'class', 'row')[0];
                     $clone = $container->cloneNode(TRUE);
                     $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
 
@@ -193,13 +192,13 @@ FRAGMENT
             if ($key == 0 && !$structure) { //Save new structure if is first time
                 echo 'no structure readed, saving structure <br>';
                 $saveStructure = new DOMDocument();
-                $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                $container = $this->getElements($dom, 'div', 'class', 'row')[0];
                 $clone = $container->cloneNode(TRUE);
                 $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                 $structureRevision = $saveStructure->saveHTML();
             }
-            
-            
+
+
             $name = $project->getElementsByTagName('h2');
             $tempArray['marketplace_name'] = $name[0]->nodeValue;
             $purpose = $project->getElementsByTagName('h3');
@@ -254,7 +253,7 @@ FRAGMENT
                         }
                         $tempArray["marketplace_amount"] = $amount;
                         $tempArray["marketplace_amountTotal"] = $amountTotal;
-                        
+
                         break;
                     case "plazo":
                         $date = $this->getDurationValue($label->nodeValue);
@@ -375,29 +374,29 @@ FRAGMENT
         $projects = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
         $i = 0;
         foreach ($projects as $project) {
-            
-            
-                         if ($key == 0 && $structure) { //Compare structures, only compare the first element
+
+
+            if ($key == 0 && $structure) { //Compare structures, only compare the first element
                 $newStructure = new DOMDocument;  //Get the old structure in db
                 $newStructure->loadHTML($structure['Structure']['structure_html']);
                 $newStructure->preserveWhiteSpace = false;
-                $trsNewStructure = $this->getElements($newStructure ,'div' , 'class', 'col-lg-4');
+                $trsNewStructure = $this->getElements($newStructure, 'div', 'class', 'col-lg-4');
 
                 $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                $container = $this->getElements($dom, 'div', 'class', 'row')[0];
                 $clone = $container->cloneNode(TRUE);
                 $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                 $saveStructure->saveHTML();
-                $originalStructure = $this->getElements($saveStructure ,'div' , 'class', 'col-lg-4');
+                $originalStructure = $this->getElements($saveStructure, 'div', 'class', 'col-lg-4');
 
-                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[3]);
+                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
 
                 echo 'structure: ' . $structureRevision . '<br>';
 
                 if (!$structureRevision) { //Save new structure
                     echo 'Structural error<br>';
                     $saveStructure = new DOMDocument();
-                    $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                    $container = $this->getElements($dom, 'div', 'class', 'row')[0];
                     $clone = $container->cloneNode(TRUE);
                     $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
 
@@ -411,13 +410,13 @@ FRAGMENT
             if ($key == 0 && !$structure) { //Save new structure if is first time
                 echo 'no structure readed, saving structure <br>';
                 $saveStructure = new DOMDocument();
-                $container = $this->getElements($dom, 'div' , 'class', 'row')[0];
+                $container = $this->getElements($dom, 'div', 'class', 'row')[0];
                 $clone = $container->cloneNode(TRUE);
                 $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
                 $structureRevision = $saveStructure->saveHTML();
             }
-                  
-            
+
+
             $name = $project->getElementsByTagName('h2');
             $tempArray['marketplace_name'] = $name[0]->nodeValue;
             $purpose = $project->getElementsByTagName('h3');
@@ -628,8 +627,8 @@ FRAGMENT
           echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>"; */
         return true;
     }
-    
-         /**
+
+    /**
      * Dom clean for structure revision
      * @param Dom $node1
      * @param Dom $node2
@@ -638,29 +637,43 @@ FRAGMENT
     function structureRevision($node1, $node2) {
 
 
-         $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->clean_dom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
-                ), array('src', 'ng-src'));
-         
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('src', 'ng-src', 'aria-valuenow', 'style'));
+
         $node1 = $this->clean_dom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'label'), //label class contain rating
                 ), array('class'));
-                  
+
+
+        $node1 = $this->clean_dom_tag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'span'),
+            array('typeSearch' => 'tagElement', 'tag' => 'label', 'attr' => 'ng-class', 'value' => 'vm.getObtenerRscClass(proyecto.RSCDelPromotor)'), //This label doesnt apperar in all investment, we must delete it
+            array('typeSearch' => 'tagElement', 'tag' => 'label', 'attr' => 'data-ng-if', 'value' => 'proyecto.RSCDelPromotor != null'), //This label doesnt apperar in all investment, we must delete it
+        ));
+
         $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
-                ), array('src', 'ng-src'));
-         
-       $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('src', 'ng-src', 'aria-valuenow', 'style'));
+
+        $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'label'), //label class contain rating
                 ), array('class'));
-        
-        
+
+        $node2 = $this->clean_dom_tag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'span'),
+            array('typeSearch' => 'tagElement', 'tag' => 'label', 'attr' => 'ng-class', 'value' => 'vm.getObtenerRscClass(proyecto.RSCDelPromotor)'), //This label doesnt apperar in all investment, we must delete it
+            array('typeSearch' => 'tagElement', 'tag' => 'label', 'attr' => 'data-ng-if', 'value' => 'proyecto.RSCDelPromotor != null'), //This label doesnt apperar in all investment, we must delete it
+        ));
+
+
         $structureRevision = $this->verify_dom_structure($node1, $node2);
         return $structureRevision;
     }
-    
 
 }
 

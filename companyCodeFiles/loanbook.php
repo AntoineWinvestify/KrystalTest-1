@@ -276,8 +276,9 @@ class loanbook extends p2pCompany {
                         unset($tempArray);
                         $investmentController = false;
                     } else {
+                        //$this->print_r2($tempArray);
                         $totalArray[] = $tempArray;
-                        $this->print_r2($totalArray);
+                        //$this->print_r2($totalArray);
                         unset($tempArray);
                     }
                 }
@@ -286,8 +287,14 @@ class loanbook extends p2pCompany {
                     break;
                 }
             }
-            return [$totalArray, $structureRevision];
         }
+        //$this->print_r2($totalArray);
+        foreach ($totalArray as $key => $investment) { //Delete empy lines
+            if (!$investment['marketplace_loanReference'] || !$investment['marketplace_loanReference'] = null || !$investment['marketplace_loanReference'] = '') {
+                unset($totalArray[$key]);
+            }
+        }
+        return [$totalArray, $structureRevision];
     }
 
     /**
@@ -479,8 +486,13 @@ class loanbook extends p2pCompany {
                     unset($tempArray);
                 }
             }
-            return [$totalArray, false, null, $structureRevision]; //$totalArray -> investments / false -> Loanbook doesnt have pagination
         }
+        foreach ($totalArray as $key => $investment) { //Delete empy lines
+            if (!$investment['marketplace_loanReference'] || !$investment['marketplace_loanReference'] = null || !$investment['marketplace_loanReference'] = '') {
+                unset($totalArray[$key]);
+            }
+        }
+        return [$totalArray, false, null, $structureRevision]; //$totalArray -> investments / false -> Loanbook doesnt have pagination
     }
 
     /**
