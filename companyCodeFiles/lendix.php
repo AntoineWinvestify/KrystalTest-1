@@ -125,9 +125,9 @@ class lendix extends p2pCompany {
             $dom->preserveWhiteSpace = false;
             $divs = $this->getElements($dom, "li", "class", "card clickable project");
 
-            /* foreach ($divs as $key2 => $div2) {
+           foreach ($divs as $key2 => $div2) {
               echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-              } */ //Debug
+              } //Debug
 
             if ($totalArray !== false) {
                 foreach ($divs as $key => $div) {
@@ -176,9 +176,9 @@ class lendix extends p2pCompany {
 
 
                     $projectDivs = $this->getElements($div, "div");
-                    /* foreach ($projectDivs as $key11 => $div11) {
+                    foreach ($projectDivs as $key11 => $div11) {
                       echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
-                      } */ //Debug
+                      }  //Debug
 
                     $tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
                     $tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
@@ -189,7 +189,7 @@ class lendix extends p2pCompany {
                     $tempArray['marketplace_durationUnit'] = 2;
                     /*                     * **************************************************** */
 
-                    if (count($projectDivs) >= 27) {
+                    if (count($projectDivs) >= 26) {
 
                         $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
                         $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);

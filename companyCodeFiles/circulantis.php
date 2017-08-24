@@ -94,7 +94,7 @@ class circulantis extends p2pCompany {
         $totalCost = $fixedCost + $interest + $amount;
         return $fixedCost + $interest + $amount;
     }
-    
+
     /**
      * Collects the marketplace data.
      * @param Array $companyBackup
@@ -166,7 +166,7 @@ class circulantis extends p2pCompany {
                             $saveStructure->saveHTML();
                             $originalStructure = $saveStructure->getElementsByTagName('tr');
 
-                            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
+                            $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[4]);
 
                             echo 'structure: ' . $structureRevision . '<br>';
 
@@ -204,7 +204,6 @@ class circulantis extends p2pCompany {
 
 
                             switch ($key) {
-
                                 case 1:
                                     $tempArray['marketplace_name'] = $td->nodeValue;
                                     $tempArray['marketplace_purpose'] = $td->nodeValue;
@@ -232,7 +231,12 @@ class circulantis extends p2pCompany {
                                 $loanId = trim(preg_replace('/\D/', ' ', $a->getAttribute('href')));
                                 echo $loanId . '<br>';
                                 $tempArray['marketplace_loanReference'] = $loanId;
+                                echo $a->getAttribute('href');
+                                echo 'URL: ' . $a->getAttribute('href') . HTML_ENDOFLINE;
+                                $urlInvestment = $a->getAttribute('href');
                             }
+
+
 
                             $buttons = $td->getElementsByTagName("button"); //Get status data
                             foreach ($buttons as $key => $button) {
@@ -276,10 +280,31 @@ class circulantis extends p2pCompany {
                                             $investmentController = true;
                                         }
                                     }
+                                } else {
+                                    //Get time left only if the investment is in progress
+                                    $strInvestment = $this->getCompanyWebpage($urlInvestment);
+                                    $domInvestment = new DOMDocument;
+                                    $domInvestment->loadHTML($strInvestment);
+                                    $domInvestment->preserveWhiteSpace = false;
+                                    $ps = $domInvestment->getElementsByTagName('p');
+                                    foreach ($ps as $keyP => $p) {
+                                        //echo $keyP . ': ' . $p->nodeValue . HTML_ENDOFLINE;
+                                        if ($keyP == 12) {
+                                            $future = strtotime($p->nodeValue); //Future date.
+                                            $timefromdb = date();
+                                            $timeleft = $future - $timefromdb;
+                                            $daysleft = round((($timeleft / 24) / 60) / 60);
+                                            $tempArray['marketplace_timeLeft'] = $daysleft;
+                                            $tempArray['marketplace_duration'] = $daysleft;
+                                            $tempArray['marketplace_timeLeftUnit'] = 1;
+                                            $tempArray['marketplace_durationUnit'] = 1;
+                                            echo 'days left: ' . $daysleft . HTML_ENDOFLINE;
+                                        }
+                                    }
                                 }
                             }
                         }
-                        $this->print_r2($tempArray);
+                        
 
 
                         if ($investmentController) { //Don't save a already existing investment
@@ -287,6 +312,7 @@ class circulantis extends p2pCompany {
                             $investmentController = false;
                         } else {
                             if ($tempArray) {
+                                $this->print_r2($tempArray);
                                 $totalArray[] = $tempArray;
                                 unset($tempArray);
                             }
@@ -363,17 +389,17 @@ class circulantis extends p2pCompany {
 
                     if ($pageNumber == 0 && $key == 1 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
                         $newStructure = new DOMDocument;  //Get the old structure in db
-                            $newStructure->loadHTML($structure['Structure']['structure_html']);
-                            $newStructure->preserveWhiteSpace = false;
-                            $trsNewStructure = $newStructure->getElementsByTagName('tr');
+                        $newStructure->loadHTML($structure['Structure']['structure_html']);
+                        $newStructure->preserveWhiteSpace = false;
+                        $trsNewStructure = $newStructure->getElementsByTagName('tr');
 
-                            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                            $clone = $table->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                            $saveStructure->saveHTML();
-                            $originalStructure = $saveStructure->getElementsByTagName('tr');
+                        $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
+                        $clone = $table->cloneNode(TRUE);
+                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+                        $saveStructure->saveHTML();
+                        $originalStructure = $saveStructure->getElementsByTagName('tr');
 
-                            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
+                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[4]);
 
                         echo 'structure: ' . $structureRevision . '<br>';
 
@@ -411,7 +437,6 @@ class circulantis extends p2pCompany {
 
 
                         switch ($key) {
-
                             case 1:
                                 $tempArray['marketplace_name'] = $td->nodeValue;
                                 $tempArray['marketplace_purpose'] = $td->nodeValue;
@@ -954,6 +979,7 @@ class circulantis extends p2pCompany {
      */
     function structureRevision($node1, $node2) {
 
+
         $node1 = $this->clean_dom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -963,8 +989,8 @@ class circulantis extends p2pCompany {
 
         $node1 = $this->clean_dom($node1, array(//We only want delete the class of td, no other classes
             array('typeSearch' => 'element', 'tag' => 'td'),
-                ), array('class'));    
-        
+                ), array('class'));
+
 
         $node2 = $this->clean_dom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'div'),
