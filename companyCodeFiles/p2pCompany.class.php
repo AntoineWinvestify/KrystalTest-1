@@ -1457,6 +1457,13 @@ function print_r2($val){
         var_dump($datas);
     }
     
+    /**
+     * Function to convert an Spreadsheet to array with PHPExcel by parts
+     * @param int $chunkInit
+     * @param int $chunkSize
+     * @param string $inputFileType
+     * @param type $values
+     */
     function convertExcelByParts($chunkInit, $chunkSize, $inputFileType, $values) {
         if (empty($inputFileType)) {
             $inputFileType = "Excel2007";
@@ -1494,7 +1501,7 @@ function print_r2($val){
         foreach ($rowDatas as $rowData) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
-                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
+                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
                 }
                 else {
                     $tempArray[$i][$value] = $rowData[$key];
@@ -1510,12 +1517,12 @@ function print_r2($val){
      * Function to take more values from cell that could be more than one type of variable
      * @param string $rowData It is the cell  
      * @param array $values It is the possible results that can be on the cell
-     * @param array $tempArray It is the temporal array with all the data
      * @return array $tempArray with all the data inserted
      */
-    function getValueFromDynamicCell($rowData, $values, $tempArray) {
+    function getValueFromDynamicCell($rowData, $values) {
         foreach ($values as $key => $value) {
-            $pos = strpos($rowData, $value["regex"]);
+            $pos = $this->getPosInit($rowData, $value["regex"]);
+            //$pos = strpos($rowData, $value["regex"]);
             if ($pos !== false) {
                 // " found after position X
                 //$tempArray["loanId"] = substr($value, $pos + $variable["initPos"], $variable["finalPos"]);
@@ -1538,13 +1545,52 @@ function print_r2($val){
      * @return string It is the value
      */
     function getValueBySubstring($rowData, $value, $pos) {
-        if (empty($value["finalPos"])) {
+        $posFinal = $this->getPosFinal($rowData, $value, $pos);
+        if (empty($posFinal)) {
             $data = substr($rowData, $pos + $value["initPos"]);
         }
         else {
-            $data = substr($rowData, $pos + $value["initPos"], $value["finalPos"]);
+            $data = substr($rowData, $pos + $value["initPos"], $posFinal);
         }
-        return $data;
+        return trim($data);
+    }
+    
+    /**
+     * Function to get the initial position to get the variable from a string
+     * @param string $rowData It is the cell
+     * @param array|string $regex It is the variable to get the initial position of the value
+     * @return int It is the position
+     */
+    function getPosInit($rowData, $regex) {
+        if (is_array($regex)) {
+            $posStart = strpos($rowData, $regex["init"]);
+            $pos = strpos($rowData, $regex["final"], $posStart);
+        }
+        else {
+            $pos = strpos($rowData, $regex);
+        }
+        return $pos;
+    }
+    
+    /**
+     * Function to get the final position to get the variable from a string
+     * @param string $rowData It is the cell
+     * @param string $value It is the variable to get the final position
+     * @param int $pos It is the initial position from we init the search
+     * @return int It is the final position to get the string
+     */
+    function getPosFinal($rowData, $value, $pos) {
+        $posFinal = null;
+        if (!is_int($value["finalPos"])) {
+            $positionFinal = strpos($rowData, $value["finalPos"], $pos);
+            if ($positionFinal !== false) {
+                $posFinal = $positionFinal-$pos-$value["initPos"];
+            }
+        }
+        else if (is_int($value["finalPos"])) {
+            $posFinal = $value["finalPos"];
+        }
+        return $posFinal;
     }
 
 }
