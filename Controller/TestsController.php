@@ -134,17 +134,42 @@ function showUserData($userIdentity, $number) {
             //var_dump($sheetData);
             echo '<br />';
         }*/
-        $values = [
+        
+        $values_mintos = [
             "A" => "TransactionId",
             "B" => "date",
             "C" => [
                 [
-                    "name" => "interest",
+                    "name" => "primary_market_investment",
+                    "regex" => "Investment principal increase"
+                ],
+                [
+                    "name" => "principal_repayment",
+                    "regex" => "Investment principal repayment"
+                ],
+                [
+                    "name" => "principal_buyback",
+                    "regex" => "Investment principal rebuy"
+                ],
+                [
+                    "name" => "regular_interest_income",
                     "regex" => "Interest income"
                 ],
                 [
-                    "name" => "repayment",
-                    "regex" => "Investment principal repayment"
+                    "name" => "delayed_interest_income",
+                    "regex" => "Delayed interest income"
+                ],
+                [
+                    "name" => "late_payment_fee_income",
+                    "regex" => "Late payment fee income"
+                ],
+                [
+                    "name" => "interest_income_buyback",
+                    "regex" => "Interest income on rebuy"
+                ],
+                [
+                    "name" => "delayed_interest_income_buyback",
+                    "regex" => "Delayed interest income on rebuy"
                 ],
                 [
                     "type" => "loanId",
@@ -157,7 +182,89 @@ function showUserData($userIdentity, $number) {
             "E" => "balance",
             "F" => "currency"
         ];
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values);
+        
+        $values_comunitae = [
+            "A" => "date",
+            "B" => "debe",
+            "C" => "haber",
+            "D" => "saldo",
+            "E" => [
+                [
+                    "name" => "cash_deposit",
+                    "regex" => "Provisión de fondos"
+                ],
+                [
+                    "name" => "cash_withdraw",
+                    "regex" => "Retirada de fondos"
+                ],
+                [
+                    "name" => "primary_market_investment",
+                    "regex" => "Participación en préstamo"
+                ],
+                [
+                    "name" => "principal_repayment",
+                    "regex" => "Abono rendimientos capital"
+                ],
+                [
+                    "name" => "regular_interest_income",
+                    "regex" => "Abono rendimientos intereses"
+                ],
+                [
+                    "name" => "Commission",
+                    "regex" => "administración"
+                ],
+                [
+                    "name" => "bank_charges",
+                    "regex" => "tarjeta"
+                ],
+                [
+                    "type" => "loanId",
+                    "regex" => "CPP_",
+                    "initPos" => 0,
+                    "finalPos" => "y Nº"
+                ]
+            ]
+        ];
+        $values_circulantis = [
+            "A" => [
+                [
+                    "name" => "primary_market_investment",
+                    "regex" => "realizada"
+                ],
+                [
+                    "name" => "primary_market_investment",
+                    "regex" => "formalizada"
+                ],
+                [
+                    "type" => "loanId",
+                    "regex" => "ID Puja",
+                    "initPos" => 8,
+                    "finalPos" => ","
+                ],
+                [
+                    "type" => "subastaId",
+                    "regex" => "ID Subasta",
+                    "initPos" => 11,
+                    "finalPos" => ","
+                ],
+                [
+                    "type" => "purpose",
+                    "regex" => [
+                        "init" => "ID Subasta", 
+                        "final" => ","],
+                    "initPos" => 1,
+                    "finalPos" => "..."
+                ]
+            ],
+            "B" => "referencia",
+            "C" => "importe",
+            "D" => "date",
+            "E" => "disponible",
+            "F" => "ofertado",
+            "G" => "invertido",
+            "H" => "total"
+        ];
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values_mintos);
         var_dump($datas);
     }
     
@@ -192,7 +299,7 @@ function showUserData($userIdentity, $number) {
         foreach ($rowDatas as $rowData) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
-                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
+                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
                 }
                 else {
                     $tempArray[$i][$value] = $rowData[$key];
@@ -205,9 +312,10 @@ function showUserData($userIdentity, $number) {
     
     
     
-    function getValueExcelFromArray($rowData, $values, $tempArray) {
+    function getValueExcelFromArray($rowData, $values) {
         foreach ($values as $key => $value) {
-            $pos = strpos($rowData, $value["regex"]);
+            $pos = $this->getPosInit($rowData, $value["regex"]);
+            //$pos = strpos($rowData, $value["regex"]);
             if ($pos !== false) {
                 // " found after position X
                 //$tempArray["loanId"] = substr($value, $pos + $variable["initPos"], $variable["finalPos"]);
@@ -223,13 +331,39 @@ function showUserData($userIdentity, $number) {
     }
     
     function getValueBySubstring($rowData, $value, $pos) {
-        if (empty($value["finalPos"])) {
+        $posFinal = $this->getPosFinal($rowData, $value, $pos);
+        if (empty($posFinal)) {
             $data = substr($rowData, $pos + $value["initPos"]);
         }
         else {
-            $data = substr($rowData, $pos + $value["initPos"], $value["finalPos"]);
+            $data = substr($rowData, $pos + $value["initPos"], $posFinal);
         }
-        return $data;
+        return trim($data);
+    }
+    
+    function getPosInit($rowData, $regex) {
+        if (is_array($regex)) {
+            $posStart = strpos($rowData, $regex["init"]);
+            $pos = strpos($rowData, $regex["final"], $posStart);
+        }
+        else {
+            $pos = strpos($rowData, $regex);
+        }
+        return $pos;
+    }
+    
+    function getPosFinal($rowData, $value, $pos) {
+        $posFinal = null;
+        if (!is_int($value["finalPos"])) {
+            $positionFinal = strpos($rowData, $value["finalPos"], $pos);
+            if ($positionFinal !== false) {
+                $posFinal = $positionFinal-$pos-$value["initPos"];
+            }
+        }
+        else if (is_int($value["finalPos"])) {
+            $posFinal = $value["finalPos"];
+        }
+        return $posFinal;
     }
     
     function convertPdf () {
@@ -246,7 +380,14 @@ function showUserData($userIdentity, $number) {
             
         }
         
-        echo $page_string;
+        $investments = explode("%", $page_string);
+        
+        foreach ($investments as $investment) {
+            echo $investment;
+            echo "<br>";
+        }
+        //echo $investments[0];
+        //echo $page_string;
         //$text = $pdf->getText();
         //echo $text;
     }
