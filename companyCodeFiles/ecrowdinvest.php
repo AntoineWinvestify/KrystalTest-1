@@ -205,7 +205,6 @@ class ecrowdinvest extends p2pCompany {
             }
         }
 
-        $this->companyUserLogout();
         if ($confirm) {
             return true;
         }

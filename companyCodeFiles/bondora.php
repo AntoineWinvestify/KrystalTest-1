@@ -22,11 +22,11 @@
  *
  * 
  * 
- * 2017-08-23
+ * 2017-08-24
  * Created
  * link account
  */
-class twino extends p2pCompany {
+class bondora extends p2pCompany {
 
     function __construct() {
         parent::__construct();
@@ -39,30 +39,40 @@ class twino extends p2pCompany {
           $credentials['csrf'] = "XXXXX";
          */
 
-        $credentials['email'] = $user;
+        //First we need get te token
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        
+        $inputs = $dom->getElementsByTagName('input');
+        /*foreach($inputs as $key => $input){
+            echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+        }*/
+        $token = $inputs[2]->getAttribute('value'); //this is the token
+
+        $credentials['username'] = $user;
         $credentials['password'] = $password;
-
-        $str = $this->doCompanyLogin($credentials); //do login
-
+        $credentials['__RequestVerificationToken'] = $token;
+        //print_r($credentials);
+        
+       $str = $this->doCompanyLogin($credentials); //do login
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        // echo $str;
-
+         //echo $str;
+        
         $confirm = false;
 
-        $svgs = $dom->getElementsByTagName('svg');
-        foreach ($svgs as $svg) {
-            // echo 'Entrando ' . 'href value; ' . $a->getAttribute('herf') . ' node value' . $a->nodeValue . HTML_ENDOFLINE;
-            if (trim($svg->getAttribute('class')) == 'svg__logout svg__logout--register') {
+        $h2s = $dom->getElementsByTagName('h2');
+        foreach ($h2s as $h2) {
+            echo $h2->nodeValue . HTML_ENDOFLINE;
+            if (trim($h2->nodeValue) == 'Saldo en cuenta') {
                 $confirm = true;
             }
         }
 
-
-
-
-        //$this->companyUserLogout($url);
         if ($confirm) {
             return 1;
         }

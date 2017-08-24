@@ -28,7 +28,7 @@
  * 
  */
 
-  /**
+/**
  * Description of mintos
  *
  */
@@ -56,7 +56,7 @@ class mintos extends p2pCompany {
      * 	
      */
     function collectUserInvestmentDataParallel() {
-        
+
     }
 
     /**
@@ -110,7 +110,7 @@ class mintos extends p2pCompany {
 
         $as = $dom->getElementsByTagName('a');
         foreach ($as as $a) {
-           // echo 'Entrando ' . 'href value; ' . $a->getAttribute('herf') . ' node value' . $a->nodeValue . HTML_ENDOFLINE;
+            // echo 'Entrando ' . 'href value; ' . $a->getAttribute('herf') . ' node value' . $a->nodeValue . HTML_ENDOFLINE;
             if (trim($a->nodeValue) == 'Overview') {
                 //echo 'a encontrado' . HTML_ENDOFLINE;
                 $confirm = true;
@@ -150,7 +150,6 @@ class mintos extends p2pCompany {
      * @param type $url
      * @return type
      */
-
     function doCompanyLogout($url) {
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
