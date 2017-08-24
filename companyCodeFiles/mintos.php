@@ -127,9 +127,9 @@ class mintos extends p2pCompany {
 
         $this->companyUserLogout($url);
         if ($confirm) {
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
     /**
