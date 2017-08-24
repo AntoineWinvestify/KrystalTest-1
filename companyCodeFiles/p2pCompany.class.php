@@ -1545,6 +1545,37 @@ function print_r2($val){
         }
         return $data;
     }
+    
+    
+        /**
+         * 
+         * @param string $fileUrl url that download the file
+         * @param string $fileName name of the file to save
+         * @param string $fileType extension of the file
+         * @param string $pfpBaseUrl pfp main url (like http://www.zank.com.es for zank)
+         * @param string $path path where you want save the file
+         */
+        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path) {
+
+        $output_filename = $fileName . "." . $fileType;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $fileUrl);
+        curl_setopt($ch, CURLOPT_VERBOSE, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, false);
+        curl_setopt($ch, CURLOPT_REFERER, $pfpBaseUrl);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        //print_r($result); // prints the contents of the collected file before writing..
+        // the following lines write the contents to a file in the same directory (provided permissions etc)
+        $fp = fopen(APP . $path . DS . $output_filename, 'w');
+        fwrite($fp, $result);
+        fclose($fp);
+    }
 
 }
 ?>
