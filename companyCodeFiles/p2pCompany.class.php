@@ -57,6 +57,8 @@ Function to save user investment data into DB
 2017-06-30              version 0.7
 Added function to create an individual cookies file for company when a request and delete after logout
 
+2017-08-24
+ added downloadPfpFile function
 
 PENDING
  * fix method  getMonetaryValue()
