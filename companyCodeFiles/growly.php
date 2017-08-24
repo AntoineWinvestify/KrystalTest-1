@@ -29,6 +29,7 @@ function collectCompanyMarketplaceData()								[OK, tested]
 function companyUserLogin()										[OK, tested]
 function collectUserInvestmentData()									[OK, tested]
 parallelization                                                                                         [OK, tested]
+pagination                                                                                              [Ok, testing]
 
 
 2016-08-12	  version 2016_0.1
@@ -38,9 +39,13 @@ Basic version
  * Added parallelization 
  * Added dom verification
  
+2017-08-24
+ * Added pagination
  
 TODO
-Pagination
+ * Added Pagination to get more than 20 investments. A single page of growly shows 20 investment although in their web
+ * shows that it should be ten. Take care of this
+ * Added new url sequence for pagination
 
 */
 
