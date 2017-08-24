@@ -381,15 +381,13 @@ function collectCompanyMarketplaceData() {
                             $this->numberOfInvestments++;
                         }
                     }
-                    if ($this->numberOfInvestments % 20 == 0 && $this->numberOfInvestments != 0) {
-                        if (empty($this->tempUrl)) {
-                            $this->tempUrl = array_shift($this->urlSequence);
-                        }
-                        $this->idForSwitch=3;
-                        $this->getCompanyWebpageMultiCurl($this->tempUrl . $this->pageNum);
-                        $this->pageNum++;
-                        break;
+                    if (empty($this->tempUrl)) {
+                        $this->tempUrl = array_shift($this->urlSequence);
                     }
+                    $this->idForSwitch=3;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl . $this->pageNum);
+                    $this->pageNum++;
+                    break;
                 }
                 $this->tempArray['global']['investments'] = $this->numberOfInvestments;
                 $this->tempArray['global']['profitibility'] = $this->tempArray['global']['profitibility'] / ($this->numberOfInvestments);
