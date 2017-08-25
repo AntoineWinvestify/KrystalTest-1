@@ -244,6 +244,7 @@ function doCompanyLogin(array $loginCredentials) {
 
         
 	$url = array_shift($this->urlSequence);	
+
 	if (!empty($this->testConfig['active']) == true) {		// test system active, so read input from prepared files
 		if (!empty($this->testConfig['siteReadings'])) {
 			$currentScreen = array_shift($this->testConfig['siteReadings']);
@@ -1606,7 +1607,7 @@ function print_r2($val){
          */
         public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path) {
 
-        $output_filename = $fileName . "." . $fileType;
+        $output_filename = $fileName . '_' . date("d-m-Y_H:i:sa") . "." . $fileType;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $fileUrl);
