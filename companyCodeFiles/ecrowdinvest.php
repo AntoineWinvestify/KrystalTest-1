@@ -33,7 +33,8 @@
   function companyUserLogin()												[OK not tested]
   function collectUserInvestmentData()									[OK not tested]
 
-
+2017/08/23
+ * link account 
 
 
   PENDING:
@@ -160,8 +161,7 @@ class ecrowdinvest extends p2pCompany {
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY ECROWDINVEST DURING LOGIN PROCESS
-          $credentials['signin']	 = 'Login';
-          $credentials['csrf'] = "XXXXX";
+          $credentials['_csrf_token'] = "XXXXX";
          */
 
         //First we need get the $csrf token
@@ -184,7 +184,7 @@ class ecrowdinvest extends p2pCompany {
             }
         }
 
-        print_r($credentials);
+        //print_r($credentials);
 
         $str = $this->doCompanyLogin($credentials); //do login
         
@@ -198,18 +198,17 @@ class ecrowdinvest extends p2pCompany {
 
         $lis = $dom->getElementsByTagName('li');
         foreach ($lis as $li) {
-            echo 'Entrando $li ' . 'href value; ' . $li->getAttribute('herf') . ' node value' . $li->nodeValue . HTML_ENDOFLINE;
+            //echo 'Entrando $li ' . 'href value; ' . $li->getAttribute('herf') . ' node value' . $li->nodeValue . HTML_ENDOFLINE;
             if (trim($li->nodeValue) == 'resumen') {
-                echo 'Li encontrado' . HTML_ENDOFLINE;
+                //echo 'Li encontrado' . HTML_ENDOFLINE;
                 $confirm = true;
             }
         }
 
-        $this->companyUserLogout();
         if ($confirm) {
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
     /**
