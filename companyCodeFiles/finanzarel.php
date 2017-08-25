@@ -32,20 +32,26 @@ class finanzarel extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+
+    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY finanzarel DURING LOGIN PROCESS
           $credentials['csrf'] = "XXXXX";
          */
 
+        
+        
         //Get credentials from form in pfp login page
         $str = $this->getCompanyWebpage();
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-
+        //echo $str;
+        
         $inputs = $dom->getElementsByTagName('input');
         foreach ($inputs as $input) {
+            echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;
             $name = $input->getAttribute('name');
             switch ($name) {
                 case 'p_flow_id':
@@ -81,7 +87,7 @@ class finanzarel extends p2pCompany {
         $credentials['p_flow_step_id'] = $pFlowStepId;
         $credentials['p_instance'] = $pInstance;
         $credentials['p_page_submission_id'] = $pPageSubmissionId;
-        $credentials['p_request'] ='Login';
+        $credentials['p_request'] = 'Login';
         $credentials['p_reload_on_submit'] = $pReloadOnSubmit;
 
         //print_r($credentials);
@@ -96,13 +102,67 @@ class finanzarel extends p2pCompany {
         $dom->preserveWhiteSpace = false;
         //echo $str;
         $h2s = $dom->getElementsByTagName('h2');
-        foreach($h2s as $h2){
-            //echo $h2->nodeValue . HTML_ENDOFLINE;
-            if(trim($h2->nodeValue) == 'Dashboard' ){
-                return true;
+        foreach ($h2s as $h2) {
+            echo $h2->nodeValue . HTML_ENDOFLINE;
+            if (trim($h2->nodeValue) == 'Dashboard') {
+                //echo 'ok' . HTML_ENDOFLINE;
+                return [$str,$credentials];
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * 	Collects the investment data of the user
+     * 	@return array	Data of each investment of the user as an element of an array
+     * 	
+     */
+    function collectUserInvestmentData($user, $password) {
+        
+        $resultLogin = $this->companyUserLogin($user, $password);
+        
+        if (!$resultLogin) {   // Error while logging in
+            $tracings = "Tracing:\n";
+            $tracings .= __FILE__ . " " . __LINE__ . " \n";
+            $tracings .= "Finazarel login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+            $tracings .= " \n";
+            $msg = "Error while logging in user's portal. Wrong userid/password \n";
+            $msg = $msg . $tracings . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+        echo 'Login ok';
+        
+        $credentials = $resultLogin[1]; //We need credentials to download the csv
+        $this->print_r2($credentials);
+        $str = $resultLogin[0];//Load the page that contains the file url
+        echo $str;
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        //$this->print_r2($dom);
+        $as = $dom->getElementsByTagName('a');
+        foreach($as as $key => $a){
+            echo $key . " => " . $a->getAttribute('href') . HTML_ENDOFLINE;
+            if(trim($a->nodeValue) == 'Descargar en csv'){
+                $request = explode("'" ,$a->getAttribute('href'))[1];
+                echo $request . HTML_ENDOFLINE;
+                break;
+            }
+        }
+        
+        $url = array_shift($this->urlSequence);
+        $fileUrl = $url . "p_flow_id=" . $credentials['p_flow_id'] . "&p_flow_step_id=" . $credentials['p_flow_step_id'] . "&p_instance=" .  $credentials['p_instance'] . "&p_debug&p_request=" . $request;
+        echo $fileUrl . HTML_ENDOFLINE;
+        $fileName = 'Finazerel';
+        $fileType = 'csv';
+        $pfpBaseUrl = 'http://www.finanzarel.com';
+        $path = 'prueba';
+        
+        $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path);
+        echo 'Downloaded';
+        
     }
 
 }
