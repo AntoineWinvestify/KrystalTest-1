@@ -35,8 +35,8 @@ class bondora extends p2pCompany {
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY finanzarel DURING LOGIN PROCESS
-          $credentials['csrf'] = "XXXXX";
+          FIELDS USED BY Bondora DURING LOGIN PROCESS
+          $credentials['*'] = "XXXXX";
          */
 
         //First we need get te token

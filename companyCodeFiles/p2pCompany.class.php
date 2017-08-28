@@ -68,7 +68,7 @@ require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
-require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
+//require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
 
 class p2pCompany{
 	const DAY 		= 1;
@@ -1605,9 +1605,9 @@ function print_r2($val){
          * @param string $pfpBaseUrl pfp main url (like http://www.zank.com.es for zank)
          * @param string $path path where you want save the file
          */
-        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path) {
+        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path, $date) {
 
-        $output_filename = $fileName . '_' . date("d-m-Y_H:i:sa") . "." . $fileType;
+        $output_filename = $fileName . '_' . $date . "." . $fileType;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $fileUrl);

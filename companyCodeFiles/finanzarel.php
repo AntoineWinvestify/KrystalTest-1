@@ -37,7 +37,7 @@ class finanzarel extends p2pCompany {
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY finanzarel DURING LOGIN PROCESS
-          $credentials['csrf'] = "XXXXX";
+          $credentials['*'] = "XXXXX";
          */
 
         
@@ -157,10 +157,11 @@ class finanzarel extends p2pCompany {
         echo $fileUrl . HTML_ENDOFLINE;
         $fileName = 'Finazerel';
         $fileType = 'csv';
+        $date = date("d-m-Y_H:i:sa");
         $pfpBaseUrl = 'http://www.finanzarel.com';
         $path = 'prueba';
         
-        $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path);
+        $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path, $date);
         echo 'Downloaded';
         
     }

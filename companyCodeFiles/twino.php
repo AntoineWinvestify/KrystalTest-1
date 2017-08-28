@@ -35,8 +35,8 @@ class twino extends p2pCompany {
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY finanzarel DURING LOGIN PROCESS
-          $credentials['csrf'] = "XXXXX";
+          FIELDS USED BY twino DURING LOGIN PROCESS
+          $credentials['*'] = "XXXXX";
          */
 
 

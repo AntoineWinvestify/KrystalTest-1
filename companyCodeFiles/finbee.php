@@ -34,8 +34,8 @@ class finbee extends p2pCompany {
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY Finbee DURING LOGIN PROCESS
-          $credentials['csrf'] = "XXXXX";
+          FIELDS USED BY finbee DURING LOGIN PROCESS
+          $credentials['*'] = "XXXXX";
          */
         //Get credentials from form in pfp login page
         $str = $this->getCompanyWebpage();
