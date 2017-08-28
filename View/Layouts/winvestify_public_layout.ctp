@@ -14,11 +14,14 @@
 
         <!-- Web Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i|Montserrat:400,700" rel="stylesheet">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
+        <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
         <!-- Vendor Styles -->
         <link href="/megaKit/vendor/themify/themify.css" rel="stylesheet" type="text/css"/>
 
         <!-- Theme Styles -->
+        <link href="/css/compare_styles.css" rel="stylesheet" type="text/css"/>
         <link href="/megaKit/css/style.css" rel="stylesheet" type="text/css"/>
         <link href="/megaKit/css/global.css" rel="stylesheet" type="text/css"/>
         <link href="/megaKit/css/custom.css" rel="stylesheet" type="text/css"/>
@@ -58,7 +61,7 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="principal_navbar">
                         <ul class="nav navbar-nav navbar-left">
-                            <li><a href="https://www.winvestify.com"><i class="g-padding-r-5--xs ti-home"></i></a></li>
+                            <li><a href="/"><i class="g-padding-r-5--xs ti-home"></i></a></li>
                             <li><a href="http://www.facebook.com/winvestify/"><i class="g-padding-r-5--xs ti-facebook"></i></a></li>
                             <li><a href="https://www.linkedin.com/company-beta/11000640/"><i class="g-padding-r-5--xs ti-linkedin"></i></a></li>
                             <li><a href="https://twitter.com/Winvestify"><i class="g-padding-r-5--xs ti-twitter"></i></a></li>
