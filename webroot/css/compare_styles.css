@@ -2129,6 +2129,36 @@ hr.nomargin {
     margin-top: 20px;
 }
 
+.teamName {
+    font-weight: bold;
+    font-size: large;
+}
+
+.teamImg {
+    max-height: 200px;
+    max-width: 200px;
+}
+.nav-pills > li.active > a.greenTab {
+    background-color: #87e14b !important;
+    font-weight: 400;
+}
+.questionTitle {
+    margin-left: 10px;
+    font-weight: 400;
+}
+.tab-pane > ul > li {
+    margin-top: 5px;
+}
+.tab-pane {
+    padding-top: 10px;
+}
+.teamBoxColor {
+    background-color: #e6e6e6;
+}
+.teamPosition {
+    margin-top: 5px;
+    margin-bottom: 10px !important;
+}
 /*PAPER BOOTSTRAP MODAL CUSTOMIZATION*/
 .wizard-container-small {
     padding-top: 50px;

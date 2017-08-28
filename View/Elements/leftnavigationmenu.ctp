@@ -66,7 +66,7 @@ $(document).ready(function() {
                 [__("Bills")],
                 [__("Investor Checking")],
                 [__("Logout")],
-                [__("Dashboard 2.0"), __("Overview"),__("Stats"),__("Initial Panel") ],
+                [__("Dashboard 2.0"), __("Overview"), __("Stats"), __("Initial Panel")]
             ];
             
             
