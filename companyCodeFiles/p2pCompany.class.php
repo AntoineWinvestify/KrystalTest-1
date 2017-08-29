@@ -955,8 +955,8 @@ public function verifyNodeHasElements($elements, $limit = null) {
  */
 public function getElementsByClass ($dom, $class) {
     $dom_xpath = new DOMXPath($dom);
-    $login = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class ')]");
-    return $login;
+    $element = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class ')]");
+    return $element;
 }
 
 
