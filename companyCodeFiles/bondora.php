@@ -78,5 +78,65 @@ class bondora extends p2pCompany {
         }
         return 0;
     }
+    
+    /**
+     *
+     * 	Collects the investment data of the user
+     * 	@return array	Data of each investment of the user as an element of an array
+     * 	
+     */
+    function collectUserInvestmentDataParallel($str) {
+        switch ($this->idForSwitch) {
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+            case 1:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                $inputs = $dom->getElementsByTagName('input');
+                /*foreach($inputs as $key => $input){
+                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+                }*/
+                $token = $inputs[2]->getAttribute('value'); //this is the token
+
+                $credentials['username'] = $this->user;
+                $credentials['password'] = $this->password;
+                $credentials['__RequestVerificationToken'] = $token;
+                //print_r($credentials);
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($credentials); //do login
+               break;
+            case 2:
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                echo $str;
+
+                $confirm = false;
+
+                $h2s = $dom->getElementsByTagName('h2');
+                foreach ($h2s as $h2) {
+                    echo $h2->nodeValue . HTML_ENDOFLINE;
+                    if (trim($h2->nodeValue) == 'Saldo en cuenta') {
+                        $confirm = true;
+                        break;
+                    }
+                }
+                
+                if ($confirm) {
+                    $this->idForSwitch++;
+                    $this->getCompanyWebpageMultiCurl(); 
+                }
+                break;
+            case 3:
+                echo "CODEEEEEEEEEEEEEE" . $str;
+                break;
+            
+        }
+        
+        
+    }
 
 }
