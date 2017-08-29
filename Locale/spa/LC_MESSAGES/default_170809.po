@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-08-23 14:15+0200\n"
+"PO-Revision-Date: 2017-08-09 12:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -1630,7 +1630,7 @@ msgstr "Capital total invertido"
 
 #: View/Marketplaces/show_market_place.ctp:135
 msgid "Total Amount Already Invested"
-msgstr "Capital Total Invertido"
+msgstr "Capital Invertido"
 
 #: View/Marketplaces/show_market_place.ctp:141
 msgid "Total Amount of all the open investments"
@@ -1638,7 +1638,7 @@ msgstr "Capital total de inversiones activas"
 
 #: View/Marketplaces/show_market_place.ctp:170
 msgid "Total Investment Amount"
-msgstr "Capital Total para Invertir"
+msgstr "Capital total de inversión"
 
 #: View/Marketplaces/show_market_place.ctp:180
 msgid "Total Number of Investments in Global Marketplace"
@@ -1912,7 +1912,7 @@ msgid ""
 "lowercase characters and a number."
 msgstr ""
 "Formato incorrecto. Su contraseña debe contener un mínimo de 8 caracteres, "
-"contener caracteres en minúscula, mayúscula y algún número\n"
+"contener caracteres en minúscula, mayúscula y algún número.\n"
 " "
 
 #: View/Users/register_panel_a.ctp:426
@@ -2104,7 +2104,8 @@ msgid ""
 "contain uppercase and lowercase characters and a number."
 msgstr ""
 "Formato incorrecto. Su contraseña debe tener un mínimo de 8 caracteres, "
-"contener caracteres minúsculas y mayúsculas y un número."
+"contener caracteres menusculas y mayusculas y un número\n"
+" "
 
 #~ msgid "Crowd Houser"
 #~ msgstr "Crowd Houser"
