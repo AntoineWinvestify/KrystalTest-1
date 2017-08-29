@@ -803,6 +803,41 @@ class p2pCompany {
         }
         return $value;
     }
+    
+    /**
+    *
+    *	Look for ALL elements (or only first) which fullfil the tag item. 
+    *	Obtain the following:
+    *		<div id="myId"....>      getElements($dom, "div", "id", "myId");
+    *		or
+    *		<div class="myClass" ....>  getElements($dom, "div", "class", "myClass");
+    *		
+    *	@param $dom
+    *	@param $tag			string 	name of tag, like "div"
+    *	@param $attribute	string	name of the attribute like "id"   optional parameter
+    *	@param $value		string	value of the attribute like< "myId"  optional parameter. Must be defined if $attribute is defined
+    *	@return array $list of doms
+    *	$list is empty if no match was found
+    *
+    */
+    /*public function getElements($dom, $tag, $attribute, $value) {
+
+            $list = array();
+
+            $attributeTrimmed = trim($attribute);
+            $valueTrimmed = trim($value);
+            $tagTrimmed = trim($tag);
+            $tags = $dom->getElementsByTagName($tagTrimmed);
+
+            foreach ($tags as $tagFound) {
+                    $attValue = trim($tagFound->getAttribute($attributeTrimmed));
+                    if ( strncasecmp ($attValue, $valueTrimmed, strlen($valueTrimmed)) == 0) {
+                            $list[] = $tagFound;	
+                    }
+            }
+            return $list;
+    }*/
+
 
     /**
      *
@@ -822,26 +857,29 @@ class p2pCompany {
      */
     public function getElements($dom, $tag, $attribute, $value) {
 
-        $list = array();
-
-        $attributeTrimmed = trim($attribute);
-        $valueTrimmed = trim($value);
-        $tagTrimmed = trim($tag);
+	$list = array();
+		
+	$attributeTrimmed = trim($attribute);
+	$valueTrimmed = trim($value);
+	$tagTrimmed = trim($tag);
         libxml_use_internal_errors(true);
-        $tags = $dom->getElementsByTagName($tagTrimmed);
-        if ($tags->length > 0) {
+	$tags = $dom->getElementsByTagName($tagTrimmed);
+	if ($tags->length > 0) {
             foreach ($tags as $tagFound) {
-                $attValue = trim($tagFound->getAttribute($attributeTrimmed));
-                if (strncasecmp($attValue, $valueTrimmed, strlen($valueTrimmed)) == 0) {
-                    $list[] = $tagFound;
-                }
+		$attValue = trim($tagFound->getAttribute($attributeTrimmed));
+		if ( strncasecmp ($attValue, $valueTrimmed, strlen($valueTrimmed)) == 0) {
+			$list[] = $tagFound;	
+		}
             }
             $this->hasElements = true;
             return $list;
-        } else {
+        }
+        else {
             $this->hasElements = false;
         }
+	
     }
+
 
     /**
      * Verify if a node has elements or it is empty
@@ -851,9 +889,11 @@ class p2pCompany {
     public function verifyNodeHasElements($elements, $limit = null) {
         if ($elements->length == 0) {
             $this->hasElements = false;
-        } else if (!empty($limit) && $elements->length < $limit) {
+        } 
+        else if (!empty($limit) && $elements->length < $limit) {
             $this->hasElements = false;
-        } else {
+        } 
+        else {
             $this->hasElements = true;
         }
     }
@@ -867,8 +907,8 @@ class p2pCompany {
 
     public function getElementsByClass($dom, $class) {
         $dom_xpath = new DOMXPath($dom);
-        $login = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class ')]");
-        return $login;
+        $element = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class ')]");
+        return $element;
     }
 
     /*
