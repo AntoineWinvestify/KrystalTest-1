@@ -458,7 +458,6 @@ function collectCompanyMarketplaceData() {
                 if ($this->accountPosition < $this->numberOfInvestments) {
                     $this->idForSwitch = 10;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);
-                    $this->accountPosition++;
                     break;
                 }
                 else {
