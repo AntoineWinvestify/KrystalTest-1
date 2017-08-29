@@ -45,38 +45,53 @@ class bondora extends p2pCompany {
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
-        
+
         $inputs = $dom->getElementsByTagName('input');
-        /*foreach($inputs as $key => $input){
-            echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
-        }*/
+        /* foreach($inputs as $key => $input){
+          echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+          } */
         $token = $inputs[2]->getAttribute('value'); //this is the token
 
         $credentials['username'] = $user;
         $credentials['password'] = $password;
         $credentials['__RequestVerificationToken'] = $token;
         //print_r($credentials);
-        
-       $str = $this->doCompanyLogin($credentials); //do login
+
+        $str = $this->doCompanyLogin($credentials); //do login
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-         //echo $str;
-        
+        //echo $str;
+
         $confirm = false;
 
         $h2s = $dom->getElementsByTagName('h2');
         foreach ($h2s as $h2) {
-            echo $h2->nodeValue . HTML_ENDOFLINE;
+            //echo $h2->nodeValue . HTML_ENDOFLINE;
             if (trim($h2->nodeValue) == 'Saldo en cuenta') {
                 $confirm = true;
+                break;
             }
         }
 
         if ($confirm) {
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
+    }
+
+    /**
+     *
+     * 	Logout of user from to company portal.
+     * 	
+     * 	@returnboolean	true: user has logged out 
+     * 	
+     */
+    function companyUserLogout($url = null) {
+        //$this->doCompanyLogout();
+        $this->getCompanyWebpage();
+        return true;
+
     }
     
     /**

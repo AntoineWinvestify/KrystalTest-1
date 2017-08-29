@@ -286,7 +286,7 @@ class MarketPlacesController extends AppController {
         $companyConditions = array('Company.id' => $companyId);
         $result = $this->Company->getCompanyDataList($companyConditions);
 
-        pr($result);
+        //pr($result);
         echo "<br>____ Checking Company " . $result[$companyId]['company_name'] . " ____<br>";
 
         $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
@@ -756,6 +756,7 @@ class MarketPlacesController extends AppController {
             $newComp->defineConfigParms($result[$companyId]);  // Is this really needed??
 
             $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MY_INVESTMENTS_SEQUENCE);
+            $this->print_r2($urlSequenceList);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
 
             $configurationParameters = array('tracingActive' => false,

@@ -39,22 +39,25 @@ class twino extends p2pCompany {
           $credentials['csrf'] = "XXXXX";
          */
 
-        $credentials['email'] = $user;
+
+        $credentials['name'] = $user;
         $credentials['password'] = $password;
+        $credentials['googleAnalyticClientId'] = "1778227581.1503479723";
 
+        print_r($credentials);
         $str = $this->doCompanyLogin($credentials); //do login
-
+        echo $str;
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        // echo $str;
+
 
         $confirm = false;
 
-        $svgs = $dom->getElementsByTagName('svg');
-        foreach ($svgs as $svg) {
-            // echo 'Entrando ' . 'href value; ' . $a->getAttribute('herf') . ' node value' . $a->nodeValue . HTML_ENDOFLINE;
-            if (trim($svg->getAttribute('class')) == 'svg__logout svg__logout--register') {
+        $pres = $dom->getElementsByTagName('pre');
+        foreach ($pres as $pre) {
+            echo 'Entrando node value; ' . $pre->nodeValue . HTML_ENDOFLINE;
+            if (trim($pre->nodeValue) == 'true') {
                 $confirm = true;
             }
         }
@@ -64,9 +67,9 @@ class twino extends p2pCompany {
 
         //$this->companyUserLogout($url);
         if ($confirm) {
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
 }
