@@ -61,6 +61,7 @@ class MarketplaceShell extends AppShell {
                 $this->cronMarketPlaceHistorical($companyId, $structure, $companyDataResult[$companyId]['company_hasMultiplePages']);
             }
         }
+        $this->out( SHELL_ENDOFLINE . 'MARKETPLACE READING FINISHED' . SHELL_ENDOFLINE);
     }
 
     /**
