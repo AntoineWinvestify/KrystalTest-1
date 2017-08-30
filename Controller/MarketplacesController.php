@@ -335,17 +335,21 @@ class MarketPlacesController extends AppController {
         $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure);
 
 
-        echo 'Marketplace Result: ';
-        $this->print_r2($marketplaceArray);
+        //echo 'Marketplace Result: ';
+        //$this->print_r2($marketplaceArray);
 
 
         if ($marketplaceArray[1] && $marketplaceArray[1] != 1) {
             echo 'Saving new structure';
             $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
-            if (!$marketplaceArray[0]) {
-                $this->Applicationerror->saveAppError('Html Structure error','Html structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
-                echo 'Sending error report';
+            if ($marketplaceArray[2] == APP_ERROR) {
+                $this->Applicationerror->saveAppError('ERROR: Html/Json Structure','Html/Json structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+            } else if($marketplaceArray[2] == WARNING) {
+                $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+            } else if($marketplaceArray[2] == INFORMATION) {
+                $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
             }
+            
         }
 
 
@@ -395,7 +399,7 @@ class MarketPlacesController extends AppController {
                 if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If it is completed
                     echo "Investment completed<br>";
                     foreach ($companyBackup as $investmentBackup) {
-                        print_r($investmentBackup);
+                        //print_r($investmentBackup);
                         if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplacebackup']['marketplace_loanReference']) { //If it exist in winvestify backup
                             $backup = false;
                             $investment['marketplace_investmentCreationDate'] = $investmentBackup['Marketplacebackup']['marketplace_investmentCreationDate'];
@@ -478,10 +482,13 @@ class MarketPlacesController extends AppController {
             if ($marketplaceArray[3] && $marketplaceArray[3] != 1) {
                 echo 'Saving new structure';
                 $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
-                 if (!$marketplaceArray[0]) {
-                $this->Applicationerror->saveAppError('Html Structure error','Html structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
-                echo 'Sending error report';
-            }
+                if ($marketplaceArray[4] == APP_ERROR) {
+                    $this->Applicationerror->saveAppError('ERROR: Html/Json ','Html/Json structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
+                }else if($marketplaceArray[4] == WARNING) {
+                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+                } else if($marketplaceArray[4] == INFORMATION) {
+                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+                }
             }
 
 

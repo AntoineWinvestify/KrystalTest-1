@@ -78,7 +78,7 @@ class Applicationerror extends AppModel
      *
      *  Saves all the data related to an application error in a centralized database
      * 	
-     * @param string $par1
+     * @param string $par1 The first word is used in the subject of the mail send, this word must be ERROR, WARNING or INFORMATION
      * @param string $par2
      * @param string $par3
      * @param string $par4
