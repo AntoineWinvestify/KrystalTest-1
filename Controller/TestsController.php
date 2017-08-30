@@ -302,7 +302,12 @@ function showUserData($userIdentity, $number) {
         foreach ($rowDatas as $rowData) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
-                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
+                    if (empty($tempArray[$i])) {
+                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
+                    }
+                    else {
+                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
+                    }
                 }
                 else {
                     $tempArray[$i][$value] = $rowData[$key];
@@ -315,7 +320,7 @@ function showUserData($userIdentity, $number) {
     
     
     
-    function getValueExcelFromArray($rowData, $values) {
+    function getValueExcelFromArray($rowData, $values, $tempArray = null) {
         foreach ($values as $key => $value) {
             $pos = $this->getPosInit($rowData, $value["regex"]);
             //$pos = strpos($rowData, $value["regex"]);
