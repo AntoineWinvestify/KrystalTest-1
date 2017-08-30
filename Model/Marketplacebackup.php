@@ -59,12 +59,16 @@ class Marketplacebackup extends AppModel {
      */
     var $validate = array();
 
+    
     public function getBackup($filters) {
+        
+        $backupConfig = Configure::read('backup');
+        
         //$conditions = array($filters);
         $backup = $this->find('all', array(
             'conditions' => $filters,
             'recursive' => -1,
-            'limit' => 1000,
+            'limit' => $backupConfig['limit'],
         ));
 
         return $backup;
