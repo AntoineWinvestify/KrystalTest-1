@@ -280,6 +280,9 @@ FRAGMENT
             }
         }
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
+                //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**
@@ -457,6 +460,9 @@ FRAGMENT
             $i++;
         }
         return [$totalArray, false, null, $structureRevision[0],$structureRevision[2]];
+         //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**

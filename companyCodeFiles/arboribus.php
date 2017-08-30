@@ -246,6 +246,7 @@ class arboribus extends p2pCompany {
             $tableNumber++;
         }
         return [$totalArray, $structureRevision[0],$structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
@@ -391,7 +392,8 @@ class arboribus extends p2pCompany {
                 }
             }
         }
-        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]]; //Becaus arboribus dont have pagination, return only the investments and a false
+        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }

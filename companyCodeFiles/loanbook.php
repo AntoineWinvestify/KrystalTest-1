@@ -271,6 +271,9 @@ class loanbook extends p2pCompany {
             }
         }
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**
@@ -438,7 +441,10 @@ class loanbook extends p2pCompany {
                 unset($totalArray[$key]);
             }
         }
-        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]] ; //$totalArray -> investments / false -> Loanbook doesnt have pagination
+        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]] ; //false -> Loanbook doesnt have pagination
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**

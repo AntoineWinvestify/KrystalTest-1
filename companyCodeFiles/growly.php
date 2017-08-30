@@ -249,6 +249,9 @@ class growly extends p2pCompany {
             } //Stop reading
         }
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**
@@ -403,7 +406,10 @@ class growly extends p2pCompany {
         if ($investmentNumber < 10) {
             $pageNumber = false;
         } //Stop reading when we dont find investmet
-        return [$totalArray, $pageNumber, null, $structureRevision[0], $structureRevision[2]]; //$total array is the rquested investment, $pageNumber is the next page, return false if is the last page
+        return [$totalArray, $pageNumber, null, $structureRevision[0], $structureRevision[2]]; //$pageNumber is the next page, return false if is the last page
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**

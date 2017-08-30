@@ -52,6 +52,8 @@
  * Status definition
  * Type definition
  * 
+ * 2017-08-29
+ * Application error message type
  *
  * Pending:
  * Checking for "country of residence" and show only marketplace for that country				[Not OK]

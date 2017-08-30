@@ -61,6 +61,10 @@
  * 
  * 2017-08-10              version 0.8
  * Structure revision added
+ * 
+ * 2017-08-29
+ * Json revision function
+ * Html revision general function
  *
  * PENDING
  * fix method  getMonetaryValue()
@@ -1339,12 +1343,22 @@ class p2pCompany {
     protected $valueNotMoreScanning = [];
     protected $sameStructure = true;
 
+    
+    /**
+     * Compares two dom structures., attributes name and length 
+     * 
+     * @param dom $node1
+     * @param dom $node2
+     * @param type $uniquesElement
+     * @param int $limit
+     * @return bool
+     */
     function verifyDomStructure($node1, $node2, $uniquesElement = null, $limit = null) {
-        echo 'Begin comparation<br>';
+        //echo 'Begin comparation<br>';
         $this->sameStructure;
         $repeatedStructureFound = false;
 
-        echo 'We have' . $node1->nodeName . ' and ' . $node2->nodeName . HTML_ENDOFLINE;
+        //echo 'We have' . $node1->nodeName . ' and ' . $node2->nodeName . HTML_ENDOFLINE;
         //We verify if nodes has attributes
         if ($node1->hasAttributes() && $node2->hasAttributes() && $this->sameStructure) {
             $node1Attr = $node1->attributes;
@@ -1357,16 +1371,16 @@ class p2pCompany {
                     $valueAttrNode1 = $node1Attr[$i]->nodeValue;
                     $valueAttrNode2 = $node2Attr[$i]->nodeValue;
 
-                    echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                   /*echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
                     echo $nameAttrNode1 . '=>' . $valueAttrNode1 . '<br>';
-                    echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>';
+                    echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>';*/
 
                     if ($nameAttrNode1 != $nameAttrNode2) {
-                        echo 'Node attr name error';
+                        //echo 'Node attr name error';
                         $this->same_structure = false;
                     }
                     if ($valueAttrNode1 != $valueAttrNode2) {
-                        echo 'Node attr value error';
+                        //echo 'Node attr value error';
                         $this->sameStructure = false;
                     }
                     if ($this->sameStructure) {
@@ -1378,28 +1392,21 @@ class p2pCompany {
                             break;
                         }
                     }
-                    /* $attributesValuesNode1 = $node1->getAttribute($nameNode1);
-                      $attributesValuesNode2 = $node3->getAttribute($nameNode2);
-                      if ($attributesValuesNode1 != $attributesValuesNode2) {
-                      $sameStructure = false;
-                      break;
-                      } */
                 }
             } else if ($node1Attr->length != $node2Attr->length) {
-                echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-
+                /*echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
                 echo $node1Attr->length . '<br>';
                 echo $node2Attr->length . '<br>';
-                echo 'Node attr length error';
+                echo 'Node attr length error';*/
                 $this->sameStructure = false;
             }
         } else if ($node1->hasAttributes() && !$node2->hasAttributes()) {
-            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            echo 'Node2 has attr error';
+            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            //echo 'Node2 has attr error';
             $this->sameStructure = false;
         } else if (!$node1->hasAttributes() && $node2->hasAttributes()) {
-            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            echo 'Node1 has attr error';
+            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            //echo 'Node1 has attr error';
             $this->sameStructure = false;
         }
         if ($this->sameStructure && !$repeatedStructureFound) {
@@ -1407,31 +1414,24 @@ class p2pCompany {
                 $limit = 0;
                 $childrenNode1 = $node1->childNodes;
                 $childrenNode2 = $node2->childNodes;
-                /* $attrNode1 = $node1->getAttribute($uniquesElement[0]);
-                  $attrNode2 = $node2->getAttribute($uniquesElement[0]);
-                  $typeNode1 = $node1->nodeName;
-                  if ($typeNode1 == $uniquesElement[1] && $attrNode1 == $uniquesElement[2]) {
-                  $limitChildren = $limit;
-                  }
-                  else { */
                 $limitChildren = $childrenNode1->length;
-                //}
+                
                 for ($i = 0; $i < $limitChildren; $i++) {
 
-                    if($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text"){
+                    if($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text"){ //Skip text nodes
                         continue;
                     }
                     
                     if (!$childrenNode1[$i] && $childrenNode2[$i]) { //First we verify if node exist
-                        echo 'Node1 doesnt exist: <br>';
+                        /*echo 'Node1 doesnt exist: <br>';
                         echo 'parent => ' . $childrenNode1[$i]->parentNode->nodeName . ' of ' . $childrenNode1[$i]->nodeName . ' value ' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';
+                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';*/
 
                         $this->sameStructure = false;
                     } else if($childrenNode1[$i] && !$childrenNode2[$i]){
-                        echo 'Node2 doesnt exist: <br>';
+                        /*echo 'Node2 doesnt exist: <br>';
                         echo $childrenNode1[$i]->parentNode->nodeName . ' ' . $childrenNode1[$i]->nodeName . ' is 1' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';
+                        echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';*/
 
                         $this->sameStructure = false;
                     }
@@ -1443,16 +1443,22 @@ class p2pCompany {
                     $this->verifyDomStructure($childrenNode1[$i], $childrenNode2[$i], $uniquesElement, $limit);
                 }
             } else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
-                echo 'Node has attr error 2';
+                //echo 'Node has attr error 2';
                 $this->sameStructure = false;
             } else if ($node1->hasChildNodes() && !$node2->hasChildNodes()) {
-                echo 'Node has attr error 2';
+                //echo 'Node has attr error 2';
                 $this->sameStructure = false;
             }
         }
         return $this->sameStructure;
     }
 
+    /**
+     * 
+     * @param type $nameAttrNode1
+     * @param type $valueAttrNode1
+     * @return type
+     */
     function nodeRepeated($nameAttrNode1, $valueAttrNode1) {
         $uniqueStructureFound = null;
         for ($i = 0; $i < count($typeUniqueElement); $i++) {
@@ -1467,8 +1473,13 @@ class p2pCompany {
         return $uniqueStructureFound;
     }
 
+
     /**
-      Function to delete unnecessary elements before we compared the two dom elements
+     * Function to delete unnecessary elements before we compared the two dom elements
+     * @param dom $dom
+     * @param array $elementsToSearch
+     * @param array $attributesToClean
+     * @return dom
      */
     function cleanDom($dom, $elementsToSearch, $attributesToClean) { //CLEAR ATTRIBUTES
         //https://stackoverflow.com/questions/35534654/php-domdocument-delete-elements
@@ -1477,9 +1488,6 @@ class p2pCompany {
         //$dom->loadHTML($html);                  // load HTML into it
         //$xpath = new DOMXPath($dom);            // create a new XPath
         //$nodes = $xpath->query('//*[@style]');  // Find elements with a style attribute
-
-        /* $domDoc = new DomDocument;
-          $domDoc->appendChild($domDoc->importNode($dom, true)); */
 
         foreach ($elementsToSearch as $element) {
 
@@ -1496,24 +1504,16 @@ class p2pCompany {
             }
         }
         return $dom;
-        //echo $dom->saveHTML();                  // output cleaned HTML
-        //If you want to remove all possible attributes from all possible tags, do
-        /* $dom = new DOMDocument;
-          $dom->loadHTML($html);
-          $xpath = new DOMXPath($dom);
-          $nodes = $xpath->query('//@*');
-          foreach ($nodes as $node) {
-          $node->parentNode->removeAttribute($node->nodeName);
-          }
-          echo $dom->saveHTML(); */
     }
 
     /**
-      Function to delete unnecessary elements before we compared the two dom elements
+     *  Function to delete unnecessary  tags
+     * @param dom $dom
+     * @param array $elementsToDelete
+     * @return dom
      */
     function cleanDomTag($dom, $elementsToDelete) { //CLEAR A TAG
         foreach ($elementsToDelete as $element) {
-
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);
             //echo 'Nodes: <br>';
             //print_r($nodes);
@@ -1526,6 +1526,16 @@ class p2pCompany {
         return $dom;
     }
 
+    /**
+     * Search the elements to delete in cleanDom and cleanDomTag functions.
+     * 
+     * @param dom $dom
+     * @param string $typeSearch
+     * @param string $tag
+     * @param string $attribute
+     * @param string $value
+     * @return array
+     */
     public function getElementsToClean($dom, $typeSearch, $tag, $attribute = null, $value = null) {
        /* echo 'Type: ' . $typeSearch . '<br>';
         echo 'Tag: ' . $tag . '<br>';
@@ -1555,15 +1565,15 @@ class p2pCompany {
     /**
      * 
      * 
-     * @param type $structure
-     * @param type $tag
-     * @param type $nodeToClone
-     * @param type $attribute
-     * @param type $attrValue
-     * @param type $containerData
-     * @param type $node1Index
-     * @param type $node2Index
-     * @return type
+     * @param array $structure 
+     * @param string $tag elements to compare
+     * @param Dom $nodeToClone node that contains the element to compare
+     * @param string $attribute attribute of the element to compare
+     * @param string $attrValue value of the  attribute of the element to compare
+     * @param array $containerData Use it to find a node if you dont have $nodeToClone, contains original dom, a tag, a attribute and his value.
+     * @param int $node1Index db node index
+     * @param int $node2Index pfp page node index
+     * @return array [$structureRevision,$break,$type] $structureRevision - boolean $break - boolean $type - int
      */
     public function  htmlRevision($structure,$tag,$nodeToClone, $attribute = null, $attrValue = null, $containerData = null, $node1Index = 1, $node2Index = 3){
         
@@ -1657,7 +1667,7 @@ class p2pCompany {
      * 
      * @param array $structure Structure stroed in bd
      * @param array $jsonEntry json entry to compare
-     * @return type
+     * @return array [$structureRevision,$break,$type] $structureRevision - boolean $break - boolean $type - int
      */
     public function jsonRevision($structure, $jsonEntry){
         $break = false;

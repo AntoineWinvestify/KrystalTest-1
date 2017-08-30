@@ -483,6 +483,9 @@ class comunitae extends p2pCompany {
             }
         }   
         return [$totalArray, $pageNumber, $type, $structureRevision[0], $structureRevision[2]]; //Return an array and the page number, $pageNumber = false when we want end the loop
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**
