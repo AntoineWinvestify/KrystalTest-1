@@ -473,121 +473,128 @@ class growly extends p2pCompany {
                 foreach ($lists as $key => $list) {
                     echo "key = $key " . $list->nodeValue . "<br>";
                 }
-
-                $spans = $lists[0]->getElementsByTagName('span');
-                foreach ($spans as $key => $span) {
-                    echo "Key = $key " . $span->nodeValue . "<br>";
-                    if ($key == 0) {
-                        $tempArray['global']['myWallet'] = $this->getMonetaryValue(trim($span->nodeValue));
+                if (empty($this->tempArray['global']['myWallet'])) {
+                    $spans = $lists[0]->getElementsByTagName('span');
+                    foreach ($spans as $key => $span) {
+                        echo "Key = $key " . $span->nodeValue . "<br>";
+                        if ($key == 0) {
+                            $this->tempArray['global']['myWallet'] = $this->getMonetaryValue(trim($span->nodeValue));
+                        }
                     }
+                    echo __FILE__ . " " . __LINE__ . "<br>";
+                    $this->print_r2($this->tempArray);
                 }
-                echo __FILE__ . " " . __LINE__ . "<br>";
-                $this->print_r2($tempArray);
-
                 //echo "STRING = " . $str;
-
-                echo __FILE__ . " " . __LINE__ . "<br>";
                 $projectListTable = $this->getElements($dom, "table", "class", "m-project-list");
-                /* if (!$this->hasElements) {
-                  return $this->getError(__LINE__, __FILE__);
-                  } */
-                echo __FILE__ . " " . __LINE__ . "<br>";
-                foreach ($projectListTable as $project) {    // Only 1 exists
-                    $projectListData = $this->getElements($project, "tr", "class", "toggle-title");
-                    $numberOfInvestments = 0;
+                if (count($projectListTable) > 0 ) {
+                    echo __FILE__ . " " . __LINE__ . "<br>";
+                    
+                    /*if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }*/
+                    echo __FILE__ . " " . __LINE__ . "<br>";
+                    foreach ($projectListTable as $project) {    // Only 1 exists
+                        $projectListData = $this->getElements($project, "tr", "class", "toggle-title");
+                        foreach ($projectListData as $key => $projectList) {  // Per project
+                            $tds = $projectList->getElementsByTagName('td');
+                            $this->verifyNodeHasElements($tds);
+                            if (!$this->hasElements) {
+                                return $this->getError(__LINE__, __FILE__);
+                            }
+                            echo __FILE__ . " " . __LINE__ . "<br>";
+                            // loanId
+                            $tempLoanId = $tds[0]->nodeValue;
+                            $as = $tds[0]->getElementsByTagName('a');
+                            $this->verifyNodeHasElements($as);
+                            if (!$this->hasElements) {
+                                return $this->getError(__LINE__, __FILE__);
+                            }
+                            $this->data1[$this->numberOfInvestments]['loanId'] = trim(preg_replace('/\D/', ' ', $as[0]->getAttribute('href')));  // Get decimals of loanId
 
-                    foreach ($projectListData as $key => $projectList) {  // Per project
-                        $numberOfInvestments = $numberOfInvestments + 1;
-                        $tds = $projectList->getElementsByTagName('td');
-                        $this->verifyNodeHasElements($tds);
-                        if (!$this->hasElements) {
-                            return $this->getError(__LINE__, __FILE__);
-                        }
-                        echo __FILE__ . " " . __LINE__ . "<br>";
-                        // loanId
-                        $tempLoanId = $tds[0]->nodeValue;
-                        $as = $tds[0]->getElementsByTagName('a');
-                        $this->verifyNodeHasElements($as);
-                        if (!$this->hasElements) {
-                            return $this->getError(__LINE__, __FILE__);
-                        }
-                        $data1[$key]['loanId'] = trim(preg_replace('/\D/', ' ', $as[0]->getAttribute('href')));  // Get decimals of loanId
+                            $this->data1[$this->numberOfInvestments]['interest'] = $this->getPercentage($tds[5]->nodeValue);
 
-                        $data1[$key]['interest'] = $this->getPercentage($tds[5]->nodeValue);
+                            // duration
+                            $tempDuration = $tds[6]->nodeValue;
+                            $strongs = $tds[6]->getElementsByTagName('strong');
+                            $this->verifyNodeHasElements($strongs);
+                            if (!$this->hasElements) {
+                                return $this->getError(__LINE__, __FILE__);
+                            }
+                            $spans = $tds[6]->getElementsByTagName('span');
+                            $this->verifyNodeHasElements($spans);
+                            if (!$this->hasElements) {
+                                return $this->getError(__LINE__, __FILE__);
+                            }
+                            $this->data1[$this->numberOfInvestments]['duration'] = trim($strongs[0]->nodeValue) . " " . trim($spans[0]->nodeValue);
+                            $this->data1[$this->numberOfInvestments]['profitGained'] = $this->getMonetaryValue($tds[4]->nodeValue);
+                            $this->data1[$this->numberOfInvestments]['invested'] = $this->getMonetaryValue($tds[2]->nodeValue);
+                            $this->data1[$this->numberOfInvestments]['pending'] = $this->getMonetaryValue($tds[3]->nodeValue);
+    //			$data1[$key]['purpose'] = $tds[1]->nodeValue;			
 
-                        // duration
-                        $tempDuration = $tds[6]->nodeValue;
-                        $strongs = $tds[6]->getElementsByTagName('strong');
-                        $this->verifyNodeHasElements($strongs);
-                        if (!$this->hasElements) {
-                            return $this->getError(__LINE__, __FILE__);
-                        }
-                        $spans = $tds[6]->getElementsByTagName('span');
-                        $this->verifyNodeHasElements($spans);
-                        if (!$this->hasElements) {
-                            return $this->getError(__LINE__, __FILE__);
-                        }
-                        $data1[$key]['duration'] = trim($strongs[0]->nodeValue) . " " . trim($spans[0]->nodeValue);
-                        $data1[$key]['profitGained'] = $this->getMonetaryValue($tds[4]->nodeValue);
-                        $data1[$key]['invested'] = $this->getMonetaryValue($tds[2]->nodeValue);
-                        $data1[$key]['pending'] = $this->getMonetaryValue($tds[3]->nodeValue);
-//			$data1[$key]['purpose'] = $tds[1]->nodeValue;			
-
-                        $data1[$key]['status'] = OK;
-//		}
-                        echo __FILE__ . " " . __LINE__ . "<br>";
-                        // deal with amortization table
-                        $projectAmortizationData = $this->getElements($project, "tr", "class", "toggle-content"); // only 1 found
-                        // convert into table
-                        $trs = $projectAmortizationData[$key]->getElementsByTagName('tr');
-                        unset($amortizationTable);
-                        $mainIndex = -1;
-                        foreach ($trs as $key1 => $tr) {
-                            $mainIndex = $mainIndex + 1;
-                            $subIndex = -1;
-                            $tds = $tr->getElementsByTagName('td');
-                            foreach ($tds as $td) {
-                                $subIndex = $subIndex + 1;
-                                if ($subIndex == 9) {    // normalize the status, needed for payment calculations
-                                    $amortizationTable[$mainIndex][$subIndex] = $this->getLoanState(trim($td->nodeValue));
-                                } else {
-                                    $amortizationTable[$mainIndex][$subIndex] = $td->nodeValue;
+                            $this->data1[$this->numberOfInvestments]['status'] = OK;
+    //		}
+                            echo __FILE__ . " " . __LINE__ . "<br>";
+                            // deal with amortization table
+                            $projectAmortizationData = $this->getElements($project, "tr", "class", "toggle-content"); // only 1 found
+                            // convert into table
+                            $trs = $projectAmortizationData[$key]->getElementsByTagName('tr');
+                            unset($amortizationTable);
+                            $mainIndex = -1;
+                            foreach ($trs as $key1 => $tr) {
+                                $mainIndex = $mainIndex + 1;
+                                $subIndex = -1;
+                                $tds = $tr->getElementsByTagName('td');
+                                foreach ($tds as $td) {
+                                    $subIndex = $subIndex + 1;
+                                    if ($subIndex == 9) {    // normalize the status, needed for payment calculations
+                                        $amortizationTable[$mainIndex][$subIndex] = $this->getLoanState(trim($td->nodeValue));
+                                    } else {
+                                        $amortizationTable[$mainIndex][$subIndex] = $td->nodeValue;
+                                    }
                                 }
                             }
-                        }
-                        if (count($amortizationTable) <> 1) {  // if only 1 payment exist, then table contains NO footer
-                            array_pop($amortizationTable);  // remove "footer"
-                        }
+                            if (count($amortizationTable) <> 1) {  // if only 1 payment exist, then table contains NO footer
+                                array_pop($amortizationTable);  // remove "footer"
+                            }
 
-                        $this->print_r2($amortizationTable);
+                            $this->print_r2($amortizationTable);
 
-                        // Duration (unit [= meses] is read before)
-                        if (count($amortizationTable) == 1) {  // This is valid for loans which have a duration of 3 (4) months
-                            $numberOfMonths = 4;     // and just 1 payment at end of period.
-                        } else {
-                            $numberOfMonths = count($amortizationTable);
+                            // Duration (unit [= meses] is read before)
+                            if (count($amortizationTable) == 1) {  // This is valid for loans which have a duration of 3 (4) months
+                                $numberOfMonths = 4;     // and just 1 payment at end of period.
+                            } else {
+                                $numberOfMonths = count($amortizationTable);
+                            }
+                            $this->data1[$this->numberOfInvestments]['duration'] = $numberOfMonths . " " . "Meses";
+                            $this->data1[$this->numberOfInvestments]['commission'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd/mm/yyyy", 1, 6);
+                            $this->data1[$this->numberOfInvestments]['date'] = $this->getHighestDateValue($amortizationTable, "dd/mm/yyyy", 1);
+                            $this->data1[$this->numberOfInvestments]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd/mm/yyyy", 1, 2);
+                            $this->print_r2($this->data1[$this->numberOfInvestments]);
+
+                            $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] + $this->data1[$this->numberOfInvestments]['pending'];
+                            $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] + $this->data1[$this->numberOfInvestments]['profitGained'];
+                            $this->tempArray['global']['profitibility'] = $this->tempArray['global']['profitibility'] + $this->data1[$this->numberOfInvestments]['interest'];
+                            $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->numberOfInvestments]['invested'];
+                            $this->numberOfInvestments++;
                         }
-                        $data1[$key]['duration'] = $numberOfMonths . " " . "Meses";
-                        $data1[$key]['commission'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd/mm/yyyy", 1, 6);
-                        $data1[$key]['date'] = $this->getHighestDateValue($amortizationTable, "dd/mm/yyyy", 1);
-                        $data1[$key]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd/mm/yyyy", 1, 2);
-                        $this->print_r2($data1[$key]);
-
-                        $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + $data1[$key]['pending'];
-                        $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] + $data1[$key]['profitGained'];
-                        $tempArray['global']['profitibility'] = $tempArray['global']['profitibility'] + $data1[$key]['interest'];
-                        $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
                     }
+                    if (empty($this->tempUrl)) {
+                        $this->tempUrl = array_shift($this->urlSequence);
+                    }
+                    $this->idForSwitch=3;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl . $this->pageNum);
+                    $this->pageNum++;
+                    break;
                 }
-                $tempArray['global']['investments'] = $numberOfInvestments;
-                $tempArray['global']['profitibility'] = $tempArray['global']['profitibility'] / ($key + 1);
+                $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                $this->tempArray['global']['profitibility'] = $this->tempArray['global']['profitibility'] / ($this->numberOfInvestments);
                 echo __FILE__ . " " . __LINE__ . "<br>";
-                $tempArray['investments'] = $data1;
+                $this->tempArray['investments'] = $this->data1;
 
-                $this->print_r2($data1);
+                $this->print_r2($this->data1);
                 echo "GROW.LY tempArray = ";
-                $this->print_r2($tempArray);
-                return $tempArray;
+                $this->print_r2($this->tempArray);
+                return $this->tempArray;
         }
     }
 
