@@ -29,12 +29,12 @@
  */
 
 /** Include path **/
-require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
-require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS .  'bondoraApi.php');
+//require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
+//require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS .  'bondoraApi.php');
 /** PHPExcel_IOFactory */
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
-App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
+//App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
 use Petslane\Bondora;
 
@@ -127,7 +127,7 @@ function showUserData($userIdentity, $number) {
 }
 
     function convertExcelToArray() {
-        $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/cake_branch/mintos.xlsx");
+        $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/compare_local/mintos.xlsx");
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         /*$loadedSheetNames = $objPHPExcel->getSheetNames();
         foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
@@ -268,7 +268,7 @@ function showUserData($userIdentity, $number) {
             "H" => "total"
         ];
         $datas = $this->saveExcelArrayToTemp($sheetData, $values_mintos);
-        var_dump($datas);
+        $this->print_r2($datas);
     }
     
     function convertExcelByParts($chunkInit, $chunkSize, $inputFileType, $values) {
