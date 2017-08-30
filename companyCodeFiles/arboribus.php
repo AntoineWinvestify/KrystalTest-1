@@ -132,7 +132,7 @@ class arboribus extends p2pCompany {
 
 
                         if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
-                           $structureRevision = $this->htmlRevision($structure,'tr',$table);
+                           $structureRevision = $this->htmlRevision($structure,'tr', $table, null, null ,null ,0 , 1);
                            if($structureRevision[1]){
                                $totalArray = false; //Stop reading in error                 
                                break;
@@ -285,7 +285,7 @@ class arboribus extends p2pCompany {
 
 
                         if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
-                           $structureRevision = $this->htmlRevision($structure,'tr',$table);
+                           $structureRevision = $this->htmlRevision($structure,'tr',$table, null, null, null, 0, 1);
                            if($structureRevision[1]){
                                $totalArray = false; //Stop reading in error                 
                                break;
@@ -1001,6 +1001,10 @@ class arboribus extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('src', 'alt', 'href', 'style', 'id'));
 
+       $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'script'),
+        ));
+        
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -1008,6 +1012,10 @@ class arboribus extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('src', 'alt', 'href', 'style', 'id'));
 
+       $node2 = $this->cleanDomTag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'script'),
+        ));
+        
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
