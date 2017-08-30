@@ -158,46 +158,14 @@ FRAGMENT
         foreach ($projects as $key => $project) {
 
 
-            if ($key == 0 && $structure) { //Compare structures, only compare the first element
-                $newStructure = new DOMDocument;  //Get the old structure in db
-                $newStructure->loadHTML($structure['Structure']['structure_html']);
-                $newStructure->preserveWhiteSpace = false;
-                $trsNewStructure = $this->getElements($newStructure, 'div', 'class', 'col-lg-4');
-
-                $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                $container = $this->getElements($dom, 'div', 'class', 'row')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                $saveStructure->saveHTML();
-                $originalStructure = $this->getElements($saveStructure, 'div', 'class', 'col-lg-4');
-
-                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[2]);
-
-                echo 'structure: ' . $structureRevision . '<br>';
-
-                if (!$structureRevision) { //Save new structure
-                    echo 'Structural error<br>';
-                    $saveStructure = new DOMDocument();
-                    $container = $this->getElements($dom, 'div', 'class', 'row')[0];
-                    $clone = $container->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                    $structureRevision = $saveStructure->saveHTML();
-                    $totalArray = false;  //Structure control.
-                    break; //Stop reading if we have a structural error
-                }
-                echo 'Structure good';
+            if ($key == 0) { //Compare structures, only compare the first element
+                      
+                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-lg-4',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'class', 'attrValue' => 'row'));
+                    if($structureRevision[1]){
+                        $totalArray = false; //Stop reading in error    
+                        break;
+                    }
             }
-
-            if ($key == 0 && !$structure) { //Save new structure if is first time
-                echo 'no structure readed, saving structure <br>';
-                $saveStructure = new DOMDocument();
-                $container = $this->getElements($dom, 'div', 'class', 'row')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                $structureRevision = $saveStructure->saveHTML();
-            }
-
 
             $name = $project->getElementsByTagName('h2');
             $tempArray['marketplace_name'] = $name[0]->nodeValue;
@@ -311,7 +279,7 @@ FRAGMENT
                 break;
             }
         }
-        return [$totalArray, $structureRevision];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
     /**
@@ -376,44 +344,12 @@ FRAGMENT
         foreach ($projects as $project) {
 
 
-            if ($key == 0 && $structure) { //Compare structures, only compare the first element
-                $newStructure = new DOMDocument;  //Get the old structure in db
-                $newStructure->loadHTML($structure['Structure']['structure_html']);
-                $newStructure->preserveWhiteSpace = false;
-                $trsNewStructure = $this->getElements($newStructure, 'div', 'class', 'col-lg-4');
-
-                $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                $container = $this->getElements($dom, 'div', 'class', 'row')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                $saveStructure->saveHTML();
-                $originalStructure = $this->getElements($saveStructure, 'div', 'class', 'col-lg-4');
-
-                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
-
-                echo 'structure: ' . $structureRevision . '<br>';
-
-                if (!$structureRevision) { //Save new structure
-                    echo 'Structural error<br>';
-                    $saveStructure = new DOMDocument();
-                    $container = $this->getElements($dom, 'div', 'class', 'row')[0];
-                    $clone = $container->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                    $structureRevision = $saveStructure->saveHTML();
-                    $totalArray = false;  //Structure control.
-                    break; //Stop reading if we have a structural error
-                }
-                echo 'Structure good';
-            }
-
-            if ($key == 0 && !$structure) { //Save new structure if is first time
-                echo 'no structure readed, saving structure <br>';
-                $saveStructure = new DOMDocument();
-                $container = $this->getElements($dom, 'div', 'class', 'row')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                $structureRevision = $saveStructure->saveHTML();
+            if ($key == 0) { //Compare structures, only compare the first element                
+                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-lg-4',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'class', 'attrValue' => 'row'));
+                    if($structureRevision[1]){
+                        $totalArray = false; //Stop reading in error                         
+                        break;
+                    }
             }
 
 
@@ -520,7 +456,7 @@ FRAGMENT
 
             $i++;
         }
-        return [$totalArray, false, null, $structureRevision];
+        return [$totalArray, false, null, $structureRevision[0],$structureRevision[2]];
     }
 
     /**
@@ -637,41 +573,41 @@ FRAGMENT
     function structureRevision($node1, $node2) {
 
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('src', 'ng-src', 'aria-valuenow', 'style'));
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'label'), //label class contain rating
                 ), array('class'));
 
 
-        $node1 = $this->clean_dom_tag($node1, array(
+        $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'span'),
             array('typeSearch' => 'tagElement', 'tag' => 'label', 'attr' => 'ng-class', 'value' => 'vm.getObtenerRscClass(proyecto.RSCDelPromotor)'), //This label doesnt apperar in all investment, we must delete it
             array('typeSearch' => 'tagElement', 'tag' => 'label', 'attr' => 'data-ng-if', 'value' => 'proyecto.RSCDelPromotor != null'), //This label doesnt apperar in all investment, we must delete it
         ));
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('src', 'ng-src', 'aria-valuenow', 'style'));
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'label'), //label class contain rating
                 ), array('class'));
 
-        $node2 = $this->clean_dom_tag($node2, array(
+        $node2 = $this->cleanDomTag($node2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'span'),
             array('typeSearch' => 'tagElement', 'tag' => 'label', 'attr' => 'ng-class', 'value' => 'vm.getObtenerRscClass(proyecto.RSCDelPromotor)'), //This label doesnt apperar in all investment, we must delete it
             array('typeSearch' => 'tagElement', 'tag' => 'label', 'attr' => 'data-ng-if', 'value' => 'proyecto.RSCDelPromotor != null'), //This label doesnt apperar in all investment, we must delete it
         ));
 
 
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
 

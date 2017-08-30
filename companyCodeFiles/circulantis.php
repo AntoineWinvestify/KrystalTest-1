@@ -153,45 +153,17 @@ class circulantis extends p2pCompany {
                             continue; //Even row are useless
                         }
 
-
-                        if ($key == 1 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
-                            $newStructure = new DOMDocument;  //Get the old structure in db
-                            $newStructure->loadHTML($structure['Structure']['structure_html']);
-                            $newStructure->preserveWhiteSpace = false;
-                            $trsNewStructure = $newStructure->getElementsByTagName('tr');
-
-                            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                            $clone = $table->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                            $saveStructure->saveHTML();
-                            $originalStructure = $saveStructure->getElementsByTagName('tr');
-
-                            $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[4]);
-
-                            echo 'structure: ' . $structureRevision . '<br>';
-
-                            if (!$structureRevision) { //Save new structure
-                                echo 'Structural error<br>';
-                                $saveStructure = new DOMDocument();
-                                $clone = $table->cloneNode(TRUE);
-                                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                                $structureRevision = $saveStructure->saveHTML();
-                                $totalArray = false;  //Structure control, don't read more tr 
-                                $reading = false; //Stop pagination in error
-                                break; //Stop reading if we have a structural error
-                            }
-                            echo 'Structure good';
+                        
+                        
+                        echo 'para entrar ' . $page . ' 0 ' . $key . ' ' . $keyTable . HTML_ENDOFLINE;
+                        if ($page == 1 && $key == 1 && $keyTable == 0) { //Compare structures, olny compare the first element
+                           $structureRevision = $this->htmlRevision($structure,'tr',$table);
+                           if($structureRevision[1]){
+                               $totalArray = false; //Stop reading in error    
+                               $reading = false;
+                               break;
+                           }
                         }
-
-                        if ($key == 1 && $keyTable == 0 && !$structure) { //Save new structure if is first time
-                            echo 'no structure readed, saving structure <br>';
-                            $saveStructure = new DOMDocument();
-                            $clone = $table->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                            $structureRevision = $saveStructure->saveHTML();
-                        }
-
 
                         echo 'Investment:  ' . $key . '<br>';
 
@@ -331,7 +303,9 @@ class circulantis extends p2pCompany {
         }
 
         $this->print_r2($totalArray);
-        return [$totalArray, $structureRevision];
+       return [$totalArray, $structureRevision[0],$structureRevision[2]];
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**
@@ -387,44 +361,14 @@ class circulantis extends p2pCompany {
                     }
 
 
-                    if ($pageNumber == 0 && $key == 1 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
-                        $newStructure = new DOMDocument;  //Get the old structure in db
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('tr');
-
-                        $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                        $clone = $table->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $saveStructure->getElementsByTagName('tr');
-
-                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[4]);
-
-                        echo 'structure: ' . $structureRevision . '<br>';
-
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
-                            $saveStructure = new DOMDocument();
-                            $clone = $table->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more tr   
-                            break; //Stop reading if we have a structural error
+                    if ($pageNumber == 1 && $key == 1 && $keyTable == 0) { //Compare structures, olny compare the first element
+                        $structureRevision = $this->htmlRevision($structure,'tr',$table);
+                        if($structureRevision[1]){
+                            $totalArray = false; //Stop reading in error    
+                            $pageNumber = false;
+                            break;
                         }
-                        echo 'Structure good';
                     }
-
-                    if ($pageNumber == 0 && $key == 1 && $keyTable == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
-                        $saveStructure = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
-                    }
-
-
 
                     echo 'Investment:  ' . $key . '<br>';
 
@@ -516,7 +460,7 @@ class circulantis extends p2pCompany {
         }
 
         $this->print_r2($totalArray);
-        return [$totalArray, $pageNumber, null, $structureRevision];
+        return [$totalArray, $pageNumber, null, $structureRevision[0], $structureRevision[2]];
     }
 
     /**
@@ -980,31 +924,31 @@ class circulantis extends p2pCompany {
     function structureRevision($node1, $node2) {
 
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'input'),
             array('typeSearch' => 'element', 'tag' => 'button'),
-                ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title'));
+                ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title', 'value'));
 
-        $node1 = $this->clean_dom($node1, array(//We only want delete the class of td, no other classes
+        $node1 = $this->cleanDom($node1, array(//We only want delete the class of td, no other classes
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('class'));
 
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'input'),
             array('typeSearch' => 'element', 'tag' => 'button'),
-                ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title'));
+                ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title', 'value'));
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('class'));
 
 
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
 

@@ -133,45 +133,13 @@ class lendix extends p2pCompany {
                 foreach ($divs as $key => $div) {
 
 
-                    if ($key == 0 && $structure) { //Compare structures, only compare the first element
-                        $newStructure = new DOMDocument;  //Get the old structure in db
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('li');
-
-                        $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $saveStructure->getElementsByTagName('li');
-
-                        $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
-
-                        echo 'structure: ' . $structureRevision . '<br>';
-
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
-                            $saveStructure = new DOMDocument();
-                            $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                            $clone = $container->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more investmnets 
-                            $reading = false; //Stop pagination in error
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good';
-                    }
-
-                    if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
-                        $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
+                    if ($offset == 0 && $key == 0) { //Compare structures, only compare the first element                      
+                        $structureRevision = $this->htmlRevision($structure,'li',null,null,null,array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
+                        if($structureRevision[1]){
+                            $totalArray = false; //Stop reading in error
+                            $reading = false;
+                            break;
+                        }      
                     }
 
 
@@ -251,7 +219,7 @@ class lendix extends p2pCompany {
 
 
         $this->print_r2($totalArray);
-        return [$totalArray, $structureRevision];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
     /**
@@ -283,45 +251,15 @@ class lendix extends p2pCompany {
         if ($totalArray !== false) {
             foreach ($divs as $key => $div) {
 
-                if ($offset == 0 && $key == 0 && $structure) { //Compare structures, only compare the first element
-                    $newStructure = new DOMDocument;  //Get the old structure in db
-                    $newStructure->loadHTML($structure['Structure']['structure_html']);
-                    $newStructure->preserveWhiteSpace = false;
-                    $trsNewStructure = $newStructure->getElementsByTagName('li');
-
-                    $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                    $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                    $clone = $container->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                    $saveStructure->saveHTML();
-                    $originalStructure = $saveStructure->getElementsByTagName('li');
-
-                    $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
-
-                    echo 'structure: ' . $structureRevision . '<br>';
-
-                    if (!$structureRevision) { //Save new structure
-                        echo 'Structural error<br>';
-                        $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                        $structureRevision = $saveStructure->saveHTML();
-                        $totalArray = false;  //Structure control, don't read more investmnets 
-                        break; //Stop reading if we have a structural error
-                    }
-                    echo 'Structure good';
+                if ($offset == 0 && $key == 0) { //Compare structures, only compare the first element
+                    $structureRevision = $this->htmlRevision($structure,'li',null,null,null,array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
+                    if($structureRevision[1]){
+                        $totalArray = false; //Stop reading in error
+                        $offset = false;
+                        break;
+                    }           
                 }
 
-                if ($offset == 0 && $key == 0 && !$structure) { //Save new structure if is first time
-                    echo 'no structure readed, saving structure <br>';
-                    $saveStructure = new DOMDocument();
-                    $container = $this->getElements($dom, 'ul', 'class', 'projects')[0];
-                    $clone = $container->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                    $structureRevision = $saveStructure->saveHTML();
-                }
 
                 $projectDivs = $this->getElements($div, "div");
 
@@ -390,7 +328,7 @@ class lendix extends p2pCompany {
 
 
         $this->print_r2($totalArray);
-        return [$totalArray, $offset, null, $structureRevision]; //$totalArray -> Investment  / $offset -> Number of next first offset investment, false when it is the last offset.
+        return [$totalArray, $offset, null, $structureRevision[0], $structureRevision[2]]; //$totalArray -> Investment  / $offset -> Number of next first offset investment, false when it is the last offset.
     }
 
     /**
@@ -591,25 +529,25 @@ class lendix extends p2pCompany {
         $node1->removeAttribute('class');
         $node2->removeAttribute('class');
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'div'), //the div class contains the rating
             array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
 
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
 
-        $node2 = $this->clean_dom($node2, array(//the div class contains the rating
+        $node2 = $this->cleanDom($node2, array(//the div class contains the rating
             array('typeSearch' => 'element', 'tag' => 'div'), //the div class contains the rating
             array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
@@ -617,7 +555,7 @@ class lendix extends p2pCompany {
 
 
 
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
 

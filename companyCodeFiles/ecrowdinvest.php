@@ -102,44 +102,13 @@ class ecrowdinvest extends p2pCompany {
 
           foreach ($projectwidgets as $key => $projectwidget) {
             
-            if ($key == 0 && $structure) { //Compare structures, only compare the first element
-                $newStructure = new DOMDocument;  //Get the old structure in db
-                $newStructure->loadHTML($structure['Structure']['structure_html']);
-                $newStructure->preserveWhiteSpace = false;
-                $trsNewStructure = $this->getElements($newStructure ,'div' , 'class', 'col-xs-12');
-
-                $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                $saveStructure->saveHTML();
-                $originalStructure = $this->getElements($saveStructure ,'div' , 'class', 'col-xs-12');
-
-                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
-
-                echo 'structure: ' . $structureRevision . '<br>';
-
-                if (!$structureRevision) { //Save new structure
-                    echo 'Structural error<br>';
-                    $saveStructure = new DOMDocument();
-                    $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
-                    $clone = $container->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                    $structureRevision = $saveStructure->saveHTML();
-                    $totalArray = false;  //Structure control.
-                    break; //Stop reading if we have a structural error
-                }
-                echo 'Structure good';
-            }
-
-            if ($key == 0 && !$structure) { //Save new structure if is first time
-                echo 'no structure readed, saving structure <br>';
-                $saveStructure = new DOMDocument();
-                $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                $structureRevision = $saveStructure->saveHTML();
+            if ($key == 0) { //Compare structures, only compare the first element
+                
+                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-xs-12',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'filter-projects'));
+                if($structureRevision[1]){
+                    $totalArray = false; //Stop reading in error                         
+                    break;
+                }    
             }
 
 
@@ -217,7 +186,7 @@ class ecrowdinvest extends p2pCompany {
             }
     }
         $this->print_r2($totalArray);
-        return [$totalArray, $structureRevision];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
     /**
@@ -238,43 +207,12 @@ class ecrowdinvest extends p2pCompany {
         $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
         foreach ($projectwidgets as $key => $projectwidget) {
             
-             if ($key == 0 && $structure) { //Compare structures, only compare the first element
-                $newStructure = new DOMDocument;  //Get the old structure in db
-                $newStructure->loadHTML($structure['Structure']['structure_html']);
-                $newStructure->preserveWhiteSpace = false;
-                $trsNewStructure = $this->getElements($newStructure ,'div' , 'class', 'col-xs-12');
-
-                $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                $saveStructure->saveHTML();
-                $originalStructure = $this->getElements($saveStructure ,'div' , 'class', 'col-xs-12');
-
-                $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
-
-                echo 'structure: ' . $structureRevision . '<br>';
-
-                if (!$structureRevision) { //Save new structure
-                    echo 'Structural error<br>';
-                    $saveStructure = new DOMDocument();
-                    $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
-                    $clone = $container->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                    $structureRevision = $saveStructure->saveHTML();
-                    $totalArray = false;  //Structure control, don't read more investmnets 
-                    break; //Stop reading if we have a structural error
-                }
-                echo 'Structure good';
-            }
-
-            if ($key == 0 && !$structure) { //Save new structure if is first time
-                echo 'no structure readed, saving structure <br>';
-                $saveStructure = new DOMDocument();
-                $container = $this->getElements($dom, 'div' , 'id', 'filter-projects')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                $structureRevision = $saveStructure->saveHTML();
+             if ($key == 0 && $structure) { //Compare structures, only compare the first element      
+                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-xs-12',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'filter-projects'));
+                if($structureRevision[1]){
+                    $totalArray = false; //Stop reading in error                         
+                    break;
+                }    
             }
             
             
@@ -336,7 +274,7 @@ class ecrowdinvest extends p2pCompany {
             unset($tempArray);
         }
         $this->print_r2($totalArray);
-        return [$totalArray, false, null, $structureRevision]; //$totaArray -> Investments / false -> ecrown doesnt have pagination
+        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]]; //$totaArray -> Investments / false -> ecrown doesnt have pagination
     }
 
     /**
@@ -491,37 +429,37 @@ class ecrowdinvest extends p2pCompany {
         $node2->removeAttribute('Style');
 
         
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
                 ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset'));
 
                 
-        $node1 = $this->clean_dom($node1, array( //Clear progress div
+        $node1 = $this->cleanDom($node1, array( //Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
 
-        $node1 = $this->clean_dom_tag($node1, array(  
+        $node1 = $this->cleanDomTag($node1, array(  
             array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
-            array('typeSearch' => 'tagElement', 'tag' => 'span'), //Span tag causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
         ));
         
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
              array('typeSearch' => 'element', 'tag' => 'img'),
                 ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset'));
         
-        $node2 = $this->clean_dom($node2, array( //Clear progress div
+        $node2 = $this->cleanDom($node2, array( //Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
         
-        $node2 = $this->clean_dom_tag($node2, array(   
+        $node2 = $this->cleanDomTag($node2, array(   
             array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
-            array('typeSearch' => 'tagElement', 'tag' => 'span'), //Span tag causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
         ));
         
         
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
     

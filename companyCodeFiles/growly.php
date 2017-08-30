@@ -107,7 +107,7 @@ class growly extends p2pCompany {
             $dom->preserveWhiteSpace = false;
 
             $table = $dom->getElementsByTagName('table');
-
+            $tbody = $dom->getElementsByTagName('tbody')[0];
 //get all rows from the table
             $rows = $table->item(0)->getElementsByTagName('tr');
             $number = count($rows);
@@ -116,46 +116,14 @@ class growly extends p2pCompany {
             if ($totalArray !== false) {
                 foreach ($rows as $key => $row) {
 
-
-                    if ($key == 0 && $structure) { //Compare structures, only compare the first element
-                        $newStructure = new DOMDocument;  //Get the old structure in db
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('tr');
-
-                        $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                        $container = $dom->getElementsByTagName('tbody')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $saveStructure->getElementsByTagName('tr');
-
-                        $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
-
-                        echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                            $saveStructure = new DOMDocument();
-                            $container = $dom->getElementsByTagName('tbody')[0];
-                            $clone = $container->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more investmnets 
-                            $reading = false; //Stop pagination in error
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                    }
-
-                    if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                        $saveStructure = new DOMDocument();
-                        $container = $dom->getElementsByTagName('tbody')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
+                    
+                    if ($page == 1 && $key == 0) { //Compare structures, only compare the first element     
+                        $structureRevision = $this->htmlRevision($structure,'tr',$tbody);
+                        if($structureRevision[1]){
+                            $totalArray = false; //Stop reading in error        
+                            $reading = false;
+                            break;
+                        }      
                     }
 
                     $index++;
@@ -280,7 +248,7 @@ class growly extends p2pCompany {
                 $reading = false;
             } //Stop reading
         }
-        return [$totalArray, $structureRevision];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
     /**
@@ -303,6 +271,7 @@ class growly extends p2pCompany {
         $dom->preserveWhiteSpace = false;
 
         $table = $dom->getElementsByTagName('table');
+        $tbody = $dom->getElementsByTagName('tbody')[0];
 
 //get all rows from the table
 
@@ -314,45 +283,13 @@ class growly extends p2pCompany {
         if ($totalArray !== false) {
             foreach ($rows as $key => $row) {
 
-
-                if ($pageNumber == 0 && $key == 0 && $structure) { //Compare structures, only compare the first element
-                    $newStructure = new DOMDocument;  //Get the old structure in db
-                    $newStructure->loadHTML($structure['Structure']['structure_html']);
-                    $newStructure->preserveWhiteSpace = false;
-                    $trsNewStructure = $newStructure->getElementsByTagName('tr');
-
-                    $saveStructure = new DOMDocument(); //CLone original structure in pfp page
-                    $container = $dom->getElementsByTagName('tbody')[0];
-                    $clone = $container->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                    $saveStructure->saveHTML();
-                    $originalStructure = $saveStructure->getElementsByTagName('tr');
-
-                    $structureRevision = $this->structureRevision($trsNewStructure[0], $originalStructure[1]);
-
-                    echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-
-                    if (!$structureRevision) { //Save new structure
-                        echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                        $saveStructure = new DOMDocument();
-                        $container = $dom->getElementsByTagName('tbody')[0];
-                        $clone = $container->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                        $structureRevision = $saveStructure->saveHTML();
-                        $totalArray = false;  //Structure control, don't read more investmnets 
-                        break; //Stop reading if we have a structural error
-                    }
-                    echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                }
-
-                if ($pageNumber == 0 && $key == 0 && !$structure) { //Save new structure if is first time
-                    echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                    $saveStructure = new DOMDocument();
-                    $container = $dom->getElementsByTagName('tbody')[0];
-                    $clone = $container->cloneNode(TRUE);
-                    $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                    $structureRevision = $saveStructure->saveHTML();
+                if ($pageNumber == 1 && $key == 0) { //Compare structures, only compare the first element                  
+                     $structureRevision = $this->htmlRevision($structure,'tr',$tbody);
+                        if($structureRevision[1]){
+                            $totalArray = false; //Stop reading in error        
+                            $pageNumber = false;
+                            break;
+                        }    
                 }
 
                 $index++;
@@ -466,7 +403,7 @@ class growly extends p2pCompany {
         if ($investmentNumber < 10) {
             $pageNumber = false;
         } //Stop reading when we dont find investmet
-        return [$totalArray, $pageNumber, null, $structureRevision]; //$total array is the rquested investment, $pageNumber is the next page, return false if is the last page
+        return [$totalArray, $pageNumber, null, $structureRevision[0], $structureRevision[2]]; //$total array is the rquested investment, $pageNumber is the next page, return false if is the last page
     }
 
     /**
@@ -877,18 +814,19 @@ class growly extends p2pCompany {
         //We need remove this attribute directly from the td tag(the father)
         $node1->removeAttribute('class');
         $node1->removeAttribute('id');
+        $node1->removeAttribute('style');
         $node2->removeAttribute('class');
         $node2->removeAttribute('id');
+        $node2->removeAttribute('style');
 
-
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'p'),
                 ), array('href', 'src', 'alt', 'title', 'aria-valuenow', 'style'));
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'div'),
@@ -896,7 +834,7 @@ class growly extends p2pCompany {
                 ), array('href', 'src', 'alt', 'title', 'aria-valuenow', 'style'));
 
 
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
 

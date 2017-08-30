@@ -131,42 +131,12 @@ class arboribus extends p2pCompany {
 
 
 
-                        if ($key == 0 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element
-                            $newStructure = new DOMDocument;  //Get the old structure in db
-                            $newStructure->loadHTML($structure['Structure']['structure_html']);
-                            $newStructure->preserveWhiteSpace = false;
-                            $trsNewStructure = $newStructure->getElementsByTagName('tr');
-
-                            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                            $clone = $table->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                            $saveStructure->saveHTML();
-                            $originalStructure = $saveStructure->getElementsByTagName('tr');
-
-                            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
-
-                            echo 'structure: ' . $structureRevision . '<br>';
-
-                            if (!$structureRevision) { //Save new structure
-                                echo 'Structural error<br>';
-                                $saveStructure = new DOMDocument();
-                                $clone = $table->cloneNode(TRUE);
-                                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                                $structureRevision = $saveStructure->saveHTML();
-                                $totalArray = false;
-
-                                break; //Stop reading if we have a structural error
-                            }
-                            echo 'Structure good';
-                        }
-
-                        if ($key == 0 && $keyTable == 0 && !$structure) { //Save new structure if is first time
-                            echo 'no structure readed, saving structure <br>';
-                            $saveStructure = new DOMDocument();
-                            $clone = $table->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                            $structureRevision = $saveStructure->saveHTML();
+                        if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
+                           $structureRevision = $this->htmlRevision($structure,'tr',$table);
+                           if($structureRevision[1]){
+                               $totalArray = false; //Stop reading in error                 
+                               break;
+                           }
                         }
 
 
@@ -275,7 +245,9 @@ class arboribus extends p2pCompany {
             }
             $tableNumber++;
         }
-        return [$totalArray, $structureRevision];
+        return [$totalArray, $structureRevision[0],$structureRevision[2]];
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**
@@ -311,43 +283,12 @@ class arboribus extends p2pCompany {
                     foreach ($trs as $key => $tr) {
 
 
-                        if ($key == 0 && $keyTable == 0 && $structure) { //Compare structures, olny compare the first element to read
-                            
-                            $newStructure = new DOMDocument;  //Get the old structure in db
-                            $newStructure->loadHTML($structure['Structure']['structure_html']);
-                            $newStructure->preserveWhiteSpace = false;
-                            $trsNewStructure = $newStructure->getElementsByTagName('tr');
-
-                            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-                            $clone = $table->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                            $saveStructure->saveHTML();
-                            $originalStructure = $saveStructure->getElementsByTagName('tr');
-
-                            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
-
-                            echo 'structure: ' . $structureRevision . '<br>';
-
-                            if (!$structureRevision) { //Save new structure
-                                echo 'Structural error<br>';
-                                $saveStructure = new DOMDocument();
-                                $clone = $table->cloneNode(TRUE);
-                                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                                $structureRevision = $saveStructure->saveHTML();
-                                $totalArray = false;
-
-                                break; //Stop reading if we have a structural error
-                            }
-                            echo 'Structure good';
-                        }
-
-                        if ($key == 0 && $keyTable == 0 && !$structure) { //Save new structure if is first time
-                            echo 'no structure readed, saving structure <br>';
-                            $saveStructure = new DOMDocument();
-                            $clone = $table->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                            $structureRevision = $saveStructure->saveHTML();
+                        if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
+                           $structureRevision = $this->htmlRevision($structure,'tr',$table);
+                           if($structureRevision[1]){
+                               $totalArray = false; //Stop reading in error                 
+                               break;
+                           }
                         }
 
 
@@ -450,7 +391,9 @@ class arboribus extends p2pCompany {
                 }
             }
         }
-        return [$totalArray, false, null, $structureRevision]; //Becaus arboribus dont have pagination, return only the investments and a false
+        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]]; //Becaus arboribus dont have pagination, return only the investments and a false
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**
@@ -1049,21 +992,21 @@ class arboribus extends p2pCompany {
      */
     function structureRevision($node1, $node2) {
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('src', 'alt', 'href', 'style', 'id'));
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('src', 'alt', 'href', 'style', 'id'));
 
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
 

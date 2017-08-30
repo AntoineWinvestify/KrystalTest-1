@@ -112,41 +112,12 @@ class loanbook extends p2pCompany {
                 foreach ($trs as $key => $tr) {
 
 
-                    if ($key == 0 && $structure) { //Compare structures, olny compare the first element
-                        $newStructure = new DOMDocument;
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $this->getElements($newStructure, 'tr', 'class', 'fila_subasta');
-
-                        $saveStructure = new DOMDocument();
-                        $clone = $section->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $this->getElements($saveStructure, 'tr', 'class', 'fila_subasta');
-
-                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[1]);
-
-                        echo 'structure: ' . $structureRevision . '<br>';
-
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
-                            $saveStructure = new DOMDocument();
-                            $clone = $section->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more tr 
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good';
-                    }
-
-                    if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
-                        $saveStructure = new DOMDocument();
-                        $clone = $section->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
+                    if ($key == 0) { //Compare structures, olny compare the first element     
+                        $structureRevision = $this->htmlRevision($structure,'tr',$section,'class','fila_subasta', null, 0, 1);
+                        if($structureRevision[1]){
+                            $totalArray = false; //Stop reading in error                 
+                            break;
+                        }                   
                     }
 
 
@@ -294,7 +265,7 @@ class loanbook extends p2pCompany {
                 unset($totalArray[$key]);
             }
         }
-        return [$totalArray, $structureRevision];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
     /**
@@ -316,44 +287,14 @@ class loanbook extends p2pCompany {
             $trs = $section->getElementsByTagName('tr');
             if ($totalArray !== false) {
                 foreach ($trs as $key => $tr) {
-
-                    if ($key == 0 && $structure) { //Compare structures, olny compare the first element
-                        $newStructure = new DOMDocument;
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $this->getElements($newStructure, 'tr', 'class', 'fila_subasta');
-
-                        $saveStructure = new DOMDocument();
-                        $clone = $section->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $this->getElements($saveStructure, 'tr', 'class', 'fila_subasta');
-
-                        $structureRevision = $this->structureRevision($trsNewStructure[2], $originalStructure[1]);
-
-                        echo 'structure: ' . $structureRevision . '<br>';
-
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error<br>';
-                            $saveStructure = new DOMDocument();
-                            $clone = $section->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more tr 
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good';
+                    
+                    if ($key == 0) { //Compare structures, olny compare the first element     
+                        $structureRevision = $this->htmlRevision($structure,'tr',$section,'class','fila_subasta', null, 0, 1);
+                        if($structureRevision[1]){
+                            $totalArray = false; //Stop reading in error                 
+                            break;
+                        }                   
                     }
-
-                    if ($key == 0 && !$structure) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure <br>';
-                        $saveStructure = new DOMDocument();
-                        $clone = $section->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
-                    }
-
 
                     $tempAttribute = $tr->getAttribute('class');
                     if ($tempAttribute == 'fila_subasta' || $tempAttribute == 'fila_subasta tablesorter-childRow') {
@@ -492,7 +433,7 @@ class loanbook extends p2pCompany {
                 unset($totalArray[$key]);
             }
         }
-        return [$totalArray, false, null, $structureRevision]; //$totalArray -> investments / false -> Loanbook doesnt have pagination
+        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]] ; //$totalArray -> investments / false -> Loanbook doesnt have pagination
     }
 
     /**
@@ -1008,29 +949,40 @@ class loanbook extends p2pCompany {
      */
     function structureRevision($node1, $node2) {
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('src', 'href', 'contracttypeid', 'style', 'data-value', 'title', 'data-original-title'));
 
-        $node1 = $this->clean_dom($node1, array(//We only want delete class of the span div, not class of the other tags
+        $node1 = $this->cleanDom($node1, array(//We only want delete class of the span div, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class'));
+        
+        $node1 = $this->cleanDomTag($node1, array(   
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment,
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'rating') //Rating div causes problems
+        ));
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('src', 'href', 'contracttypeid', 'style', 'data-value', 'title', 'data-original-title'));
 
-        $node2 = $this->clean_dom($node2, array(//We only want delete class of the span div, not class of the other tags
+        $node2 = $this->cleanDom($node2, array(//We only want delete class of the span div, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class'));
 
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $node2 = $this->cleanDomTag($node2, array(   
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment, 
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'rating') //Rating div causes problems
+        ));
+        
+                
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
 

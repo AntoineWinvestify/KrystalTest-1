@@ -164,45 +164,12 @@ class comunitae extends p2pCompany {
                 foreach ($rows as $key => $row) {
 
 
-                    if ($pageNumber == 1 && $key == 0 && $structure && $type == 1) { //Compare structures, olny compare the first element
-                        $newStructure = new DOMDocument;
-                        $newStructure->loadHTML($structure['Structure']['structure_html']);
-                        $newStructure->preserveWhiteSpace = false;
-                        $trsNewStructure = $newStructure->getElementsByTagName('article');
-
-                        $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'div', 'id', 'pymeList');
-                        $clone = $container[0]->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $saveStructure->saveHTML();
-                        $originalStructure = $saveStructure->getElementsByTagName('article');
-
-                        $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[2]);
-
-                        echo 'structure: ' . $structureRevision . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-
-                        if (!$structureRevision) { //Save new structure
-                            echo 'Structural error' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                            $saveStructure = new DOMDocument();
-                            $container = $this->getElements($dom, 'div', 'id', 'pymeList');
-                            $clone = $container[0]->cloneNode(TRUE);
-                            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                            $structureRevision = $saveStructure->saveHTML();
-                            $totalArray = false;  //Structure control, don't read more tr 
-                            break; //Stop reading if we have a structural error
-                        }
-                        echo 'Structure good' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                    }
-
-                    if ($key == 0 && !$structure && $type == 1) { //Save new structure if is first time
-                        echo 'no structure readed, saving structure' . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-                        $saveStructure = new DOMDocument();
-                        $container = $this->getElements($dom, 'div', 'id', 'pymeList');
-                        //print_r($container);
-                        $clone = $container[0]->cloneNode(TRUE);
-                        $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-                        $structureRevision = $saveStructure->saveHTML();
+                    if ($pageNumber == 1 && $key == 0 && $type == 1) { //Compare structures, olny compare the first element
+                            $structureRevision = $this->htmlRevision($structure,'article',null,null,null,array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'pymeList'));
+                            if($structureRevision[1]){
+                                $totalArray = false; //Stop reading in error                         
+                                break;
+                            }                               
                     }
 
 
@@ -312,7 +279,7 @@ class comunitae extends p2pCompany {
                 }
             }
         }
-        return [$totalArray, $structureRevision];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
     /**
@@ -403,6 +370,17 @@ class comunitae extends p2pCompany {
 
         if ($totalArray !== false && $pageNumber) { // If we find a structural error, dont read.
             foreach ($rows as $key => $row) {
+                
+                if ($pageNumber == 1 && $key == 0 && $type == 1) { //Compare structures, olny compare the first element
+                    $structureRevision = $this->htmlRevision($structure,'article',null,null,null,array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'pymeList'));
+                    if($structureRevision[1]){
+                        $totalArray = false; //Stop reading in error      
+                        $pageNumber = false;
+                        break;
+                    }                               
+                }
+                
+                
                 echo 'Begining read: <br>';
                 $investmentNumberControler = 0;
 
@@ -504,7 +482,7 @@ class comunitae extends p2pCompany {
                 unset($tempArray);
             }
         }   
-        return [$totalArray, $pageNumber, $type, $structureRevision]; //Return an array and the page number, $pageNumber = false when we want end the loop
+        return [$totalArray, $pageNumber, $type, $structureRevision[0], $structureRevision[2]]; //Return an array and the page number, $pageNumber = false when we want end the loop
     }
 
     /**
@@ -1187,33 +1165,33 @@ class comunitae extends p2pCompany {
 
 
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('title', 'data-risk', 'id', 'style', 'aria-valuenow', 'data-toggle', 'data-placement'));
 
 
-        $node1 = $this->clean_dom_tag($node1, array(
+        $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'col-xs-5'),
         ));
 
-        $node1 = $this->clean_dom($node1, array(//We only want delete class of the span tag, not class of the other tags
+        $node1 = $this->cleanDom($node1, array(//We only want delete class of the span tag, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'article'),
                 ), array('class'));
 
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('title', 'data-risk', 'id', 'style', 'aria-valuenow', 'data-toggle', 'data-placement'));
 
-        $node2 = $this->clean_dom_tag($node2, array(
+        $node2 = $this->cleanDomTag($node2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'col-xs-5'),
         ));
 
-        $node2 = $this->clean_dom($node2, array(//We only want delete class of the span tag, not class of the other tags
+        $node2 = $this->cleanDom($node2, array(//We only want delete class of the span tag, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'article'),
@@ -1221,7 +1199,7 @@ class comunitae extends p2pCompany {
 
 
 
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
 

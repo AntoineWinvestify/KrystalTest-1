@@ -106,45 +106,17 @@ class mytriplea extends p2pCompany {
         $dom->preserveWhiteSpace = false;
 
         //Structure comparation, not in the same place where we colect the data because we get the mytriplea data from ajax response.
-        if ($structure) { //Compare structures, only compare the first element
-            $newStructure = new DOMDocument;  //Get the old structure in db
-            $newStructure->loadHTML($structure['Structure']['structure_html']);
-            $newStructure->preserveWhiteSpace = false;
-            $trsNewStructure = $newStructure->getElementsByTagName('article');
+        if ($page == 0) { //Compare structures, only compare the first element
 
-            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-            $clone = $container->cloneNode(TRUE);
-            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-            $saveStructure->saveHTML();
-            $originalStructure = $saveStructure->getElementsByTagName('article');
-
-            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
-
-            echo 'structure: ' . $structureRevision . '<br>';
-
-            if (!$structureRevision) { //Save new structure
-                echo 'Structural error<br>';
-                $saveStructure = new DOMDocument();
-                $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                $structureRevision = $saveStructure->saveHTML();
-                $totalArray = false;  //Structure control, don't read more investmnets 
-                $reading = false; //Stop pagination in error          
-            }
-            echo 'Structure good';
-        }
-
-        if (!$structure) { //Save new structure if is first time
-            echo 'no structure readed, saving structure <br>';
-            $saveStructure = new DOMDocument();
-            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-            $clone = $container->cloneNode(TRUE);
-            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-            $structureRevision = $saveStructure->saveHTML();
-        }
+            $structureRevision = $this->htmlRevision($structure,'article',null,null,null, array('dom' => $dom, 'tag' => 'div', 'attribute' => 'class', 'attrValue' => 'row divTarjetasPymeAjax' ));
+            if($structureRevision[1]){
+                $totalArray = false; //Stop reading in error
+                $reading = false;
+            }   
+        
+        }                
+                    
+            
 
 
         while ($reading) { //Pagination loop
@@ -337,7 +309,7 @@ class mytriplea extends p2pCompany {
             } //Stop reading
         }
         $this->print_r2($totalArray);
-        return [$totalArray, $structureRevision];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
     /**
@@ -362,35 +334,12 @@ class mytriplea extends p2pCompany {
         $dom->preserveWhiteSpace = false;
 
         //Structure comparation, not in the same place where we colect the data because we get the mytriplea data from ajax response.
-        if ($pageNumber == 0 && $structure) { //Compare structures, only compare the first element
-            $newStructure = new DOMDocument;  //Get the old structure in db
-            $newStructure->loadHTML($structure['Structure']['structure_html']);
-            $newStructure->preserveWhiteSpace = false;
-            $trsNewStructure = $newStructure->getElementsByTagName('article');
-
-            $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-            $clone = $container->cloneNode(TRUE);
-            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-            $saveStructure->saveHTML();
-            $originalStructure = $saveStructure->getElementsByTagName('article');
-
-            $structureRevision = $this->structureRevision($trsNewStructure[1], $originalStructure[0]);
-
-            echo 'structure: ' . $structureRevision . '<br>';
-
-            if (!$structureRevision) { //Save new structure
-                echo 'Structural error<br>';
-                $saveStructure = new DOMDocument();
-                $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
-                $clone = $container->cloneNode(TRUE);
-                $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
-
-                $structureRevision = $saveStructure->saveHTML();
-                $totalArray = false;  //Structure control, don't read more investmnets 
-                $reading = false; //Stop pagination in error          
-            }
-            echo 'Structure good';
+        if ($pageNumber == 0) { //Compare structures, only compare the first element
+            $structureRevision = $this->htmlRevision($structure,'article',null,null,null, array('dom' => $dom, 'tag' => 'div', 'attribute' => 'class', 'attrValue' => 'row divTarjetasPymeAjax' ));
+            if($structureRevision[1]){
+                $totalArray = false; //Stop reading in error
+                $pageNumber = false;
+            }     
         }
 
         if ($pageNumber == 0 && !$structure) { //Save new structure if is first time
@@ -554,7 +503,7 @@ class mytriplea extends p2pCompany {
             echo 'to ' . $pageNumber;
         }
         $this->print_r2($totalArray);
-        return [$totalArray, $pageNumber, null, $structureRevision]; //$totalArray are the investment, $pageNumber is the next page, false when we read the last page
+        return [$totalArray, $pageNumber, null, $structureRevision[0], $structureRevision[2]]; //$totalArray are the investment, $pageNumber is the next page, false when we read the last page
     }
 
     /**
@@ -1112,39 +1061,37 @@ class mytriplea extends p2pCompany {
      */
     function structureRevision($node1, $node2) {
 
-        $node1 = $this->clean_dom($node1, array(
+        $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('src', 'href', 'style'));
 
 
-        $node1 = $this->clean_dom($node1, array(//We only want delete class of the div  tag because contain the status
+        $node1 = $this->cleanDom($node1, array(//We only want delete class of the div  tag because contain the status
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class'));
 
-        $node1 = $this->clean_dom_tag($node1, array(
+        $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'li'), //li lenght can change
         ));
 
-        $node2 = $this->clean_dom($node2, array(
+        $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('src', 'href', 'style'));
 
-        $node2 = $this->clean_dom($node2, array(//We only want delete class of the div tag because contain the status
+        $node2 = $this->cleanDom($node2, array(//We only want delete class of the div tag because contain the status
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class'));
 
-        $node2 = $this->clean_dom_tag($node2, array(
+        $node2 = $this->cleanDomTag($node2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'li'), //li lenght can change
         ));
         
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
 
 }
-
-?>
