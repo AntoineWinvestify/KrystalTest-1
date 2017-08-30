@@ -1674,9 +1674,14 @@ class p2pCompany {
         $type = false;
         
         if ($structure) { //Compare structures, olny compare the first element
-            $compareStructure = json_decode($structure['Structure']['structure_html']);
+            $compareStructure = json_decode($structure['Structure']['structure_html'],true);
+            print_r($compareStructure);
             $structureCountMax = count($compareStructure);
+            echo  $structureCountMax;
             $jsonEntryCount = count($jsonEntry);
+            print_r($jsonEntry);
+            echo $jsonEntryCount;
+            
             $structureCount = 0;
             $type = false;
             
@@ -1684,6 +1689,7 @@ class p2pCompany {
                 foreach ($compareStructure as $key2 => $value2) {
                      if ($key == $key2) { //Compares key names
                         $structureCount++;
+                        echo 'hecho ' . $structureCount;
                         break;
                     }
                 }

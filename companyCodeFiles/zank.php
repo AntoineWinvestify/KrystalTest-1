@@ -169,7 +169,7 @@ class zank extends p2pCompany {
             $readControl = 0; //Read control, stop the loop if it find existing and completed inversions
             foreach ($jsonResults as $key => $jsonEntry) {
 
-                if ($form['start'] == 20 && $key == 0) { //Only compare the first entry
+                if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
                     $structureRevision = $this->jsonRevision($structure, $jsonEntry);
                     if ($structureRevision[1]) { //Structural error
                         $totalArray = false; //Stop reading in error
@@ -370,7 +370,7 @@ class zank extends p2pCompany {
         /* Zank pagination must be done using curl, form are parameters sent in curl */
 
         $form = [
-            "length" => 200, //Number of investment for page
+            "length" => 100, //Number of investment for page
             "start" => $start, //First investment of the page
         ];
 
@@ -395,7 +395,8 @@ class zank extends p2pCompany {
         foreach ($jsonResults as $jsonEntry) {
 
 
-            if ($form['start'] == 20 && $key == 0) { //Only compare the first entry
+            
+            if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
                 $structureRevision = $this->jsonRevision($structure, $jsonEntry);
                 if ($structureRevision[1]) { //Structural error
                     $totalArray = false; //Stop reading in error

@@ -89,11 +89,14 @@ class MarketplaceShell extends AppShell {
 
 
         if ($marketplaceArray[1] && $marketplaceArray[1] != 1) {
-            $this->out('Saving new structure' . SHELL_ENDOFLINE);
+            echo 'Saving new structure';
             $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
-            if (!$marketplaceArray[0]) {
-                $this->Applicationerror->saveAppError('Html Structure error', 'Html structural error detected in Pfp id: ' . $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
-                $this->out('Sending error report' . SHELL_ENDOFLINE);
+            if ($marketplaceArray[2] == APP_ERROR) {
+                $this->Applicationerror->saveAppError('ERROR: Html/Json Structure', 'Html/Json structural error detected in Pfp id: ' . $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+            } else if ($marketplaceArray[2] == WARNING) {
+                $this->Applicationerror->saveAppError('WARNING: Html/Json Structure', 'Html/Json structural change detected in Pfp id: ' . $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+            } else if ($marketplaceArray[2] == INFORMATION) {
+                $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure', 'Html/Json structural change detected in Pfp id: ' . $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
             }
         }
 
@@ -204,12 +207,15 @@ class MarketplaceShell extends AppShell {
             $marketplaceArray = $newComp->collectHistorical($structure, $start, $type); //$start is for pfp with paginations, $type is for comunitae.
 
 
-            if ($marketplaceArray[3] && $marketplaceArray[3] != 1) {
-                // 'Saving new structure';
+           if ($marketplaceArray[3] && $marketplaceArray[3] != 1) {
+                echo 'Saving new structure';
                 $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
-                if (!$marketplaceArray[0]) {
-                    $this->Applicationerror->saveAppError('Html Structure error', 'Html structural error detected in Pfp id: ' . $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
-                    $this->out('Sending error report' . SHELL_ENDOFLINE);
+                if ($marketplaceArray[4] == APP_ERROR) {
+                    $this->Applicationerror->saveAppError('ERROR: Html/Json ','Html/Json structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
+                }else if($marketplaceArray[4] == WARNING) {
+                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+                } else if($marketplaceArray[4] == INFORMATION) {
+                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
                 }
             }
 
