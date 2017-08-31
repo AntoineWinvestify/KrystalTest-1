@@ -44,15 +44,15 @@
         </div>
         <?php echo $this->Html->script(array('local')); ?>
         <!--========== HEADER ==========-->
-        <header class="navbar-fixed-top s-header js__header-sticky js__header-overlay">
+        <header class="s-header js__header-sticky js__header-overlay">
             <!-- Navbar -->
-            <nav class="navbar navbar-default">
+            <nav class="navbar navbar-default navbar-fixed-top">
                 <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header navbar-right">
                         <ul class="nav pull-left navbar-nav collapse-tablet">
-                            <li id="liLogin" style="float:left; display:inline-block" class="dropdown pull-left"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
-                                <div id="loginDropdown" class="dropdown-menu">
+                            <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
+                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
                                     <div class="row">
                                         <div class="col-sm-offset-1 col-sm-10 col-xs-12" style="margin-top:10px;">
                                             <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
@@ -153,7 +153,7 @@
                                     <?php echo __('Register')?>
                                 </a>
                             </li>
-                            <li class="dropdown pull-left" style="margin-top:-3px; display:inline-block">
+                            <li class="dropdown" style="margin-top:-3px; display:inline-block">
                                 <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
@@ -202,7 +202,7 @@
         <!-- Mockup -->
         <div class="container_features row">
             <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-offset-2 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
-                <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><?php echo __('<strong>ENTER YOUR DASHBOARD</strong><br/>All your investments are shown on one single page') ?></p>
+                <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?></p>
                 <div class="row" id="featuresButton">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <a class="center-block" style="text-align: center;" href="/users/registerPanel">
@@ -563,10 +563,10 @@
 			}, 7000);
 		};
 		self.move(0);
-                var sliderText = ["<?php echo __('<strong>DASHBOARD</strong><br/>All your investments are shown on one single page') ?>", 
-                                  "<?php echo __('<strong>MARKETPLACE</strong><br/>Our global marketplace contains all the investment opportunities in real time') ?>", 
-                                  "<?php echo __('<strong>LINKED ACCOUNTS PANEL</strong><br/>Incorporate all your Investment Accounts in our linked accounts panel') ?>", 
-                                  "<?php echo __('<strong>PERSONAL DATA PANEL</strong><br/>Access to your personal data is simple, secure and fast') ?>"
+                var sliderText = ["<?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?>", 
+                                  "<?php echo __('MARKETPLACE<br/>Our global marketplace contains all the investment opportunities in real time') ?>", 
+                                  "<?php echo __('LINKED ACCOUNTS PANEL<br/>Incorporate all your Investment Accounts in our linked accounts panel') ?>", 
+                                  "<?php echo __('PERSONAL DATA PANEL<br/>Access to your personal data is simple, secure and fast') ?>"
                                  ];
                 
                 //enlarge img

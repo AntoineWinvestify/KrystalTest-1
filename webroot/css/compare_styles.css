@@ -1348,8 +1348,6 @@ hr.nomargin {
     top: 20px;
 }
 
-
-
 /* Winvestify Login Styling*/
 .loginContainer {
     margin: 0 auto;
@@ -1671,6 +1669,10 @@ hr.nomargin {
                     }
                     #popUp {
                         width: 50%;
+                    }
+                    .navbar-fixed-top {
+                        width: 1200px;
+                        position: fixed;
                     }
                 }
         @media (min-width: 1200px) {
@@ -2076,4 +2078,41 @@ hr.nomargin {
 
 .wizard-card-small .wizard-footer {
     padding: 0 15px 5px !important;
+}
+
+#errorBox {
+    background-color: #e6e6e6;
+    padding: 20px 50px;
+    margin-top: 20px;
+}
+
+.teamName {
+    font-weight: bold;
+    font-size: large;
+}
+
+.teamImg {
+    max-height: 200px;
+    max-width: 200px;
+}
+.nav-pills > li.active > a.greenTab {
+    background-color: #87e14b !important;
+    font-weight: 400;
+}
+.questionTitle {
+    margin-left: 10px;
+    font-weight: 400;
+}
+.tab-pane > ul > li {
+    margin-top: 5px;
+}
+.tab-pane {
+    padding-top: 10px;
+}
+.teamBoxColor {
+    background-color: #e6e6e6;
+}
+.teamPosition {
+    margin-top: 5px;
+    margin-bottom: 10px !important;
 }

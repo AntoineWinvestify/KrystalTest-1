@@ -34,48 +34,9 @@ class Sector extends AppModel {
                 'className' => 'Role',
                 'joinTable' => 'roles_sectors',
                 'foreignKey' => 'sector_id',
-                'associationForeignKey' => 'role_id',
-                'unique' => true,
-                'conditions' => '',
-                'fields' => '',
-                'order' => '',
-                'limit' => '',
-                'offset' => '',
-                'finderQuery' => '',
-                'with' => ''
+                'associationForeignKey' => 'role_id'
             )
     );
     
-    /*public $hasMany = array(
-			'Linkedaccount' => array(
-				'className' => 'Linkedaccount',
-				'foreignKey' => 'investor_id',
-				'fields' => '',
-				'order' => '',
-				),
-			);*/
-
-    /*public $hasOne = array (
-				'User' => array(
-				'className' => 'User',
-				'foreignKey' => 'investor_id',
-				'fields' => '',
-				'order' => '',
-				),
-			);*/
     
-    /**
-    *
-    *	Translates the unique userReference to the database reference
-    *	@param 		string	$role It is the role that user has in the website
-    * 	@return 	int	$investorId The database reference of the investor
-    * 					
-    */
-    function getSectorByRole($role) {
-        $resultInvestor = $this->find("all", array("fields"	=> array("id"),
-                                        "recursive" => -1,
-                                        "conditions" => array("investor_identity" => $investorReference),
-                                    ));
-        //return $resultInvestor['Investor']['id'];
-    }
 }

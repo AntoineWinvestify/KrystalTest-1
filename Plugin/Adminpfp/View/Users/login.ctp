@@ -45,4 +45,3 @@
 </div>
 <?php
 	echo $this->element('publicfooteradminpfp');
-?>

@@ -344,7 +344,7 @@ app.visual = {
         var telephone = $(".telephoneNumber").val();
         var isCheckedPrivacyPolicy = $("#ContentPlaceHolder_registerPrivacyPolicy").is(':checked');
         $(".errorInputMessage").hide(); // remove all error texts
-        $(".editRegistrationData input").removeClass("redBorder"); // remove ALL redborders
+        $("#registerModal input").removeClass("redBorder"); // remove ALL redborders
 
         if (email === "") {
             $(".userName").addClass("redBorder");

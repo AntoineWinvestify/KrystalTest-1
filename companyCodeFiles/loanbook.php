@@ -42,6 +42,10 @@ Duration fixed
  * Added parallelization
  * Added logout
  * Added verification of dom elements
+ * 
+
+2017-08-01      version 0.3
+ * Fixed error to take more than one investment on lines 364 and 395
 
 PENDING:
 
@@ -326,24 +330,24 @@ function collectCompanyMarketplaceData() {
                 break;
             case 4:
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
-                //$this->getCompanyWebpageMultiCurl();  //str2 load Webpage into a string variable so it can be parsed
-                //break;
+                //array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl();  //str2 load Webpage into a string variable so it can be parsed
+                break;
             case 5:
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
-                //$this->getCompanyWebpageMultiCurl();  //str3 load Webpage into a string variable so it can be parsed	
-                //break;
+                //array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl();  //str3 load Webpage into a string variable so it can be parsed	
+                break;
             case 6:
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
-                //$this->getCompanyWebpageMultiCurl();  //str4 load Webpage into a string variable so it can be parsed	
-                //break;
+                //array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl();  //str4 load Webpage into a string variable so it can be parsed	
+                break;
             case 7:
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
-                //$this->getCompanyWebpageMultiCurl();  //str5 load Webpage into a string variable so it can be parsed	
-                //break;
+                //array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl();  //str5 load Webpage into a string variable so it can be parsed	
+                break;
             case 8:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  //str6 load Webpage into a string variable so it can be parsed	
@@ -360,7 +364,7 @@ function collectCompanyMarketplaceData() {
                 }
                 // Get information about each individual transaction
                 $this->numberOfInvestments = 0;
-                for ($key = 0 ; $key < count($trs); $key++) {
+                for ($key = 0 ; $key < $trs->length; $key++) {
                     if ($trs[$key]->getAttribute("class") <> "expander") {
                         continue;
                     }
@@ -387,7 +391,9 @@ function collectCompanyMarketplaceData() {
                     $this->data1[$key]['interest'] = $this->getPercentage($tds[6]->nodeValue);
 
                     // Get amortization table. first get base URL for amortization table
-                    $baseUrl = array_shift($this->urlSequence);
+                    if (empty($baseUrl)) {
+                        $baseUrl = array_shift($this->urlSequence);
+                    }
                     $as = $tds[0]->getElementsByTagName('a');   // only 1 will be found
                     $this->verifyNodeHasElements($as);
                     if (!$this->hasElements) {
@@ -448,10 +454,11 @@ function collectCompanyMarketplaceData() {
                 $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
                         $this->data1[$this->accountPosition]['profitGained'];
                 $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->accountPosition]['invested'];
-                if ($this->accountPosition != ($this->numberOfInvestments-1)) {
+                $this->accountPosition++;
+                if ($this->accountPosition < $this->numberOfInvestments) {
                     $this->idForSwitch = 10;
-                    $this->accountPosition++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);
+                    $this->accountPosition++;
                     break;
                 }
                 else {

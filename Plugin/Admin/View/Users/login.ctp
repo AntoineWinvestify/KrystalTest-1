@@ -9,9 +9,17 @@
  * @date 2017-07-30
  * @package
  * 
+ * Winadmin Login Panel
+ * 
+ * [2017-08-16] version 0.2
+ * Added header navbar & footer.
+ * 
 */
 	
 
+?>
+<?php
+    echo $this->element('navbaradmin');
 ?>
 <div class="loginContainer">
     <div class="loginBox">
@@ -29,3 +37,5 @@
         </div>  
     </div>
 </div>
+<?php
+	echo $this->element('publicfooteradmin');
