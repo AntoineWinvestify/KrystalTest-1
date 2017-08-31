@@ -47,28 +47,31 @@ class bondora extends p2pCompany {
 
 
         $inputs = $dom->getElementsByTagName('input');
-        /* foreach($inputs as $key => $input){
-          echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
-          } */
-        $token = $inputs[2]->getAttribute('value'); //this is the token
+        foreach ($inputs as $key => $input) {
+            //echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+            if ($key == 0) {
+                continue;
+            }
+            $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+        }
 
-        $credentials['username'] = $user;
-        $credentials['password'] = $password;
-        $credentials['__RequestVerificationToken'] = $token;
-        //print_r($credentials);
+        $credentials['Email'] = $user;
+        $credentials['Password'] = $password;
+
+        print_r($credentials);
 
         $str = $this->doCompanyLogin($credentials); //do login
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        //echo $str;
+        echo $str;
 
         $confirm = false;
 
-        $h2s = $dom->getElementsByTagName('h2');
-        foreach ($h2s as $h2) {
-            //echo $h2->nodeValue . HTML_ENDOFLINE;
-            if (trim($h2->nodeValue) == 'Saldo en cuenta') {
+        $spans = $dom->getElementsByTagName('span');
+        foreach ($spans as $span) {
+            //echo $span->nodeValue . HTML_ENDOFLINE;
+            if (trim($span->nodeValue) == 'Account value') {
                 $confirm = true;
                 break;
             }
@@ -91,7 +94,6 @@ class bondora extends p2pCompany {
         //$this->doCompanyLogout();
         $this->getCompanyWebpage();
         return true;
-
     }
 
 }
