@@ -126,6 +126,21 @@ function showUserData($userIdentity, $number) {
     }
 }
 
+    function showInitialPanel(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardOverview(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardMyInvestments(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardStats(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function modal(){
+        $this->layout = 'azarus_private_layout';
+    }
     function convertExcelToArray() {
         $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/cake_branch/mintos.xlsx");
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
