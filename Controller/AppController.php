@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                         |
  * +-----------------------------------------------------------------------+
@@ -48,23 +48,23 @@
   Added type of dashboard record
 
 
-2017-06-11      version 0.2
-Corrected test for language cookie 
+  2017-06-11      version 0.2
+  Corrected test for language cookie
 
 
-2017-06-14      version 0.21
-loginRedirect has changed to global market place 
+  2017-06-14      version 0.21
+  loginRedirect has changed to global market place
 
 
-2017-06-19      version 0.22
-Added a new crowdlending type and defined its "string" values globally.
-Added type of dashboard record
- 
-2017-06-22      version 0.23
-Added isAuthorized function to verify if a determinated role has access
-  
-2017-06-27      version 0.24  
-Added new function to get sectors of the leftnavigationmenu by role
+  2017-06-19      version 0.22
+  Added a new crowdlending type and defined its "string" values globally.
+  Added type of dashboard record
+
+  2017-06-22      version 0.23
+  Added isAuthorized function to verify if a determinated role has access
+
+  2017-06-27      version 0.24
+  Added new function to get sectors of the leftnavigationmenu by role
 
 
 
@@ -84,6 +84,8 @@ Added new function to get sectors of the leftnavigationmenu by role
  * [2017-07-14] Version 0.7
  * Files type defined
  * 
+ * 2017/08/17
+ * All constant moved.
  * 
  *  PENDING:
  * -
@@ -91,192 +93,212 @@ Added new function to get sectors of the leftnavigationmenu by role
  *
  *
  */
-
 App::uses('Controller', 'Controller');
-
 
 //Global constants for all the controllers, models and views
 
-define("NOT_ACTIVE", 0);
-define("ACTIVE", 1);
-//define("HOUR", 4);
-//define("DAY", 1);
-//define('MONTH', 2);
-define('YEAR_CUARTER', 3);
-define('TRUE', 1);
-define('FALSE', 0);
-define('LOAN_TO_PRIVATE_PERSON', 1);
-define('LOAN_TO_COMPANY', 2);
-define('FINANCING_TO_PRIVATE_PERSON', 4);
-define('FINANCING_TO_COMPANY', 8);
-define('ALLOW_LINKED_ACCOUNTS', 16);
+/* define("NOT_ACTIVE", 0);
+  define("ACTIVE", 1);
+  define("HOUR", 4);
+  define("DAY", 1);
+  define('MONTH', 2);
+  define('YEAR_CUARTER', 3);
+  define('TRUE', 1);
+  define('FALSE', 0);
+  define('LOAN_TO_PRIVATE_PERSON', 1);
+  define('LOAN_TO_COMPANY', 2);
+  define('FINANCING_TO_PRIVATE_PERSON', 4);
+  define('FINANCING_TO_COMPANY', 8);
+  define('ALLOW_LINKED_ACCOUNTS', 16);
 
 
-// Sequences
-define('LOGIN_SEQUENCE', 1);
-define('LOGOUT_SEQUENCE', 2);
-define('MARKETPLACE_SEQUENCE', 3);
-define('MY_INVESTMENTS_SEQUENCE', 4);
-define('MY_VIRTUAL_WALLET_SEQUENCE', 5);
+  //Special Characters
+  define('LINE_FEED', 10);
 
-define('CHAT_ACTIVE', 1);
-define('CHAT_TEMPORARY_NOT_ACTIVE', 2);
-define('CHAT_NOT_ACTIVE', 3);
-define('CHAT_INACTIVITY', 4);
+  // Sequences
+  define('LOGIN_SEQUENCE', 1);
+  define('LOGOUT_SEQUENCE', 2);
+  define('MARKETPLACE_SEQUENCE', 3);
+  define('MY_INVESTMENTS_SEQUENCE', 4);
+  define('MY_VIRTUAL_WALLET_SEQUENCE', 5);
+  define('HISTORICAL_SEQUENCE',6);
 
-
-// type of financial product
-define('PAGARE', 1);
-define('LOAN', 2);
-define('FINANCING', 3);
+  define('CHAT_ACTIVE', 1);
+  define('CHAT_TEMPORARY_NOT_ACTIVE', 2);
+  define('CHAT_NOT_ACTIVE', 3);
+  define('CHAT_INACTIVITY', 4);
 
 
-// account definition progress	
-define('UNCONFIRMED_ACCOUNT', 1);
-define('CONFIRMED_ACCOUNT_WITH_DEFAULT_DATA', 2);
-define('FOLLOWERS_DEFINED', 4);
-define('QUESTIONAIRE_FILLED_OUT', 32);  // represents from here that the account is fully created
-define('NEW_DEFAULT_PERSONAL_DATA', 128);
-define('NEW_DEFAULT_INVESTMENT_DATA', 256);
-define('NEW_DEFAULT_FOLLOWER_DATA', 512);
+  // type of financial product
+  define('PAGARE', 1);
+  define('LOAN', 2);
+  define('FINANCING', 3);
 
 
-// metrics	
-define('TOTAL_NUMBER_OF_USERS', 1);
-define('TOTAL_NUMBER_OF_ACTIVE_USERS', 2);
-define('TOTAL_NUMBER_OF_USERS_WITH_LINKED_ACCOUNTS', 3);
-define('NUMBER_OF_INVESTMENTS_PER_LINKED_ACCOUNT', 4);
-define('TOTAL_NUMBER_OF_INVESTMENTS_PER_USER', 5);
-define('NUMBER_OF_LINKED_ACCOUNTS_PER_USER', 6);
-define('TOTAL_AMOUNT_INVESTED_PER_USER', 7);
+  // account definition progress
+  define('UNCONFIRMED_ACCOUNT', 1);
+  define('CONFIRMED_ACCOUNT_WITH_DEFAULT_DATA', 2);
+  define('FOLLOWERS_DEFINED', 4);
+  define('QUESTIONAIRE_FILLED_OUT', 32);  // represents from here that the account is fully created
+  define('NEW_DEFAULT_PERSONAL_DATA', 128);
+  define('NEW_DEFAULT_INVESTMENT_DATA', 256);
+  define('NEW_DEFAULT_FOLLOWER_DATA', 512);
 
 
-// type of counters
-define('ACCUMULATIVE_COUNTER', 1);
-define('DELTA_COUNTER', 2);
-define('LEVEL_COUNTER', 3);
+  // metrics
+  define('TOTAL_NUMBER_OF_USERS', 1);
+  define('TOTAL_NUMBER_OF_ACTIVE_USERS', 2);
+  define('TOTAL_NUMBER_OF_USERS_WITH_LINKED_ACCOUNTS', 3);
+  define('NUMBER_OF_INVESTMENTS_PER_LINKED_ACCOUNT', 4);
+  define('TOTAL_NUMBER_OF_INVESTMENTS_PER_USER', 5);
+  define('NUMBER_OF_LINKED_ACCOUNTS_PER_USER', 6);
+  define('TOTAL_AMOUNT_INVESTED_PER_USER', 7);
 
 
-// queue types
-define('FIFO', 1);
-define('LIFO', 2);
+  // type of counters
+  define('ACCUMULATIVE_COUNTER', 1);
+  define('DELTA_COUNTER', 2);
+  define('LEVEL_COUNTER', 3);
 
 
-// queue states
-define('IDLE', 1);
-define('WAITING_FOR_EXECUTION', 2);
-define('EXECUTING', 3);
-define('FINISHED', 4);
+  // queue types
+  define('FIFO', 1);
+  define('LIFO', 2);
 
 
-// notifications states
-define('WAITING_FOR_VISUALIZATION', 1);
-define('READY_FOR_VISUALIZATION', 2);
-define('READ_BY_USER', 3);
-define('DELETED', 4);
+  // queue states
+  define('IDLE', 1);
+  define('WAITING_FOR_EXECUTION', 2);
+  define('EXECUTING', 3);
+  define('FINISHED', 4);
+
+
+  // notifications states
+  define('WAITING_FOR_VISUALIZATION', 1);
+  define('READY_FOR_VISUALIZATION', 2);
+  define('READ_BY_USER', 3);
+  define('DELETED', 4);
 
 
 
-// MAPPING OF 'PAYMENT TRANSACTION' STATE OF LOAN ACCORDING TO AMORTIZATION TABLE
-define('TERMINATED_OK', -1); // Investment has been successfully amortized according to predefined payment schedule
-define('PENDING', 0);   // First repayment has not yet occured as repayment date is in future
-define('OK', 1);    // Investment is being repayed according to predefined payment schedule
-define('PAYMENT_DELAYED', 2); // Investment repayments is BEHIND repayment schedule
-define('DEFAULTED', 3);   // User has defaulted on the loan and will NOT repay the full amount of the loan.
-// Investment must be considered LOST
-// DEFINITION OF WORK SECTORS				 // NOT ACTUALLY USED
-define('EDUCATION', 110);
-define('HEALTH_CARE', 120);
-define('CIVIL_SERVANT', 150);
-define('SOCIAL_SERVICES', 160);
-define('ICT', 220);
-define('AGRICULTURE', 311);
-define('CONSTRUCTION', 323);
-define('TURISM', 332);
+  // MAPPING OF 'PAYMENT TRANSACTION' STATE OF LOAN ACCORDING TO AMORTIZATION TABLE
+  define('TERMINATED_OK', -1); // Investment has been successfully amortized according to predefined payment schedule
+  define('PENDING', 0);   // First repayment has not yet occured as repayment date is in future
+  define('OK', 1);    // Investment is being repayed according to predefined payment schedule
+  define('PAYMENT_DELAYED', 2); // Investment repayments is BEHIND repayment schedule
+  define('DEFAULTED', 3);   // User has defaulted on the loan and will NOT repay the full amount of the loan.
+  // Investment must be considered LOST
+  // DEFINITION OF WORK SECTORS				 // NOT ACTUALLY USED
+  define('EDUCATION', 110);
+  define('HEALTH_CARE', 120);
+  define('CIVIL_SERVANT', 150);
+  define('SOCIAL_SERVICES', 160);
+  define('ICT', 220);
+  define('AGRICULTURE', 311);
+  define('CONSTRUCTION', 323);
+  define('TURISM', 332);
 
-define('ACCREDITED_INVESTOR', 2);
-define('NOT_ACCREDITED_INVESTOR', 1);
-
-
-// DEFINITION OF TYPE OF CROWDLENDING M0DALITIES
-define('P2P', 1);
-define('P2B', 2);
-define('INVOICE_TRADING', 4);
-define('CROWD_REAL_ESTATE', 8);
-define('SOCIAL', 16);
+  define('ACCREDITED_INVESTOR', 2);
+  define('NOT_ACCREDITED_INVESTOR', 1);
 
 
-// REGISTRATION PROGRESS WHEN USERS REGISTERS	
-define('REGISTRATION_PROGRESS_1', 1);
-define('REGISTRATION_PROGRESS_2', 2);
-define('REGISTRATION_PROGRESS_3', 3);
-define('REGISTRATION_PROGRESS_4', 4);
-define('REGISTRATION_PROGRESS_5', 5);
+  // DEFINITION OF TYPE OF CROWDLENDING M0DALITIES
+  define('P2P', 1);
+  define('P2B', 2);
+  define('INVOICE_TRADING', 4);
+  define('CROWD_REAL_ESTATE', 8);
+  define('SOCIAL', 16);
 
 
-//COMPANY SERVICE STATUS
-define('SER_INACTIVE', 1);
-define('SER_ACTIVE', 2);
-define('SER_SUSPENDED', 3);
-
-//OCR STATUS
-define('NOT_SENT', 0);
-define('SENT', 1);
-define('ERROR', 2);
-define('OCR_PENDING', 3);
-define('OCR_FINISHED', 4);
-define('FIXED', 5);
-
-//OCR COMPANY STATUS
-define('SELECTED', 0);
-define('SENT', 1);
-define('ACCEPTED', 2);
-define('DENIED', 3);
-define('DOWNLOADED', 4);
-
-//CHECK DATA & FILES STATUS
-define('UNCHECKED', 0);
-define('CHECKED', 1);
-define('ERROR', 2);
-
-//FILE OPTIONAL OR REQUIRED
-define('OPTIONAL', 1);
-define('REQUIRED', 0);
-
-//CHECK STATUS(for winadmin invcestor data)
-define('YES', 1);
-define('NO', 2);
-define('PENDING', 0);
+  // REGISTRATION PROGRESS WHEN USERS REGISTERS
+  define('REGISTRATION_PROGRESS_1', 1);
+  define('REGISTRATION_PROGRESS_2', 2);
+  define('REGISTRATION_PROGRESS_3', 3);
+  define('REGISTRATION_PROGRESS_4', 4);
+  define('REGISTRATION_PROGRESS_5', 5);
 
 
-// CURL ERRORS
-define('CURL_ERROR_TIMEOUT', 28);
+  //COMPANY SERVICE STATUS
+  define('SER_INACTIVE', 1);
+  define('SER_ACTIVE', 2);
+  define('SER_SUSPENDED', 3);
 
-// TYPES OF DASHBOARD RECORDS	
-define('USER_GENERATED', 2);
-define('SYSTEM_GENERATED', 1);
+  //OCR STATUS
+  define('NOT_SENT', 0);
+  define('SENT', 1);
+  define('ERROR', 2);
+  define('OCR_PENDING', 3);
+  define('OCR_FINISHED', 4);
+  define('FIXED', 5);
+
+  //OCR COMPANY STATUS
+  define('SELECTED', 0);
+  define('SENT', 1);
+  define('ACCEPTED', 2);
+  define('DENIED', 3);
+  define('DOWNLOADED', 4);
+
+  //CHECK DATA & FILES STATUS
+  define('UNCHECKED', 0);
+  define('CHECKED', 1);
+  define('ERROR', 2);
+
+  //FILE OPTIONAL OR REQUIRED
+  define('OPTIONAL', 1);
+  define('REQUIRED', 0);
+
+  //CHECK STATUS(for winadmin invcestor data)
+  define('YES', 1);
+  define('NO', 2);
+  define('PENDING', 0);
 
 
-// DEFINED CURRENCIES
-define('EUR', 1);           // Euro
-define('GBP', 2);           // UK Pound Sterling
-define('USD', 3);           // US Dollar
+  // CURL ERRORS
+  define('CURL_ERROR_TIMEOUT', 28);
 
-// APPLICATION THAT CAN PRODUCE BILLING DATA
-define('TALLYMAN_APP', 1);
+  // TYPES OF DASHBOARD RECORDS
+  define('USER_GENERATED', 2);
+  define('SYSTEM_GENERATED', 1);
 
-//DOCUMENT TYPE(Files table)
-define('DNI_FRONT', 1);
-define('DNI_BACK', 2);
-define('IBAN', 3);
-define('CIF', 4);
 
-//ROLES FOR USER
-define('ROLE_SUPERADMIN', 1);
-define('ROLE_WINADMIN', 2);
-define('ROLE_PFPADMIN', 3);
-define('ROLE_INVESTOR', 4);
-define('ROLE_WINADMINTECH', 5);
+  // DEFINED CURRENCIES
+  define('EUR', 1);           // Euro
+  define('GBP', 2);           // UK Pound Sterling
+  define('USD', 3);           // US Dollar
+
+  // APPLICATION THAT CAN PRODUCE BILLING DATA
+  define('TALLYMAN_APP', 1);
+
+  //DOCUMENT TYPE(Files table)
+  define('DNI_FRONT', 1);
+  define('DNI_BACK', 2);
+  define('IBAN', 3);
+  define('CIF', 4);
+
+  //ROLES FOR USER
+  define('ROLE_SUPERADMIN', 1);
+  define('ROLE_WINADMIN', 2);
+  define('ROLE_PFPADMIN', 3);
+  define('ROLE_INVESTOR', 4);
+  define('ROLE_WINADMINTECH', 5);
+
+  //INVESTMENT TYPE
+  define('PROMISSORY_NOTE', 1);
+  define('LOAN', 2);
+  define('FUNDING', 3);
+
+  //CRON MARKETPLACE
+  define('MARKETPLACELOOP', 1);
+  define('HISTORICAL', 2);
+
+  //MARKETPLACE INVESTMENT TYPE STATUS
+  define('PERCENT', 1);
+  define('CONFIRMED', 2);
+  define('BEFORE_CONFIRMED', 3);
+  define('REJECTED', 4); */
+
+//
+
 
 class AppController extends Controller {
 
@@ -338,6 +360,25 @@ class AppController extends Controller {
         //Company ocr service status
         $this->serviceStatus = array(0 => __('Choose One'), 1 => __("Inactive"), 2 => __("Active"), 3 => __("Suspended"));
 
+        
+        //Investment Status in marketplace
+        $this->marketpalceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
+
+        
+        //Country for excel export
+        $this->countryArray = array(0 => __('Choose One'),
+                '-Países Bálticos' => array(
+                    'LV' => 'Letonia',
+                    'LT' => 'Lituania'
+                ),
+                '-Resto Europa' => array(
+                    'ES' => 'España',
+                    'IT' => 'Italia',
+                    'FR' => 'Francia',
+                    'DE' => 'Alemania',
+                    'NL' => 'Países Bajos')
+        );
+
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
@@ -392,27 +433,23 @@ class AppController extends Controller {
             $controller = $this->params['controller'];
             $action2 = $this->params['action'];
             //Here we verify if this user has authorization to acces the controller and the action
-            $resultAcl = $this->isAuthorized($controller,$action);
+            $resultAcl = $this->isAuthorized($controller, $action);
             if (!$resultAcl) {
                 //In contructions, we use this now before we create a error page
                 throw new
-                            FatalErrorException(__('You cannot access this page directly'));
+                FatalErrorException(__('You cannot access this page directly'));
             }
         }
         if ($this->Auth->user()) {
             $sectorExist = $this->Session->read('sectorsMenu');
             if (empty($sectorExist)) {
                 $roleId = $this->Auth->User('role_id');
-                /*$this->Role = ClassRegistry::init('Role');
-                $sectors = $this->Role->getSectorsByRole($roleId);*/
+                /* $this->Role = ClassRegistry::init('Role');
+                  $sectors = $this->Role->getSectorsByRole($roleId); */
                 $sectors = $this->getSectorsByRole($roleId);
                 $this->Session->write('sectorsMenu', $sectors);
             }
-
         }
-       
-        
-        
     }
 
     /**
@@ -724,22 +761,22 @@ class AppController extends Controller {
      * @return boolean It is the access, it can be true or false
      */
     function isAuthorized($controller, $access = '*') {
-	//$userId = $this->Auth->user('id');
-	$aro = $this->Auth->user('Role.id');
+        //$userId = $this->Auth->user('id');
+        $aro = $this->Auth->user('Role.id');
         // Get internal database reference of the investor
         //$this->Role = ClassRegistry::init('Role');
         //$aro = $this->Role->getRoleNameById($roleId);
-        
-	return $this->Acl->check($aro, $controller, $access);
+
+        return $this->Acl->check($aro, $controller, $access);
     }
-    
+
     /**
      * Function to get the sectors for the leftnavigationmenu by User's role
      * We do a three table query using the joins option
      * @param int $roleId It is the user's role id
      * @return boolean|array Return false if there is not roleId or the array with the sectors
      */
-    function getSectorsByRole($roleId = null){
+    function getSectorsByRole($roleId = null) {
         if (empty($roleId)) {
             return false;
         }
