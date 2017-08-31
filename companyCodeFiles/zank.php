@@ -133,8 +133,6 @@ class zank extends p2pCompany {
             exit;
         }
 
-        $config = Configure::read('100perCent');
-        $limit = $config['zankLimit'];
         
         $form = [
             "length" => 20,
@@ -144,6 +142,7 @@ class zank extends p2pCompany {
         $url = array_shift($this->urlSequence);
         $this->url = $url;
         $totalArray = array();
+        $readControl = 0; //Read control, stop the loop if it find existing and completed inversions
         while ($reading) {
             $reading = false;
             //echo __FUNCTION__ . __LINE__ . "start with first read<br>";
@@ -163,13 +162,12 @@ class zank extends p2pCompany {
             $numberOfInversions = count($jsonResults);
             //echo 'el numero es ' . $numberOfInversions;
 
-
             if ($numberOfInversions == $form['length']) {
                 $reading = true;
                 $form['start'] = $form['start'] + $form['length'];
             }
             //echo 'aqui es' . $form['start'];
-            $readControl = 0; //Read control, stop the loop if it find existing and completed inversions
+          
             foreach ($jsonResults as $key => $jsonEntry) {
 
                 if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
@@ -314,8 +312,9 @@ class zank extends p2pCompany {
                 if ($inversionReadController == 1) {
                     //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $readControl++;
-                    echo 'Advance';
-                } else if ($readControl > $limit) {
+                    echo 'Advance:' . $readControl . HTML_ENDOFLINE;
+                } 
+                if ($readControl > 20) {
                     echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
                     $reading = false;
                     echo 'Break';

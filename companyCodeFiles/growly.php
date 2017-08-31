@@ -244,7 +244,7 @@ class growly extends p2pCompany {
                 }
             }
             $page++; //Adance page
-            if ($readController > 2 || $investmentNumber < 10) {
+            if ($readController > 15 || $investmentNumber < 10) {
                 $reading = false;
             } //Stop reading
         }

@@ -261,16 +261,16 @@ class circulantis extends p2pCompany {
                                     $ps = $domInvestment->getElementsByTagName('p');
                                     foreach ($ps as $keyP => $p) {
                                         //echo $keyP . ': ' . $p->nodeValue . HTML_ENDOFLINE;
-                                        if ($keyP == 12) {
-                                            $future = strtotime($p->nodeValue); //Future date.
+                                        if (trim($p->getAttribute('id')) == 'pdiasfinanciados') {
+                                            /*$future = strtotime($p->nodeValue); //Future date.
                                             $timefromdb = date();
                                             $timeleft = $future - $timefromdb;
                                             $daysleft = round((($timeleft / 24) / 60) / 60);
-                                            $tempArray['marketplace_timeLeft'] = $daysleft;
-                                            $tempArray['marketplace_duration'] = $daysleft;
-                                            $tempArray['marketplace_timeLeftUnit'] = 1;
+                                            $tempArray['marketplace_timeLeft'] = $daysleft;*/
+                                            $tempArray['marketplace_duration'] = $p->nodeValue;
+                                            //$tempArray['marketplace_timeLeftUnit'] = 1;
                                             $tempArray['marketplace_durationUnit'] = 1;
-                                            echo 'days left: ' . $daysleft . HTML_ENDOFLINE;
+                                           // echo 'days left: ' . $daysleft . HTML_ENDOFLINE;
                                         }
                                     }
                                 }
