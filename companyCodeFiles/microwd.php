@@ -56,14 +56,14 @@ class microwd extends p2pCompany {
 
         $confirm = false;
 
-        /*$h2s = $dom->getElementsByTagName('h2');
-        foreach ($h2s as $h2) {
-            //echo $h2->nodeValue . HTML_ENDOFLINE;
-            if (trim($h2->nodeValue) == 'Saldo en cuenta') {
+        $as = $dom->getElementsByTagName('a');
+        foreach ($as as $a) {
+            //echo $a->nodeValue . HTML_ENDOFLINE;
+            if (trim($a->nodeValue) == 'Logout') {
                 $confirm = true;
                 break;
             }
-        }*/
+        }
 
         if ($confirm) {
             return true;
