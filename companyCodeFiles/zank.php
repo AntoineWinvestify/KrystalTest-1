@@ -133,6 +133,9 @@ class zank extends p2pCompany {
             exit;
         }
 
+        $config = Configure::read('100perCent');
+        $limit = $config['zankLimit'];
+        
         $form = [
             "length" => 20,
             "start" => $this->start
@@ -306,12 +309,13 @@ class zank extends p2pCompany {
                 }
 
 
+                
 
                 if ($inversionReadController == 1) {
                     //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $readControl++;
                     echo 'Advance';
-                } else if ($readControl > 2) {
+                } else if ($readControl > $limit) {
                     echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
                     $reading = false;
                     echo 'Break';

@@ -176,10 +176,11 @@ class comunitae extends p2pCompany {
 
                     //$this->print_r($row);
                     $loanId = $row->getAttribute('id');
-                    $tempArray['marketplace_loanReference'] = $loanId;
-                    if ($tempArray['marketplace_loanReference'] == 'collapse_check') {
+                    if ($loanId == 'collapse_check') {
                         break;
                     }
+                    $tempArray['marketplace_loanReference'] = $loanId;
+
 
                     $nameFound = false;
 
@@ -248,6 +249,7 @@ class comunitae extends p2pCompany {
 
                     if ($tempArray) {
                         $totalArray[] = $tempArray;
+                        unset($tempArray);
                     }
                     unset($tempArray);
 
