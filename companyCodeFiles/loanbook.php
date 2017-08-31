@@ -711,11 +711,10 @@ class loanbook extends p2pCompany {
                 $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
                         $this->data1[$this->accountPosition]['profitGained'];
                 $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->accountPosition]['invested'];
-                $this->accountPosition++;
-                if ($this->accountPosition < $this->numberOfInvestments) {
+                if ($this->accountPosition < $this->numberOfInvestments-1) {
                     $this->idForSwitch = 10;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);
                     $this->accountPosition++;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);
                     break;
                 } else {
                     $this->tempArray['global']['investments'] = $this->numberOfInvestments;
