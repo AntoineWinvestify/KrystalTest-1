@@ -247,7 +247,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                                 <?php
 										echo $this->Form->input('name', array(
 											'label' 		=> false,
-											'class' 		=> 'form-control blue_noborder22',
+											'class' 		=> 'form-control blue_noborder2',
                                                                                         'type'                  => 'text',
 											'disabled'		=> 'disabled',
 											'value'			=> $account['Linkedaccount']['linkedaccount_username'],						
