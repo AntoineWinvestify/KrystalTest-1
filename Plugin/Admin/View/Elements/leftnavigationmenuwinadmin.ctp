@@ -125,6 +125,11 @@ $(document).ready(function() {
               <i class="fa fa-dashboard"></i> <span><?php echo __('Update PFP data')?></span>
             </a>
         </li>
+        <li class="treeview">
+            <a href="/admin/ocrs/generateExcel">
+              <i class="fa fa-dashboard"></i> <span><?php echo __('Generate Excel')?></span>
+            </a>
+        </li>
         <?php /*<li class="treeview">
             <a href="/ocrs/ocrWinadminSoldUsers">
               <i class="fa fa-dashboard"></i> <span><?php echo __('WinAdmin - Sold Users')?></span>

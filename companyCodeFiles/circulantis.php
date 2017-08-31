@@ -1,65 +1,68 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
+/**
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+ * | the Free Software Foundation; either version 2 of the License, or 	|
+ * | (at your option) any later version.                                      		|
+ * | This file is distributed in the hope that it will be useful   		    	|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
+ * | GNU General Public License for more details.        			              	|
+ * +---------------------------------------------------------------------------------------------------------------+
  *
  *
- * Contains all the code required for accessing the website of "Circulantis"
- *
- * 
- * @author Antoine de Poorter
+ * @author
  * @version 0.1
- * @date 2016-11-10
+ * @date 2016-10-25
  * @package
-
-function calculateLoanCost()										[not OK, not tested]
-function collectCompanyMarketplaceData()								[OK, tested]
-function companyUserLogin()										[OK, tested]
-function companyUserLogout										[OK, tested]
-function collectUserInvestmentData()									[OK, tested]
-parallelization                                                                                         [OK, tested]
-
-2016-11-10	  version 2016_0.1
-Basic version
-
-2017/05/11
+ *
+ * function calculateLoanCost()										[not OK, not tested]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function companyUserLogout										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * parallelization                                                                                         [OK, tested]
+ *
+ * 2016-11-10	  version 2016_0.1
+ * Basic version
+ *
+ * 2017/05/11
  * OUTSTANDING PRINCIPAL
  * transaction id
  * period of investiment
-
-2017-05-16          version 2017_0.2
+ *
+ * 2017-05-16          version 2017_0.2
  * Added parallelization
  * Dom verification
  * 
-
-2017-05-25
+ *
+ * 2017-05-25
  * There is an array_shift to delete the first url of urlsequence on case 0 of the switch
  * We would need to delete the urlsequence on DB for Circulantis to work
  * 
-2017-07-26
+ * 2017-07-26
  * Urlseuqnces fix marketplace
  * $attr class fix col-xs-12 col-sm-6 col-md-3 col-lg-3 line 113
  * 
-Pending:
-
-
-
-
+ * 2017-08-07
+ * collectCompanyMarketplaceData - pagination loop added
+ * collectHistorical - added
+ * 
+ * 2017-10-2017
+ * Structure revision added
+ * 
+ * 2017-11-2017
+ * Status definition added
+ * Pending:
+ *
+ *
+ *
+ *
  */
-
 class circulantis extends p2pCompany {
 
     function __construct() {
@@ -93,87 +96,377 @@ class circulantis extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the marketplace data.
-     *
-     * 	@return array	Each investment option as an element of an array
-     *
+     * Collects the marketplace data.
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
-    function collectCompanyMarketplaceData() {
+    function collectCompanyMarketplaceData($companyBackup, $structure) {
+
+        $user = "inigo.iturburua@gmail.com";
+        $password = "Ap_94!56";
+
+        $resultMicirculantis = $this->companyUserLogin($user, $password);   //We need login to see the status
+        echo __FILE__ . " " . __LINE__ . "<br>";
+
+        if (!$resultMicirculantis) {   // Error while logging in
+            $tracings = "Tracing:\n";
+            $tracings .= __FILE__ . " " . __LINE__ . " \n";
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+            $tracings .= " \n";
+            $msg = "Error while logging in user's portal. Wrong userid/password \n";
+            $msg = $msg . $tracings . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+
 
         $totalArray = array();
 
-        $str = $this->getCompanyWebpage();
+        $page = 1;
+        $url = array_shift($this->urlSequence);
+
+        $reading = true;
+        $readController = 0;
+        $investmentController = false;
+
+
+        while ($reading) { //Pagination loop */
+            $investmentNumber = 0;
+
+            $str = $this->getCompanyWebpage($url . $page);
+            //echo $str;
+            $dom = new DOMDocument;
+            $dom->loadHTML($str);
+            $dom->preserveWhiteSpace = false;
+
+            $tables = $dom->getElementsByTagName("table"); //Get investment table
+
+            foreach ($tables as $keyTable => $table) {
+                $rows = $table->getElementsByTagName("tr"); //Get investment row
+
+                if ($totalArray !== false) { //Structure control 
+                    foreach ($rows as $key => $row) {
+
+                        if ($key % 2 == 0) {
+                            continue; //Even row are useless
+                        }
+
+                        
+                        
+                        echo 'para entrar ' . $page . ' 0 ' . $key . ' ' . $keyTable . HTML_ENDOFLINE;
+                        if ($page == 1 && $key == 1 && $keyTable == 0) { //Compare structures, olny compare the first element
+                           $structureRevision = $this->htmlRevision($structure,'tr',$table);
+                           if($structureRevision[1]){
+                               $totalArray = false; //Stop reading in error    
+                               $reading = false;
+                               break;
+                           }
+                        }
+
+                        echo 'Investment:  ' . $key . '<br>';
+
+                        $tempArray['marketplace_country'] = 'ES';
+
+                        $tds = $row->getElementsByTagName("td"); //Get investment data
+
+                        foreach ($tds as $key => $td) {
+                            echo $key . ': ' . $td->nodeValue . '<br>';
+
+
+                            switch ($key) {
+                                case 1:
+                                    $tempArray['marketplace_name'] = $td->nodeValue;
+                                    $tempArray['marketplace_purpose'] = $td->nodeValue;
+                                    break;
+                                case 4:
+                                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
+                                    break;
+                                case 5:
+                                    $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
+                                    break;
+                                case 6:
+                                    $tempArray['marketplace_rating'] = $td->nodeValue;
+                                    break;
+                                case 8:
+                                    $tempArray['marketplace_vencimiento'] = $td->nodeValue;
+                                    break;
+                                case 9:
+                                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
+                                    break;
+                            }
+
+                            $as = $td->getElementsByTagName("a"); //Get loanId
+                            foreach ($as as $key => $a) {
+                                echo $key . ' loan Id: ' . $a->getAttribute('href') . '<br>';
+                                $loanId = trim(preg_replace('/\D/', ' ', $a->getAttribute('href')));
+                                echo $loanId . '<br>';
+                                $tempArray['marketplace_loanReference'] = $loanId;
+                                echo $a->getAttribute('href');
+                                echo 'URL: ' . $a->getAttribute('href') . HTML_ENDOFLINE;
+                                $urlInvestment = $a->getAttribute('href');
+                            }
+
+
+
+                            $buttons = $td->getElementsByTagName("button"); //Get status data
+                            foreach ($buttons as $key => $button) {
+                                echo $key . ' status: ' . $button->getAttribute('title') . '<br>';
+
+                                switch ($button->getAttribute('title')) {
+                                    case 'Abierta':
+                                        $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                        break;
+                                    case 'Formalizada':
+                                        $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                        $tempArray['marketplace_status'] = CONFIRMED;
+                                        break;
+                                    case 'Finalizada':
+                                        $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                        $tempArray['marketplace_status'] = PERCENT;
+                                        break;
+                                    case 'Atrasada':
+                                        $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                        break;
+                                    case 'Cobrada':
+                                        $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                        break;
+                                    case 'Cobrada parcialmente':
+                                        $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                        break;
+                                    case 'No formalizada':
+                                        $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                        $tempArray['marketplace_status'] = REJECTED;
+                                }
+
+
+                                if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                                    foreach ($companyBackup as $inversionBackup) { //If completed investmet with same status in backup
+                                        if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_statusLiteral'] == $tempArray['marketplace_statusLiteral']) {
+                                            echo 'Already exist';
+                                            $readController++;
+                                            $investmentController = true;
+                                        }
+                                    }
+                                } else {
+                                    //Get time left only if the investment is in progress
+                                    $strInvestment = $this->getCompanyWebpage($urlInvestment);
+                                    $domInvestment = new DOMDocument;
+                                    $domInvestment->loadHTML($strInvestment);
+                                    $domInvestment->preserveWhiteSpace = false;
+                                    $ps = $domInvestment->getElementsByTagName('p');
+                                    foreach ($ps as $keyP => $p) {
+                                        //echo $keyP . ': ' . $p->nodeValue . HTML_ENDOFLINE;
+                                        if ($keyP == 12) {
+                                            $future = strtotime($p->nodeValue); //Future date.
+                                            $timefromdb = date();
+                                            $timeleft = $future - $timefromdb;
+                                            $daysleft = round((($timeleft / 24) / 60) / 60);
+                                            $tempArray['marketplace_timeLeft'] = $daysleft;
+                                            $tempArray['marketplace_duration'] = $daysleft;
+                                            $tempArray['marketplace_timeLeftUnit'] = 1;
+                                            $tempArray['marketplace_durationUnit'] = 1;
+                                            echo 'days left: ' . $daysleft . HTML_ENDOFLINE;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+
+
+                        if ($investmentController) { //Don't save a already existing investment
+                            unset($tempArray);
+                            $investmentController = false;
+                        } else {
+                            if ($tempArray) {
+                                $this->print_r2($tempArray);
+                                $totalArray[] = $tempArray;
+                                unset($tempArray);
+                            }
+                        }
+                        $investmentNumber++;
+                    }
+                }
+
+                $page++; //Advance page
+                if ($readController > 2 || $investmentNumber < 15) {
+                    echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $page;
+                    $reading = false;
+                } //Stop reading
+                break;
+            }
+        }
+
+        $this->print_r2($totalArray);
+       return [$totalArray, $structureRevision[0],$structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
+    }
+
+    /**
+     * collect all investment
+     * @param Array $structure
+     * @param Int $page
+     * @param Int $type
+     * @return Array
+     */
+    function collectHistorical($structure, $pageNumber, $type = null) {
+
+        $user = "inigo.iturburua@gmail.com";
+        $password = "Ap_94!56";
+
+        $resultMicirculantis = $this->companyUserLogin($user, $password);   //We need login to see the status
+        echo __FILE__ . " " . __LINE__ . "<br>";
+
+        if (!$resultMicirculantis) {   // Error while logging in
+            $tracings = "Tracing:\n";
+            $tracings .= __FILE__ . " " . __LINE__ . " \n";
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+            $tracings .= " \n";
+            $msg = "Error while logging in user's portal. Wrong userid/password \n";
+            $msg = $msg . $tracings . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+
+        $totalArray = array();
+
+        $pageNumber++; //Advance page, first page is 1, we sent 0
+        $investmentNumber = 0;
+        $url = array_shift($this->urlSequence);
+
+
+        $str = $this->getCompanyWebpage($url . $pageNumber);
+        //echo $str;
         $dom = new DOMDocument;
         $dom->loadHTML($str);
-
         $dom->preserveWhiteSpace = false;
-        $tag = "div";
-        $attr = "class";
-        $value = "col-xs-12 col-sm-6 col-md-3 col-lg-3";
 
-        $divs1 = $this->getElements($dom, $tag, $attr, $value);
-        foreach ($divs1 as $div1) {
-            $newdivs = $div1->getElementsByTagName("div");
-            foreach ($newdivs as $newdiv) {
-                $class = $newdiv->getAttribute("class");
-                if ($class == "imagen-cabecera-subasta") {
-                    $totalArray[] = $tempArray;
-                    $this->print_r2($tempArray);
-                    unset($tempArray);
-                    $onClick = $newdiv->getAttribute('onclick');
-                    $onClick = explode("-", $onClick);
-                    
-                    $name = "";
-                    for ($i = 4 ; $i < count($onClick)-1 ; $i++ ){                      
-                            $name = $name . " " . $onClick[$i];
+        $tables = $dom->getElementsByTagName("table"); //Get investment table
+
+        foreach ($tables as $keyTable => $table) {
+            $rows = $table->getElementsByTagName("tr"); //Get investment row
+
+            if ($totalArray !== false) {
+                foreach ($rows as $key => $row) {
+
+                    if ($key % 2 == 0) {
+                        continue; //Even row are useless
                     }
-                    
-                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', ' ', $onClick[count($onClick)-1]));
-                    $tempArray['marketplace_purpose'] = $name;
-                }
-                if ($class == "titulo-subasta") {
-                    $sector = explode('Importe', trim($div1->nodeValue));
-                    $tempArray['marketplace_sector'] = trim($sector[0]);
-                }
-                if ($class == "datos_subasta") {
-                    $tds = $div1->getElementsByTagName('td');
-                    $innerIndex = 0;
 
-                    foreach ($tds as $td) {
-                        switch ($innerIndex) {
+
+                    if ($pageNumber == 1 && $key == 1 && $keyTable == 0) { //Compare structures, olny compare the first element
+                        $structureRevision = $this->htmlRevision($structure,'tr',$table);
+                        if($structureRevision[1]){
+                            $totalArray = false; //Stop reading in error    
+                            $pageNumber = false;
+                            break;
+                        }
+                    }
+
+                    echo 'Investment:  ' . $key . '<br>';
+
+                    $tempArray['marketplace_country'] = 'ES';
+
+                    $tds = $row->getElementsByTagName("td"); //Get investment data
+
+                    foreach ($tds as $key => $td) {
+                        echo $key . ': ' . $td->nodeValue . '<br>';
+
+
+                        switch ($key) {
                             case 1:
+                                $tempArray['marketplace_name'] = $td->nodeValue;
+                                $tempArray['marketplace_purpose'] = $td->nodeValue;
+                                break;
+                            case 4:
                                 $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
-                                break;
-                            case 2:
-                                $tempDuration = $td->nodeValue;
-                                break;
-                            case 3:
-                                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue . $tempDuration);
                                 break;
                             case 5:
                                 $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
                                 break;
-                            case 7:
+                            case 6:
                                 $tempArray['marketplace_rating'] = $td->nodeValue;
                                 break;
-                            case 11:
+                            case 8:
+                                $tempArray['marketplace_vencimiento'] = $td->nodeValue;
+                                break;
+                            case 9:
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
                                 break;
-
-                            default:
                         }
-                        $innerIndex = $innerIndex + 1;
+
+                        $as = $td->getElementsByTagName("a"); //Get loanId
+                        foreach ($as as $key => $a) {
+                            echo $key . ' loan Id: ' . $a->getAttribute('href') . '<br>';
+                            $loanId = trim(preg_replace('/\D/', ' ', $a->getAttribute('href')));
+                            echo $loanId . '<br>';
+                            $tempArray['marketplace_loanReference'] = $loanId;
+                        }
+
+                        $buttons = $td->getElementsByTagName("button"); //Get status data
+                        foreach ($buttons as $key => $button) {
+                            echo $key . ' status: ' . $button->getAttribute('title') . '<br>';
+                            switch ($button->getAttribute('title')) {
+                                case 'Abierta':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    break;
+                                case 'Formalizada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                    break;
+                                case 'Finalizada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = PERCENT;
+                                    break;
+                                case 'Atrasada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                    break;
+                                case 'Cobrada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                    break;
+                                case 'Cobrada parcialmente':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                    break;
+                                case 'No formalizada':
+                                    $tempArray['marketplace_statusLiteral'] = $button->getAttribute('title');
+                                    $tempArray['marketplace_status'] = REJECTED;
+                            }
+                        }
                     }
+                    $this->print_r2($tempArray);
+
+
+
+                    $totalArray[] = $tempArray;
+                    unset($tempArray);
+                    $investmentNumber++;
                 }
             }
+            if ($investmentNumber < 15) {
+                echo 'stop reading ' . print_r($investmentNumber) . ' pag: ' . $pageNumber;
+                $pageNumber = false;
+            } //Stop reading
+            break; //Only read one table
         }
 
-        unset($totalArray[0]);
         $this->print_r2($totalArray);
-        return $totalArray;
+        return [$totalArray, $pageNumber, null, $structureRevision[0], $structureRevision[2]];
+         //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
-    
+
     /**
      *
      * 	Collects the investment data of the user
@@ -186,13 +479,13 @@ class circulantis extends p2pCompany {
         switch ($this->idForSwitch) {
             case 0:
                 echo __FILE__ . " " . __LINE__ . "<br>";
-                
+
                 $this->idForSwitch++;
                 //We need to delete a urlsequence on DB for Circulantis to work
                 array_shift($this->urlSequence);
-                //$this->getCompanyWebpage();
-                //$resultMicirculantis = $this->companyUserLogin($user, $password);
-                //break;
+            //$this->getCompanyWebpage();
+            //$resultMicirculantis = $this->companyUserLogin($user, $password);
+            //break;
             case 1:
                 $credentials = array();
                 /**
@@ -206,10 +499,10 @@ class circulantis extends p2pCompany {
                 $this->doCompanyLoginMultiCurl($credentials);
                 break;
             case 2:
-                /*$dom = new DOMDocument;
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;*/
+                /* $dom = new DOMDocument;
+                  libxml_use_internal_errors(true);
+                  $dom->loadHTML($str);
+                  $dom->preserveWhiteSpace = false; */
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
@@ -217,24 +510,24 @@ class circulantis extends p2pCompany {
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false; 
-                $divs = $this->getElements($dom, 'div', 'id', 'sub-menu');	
+                $dom->preserveWhiteSpace = false;
+                $divs = $this->getElements($dom, 'div', 'id', 'sub-menu');
                 if (empty($divs)) {
                     return $this->getError(__LINE__, __FILE__);
                 }
                 /*
                  * MAKE COMPROBATION
-                if (empty($divs)) {
-                        return 0;
-                }
-                */
+                  if (empty($divs)) {
+                  return 0;
+                  }
+                 */
                 $lis = $this->getElements($divs[0], 'li');
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
                 $resultMicirculantis = false;
-                if ($lis[0]->nodeValue === "Mis datos") {			// JSON response with wallet value
-                        $resultMicirculantis = true;		
+                if ($lis[0]->nodeValue === "Mis datos") {   // JSON response with wallet value
+                    $resultMicirculantis = true;
                 }
 
                 if (!$resultMicirculantis) {   // Error while logging in
@@ -472,7 +765,7 @@ class circulantis extends p2pCompany {
              */
 // map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED			
             $data1[$key]['status'] = OK;
-             $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + ($data1[$key]['invested'] /*- $data1[$key]['amortized']*/);
+            $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] + ($data1[$key]['invested'] /* - $data1[$key]['amortized'] */);
             $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] + $data1[$key]['profitGained'];
             $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
         }
@@ -534,7 +827,7 @@ class circulantis extends p2pCompany {
             echo __FILE__ . " " . __LINE__ . "<br>";
             $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] + $data1[$key]['profitGained'];
             $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $data1[$key]['invested'];
-           
+
             echo __FILE__ . " " . __LINE__ . "<br>";
         }
 
@@ -554,7 +847,7 @@ class circulantis extends p2pCompany {
             echo "key = $key and " . $div->nodeValue . "<br>";
             echo __FILE__ . " " . __LINE__ . "<br>";
         }
-         $prof = $this->getElements($dom, "div", "class", "col-lg-2 total_fondos");
+        $prof = $this->getElements($dom, "div", "class", "col-lg-2 total_fondos");
         $tempArray['global']['profitibility'] = $this->getPercentage($prof[0]->nodeValue);
         $tempArray['global']['investments'] = $numberOfInvestments;
         $tempArray['investments'] = $data1;
@@ -624,6 +917,43 @@ class circulantis extends p2pCompany {
 
         $str = $this->doCompanyLogout();
         return true;
+    }
+
+    /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+
+
+        $node1 = $this->cleanDom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'input'),
+            array('typeSearch' => 'element', 'tag' => 'button'),
+                ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title', 'value'));
+
+        $node1 = $this->cleanDom($node1, array(//We only want delete the class of td, no other classes
+            array('typeSearch' => 'element', 'tag' => 'td'),
+                ), array('class'));
+
+
+        $node2 = $this->cleanDom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'input'),
+            array('typeSearch' => 'element', 'tag' => 'button'),
+                ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title', 'value'));
+
+        $node2 = $this->cleanDom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'td'),
+                ), array('class'));
+
+
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
+        return $structureRevision;
     }
 
 }

@@ -1,61 +1,64 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
+/**
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+ * | the Free Software Foundation; either version 2 of the License, or 	|
+ * | (at your option) any later version.                                      		|
+ * | This file is distributed in the hope that it will be useful   		    	|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
+ * | GNU General Public License for more details.        			              	|
+ * +---------------------------------------------------------------------------------------------------------------+
  *
  *
- * Contains the code required for accessing the website of "Comunitae"
- *
- * 
- * @author Antoine de Poorter
+ * @author
  * @version 0.1
- * @date 2016-11-05
+ * @date 2016-10-25
  * @package
-
-function calculateLoanCost()										[Not OK]
-function collectCompanyMarketplaceData()								[OK, tested]
-function companyUserLogin()										[OK, tested]
-function collectUserInvestmentData()									[OK, tested]
-function companyUserLogout()										[Not OK, testing]
-parallelization on collectUserInvestmentData                                                            [OK, tested]
-
-  2016-11-05	  version 2016_0.1
-  Basic version									
-
-  2017-03-27
-  line 251 - changed parameter for url.
-
-  2017-03-18
-  Captured exceptions for table errors.
-
-  2017-4-18
-  Login error fixed always forcing login
- 
-  2017-06-01
+ *
+ * function calculateLoanCost()										[Not OK]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * function companyUserLogout()										[Not OK, testing]
+ * parallelization on collectUserInvestmentData                                                            [OK, tested]
+ *
+ * 2016-11-05	  version 2016_0.1
+ * Basic version
+ *
+ * 2017-03-27
+ * line 251 - changed parameter for url.
+ *
+ * 2017-03-18
+ * Captured exceptions for table errors.
+ *
+ * 2017-4-18
+ * Login error fixed always forcing login
+ *
+ * 2017-06-01
  * Added new urlSequences for Arboribus, it changed because we had some errors
  * Fixed logout and login problem
- 
-  They forced logout after a login
-  PENDING:
-  logout procedure
-
+ *
+ *
+ *  2017-08-07
+ *  Arboribus 100% adaptation
+ *  collectCompanyMarketplaceData - Read completed investment table
+ *  collectHistorical - Added
+ * 
+ * 2017-08-10
+ * Structure revision added
+ * 
+ * 2017-08-11
+ * Status definition added
+ * 
+ * 
  */
-
 class arboribus extends p2pCompany {
-    
+
     private $credentials = array();
     private $strListInvestments;
     private $tempDataInvestment;
@@ -93,12 +96,169 @@ class arboribus extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the marketplace data
-     * 	@return array	Each investment option as an element of an array
-     * 	
+     * Collects the marketplace data, Arboribus don't need pagination.
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
-    function collectCompanyMarketplaceData() {
+    function collectCompanyMarketplaceData($companyBackup, $structure) {
+
+
+        $readController = 0;
+        $investmentController = false;
+        $totalArray = array();
+
+        $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
+
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $tableNumber = 1; //Arboribus have two tables.
+
+        $tables = $dom->getElementsByTagName('table');
+        foreach ($tables as $keyTable => $table) {
+            $classy = $table->getAttribute("class");
+
+            //echo 'CLASE' . $classy;
+            //echo '<br>';
+
+
+            if ($classy == "arb_subasta_table") { //Read the tables with investment
+                $trs = $table->getElementsByTagName('tr');
+                if ($totalArray !== false) {
+                    foreach ($trs as $key => $tr) {
+                        $tempArray = array();
+
+
+
+                        if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
+                           $structureRevision = $this->htmlRevision($structure,'tr', $table, null, null ,null ,0 , 1);
+                           if($structureRevision[1]){
+                               $totalArray = false; //Stop reading in error                 
+                               break;
+                           }
+                        }
+
+
+                        $scripts = $tr->getElementsByTagName('script');
+                        foreach ($scripts as $script) { //Time left is in a script, read the script and calculate.
+                            $date = explode(',', preg_replace('/[^0-9\-,]/', '', $script->nodeValue));
+                            $limitDay = $date[0] . '-' . explode('-', $date[1])[0] . '-' . $date[2] . ' ' . $date[7] . ':' . substr(trim($date[8]), 0, -1);
+                            $limitDate = strtotime($limitDay);
+                            $now = strtotime(date("Y-m-d H:i"));
+                            $timeleft = $limitDate - $now;
+                            $daysleft = round((($timeleft / 24) / 60) / 60);
+
+
+                            echo $limitDate;
+                            echo '<br>';
+                            echo $now;
+                            echo '<br>';
+                            echo $timeleft;
+                            echo '<br>';
+                            echo $daysleft;
+                            echo '<br>';
+
+                            $tempArray['marketplace_timeLeft'] = $daysleft;
+                            $tempArray['marketplace_timeLeftUnit'] = 1;
+                        }
+
+                        $tds = $tr->getElementsByTagName('td');
+
+                        $index = -1;
+
+                        $tempArray['marketplace_country'] = 'ES';
+
+                        foreach ($tds as $td) {
+
+                            $index = $index + 1;
+                            switch ($index) {
+                                case 1:
+                                    $tempArray['marketplace_loanReference'] = $td->nodeValue;
+                                    break;
+                                case 2:
+                                    $innerIndex = 0;
+                                    $as = $td->getElementsByTagName('a');
+
+                                    foreach ($as as $a) {  // only 1 will be found
+                                        $tempArray['marketplace_purpose'] = trim($a->nodeValue);
+                                    }
+                                    $tempArray['marketplace_requestorLocation'] = trim(str_replace($tempArray['marketplace_purpose'], "", $td->nodeValue));
+                                    break;
+                                case 3:
+                                    $tempArray['marketplace_rating'] = $td->nodeValue;
+                                    break;
+                                case 4:
+                                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
+                                    break;
+                                case 6:
+                                    $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($td->nodeValue));
+                                    break;
+                                case 7:
+                                    $divs = $td->getElementsByTagName('div');
+                                    $innerIndex = 0;
+                                    foreach ($divs as $div) {
+
+                                        if ($innerIndex == 1) {
+                                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($div->nodeValue));
+
+                                            if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                                                if ($tableNumber == 1) {
+                                                    $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                                    $tempArray['marketplace_status'] = PERCENT;
+                                                } else {
+                                                    $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                                }
+                                                foreach ($companyBackup as $inversionBackup) {
+                                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                                                        $readController++;
+                                                        $investmentController = true;
+                                                        $tempArray['marketplace_timeLeft'] = 0;
+                                                        $tempArray['marketplace_timeLeftUnit'] = -1;
+                                                    }
+                                                }
+                                            } else {
+                                                $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                                            }
+                                        }
+                                        $innerIndex = $innerIndex + 1;
+                                    }
+                                    break;
+                                case 8:
+                                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
+                                    break;
+                            }
+                        }
+
+                        $this->print_r2($tempArray);
+
+                        if ($investmentController) { //Don't save a already existing investment
+                            unset($tempArray);
+                            $investmentController = false;
+                        } else {
+                            $totalArray[] = $tempArray;
+                            unset($tempArray);
+                        }
+                    }
+                }
+            }
+            $tableNumber++;
+        }
+        return [$totalArray, $structureRevision[0],$structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
+    }
+
+    /**
+     * collect all investment
+     * @param Array $structure
+     * @param Int $page
+     * @param Int $type
+     * @return Array
+     */
+    function collectHistorical($structure, $page = null, $type = null) { //Arboribus dont have paginaticon
         $totalArray = array();
 
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
@@ -107,66 +267,137 @@ class arboribus extends p2pCompany {
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
+
         $tables = $dom->getElementsByTagName('table');
-        foreach ($tables as $table) {   // only deal with FIRST table in document
-            $trs = $table->getElementsByTagName('tr');
-            foreach ($trs as $tr) {
-                $tds = $tr->getElementsByTagName('td');
-                $index = -1;
-                $tempArray = array();
-                foreach ($tds as $td) {
-                    $index = $index + 1;
+        foreach ($tables as $keyTable => $table) {   // only deal with FIRST table in document
+            $classy = $table->getAttribute("class");
 
-                    switch ($index) {
-                        case 1:
-                            $tempArray['marketplace_loanReference'] = $td->nodeValue;
-                            break;
-                        case 2:
-                            $innerIndex = 0;
-                            $as = $td->getElementsByTagName('a');
+            echo 'CLASE' . $classy;
+            echo '<br>';
 
-                            foreach ($as as $a) {  // only 1 will be found
-                                $tempArray['marketplace_purpose'] = trim($a->nodeValue);
+
+            if ($classy == "arb_subasta_table") {
+
+                $trs = $table->getElementsByTagName('tr');
+
+                if ($totalArray !== false) {
+                    foreach ($trs as $key => $tr) {
+
+
+                        if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
+                           $structureRevision = $this->htmlRevision($structure,'tr',$table, null, null, null, 0, 1);
+                           if($structureRevision[1]){
+                               $totalArray = false; //Stop reading in error                 
+                               break;
+                           }
+                        }
+
+
+                        $tds = $tr->getElementsByTagName('td');
+                        $index = -1;
+
+                        $tempArray = array();
+
+                        $scripts = $tr->getElementsByTagName('script');
+                        foreach ($scripts as $script) {
+
+                            $date = explode(',', preg_replace('/[^0-9\-,]/', '', $script->nodeValue));
+                            $limitDay = $date[0] . '-' . explode('-', $date[1])[0] . '-' . $date[2] . ' ' . $date[7] . ':' . substr(trim($date[8]), 0, -1);
+                            $limitDate = strtotime($limitDay);
+                            $now = strtotime(date("Y-m-d H:i"));
+                            $timeleft = $limitDate - $now;
+                            $daysleft = round((($timeleft / 24) / 60) / 60);
+
+
+                            echo $limitDate;
+                            echo '<br>';
+                            echo $now;
+                            echo '<br>';
+                            echo $timeleft;
+                            echo '<br>';
+                            echo $daysleft;
+                            echo '<br>';
+
+                            $tempArray['marketplace_timeLeft'] = $daysleft;
+                            $tempArray['marketplace_timeLeftUnit'] = 1;
+                        }
+
+
+                        $tempArray['marketplace_country'] = 'ES';
+                        $tempArray['marketplace_timeLeft'] = $daysleft;
+                        $tempArray['marketplace_timeLeftUnit'] = 1;
+
+                        foreach ($tds as $td) {
+                            $index = $index + 1;
+
+                            switch ($index) {
+                                case 1:
+                                    $tempArray['marketplace_loanReference'] = $td->nodeValue;
+                                    break;
+                                case 2:
+                                    $innerIndex = 0;
+                                    $as = $td->getElementsByTagName('a');
+
+                                    foreach ($as as $a) {  // only 1 will be found
+                                        $tempArray['marketplace_purpose'] = trim($a->nodeValue);
+                                    }
+                                    $tempArray['marketplace_requestorLocation'] = trim(str_replace($tempArray['marketplace_purpose'], "", $td->nodeValue));
+                                    break;
+                                case 3:
+                                    $tempArray['marketplace_rating'] = $td->nodeValue;
+                                    break;
+                                case 4:
+                                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
+                                    break;
+                                case 6:
+                                    $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($td->nodeValue));
+                                    break;
+                                case 7:
+                                    $divs = $td->getElementsByTagName('div');
+                                    $innerIndex = 0;
+                                    foreach ($divs as $div) {
+
+                                        if ($innerIndex == 1) {
+                                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($div->nodeValue));
+                                        }
+                                        $innerIndex = $innerIndex + 1;
+                                    }
+                                    break;
+                                case 8:
+                                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
+                                    break;
                             }
-                            $tempArray['marketplace_requestorLocation'] = trim(str_replace($tempArray['marketplace_purpose'], "", $td->nodeValue));
-                            break;
-                        case 3:
-                            $tempArray['marketplace_rating'] = $td->nodeValue;
-                            break;
-                        case 4:
-                            $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
-                            break;
-                        case 6:
-                            $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($td->nodeValue));
-                            break;
-                        case 7:
-                            $divs = $td->getElementsByTagName('div');
-                            $innerIndex = 0;
-                            foreach ($divs as $div) {
+                        }
 
-                                if ($innerIndex == 1) {
-                                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($div->nodeValue));
-                                }
-                                $innerIndex = $innerIndex + 1;
+                        if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                            if ($tableNumber == 1) {
+                                $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                                $tempArray['marketplace_status'] = PERCENT;
+                            } else {
+                                $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                                $tempArray['marketplace_status'] = CONFIRMED;
+                                $tempArray['marketplace_timeLeft'] = 0;
+                                $tempArray['marketplace_timeLeftUnit'] = -1;
                             }
-                            break;
-                        case 8:
-                            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
-                            break;
+                        } else {
+                            $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                        }
+
+                        $this->print_r2($tempArray);
+
+                        $totalArray[] = $tempArray;
+
+                        unset($tempArray);
                     }
                 }
-
-                $this->print_r2($tempArray);
-                if ($tempArray['marketplace_subscriptionProgress'] <> 10000) {
-                    $totalArray[] = $tempArray;
-                }
-                unset($tempArray);
             }
-            break;
         }
-        return $totalArray;
+        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
-    
+
     /**
      *
      * 	Collects the investment data of the user
@@ -174,13 +405,13 @@ class arboribus extends p2pCompany {
      * 	
      */
     function collectUserInvestmentDataParallel($str) {
-        
+
         switch ($this->idForSwitch) {
             /////////////LOGIN
             case 0:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
-                break;  
+                break;
             case 1:
                 //Login fixed
                 $dom = new DOMDocument;
@@ -239,7 +470,7 @@ class arboribus extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 $as = $dom->getElementsByTagName('a');
                 $resultMyArboribus = false;
-                
+
                 foreach ($as as $a) {
                     if (strcasecmp(trim($a->nodeValue), "Salir") == 0) {  // Login confirmed           
                         $this->mainPortalPage = $str;
@@ -247,7 +478,7 @@ class arboribus extends p2pCompany {
                     }
                 }
 
-                
+
                 if (!$resultMyArboribus) {   // Error while logging in
                     echo __FILE__ . " " . __LINE__ . " LOGIN ERROR<br>";
                     $tracings = "Tracing:\n";
@@ -258,13 +489,12 @@ class arboribus extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     return $this->getError(__LINE__, __FILE__);
-                    
                 }
                 echo __FILE__ . " " . __LINE__ . " LOGIN CONFIRMED<br>";
                 $dom = new DOMDocument;
                 $dom->loadHTML($this->mainPortalPage); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
                 $dom->preserveWhiteSpace = false;
-        //        echo $this->mainPortalPage;
+                //        echo $this->mainPortalPage;
                 echo __FILE__ . " " . __LINE__ . "<br>";
 
                 echo __FILE__ . " " . __LINE__ . "<br>";
@@ -342,7 +572,7 @@ class arboribus extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 // deal with amortization table and normalize the loan state
-                /*try {*/   
+                /* try { */
                 $projectAmortizationData = $this->getElements($dom, "table", "class", "resumen"); // only 1 found
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
@@ -359,14 +589,14 @@ class arboribus extends p2pCompany {
                     $mainIndex = $mainIndex + 1;
                     $subIndex = -1;
                     $tds = $tr->getElementsByTagName('td');
-                    /*$this->verifyNodeHasElements($tds);
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
-                    }*/
+                    /* $this->verifyNodeHasElements($tds);
+                      if (!$this->hasElements) {
+                      return $this->getError(__LINE__, __FILE__);
+                      } */
                     echo __FILE__ . " " . __LINE__ . "<br>";
                     foreach ($tds as $td) {
                         $subIndex = $subIndex + 1;
- //                       echo __FILE__ . " " . __LINE__ . "<br>";
+                        //                       echo __FILE__ . " " . __LINE__ . "<br>";
                         //¿
                         if ($subIndex == 7) {
                             $imgs = $this->getElements($td, "img", "title", "pagado");
@@ -388,7 +618,7 @@ class arboribus extends p2pCompany {
 //		if (strncasecmp($investmentListItem['estado'], "Al d", 2) == 0) {		// checking for status words "Al día"
 //			$tempDataInvestment['status'] = OK;
 //		}
- //               echo __FILE__ . " " . __LINE__ . "<br>";
+                //               echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->tempDataInvestment[$this->investmentSequence]['commission'] = 0;
 //Duration	Unit (=meses) is hard coded		
                 $this->tempDataInvestment[$this->investmentSequence]['duration'] = count($amortizationTable) . " Meses";
@@ -396,7 +626,7 @@ class arboribus extends p2pCompany {
                 $this->tempDataInvestment[$this->investmentSequence]['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 7);
                 $this->tempDataInvestment[$this->investmentSequence]['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 7);
                 $this->tempArray['investments'][] = $this->tempDataInvestment[$this->investmentSequence];
- //               echo __FILE__ . " " . __LINE__ . "<br>";
+                //               echo __FILE__ . " " . __LINE__ . "<br>";
 // update the global data of Arboribus
                 $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] +
                         $this->tempDataInvestment[$this->investmentSequence]['xxxx'];
@@ -404,22 +634,19 @@ class arboribus extends p2pCompany {
                         $this->tempDataInvestment[$this->investmentSequence]['profitGained'];
                 $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->tempDataInvestment[$this->investmentSequence]['invested'];
 //                echo __FILE__ . " " . __LINE__ . "<br>";
-
                 // The normal logout procedure does not work so do a workaround
                 // Force a logout with data elements provided in the last read page.
                 //$this->companyUserLogout();
-                if (($this->numberIfInvestments-1) != $this->investmentSequence) {
+                if (($this->numberIfInvestments - 1) != $this->investmentSequence) {
                     $this->idForSwitch = 7;
                     $this->investmentSequence++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->investmentSequence]);
                     break;
-                }
-                else {
+                } else {
                     $this->tempArray['global']['investments'] = $this->numberIfInvestments;
                     $this->idForSwitch++;
                     $this->getCompanyWebpageMultiCurl();
                     break;
-                    
                 }
             case 8:
                 //Added urlsequences on database for logout
@@ -495,7 +722,7 @@ class arboribus extends p2pCompany {
         $url = array_shift($this->urlSequence);
         echo __FILE__ . " " . __LINE__ . "<br>";
 
-      
+
         //       echo __FILE__ . " " . __LINE__ . "<br>";
         $numberIfInvestments = 0;
         foreach ($investmentListItems as $key => $investmentListItem) {
@@ -668,7 +895,6 @@ class arboribus extends p2pCompany {
         return 0; // Log in fails due to authentication error 
     }
 
-
     /**
      *
      * 	Logout of user from to company portal.
@@ -705,10 +931,10 @@ class arboribus extends p2pCompany {
             }
         }
     }
-    
+
     function companyUserLogoutMultiCurl($str) {
 
-        
+
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -738,7 +964,6 @@ class arboribus extends p2pCompany {
         }
     }
 
-
     /**
      *
      * 	translate the html of loan state to the winvestify normalized state
@@ -759,6 +984,40 @@ class arboribus extends p2pCompany {
         }
         echo "normalizedState = $normalizedState<br>";
         return $normalizedState;
+    }
+
+    /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+
+        $node1 = $this->cleanDom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'span'),
+                ), array('src', 'alt', 'href', 'style', 'id'));
+
+       $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'script'),
+        ));
+        
+        $node2 = $this->cleanDom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'span'),
+                ), array('src', 'alt', 'href', 'style', 'id'));
+
+       $node2 = $this->cleanDomTag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'script'),
+        ));
+        
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
+        return $structureRevision;
     }
 
 }
