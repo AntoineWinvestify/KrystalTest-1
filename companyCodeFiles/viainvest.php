@@ -85,7 +85,7 @@ class viainvest extends p2pCompany {
         $as = $dom->getElementsByTagName('a');
         foreach ($as as $a) {
             //echo $a->nodeValue . HTML_ENDOFLINE;
-            if (trim($a->nodeValue) == 'Account') {
+            if (trim($a->getAttribute('title')) == 'Logout') {
                 $confirm = true;
                 break;
             }
