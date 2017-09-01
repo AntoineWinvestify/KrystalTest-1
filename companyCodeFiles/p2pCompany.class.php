@@ -1371,16 +1371,16 @@ class p2pCompany {
                     $valueAttrNode1 = $node1Attr[$i]->nodeValue;
                     $valueAttrNode2 = $node2Attr[$i]->nodeValue;
 
-                   /*echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                   echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
                     echo $nameAttrNode1 . '=>' . $valueAttrNode1 . '<br>';
-                    echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>';*/
+                    echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>';
 
                     if ($nameAttrNode1 != $nameAttrNode2) {
-                        //echo 'Node attr name error';
+                        echo 'Node attr name error';
                         $this->same_structure = false;
                     }
                     if ($valueAttrNode1 != $valueAttrNode2) {
-                        //echo 'Node attr value error';
+                        echo 'Node attr value error';
                         $this->sameStructure = false;
                     }
                     if ($this->sameStructure) {
@@ -1394,19 +1394,19 @@ class p2pCompany {
                     }
                 }
             } else if ($node1Attr->length != $node2Attr->length) {
-                /*echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
                 echo $node1Attr->length . '<br>';
                 echo $node2Attr->length . '<br>';
-                echo 'Node attr length error';*/
+                echo 'Node attr length error';
                 $this->sameStructure = false;
             }
         } else if ($node1->hasAttributes() && !$node2->hasAttributes()) {
-            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            //echo 'Node2 has attr error';
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node2 has attr error';
             $this->sameStructure = false;
         } else if (!$node1->hasAttributes() && $node2->hasAttributes()) {
-            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            //echo 'Node1 has attr error';
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node1 has attr error';
             $this->sameStructure = false;
         }
         if ($this->sameStructure && !$repeatedStructureFound) {
@@ -1423,15 +1423,15 @@ class p2pCompany {
                     }
                     
                     if (!$childrenNode1[$i] && $childrenNode2[$i]) { //First we verify if node exist
-                        /*echo 'Node1 doesnt exist: <br>';
+                        echo 'Node1 doesnt exist: <br>';
                         echo 'parent => ' . $childrenNode1[$i]->parentNode->nodeName . ' of ' . $childrenNode1[$i]->nodeName . ' value ' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';*/
+                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';
 
                         $this->sameStructure = false;
                     } else if($childrenNode1[$i] && !$childrenNode2[$i]){
-                        /*echo 'Node2 doesnt exist: <br>';
+                        echo 'Node2 doesnt exist: <br>';
                         echo $childrenNode1[$i]->parentNode->nodeName . ' ' . $childrenNode1[$i]->nodeName . ' is 1' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';*/
+                        echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';
 
                         $this->sameStructure = false;
                     }
@@ -1442,13 +1442,13 @@ class p2pCompany {
 
                     $this->verifyDomStructure($childrenNode1[$i], $childrenNode2[$i], $uniquesElement, $limit);
                 }
-            } else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
-                //echo 'Node has attr error 2';
+            } /*else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
+                echo 'Node has attr error 2';
                 $this->sameStructure = false;
             } else if ($node1->hasChildNodes() && !$node2->hasChildNodes()) {
-                //echo 'Node has attr error 2';
+                echo 'Node has attr error 2';
                 $this->sameStructure = false;
-            }
+            }*/
         }
         return $this->sameStructure;
     }
