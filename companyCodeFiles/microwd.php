@@ -59,7 +59,7 @@ class microwd extends p2pCompany {
         $as = $dom->getElementsByTagName('a');
         foreach ($as as $a) {
             //echo $a->nodeValue . HTML_ENDOFLINE;
-            if (trim($a->nodeValue) == 'Logout') {
+            if (trim($a->nodeValue) == 'Salir') {
                 $confirm = true;
                 break;
             }
