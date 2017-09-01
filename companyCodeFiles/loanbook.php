@@ -101,7 +101,7 @@ class loanbook extends p2pCompany {
     function collectCompanyMarketplaceData($companyBackup, $structure) { //loanbook doesnt have pagination, it uses one table
         $readController = 0;
         $investmentController = false;
-
+        $dontRepeat = true;
         $totalArray = array();
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
 
@@ -117,12 +117,14 @@ class loanbook extends p2pCompany {
                 foreach ($trs as $key => $tr) {
 
 
-                    if ($key == 0) { //Compare structures, olny compare the first element     
-                        $structureRevision = $this->htmlRevision($structure,'tr',$section,'class','fila_subasta', null, 0, 1);
-                        if($structureRevision[1]){
+                    if ($key == 0 && $dontRepeat == true) { //Compare structures, olny compare the first element     
+                        echo 'Comparo';
+                        $structureRevision = $this->htmlRevision($structure, 'tr', $section, 'class', 'fila_subasta', null, 0, 1);
+                        $dontRepeat = false;
+                        if ($structureRevision[1]) {
                             $totalArray = false; //Stop reading in error                 
                             break;
-                        }                   
+                        }
                     }
 
 
@@ -188,7 +190,17 @@ class loanbook extends p2pCompany {
                                         //$tempArray['marketplace_sector'] = $sector;
                                         $tempArray['marketplace_requestorLocation'] = $location;
                                         $tempArray['marketplace_amount'] = $this->getMonetaryValue($tempDataAmount[1]);
-                                        $tempArray['marketplace_loanReference'] = trim($loanReference[1]);
+                                        echo 'Reference: ' . print_r($loanReference);
+
+                                        $spans = $td->getElementsByTagName('span');
+                                        foreach ($spans as $span) {
+                                            echo 'span: ' . $span->nodeValue . SHELL_ENDOFLINE;
+                                            if (!strpos($span->nodeValue, 'CM' == false)) {
+                                                $tempArray['marketplace_loanReference'] = trim($span->nodeValue);
+                                            }
+                                        }
+
+                                        //$tempArray['marketplace_loanReference'] = trim($loanReference[1]);
                                         $as = $div->getElementsByTagName('a');  //just one is found
                                         foreach ($as as $a) {
                                             $tempArray['marketplace_purpose'] = trim($a->nodeValue);
@@ -253,12 +265,13 @@ class loanbook extends p2pCompany {
                         $investmentController = false;
                     } else {
                         //$this->print_r2($tempArray);
+                        //$this->print_r2($tempArray);
                         $totalArray[] = $tempArray;
                         //$this->print_r2($totalArray);
                         unset($tempArray);
                     }
                 }
-                if ($readController > 2) { //If we fin more than two completed investment existing in the backpup, stop reading
+                if ($readController > 15) { //If we fin more than two completed investment existing in the backpup, stop reading
                     echo 'Stop reading';
                     break;
                 }
@@ -284,7 +297,7 @@ class loanbook extends p2pCompany {
     function collectHistorical($structure) { //loanbook doesnt have pagination
         $totalArray = array();
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
-
+        $dontRepeat = true;
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -295,13 +308,14 @@ class loanbook extends p2pCompany {
             $trs = $section->getElementsByTagName('tr');
             if ($totalArray !== false) {
                 foreach ($trs as $key => $tr) {
-                    
-                    if ($key == 0) { //Compare structures, olny compare the first element     
-                        $structureRevision = $this->htmlRevision($structure,'tr',$section,'class','fila_subasta', null, 0, 1);
-                        if($structureRevision[1]){
+
+                    if ($key == 0 && $dontRepeat == true) { //Compare structures, olny compare the first element     
+                        $structureRevision = $this->htmlRevision($structure, 'tr', $section, 'class', 'fila_subasta', null, 0, 1);
+                        $dontRepeat = false;
+                        if ($structureRevision[1]) {
                             $totalArray = false; //Stop reading in error                 
                             break;
-                        }                   
+                        }
                     }
 
                     $tempAttribute = $tr->getAttribute('class');
@@ -441,7 +455,7 @@ class loanbook extends p2pCompany {
                 unset($totalArray[$key]);
             }
         }
-        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]] ; //false -> Loanbook doesnt have pagination
+        return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]]; //false -> Loanbook doesnt have pagination
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
@@ -711,7 +725,7 @@ class loanbook extends p2pCompany {
                 $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
                         $this->data1[$this->accountPosition]['profitGained'];
                 $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->accountPosition]['invested'];
-                if ($this->accountPosition < $this->numberOfInvestments-1) {
+                if ($this->accountPosition < $this->numberOfInvestments - 1) {
                     $this->idForSwitch = 10;
                     $this->accountPosition++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);
@@ -970,8 +984,8 @@ class loanbook extends p2pCompany {
         $node1 = $this->cleanDom($node1, array(//We only want delete class of the span div, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class'));
-        
-        $node1 = $this->cleanDomTag($node1, array(   
+
+        $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment,
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'rating') //Rating div causes problems
         ));
@@ -987,12 +1001,12 @@ class loanbook extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class'));
 
-        $node2 = $this->cleanDomTag($node2, array(   
+        $node2 = $this->cleanDomTag($node2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment, 
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'rating') //Rating div causes problems
         ));
-        
-                
+
+
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
