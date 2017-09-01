@@ -171,7 +171,7 @@ class finanzarel extends p2pCompany {
         $pfpBaseUrl = 'http://www.finanzarel.com';
         $path = 'prueba';
 
-        $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel');
+        $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
         echo 'Downloaded';
     }
 

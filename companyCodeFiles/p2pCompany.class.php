@@ -1606,12 +1606,11 @@ function print_r2($val){
          * @param string $pfpBaseUrl pfp main url (like http://www.zank.com.es for zank)
          * @param string $path path where you want save the file
          */
-        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName) {
+        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity) {
 
             $date = date("d-m-Y_H:i:sa");
             $configPath = Configure::read('files');
             $partialPath = $config['investorPath'];
-            $identity = $this->Session->read('Auth.User.Investor.investor_identity');
             $path = $partialPath . $identity . DS . 'Investments' .DS .$date . DS . $pfpName;
                     
                     
