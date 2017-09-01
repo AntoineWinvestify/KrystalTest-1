@@ -42,27 +42,33 @@ class twino extends p2pCompany {
 
         $credentials['name'] = $user;
         $credentials['password'] = $password;
-
-        $payload =  json_encode('{"name":' . $credentials['name'] . ',"password"' . $credentials['password'] . ',"googleAnalyticClientId":"1778227581.1503479723"}');
+        $credentials['googleAnalyticClientId'] = '1778227581.1503479723';
+        $payload = json_encode($credentials);
+        
         echo $payload;
         $this->doCompanyLoginRequestPayload($payload); //do login
 
         $str = $this->getCompanyWebpage();
-        echo $str;
-        $dom = new DOMDocument;  //Check if works
+        $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
-
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;  //Check if works
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        echo $str;
+        
         $confirm = false;
 
-        $pres = $dom->getElementsByTagName('pre');
-        foreach ($pres as $pre) {
-            echo 'Entrando node value; ' . $pre->nodeValue . HTML_ENDOFLINE;
-            if (trim($pre->nodeValue) == 'true') {
+        /*$pres = $dom->getElementsByTagName('pre');
+        foreach ($pres as $pre) {*/
+           // echo 'Entrando node value; ' . $pre->nodeValue . HTML_ENDOFLINE;
+            if ($str == true) {
                 $confirm = true;
+                //break;
             }
-        }
+       // }
 
 
 

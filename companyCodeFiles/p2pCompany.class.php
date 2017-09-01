@@ -293,7 +293,7 @@ class p2pCompany {
 
         //set data to be posted
         curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-
+        
         // Fail the cURL request if response code = 400 (like 404 errors)
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
@@ -375,7 +375,8 @@ class p2pCompany {
 
         //set data to be posted
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
-
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        
         // Fail the cURL request if response code = 400 (like 404 errors)
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
