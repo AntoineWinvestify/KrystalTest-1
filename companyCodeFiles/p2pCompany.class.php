@@ -330,6 +330,92 @@ class p2pCompany {
         return $str;
     }
 
+    
+    function doCompanyLoginRequestPayload($payload) {
+
+
+        $url = array_shift($this->urlSequence);
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "<strong>" . "TestSystem: file = $currentScreen<br>" . "</strong>";
+                return $str;
+            }
+        }
+
+
+        $curl = curl_init();
+        if (!$curl) {
+            echo __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
+            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
+            $msg = $msg . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+// check if extra headers have to be added to the http message  
+        if (!empty($this->headers)) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+            unset($this->headers);   // reset fields
+        }
+
+        // Set the file URL to fetch through cURL
+        curl_setopt($curl, CURLOPT_URL, $url);
+        // Set a different user agent string (Googlebot)
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
+
+        // Follow redirects, if any
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        //set data to be posted
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+
+        // Fail the cURL request if response code = 400 (like 404 errors)
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+        // Return the actual result of the curl result instead of success code
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        // Wait for 10 seconds to connect, set 0 to wait indefinitely
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+
+        // Execute the cURL request for a maximum of 50 seconds
+        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+
+        // Do not check the SSL certificates
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);  // important
+        curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);  // Important
+        // Fetch the URL and save the content
+        $str = curl_exec($curl);
+        if (!empty($this->testConfig['active']) == true) {
+            print_r(curl_getinfo($curl));
+            echo "<br>";
+            print_r(curl_error($curl));
+            echo "<br>";
+        }
+        curl_close($curl);
+
+        if ($this->config['appDebug'] == true) {
+            echo "LOGIN URL = $url <br>";
+        }
+        if ($this->config['tracingActive'] == true) {
+            $this->doTracing($this->config['traceID'], "LOGIN", $str);
+        }
+        return $str;
+    }
+    
+    
+    
+    
+    
     /**
      *
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
@@ -592,60 +678,6 @@ class p2pCompany {
     
     
     
-    /** used by both the investors and the admin user for obtaining marketplace data
-     *
-     * 	Enter the Webpage of the user's portal
-     * 	@param string 		$url	The url is read from the urlSequence array, i.e. contents of first element
-     * 	@return	string		$str	html string
-     *
-     */
-    function doCompanyLoginMultiCurlRequestPayload($payload) {
-
-        $url = array_shift($this->urlSequence);
-        echo $url;
-        $this->errorInfo = $url;
-        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
-            if (!empty($this->testConfig['siteReadings'])) {
-                $currentScreen = array_shift($this->testConfig['siteReadings']);
-                $str = file_get_contents($currentScreen);
-
-                if ($str === false) {
-                    echo "cannot find file<br>";
-                    exit;
-                }
-                echo "<strong>" . "TestSystem: file = $currentScreen<br>" . "</strong>";
-                return $str;
-            }
-        }
-
-
-
-
-        $request = new \cURL\Request();
-        $request->getOptions()
-                ->set(CURLOPT_URL, $url)
-                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
-                ->set(CURLOPT_FOLLOWLOCATION, true)
-                ->set(CURLOPT_POSTFIELDS, $payload)
-                -ser(CURLOPT_HTTPHEADER, array('Content-Type:application/json'))
-                ->set(CURLOPT_FAILONERROR, true)
-                ->set(CURLOPT_RETURNTRANSFER, true)
-                ->set(CURLOPT_CONNECTTIMEOUT, 30)
-                ->set(CURLOPT_TIMEOUT, 100)
-                ->set(CURLOPT_SSL_VERIFYHOST, false)
-                ->set(CURLOPT_SSL_VERIFYPEER, false)
-                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
-                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
-
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
-        // Add the url to the queue
-        $this->marketplaces->addRequetsToQueueCurls($request);
-    }
-    
-    
-    
-    
-
     /**
      *
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element

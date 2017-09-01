@@ -43,9 +43,11 @@ class twino extends p2pCompany {
         $credentials['name'] = $user;
         $credentials['password'] = $password;
         $credentials['googleAnalyticClientId'] = "1778227581.1503479723";
+        $payload = json_encode($credentials);
 
-        print_r($credentials);
-        $str = $this->doCompanyLogin($credentials); //do login
+        $this->doCompanyLoginRequestPayload($payload); //do login
+
+        $str = $this->getCompanyWebpage();
         echo $str;
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
