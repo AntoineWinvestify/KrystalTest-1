@@ -124,6 +124,7 @@ class p2pCompany{
         //Cookies
         protected $cookies_name = 'cookies.txt';
 	
+
 /**
 *
 * Prepare all the default data of the class and its subclasses
@@ -1605,8 +1606,15 @@ function print_r2($val){
          * @param string $pfpBaseUrl pfp main url (like http://www.zank.com.es for zank)
          * @param string $path path where you want save the file
          */
-        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path, $date) {
+        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName) {
 
+            $date = date("d-m-Y_H:i:sa");
+            $configPath = Configure::read('files');
+            $partialPath = $config['investorPath'];
+            $identity = $this->Session->read('Auth.User.Investor.investor_identity');
+            $path = $partialPath . $identity . DS . 'Investments' .DS .$date . DS . $pfpName;
+                    
+                    
         $output_filename = $fileName . '_' . $date . "." . $fileType;
 
         $ch = curl_init();

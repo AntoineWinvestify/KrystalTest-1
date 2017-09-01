@@ -167,11 +167,11 @@ class finanzarel extends p2pCompany {
         echo $fileUrl . HTML_ENDOFLINE;
         $fileName = 'Finanzarel';
         $fileType = 'csv';
-        $date = date("d-m-Y_H:i:sa");
+
         $pfpBaseUrl = 'http://www.finanzarel.com';
         $path = 'prueba';
 
-        $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path, $date);
+        $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel');
         echo 'Downloaded';
     }
 
