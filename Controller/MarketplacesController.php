@@ -1,46 +1,66 @@
 <?php
 
-/*
-
- * MarketplacesController
- * Handles all functionality of the market place
+/**
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  |
+ * | the Free Software Foundation; either version 2 of the License, or 	|
+ * | (at your option) any later version.                                      		|
+ * | This file is distributed in the hope that it will be useful   		    	|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
+ * | GNU General Public License for more details.        			              	|
+ * +---------------------------------------------------------------------------------------------------------------+
+ *
+ *
+ * @author
+ * @version 0.1
+ * @date 2016-10-25
+ * @package
+ * 
+ *  2016-08-05		version 0.1
+ * basic version
+ *
+ * Remove all records which no longer appear in company market places, because they were		[OK, tested]
+ * fully subscribed or were not fully subscribed during the publication phase
+ *
+ * function getNext																			[OK, tested]
  *
  *
  *
-
-
-  2016-08-05		version 0.1
-  basic version
-
-  Remove all records which no longer appear in company market places, because they were		[OK, tested]
-  fully subscribed or were not fully subscribed during the publication phase
-
-  function getNext																			[OK, tested]
-
-
-
-  2016-12-12		version 0.2
-  Added new field: "marketplace_origCreated" in database backup. At the same time rectified error:
-  missing records in the marketplace_backup DB. -> added Model->clear in function "backupRecord"	[OK, tested]
-
-
-  2017-01-12
-  added functions xxx yyy zzz . These are AJAX functions which the browser sends for requesting Dashboard data
-
-  2017-05-02      version 0.3                                                                     [OK, tested]
-  Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
-
-
-
-
-  Pending:
-  Checking for "country of residence" and show only marketplace for that country				[Not OK]
-  Send an email in case of error while writing to the database in function cronMarketPlaceLoop
-  function cronMarketStart: check the issue of "country"
-  function "storeBetaTester": check the validility of email address using "mailgun.com" email verifier interface
+ * 2016-12-12		version 0.2
+ * Added new field: "marketplace_origCreated" in database backup. At the same time rectified error:
+ *  missing records in the marketplace_backup DB. -> added Model->clear in function "backupRecord"	[OK, tested]
+ *
+ *
+ * 2017-01-12
+ * added functions xxx yyy zzz . These are AJAX functions which the browser sends for requesting Dashboard data
+ *
+ * 2017-05-02      version 0.3                                                                     [OK, tested]
+ * Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
+ *
+ * 2017-08-01
+ * cronMarketPlaceLoop remake
+ * cronMarketPlaceHistorical new function
+ * 
+ * 2017-08-10
+ * Status fixing
+ * 
+ * 2017-08-11
+ * Status definition
+ * Type definition
+ * 
+ * 2017-08-29
+ * Application error message type
+ *
+ * Pending:
+ * Checking for "country of residence" and show only marketplace for that country				[Not OK]
+ * Send an email in case of error while writing to the database in function cronMarketPlaceLoop
+ * function cronMarketStart: check the issue of "country"
+ * function "storeBetaTester": check the validility of email address using "mailgun.com" email verifier interface
  */
-
-
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
@@ -49,9 +69,8 @@ class MarketPlacesController extends AppController {
 
     var $name = 'Marketplaces';
     var $helpers = array('Html', 'Form', 'Js');
-    var $uses = array('Marketplace', 'Company', 'Urlsequence');
+    var $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
     var $components = array('Security', 'Session');
-    
     private $queueCurls;
     private $newComp = array();
     private $tempArray = array();
@@ -92,7 +111,7 @@ class MarketPlacesController extends AppController {
         $geoData = $this->getGeoLocationData($userIp);          // Where is the user?
 
         $countryCode = $geoData['country_code'];
-        $filterConditions = array('Company.company_country' => $countryCode);
+        $filterConditions = array('Company.company_country' => $countryCode, 'company_showInGlobalMarketplace' => 1);
 
         $results = $this->Company->getCompanyList($filterConditions);
         $filterConditions = array('company_id' => $results);
@@ -183,13 +202,16 @@ class MarketPlacesController extends AppController {
 
         $locationData = $this->Session->read('locationData');
         $locationData['country_code'] = "ES";
-        $filterConditions = array('Company.company_country' => $locationData['country_code']);
+        $filterConditions = array('Company.company_country' => $locationData['country_code'], 'company_showInGlobalMarketplace' => 1);
 
         $companyResults = $this->Company->getCompanyDataList($filterConditions);
-
         $this->set('companyResults', $companyResults);
-        $marketPlaceResults = $this->Marketplace->getMarketplaceDataList();
 
+        $filterConditions = array('company_showInGlobalMarketplace' => 1);
+        $CompanyIdresults = $this->Company->getCompanyList($filterConditions);
+
+        $filterConditions = array('company_id' => $CompanyIdresults);
+        $marketPlaceResults = $this->Marketplace->getMarketplaceDataList($filterConditions);
         $this->set('marketPlaceResults', $marketPlaceResults);
     }
 
@@ -206,7 +228,7 @@ class MarketPlacesController extends AppController {
         $this->pageTitle = "MarketPlace";
 
         $country_code = $this->Session->read('locationData.country_code');
-        $filterConditions = array('Company.company_country' => $country_code);
+        $filterConditions = array(/* 'Company.company_country' => $country_code, */ 'company_showInGlobalMarketplace' => 1);
         $results = $this->Company->getCompanyList($filterConditions);
 
         $filterConditions = array('company_id' => $results);
@@ -228,13 +250,15 @@ class MarketPlacesController extends AppController {
      *
      */
 // start the cronjob
-    function cronMarketStart() {
+    function cronMarketStart($type = 1) {
+
 
         $this->autoRender = false;
         Configure::write('debug', 2);
+        $this->Structure = ClassRegistry::init('Structure');
+
 
         $country = "ES";
-        echo "country = $country and ip = $ip<br>";
 
         $filterConditions = array('Company.company_country' => $country);
         $companyDataResult = $this->Company->getCompanyDataList($filterConditions);
@@ -266,10 +290,18 @@ class MarketPlacesController extends AppController {
         $lastScannedCompany = $lastScanned['Configuration']['lastScannedCompany'];
         $companyList = $this->getNext($lastScannedCompany);
         $this->print_r2($companyList);
+
+
         foreach ($companyList as $companyId) {
             $this->Configuration->writeConfigParameter('lastScannedCompany', $companyId);
             echo "companyId = $companyId <br>";
-            $this->cronMarketPlaceLoop($companyId);
+            $structure = $this->Structure->getStructure($companyId, 1);
+            //print_r($structure);
+            if ($type == 1) {
+                $this->cronMarketPlaceLoop($companyId, $structure);
+            } else if ($type == 2) {
+                $this->cronMarketPlaceHistorical($companyId, $structure, $companyDataResult[$companyId]['company_hasMultiplePages']);
+            }
         }
     }
 
@@ -279,15 +311,20 @@ class MarketPlacesController extends AppController {
      * 
      *
      */
-    function cronMarketPlaceLoop($companyId) {
+    function cronMarketPlaceLoop($companyId, $structure) {
         $this->autoRender = false;
-        Configure::write('debug', 2);
+        $this->Structure = ClassRegistry::init('Structure');
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        //Configure::write('debug', 2);
 
         $companyConditions = array('Company.id' => $companyId);
         $result = $this->Company->getCompanyDataList($companyConditions);
 
         //pr($result);
         echo "<br>____ Checking Company " . $result[$companyId]['company_name'] . " ____<br>";
+
+        $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+        $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
 
         $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
         $newComp->defineConfigParms($result[$companyId]);
@@ -297,109 +334,182 @@ class MarketPlacesController extends AppController {
 
         $this->print_r2($urlSequenceList);
         $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $marketplaceArray = $newComp->collectCompanyMarketplaceData();
+        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure);
 
-// read all existing entries for company
-        $companyFilterConditions = array('company_id' => $result[$companyId]['id']);
-//echo  __FUNCTION__ . " " . __LINE__ . "company filtering condition = ";
-//$this->print_r2($companyFilterConditions);
-        $allCompanyMarketListings = $this->Marketplace->find("list", $params = array('recursive' => -1,
-            'fields' => array('Marketplace.company_id'),
-            'conditions' => $companyFilterConditions,
-                )
-        );
-        echo __FUNCTION__ . " " . __LINE__ . "<br>";
-//		$this->print_r2($allCompanyMarketListings);
 
-        foreach ($marketplaceArray as $listing) {
-            $conditions = array('marketplace_loanReference' => $listing['marketplace_loanReference']);
-//			echo "<br>" . __FUNCTION__ . " " . __LINE__ . " Conditions<br>";
-//			$this->print_r2($conditions);
-            $existingCompanyMarketListing = $this->Marketplace->find("all", $params = array('recursive' => -1,
-                'conditions' => $conditions,
-                'limit' => 1,
-                'order' => 'Marketplace.id DESC',
-                    )
-            );
-            echo __FUNCTION__ . " " . __LINE__ . "<br>";
-            $this->print_r2($existingCompanyMarketListing);
+        //echo 'Marketplace Result: ';
+        //$this->print_r2($marketplaceArray);
 
-            $listing['company_id'] = $result[$companyId]['id'];
-            echo __FUNCTION__ . " " . __LINE__ . " Company_id = " . $result[$companyId]['id'];
-            $this->Marketplace->clear();
-            $this->print_r2($listing);
 
-            if ($listing['marketplace_subscriptionProgress'] == 10000) { // company maintains this entry in their marketplace
-                echo __FUNCTION__ . " " . __LINE__ . " Loan with 100% detected<br>";
-                continue;             // eventhough you can no longer invest in this option
+        if ($marketplaceArray[1] && $marketplaceArray[1] != 1) {
+            echo 'Saving new structure';
+            $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[1], 'structure_type' => 1));
+            if ($marketplaceArray[2] == APP_ERROR) {
+                $this->Applicationerror->saveAppError('ERROR: Html/Json Structure','Html/Json structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+            } else if($marketplaceArray[2] == WARNING) {
+                $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+            } else if($marketplaceArray[2] == INFORMATION) {
+                $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
             }
+            
+        }
 
-            if (empty($existingCompanyMarketListing)) {   // New entry found, save it 
-                if ($this->Marketplace->save($listing, $validate == true)) {
-                    echo __FUNCTION__ . " " . __LINE__ . " " . "New listing found and saved in DB<br>";
-                } else {
-                    CakeLog::write('cronLog.txt', "Error saving following data: " . json_encode($listing));
-                    echo __FUNCTION__ . " " . __LINE__ . " " . "ERROR while trying to save a new listing in DB<br>";
-                }
-            } else { // already existing entry, so just update some of the data (if aplicable) for this listing like "daysLeft
-                echo __FUNCTION__ . " " . __LINE__ . " check if something has changed<br>";
-                $dataChangeDetected = false;
-                foreach ($listing as $key => $item) {
-                    $this->print_r2($item);
-                    echo __FILE__ . " " . __LINE__ . "   key = $key <br>";
-                    echo "comp1 = " . $existingCompanyMarketListing[0]['Marketplace'][$key] . " and comp2 = " . $item . "<br>";
-                    if (trim($existingCompanyMarketListing[0]['Marketplace'][$key]) <> trim($item)) {
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "A change detected <br>";
-                        $dataChangeDetected = true;
-                        break;
-                    }
-                }
-                if ($dataChangeDetected == true) {
-                    echo __FILE__ . " " . __LINE__ . "  Make a backup of DB record " . $existingCompanyMarketListing[0]['Marketplace']['id'] . "<br>";
-                    $resultBackup = $this->backupRecord($existingCompanyMarketListing[0]['Marketplace']['id']);
-                    if ($resultBackup == false) {
-                        CakeLog::write('cronLog.txt', 'Error saving backing up DB table: company_id = ' .
-                                $result[$companyId]['company_name'] . 'and loanReference =  ' .
-                                $listing['marketplace_loanReference']);
-                    }
-                    if ($this->Marketplace->save($listing, $validate == true)) {
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "A CHANGE of existing listing was detected <br>";
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "An updated listing saved as new entry in the DB<br>";
-                    } else {
-                        CakeLog::write('cronLog.txt', "Error saving following data: " . json_encode($listing));
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "ERROR while trying to save a new listing in DB<br>";
-                    }
-                } else {
-                    $listing['id'] = $existingCompanyMarketListing[0]['Marketplace']['id'];
-                    unset($allCompanyMarketListings[$listing['id']]);
-                    echo __FUNCTION__ . " " . __LINE__ . " " . "Nothing has changed so the existing listing will be updated in DB<br>";
-                    echo __FUNCTION__ . " " . __LINE__ . " " . "listingID = " . $listing['id'] . " <br>";
-//					write a 'dummy' field so that the "modified" field gets updated
-                    $listing['marketplace_loanReference'] = $existingCompanyMarketListing[0]['Marketplace']['marketplace_loanReference'];
-                    if ($this->Marketplace->save($listing, $validate == true)) {
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "Modified field has been updated <br>";
-                    } else {
-                        CakeLog::write('cronLog.txt', "Error saving following data: " . json_encode($listing));
-                        // error while saving data, log this and inform admin
-                        echo __FUNCTION__ . " " . __LINE__ . " " . "ERROR while trying to update an exiting listing in DB<br>";
+
+        foreach ($marketplaceArray[0] as $investment) { //Read the investment
+            $DontExist = true;
+            $backup = true;
+            $investment['company_id'] = $companyId;
+
+            foreach ($companyMarketplace as $marketplaceInvestment) {
+
+                if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
+                    $DontExist = false;
+                    echo "Investment already exist<br>";
+                    $investment['marketplace_investmentCreationDate'] = $marketplaceInvestment['Marketplace']['marketplace_investmentCreationDate'];
+                    if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If is completed
+                        echo "Investment completed<br>";
+
+                        //Delete from maketplace
+                        $this->Marketplace->delete($marketplaceInvestment['Marketplace']['id']);
+
+                        //Save complete in backup
+                        $investment['marketplace_origCreated'] = $marketplaceInvestment['Marketplace']['created'];
+                        $this->Marketplacebackup->create();
+                        $this->Marketplacebackup->save($investment);
+                        echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
+                        $this->print_r2($investment);
+                        continue;
+                    } else { //If isn't completed
+                        echo "Investment incompleted<br>";
+                        //Save in backup
+                        $investment['marketplace_origCreated'] = $marketplaceInvestment['Marketplace']['created'];
+                        $this->Marketplacebackup->create();
+                        $this->Marketplacebackup->save($investment);
+                        echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
+                        $this->print_r2($investment);
+                        unset($investment['marketplace_origCreated']);
+
+                        //Replace in marketplace
+                        $investment['id'] = $marketplaceInvestment['Marketplace']['id'];
+                        $this->Marketplace->save($investment);
+                        continue;
                     }
                 }
             }
-        }  // foreach ($marketplaceArray as $listing) {
-// move the records that were *NOT* modified to the backup database. These records indicate an loan entry which was
-// fully subscribed or which did not reach the fully subscribed status during the publication phase
-        echo __FUNCTION__ . " " . __LINE__ . " Check if records must be deleted <br>";
-        pr($allCompanyMarketListings);
-        foreach ($allCompanyMarketListings as $key => $companyListing) {
-            echo __FUNCTION__ . " " . __LINE__ . " " . "Move a non referenced DB record " .
-            $existingCompanyMarketListing[0]['Marketplace']['id'] .
-            " key = $key to backup<br>";
-//			$result = $this->backupRecord($existingCompanyMarketListing[0]['Marketplace']['id']);
-            $resultBackup = $this->backupRecord($key);
-            if ($resultBackup == false) {
-                CakeLog::write('cronLog.txt', 'Error saving backing up DB table: company_id = ' .
-                        $resultBackup['Company']['company_name'] . ' and loanReference =  ' .
-                        $listing['marketplace_loanReference']);
+
+            if ($DontExist) {//If not exist in winvestify marketplace
+                if ($investment['marketplace_subscriptionProgress'] == 10000 || $investment['marketplace_status'] == PERCENT || $investment['marketplace_status'] == CONFIRMED || $investment['marketplace_status'] == REJECTED) { //If it is completed
+                    echo "Investment completed<br>";
+                    foreach ($companyBackup as $investmentBackup) {
+                        //print_r($investmentBackup);
+                        if ($investment['marketplace_loanReference'] == $investmentBackup['Marketplacebackup']['marketplace_loanReference']) { //If it exist in winvestify backup
+                            $backup = false;
+                            $investment['marketplace_investmentCreationDate'] = $investmentBackup['Marketplacebackup']['marketplace_investmentCreationDate'];
+                            if ($investment['marketplace_status'] == $investmentBackup['Marketplacebackup']['marketplace_status']) { //Same status
+                                echo 'Ignore<br>';
+                                //Ignore
+                                continue;
+                            }
+                        }
+                    } if ($backup) { //If it not exist in winvestify backup
+                        $date = new DateTime();
+                        $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
+
+                        //Save in backup
+                        $this->Marketplacebackup->create();
+                        $this->Marketplacebackup->save($investment);
+                        echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
+                        $this->print_r2($investment);
+                        continue;
+                    }
+                } else {  //If isn't completed
+                    echo "Investment incompleted<br>";
+
+                    $date = new DateTime();
+                    $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
+
+                    //Add to marketplace
+                    $this->Marketplace->create();
+                    $this->Marketplace->save($investment);
+
+                    //Add to Backup
+                    $this->Marketplacebackup->create();
+                    $this->Marketplacebackup->save($investment);
+                    echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
+                    $this->print_r2($investment);
+                    continue;
+                }
+            }
+        }
+    }
+
+    /* Collect all invesment of the user, open and closed */
+
+    function cronMarketPlaceHistorical($companyId, $structure, $hasMultplePages) {
+        $this->autoRender = false;
+        $this->Structure = ClassRegistry::init('Structure');
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        //Configure::write('debug', 2);
+        $repeat = true; //Read another page
+        $start = 0; //For pagination
+        if ($hasMultplePages) {
+            $type = PROMISSORY_NOTE; //Is definead as 1
+        }
+
+        $companyConditions = array('Company.id' => $companyId);
+        $result = $this->Company->getCompanyDataList($companyConditions);
+
+        pr($result);
+        echo "<br>____ Checking Company " . $result[$companyId]['company_name'] . " ____<br>";
+
+        $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+        $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
+
+        $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
+        $newComp->defineConfigParms($result[$companyId]);
+
+        $companyId = $result[$companyId]['id'];
+
+
+        while ($repeat != false) {
+
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, HISTORICAL_SEQUENCE);
+            $this->print_r2($urlSequenceList);
+            $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+
+
+            $marketplaceArray = $newComp->collectHistorical($structure, $start, $type); //$start is for pfp with paginations, $type is for comunitae.
+
+
+            if ($marketplaceArray[3] && $marketplaceArray[3] != 1) {
+                echo 'Saving new structure';
+                $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
+                if ($marketplaceArray[4] == APP_ERROR) {
+                    $this->Applicationerror->saveAppError('ERROR: Html/Json ','Html/Json structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
+                }else if($marketplaceArray[4] == WARNING) {
+                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+                } else if($marketplaceArray[4] == INFORMATION) {
+                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+                }
+            }
+
+
+            echo 'RESULTADO: ';
+            $this->print_r2($marketplaceArray);
+            foreach ($marketplaceArray[0] as $investment) {
+                $investment['company_id'] = $companyId;
+                $date = new DateTime();
+                $investment['marketplace_investmentCreationDate'] = $date->format('Y-m-d H:i:s');
+                echo __FUNCTION__ . __LINE__ . "PFP Backup Saving:<br>";
+                $this->print_r2($investment);
+                $this->Marketplacebackup->create();
+                $this->Marketplacebackup->save($investment);
+            }
+
+            $start = $marketplaceArray[1];
+            $repeat = $marketplaceArray[1];
+            if ($hasMultplePages) {
+                $type = $marketplaceArray[2];
             }
         }
     }
@@ -915,6 +1025,7 @@ class MarketPlacesController extends AppController {
      * 
      * Get the variable queueCurls
      */
+
     public function getQueueCurls() {
         return $this->queueCurls;
     }
@@ -928,6 +1039,93 @@ class MarketPlacesController extends AppController {
         $this->queueCurls->attach($request);
     }
 
+    public function importBackupExcel() {
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 
+        $currentDateTime = date('Y-m-d_H:i:s');
+
+        // $filter = $this->request->params['filters'];
+        $filter = null;
+        $backup = $this->Marketplacebackup->getBackup($filter);
+        //$this->print_r2($backup);
+
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getProperties()->setTitle("BackupExcel");
+
+
+        $objPHPExcel->setActiveSheetIndex(0)->getColumnDimension('B')->setWidth(13);
+        $objPHPExcel->setActiveSheetIndex(0)->getColumnDimension('C')->setWidth(25);
+        $objPHPExcel->setActiveSheetIndex(0)->getColumnDimension('D')->setWidth(28);
+        $objPHPExcel->setActiveSheetIndex(0)->getColumnDimension('E')->setWidth(25);
+
+        $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'id')
+                ->setCellValue('B1', 'company_id')
+                ->setCellValue('C1', 'marketplace_amount')
+                ->setCellValue('D1', 'marketplace_amountTotal')
+                ->setCellValue('E1', 'marketplace_duration')
+                ->setCellValue('F1', 'marketplace_durationUnit')
+                ->setCellValue('G1', 'marketplace_category')
+                ->setCellValue('H1', 'marketplace_rating')
+                ->setCellValue('I1', 'marketplace_interestRate')
+                ->setCellValue('J1', 'marketplace_purpose')
+                ->setCellValue('K1', 'marketplace_status')
+                ->setCellValue('L1', 'marketplace_statusLiteral')
+                ->setCellValue('M1', 'marketplace_timeLeft')
+                ->setCellValue('N1', 'marketplace_timeLeftUnit')
+                ->setCellValue('O1', 'marketplace_name')
+                ->setCellValue('P1', 'marketplace_loanReference')
+                ->setCellValue('Q1', 'marketplace_subscriptionProgress')
+                ->setCellValue('R1', 'marketplace_sector')
+                ->setCellValue('S1', 'marketplace_requestorLocation')
+                ->setCellValue('T1', 'marketplace_numberOfInvestors')
+                ->setCellValue('U1', 'marketplace_origCreated')
+                ->setCellValue('V1', 'marketplace_productType')
+                ->setCellValue('W1', 'marketplace_country')
+                ->setCellValue('X1', 'marketplace_investmentCreationDate')
+                ->setCellValue('Y1', 'created');
+
+
+        $i = 2;
+        foreach ($backup as $row) {
+
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A' . $i, $row['Marketplacebackup']['id'])
+                    ->setCellValue('B' . $i, $row['Marketplacebackup']['company_id'])
+                    ->setCellValue('C' . $i, $row['Marketplacebackup']['marketplace_amount'])
+                    ->setCellValue('D' . $i, $row['Marketplacebackup']['marketplace_amountTotal'])
+                    ->setCellValue('E' . $i, $row['Marketplacebackup']['marketplace_duration'])
+                    ->setCellValue('F' . $i, $row['Marketplacebackup']['marketplace_durationUnit'])
+                    ->setCellValue('G' . $i, $row['Marketplacebackup']['marketplace_category'])
+                    ->setCellValue('H' . $i, $row['Marketplacebackup']['marketplace_rating'])
+                    ->setCellValue('I' . $i, $row['Marketplacebackup']['marketplace_interestRate'])
+                    ->setCellValue('J' . $i, $row['Marketplacebackup']['marketplace_purpose'])
+                    ->setCellValue('K' . $i, $row['Marketplacebackup']['marketplace_status'])
+                    ->setCellValue('L' . $i, $row['Marketplacebackup']['marketplace_statusLiteral'])
+                    ->setCellValue('M' . $i, $row['Marketplacebackup']['marketplace_timeLeft'])
+                    ->setCellValue('N' . $i, $row['Marketplacebackup']['marketplace_timeLeftUnit'])
+                    ->setCellValue('O' . $i, $row['Marketplacebackup']['marketplace_name'])
+                    ->setCellValue('P' . $i, $row['Marketplacebackup']['marketplace_loanReference'])
+                    ->setCellValue('Q' . $i, $row['Marketplacebackup']['marketplace_subscriptionProgress'])
+                    ->setCellValue('R' . $i, $row['Marketplacebackup']['marketplace_sector'])
+                    ->setCellValue('S' . $i, $row['Marketplacebackup']['marketplace_requestorLocation'])
+                    ->setCellValue('T' . $i, $row['Marketplacebackup']['marketplace_numberOfInvestors'])
+                    ->setCellValue('U' . $i, $row['Marketplacebackup']['marketplace_origCreated'])
+                    ->setCellValue('V' . $i, $row['Marketplacebackup']['marketplace_productType'])
+                    ->setCellValue('W' . $i, $row['Marketplacebackup']['marketplace_country'])
+                    ->setCellValue('X' . $i, $row['Marketplacebackup']['marketplace_investmentCreationDate'])
+                    ->setCellValue('Y' . $i, $row['Marketplacebackup']['created']);
+
+            $i++;
+        }
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="BackupMarketplace_' . $currentDateTime . '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+        exit;
+    }
 
 }
