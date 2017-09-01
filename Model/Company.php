@@ -53,7 +53,11 @@ class Company extends AppModel {
             'joinTable' => 'requiredfiles',
             'foreignKey' => 'company_id',
             'associationForeignKey' => 'file_id',
-        )
+        ),
+        'Structure' => array(
+            'className' => 'Structure',
+            'foreignKey' => 'company_id',
+        ),
     );
     public $hasAndBelongsToMany = array(
         'Ocr' => array(
@@ -149,7 +153,7 @@ class Company extends AppModel {
     public function companiesDataOCR($filter = null) {
 
         $ocrServices = $this->Serviceocr->find('all', array('conditions' => array('serviceocr_status' => SER_ACTIVE)));
-    
+
         $idList = array();
         foreach ($ocrServices as $ocrService) {
             array_push($idList, $ocrService['Serviceocr']['company_id']);
@@ -167,14 +171,14 @@ class Company extends AppModel {
             $filtro = array('Company.company_PFPType' => $filter['type_filter']);
             $conditions = array_merge($conditions, $filtro);
         }
-       
+
         $data = $this->find("all", array(
             'fields' => array('id', 'Company.company_name', 'Company.company_country', 'Company.company_logoGUID', 'Company.company_countryName', 'Company.Company_termsUrl',
                 'Company.Company_privacyUrl', 'Company.company_PFPType'),
             'recursive' => -1,
             'conditions' => $conditions,
         ));
-        
+
         return $data;
     }
 

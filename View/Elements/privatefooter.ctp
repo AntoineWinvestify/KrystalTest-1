@@ -23,12 +23,13 @@ Pending:
 ?>
 <?php
 	$actualDate = getDate();
+         $version = Configure::read('winvestify');
 ?>
 
 
 <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> 0.7.5 
+      <b>Version</b> <?php echo $version['version'] ?>
     </div>
 	<strong>Copyright &copy; <?php echo $actualDate['year']; echo "&nbsp;" . __("Winvestify") . ". ";
 	echo "</strong>";

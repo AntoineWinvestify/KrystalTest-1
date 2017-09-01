@@ -61,7 +61,7 @@
                     <h2><?php echo __('What can you do now?')?></h2>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                    <h3 align="center"><i class="fa fa-home"></i> <a href=""><?php echo __('Go Home')?></a></h3>
+                    <h3 align="center"><i class="fa fa-home"></i> <a href="/"><?php echo __('Go Home')?></a></h3>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <h3 align="center"><i class="fa fa-question-circle"></i> <a href="/Contactforms/form"><?php echo __('Contact Winvestify')?></a></h3>

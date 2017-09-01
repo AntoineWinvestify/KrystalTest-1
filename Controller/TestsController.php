@@ -30,10 +30,13 @@
 
 /** Include path **/
 require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
+require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS .  'bondoraApi.php');
 /** PHPExcel_IOFactory */
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
+
+use Petslane\Bondora;
 
 /*use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Cell;*/
@@ -52,7 +55,7 @@ function beforeFilter() {
 
 	$this->Security->requireAuth();
         
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf"));
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying"));
 }
 
    
@@ -123,6 +126,21 @@ function showUserData($userIdentity, $number) {
     }
 }
 
+    function showInitialPanel(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardOverview(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardMyInvestments(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardStats(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function modal(){
+        $this->layout = 'azarus_private_layout';
+    }
     function convertExcelToArray() {
         $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/cake_branch/mintos.xlsx");
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
@@ -299,7 +317,12 @@ function showUserData($userIdentity, $number) {
         foreach ($rowDatas as $rowData) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
-                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
+                    if (empty($tempArray[$i])) {
+                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
+                    }
+                    else {
+                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
+                    }
                 }
                 else {
                     $tempArray[$i][$value] = $rowData[$key];
@@ -312,7 +335,7 @@ function showUserData($userIdentity, $number) {
     
     
     
-    function getValueExcelFromArray($rowData, $values) {
+    function getValueExcelFromArray($rowData, $values, $tempArray = null) {
         foreach ($values as $key => $value) {
             $pos = $this->getPosInit($rowData, $value["regex"]);
             //$pos = strpos($rowData, $value["regex"]);
@@ -369,26 +392,62 @@ function showUserData($userIdentity, $number) {
     function convertPdf () {
         // Parse pdf file and build necessary objects.
         $parser = new \Smalot\PdfParser\Parser();
-        $pdf    = $parser->parseFile('/var/www/html/cake_branch/circulantis.pdf');
+        $pdf    = $parser->parseFile('/var/www/html/cake_branch/comunitae.pdf');
         // Retrieve all pages from the pdf file.
         $pages  = $pdf->getPages();
         // Loop over each page to extract text.
+        $page_string = [];
+        
         foreach ($pages as $page) {
             echo "<br>";
-            $page_string = $page->getText();
+            $page_string[] = $page->getText();
             echo "<br>";
             
         }
         
-        $investments = explode("%", $page_string);
+        foreach ($page_string as $page) {
+            echo $page;
+            echo "<br>";
+        }
+        
+        /*$investments = explode("%", $page_string[0]);
         
         foreach ($investments as $investment) {
             echo $investment;
             echo "<br>";
-        }
+        }*/
         //echo $investments[0];
         //echo $page_string;
         //$text = $pdf->getText();
         //echo $text;
+    }
+    
+    function bondoraTrying() {
+        $config = array(
+            'auth' => array(
+                'url_base' => 'https://www.bondora.com',
+                'client_id' => 'ff77b8a268b7437db6ada6cc4542a2ca',
+                'secret' => 'AodG9hU9nsYyNgBku3z503wcejJLK9DrN07pm7fnEbWjuZRw',
+                'scope' => 'BidsEdit BidsRead Investments SmBuy SmSell',
+            ),
+            'api_base' => 'https://api.bondora.com',
+        );
+        $api = new Bondora\Api($config);
+
+        // Get login url
+        $url = $api->getAuthUrl();
+        echo $url;
+        
+        if (empty($_GET["code"])) {
+            echo "patata";
+            header("Location: " . $url);
+            echo $url;
+        }
+        $code = $_GET["code"];
+        echo $code;
+        // redirect user to $url. After login, user will be redirected back with get parameter 'code'
+
+        // get token from 'code' provided after user successful login. Store access_token and refresh_token
+        //$token_object = $api->getToken($code);
     }
 }
