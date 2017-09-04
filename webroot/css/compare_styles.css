@@ -2115,3 +2115,8 @@ hr.nomargin {
     margin-top: 5px;
     margin-bottom: 10px !important;
 }
+.disabledPointer {
+    cursor: not-allowed !important;
+    background-color: #eee;
+    opacity: 1;
+}
