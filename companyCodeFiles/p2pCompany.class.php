@@ -684,7 +684,7 @@ class p2pCompany {
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
      * 	
      */
-    function doCompanyLogoutMultiCurl(array $logoutCredentials = null) {
+    function doCompanyLogoutMultiCurl(array $logoutCredentials = null,$url = null) {
         /*
           //traverse array and prepare data for posting (key1=value1)
           foreach ( $logoutData as $key => $value) {
@@ -694,7 +694,9 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
         //  barzana@gmail.com 	939233Maco048 
-        $url = array_shift($this->urlSequence);
+        if($url){
+            $url = array_shift($this->urlSequence);
+        }
         echo $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -1629,35 +1631,59 @@ class p2pCompany {
          * @param string $fileUrl url that download the file
          * @param string $fileName name of the file to save
          * @param string $fileType extension of the file
-         * @param string $pfpBaseUrl pfp main url (like http://www.zank.com.es for zank)
+         * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
          * @param string $path path where you want save the file
          */
-        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity) {
+        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity,$credentials) {
 
+            print_r($credentials);
+            echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
+            
             $date = date("d-m-Y_H:i:sa");
             $configPath = Configure::read('files');
-            $partialPath = $config['investorPath'];
+            $partialPath = $configPath['investorPath'];   
+            $identity = 'testUser';         
             $path = $partialPath . $identity . DS . 'Investments' .DS .$date . DS . $pfpName;
+                   
+            echo 'Saving in: ' . $path . HTML_ENDOFLINE;        
                     
-                    
-        $output_filename = $fileName . '_' . $date . "." . $fileType;
+            
+            
+            $output_filename = $fileName . '_' . $date . "." . $fileType;
+            echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $fileUrl);
-        curl_setopt($ch, CURLOPT_VERBOSE, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, false);
-        curl_setopt($ch, CURLOPT_REFERER, $pfpBaseUrl);
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        $result = curl_exec($ch);
-        curl_close($ch);
+            if($credentials){
+                //traverse array and prepare data for posting (key1=value1)
+                foreach ($loginCredentials as $key => $value) {
+                    $postItems[] = $key . '=' . $value;
+                }
+                //create the final string to be posted using implode()
+                $postString = $credentials;
+                //set data to be posted
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
+            }
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $fileUrl);
+            curl_setopt($ch, CURLOPT_VERBOSE, 1);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_AUTOREFERER, false);
+            curl_setopt($ch, CURLOPT_REFERER, $pfpBaseUrl);
+            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            $result = curl_exec($ch);
+            curl_close($ch);
 
-        //print_r($result); // prints the contents of the collected file before writing..
-        // the following lines write the contents to a file in the same directory (provided permissions etc)
-        $fp = fopen(APP . $path . DS . $output_filename, 'w');
-        fwrite($fp, $result);
-        fclose($fp);
+            //print_r($result); // prints the contents of the collected file before writing..
+            // the following lines write the contents to a file in the same directory (provided permissions etc)
+            $fp = fopen(APP . $path . DS . $output_filename, 'w+');
+             if (!file_exists($fp)) {
+                echo 'Creating dir' . HTML_ENDOFLINE;
+                mkdir($path, 0770, true);
+            }
+            echo 'File: ' . print_r($fp) . HTML_ENDOFLINE;
+            fwrite($fp, $result);
+            fclose($fp);
         }
 
     
