@@ -151,9 +151,19 @@ $(document).ready(function() {
           </ul>
         </li>
         <li class="treeview">
-            <a href="/ocrs/ocrInvestorView">
-              <i class="fa fa-dashboard"></i> <span><?php echo __('One Click Registration')?></span>
-            </a>
+          <a href="#">
+            <i class="fa fa-user-secret"></i> <span><?php echo __('Dashboard')?></span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+              <li><a href="/tests/showInitialPanel"><i class="fa fa-circle-o"></i> <?php echo __('Initial Panel')?></a></li>
+            <li><a href="/tests/dashboardOverview"><i class="fa fa-circle-o"></i> <?php echo __('Overview')?></a></li>
+            <li><a href="/tests/dashboardMyInvestments"><i class="fa fa-circle-o"></i> <?php echo __('My Investments')?></a></li>
+            <li><a href="/tests/dashboardStats"><i class="fa fa-circle-o"></i> <?php echo __('Stats')?></a></li>
+            <li><a href="/tests/modal"><i class="fa fa-circle-o"></i> <?php echo __('NEW MODAL')?></a></li>
+          </ul>
         </li>
         <li class="treeview">
           <a href="/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>

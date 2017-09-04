@@ -128,15 +128,21 @@ function showUserData($userIdentity, $number) {
     }
 }
 
-
-
-
-
-
-
-
-
-
+    function showInitialPanel(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardOverview(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardMyInvestments(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function dashboardStats(){
+        $this->layout = 'azarus_private_layout';
+    }
+    function modal(){
+        $this->layout = 'azarus_private_layout';
+    }
     function convertExcelToArray() {
         $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/compare_local/mintos2.xlsx");
     $this->autoRender = false;
@@ -345,7 +351,12 @@ for ($row = 1; $row <= $highestRow; $row++){
         foreach ($rowDatas as $keyRow => $rowData) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
-                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
+                    if (empty($tempArray[$i])) {
+                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
+                    }
+                    else {
+                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
+                    }
                 }
                 else {
                     $tempArray[$i][$value] = $rowData[$key];

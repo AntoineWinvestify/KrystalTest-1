@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AppShell file
  *
@@ -16,7 +17,6 @@
  * @since         CakePHP(tm) v 2.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 App::uses('Shell', 'Console');
 
 /**
@@ -28,5 +28,24 @@ App::uses('Shell', 'Console');
  * @package       app.Console.Command
  */
 class AppShell extends Shell {
+
+    /**
+     *
+     * 	Creates a new instance of class with name company, like zank, or comunitae....
+     *
+     * 	@param 		int 	$companyCodeFile		Name of "company"
+     * 	@return 	object 	instance of class "company"
+     *
+     */
+    function companyClass($companyCodeFile) {
+
+        $dir = Configure::read('companySpecificPhpCodeBaseDir');
+        $includeFile = $dir . $companyCodeFile . ".php";
+        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
+        require_once($includeFile);
+        $newClass = $companyCodeFile;
+        $newComp = new $newClass;
+        return $newComp;
+    }
 
 }
