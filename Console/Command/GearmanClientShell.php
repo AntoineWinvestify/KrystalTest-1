@@ -40,18 +40,26 @@ class GearmanClientShell extends AppShell {
 			'now' => time()
 		);
 		// synchronous (resp = A string representing the results of running a task.)
-		$resp = $this->GearmanClient->doNormal("json_test", json_encode($params));
+		/*$resp = $this->GearmanClient->doNormal("json_test", json_encode($params));
 		if ($this->GearmanClient->returnCode() != GEARMAN_SUCCESS){
 			$this->out("Bad return code!");
 			return;
 		}
 		// do something with the response
 		$this->out($resp);
-		return;
+		return;*/
 		// OR
 		
 		// asynchronous (resp = The job handle for the submitted task.)
-		/*$resp = $this->GearmanClient->doBackground("json_test", json_encode($params));
+                for ($i = 0; $i < 100; $i++) {
+                    $params["num"] = $i;
+                    $resp = $this->GearmanClient->addTaskBackground("json_test", json_encode($params));
+                }
+                $start = microtime(true);
+                $this->GearmanClient->runTasks();
+                $totaltime = number_format(microtime(true) - $start, 2);
+                echo "Got user info in: $totaltime seconds:\n";
+		$resp = $this->GearmanClient->doBackground("json_test", json_encode($params));
 		if ($this->GearmanClient->returnCode() != GEARMAN_SUCCESS){
 			$this->out("Bad return code!");
 			return;
@@ -63,7 +71,7 @@ class GearmanClientShell extends AppShell {
 		$this->out('Known: '.$status[0]);
 		$this->out('Running: '.$status[1]);
 		$this->out('Progress: '.$status[2].'/'.$status[3]);
-		return;*/
+		return;
 	}
         
         public function reverseFN() {
