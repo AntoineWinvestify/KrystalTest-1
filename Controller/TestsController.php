@@ -29,8 +29,9 @@
  */
 
 /** Include path **/
-//require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
+require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
 //require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS .  'bondoraApi.php');
+
 /** PHPExcel_IOFactory */
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
@@ -52,6 +53,7 @@ class TestsController extends AppController {
     
 function beforeFilter() {
         parent::beforeFilter();
+        
 
 	$this->Security->requireAuth();
         
@@ -126,9 +128,38 @@ function showUserData($userIdentity, $number) {
     }
 }
 
+
+
+
+
+
+
+
+
+
     function convertExcelToArray() {
-        $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/compare_local/mintos.xlsx");
+        $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/compare_local/mintos2.xlsx");
+    $this->autoRender = false;
+ //ini_set('memory_limit','1024M');
+ //  Get worksheet dimensions
+  
+$sheet = $objPHPExcel->getActiveSheet(); 
+$highestRow = $sheet->getHighestRow(); 
+$highestColumn = $sheet->getHighestColumn();
+echo " high = $highestRow and $highestColumn <br";
+
+/*
+for ($row = 1; $row <= $highestRow; $row++){ 
+    //  Read a row of data into an array
+    $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,
+                                    NULL,
+                                    TRUE,
+                                    FALSE);
+    $this->print_r2($rowData);
+};*/
+
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+
         /*$loadedSheetNames = $objPHPExcel->getSheetNames();
         foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
             echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
@@ -256,7 +287,7 @@ function showUserData($userIdentity, $number) {
                         "init" => "ID Subasta", 
                         "final" => ","],
                     "initPos" => 1,
-                    "finalPos" => "..."
+                    "finalPos" => ","
                 ]
             ],
             "B" => "referencia",
@@ -267,7 +298,10 @@ function showUserData($userIdentity, $number) {
             "G" => "invertido",
             "H" => "total"
         ];
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values_mintos);
+        echo "EEE";
+        $offset = 3;
+   
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values_mintos, $offset);
         $this->print_r2($datas);
     }
     
@@ -289,17 +323,26 @@ function showUserData($userIdentity, $number) {
         $chunkFilter->setRows($chunkInit,$chunkSize);
         /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
         $objReader->setReadFilter($chunkFilter);
-        
-        $objPHPExcel = $objReader->load("/var/www/html/cake_branch/mintos.xlsx");
+       
+        $objPHPExcel = $objReader->load("/var/www/html/compare_local/mintos.xlsx");
+      
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+         echo "<br><br>CHARO<br>";
+        $this->print_r2($sheetData);
+        echo "<br><br>ANTOINE<br>";
+   
         $datas = $this->saveExcelArrayToTemp($sheetData, $values);
-        var_dump($datas);
+        echo "ANTOINE";
+        $this->print_r2($datas);
     }
     
-    function saveExcelArrayToTemp($rowDatas, $values) {
+    function saveExcelArrayToTemp($rowDatas, $values, $offset) {
+        echo __FILE__ . " " . __LINE__ ."<br>";
+       
         $i = 0;
         $tempArray = [];
-        foreach ($rowDatas as $rowData) {
+      
+        foreach ($rowDatas as $keyRow => $rowData) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
                     $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
@@ -308,14 +351,26 @@ function showUserData($userIdentity, $number) {
                     $tempArray[$i][$value] = $rowData[$key];
                 }
             }
-            $i++;
+
+            if (array_key_exists("loanId", $tempArray[$i]) ){
+                $tempArray[$tempArray[$i]['loanId']]  = $tempArray[$i];
+            }
+            else {      // move to the global index
+                $tempArray['global'] = $tempArray[$i];
+            }
+            unset($tempArray[$i]);
+            
+            $i++;             
         }
+
+        echo "Changing index to LoanId if exists else use a generic ";
         return $tempArray;
     }
     
     
     
     function getValueExcelFromArray($rowData, $values) {
+ //       echo __FILE__ . " " . __LINE__ ."<br>";
         foreach ($values as $key => $value) {
             $pos = $this->getPosInit($rowData, $value["regex"]);
             //$pos = strpos($rowData, $value["regex"]);
