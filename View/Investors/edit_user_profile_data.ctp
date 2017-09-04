@@ -141,7 +141,7 @@ $(document).ready(function() {
                 investor_city: $("#ContentPlaceHolder_city").val(),
                 investor_country: $("#ContentPlaceHolder_country").val(),
                 investor_DNI: $("#ContentPlaceHolder_dni").val(),
-                investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
+                //investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
                 investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val()
            };
     //		ga_savePersonalData();
@@ -479,13 +479,13 @@ $(document).ready(function() {
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- telephone -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone')?></label>
-                                <div class="form-control blue_noborder2">
+                                <div class="form-control blue_noborder2 disabledPointer">
                                                                                                     <?php
                                                                                                             $errorClass = "";
                                                                                                             if (array_key_exists('investor_telephone', $investorValidationErrors)) {
                                                                                                                     $errorClass = "redBorder";
                                                                                                             }
-                                                                                                            $class = "telephoneNumber center-block". ' ' . $errorClass;
+                                                                                                            $class = "telephoneNumber center-block disabledPointer". ' ' . $errorClass;
 
                                                                                                             echo $this->Form->input('Investor.investor_telephone', array(
                                                                                                                                                             'name'			=> 'telephone',
@@ -494,7 +494,8 @@ $(document).ready(function() {
                                                                                                                                                             'placeholder' 	=>  __('Telephone'),
                                                                                                                                                             'class' 		=> $class,
                                                                                                                                                             'type'			=> 'tel',
-                                                                                                                                                            'value'			=> $resultUserData[0]['Investor']['investor_telephone']
+                                                                                                                                                            'value'			=> $resultUserData[0]['Investor']['investor_telephone'],
+                                                                                                                                                            'disabled'          => 'disabled'
                                                                                                                                                             ));
                                                                                                             $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
                                                                                                             if (array_key_exists('investor_telephone',$validationResult)) {
