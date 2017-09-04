@@ -1,39 +1,33 @@
 <?php
 /*
-// +-----------------------------------------------------------------------+
-// | Copyright (C) 2017, http://www.winvestify.com                         |
-// +-----------------------------------------------------------------------+
-// | This file is free software; you can redistribute it and/or modify     |
-// | it under the terms of the GNU General Public License as published by  |
-// | the Free Software Foundation; either version 2 of the License, or     |
-// | (at your option) any later version.                                   |
-// | This file is distributed in the hope that it will be useful           |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
-// | GNU General Public License for more details.                          |
-// +-----------------------------------------------------------------------+
-// | Author: Antoine de Poorter                                            |
-// +-----------------------------------------------------------------------+
-//
-
-
-
-Functions for the Winadmin role
-
-
-2017-07-08	  version 0.1
-Initial version. 
+ * +-----------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                         |
+ * +-----------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify     |
+ * | it under the terms of the GNU General Public License as published by  |
+ * | the Free Software Foundation; either version 2 of the License, or     |
+ * | (at your option) any later version.                                   |
+ * | This file is distributed in the hope that it will be useful           |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
+ * | GNU General Public License for more details.                          |
+ * +-----------------------------------------------------------------------+
+ * | Author: Antoine de Poorter                                            |
+ * +-----------------------------------------------------------------------+
+ *
+ * Functions for the Winadmin role
+ * 
+ * 2017-07-08	  version 0.1
+ * Initial version. 
  * All methods are "protected" using the "isAuthorized" function
  *
+ * [2017-09-04] version 0.2
+ * Added correct logout
  * 
-
-
-
-Pending
-
-
-
-*/
+ * 
+ * Pending
+ * 
+ */
 
 App::uses('CakeEvent', 'Event');
 App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
@@ -272,6 +266,10 @@ public function logout() {
 	$event = new CakeEvent('Controller.User_logout', $this, array('data' => $user,
 				));
 	$this->getEventManager()->dispatch($event);
+        $this->Session->destroy();						// NOT NEEDED?
+	$this->Session->delete('Auth');
+        $this->Session->delete('Acl');
+        $this->Session->delete('sectorsMenu');
 	return $this->redirect($this->Auth->logout());
 }
 
