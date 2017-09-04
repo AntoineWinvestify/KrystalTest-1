@@ -45,7 +45,7 @@ class twino extends p2pCompany {
         $credentials['googleAnalyticClientId'] = '1778227581.1503479723';
         $payload = json_encode($credentials);
         
-        echo $payload;
+        //echo $payload;
         $this->doCompanyLoginRequestPayload($payload); //do login
 
         $str = $this->getCompanyWebpage();
@@ -53,24 +53,19 @@ class twino extends p2pCompany {
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
-        $str = $this->getCompanyWebpage();
+        $str = $this->getCompanyWebpage(); //This url return true if you are logged, false if not.
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        echo $str;
+        //echo $str;
         
         $confirm = false;
 
-        /*$pres = $dom->getElementsByTagName('pre');
-        foreach ($pres as $pre) {*/
-           // echo 'Entrando node value; ' . $pre->nodeValue . HTML_ENDOFLINE;
+
             if ($str == true) {
                 $confirm = true;
-                //break;
+
             }
-       // }
-
-
 
 
         //$this->companyUserLogout($url);

@@ -131,6 +131,38 @@ class mintos extends p2pCompany {
         }
         return false;
     }
+    
+    
+    
+     /**
+     * Download the file with the user investment
+     * @param string $user
+     * @param string $password
+     */
+    function collectUserInvestmentData($user, $password) {
+        
+        $resultLogin = $this->companyUserLogin($user, $password);
+
+        if (!$resultLogin) {   // Error while logging in
+            $tracings = "Tracing:\n";
+            $tracings .= __FILE__ . " " . __LINE__ . " \n";
+            $tracings .= "Finazarel login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+            $tracings .= " \n";
+            $msg = "Error while logging in user's portal. Wrong userid/password \n";
+            $msg = $msg . $tracings . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+        echo 'Login ok';
+        
+        
+        
+        
+        
+    }
+    
+    
+    
 
     /**
      *
