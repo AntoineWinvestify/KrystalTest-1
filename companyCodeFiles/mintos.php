@@ -174,9 +174,10 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $resultLogin = false;
-
+                echo 'CHeck login' . HTML_ENDOFLINE;
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $a) {
+                    echo $a->nodeValue . HTML_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
                         echo 'Find' . HTML_ENDOFLINE;
                         $resultLogin = true;
@@ -184,14 +185,7 @@ class mintos extends p2pCompany {
                     }
                 }
 
-                $this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl();
-                echo 'Next: ' . $next . HTML_ENDOFLINE;
-                break;
-            ////////DOWNLOAD FILE
-            case 4:
-                echo $this->idForSwitch . HTML_ENDOFLINE;
-                if (!$resultLogin) {   // Error while logging in
+                 if (!$resultLogin) {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Finazarel login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -200,7 +194,15 @@ class mintos extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     exit;
-                }
+                } 
+                
+                $this->idForSwitch++;
+                $next = $this->getCompanyWebpageMultiCurl();
+                echo 'Next: ' . $next . HTML_ENDOFLINE;
+                break;
+            ////////DOWNLOAD FILE
+            case 4:
+                echo $this->idForSwitch . HTML_ENDOFLINE;         
                 echo 'Login ok';
                 $fileUrl = $str;
                 echo $fileUrl . HTML_ENDOFLINE;

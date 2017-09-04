@@ -625,7 +625,7 @@ class p2pCompany {
     function doCompanyLoginMultiCurl(array $loginCredentials) {
 
         $url = array_shift($this->urlSequence);
-        echo $url;
+        echo 'login:' . $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
