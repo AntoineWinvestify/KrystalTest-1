@@ -44,8 +44,9 @@
                 <form method="post" action="/users/loginAction" id="ctl00">
                    <p id="profile-name" class="profile-name-card"><?php echo __("ACCESS to Winvestify")?></p>
                    <span id="reauth-email" class="reauth-email"></span>
-                   <input name="data[User][username]" type="text" id="inputEmail" class="form-control blue_noborder" placeholder="<?php echo __("usuario");?>" required="" autofocus="" />
-                   <input name="data[User][password]" type="password" id="inputPassword" class="form-control blue_noborder" style="margin-top: 20px;" placeholder="Password" required="" />
+                   <input name="data[User][username]" type="text" id="inputEmail" class="form-control blue_noborder redBorder" placeholder="<?php echo __("usuario");?>" required="" autofocus="" />	
+                   <input name="data[User][password]" type="password" id="inputPassword" class="form-control blue_noborder redBorder" style="margin-top: 20px;" placeholder="Password" required="" />		
+                   <p class="errorInputMessage" style="display: block"><i class="fa fa-exclamation-circle"></i>&nbsp;<?php echo __('Username or password is incorrect')?></p>
                    <input type="submit" name="btLogin" value="Acceder" id="btLogin" class="btn btn-default center-block" style="margin-top: 20px;" />
                    <span id="lbAviso" class="displayBlock" style="color:Red;"></span>
                 </form>
