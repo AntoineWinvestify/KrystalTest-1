@@ -430,7 +430,7 @@
         
         <!--========== END PAGE CONTENT ==========-->
         
-        <?php //echo $this->fetch('content'); ?>
+        <?php echo $this->fetch('content'); ?>
         <?php echo $this->element('publicfooter') ?>
 
         <!-- Back To Top -->
