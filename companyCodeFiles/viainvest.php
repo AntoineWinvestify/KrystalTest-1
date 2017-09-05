@@ -69,9 +69,9 @@ class viainvest extends p2pCompany {
         $credentials[urlencode('data[User][email]')] = $user;
         $credentials[urlencode('data[User][passwd]')] = $password;
         $credentials[urlencode('data[User][is_remember]')] = 0;
-         //print_r($credentials);
+        //print_r($credentials);
 
-         
+
         $str = $this->doCompanyLogin($credentials); //do login
 
         $str = $this->getCompanyWebpage();
@@ -93,6 +93,19 @@ class viainvest extends p2pCompany {
 
 
         return $confirm;
+    }
+
+    /**
+     *
+     * 	Logout of user from the company portal.
+     * 	
+     * 	@returnboolean	true: user has logged out 
+     * 	
+     */
+    function companyUserLogout() {
+
+        $str = $this->doCompanyLogout();
+        return true;
     }
 
 }

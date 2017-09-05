@@ -89,17 +89,29 @@ class finbee extends p2pCompany {
         $dom->preserveWhiteSpace = false;
         //echo $str;
         $as = $dom->getElementsByTagName('a');
-        
+
         $confirm = false;
         foreach ($as as $a) {
-            
+
             if (trim($a->nodeValue) == 'My Lending Account') {
                 $confirm = true;
             }
-            
         }
-        
+
         return $confirm;
+    }
+
+    /**
+     *
+     * 	Logout of user from the company portal.
+     * 	
+     * 	@returnboolean	true: user has logged out 
+     * 	
+     */
+    function companyUserLogout() {
+
+        $str = $this->doCompanyLogout();
+        return true;
     }
 
 }

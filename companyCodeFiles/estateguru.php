@@ -69,4 +69,17 @@ class estateguru extends p2pCompany {
         return $confirm;
     }
 
+    /**
+     *
+     * 	Logout of user from the company portal.
+     * 	
+     * 	@returnboolean	true: user has logged out 
+     * 	
+     */
+    function companyUserLogout() {
+
+        $str = $this->doCompanyLogout();
+        return true;
+    }
+
 }

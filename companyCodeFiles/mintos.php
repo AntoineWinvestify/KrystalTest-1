@@ -188,7 +188,7 @@ class mintos extends p2pCompany {
                  if (!$resultLogin) {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
-                    $tracings .= "Finazarel login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
                     $tracings .= " \n";
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
@@ -247,18 +247,17 @@ class mintos extends p2pCompany {
 
         $str =  $this->getCompanyWebpage();
         $dom = new DOMDocument;
-        $dom->loadHTML($str);
+        $dom->loadHTML($str); //Load page with the url
         $dom->preserveWhiteSpace = false;
         $as = $dom->getElementsByTagName('a');
-        foreach ($as as $a) { //get logout url
-            //echo $a->getAttribute('class') . HTML_ENDOFLINE;
+        foreach ($as as $a) { //get logout url  
             if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
                 $logoutUrl = $a->getAttribute('href');
                 break;
             }
         }
 
-        $this->getCompanyWebpage($logoutUrl); //logout
+        $this->doCompanyLogout($logoutUrl); //logout
         return true;
     }
 

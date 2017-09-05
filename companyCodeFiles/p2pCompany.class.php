@@ -422,7 +422,7 @@ class p2pCompany {
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
      * 	
      */
-    function doCompanyLogout() {
+    function doCompanyLogout($url = null) {
         /*
           //traverse array and prepare data for posting (key1=value1)
           foreach ( $logoutData as $key => $value) {
@@ -432,7 +432,9 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
 //  barzana@gmail.com 	939233Maco048 
-        $url = array_shift($this->urlSequence);
+        if($url == null){
+            $url = array_shift($this->urlSequence);
+        }
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
                 $currentScreen = array_shift($this->testConfig['siteReadings']);
@@ -623,7 +625,7 @@ class p2pCompany {
      *
      */
     function doCompanyLoginMultiCurl(array $loginCredentials) {
-
+       
         $url = array_shift($this->urlSequence);
         echo 'login:' . $url;
         $this->errorInfo = $url;

@@ -44,7 +44,7 @@ class twino extends p2pCompany {
         $credentials['password'] = $password;
         $credentials['googleAnalyticClientId'] = '1778227581.1503479723';
         $payload = json_encode($credentials);
-        
+
         //echo $payload;
         $this->doCompanyLoginRequestPayload($payload); //do login
 
@@ -58,14 +58,13 @@ class twino extends p2pCompany {
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
         //echo $str;
-        
+
         $confirm = false;
 
 
-            if ($str == true) {
-                $confirm = true;
-
-            }
+        if ($str == true) {
+            $confirm = true;
+        }
 
 
         //$this->companyUserLogout($url);
@@ -73,6 +72,19 @@ class twino extends p2pCompany {
             return true;
         }
         return false;
+    }
+
+    /**
+     *
+     * 	Logout of user from the company portal.
+     * 	
+     * 	@returnboolean	true: user has logged out 
+     * 	
+     */
+    function companyUserLogout() {
+
+        $str = $this->doCompanyLogout();
+        return true;
     }
 
 }

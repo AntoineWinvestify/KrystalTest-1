@@ -46,9 +46,9 @@ class microwd extends p2pCompany {
         //print_r($credentials);
 
         $str = $this->doCompanyLogin($credentials); //do login
-        
-        
-        
+
+
+
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -69,6 +69,19 @@ class microwd extends p2pCompany {
             return true;
         }
         return false;
+    }
+
+    /**
+     *
+     * 	Logout of user from the company portal.
+     * 	
+     * 	@returnboolean	true: user has logged out 
+     * 	
+     */
+    function companyUserLogout() {
+
+        $str = $this->doCompanyLogout();
+        return true;
     }
 
 }
