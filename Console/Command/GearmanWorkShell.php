@@ -44,7 +44,7 @@ class GearmanWorkShell extends AppShell {
     public function my_json_test($job) {
             $params = json_decode($job->workload(),true);
             // add a dummy response so we know that it worked
-            sleep(3);
+            //sleep(3);
             echo "Sending email: params";
             $sectors = $this->getSectorsByRole(4);
             $params['response'] = $sectors;//$this->Company->find('first');
@@ -93,6 +93,14 @@ class GearmanWorkShell extends AppShell {
 
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
+    }
+    
+    function multicurl() {
+        
+    }
+    
+    function casperjs() {
+        
     }
     
     
