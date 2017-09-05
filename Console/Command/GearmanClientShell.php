@@ -39,6 +39,18 @@ class GearmanClientShell extends AppShell {
 			'foo' => 'bar',
 			'now' => time()
 		);
+                $this->GearmanClient->setFailCallback("fail_change");
+                /* Callbacks that can be created
+                $client->setCreatedCallback("create_change");
+
+                $client->setDataCallback("data_change");
+
+                $client->setStatusCallback("status_change");
+
+                $client->setCompleteCallback("complete_change");
+
+                $client->setFailCallback("fail_change");*/
+                
 		// synchronous (resp = A string representing the results of running a task.)
 		/*$resp = $this->GearmanClient->doNormal("json_test", json_encode($params));
 		if ($this->GearmanClient->returnCode() != GEARMAN_SUCCESS){
@@ -49,17 +61,17 @@ class GearmanClientShell extends AppShell {
 		$this->out($resp);
 		return;*/
 		// OR
-		
+		$resp = [];
 		// asynchronous (resp = The job handle for the submitted task.)
                 for ($i = 0; $i < 100; $i++) {
                     $params["num"] = $i;
-                    $resp = $this->GearmanClient->addTaskBackground("json_test", json_encode($params));
+                    $resp[] = $this->GearmanClient->addTask("json_test", json_encode($params));
                 }
                 $start = microtime(true);
                 $this->GearmanClient->runTasks();
                 $totaltime = number_format(microtime(true) - $start, 2);
                 echo "Got user info in: $totaltime seconds:\n";
-		$resp = $this->GearmanClient->doBackground("json_test", json_encode($params));
+		/*$resp = $this->GearmanClient->doBackground("json_test", json_encode($params));
 		if ($this->GearmanClient->returnCode() != GEARMAN_SUCCESS){
 			$this->out("Bad return code!");
 			return;
@@ -70,12 +82,16 @@ class GearmanClientShell extends AppShell {
 		// the job status array contains: "job known", "job running", numerator, denominator
 		$this->out('Known: '.$status[0]);
 		$this->out('Running: '.$status[1]);
-		$this->out('Progress: '.$status[2].'/'.$status[3]);
+		$this->out('Progress: '.$status[2].'/'.$status[3]);*/
 		return;
 	}
         
         public function reverseFN() {
             $this->GearmanClient->addServers('127.0.0.1');
             print $this->GearmanClient->doNormal("reverse", "Hello World!");
+        }
+        
+        function fail_change($task) {
+            echo "DATA: " . $task->data() . "\n";
         }
 }
