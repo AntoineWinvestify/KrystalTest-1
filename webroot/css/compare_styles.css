@@ -2108,6 +2108,9 @@ hr.nomargin {
 .tab-pane {
     padding-top: 10px;
 }
+.teamBox {
+    height: 350px;
+}
 .teamBoxColor {
     background-color: #e6e6e6;
 }
