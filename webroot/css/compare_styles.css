@@ -1366,7 +1366,7 @@ hr.nomargin {
 .loginBox {
     background-color: white;
     border: 1px solid gray;
-    height: 250px;
+    height: 300px;
     width: 350px;
     float: right;
     border-radius: 5px;
@@ -1428,6 +1428,19 @@ hr.nomargin {
                         }
                         #registerButton {
                             left: 25%;
+                        }
+                        .loginBox {
+                            background-color: white;
+                            border: 1px solid gray;
+                            height: 260px;
+                            width: 300px;
+                            float: right;
+                            border-radius: 5px;
+                            margin: 170px 10px 0px 0px;
+                            padding-top: 20px;
+                        }
+                        .logoRedirect {
+                            height: 40px;
                         }
                     }
 
@@ -1565,6 +1578,16 @@ hr.nomargin {
             }
             #featuresPadding {
                 margin-top: 0px !important;
+            }
+            .loginBox {
+                background-color: white;
+                border: 1px solid gray;
+                height: 260px;
+                width: 300px;
+                float: right;
+                border-radius: 5px;
+                margin: 120px 10px 0px 0px;
+                padding-top: 20px;
             }
         }
             
@@ -2152,12 +2175,20 @@ hr.nomargin {
 .tab-pane {
     padding-top: 10px;
 }
+.teamBox {
+    height: 350px;
+}
 .teamBoxColor {
     background-color: #e6e6e6;
 }
 .teamPosition {
     margin-top: 5px;
     margin-bottom: 10px !important;
+}
+.disabledPointer {
+    cursor: not-allowed !important;
+    background-color: #eee;
+    opacity: 1;
 }
 /*PAPER BOOTSTRAP MODAL CUSTOMIZATION*/
 .wizard-container-small {
