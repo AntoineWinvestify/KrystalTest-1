@@ -265,6 +265,18 @@ App::uses('Controller', 'Controller');
   define('EUR', 1);           // Euro
   define('GBP', 2);           // UK Pound Sterling
   define('USD', 3);           // US Dollar
+  define('ARS', 4);           // Argentinian peso
+  define('AUD', 5);           // Australina dollar  
+  define('NZD', 6);           // New zeeland dollar                                            
+  define('BYN', 7);           // Belarusian ruble         
+  define('BGN', 8);           // Bulgarian lev   
+  define('CZK', 9);           // Czech koruna                                         
+  define('DKK', 10);          // Danish krone                                         
+  define('CHF', 11);          // Swiss franc                                             
+  define('MXN', 12);          // Mexican peso  
+  define('RUB', 13);          // Russian ruble  
+
+
 
   // APPLICATION THAT CAN PRODUCE BILLING DATA
   define('TALLYMAN_APP', 1);
@@ -299,8 +311,9 @@ App::uses('Controller', 'Controller');
 
 //
 
-
+include  '/var/www/html/compare_local/app/Config/constants_1.php';
 class AppController extends Controller {
+
 
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
@@ -349,8 +362,29 @@ class AppController extends Controller {
         );
 
         // TRANSLATE CURRENCY NAME
-        $this->currencyName = array(0 => "(select)", 1 => "€", 2 => "£", 3 => "$");
-
+        $this->currencyName7 = array(EUR => "€", 
+                                    GBP => "£", 
+                                    USD => "$",
+                                    ARS => "$",
+                                    AUD => "$",
+                                    NZD => "$",                                           
+                                    BYN => "BR",       
+                                    BGN => "лв", 
+                                    CZK => "Kč",                                        
+                                    DKK => "Kr",                                       
+                                    CHF => "Fr",                                        
+                                    MXN => "$", 
+                                    RUB => "₽",              
+                                    );
+        
+                                     
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
         //Investor Status to PFP Admin
         $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
 

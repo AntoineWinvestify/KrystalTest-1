@@ -313,8 +313,6 @@ for ($row = 1; $row <= $highestRow; $row++){
             "A" =>  [
                 "name" => "transaction_id"
              ],
- // OperaciÃ³n realizada ID Puja: 181325, ID Subasta: 1908,Ahumados Sabal, S.L....           
-
             "B" => [
                 [
                     "type" => "date",                           // Winvestify standardized name 
@@ -325,36 +323,68 @@ for ($row = 1; $row <= $highestRow; $row++){
                                 ],
                     "functionName" => "normalizeDate",         
                 ]
-                
-    /*            [
-                    "type" => "date1",                           // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "mddddY",		// Input parameters. The first parameter
-				"input3" => "sssTTs"              // is always the contents of the cell
-                                  // etc etc  ...
-                                ],
-                    "functionName" => "formatDate",         
-                 ]
-     */
             ],
             "C" => [
                 [
-                    "type" => "purpose",                        // Complex format, calling external method
+                    "type" => "loanId",                        // Complex format, calling external method
                     "inputData" => [
-                                "input2" => "ID Subasta", 
+                                "input2" => "Loan ID: ",       // May contain trailing spaces
                                 "input3" => ",",
-                                "input4" => 1,
-                                "input5" => ","
                             ],
                     "functionName" => "extractDataFromString",  
+                ],
+                [
+                    "type" => "transactionType",               // Complex format, calling external method
+                    "inputData" => [                           // List of all concepts that the platform can generate
+                                                               // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Incoming client payment", "Cash_deposit"],
+                                                ["Investment principal increase", "Primary_market_investment"],
+                                                ["Investment principal repayment", "Principal_repayment"],
+                                                ["Investment principal rebuy","Principal_buyback"],
+                                                ["Interest income", "Regular_interest_income"],
+                                                ["Delayed interest income", "Delayed_interest_income"],
+                                                ["Late payment fee income","Late_payment_fee_income"],
+                                                ["Interest income on rebuy", "Interest_income_buyback"],
+                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
+                                        
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",             // Complex format, calling external method
+                    "inputData" => [                           // List of all concepts that the platform can generate
+                                                               // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Incoming client payment", "Cash_deposit"],
+                                                ["Investment principal increase", "Primary_market_investment"],
+                                                ["Investment principal repayment", "Principal_repayment"],
+                                                ["Investment principal rebuy","Principal_buyback"],
+                                                ["Interest income", "Regular_interest_income"],
+                                                ["Delayed interest income", "Delayed_interest_income"],
+                                                ["Late payment fee income","Late_payment_fee_income"],
+                                                ["Interest income on rebuy", "Interest_income_buyback"],
+                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
+                                        
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
                 ]
             ],
             "D" => [                                            // Simply changing name of column to Winvestify
-                    "name" => "turnover",                   // standardized name, which is also the name of index 
+                    "name" => "turnover",                       // standardized name, which is also the name of index 
                 ],
             "E" => [
                     "name" => "balance",
                 ],
+            "F" => [
+                [
+                    "type" => "currency",                        // Complex format, calling external method
+                    "functionName" => "getCurrency",  
+                ]
+            ],          
+            
+            
+            
    //         "E" => "primary_market_investment",
     /*
             "F" => "secundary_market_investment",
@@ -381,9 +411,7 @@ for ($row = 1; $row <= $highestRow; $row++){
         ];       
  echo "B___________________________B<br><br>";
   $this->print_r2($values_example);
-  echo "Anto";
 
-  
         $transactionDetails = [
             "cash_deposit" => [
                 "cash" => 1,         // 1 = income, 2 = cost
@@ -483,11 +511,6 @@ for ($row = 1; $row <= $highestRow; $row++){
                 ],    
          ];  
             
-            
-            
-            
-            
-        
         $offset = 3;
    
         $datas = $this->saveExcelArrayToTemp($sheetData, $values_example, $offset);
@@ -545,12 +568,33 @@ $offset = 113;
             unset($rowDatas[$key]);  
             $i++;
         }
+// MINTOS
+// Transaction ID	Date            Details                                 Turnover            	Balance             Currency
+// 126162002	2017-01-01 23:30:00	Interest income Loan ID: 16706-01	5.1373503120617         5.1458167810378     EUR
+ 
         
-   //     $this->print_r2($rowDatas);
-// Transaction ID	Date            Details                                 Turnover            	Balance	Currency
-// 126162844	2017-01-01 23:30:00	Interest income Loan ID: 19550-01	0.000891587669667	9.6354150112017	EUR
-// 126162002	2017-01-01 23:30:00	Interest income Loan ID: 16706-01	5.1373503120617         5.1458167810378	EUR
-   
+// CIRCULANTIS
+// MOVIMIENTO                                                                   REFERENCIA IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
+// OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
+
+        
+// ECROWD
+// Fecha        Nombre del proyecto                                                     Cuota	Amortización de capital(€)	Intereses brutos(€) Retención IRPF(€)  Total(€)
+// 25-07-2017	Ampliación de la red de fibra óptica de l'Ametlla de Mar - Fase 5 -	2	0,00                              1,09               0,21                0,88
+ 
+        
+// FINANZAREL        
+// Id           A�o	Trimestre	Fecha           Subasta     Descripci�n                 Importe         Saldo
+// 20171678450	2017	2017T3          21/07/17	2817        Intereses                   �0,97           �55.314,02
+// 20171678440	2017	2017T3          21/07/17	2817        Amortizaci�n de efecto	-�153,94	�55.313,06
+  
+        
+// COMUNITAE
+// Fecha de Operacion	Debe	Haber	Saldo	Concepto
+// 8/1/2017             0.50€	0.00€	49.61€	Cargo por comisión de administración
+// 7/25/2017            0.58€	0.00€	50.11€	Cargo por comisión de administración
+// 7/25/2017            0.00€	50.00€	50.69€	Abono rendimientos capital   ptmo. CPP_016231  y Nº de recibo 342097
+
         $i = 0;
         foreach ($rowDatas as $keyRow => $rowData) {
             foreach ($values as $key => $value) {
@@ -560,14 +604,18 @@ $offset = 113;
                 }
                 else {
                     foreach ($value as $userFunction ) {
+                        if (!array_key_exists('inputData',$userFunction)) {
+                            $userFunction['inputData'] = [];
+                        }                        
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
+                        $this->print_r2($userFunction['inputData']);
+                        
                         $tempArray[$i][$userFunction["type"]] = call_user_func_array(array(__NAMESPACE__ .'\TestsController',  
                                 $userFunction['functionName']), $userFunction['inputData']);
                     }
                 }
             }
-
-            
+/*
             if (array_key_exists("loanId", $tempArray[$i]) ){
                 $tempArray[$tempArray[$i]['loanId']]  = $tempArray[$i];
             }
@@ -575,7 +623,7 @@ $offset = 113;
                 $tempArray['global'] = $tempArray[$i];
             }
             unset($tempArray[$i]);
-            
+*/            
             $i++; 
         continue;       // short cut
         }
@@ -599,83 +647,253 @@ $offset = 113;
        echo "par2 = $currentFormat <br>";
        return $tempDate[0] . "-" . $tempDate[1] . "-" . $tempDate[2];
    }  
-    
+  
+ 
     /**
-    * Extracts data from a string
-    * 
-    * @param type $string
-    * @param type $parameter2
-    * @return type
-    * 
-    */
-    function extractDataFromString($string, $parameter2) {
-       $tempDate = $this->multiexplode(array(":", " ", ".", "-"), $date);
-       echo "par2 = $currentFormat <br>";
-       return $tempDate[0] . "-" . $tempDate[1] . "-" . $tempDate[2];
-   }  
-   
-   
+     * Gets the currency
+     * 
+     * @param string $currency  
+     * @return integer  constant representing currency 
+     * 
+     */
+   function getCurrency($loanCurrency) {
 
+        // TRANSLATE CURRENCY NAME
+        $currencyName = array(EUR => ["EUR", "€"], 
+                                GBP => ["GBP", "£"], 
+                                USD => ["USD", "$"],
+                                ARS => ["ARS", "$"],
+                                AUD => ["AUD", "$"],
+                                NZD => ["NZD", "$"],                                           
+                                BYN => ["BYN", "BR"],       
+                                BGN => ["BGN", "лв"], 
+                                CZK => ["CZK", "Kč"],                                        
+                                DKK => ["DKK", "Kr"],                                       
+                                CHF => ["CHF", "Fr"],                                        
+                                MXN => ["MXN", "$"], 
+                                RUB => ["RUB", "₽"],              
+                              );
+
+        foreach ($currencyName as $currencyIndex => $currency) {
+            if ($loanCurrency == $currency[0]) {
+              return $currencyIndex;
+            }   
+        } 
+   
+   }
+   
+    /**
+     * Extracts data from a string. The returned string is the part
+     * from the input string after the searchString, until the seperator character
+     * 
+     * @param string    $input
+     * @param string    $search
+     * @param string    $seperator   The seperator character
+     * @return string   $extractedString
+     *       
+     */
+    function extractDataFromString($input, $search, $seperator ) {
+        $position = stripos($input, $search) + strlen($search);
+        $substrings = explode($seperator, substr($input, $position));
+        return $substrings[0];
+    }  
+   
+   
+    /**  "MIX" ACCORDING TO FLOW DATA IS STILL MISSING
+     * Reads the transaction type of the cashflow operation
+     * 
+     * @param string   +$input
+     * @return array   $parameter2  List of all concepts of the platform
+     *       
+     */
+    function getTransactionType($input, $config) {
+       $transactionDetails = [
+            0 => [
+                "detail" => "cash_deposit",
+                "cash" => 1,                                    // 1 = in, 2 = out
+                "account" => "CF",                           
+                "transactionType" => "Deposit"
+                ],
+            1 => [
+                "detail" => "cash_withdrawal",
+                "cash" => 2,   
+                "account" => "CF", 
+                "transactionType" => "Withdraw"               
+                ], 
+            2 => [
+                "detail" => "primary_market_investment",
+                "cash" => 2,  
+                "account" => "Capital",                 
+                "transactionType" => "Investment"
+                ],
+            3 => [
+                "detail" => "secundary_market_investment",
+                "cash" => 2,
+                "account" => "Capital",                 
+                "transactionType" => "Investment"              
+                ], 
+            4 => [
+                "detail" => "principal_repayment",
+                "cash" => 1,  
+                "account" => "Capital",                 
+                "transactionType" => "Repayment"
+                ],
+            5 => [
+                "detail" => "partial_principal_repayment",
+                "cash" => 1, 
+                "account" => "Capital",                
+                "transactionType" => "Repayment"               
+                ], 
+            6 => [
+                "detail" => "principal_buyback",
+                "cash" => 1, 
+                "account" => "Capital",                 
+                "transactionType" => "Repayment"
+                ],
+            7 => [
+                "detail" => "regular_interest_income",
+                "cash" => 1, 
+                "account" => "PL",                
+                "transactionType" => "Income"               
+                ], 
+            8 => [
+                "detail" => "delayed_interest_income",
+                "cash" => 1,  
+                "account" => "PL",                 
+                "transactionType" => "Income"
+                ],
+            9 => [
+                "detail" => "late_payment_fee_income",
+                "cash" => 1,  
+                "account" => "PL",                 
+                "transactionType" => "Income"               
+                ], 
+            10 => [
+                "detail" => "cash_deposit",
+                "cash" => 1,  
+                "account" => "PL",                 
+                "transactionType" => "Income"
+                ],
+            11 => [
+                "detail" => "interest_income_buyback",
+                "cash" => 1,
+                "account" => "PL", 
+                "transactionType" => "Income"               
+                ], 
+            12 => [
+                "detail" => "delayed_interest_income_buyback",
+                "cash" => 1,
+                "account" => "PL", 
+                "transactionType" => "Income"
+                ],
+            13 => [
+                "detail" => "cash_withdrawal",
+                "cash" => 1,
+                "account" => "PL", 
+                "transactionType" => "Income"              
+                ], 
+            14 => [
+                "detail" => "cash_deposit",
+                "cash" => 1,
+                "account" => "PL", 
+                "transactionType" => "Income"
+                ],
+            15 => [
+                "detail" => "cash_withdrawal",
+                "cash" => 1,
+                "account" => "PL", 
+                "transactionType" => "Income"               
+                ],  
+            16 => [
+                "detail" => "recoveries",
+                "cash" => 1, 
+                "account" => "PL", 
+                "transactionType" => "Income"               
+                ],  
+            17 => [
+                "detail" => "commission",
+                "cash" => 2,
+                "account" => "PL", 
+                "transactionType" => "Costs"               
+                ], 
+            18 => [
+                "detail" => "bank_charges",
+                "cash" => 2,
+                "account" => "PL", 
+                "transactionType" => "Costs"               
+                ], 
+            19 => [
+                "detail" => "premium_paid_secondary_market",
+                "cash" => 2,    
+                "account" => "PL", 
+                "transactionType" => "Costs"               
+                ], 
+            20 => [
+                "detail" => "interest_payment_secondary_market_purchase",
+                "cash" => 2,  
+                "account" => "PL", 
+                "transactionType" => "Costs"               
+                ],            
+            21 => [
+                "detail" => "tax_VAT",
+                "cash" => 2,  
+                "account" => "PL", 
+                "transactionType" => "Costs"               
+                ], 
+            22 => [
+                "detail" => "tax_income_withholding_tax",
+                "cash" => 2,  
+                "account" => "PL", 
+                "transactionType" => "Costs"               
+                ],            
+            23 => [
+                "detail" => "write-off", 
+                "cash" => 2,  
+                "account" => "PL", 
+                "transactionType" => "Costs"               
+                ]    
+         ];        
+
+        foreach ($config as $key => $configItem) {
+            $position = stripos($input, $configItem[0]);
+            if ($position !== false) {
+                return $configItem[1];
+            }
+        }
+        return;
+    }     
+    
+    
+   
+    /**  "MIX" ACCORDING TO FLOW DATA IS STILL MISSING
+     * 
+     * Reads the transaction detail of the cashflow operation
+     * 
+     * @param string   +$input
+     * @return array   $parameter2  List of all concepts of the platform
+     *       
+     */
+    function getTransactionDetail($input, $parameter2) {    
+  
+       echo "CASDHLSDSKFSLDK"; 
+        
+    }  
+
+    
+    
     function multiexplode ($delimiters,$string) {
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $launch = explode($delimiters[0], $ready);
         return  $launch;
     } 
     
-    function getValueExcelFromArray($rowData, $values) {
- //       echo __FILE__ . " " . __LINE__ ."<br>";
-        foreach ($values as $key => $value) {
-            $pos = $this->getPosInit($rowData, $value["regex"]);
-            //$pos = strpos($rowData, $value["regex"]);
-            if ($pos !== false) {
-                // " found after position X
-                //$tempArray["loanId"] = substr($value, $pos + $variable["initPos"], $variable["finalPos"]);
-                if (!empty($value["name"])) {
-                    $tempArray["type"] = $value["name"];
-                }
-                else {
-                    $tempArray[$value["type"]] = $this->getValueBySubstring($rowData, $value, $pos);
-                }
-            }
-        }
-        return $tempArray;
-    }
     
-    function getValueBySubstring($rowData, $value, $pos) {
-        $posFinal = $this->getPosFinal($rowData, $value, $pos);
-        if (empty($posFinal)) {
-            $data = substr($rowData, $pos + $value["initPos"]);
-        }
-        else {
-            $data = substr($rowData, $pos + $value["initPos"], $posFinal);
-        }
-        return trim($data);
-    }
     
-    function getPosInit($rowData, $regex) {
-        if (is_array($regex)) {
-            $posStart = strpos($rowData, $regex["init"]);
-            $pos = strpos($rowData, $regex["final"], $posStart);
-        }
-        else {
-            $pos = strpos($rowData, $regex);
-        }
-        return $pos;
-    }
     
-    function getPosFinal($rowData, $value, $pos) {
-        $posFinal = null;
-        if (!is_int($value["finalPos"])) {
-            $positionFinal = strpos($rowData, $value["finalPos"], $pos);
-            if ($positionFinal !== false) {
-                $posFinal = $positionFinal-$pos-$value["initPos"];
-            }
-        }
-        else if (is_int($value["finalPos"])) {
-            $posFinal = $value["finalPos"];
-        }
-        return $posFinal;
-    }
+    
+    
+    
+    
     
     function convertPdf () {
         // Parse pdf file and build necessary objects.
