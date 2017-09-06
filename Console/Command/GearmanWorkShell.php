@@ -38,6 +38,21 @@ class GearmanWorkShell extends AppShell {
             $this->GearmanWorker->addServers('127.0.0.1');
             $this->GearmanWorker->addFunction('json_test', array($this, 'my_json_test'));
             $this->GearmanWorker->addFunction('reverse', array($this, 'my_reverse_function'));
+            $this->GearmanWorker->addFunction('testException', function(GearmanJob $job) {
+                throw new Exception('Boom');
+            });
+            $this->GearmanWorker->addFunction('testFail', function(GearmanJob $job) {
+                
+                try {
+                    throw new Exception('Boom');
+                } catch (Exception $e) {
+                    /*syslog(LOG_ERR, $e);
+                    exit(1);*/
+                    $job->sendException($e->getMessage());
+                    $job->sendFail();
+                    
+                }
+            });
             while( $this->GearmanWorker->work() );
     }
     

@@ -94,5 +94,69 @@ class GearmanClientShell extends AppShell {
     function fail_change($task) {
         echo "DATA: " . $task->data() . "\n";
     }
+    
+    /**
+     * This function will make a Gearman Worker Explode BOOOM
+     */
+    public function try_exceptions() {
+        $this->GearmanClient->addServers('127.0.0.1');
+        $this->status_string = "cu";
+        $this->status_string2 = "cu";
+        $this->GearmanClient->setExceptionCallback(function(GearmanTask $task) {
+            $m = $task->data();
+            echo "ID Unique: " . $task->unique() . "\n";
+            echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
+            //return GEARMAN_WORK_EXCEPTION;
+        });
+        
+        $this->GearmanClient->setFailCallback(function(GearmanTask $task) {
+            $m = $task->data();
+            echo "ID Unique: " . $task->unique() . "\n";
+            echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
+            //echo GEARMAN_WORK_FAIL;
+        });
+        
+        $this->GearmanClient->setCompleteCallback(function(GearmanTask $task) {
+            echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
+            echo GEARMAN_SUCCESS;
+        });
+        
+        $this->GearmanClient->addTask('testFail', 'workload', null, '123');
+        $this->GearmanClient->addTask('testException', 'workload', null, '234');
+        $this->GearmanClient->addTask('testFail', 'workload',null, '12345');
+        $this->GearmanClient->runTasks();
+        //echo "This is an error fail \n";
+        //echo $this->status_string;
+        //echo "This is an error exception \n";
+        //echo $this->status_string2;
+        //echo $this->GearmanClient->returnCode();
+        /*if ($this->GearmanClient->returnCode() != GEARMAN_SUCCESS){
+          $this->out("Bad return code!");
+          return;
+          }
+        echo "\n";*/
+        
+        $this->GearmanClient->addTask('testException', 'workload', null, '22222');
+        $this->GearmanClient->runTasks();
+        //echo "This is an error exception \n";
+        //echo $this->status_string2;
+        //echo $this->GearmanClient->returnCode();
+        echo "\n";
+        
+        /*$this->GearmanClient->addTask('test', 'workload');
+        $this->GearmanClient->runTasks();
+        echo "This is an error";
+        var_dump($this->GearmanClient->returnCode());*/
+        
+        /*$this->GearmanClient->addTask('test', 'workload');
+        $this->GearmanClient->runTasks();
+        echo "This is an error";
+        echo $this->GearmanClient->returnCode();*/ 
+        
+    }
+    
+    function complete_change($task) {
+        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
+    }
 
 }
