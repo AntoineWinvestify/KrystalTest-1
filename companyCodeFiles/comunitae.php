@@ -61,6 +61,11 @@
  * Added three urlsequences for userinvestment to get all the user's investment
  * Fixed code to take into account these investments
  *
+ * 
+ * 2017-09-06
+ * Comunitae hidden investment fix
+ * 
+ * 
  * PENDING:
  * if subscriptionProgress = "finalizado" then write -1 in DB field
  * if (strcasecmp (trim($a->nodeValue), trim($user)) == 0) {   line 112 should also
@@ -287,7 +292,7 @@ class comunitae extends p2pCompany {
             }
         }
         
-        for($urlSequenceNumber ;$urlSequenceNumber < 5;$urlSequenceNumber++){
+        for($urlSequenceNumber ;$urlSequenceNumber < 5;$urlSequenceNumber++){ //Fix url sequence error. Factoring only have one page yet.
             array_shift($this->urlSequence);
         }
         
@@ -296,7 +301,7 @@ class comunitae extends p2pCompany {
         
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         //$this->print_r2($hiddenInvestments);
-        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        $totalArray = array_merge($totalArray,$hiddenInvestments); //Add hidden investent in the array
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
@@ -323,7 +328,7 @@ class comunitae extends p2pCompany {
         
         $tempArray = array();
         $newTotalArray = array();
-        
+        //Read investment info
         foreach($investmentDeletedList as $loanId) {
             $str = $this->getCompanyWebpage($url . $loanId . '?np=1');
             /*echo 'Investment page : '  .  HTML_ENDOFLINE;
@@ -373,7 +378,7 @@ class comunitae extends p2pCompany {
             
         //$this->print_r2($newTotalArray);
         $this->companyUserLogout();
-        return $newTotalArray;
+        return $newTotalArray; //Return hidden investments info in an array
     }
     
     /**
