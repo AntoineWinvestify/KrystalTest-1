@@ -1422,6 +1422,19 @@ hr.nomargin {
                         #registerButton {
                             left: 25%;
                         }
+                        .loginBox {
+                            background-color: white;
+                            border: 1px solid gray;
+                            height: 260px;
+                            width: 300px;
+                            float: right;
+                            border-radius: 5px;
+                            margin: 170px 10px 0px 0px;
+                            padding-top: 20px;
+                        }
+                        .logoRedirect {
+                            height: 40px;
+                        }
                     }
 
         /*MOBILE MEDIA QUERY <480px */
@@ -1558,6 +1571,16 @@ hr.nomargin {
             }
             #featuresPadding {
                 margin-top: 0px !important;
+            }
+            .loginBox {
+                background-color: white;
+                border: 1px solid gray;
+                height: 260px;
+                width: 300px;
+                float: right;
+                border-radius: 5px;
+                margin: 120px 10px 0px 0px;
+                padding-top: 20px;
             }
         }
             
