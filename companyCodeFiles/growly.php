@@ -838,7 +838,12 @@ class growly extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'p'),
                 ), array('href', 'src', 'alt', 'title', 'aria-valuenow', 'style'));
-
+        
+        $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'rel', 'value' => 'tooltip'), 
+        ));
+        
+        
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
@@ -846,6 +851,9 @@ class growly extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'p'),
                 ), array('href', 'src', 'alt', 'title', 'aria-valuenow', 'style'));
 
+        $node2 = $this->cleanDomTag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'rel', 'value' => 'tooltip'), 
+        ));
 
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
