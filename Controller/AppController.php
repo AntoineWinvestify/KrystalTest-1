@@ -362,7 +362,7 @@ class AppController extends Controller {
 
         
         //Investment Status in marketplace
-        $this->marketpalceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
+        $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
 
         
         //Country for excel export

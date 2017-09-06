@@ -143,6 +143,9 @@ function showUserData($userIdentity, $number) {
     function modal(){
         $this->layout = 'azarus_private_layout';
     }
+    
+    
+    
     function convertExcelToArray() {
         $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/compare_local/mintos2.xlsx");
     $this->autoRender = false;
@@ -304,10 +307,190 @@ for ($row = 1; $row <= $highestRow; $row++){
             "G" => "invertido",
             "H" => "total"
         ];
-        echo "EEE";
+
+
+        $values_example = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+ // OperaciÃ³n realizada ID Puja: 181325, ID Subasta: 1908,Ahumados Sabal, S.L....           
+
+            "B" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "mdY",		// Input parameters. The first parameter
+				//"input3" => "ssss"            // is always the contents of the cell
+                                  // etc etc  ...
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+                
+    /*            [
+                    "type" => "date1",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "mddddY",		// Input parameters. The first parameter
+				"input3" => "sssTTs"              // is always the contents of the cell
+                                  // etc etc  ...
+                                ],
+                    "functionName" => "formatDate",         
+                 ]
+     */
+            ],
+            "C" => [
+                [
+                    "type" => "purpose",                        // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "ID Subasta", 
+                                "input3" => ",",
+                                "input4" => 1,
+                                "input5" => ","
+                            ],
+                    "functionName" => "extractDataFromString",  
+                ]
+            ],
+            "D" => [                                            // Simply changing name of column to Winvestify
+                    "name" => "turnover",                   // standardized name, which is also the name of index 
+                ],
+            "E" => [
+                    "name" => "balance",
+                ],
+   //         "E" => "primary_market_investment",
+    /*
+            "F" => "secundary_market_investment",
+            "G" => "principal_repayment",
+            "H" => "partial_principal_repayment",
+            "I" => "regular_interest_income",
+            "J" => "delayed_interest_income",
+            "K" => "late_payment_fee_income",
+            "L" => "interest_income_buyback",
+            "M" => "other_income",
+            "N" => "other_income_1",
+            "O" => "other_income_2",
+            "P" => "other_income_3",
+            "Q" => "commission",           
+            "R" => "recoveries",
+            "S" => "bank_charges",
+            "T" => "premium_paid_secondary_market",
+            "U" => "interest_payment_secondary_market_purchase",
+            "V" => "tax_VAT",
+            "W" => "tax_income_withholding_tax",
+            "X" => "write-off"
+     */ 
+     
+        ];       
+ echo "B___________________________B<br><br>";
+  $this->print_r2($values_example);
+  echo "Anto";
+
+  
+        $transactionDetails = [
+            "cash_deposit" => [
+                "cash" => 1,         // 1 = income, 2 = cost
+                "transactionType" => "Deposit",
+                ],
+            "cash_withdrawal" => [
+                "cash" => 2,         
+                "transactionType" => "Withdraw",               
+                ], 
+            "primary_market_investment" => [
+                "cash" => 2,         
+                "transactionType" => "Investment",
+                ],
+            "secundary_market_investment" => [
+                "cash" => 2,         
+                "transactionType" => "Investment",               
+                ], 
+            "principal_repayment" => [
+                "cash" => 1,        
+                "transactionType" => "Repayment",
+                ],
+            "partial_principal_repayment" => [
+                "cash" => 1,         
+                "transactionType" => "Repayment",               
+                ], 
+            "principal_buyback" => [
+                "cash" => 1,        
+                "transactionType" => "Repayment",
+                ],
+            "regular_interest_income" => [
+                "cash" => 1,         
+                "transactionType" => "Income",               
+                ], 
+            "delayed_interest_income" => [
+                "cash" => 1,         
+                "transactionType" => "Income",
+                ],
+            "late_payment_fee_income" => [
+                "cash" => 1,         
+                "transactionType" => "Income",               
+                ], 
+            "cash_deposit" => [
+                "cash" => 1,        
+                "transactionType" => "Income",
+                ],
+            "interest_income_buyback" => [
+                "cash" => 1,         
+                "transactionType" => "Income",               
+                ], 
+            "delayed_interest_income_buyback" => [
+                "cash" => 1,        
+                "transactionType" => "Income",
+                ],
+            "cash_withdrawal" => [
+                "cash" => 1,         
+                "transactionType" => "Income",               
+                ], 
+            "cash_deposit" => [
+                "cash" => 1,       
+                "transactionType" => "Income",
+                ],
+            "cash_withdrawal" => [
+                "cash" => 1,         
+                "transactionType" => "Income",               
+                ],  
+            "recoveries" => [
+                "cash" => 1,         
+                "transactionType" => "Income",               
+                ],  
+            "commission" => [
+                "cash" => 2,         
+                "transactionType" => "Costs",               
+                ], 
+            "bank_charges" => [
+                "cash" => 2,         
+                "transactionType" => "Costs",               
+                ], 
+            "premium_paid_secondary_market" => [
+                "cash" => 2,         
+                "transactionType" => "Costs",               
+                ], 
+            "interest_payment_secondary_market_purchase" => [
+                "cash" => 2,         
+                "transactionType" => "Costs",               
+                ],            
+            "tax_VAT" => [
+                "cash" => 2,         
+                "transactionType" => "Costs",               
+                ], 
+            "tax_income_withholding_tax" => [
+                "cash" => 2,         
+                "transactionType" => "Costs",               
+                ],            
+            "write-off" => [
+                "cash" => 2,         
+                "transactionType" => "Costs",               
+                ],    
+         ];  
+            
+            
+            
+            
+            
+        
         $offset = 3;
    
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values_mintos, $offset);
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values_example, $offset);
         $this->print_r2($datas);
     }
     
@@ -333,36 +516,58 @@ for ($row = 1; $row <= $highestRow; $row++){
         $objPHPExcel = $objReader->load("/var/www/html/compare_local/mintos.xlsx");
       
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-         echo "<br><br>CHARO<br>";
         $this->print_r2($sheetData);
-        echo "<br><br>ANTOINE<br>";
    
         $datas = $this->saveExcelArrayToTemp($sheetData, $values);
         echo "ANTOINE";
         $this->print_r2($datas);
     }
     
+    
+    
+    /**
+     * Function to get the final position to get the variable from a string
+     * @param string $rowDatas  the excel data in an array
+     * @param string $value     the array with cofiguration data for parsing
+     * @param int $offset       the number of indices which are NOT to be parsed
+     * @return array $temparray the data after the parsing process
+     * 
+     */
     function saveExcelArrayToTemp($rowDatas, $values, $offset) {
         echo __FILE__ . " " . __LINE__ ."<br>";
-       
-        $i = 0;
         $tempArray = [];
-      
+$offset = 113;
+        $i = 0;
+        foreach ($rowDatas as $key => $rowData) {
+            if ($i == $offset) {
+                break;
+            }
+            unset($rowDatas[$key]);  
+            $i++;
+        }
+        
+   //     $this->print_r2($rowDatas);
+// Transaction ID	Date            Details                                 Turnover            	Balance	Currency
+// 126162844	2017-01-01 23:30:00	Interest income Loan ID: 19550-01	0.000891587669667	9.6354150112017	EUR
+// 126162002	2017-01-01 23:30:00	Interest income Loan ID: 16706-01	5.1373503120617         5.1458167810378	EUR
+   
+        $i = 0;
         foreach ($rowDatas as $keyRow => $rowData) {
             foreach ($values as $key => $value) {
-                if (is_array($value)) {
-                    if (empty($tempArray[$i])) {
-                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
-                    }
-                    else {
-                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
-                    }
+                $this->print_r2($value);
+                if (array_key_exists("name", $value)) {
+                    $tempArray[$i][$value["name"]] = $rowData[$key];
                 }
                 else {
-                    $tempArray[$i][$value] = $rowData[$key];
+                    foreach ($value as $userFunction ) {
+                        array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
+                        $tempArray[$i][$userFunction["type"]] = call_user_func_array(array(__NAMESPACE__ .'\TestsController',  
+                                $userFunction['functionName']), $userFunction['inputData']);
+                    }
                 }
             }
 
+            
             if (array_key_exists("loanId", $tempArray[$i]) ){
                 $tempArray[$tempArray[$i]['loanId']]  = $tempArray[$i];
             }
@@ -371,14 +576,51 @@ for ($row = 1; $row <= $highestRow; $row++){
             }
             unset($tempArray[$i]);
             
-            $i++;             
+            $i++; 
+        continue;       // short cut
         }
-
-        echo "Changing index to LoanId if exists else use a generic ";
+        echo "AAAAAAAAAAAAAAAAAAA";
+        $this->print_r2($tempArray);
+        exit;
         return $tempArray;
     }
     
     
+    /**
+     * Converts any type of date format to internal format dd-mm-yyyy
+     * 
+     * @param string $date  
+     * @param string $currentFormat
+     * @return string 
+     * 
+     */
+   function normalizeDate($date, $currentFormat) {
+       $tempDate = $this->multiexplode(array(":", " ", ".", "-"), $date);
+       echo "par2 = $currentFormat <br>";
+       return $tempDate[0] . "-" . $tempDate[1] . "-" . $tempDate[2];
+   }  
+    
+    /**
+    * Extracts data from a string
+    * 
+    * @param type $string
+    * @param type $parameter2
+    * @return type
+    * 
+    */
+    function extractDataFromString($string, $parameter2) {
+       $tempDate = $this->multiexplode(array(":", " ", ".", "-"), $date);
+       echo "par2 = $currentFormat <br>";
+       return $tempDate[0] . "-" . $tempDate[1] . "-" . $tempDate[2];
+   }  
+   
+   
+
+    function multiexplode ($delimiters,$string) {
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+        $launch = explode($delimiters[0], $ready);
+        return  $launch;
+    } 
     
     function getValueExcelFromArray($rowData, $values) {
  //       echo __FILE__ . " " . __LINE__ ."<br>";
