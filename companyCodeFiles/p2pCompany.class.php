@@ -650,7 +650,7 @@ class p2pCompany {
 
         //create the final string to be posted using implode()
         $postString = implode('&', $postItems);
-
+        echo 'post-String: ' . print_r($postString);
         $request = new \cURL\Request();
 
         // check if extra headers have to be added to the http message  

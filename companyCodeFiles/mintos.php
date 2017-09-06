@@ -163,6 +163,7 @@ class mintos extends p2pCompany {
             case 2:
                 echo $this->idForSwitch . HTML_ENDOFLINE;
                 $this->idForSwitch++;
+                echo $str;
                 $next = $this->getCompanyWebpageMultiCurl();
                 echo 'Next: ' . $next . HTML_ENDOFLINE;
                 break;
@@ -172,7 +173,7 @@ class mintos extends p2pCompany {
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-
+                //echo $str;
                 $resultLogin = false;
                 echo 'CHeck login' . HTML_ENDOFLINE;
                 $as = $dom->getElementsByTagName('a');
