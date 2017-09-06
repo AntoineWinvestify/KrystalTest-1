@@ -1240,7 +1240,7 @@ class p2pCompany {
      * Delete the cookies file generated for the request
      */
     public function deleteCookiesFile() {
-        if (file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
+        if ($this->cookies_name != "cookies.txt" && file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
             unlink($this->cookiesDir . '/' . $this->cookies_name);
         }
     }
