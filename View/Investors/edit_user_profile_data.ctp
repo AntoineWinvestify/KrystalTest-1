@@ -168,25 +168,26 @@ $(document).ready(function() {
                 <div class="card-header" data-background-color="blue">
                     <h4 class="title"><strong><?php echo __('Personal Data')?></strong></h4>
                 </div>
-                <?php
-                    if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
-                        if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result of a change of data
-                ?>
-                            <div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button>
-                                <strong><?php echo __("You're data has been successfully modified")?></strong>	
-                            </div>
-                <?php
-                        }
-                    }
-                ?>
-
                 <div class="card-content table-responsive togetoverlay">
                     <div class="overlay" style="display:none;">
                         <div class="fa fa-spin fa-spinner" style="color:green">	
                         </div>
                     </div>
                     <div class="row">
+                        <?php
+                            if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
+                                if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result of a change of data
+                        ?>
+                                <div class="col-xs-12 col-sm-6 col-md-12 col-lg-12">
+                                    <div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert">
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button>
+                                        <strong><?php echo __("You're data has been successfully modified")?></strong>	
+                                    </div>
+                                </div>
+                        <?php
+                                }
+                            }
+                        ?>
                         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6"> <!-- Password -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_password1" data-placement="auto"><?php echo __('Password')?></label>
