@@ -306,6 +306,11 @@ class comunitae extends p2pCompany {
     }
 
     
+    /**Read hidden investment.
+     * 
+     * @param array $investmentDeletedList loan id list
+     * @return array investments info list
+     */
     function readHiddenInvestment ($investmentDeletedList){
         
         $login = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
