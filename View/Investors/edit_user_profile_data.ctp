@@ -47,6 +47,10 @@ if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result 
 <link rel="stylesheet" type="text/css" href="/plugins/datepicker/datepicker3.css">
 <script type="text/javascript">
 
+function ga_savePersonalData() {
+	console.log("ga 'send' 'event' 'PersonalData'  'savePersonalDataClick'");
+	ga('send', 'event', 'PersonalData', 'savePersonalDataClick');	
+}
 
 function successAdd(data){
 	console.log("successAdd function is called");
@@ -143,8 +147,8 @@ $(document).ready(function() {
                 investor_DNI: $("#ContentPlaceHolder_dni").val(),
                 //investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
                 investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val()
-           };
-    //		ga_savePersonalData();
+            };
+            ga_savePersonalData();
             var data = jQuery.param( params );
             getServerData(link, data, successModified, errorModified);
         }
