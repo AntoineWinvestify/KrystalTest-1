@@ -176,9 +176,13 @@ public function editUserProfileData() {
             $this->Investor->save($receivedData, $validate = false);
             // UPDATE THE SESSION DATA
         }
-
+        
         $receivedDataTemp[0]['Investor'] = $receivedData;
-        $this->set('resultUserData', $receivedDataTemp);
+        //We do again the query to get correctly the data on plugins.
+        $resultInvestorTemp = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
+            'recursive' => -1,
+        ));
+        $this->set('resultUserData', $resultInvestorTemp);
         //}
     }
 
