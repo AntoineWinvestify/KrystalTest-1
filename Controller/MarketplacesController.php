@@ -325,7 +325,13 @@ class MarketPlacesController extends AppController {
 
         $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
         $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
-
+        
+        $loanIdList = array(); //This array contains the loan_reference of each investment, we need it to search in the pfp marketplace if the investment have been deleted. (COMUNITAE delete some finished investmenet)
+        foreach($companyMarketplace as $ivestment){
+            $loanId = $ivestment['Marketplace']['marketplace_loanReference'];
+            array_push($loanIdList, $loanId);
+        }
+        
         $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
         $newComp->defineConfigParms($result[$companyId]);
 
@@ -334,7 +340,7 @@ class MarketPlacesController extends AppController {
 
         $this->print_r2($urlSequenceList);
         $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure);
+        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure,$loanIdList);
 
 
         //echo 'Marketplace Result: ';

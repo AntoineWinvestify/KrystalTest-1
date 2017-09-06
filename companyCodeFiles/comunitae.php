@@ -124,18 +124,24 @@ class comunitae extends p2pCompany {
      * @param Array $structure
      * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) {
+    function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
 
+        echo 'Comunitae array loan id: ' .HTML_ENDOFLINE;
+        $this->print_r2($loanIdList);
+        
+        $this->investmentDeletedList = $loanIdList;
         $totalArray = array();
         $subscriptionComplete = false;
         $structureRevision = 1;
         $pageNumber = 1;
         $url = null;
         $urlNextPage = null;
+        $urlSequenceNumber = 0;
         $type = 1; // 1 = pagare, comunitae have 'pagares' and 'Factoring'
         for ($i = 0; $i < 2; $i++) {
             $numberOfInvestmentInPage = 0;
             $str = $this->getCompanyWebpage($url);
+            $urlSequenceNumber++;
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             if ($i == 0) {
@@ -153,6 +159,7 @@ class comunitae extends p2pCompany {
 
                 //$rows = $listing->getElementsByTagName('article');
             } else if ($i == 1) {
+                echo 'factoring url' . $url; 
                 //Factoring
                 $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
                 $type = 4; //4 = factoring
@@ -237,7 +244,7 @@ class comunitae extends p2pCompany {
                                 $tempArray['marketplace_statusLiteral'] = 'Completado';
                                 $tempArray['marketplace_status'] = PERCENT;
                                 foreach ($companyBackup as $inversionBackup) {
-                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado') {
+                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
                                         $subscriptionComplete = true;
                                     }
                                 }
@@ -248,18 +255,21 @@ class comunitae extends p2pCompany {
 
 
                     if ($tempArray) {
+                        $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);       
                         $totalArray[] = $tempArray;
                         unset($tempArray);
+                        $numberOfInvestmentInPage++;
                     }
                     unset($tempArray);
 
-                    $numberOfInvestmentInPage++;
-
+                    
+                    echo 'Investment' . $numberOfInvestmentInPage;
                     //If subscription of the investment is not complete and the number of investment is the 15th in the page
                     //We need to go to the next page to verify if there are investments or not
                     if (!$subscriptionComplete && $numberOfInvestmentInPage == 15) {
                         if (empty($urlNextPage)) {
                             $urlNextPage = array_shift($this->urlSequence);
+                            $urlSequenceNumber++;
                         }
                         $numberOfInvestmentInPage = 0;
                         $pageNumber++;
@@ -273,17 +283,99 @@ class comunitae extends p2pCompany {
                         $numberOfInvestmentInPage = 0;
                         break;
                     }
-                    //If there is a complete investment in the first page
-                    //We need to delete the urlSequence for the nextPage
-                    else if ($subscriptionComplete && $pageNumber == 1) {
-                        array_shift($this->urlSequence);
-                    }
                 }
             }
         }
+        
+        for($urlSequenceNumber ;$urlSequenceNumber < 5;$urlSequenceNumber++){
+            array_shift($this->urlSequence);
+        }
+        
+        echo 'Final loan id array: ' . HTML_ENDOFLINE;     
+        $this->print_r2($this->investmentDeletedList);
+        
+        $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
+        //$this->print_r2($hiddenInvestments);
+        $totalArray = array_merge($totalArray,$hiddenInvestments);
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
     }
 
+    
+    function readHiddenInvestment ($investmentDeletedList){
+        
+        $login = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
+        
+         if (!$login) {   // Error while logging in
+            echo __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN<br>";
+            $tracings = "Tracing:\n";
+            $tracings .= __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN\n";
+            $tracings .= "Comunitae login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+            $tracings .= " \n";
+            $msg = "Error while logging in user's portal. Wrong userid/password \n";
+            $msg = $msg . $tracings . " \n";
+            $this->logToFile("Warning", $msg);
+            //echo 'Login fail';
+            return $this->getError(__LINE__, __FILE__);
+        }
+        
+        
+        $url = array_shift($this->urlSequence);
+        
+        $tempArray = array();
+        $newTotalArray = array();
+        
+        foreach($investmentDeletedList as $loanId) {
+            $str = $this->getCompanyWebpage($url . $loanId . '?np=1');
+            /*echo 'Investment page : '  .  HTML_ENDOFLINE;
+            echo $url . $loanId . '?np=1' .  HTML_ENDOFLINE;
+            echo $str;*/
+            $dom = new DOMDocument;
+            $dom->loadHTML($str);
+            $dom->preserveWhiteSpace = false;
+            
+            $tempArray['marketplace_loanReference'] = $loanId;
+            $tempArray['marketplace_country'] = 'ES';
+            //echo 'Sections: ' . HTML_ENDOFLINE;
+            $sections = $dom->getElementsByTagName('section');
+            
+            foreach($sections as $key=>$section){
+                //echo 'Section ' . $key .":" . HTML_ENDOFLINE;
+                //echo '  divs: ' . HTML_ENDOFLINE;
+                switch($key){
+                    case 2:
+                        $divs = $section->getElementsByTagName('div');
+                        //foreach($divs as $keyDiv => $div){
+                            //echo '  div ' . $keyDiv . $div->nodeValue . HTML_ENDOFLINE;
+                            $tempArray['marketplace_name'] = trim($divs[2]->nodeValue);
+                            $tempArray['marketplace_purpose'] = trim($divs[2]->nodeValue);
+                            $tempArray['marketplace_rating'] = trim($divs[11]->nodeValue);
+                            $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($divs[12]->nodeValue));
+                            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($divs[14]->nodeValue));
+                            $tempArray['marketplace_amount'] = $this->getMonetaryValue(trim($divs[16]->nodeValue));
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($divs[19]->nodeValue));
+                            if($tempArray['marketplace_subscriptionProgress'] == 10000){
+                                $tempArray['marketplace_statusLiteral'] = 'Completado';
+                                $tempArray['marketplace_status'] = PERCENT;
+                            }else{
+                                $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                                $tempArray['marketplace_status'] = null;
+                            }
+                        //}
+                        break;            
+                }
+               
+               
+            } 
+            
+            $newTotalArray[] = $tempArray;
+            unset($tempArray);
+        }     
+            
+        //$this->print_r2($newTotalArray);
+        $this->companyUserLogout();
+        return $newTotalArray;
+    }
+    
     /**
      * collect all investment
      * @param Array $structure

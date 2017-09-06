@@ -232,6 +232,7 @@ class p2pCompany {
 
 
         $url = array_shift($this->urlSequence);
+        echo 'login url' . $url . HTML_ENDOFLINE;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
                 $currentScreen = array_shift($this->testConfig['siteReadings']);
@@ -1716,6 +1717,26 @@ class p2pCompany {
         }
         return [$structureRevision,$break,$type];
     }
+    
+    
+    /**Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
+     * The array will contain the deleted/hidden invesment that we cant update from the pfp marketplace.
+     * @param array $loanReferenceList loan reference id list that we have in our marketplace
+     * @param array $investment single investment that we compare
+     */
+    public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
+        print_r($investment);
+        print_r($loanReferenceList);
+         foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
+            if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
+                echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;
+                unset($loanReferenceList[$key]); 
+            }
+        }
+        
+        return $loanReferenceList;
+    }
+    
 
 }
 
