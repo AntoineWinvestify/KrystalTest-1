@@ -83,7 +83,7 @@ function beforeFilter() {
 	$this->Auth->allow('requestNewPasswordPanel', 'loginAction', 'provideNewPassword', 'changeDisplayLanguage', 'login', 'readUsedLanguage',
 						'testReadPreferredFollowers', 'cronDBbackup', 'initLoad',
 						'registerPanel', 'registerPanelA', 'registerPanelB', 'registerPanelC', 'registerPanelD',
-						'registerPanelE', 'cronAnalyzeUserDatas', 'session');
+						'registerPanelE', 'cronAnalyzeUserDatas', 'session', 'loginRedirect');
 
 	// allow these actions without logon
 //	$this->Security->validatePost = false;
@@ -157,7 +157,7 @@ public function loginAction()
 											'default',array(),	'auth');
 				$this->set("error", true);
 				return $this->redirect(
-					array('controller' => 'marketplaces', 'action' => 'getGlobalMarketPlaceData'));
+					array('controller' => 'users', 'action' => 'loginRedirect'));
 			}
 
 			$investorId = $this->Auth->user('Investor.id');
@@ -170,7 +170,7 @@ public function loginAction()
 			$this->Session->setFlash(__('Username or password is incorrect'),
 											'default',array(),	'auth');
 			$this->set("error", true);
-			return $this->redirect(array('controller' => 'marketplaces', 'action' => 'getGlobalMarketPlaceData'));
+			return $this->redirect(array('controller' => 'users', 'action' => 'loginRedirect'));
 		}
 	}
 }
@@ -195,6 +195,12 @@ public function login()
 	}
 	$error = false;
 	$this->set("error", $error);
+}
+
+public function loginRedirect() {
+    $this->layout = "winvestify_login";
+    $error = false;
+    $this->set("error", $error);
 }
 
 

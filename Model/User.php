@@ -157,6 +157,7 @@ class User extends AppModel {
                 'investor_telephone' => $telephone,
                 'investor_country' => $country,
                 'investor_accountStatus' => UNCONFIRMED_ACCOUNT,
+                'investor_photoChatGUID' => 'user1_128.png'
             );
 
             if ($this->Investor->save($data, $validation = true)) {                                   // OK
