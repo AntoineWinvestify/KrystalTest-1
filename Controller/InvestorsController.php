@@ -25,10 +25,11 @@
   function acceptConditionsTempPanel                            			[OK]
   removed acceptConditionsTempPanel after finishing Beta testing period                 [OK, tested]
 
-
+  2017-09-06        version 0.2
+  Updated data saving to do again a query to show correctly the data 
+  
   Pending:
   Generate a miniview for the extended notification of the event "newAccountLinked"     [OK, not yet tested]
-  User cannot modify his mobile phone number.
  * A more consistent andpermanent solution will be implemented with 1CR for all "confirmed" data items,
  * like name, surname, telephone, dni, ....
  * 
@@ -176,8 +177,7 @@ public function editUserProfileData() {
             $this->Investor->save($receivedData, $validate = false);
             // UPDATE THE SESSION DATA
         }
-        
-        $receivedDataTemp[0]['Investor'] = $receivedData;
+
         //We do again the query to get correctly the data on plugins.
         $resultInvestorTemp = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
             'recursive' => -1,
