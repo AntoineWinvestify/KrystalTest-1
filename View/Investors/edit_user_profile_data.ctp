@@ -47,6 +47,10 @@ if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result 
 <link rel="stylesheet" type="text/css" href="/plugins/datepicker/datepicker3.css">
 <script type="text/javascript">
 
+function ga_savePersonalData() {
+	console.log("ga 'send' 'event' 'PersonalData'  'savePersonalDataClick'");
+	ga('send', 'event', 'PersonalData', 'savePersonalDataClick');	
+}
 
 function successAdd(data){
 	console.log("successAdd function is called");
@@ -141,10 +145,10 @@ $(document).ready(function() {
                 investor_city: $("#ContentPlaceHolder_city").val(),
                 investor_country: $("#ContentPlaceHolder_country").val(),
                 investor_DNI: $("#ContentPlaceHolder_dni").val(),
-                investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
+                //investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
                 investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val()
-           };
-    //		ga_savePersonalData();
+            };
+            ga_savePersonalData();
             var data = jQuery.param( params );
             getServerData(link, data, successModified, errorModified);
         }
@@ -168,25 +172,26 @@ $(document).ready(function() {
                 <div class="card-header" data-background-color="blue">
                     <h4 class="title"><strong><?php echo __('Personal Data')?></strong></h4>
                 </div>
-                <?php
-                    if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
-                        if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result of a change of data
-                ?>
-                            <div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button>
-                                <strong><?php echo __("You're data has been successfully modified")?></strong>	
-                            </div>
-                <?php
-                        }
-                    }
-                ?>
-
                 <div class="card-content table-responsive togetoverlay">
                     <div class="overlay" style="display:none;">
                         <div class="fa fa-spin fa-spinner" style="color:green">	
                         </div>
                     </div>
                     <div class="row">
+                        <?php
+                            if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
+                                if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result of a change of data
+                        ?>
+                                <div class="col-xs-12 col-sm-6 col-md-12 col-lg-12">
+                                    <div class="alert bg-success alert-dismissible alert-win-success fade in alert-to-fade" role="alert">
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px;"><span aria-hidden="true">&times;</span></button>
+                                        <strong><?php echo __("You're data has been successfully modified")?></strong>	
+                                    </div>
+                                </div>
+                        <?php
+                                }
+                            }
+                        ?>
                         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6"> <!-- Password -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_password1" data-placement="auto"><?php echo __('Password')?></label>
@@ -479,13 +484,13 @@ $(document).ready(function() {
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- telephone -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone')?></label>
-                                <div class="form-control blue_noborder2">
+                                <div class="form-control blue_noborder2 disabledPointer">
                                                                                                     <?php
                                                                                                             $errorClass = "";
                                                                                                             if (array_key_exists('investor_telephone', $investorValidationErrors)) {
                                                                                                                     $errorClass = "redBorder";
                                                                                                             }
-                                                                                                            $class = "telephoneNumber center-block". ' ' . $errorClass;
+                                                                                                            $class = "telephoneNumber center-block disabledPointer". ' ' . $errorClass;
 
                                                                                                             echo $this->Form->input('Investor.investor_telephone', array(
                                                                                                                                                             'name'			=> 'telephone',
@@ -494,7 +499,8 @@ $(document).ready(function() {
                                                                                                                                                             'placeholder' 	=>  __('Telephone'),
                                                                                                                                                             'class' 		=> $class,
                                                                                                                                                             'type'			=> 'tel',
-                                                                                                                                                            'value'			=> $resultUserData[0]['Investor']['investor_telephone']
+                                                                                                                                                            'value'			=> $resultUserData[0]['Investor']['investor_telephone'],
+                                                                                                                                                            'disabled'          => 'disabled'
                                                                                                                                                             ));
                                                                                                             $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
                                                                                                             if (array_key_exists('investor_telephone',$validationResult)) {
