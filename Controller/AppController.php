@@ -311,7 +311,6 @@ App::uses('Controller', 'Controller');
 
 //
 
-include  '/var/www/html/compare_local/app/Config/constants_1.php';
 class AppController extends Controller {
 
 
