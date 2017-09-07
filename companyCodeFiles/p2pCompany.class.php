@@ -573,7 +573,7 @@ class p2pCompany {
 
         $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
         // Add the url to the queue
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->marketplaces->addRequestToQueueCurls($request);
     }
 
     /**
@@ -643,7 +643,7 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
 
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->marketplaces->addRequestToQueueCurls($request);
     }
 
     /**
@@ -718,7 +718,7 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
         //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->marketplaces->addRequestToQueueCurls($request);
 
         if ($this->config['appDebug'] == true) {
             echo "VISITED COMPANY URL = $url <br>";

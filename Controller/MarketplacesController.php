@@ -1036,7 +1036,7 @@ class MarketPlacesController extends AppController {
      * Add a request to the queue to initiate the multi_curl
      * @param type $request It's the request to process
      */
-    public function addRequetsToQueueCurls($request) {
+    public function addRequestToQueueCurls($request) {
         $this->queueCurls->attach($request);
     }
 
