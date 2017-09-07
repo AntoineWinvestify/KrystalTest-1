@@ -38,13 +38,28 @@ class GearmanWorkShell extends AppShell {
             $this->GearmanWorker->addServers('127.0.0.1');
             $this->GearmanWorker->addFunction('json_test', array($this, 'my_json_test'));
             $this->GearmanWorker->addFunction('reverse', array($this, 'my_reverse_function'));
+            $this->GearmanWorker->addFunction('testException', function(GearmanJob $job) {
+                throw new Exception('Boom');
+            });
+            $this->GearmanWorker->addFunction('testFail', function(GearmanJob $job) {
+                
+                try {
+                    throw new Exception('Boom');
+                } catch (Exception $e) {
+                    /*syslog(LOG_ERR, $e);
+                    exit(1);*/
+                    $job->sendException($e->getMessage());
+                    $job->sendFail();
+                    
+                }
+            });
             while( $this->GearmanWorker->work() );
     }
     
     public function my_json_test($job) {
             $params = json_decode($job->workload(),true);
             // add a dummy response so we know that it worked
-            sleep(3);
+            //sleep(3);
             echo "Sending email: params";
             $sectors = $this->getSectorsByRole(4);
             $params['response'] = $sectors;//$this->Company->find('first');
@@ -93,6 +108,14 @@ class GearmanWorkShell extends AppShell {
 
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
+    }
+    
+    function multicurl() {
+        
+    }
+    
+    function casperjs() {
+        
     }
     
     

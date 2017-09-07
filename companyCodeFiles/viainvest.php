@@ -22,11 +22,11 @@
  *
  * 
  * 
- * 2017-08-23
+ * 2017-08-28
  * Created
  * link account
  */
-class twino extends p2pCompany {
+class viainvest extends p2pCompany {
 
     function __construct() {
         parent::__construct();
@@ -35,25 +35,46 @@ class twino extends p2pCompany {
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY twino DURING LOGIN PROCESS
+          FIELDS USED BY viainvest DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
          */
 
 
-        $credentials['name'] = $user;
-        $credentials['password'] = $password;
-        $credentials['googleAnalyticClientId'] = '1778227581.1503479723';
-        $payload = json_encode($credentials);
-
-        //echo $payload;
-        $this->doCompanyLoginRequestPayload($payload); //do login
-
+        //Get credentials
         $str = $this->getCompanyWebpage();
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
-        $str = $this->getCompanyWebpage(); //This url return true if you are logged, false if not.
+        $forms = $this->getElements($dom, 'form', 'action', '/users/login');
+        $inputs = $forms[0]->getElementsByTagName('input');
+
+        foreach ($inputs as $key => $input) {
+            //echo $key . ' => ' . $input->getAttribute('name') . " => " . $input->getAttribute('value') . HTML_ENDOFLINE;
+            //$credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+            switch ($key) {
+                case 1:
+                    $credentials[urlencode($input->getAttribute('name'))] = $input->getAttribute('value');
+                    break;
+                case 7:
+                    $credentials[urlencode($input->getAttribute('name'))] = $input->getAttribute('value');
+                    break;
+                case 8:
+                    $credentials[urlencode($input->getAttribute('name'))] = $input->getAttribute('value');
+                    break;
+            }
+        }
+
+        $credentials['_method'] = 'POST';
+        $credentials[urlencode('data[User][email]')] = $user;
+        $credentials[urlencode('data[User][passwd]')] = $password;
+        $credentials[urlencode('data[User][is_remember]')] = 0;
+        //print_r($credentials);
+
+
+        $str = $this->doCompanyLogin($credentials); //do login
+
+        $str = $this->getCompanyWebpage();
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -61,17 +82,17 @@ class twino extends p2pCompany {
 
         $confirm = false;
 
-
-        if ($str == true) {
-            $confirm = true;
+        $as = $dom->getElementsByTagName('a');
+        foreach ($as as $a) {
+            //echo $a->nodeValue . HTML_ENDOFLINE;
+            if (trim($a->getAttribute('title')) == 'Logout') {
+                $confirm = true;
+                break;
+            }
         }
 
 
-        //$this->companyUserLogout($url);
-        if ($confirm) {
-            return true;
-        }
-        return false;
+        return $confirm;
     }
 
     /**

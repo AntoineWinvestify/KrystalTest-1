@@ -22,11 +22,11 @@
  *
  * 
  * 
- * 2017-08-23
+ * 2017-08-28
  * Created
  * link account
  */
-class twino extends p2pCompany {
+class microwd extends p2pCompany {
 
     function __construct() {
         parent::__construct();
@@ -35,25 +35,20 @@ class twino extends p2pCompany {
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY twino DURING LOGIN PROCESS
+          FIELDS USED BY microwd DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
          */
 
 
-        $credentials['name'] = $user;
-        $credentials['password'] = $password;
-        $credentials['googleAnalyticClientId'] = '1778227581.1503479723';
-        $payload = json_encode($credentials);
+        $credentials['_username'] = $user;
+        $credentials['_password'] = $password;
 
-        //echo $payload;
-        $this->doCompanyLoginRequestPayload($payload); //do login
+        //print_r($credentials);
 
-        $str = $this->getCompanyWebpage();
-        $dom = new DOMDocument;
-        $dom->loadHTML($str);
-        $dom->preserveWhiteSpace = false;
+        $str = $this->doCompanyLogin($credentials); //do login
 
-        $str = $this->getCompanyWebpage(); //This url return true if you are logged, false if not.
+
+
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -61,13 +56,15 @@ class twino extends p2pCompany {
 
         $confirm = false;
 
-
-        if ($str == true) {
-            $confirm = true;
+        $as = $dom->getElementsByTagName('a');
+        foreach ($as as $a) {
+            //echo $a->nodeValue . HTML_ENDOFLINE;
+            if (trim($a->nodeValue) == 'Salir') {
+                $confirm = true;
+                break;
+            }
         }
 
-
-        //$this->companyUserLogout($url);
         if ($confirm) {
             return true;
         }

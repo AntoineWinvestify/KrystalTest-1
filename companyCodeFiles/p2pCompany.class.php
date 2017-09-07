@@ -76,7 +76,7 @@ require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
-require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
+//require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
 class p2pCompany {
 
     /*const DAY = 1;
@@ -293,7 +293,7 @@ class p2pCompany {
 
         //set data to be posted
         curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-
+        
         // Fail the cURL request if response code = 400 (like 404 errors)
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
@@ -330,12 +330,99 @@ class p2pCompany {
         return $str;
     }
 
+    
+    function doCompanyLoginRequestPayload($payload) {
+
+
+        $url = array_shift($this->urlSequence);
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "<strong>" . "TestSystem: file = $currentScreen<br>" . "</strong>";
+                return $str;
+            }
+        }
+
+
+        $curl = curl_init();
+        if (!$curl) {
+            echo __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
+            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
+            $msg = $msg . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+// check if extra headers have to be added to the http message  
+        if (!empty($this->headers)) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+            unset($this->headers);   // reset fields
+        }
+
+        // Set the file URL to fetch through cURL
+        curl_setopt($curl, CURLOPT_URL, $url);
+        // Set a different user agent string (Googlebot)
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
+
+        // Follow redirects, if any
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        //set data to be posted
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        
+        // Fail the cURL request if response code = 400 (like 404 errors)
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+        // Return the actual result of the curl result instead of success code
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        // Wait for 10 seconds to connect, set 0 to wait indefinitely
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+
+        // Execute the cURL request for a maximum of 50 seconds
+        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+
+        // Do not check the SSL certificates
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);  // important
+        curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);  // Important
+        // Fetch the URL and save the content
+        $str = curl_exec($curl);
+        if (!empty($this->testConfig['active']) == true) {
+            print_r(curl_getinfo($curl));
+            echo "<br>";
+            print_r(curl_error($curl));
+            echo "<br>";
+        }
+        curl_close($curl);
+
+        if ($this->config['appDebug'] == true) {
+            echo "LOGIN URL = $url <br>";
+        }
+        if ($this->config['tracingActive'] == true) {
+            $this->doTracing($this->config['traceID'], "LOGIN", $str);
+        }
+        return $str;
+    }
+    
+    
+    
+    
+    
     /**
      *
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
      * 	
      */
-    function doCompanyLogout() {
+    function doCompanyLogout($url = null) {
         /*
           //traverse array and prepare data for posting (key1=value1)
           foreach ( $logoutData as $key => $value) {
@@ -345,7 +432,9 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
 //  barzana@gmail.com 	939233Maco048 
-        $url = array_shift($this->urlSequence);
+        if($url == null){
+            $url = array_shift($this->urlSequence);
+        }
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
                 $currentScreen = array_shift($this->testConfig['siteReadings']);
@@ -536,9 +625,9 @@ class p2pCompany {
      *
      */
     function doCompanyLoginMultiCurl(array $loginCredentials) {
-
+       
         $url = array_shift($this->urlSequence);
-        echo $url;
+        echo 'login:' . $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -561,7 +650,7 @@ class p2pCompany {
 
         //create the final string to be posted using implode()
         $postString = implode('&', $postItems);
-
+        echo 'post-String: ' . print_r($postString);
         $request = new \cURL\Request();
 
         // check if extra headers have to be added to the http message  
@@ -589,13 +678,15 @@ class p2pCompany {
         // Add the url to the queue
         $this->marketplaces->addRequetsToQueueCurls($request);
     }
-
+    
+    
+    
     /**
      *
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
      * 	
      */
-    function doCompanyLogoutMultiCurl(array $logoutCredentials = null) {
+    function doCompanyLogoutMultiCurl(array $logoutCredentials = null,$url = null) {
         /*
           //traverse array and prepare data for posting (key1=value1)
           foreach ( $logoutData as $key => $value) {
@@ -605,7 +696,9 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
         //  barzana@gmail.com 	939233Maco048 
-        $url = array_shift($this->urlSequence);
+        if($url){
+            $url = array_shift($this->urlSequence);
+        }
         echo $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -1540,29 +1633,59 @@ class p2pCompany {
          * @param string $fileUrl url that download the file
          * @param string $fileName name of the file to save
          * @param string $fileType extension of the file
-         * @param string $pfpBaseUrl pfp main url (like http://www.zank.com.es for zank)
+         * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
          * @param string $path path where you want save the file
          */
-        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $path) {
+        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity,$credentials) {
 
-        $output_filename = $fileName . '_' . date("d-m-Y_H:i:sa") . "." . $fileType;
+            print_r($credentials);
+            echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
+            
+            $date = date("d-m-Y_H:i:sa");
+            $configPath = Configure::read('files');
+            $partialPath = $configPath['investorPath'];   
+            $identity = 'testUser';         
+            $path = $partialPath . $identity . DS . 'Investments' .DS .$date . DS . $pfpName;
+                   
+            echo 'Saving in: ' . $path . HTML_ENDOFLINE;        
+                    
+            
+            
+            $output_filename = $fileName . '_' . $date . "." . $fileType;
+            echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $fileUrl);
-        curl_setopt($ch, CURLOPT_VERBOSE, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, false);
-        curl_setopt($ch, CURLOPT_REFERER, $pfpBaseUrl);
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        $result = curl_exec($ch);
-        curl_close($ch);
+            if($credentials){
+                //traverse array and prepare data for posting (key1=value1)
+                foreach ($loginCredentials as $key => $value) {
+                    $postItems[] = $key . '=' . $value;
+                }
+                //create the final string to be posted using implode()
+                $postString = $credentials;
+                //set data to be posted
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
+            }
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $fileUrl);
+            curl_setopt($ch, CURLOPT_VERBOSE, 1);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_AUTOREFERER, false);
+            curl_setopt($ch, CURLOPT_REFERER, $pfpBaseUrl);
+            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            $result = curl_exec($ch);
+            curl_close($ch);
 
-        //print_r($result); // prints the contents of the collected file before writing..
-        // the following lines write the contents to a file in the same directory (provided permissions etc)
-        $fp = fopen(APP . $path . DS . $output_filename, 'w');
-        fwrite($fp, $result);
-        fclose($fp);
+            //print_r($result); // prints the contents of the collected file before writing..
+            // the following lines write the contents to a file in the same directory (provided permissions etc)
+            $fp = fopen(APP . $path . DS . $output_filename, 'w+');
+             if (!file_exists($fp)) {
+                echo 'Creating dir' . HTML_ENDOFLINE;
+                mkdir($path, 0770, true);
+            }
+            echo 'File: ' . print_r($fp) . HTML_ENDOFLINE;
+            fwrite($fp, $result);
+            fclose($fp);
         }
 
     

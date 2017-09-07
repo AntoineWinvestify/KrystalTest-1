@@ -51,16 +51,6 @@ class mintos extends p2pCompany {
 
     /**
      *
-     * 	Collects the investment data of the user
-     * 	@return array	Data of each investment of the user as an element of an array
-     * 	
-     */
-    function collectUserInvestmentDataParallel() {
-
-    }
-
-    /**
-     *
      * 	Checks if the user can login to its portal. Typically used for linking a company account
      * 	to our account
      * 	
@@ -90,6 +80,7 @@ class mintos extends p2pCompany {
         $credentials['_csrf_token'] = $csrf;
         $credentials['_submit'] = '';
 
+
         if (!empty($options)) {
             foreach ($options as $key => $option) {
                 $credentials[$key] = $option[$key];
@@ -101,6 +92,7 @@ class mintos extends p2pCompany {
         $str = $this->doCompanyLogin($credentials); //do login
 
 
+        $str = $this->getCompanyWebpage();
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -123,13 +115,126 @@ class mintos extends p2pCompany {
         }
 
 
-
-
-        $this->companyUserLogout($url);
         if ($confirm) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Download the file with the user investment
+     * @param string $user
+     * @param string $password
+     */
+    function collectUserInvestmentDataParallel($str) {
+
+
+        switch ($this->idForSwitch) {
+            /////////////LOGIN
+            case 0:
+                echo $this->idForSwitch . HTML_ENDOFLINE;
+                $this->idForSwitch++;
+                $next = $this->getCompanyWebpageMultiCurl();
+                echo 'Next: ' . $next . HTML_ENDOFLINE;
+                break;
+            case 1:
+                echo $this->idForSwitch . HTML_ENDOFLINE;
+                //Login fixed
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+                $csrf = $input[0]->getAttribute('value'); //this is the csrf token
+
+                $this->credentials['_username'] = $this->user;
+                $this->credentials['_password'] = $this->password;
+                $this->credentials['_csrf_token'] = $csrf;
+                $this->credentials['_submit'] = '';
+
+                echo 'Credentials: ' .HTML_ENDOFLINE;
+                $this->print_r2($this->credentials);
+                
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($this->credentials);
+                unset($this->credentials);
+                break;
+            case 2:
+                echo $this->idForSwitch . HTML_ENDOFLINE;
+                $this->idForSwitch++;
+                //echo $str;
+                $next = $this->getCompanyWebpageMultiCurl();
+                echo 'Next: ' . $next . HTML_ENDOFLINE;
+                break;
+            case 3:
+                echo $this->idForSwitch . HTML_ENDOFLINE;
+                $dom = new DOMDocument;  //Check if works
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                //echo $str;
+                $resultLogin = false;
+                echo 'CHeck login' . HTML_ENDOFLINE;
+                $as = $dom->getElementsByTagName('a');
+                foreach ($as as $a) {
+                    echo $a->nodeValue . HTML_ENDOFLINE;
+                    if (trim($a->nodeValue) == 'Overview') {
+                        echo 'Find' . HTML_ENDOFLINE;
+                        $resultLogin = true;
+                        break;
+                    }
+                }
+
+                 if (!$resultLogin) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    exit;
+                } 
+                
+                $this->idForSwitch++;
+                $next = $this->getCompanyWebpageMultiCurl();
+                echo 'Next: ' . $next . HTML_ENDOFLINE;
+                break;
+            ////////DOWNLOAD FILE
+            case 4:
+                echo $this->idForSwitch . HTML_ENDOFLINE;         
+                echo 'Login ok';
+                $fileUrl = array_shift($this->urlSequence);
+                echo $fileUrl . HTML_ENDOFLINE;
+                $credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
+                $fileName = 'Investment';
+                $fileType = 'xlsx';
+                $pfpBaseUrl = 'https://www.mintos.com/en/my-investments/?statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
+                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile);
+                echo 'Downloaded';
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            //////LOGOUT
+            case 5:
+                echo $this->idForSwitch . HTML_ENDOFLINE;
+                //Get logout url
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                $as = $dom->getElementsByTagName('a');
+                foreach ($as as $a) {
+                    echo $a->getAttribute('class') . HTML_ENDOFLINE;
+                    if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
+                        $logoutUrl = $a->getAttribute('href');
+                        break;
+                    }
+                }
+                echo 'Logout:' . $logoutUrl . HTML_ENDOFLINE;
+                $this->getCompanyWebpageMultiCurl($logoutUrl); //Logout
+                break;
+        }
     }
 
     /**
@@ -141,92 +246,20 @@ class mintos extends p2pCompany {
      */
     function companyUserLogout($url) {
 
-        $str = $this->doCompanyLogout($url);
-        return true;
-    }
-
-    /** Mintos logout need a token that changes everytime you enter.
-     * 
-     * @param type $url
-     * @return type
-     */
-    function doCompanyLogout($url) {
-
-        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
-            if (!empty($this->testConfig['siteReadings'])) {
-                $currentScreen = array_shift($this->testConfig['siteReadings']);
-                $str = file_get_contents($currentScreen);
-
-                if ($str === false) {
-                    echo "cannot find file<br>";
-                    exit;
-                }
-                echo "TestSystem: file = $currentScreen<br>";
-                return $str;
+        $str =  $this->getCompanyWebpage();
+        $dom = new DOMDocument;
+        $dom->loadHTML($str); //Load page with the url
+        $dom->preserveWhiteSpace = false;
+        $as = $dom->getElementsByTagName('a');
+        foreach ($as as $a) { //get logout url  
+            if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
+                $logoutUrl = $a->getAttribute('href');
+                break;
             }
         }
 
-        $curl = curl_init();
-
-        if (!$curl) {
-            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
-            $msg = $msg . " \n";
-            $this->logToFile("Warning", $msg);
-            exit;
-        }
-
-// check if extra headers have to be added to the http message  
-        if (!empty($this->headers)) {
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-            unset($this->headers);   // reset fields
-        }
-
-        // Set the file URL to fetch through cURL
-        curl_setopt($curl, CURLOPT_URL, $url);
-
-        // Set a different user agent string (Googlebot)
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
-
-        // Follow redirects, if any
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-
-        // Fail the cURL request if response code = 400 (like 404 errors) 
-        curl_setopt($curl, CURLOPT_FAILONERROR, true);
-
-        // Return the actual result of the curl result instead of success code
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-        // Wait for 10 seconds to connect, set 0 to wait indefinitely
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-
-        // Execute the cURL request for a maximum of 50 seconds
-        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
-
-        // Do not check the SSL certificates
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-        curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);  // important
-        curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);  // Important
-        // Fetch the URL and save the content
-        // cURL executed successfully
-        $str = curl_exec($curl);
-        if (!empty($this->testConfig['active']) == true) {
-            print_r(curl_getinfo($curl));
-            echo "<br>";
-            print_r(curl_error($curl));
-            echo "<br>";
-        }
-
-// close cURL resource to free up system resources		
-        curl_close($curl);
-        if ($this->config['appDebug'] == true) {
-            echo "LOGOUT URL = $url <br>";
-        }
-        if ($this->config['tracingActive'] == true) {
-            $this->doTracing($this->config['traceID'], "LOGOUT", $str);
-        }
-        return($str);
+        $this->doCompanyLogout($logoutUrl); //logout
+        return true;
     }
 
 }

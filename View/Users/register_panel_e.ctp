@@ -68,7 +68,7 @@ ajax spinner
 									<div class="form-group">
 										<?php
 											echo $this->Form->button(__('Go to My Account'), $options = array('name' => 'btnRegisterUser',
-																				'href'	=> '/users/login',
+																				'href'	=> '/users/loginRedirect',
 																				'id'	=> 'btnRegisterGoToAccount',
 																				'class' => 'btn btn-default pull-right'));
 										?>		
