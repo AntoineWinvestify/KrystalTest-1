@@ -21,7 +21,7 @@
  * @package
  */
 
-class GearmanWorkShell extends AppShell {
+class GearmanWorkerShell extends AppShell {
     protected $GearmanWorker;
     
     var $uses = array('Marketplace', 'Company', 'Urlsequence');
