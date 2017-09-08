@@ -199,10 +199,13 @@ public function beforeSave1($options = array()) {
         }
 
         if (empty($status)) {
-            $status =  WAITING_FOR_EXECUTION;
+            $status =  START_COLLECTING;
         }
         if (empty($limit)) {
             $limit = 100;
+        }
+        if (empty($usertype)) {
+            $usertype = WEEKLY_USER;
         }
         
         
