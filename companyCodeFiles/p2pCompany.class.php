@@ -625,7 +625,7 @@ class p2pCompany {
      *
      */
     function doCompanyLoginMultiCurl(array $loginCredentials) {
-       
+       echo 'credentials: ' . print_r($loginCredentials);
         $url = array_shift($this->urlSequence);
         echo 'login:' . $url;
         $this->errorInfo = $url;
@@ -650,7 +650,7 @@ class p2pCompany {
 
         //create the final string to be posted using implode()
         $postString = implode('&', $postItems);
-        echo 'post-String: ' . print_r($postString);
+        echo 'post-String: ' . $postString;
         $request = new \cURL\Request();
 
         // check if extra headers have to be added to the http message  
@@ -1645,7 +1645,7 @@ class p2pCompany {
             $configPath = Configure::read('files');
             $partialPath = $configPath['investorPath'];   
             $identity = 'testUser';         
-            $path = $partialPath . $identity . DS . 'Investments' .DS .$date . DS . $pfpName;
+            $path = $partialPath . $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
                    
             echo 'Saving in: ' . $path . HTML_ENDOFLINE;        
                     
@@ -1654,28 +1654,33 @@ class p2pCompany {
             $output_filename = $fileName . '_' . $date . "." . $fileType;
             echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
 
-            if($credentials){
-                //traverse array and prepare data for posting (key1=value1)
-                foreach ($loginCredentials as $key => $value) {
-                    $postItems[] = $key . '=' . $value;
-                }
-                //create the final string to be posted using implode()
-                $postString = $credentials;
-                //set data to be posted
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-            }
+           
             
             $ch = curl_init();
+            $headers = array(
+                'content-disposition' => 'attachment; filename="my-investments.xlsx"',
+                'content-length' =>169096,
+               ' content-type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; name=my-investments.xlsx',
+                'pragma' => 'public',
+            );
+
             curl_setopt($ch, CURLOPT_URL, $fileUrl);
             curl_setopt($ch, CURLOPT_VERBOSE, 1);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_AUTOREFERER, false);
             curl_setopt($ch, CURLOPT_REFERER, $pfpBaseUrl);
             curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_HEADER, $headers);
+             if($credentials){
+                //create the final string
+                $postString = $credentials;
+                //set data to be posted
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
+            }
             $result = curl_exec($ch);
             curl_close($ch);
 
+            
             //print_r($result); // prints the contents of the collected file before writing..
             // the following lines write the contents to a file in the same directory (provided permissions etc)
             $fp = fopen(APP . $path . DS . $output_filename, 'w+');
