@@ -187,16 +187,35 @@ public function beforeSave1($options = array()) {
     return true;
 }
 
-    public function getUsersByStatus($status, $limit) {
-        $result = $this->find("first", array("conditions" => array("queue_type" => $queuetype,
-                "queue_status" => WAITING_FOR_EXECUTION),
-            "order" => $order,
-            "limit" => 1)
-        );
+    public function getUsersByStatus($queuetype, $status, $limit = null, $usertype = null) {
+        
+        switch ($queuetype) {
+            case FIFO:
+                $order = "Queue.id ASC";
+                break;
+            case LIFO:
+                $order = "Queue.id DESC";
+                break;
+        }
+
+        if (empty($status)) {
+            $status =  WAITING_FOR_EXECUTION;
+        }
+        if (empty($limit)) {
+            $limit = 100;
+        }
+        
+        
+        $result = $this->find("all", array("conditions" => array("queue_type" => $queuetype,
+                                            "queue_status" => $status),
+                                            "order" => $order,
+                                            "limit" => $limit)
+                            );
 
         if (empty($result)) {
             return;
         }
+        return $result;
     }
 
 }
