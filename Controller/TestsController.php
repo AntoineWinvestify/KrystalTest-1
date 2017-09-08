@@ -1,5 +1,4 @@
 <?php
-
 /*
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2016, http://beyond-language-skills.com                 |
@@ -30,11 +29,12 @@
 
 /** Include path **/
 require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
-require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS .  'bondoraApi.php');
+//require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS .  'bondoraApi.php');
+
 /** PHPExcel_IOFactory */
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
-App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
+//App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
 use Petslane\Bondora;
 
@@ -52,6 +52,7 @@ class TestsController extends AppController {
     
 function beforeFilter() {
         parent::beforeFilter();
+        
 
 	$this->Security->requireAuth();
         
@@ -141,9 +142,33 @@ function showUserData($userIdentity, $number) {
     function modal(){
         $this->layout = 'azarus_private_layout';
     }
+    
+    
+    
     function convertExcelToArray() {
-        $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/cake_branch/mintos.xlsx");
+
+        $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/compare_local/mintos1.xlsx");
+    $this->autoRender = false;
+ //ini_set('memory_limit','1024M');
+ //  Get worksheet dimensions
+  
+$sheet = $objPHPExcel->getActiveSheet(); 
+$highestRow = $sheet->getHighestRow(); 
+$highestColumn = $sheet->getHighestColumn();
+echo " high = $highestRow and $highestColumn <br";
+
+/*
+for ($row = 1; $row <= $highestRow; $row++){ 
+    //  Read a row of data into an array
+    $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,
+                                    NULL,
+                                    TRUE,
+                                    FALSE);
+    $this->print_r2($rowData);
+};*/
+
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+
         /*$loadedSheetNames = $objPHPExcel->getSheetNames();
         foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
             echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
@@ -152,54 +177,7 @@ function showUserData($userIdentity, $number) {
             //var_dump($sheetData);
             echo '<br />';
         }*/
-        
-        $values_mintos = [
-            "A" => "TransactionId",
-            "B" => "date",
-            "C" => [
-                [
-                    "name" => "primary_market_investment",
-                    "regex" => "Investment principal increase"
-                ],
-                [
-                    "name" => "principal_repayment",
-                    "regex" => "Investment principal repayment"
-                ],
-                [
-                    "name" => "principal_buyback",
-                    "regex" => "Investment principal rebuy"
-                ],
-                [
-                    "name" => "regular_interest_income",
-                    "regex" => "Interest income"
-                ],
-                [
-                    "name" => "delayed_interest_income",
-                    "regex" => "Delayed interest income"
-                ],
-                [
-                    "name" => "late_payment_fee_income",
-                    "regex" => "Late payment fee income"
-                ],
-                [
-                    "name" => "interest_income_buyback",
-                    "regex" => "Interest income on rebuy"
-                ],
-                [
-                    "name" => "delayed_interest_income_buyback",
-                    "regex" => "Delayed interest income on rebuy"
-                ],
-                [
-                    "type" => "loanId",
-                    "regex" => "Loan ID",
-                    "initPos" => 9,
-                    "finalPos" => null
-                ]
-            ],
-            "D" => "turnover",
-            "E" => "balance",
-            "F" => "currency"
-        ];
+     
         
         $values_comunitae = [
             "A" => "date",
@@ -271,7 +249,7 @@ function showUserData($userIdentity, $number) {
                         "init" => "ID Subasta", 
                         "final" => ","],
                     "initPos" => 1,
-                    "finalPos" => "..."
+                    "finalPos" => ","
                 ]
             ],
             "B" => "referencia",
@@ -282,8 +260,87 @@ function showUserData($userIdentity, $number) {
             "G" => "invertido",
             "H" => "total"
         ];
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values_mintos);
-        var_dump($datas);
+
+
+        $values_mintos = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+            "B" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "Y-m-d",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                  // etc etc  ...
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+            ],
+            "C" => [
+                [
+                    "type" => "loanId",                         // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "Loan ID: ",        // May contain trailing spaces
+                                "input3" => ",",
+                            ],
+                    "functionName" => "extractDataFromString",  
+                ],
+                [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Incoming client payment", "Cash_deposit"],
+                                                ["Investment principal increase", "Primary_market_investment"],
+                                                ["Investment principal repayment", "Principal_repayment"],
+                                                ["Investment principal rebuy","Principal_buyback"],
+                                                ["Interest income", "Regular_interest_income"],
+                                                ["Delayed interest income", "Delayed_interest_income"],
+                                                ["Late payment fee income","Late_payment_fee_income"],
+                                                ["Interest income on rebuy", "Interest_income_buyback"],
+                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Incoming client payment", "Cash_deposit"],
+                                                ["Investment principal increase", "Primary_market_investment"],
+                                                ["Investment principal repayment", "Principal_repayment"],
+                                                ["Investment principal rebuy","Principal_buyback"],
+                                                ["Interest income", "Regular_interest_income"],
+                                                ["Delayed interest income", "Delayed_interest_income"],
+                                                ["Late payment fee income","Late_payment_fee_income"],
+                                                ["Interest income on rebuy", "Interest_income_buyback"],
+                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
+                                        
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ]
+            ],
+            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
+                    "name" => "turnover",                      
+                ],
+            "E" => [
+                    "name" => "balance",
+                ],
+            "F" => [
+                [
+                    "type" => "currency",                       // Complex format, calling external method
+                    "functionName" => "getCurrency",  
+                ]
+            ],          
+        ];       
+ 
+            
+        $offset = 3;
+   
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values_mintos, $offset);
+        $this->print_r2($datas);
     }
     
     function convertExcelByParts($chunkInit, $chunkSize, $inputFileType, $values) {
@@ -304,90 +361,236 @@ function showUserData($userIdentity, $number) {
         $chunkFilter->setRows($chunkInit,$chunkSize);
         /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
         $objReader->setReadFilter($chunkFilter);
-        
-        $objPHPExcel = $objReader->load("/var/www/html/cake_branch/mintos.xlsx");
+       
+        $objPHPExcel = $objReader->load("/var/www/html/compare_local/mintos2.xlsx");
+      
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $this->print_r2($sheetData);
+   
         $datas = $this->saveExcelArrayToTemp($sheetData, $values);
-        var_dump($datas);
+        echo "ANTOINE";
+        $this->print_r2($datas);
     }
     
-    function saveExcelArrayToTemp($rowDatas, $values) {
-        $i = 0;
+    
+    
+    /**
+     * Function to get the final position to get the variable from a string
+     * @param string $rowDatas  the excel data in an array
+     * @param string $value     the array with configuration data for parsing
+     * @param int $offset       the number of indices at beginning of array which are NOT to be parsed
+     * @return array $temparray the data after the parsing process
+     * 
+     */
+    function saveExcelArrayToTemp($rowDatas, $values, $offset) {
+        echo __FILE__ . " " . __LINE__ ."<br>";
         $tempArray = [];
-        foreach ($rowDatas as $rowData) {
-            foreach ($values as $key => $value) {
-                if (is_array($value)) {
-                    if (empty($tempArray[$i])) {
-                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
-                    }
-                    else {
-                        $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value, $tempArray[$i]);
-                    }
-                }
-                else {
-                    $tempArray[$i][$value] = $rowData[$key];
-                }
+$offset = 11152;
+        $i = 0;
+        foreach ($rowDatas as $key => $rowData) {
+            if ($i == $offset) {
+                break;
             }
+            unset($rowDatas[$key]);  
             $i++;
         }
-        return $tempArray;
-    }
-    
-    
-    
-    function getValueExcelFromArray($rowData, $values, $tempArray = null) {
-        foreach ($values as $key => $value) {
-            $pos = $this->getPosInit($rowData, $value["regex"]);
-            //$pos = strpos($rowData, $value["regex"]);
-            if ($pos !== false) {
-                // " found after position X
-                //$tempArray["loanId"] = substr($value, $pos + $variable["initPos"], $variable["finalPos"]);
-                if (!empty($value["name"])) {
-                    $tempArray["type"] = $value["name"];
+
+        
+// CIRCULANTIS
+// MOVIMIENTO                                                                   REFERENCIA IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
+// OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
+
+        
+// ECROWD
+// Fecha        Nombre del proyecto                                                     Cuota	Amortización de capital(€)	Intereses brutos(€) Retención IRPF(€)  Total(€)
+// 25-07-2017	Ampliación de la red de fibra óptica de l'Ametlla de Mar - Fase 5 -	2	0,00                              1,09               0,21                0,88
+ 
+        
+// FINANZAREL        
+// Id           A�o	Trimestre	Fecha           Subasta     Descripci�n                 Importe         Saldo
+// 20171678450	2017	2017T3          21/07/17	2817        Intereses                   �0,97           �55.314,02
+// 20171678440	2017	2017T3          21/07/17	2817        Amortizaci�n de efecto	-�153,94	�55.313,06
+  
+        
+// COMUNITAE
+// Fecha de Operacion	Debe	Haber	Saldo	Concepto
+// 8/1/2017             0.50€	0.00€	49.61€	Cargo por comisión de administración
+// 7/25/2017            0.58€	0.00€	50.11€	Cargo por comisión de administración
+// 7/25/2017            0.00€	50.00€	50.69€	Abono rendimientos capital   ptmo. CPP_016231  y Nº de recibo 342097
+
+        $i = 0;
+        foreach ($rowDatas as $keyRow => $rowData) {
+            foreach ($values as $key => $value) {
+                if (array_key_exists("name", $value)) {
+                    $tempArray[$i][$value["name"]] = $rowData[$key];
                 }
                 else {
-                    $tempArray[$value["type"]] = $this->getValueBySubstring($rowData, $value, $pos);
+                    foreach ($value as $userFunction ) {
+                        if (!array_key_exists('inputData',$userFunction)) {
+                            $userFunction['inputData'] = [];
+                        }                        
+                        array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
+                        $tempArray[$i][$userFunction["type"]] = call_user_func_array(array(__NAMESPACE__ .'\TestsController',  
+                                $userFunction['functionName']), $userFunction['inputData']);
+                    }
                 }
             }
+/*
+            if (array_key_exists("loanId", $tempArray[$i]) ){
+                echo "Adding entry for loanId " . $tempArray[$i]['loanId'] . ", TransactionId =  " . $tempArray[$i]['transaction_id'] . "<br>";
+                $tempArray[ $tempArray[$i]['loanId'] ][]  = $tempArray[$i];
+            }
+            else {      // move to the global index
+                $tempArray['global'][] = $tempArray[$i];
+            }
+            unset($tempArray[$i]);
+ */           
+          $i++; 
+     //   continue;       // short cut
         }
+ //       $this->print_r2($tempArray);
         return $tempArray;
     }
     
-    function getValueBySubstring($rowData, $value, $pos) {
-        $posFinal = $this->getPosFinal($rowData, $value, $pos);
-        if (empty($posFinal)) {
-            $data = substr($rowData, $pos + $value["initPos"]);
-        }
-        else {
-            $data = substr($rowData, $pos + $value["initPos"], $posFinal);
-        }
-        return trim($data);
-    }
     
-    function getPosInit($rowData, $regex) {
-        if (is_array($regex)) {
-            $posStart = strpos($rowData, $regex["init"]);
-            $pos = strpos($rowData, $regex["final"], $posStart);
-        }
-        else {
-            $pos = strpos($rowData, $regex);
-        }
-        return $pos;
+    /**
+     * Converts any type of date format to internal format yyyy-mm-dd
+     * 
+     * @param string $date  
+     * @param string $currentFormat:  Y = 4 digit year, y = 2 digit year
+     *                                M = 2 digit month, m = 1 OR 2 digit month (no leading 0)
+     *                                D = 2 digit day, d = 1 OR 2 digit day (no leading 0)
+     *                         
+     * @return string 
+     * 
+     */
+   function normalizeDate($date, $currentFormat) {
+       $internalFormat = $this->multiexplode(array(".", "-", "/"), $currentFormat);
+       
+       ((count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2]);
+       
+       $tempDate = $this->multiexplode(array(":", " ", ".", "-"), $date);
+       $finalDate = array();
+
+       $length = strlen($dateFormat);
+       for ($i = 0; $i < $length; $i++) {
+            switch ($dateFormat[$i]) {
+                case "d":
+                    $finalDate[2] = $tempDate[$i];
+                break;
+                case "D":
+                    $finalDate[2] = $tempDate[$i];
+                break;              
+                case "m":
+                    $finalDate[1] = $tempDate[$i];
+                break;
+                case "M":
+                    $finalDate[1] = $tempDate[$i]; 
+                break;  
+                case "y":
+                    $finalDate[0] = $tempDate[$i]; 
+                break;
+                case "Y":
+                    $finalDate[0] = $tempDate[$i]; 
+                break;              
+            }
+        }    
+        return $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2];   
+   }  
+  
+ 
+    /**
+     * Translates the currency to internal representation
+     * 
+     * @param string $loanCurrency  
+     * @return integer  constant representing currency 
+     * 
+     */
+    function getCurrency($loanCurrency) {
+        $details = new Parser();
+        $currencyDetails = $details->getCurrencyDetails();
+
+        foreach ($currencyDetails as $currencyIndex => $currency) {
+            if ($loanCurrency == $currency[0]) {
+              return $currencyIndex;
+            }   
+        } 
     }
-    
-    function getPosFinal($rowData, $value, $pos) {
-        $posFinal = null;
-        if (!is_int($value["finalPos"])) {
-            $positionFinal = strpos($rowData, $value["finalPos"], $pos);
-            if ($positionFinal !== false) {
-                $posFinal = $positionFinal-$pos-$value["initPos"];
+   
+    /**
+     * Extracts data from a string. The returned string is the part
+     * from the input string after the searchString, until the seperator character
+     * 
+     * @param string    $input
+     * @param string    $search
+     * @param string    $seperator   The seperator character
+     * @return string   $extractedString
+     *       
+     */
+    function extractDataFromString($input, $search, $seperator ) {
+        $position = stripos($input, $search) + strlen($search);
+        $substrings = explode($seperator, substr($input, $position));
+        return $substrings[0];
+    }  
+   
+   
+    /**  "MIX" ACCORDING TO FLOW DATA IS STILL MISSING
+     * Reads the transaction type of the cashflow operation
+     * 
+     * @param string   +$input
+     * @return array   $parameter2  List of all concepts of the platform
+     *       
+     */
+    function getTransactionDetail($input, $config) {
+        foreach ($config as $key => $configItem) {
+            $position = stripos($input, $configItem[0]);
+            if ($position !== false) {
+                return $configItem[1];
             }
         }
-        else if (is_int($value["finalPos"])) {
-            $posFinal = $value["finalPos"];
-        }
-        return $posFinal;
-    }
+    }     
+    
+    
+   
+    /**  "MIX" ACCORDING TO FLOW DATA IS STILL MISSING
+     * 
+     * Reads the transaction detail of the cashflow operation
+     * 
+     * @param string   +$input
+     * @return array   $parameter2  List of all concepts of the platform
+     *       
+     */
+    function getTransactionType($input, $config) {    
+        $details = new Parser();
+        $transactionDetails = $details->getTransactionDetails();
+
+        foreach ($config as $key => $configItem) {
+            $position = stripos($input, $configItem[0]);
+            if ($position !== false) {  // value is in $configItem[1];
+                foreach ($transactionDetails as $key => $detail) {
+                    if ($detail['detail'] == $configItem[1]) {
+                        return $detail['transactionType'];
+                    }
+                }
+            }
+        }         
+    }  
+
+    
+    
+    function multiexplode ($delimiters,$string) {
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+        $launch = explode($delimiters[0], $ready);
+        return  $launch;
+    } 
+    
+    
+    
+    
+    
+    
+    
+    
     
     function convertPdf () {
         // Parse pdf file and build necessary objects.
