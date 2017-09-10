@@ -361,7 +361,7 @@ class AppController extends Controller {
         );
 
         // TRANSLATE CURRENCY NAME
-        $this->currencyName7 = array(EUR => "€", 
+        $this->currencyName = array(EUR => "€", 
                                     GBP => "£", 
                                     USD => "$",
                                     ARS => "$",
