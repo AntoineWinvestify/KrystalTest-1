@@ -21,7 +21,7 @@
  * @package
  */
 
-class GearmanClientShell extends AppShell {
+class GearmanClientExampleShell extends AppShell {
     protected $GearmanClient;
 
     public function startup() {
@@ -33,13 +33,19 @@ class GearmanClientShell extends AppShell {
     }
 
     public function main() {
+        $this->GearmanClient->addServers();
+        $this->GearmanClient->setFailCallback($this, "verifyFailCollectingData");
+    }
+    
+    public function example() {
         $this->GearmanClient->addServers('127.0.0.1');
         // simple array of parameters to serve as the test workload
         $params = array(
             'foo' => 'bar',
             'now' => time()
         );
-        $this->GearmanClient->setFailCallback("fail_change");
+        $this->GearmanClient->setFailCallback(array($this, 'fail_change'));
+        $this->GearmanClient->setExceptionCallback();
         /* Callbacks that can be created
           $client->setCreatedCallback("create_change");
 
