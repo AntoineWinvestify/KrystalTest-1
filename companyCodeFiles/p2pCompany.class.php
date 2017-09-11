@@ -232,7 +232,7 @@ class p2pCompany {
 
 
         $url = array_shift($this->urlSequence);
-        echo 'login url' . $url . HTML_ENDOFLINE;
+        //echo 'login url' . $url . HTML_ENDOFLINE;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
                 $currentScreen = array_shift($this->testConfig['siteReadings']);
