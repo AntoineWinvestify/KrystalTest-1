@@ -145,8 +145,11 @@ class comunitae extends p2pCompany {
         $type = 1; // 1 = pagare, comunitae have 'pagares' and 'Factoring'
         for ($i = 0; $i < 2; $i++) {
             $numberOfInvestmentInPage = 0;
+            if(empty($url)){
+                $urlSequenceNumber++;
+            }
             $str = $this->getCompanyWebpage($url);
-            $urlSequenceNumber++;
+            
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             if ($i == 0) {
@@ -292,7 +295,7 @@ class comunitae extends p2pCompany {
             }
         }
         
-        for($urlSequenceNumber ;$urlSequenceNumber < 5;$urlSequenceNumber++){ //Fix url sequence error. Factoring only have one page yet.
+        for($urlSequenceNumber ;$urlSequenceNumber < 4;$urlSequenceNumber++){ //Fix url sequence error. Factoring only have one page yet.
             array_shift($this->urlSequence);
         }
         
