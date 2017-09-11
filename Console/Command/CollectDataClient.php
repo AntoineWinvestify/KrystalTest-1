@@ -63,7 +63,8 @@ class CollectDataClientShell extends AppShell {
             ));
             $investorId = $resultInvestor['Investor']['id'];
             $filterConditions = array('investor_id' => $investorId);
-            $linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+            $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+            //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
         }
         
         $userLinkedaccounts = [];
@@ -76,17 +77,19 @@ class CollectDataClientShell extends AppShell {
                         break;
                     }
                 }
+                //$i is the number of each company per user and per type of company
                 $i++;
             }
         }
         
-        //$key is queue_userReference
+        //$key is the number of each linkedaccounts
         //$key is type of access to company (multicurl, casper, etc)
         foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
             foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
                 $data["companies"] = $linkedaccountsByType;
-                $data["queue_userReference"] = $key;
-                $this->GearmanClient->addTask($key2, json_encode($data), null, $key . ".-;" . $key2);
+                $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
+                $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
+                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_userReference"] . ".-;" . $key2);
             }
         }
         
