@@ -63,7 +63,7 @@ class CollectDataWorkerShell extends AppShell {
             $this->newComp[$i] = $this->companyClass($result[$i][$this->companyId[$i]]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
             $this->newComp[$i]->defineConfigParms($result[$i][$this->companyId[$i]]);  // Is this really needed??
             $this->newComp[$i]->setMarketPlaces($this);
-            $this->newComp[$i]->setQueueId($resultQueue);
+            $this->newComp[$i]->setQueueId($data["queue_id"]);
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], MY_INVESTMENTS_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
@@ -73,7 +73,7 @@ class CollectDataWorkerShell extends AppShell {
             $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class
             $this->newComp[$i]->setPassword($linkedaccount['Linkedaccount']['linkedaccount_password']); //Set the pass on the class
             $configurationParameters = array('tracingActive' => true,
-                'traceID' => $resultQueue['Queue']['queue_userReference'],
+                'traceID' => $data["queue_userReference"],
             );
             $this->newComp[$i]->defineConfigParms($configurationParameters);
             $i++;
