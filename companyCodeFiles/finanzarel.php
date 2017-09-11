@@ -52,7 +52,7 @@ class finanzarel extends p2pCompany {
 
         $inputs = $dom->getElementsByTagName('input');
         foreach ($inputs as $input) {
-            echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;
+            //echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;
             $name = $input->getAttribute('name');
             switch ($name) {
                 case 'p_flow_id':
@@ -105,7 +105,7 @@ class finanzarel extends p2pCompany {
         //echo $str;
         $h2s = $dom->getElementsByTagName('h2');
         foreach ($h2s as $h2) {
-            echo $h2->nodeValue . HTML_ENDOFLINE;
+            //echo $h2->nodeValue . HTML_ENDOFLINE;
             if (trim($h2->nodeValue) == 'Dashboard') {
                 //echo 'ok' . HTML_ENDOFLINE;
                 return true;
