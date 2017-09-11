@@ -1725,8 +1725,8 @@ class p2pCompany {
      * @param array $investment single investment that we compare
      */
     public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
-        print_r($investment);
-        print_r($loanReferenceList);
+        //print_r($investment);
+        //print_r($loanReferenceList);
          foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
             if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
                 echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;

@@ -131,7 +131,7 @@ class comunitae extends p2pCompany {
      */
     function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
 
-        echo 'Comunitae array loan id: ' .HTML_ENDOFLINE;
+        //echo 'Comunitae array loan id: ' .HTML_ENDOFLINE;
         $this->print_r2($loanIdList);
         
         $this->investmentDeletedList = $loanIdList;
@@ -167,7 +167,7 @@ class comunitae extends p2pCompany {
 
                 //$rows = $listing->getElementsByTagName('article');
             } else if ($i == 1) {
-                echo 'factoring url' . $url; 
+                //echo 'factoring url' . $url; 
                 //Factoring
                 $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
                 $type = 4; //4 = factoring
@@ -244,7 +244,7 @@ class comunitae extends p2pCompany {
                         if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
 
                             if (stristr(trim($span->nodeValue), "%") == true) {
-                                echo "Comunitae: % found, so store in marketplace" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                                //echo "Comunitae: % found, so store in marketplace" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
                                 $tempArray['marketplace_statusLiteral'] = 'En proceso';
                             } else {
@@ -271,7 +271,7 @@ class comunitae extends p2pCompany {
                     unset($tempArray);
 
                     
-                    echo 'Investment' . $numberOfInvestmentInPage;
+                    //echo 'Investment' . $numberOfInvestmentInPage;
                     //If subscription of the investment is not complete and the number of investment is the 15th in the page
                     //We need to go to the next page to verify if there are investments or not
                     if (!$subscriptionComplete && $numberOfInvestmentInPage == 15) {
@@ -299,8 +299,8 @@ class comunitae extends p2pCompany {
             array_shift($this->urlSequence);
         }
         
-        echo 'Final loan id array: ' . HTML_ENDOFLINE;     
-        $this->print_r2($this->investmentDeletedList);
+        /*echo 'Final loan id array: ' . HTML_ENDOFLINE;     
+        $this->print_r2($this->investmentDeletedList);*/
         
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         //$this->print_r2($hiddenInvestments);
