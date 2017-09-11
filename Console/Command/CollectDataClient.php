@@ -72,7 +72,7 @@ class CollectDataClientShell extends AppShell {
             foreach ($linkedaccountResult as $linkedaccount) {
                 foreach (COMPANY_TYPES as $key2 => $companyType) {
                     if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
-                        $userLinkedaccounts[$key][$key2][$i]['company_id'] = $linkedaccount['Linkedaccount']['company_id'];
+                        $userLinkedaccounts[$key][$key2][$i] = $linkedaccount;
                         break;
                     }
                 }
@@ -80,9 +80,13 @@ class CollectDataClientShell extends AppShell {
             }
         }
         
+        //$key is queue_userReference
+        //$key is type of access to company (multicurl, casper, etc)
         foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
             foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
-                $this->GearmanClient->addTask($key2, json_encode($linkedaccountsByType), null, $key. ".-;" . $key2);
+                $data["companies"] = $linkedaccountsByType;
+                $data["queue_userReference"] = $key;
+                $this->GearmanClient->addTask($key2, json_encode($data), null, $key . ".-;" . $key2);
             }
         }
         
