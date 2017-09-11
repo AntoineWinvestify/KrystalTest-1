@@ -25,6 +25,7 @@
 
 class CollectDataClientShell extends AppShell {
     protected $GearmanClient;
+    private $newComp = [];
 
     public function startup() {
         $this->GearmanClient = new GearmanClient();
@@ -62,21 +63,32 @@ class CollectDataClientShell extends AppShell {
             ));
             $investorId = $resultInvestor['Investor']['id'];
             $filterConditions = array('investor_id' => $investorId);
-            $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+            $linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
         }
         
         $userLinkedaccounts = [];
-        foreach ($linkedaccountsResults as $key => $linkedaccount) {
-            foreach (COMPANY_TYPES as $key2 => $companyType) {
-                if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
-                    $userLinkedaccounts[$key][$key2]['company_id'] = $linkedaccount['Linkedaccount']['company_id'];
+        $i = 0;
+        foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
+            foreach ($linkedaccountResult as $linkedaccount) {
+                foreach (COMPANY_TYPES as $key2 => $companyType) {
+                    if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
+                        $userLinkedaccounts[$key][$key2][$i]['company_id'] = $linkedaccount['Linkedaccount']['company_id'];
+                        break;
+                    }
                 }
+                $i++;
             }
         }
         
-        foreach ($userLinkedaccount as $userLinkedaccount) {
-            
+        foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
+            foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
+                $this->GearmanClient->addTask($key2, json_encode($linkedaccountsByType), null, $key. ".-;" . $key2);
+            }
         }
+        
+        $this->GearmanClient->runTasks();
+        
+        
         
         
         
