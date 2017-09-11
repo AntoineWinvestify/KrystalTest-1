@@ -65,14 +65,17 @@ class CollectDataClientShell extends AppShell {
             $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
         }
         
-        $userLinkedaccount = [];
-        foreach ($linkedaccountsResults as $linkedaccount) {
-            foreach (COMPANY_TYPES as $key => $companyType) {
+        $userLinkedaccounts = [];
+        foreach ($linkedaccountsResults as $key => $linkedaccount) {
+            foreach (COMPANY_TYPES as $key2 => $companyType) {
                 if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
-                    
+                    $userLinkedaccounts[$key][$key2]['company_id'] = $linkedaccount['Linkedaccount']['company_id'];
                 }
             }
-            $this->companyId[$i] = $linkedaccount['Linkedaccount']['company_id'];
+        }
+        
+        foreach ($userLinkedaccount as $userLinkedaccount) {
+            
         }
         
         
