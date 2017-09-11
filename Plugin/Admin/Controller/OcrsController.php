@@ -286,7 +286,7 @@ class ocrsController extends AdminAppController {
         $this->set('countryData', $this->countryArray);
 
         //Status selector
-        $this->set('status', $this->marketpalceStatus);
+        $this->set('status', $this->marketplaceStatus);
 
         //Modality selector
         $this->set('type', $this->crowdlendingTypesLong);

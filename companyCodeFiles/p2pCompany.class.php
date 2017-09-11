@@ -72,30 +72,31 @@
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 //Configure::load('constants'); //Load all global constants
 
-require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
-App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
-App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
-App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
+require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
+App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'Reader' . DS . 'IReadFilterWinvestify.php'));
+
 //require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
 class p2pCompany {
+    /* const DAY = 1;
+      const MONTH = 2;
+      const YEAR_CUARTER = 3;
+      const HOUR = 4; */
 
-    /*const DAY = 1;
-    const MONTH = 2;
-    const YEAR_CUARTER = 3;
-    const HOUR = 4;*/
 // type of financial product
-    /*const PAGARE = 1;
-    const LOAN = 2;
-    const FINANCING = 3;*/
+    /* const PAGARE = 1;
+      const LOAN = 2;
+      const FINANCING = 3; */
 // http message type for method "getCompanyWebpage"
-    /*const GET = 1; // GET a webpage
-    const POST = 2; // POST some parameters, typically used for login procedure
-    const PUT = 3; // Not implemented yet)
-    const DELETE = 4; // DELETE a resource on the server typically used for logging out
-    const OPTIONS = 5; // Not implemented yet)
-    const TRACE = 6; // Not implemented yet)
-    const CONNECT = 7; // Not implemented yet)
-    const HEAD = 8; // Not implemented yet)*/
+    /* const GET = 1; // GET a webpage
+      const POST = 2; // POST some parameters, typically used for login procedure
+      const PUT = 3; // Not implemented yet)
+      const DELETE = 4; // DELETE a resource on the server typically used for logging out
+      const OPTIONS = 5; // Not implemented yet)
+      const TRACE = 6; // Not implemented yet)
+      const CONNECT = 7; // Not implemented yet)
+      const HEAD = 8; // Not implemented yet) */
 
     //Variable to use in this method
     // MarketplacesController
@@ -127,7 +128,7 @@ class p2pCompany {
     protected $tries = 0;
     //Cookies
     protected $cookies_name = 'cookies.txt';
-     //These are three variables 
+    //These are three variables 
     protected $typeUniqueElement = [];
     protected $valueUniqueElement = [];
     protected $verifyUniqueElement = [];
@@ -293,7 +294,7 @@ class p2pCompany {
 
         //set data to be posted
         curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-        
+
         // Fail the cURL request if response code = 400 (like 404 errors)
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
@@ -330,7 +331,6 @@ class p2pCompany {
         return $str;
     }
 
-    
     function doCompanyLoginRequestPayload($payload) {
 
 
@@ -376,7 +376,7 @@ class p2pCompany {
         //set data to be posted
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        
+
         // Fail the cURL request if response code = 400 (like 404 errors)
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
 
@@ -412,11 +412,7 @@ class p2pCompany {
         }
         return $str;
     }
-    
-    
-    
-    
-    
+
     /**
      *
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
@@ -432,7 +428,7 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
 //  barzana@gmail.com 	939233Maco048 
-        if($url == null){
+        if ($url == null) {
             $url = array_shift($this->urlSequence);
         }
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -625,7 +621,7 @@ class p2pCompany {
      *
      */
     function doCompanyLoginMultiCurl(array $loginCredentials) {
-       
+        echo 'credentials: ' . print_r($loginCredentials);
         $url = array_shift($this->urlSequence);
         echo 'login:' . $url;
         $this->errorInfo = $url;
@@ -650,7 +646,7 @@ class p2pCompany {
 
         //create the final string to be posted using implode()
         $postString = implode('&', $postItems);
-        echo 'post-String: ' . print_r($postString);
+        echo 'post-String: ' . $postString;
         $request = new \cURL\Request();
 
         // check if extra headers have to be added to the http message  
@@ -678,15 +674,13 @@ class p2pCompany {
         // Add the url to the queue
         $this->marketplaces->addRequetsToQueueCurls($request);
     }
-    
-    
-    
+
     /**
      *
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
      * 	
      */
-    function doCompanyLogoutMultiCurl(array $logoutCredentials = null,$url = null) {
+    function doCompanyLogoutMultiCurl(array $logoutCredentials = null, $url = null) {
         /*
           //traverse array and prepare data for posting (key1=value1)
           foreach ( $logoutData as $key => $value) {
@@ -696,7 +690,7 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
         //  barzana@gmail.com 	939233Maco048 
-        if($url){
+        if ($url) {
             $url = array_shift($this->urlSequence);
         }
         echo $url;
@@ -914,41 +908,40 @@ class p2pCompany {
         }
         return $value;
     }
-    
+
     /**
-    *
-    *	Look for ALL elements (or only first) which fullfil the tag item. 
-    *	Obtain the following:
-    *		<div id="myId"....>      getElements($dom, "div", "id", "myId");
-    *		or
-    *		<div class="myClass" ....>  getElements($dom, "div", "class", "myClass");
-    *		
-    *	@param $dom
-    *	@param $tag			string 	name of tag, like "div"
-    *	@param $attribute	string	name of the attribute like "id"   optional parameter
-    *	@param $value		string	value of the attribute like< "myId"  optional parameter. Must be defined if $attribute is defined
-    *	@return array $list of doms
-    *	$list is empty if no match was found
-    *
-    */
-    /*public function getElements($dom, $tag, $attribute, $value) {
+     *
+     * 	Look for ALL elements (or only first) which fullfil the tag item. 
+     * 	Obtain the following:
+     * 		<div id="myId"....>      getElements($dom, "div", "id", "myId");
+     * 		or
+     * 		<div class="myClass" ....>  getElements($dom, "div", "class", "myClass");
+     * 		
+     * 	@param $dom
+     * 	@param $tag			string 	name of tag, like "div"
+     * 	@param $attribute	string	name of the attribute like "id"   optional parameter
+     * 	@param $value		string	value of the attribute like< "myId"  optional parameter. Must be defined if $attribute is defined
+     * 	@return array $list of doms
+     * 	$list is empty if no match was found
+     *
+     */
+    /* public function getElements($dom, $tag, $attribute, $value) {
 
-            $list = array();
+      $list = array();
 
-            $attributeTrimmed = trim($attribute);
-            $valueTrimmed = trim($value);
-            $tagTrimmed = trim($tag);
-            $tags = $dom->getElementsByTagName($tagTrimmed);
+      $attributeTrimmed = trim($attribute);
+      $valueTrimmed = trim($value);
+      $tagTrimmed = trim($tag);
+      $tags = $dom->getElementsByTagName($tagTrimmed);
 
-            foreach ($tags as $tagFound) {
-                    $attValue = trim($tagFound->getAttribute($attributeTrimmed));
-                    if ( strncasecmp ($attValue, $valueTrimmed, strlen($valueTrimmed)) == 0) {
-                            $list[] = $tagFound;	
-                    }
-            }
-            return $list;
-    }*/
-
+      foreach ($tags as $tagFound) {
+      $attValue = trim($tagFound->getAttribute($attributeTrimmed));
+      if ( strncasecmp ($attValue, $valueTrimmed, strlen($valueTrimmed)) == 0) {
+      $list[] = $tagFound;
+      }
+      }
+      return $list;
+      } */
 
     /**
      *
@@ -968,29 +961,26 @@ class p2pCompany {
      */
     public function getElements($dom, $tag, $attribute, $value) {
 
-	$list = array();
-		
-	$attributeTrimmed = trim($attribute);
-	$valueTrimmed = trim($value);
-	$tagTrimmed = trim($tag);
+        $list = array();
+
+        $attributeTrimmed = trim($attribute);
+        $valueTrimmed = trim($value);
+        $tagTrimmed = trim($tag);
         libxml_use_internal_errors(true);
-	$tags = $dom->getElementsByTagName($tagTrimmed);
-	if ($tags->length > 0) {
+        $tags = $dom->getElementsByTagName($tagTrimmed);
+        if ($tags->length > 0) {
             foreach ($tags as $tagFound) {
-		$attValue = trim($tagFound->getAttribute($attributeTrimmed));
-		if ( strncasecmp ($attValue, $valueTrimmed, strlen($valueTrimmed)) == 0) {
-			$list[] = $tagFound;	
-		}
+                $attValue = trim($tagFound->getAttribute($attributeTrimmed));
+                if (strncasecmp($attValue, $valueTrimmed, strlen($valueTrimmed)) == 0) {
+                    $list[] = $tagFound;
+                }
             }
             $this->hasElements = true;
             return $list;
-        }
-        else {
+        } else {
             $this->hasElements = false;
         }
-	
     }
-
 
     /**
      * Verify if a node has elements or it is empty
@@ -1000,11 +990,9 @@ class p2pCompany {
     public function verifyNodeHasElements($elements, $limit = null) {
         if ($elements->length == 0) {
             $this->hasElements = false;
-        } 
-        else if (!empty($limit) && $elements->length < $limit) {
+        } else if (!empty($limit) && $elements->length < $limit) {
             $this->hasElements = false;
-        } 
-        else {
+        } else {
             $this->hasElements = true;
         }
     }
@@ -1439,7 +1427,7 @@ class p2pCompany {
             return $uuid;
         }
     }
-    
+
     /**
      * Function to convert an Spreadsheet to array with PHPExcel
      * @param string $nameSpreadsheet It is the name of the spreadsheet
@@ -1452,18 +1440,18 @@ class p2pCompany {
         if (empty($folderSpreadsheet)) {
             $folderSpreadsheet = "/var/www/html/cake_branch/";
         }
-        
-        
+
+
         $objPHPExcel = PHPExcel_IOFactory::load($folderSpreadsheet . $nameSpreadsheet);
-        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-        /*$loadedSheetNames = $objPHPExcel->getSheetNames();
-        foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
-            echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
-            $objPHPExcel->setActiveSheetIndexByName($loadedSheetName);
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, false, false, true);
-            //var_dump($sheetData);
-            echo '<br />';
-        }*/
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+        /* $loadedSheetNames = $objPHPExcel->getSheetNames();
+          foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
+          echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
+          $objPHPExcel->setActiveSheetIndexByName($loadedSheetName);
+          $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, false, false, true);
+          //var_dump($sheetData);
+          echo '<br />';
+          } */
         $values = [
             "A" => "TransactionId",
             "B" => "date",
@@ -1490,7 +1478,7 @@ class p2pCompany {
         $datas = $this->saveExcelArrayToTemp($sheetData, $values);
         var_dump($datas);
     }
-    
+
     /**
      * Function to convert an Spreadsheet to array with PHPExcel by parts
      * @param int $chunkInit
@@ -1509,20 +1497,20 @@ class p2pCompany {
             $chunkSize = 500;
         }
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-        
-        /**  Create a new Instance of our Read Filter  **/
+
+        /**  Create a new Instance of our Read Filter  * */
         $chunkFilter = new readFilterWinvestify();
-        /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
-        $chunkFilter->setRows($chunkInit,$chunkSize);
-        /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
+        /**  Tell the Read Filter, the limits on which rows we want to read this iteration  * */
+        $chunkFilter->setRows($chunkInit, $chunkSize);
+        /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  * */
         $objReader->setReadFilter($chunkFilter);
-        
+
         $objPHPExcel = $objReader->load("/var/www/html/cake_branch/mintos.xlsx");
-        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
         $datas = $this->saveExcelArrayToTemp($sheetData, $values);
         var_dump($datas);
     }
-    
+
     /**
      * Function to convert from an array with PHPExcel structure to a more manipulable structure
      * @param array $rowDatas It is the array with PHPExcel structure
@@ -1536,8 +1524,7 @@ class p2pCompany {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
                     $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
-                }
-                else {
+                } else {
                     $tempArray[$i][$value] = $rowData[$key];
                 }
             }
@@ -1545,8 +1532,7 @@ class p2pCompany {
         }
         return $tempArray;
     }
-    
-    
+
     /**
      * Function to take more values from cell that could be more than one type of variable
      * @param string $rowData It is the cell  
@@ -1562,15 +1548,14 @@ class p2pCompany {
                 //$tempArray["loanId"] = substr($value, $pos + $variable["initPos"], $variable["finalPos"]);
                 if (!empty($value["name"])) {
                     $tempArray["type"] = $value["name"];
-                }
-                else {
+                } else {
                     $tempArray[$value["type"]] = $this->getValueBySubstring($rowData, $value, $pos);
                 }
             }
         }
         return $tempArray;
     }
-    
+
     /**
      * Function to get the necessary value with substring function
      * @param string $rowData It is the cell  
@@ -1582,13 +1567,12 @@ class p2pCompany {
         $posFinal = $this->getPosFinal($rowData, $value, $pos);
         if (empty($posFinal)) {
             $data = substr($rowData, $pos + $value["initPos"]);
-        }
-        else {
+        } else {
             $data = substr($rowData, $pos + $value["initPos"], $posFinal);
         }
         return trim($data);
     }
-    
+
     /**
      * Function to get the initial position to get the variable from a string
      * @param string $rowData It is the cell
@@ -1599,13 +1583,12 @@ class p2pCompany {
         if (is_array($regex)) {
             $posStart = strpos($rowData, $regex["init"]);
             $pos = strpos($rowData, $regex["final"], $posStart);
-        }
-        else {
+        } else {
             $pos = strpos($rowData, $regex);
         }
         return $pos;
     }
-    
+
     /**
      * Function to get the final position to get the variable from a string
      * @param string $rowData It is the cell
@@ -1618,77 +1601,92 @@ class p2pCompany {
         if (!is_int($value["finalPos"])) {
             $positionFinal = strpos($rowData, $value["finalPos"], $pos);
             if ($positionFinal !== false) {
-                $posFinal = $positionFinal-$pos-$value["initPos"];
+                $posFinal = $positionFinal - $pos - $value["initPos"];
             }
-        }
-        else if (is_int($value["finalPos"])) {
+        } else if (is_int($value["finalPos"])) {
             $posFinal = $value["finalPos"];
         }
         return $posFinal;
     }
-    
-    
-        /**
-         * 
-         * @param string $fileUrl url that download the file
-         * @param string $fileName name of the file to save
-         * @param string $fileType extension of the file
-         * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
-         * @param string $path path where you want save the file
-         */
-        public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity,$credentials) {
 
-            print_r($credentials);
-            echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
-            
-            $date = date("d-m-Y_H:i:sa");
-            $configPath = Configure::read('files');
-            $partialPath = $configPath['investorPath'];   
-            $identity = 'testUser';         
-            $path = $partialPath . $identity . DS . 'Investments' .DS .$date . DS . $pfpName;
-                   
-            echo 'Saving in: ' . $path . HTML_ENDOFLINE;        
-                    
-            
-            
-            $output_filename = $fileName . '_' . $date . "." . $fileType;
-            echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
+    /**
+     * 
+     * @param string $fileUrl url that download the file
+     * @param string $fileName name of the file to save
+     * @param string $fileType extension of the file
+     * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
+     * @param string $path path where you want save the file
+     */
+    public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
 
-            if($credentials){
-                //traverse array and prepare data for posting (key1=value1)
-                foreach ($loginCredentials as $key => $value) {
-                    $postItems[] = $key . '=' . $value;
-                }
-                //create the final string to be posted using implode()
-                $postString = $credentials;
-                //set data to be posted
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-            }
-            
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $fileUrl);
-            curl_setopt($ch, CURLOPT_VERBOSE, 1);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_AUTOREFERER, false);
-            curl_setopt($ch, CURLOPT_REFERER, $pfpBaseUrl);
-            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            $result = curl_exec($ch);
-            curl_close($ch);
+        print_r($credentials);
+        echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
 
-            //print_r($result); // prints the contents of the collected file before writing..
-            // the following lines write the contents to a file in the same directory (provided permissions etc)
-            $fp = fopen(APP . $path . DS . $output_filename, 'w+');
-             if (!file_exists($fp)) {
-                echo 'Creating dir' . HTML_ENDOFLINE;
-                mkdir($path, 0770, true);
-            }
-            echo 'File: ' . print_r($fp) . HTML_ENDOFLINE;
-            fwrite($fp, $result);
-            fclose($fp);
+        $date = date("d-m-Y_H:i:sa");
+        $configPath = Configure::read('files');
+        $partialPath = $configPath['investorPath'];
+        $identity = 'testUser';
+        $path = $partialPath . $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
+
+        echo 'Saving in: ' . $path . HTML_ENDOFLINE;
+
+
+
+        $output_filename = $fileName . '_' . $date . "." . $fileType;
+        echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
+        $output_filename = 'prueba';
+        echo $fileUrl . HTML_ENDOFLINE;
+
+
+        $ch = curl_init(); //'cookie: __cfduid=d21a834ccb1e60740448f41c2268cf12e1501673244; PHPSESSID=h3jp268d06961sjlsiiuf8du11; _gat_UA-53926147-5=1; alive=1; _ga=GA1.2.199063307.1501673247; _gid=GA1.2.1698279269.1504852937; __zlcmid=hogdmMCQMh0blo'  
+        //--data 'currency=978&+=978&purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments='  --compressed");
+        $fp = fopen(APP . $path . DS . $output_filename, 'w+');
+        if (!file_exists($fp)) {
+            echo 'Creating dir' . HTML_ENDOFLINE;
+            mkdir($fp, 0770, true);
         }
 
-    
+        $header[] = 'accept-language: en-US,en;q=0.8';
+        $header[] = 'upgrade-insecure-requests: 1';
+        $header[] = 'origin: ' . $pfpBaseUrl;
+        $header[] = 'content-type: application/x-www-form-urlencoded';
+        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+        $header[] = 'authority: ' . $pfpBaseUrl;
+        $header[] = 'cache-control: max-age=0';
+
+
+        curl_setopt($ch, CURLOPT_URL, $fileUrl);
+        //curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate,br");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 OPR/44.0.2510.857');
+        curl_setopt($ch, CURLOPT_REFERER, $referer); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
+        curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
+        curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
+
+       if($credentials){
+          $postString = $credentials;
+          //set data to be posted
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
+        }
+        
+        $result = curl_exec($ch);
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        print_r($result); // prints the contents of the collected file before writing..
+        $fichero = fwrite($fp,$result);
+        echo "fichero" . $fichero;
+        fclose($fp);
+        
+        if ($statusCode == 200) {
+            echo 'Downloaded!' . HTML_ENDOFLINE;
+        } else {
+            echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
+        }
+    }
+
     /**
      * Compares two dom structures., attributes name and length 
      * 
@@ -1716,9 +1714,9 @@ class p2pCompany {
                     $valueAttrNode1 = $node1Attr[$i]->nodeValue;
                     $valueAttrNode2 = $node2Attr[$i]->nodeValue;
 
-                   /*echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-                    echo $nameAttrNode1 . '=>' . $valueAttrNode1 . '<br>';
-                    echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>';*/
+                    /* echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                      echo $nameAttrNode1 . '=>' . $valueAttrNode1 . '<br>';
+                      echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>'; */
 
                     if ($nameAttrNode1 != $nameAttrNode2) {
                         //echo 'Node attr name error';
@@ -1739,10 +1737,10 @@ class p2pCompany {
                     }
                 }
             } else if ($node1Attr->length != $node2Attr->length) {
-                /*echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-                echo $node1Attr->length . '<br>';
-                echo $node2Attr->length . '<br>';
-                echo 'Node attr length error';*/
+                /* echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                  echo $node1Attr->length . '<br>';
+                  echo $node2Attr->length . '<br>';
+                  echo 'Node attr length error'; */
                 $this->sameStructure = false;
             }
         } else if ($node1->hasAttributes() && !$node2->hasAttributes()) {
@@ -1760,27 +1758,27 @@ class p2pCompany {
                 $childrenNode1 = $node1->childNodes;
                 $childrenNode2 = $node2->childNodes;
                 $limitChildren = $childrenNode1->length;
-                
+
                 for ($i = 0; $i < $limitChildren; $i++) {
 
-                    if($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text"){ //Skip text nodes
+                    if ($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text") { //Skip text nodes
                         continue;
                     }
-                    
+
                     if (!$childrenNode1[$i] && $childrenNode2[$i]) { //First we verify if node exist
-                        /*echo 'Node1 doesnt exist: <br>';
-                        echo 'parent => ' . $childrenNode1[$i]->parentNode->nodeName . ' of ' . $childrenNode1[$i]->nodeName . ' value ' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';*/
+                        /* echo 'Node1 doesnt exist: <br>';
+                          echo 'parent => ' . $childrenNode1[$i]->parentNode->nodeName . ' of ' . $childrenNode1[$i]->nodeName . ' value ' . $childrenNode1[$i]->nodeValue . '<br>';
+                          echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>'; */
 
                         $this->sameStructure = false;
-                    } else if($childrenNode1[$i] && !$childrenNode2[$i]){
-                        /*echo 'Node2 doesnt exist: <br>';
-                        echo $childrenNode1[$i]->parentNode->nodeName . ' ' . $childrenNode1[$i]->nodeName . ' is 1' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';*/
+                    } else if ($childrenNode1[$i] && !$childrenNode2[$i]) {
+                        /* echo 'Node2 doesnt exist: <br>';
+                          echo $childrenNode1[$i]->parentNode->nodeName . ' ' . $childrenNode1[$i]->nodeName . ' is 1' . $childrenNode1[$i]->nodeValue . '<br>';
+                          echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>'; */
 
                         $this->sameStructure = false;
                     }
-                    
+
                     if (!$this->sameStructure) {
                         break;
                     }
@@ -1818,7 +1816,6 @@ class p2pCompany {
         return $uniqueStructureFound;
     }
 
-
     /**
      * Function to delete unnecessary elements before we compared the two dom elements
      * @param dom $dom
@@ -1833,7 +1830,6 @@ class p2pCompany {
         //$dom->loadHTML($html);                  // load HTML into it
         //$xpath = new DOMXPath($dom);            // create a new XPath
         //$nodes = $xpath->query('//*[@style]');  // Find elements with a style attribute
-
         foreach ($elementsToSearch as $element) {
 
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element["value"]);
@@ -1865,7 +1861,7 @@ class p2pCompany {
             foreach ($nodes as $node) {
                 //echo 'Delete: <br>';
                 //print_r($node);
-                    $node->parentNode->removeChild($node);
+                $node->parentNode->removeChild($node);
             }
         }
         return $dom;
@@ -1882,10 +1878,10 @@ class p2pCompany {
      * @return array
      */
     public function getElementsToClean($dom, $typeSearch, $tag, $attribute = null, $value = null) {
-       /* echo 'Type: ' . $typeSearch . '<br>';
-        echo 'Tag: ' . $tag . '<br>';
-        echo 'Attribute: ' . $attribute . '<br>';
-        echo 'Value: ' . $value . '<br>';*/
+        /* echo 'Type: ' . $typeSearch . '<br>';
+          echo 'Tag: ' . $tag . '<br>';
+          echo 'Attribute: ' . $attribute . '<br>';
+          echo 'Value: ' . $value . '<br>'; */
 
         /* $list = array();
           $attributeTrimmed = trim($attribute); */
@@ -1906,7 +1902,7 @@ class p2pCompany {
         }
         return $elements;
     }
-    
+
     /**
      * 
      * 
@@ -1920,45 +1916,44 @@ class p2pCompany {
      * @param int $node2Index pfp page node index
      * @return array [$structureRevision,$break,$type] $structureRevision - boolean $break - boolean $type - int
      */
-    public function  htmlRevision($structure,$tag,$nodeToClone, $attribute = null, $attrValue = null, $containerData = null, $node1Index = 1, $node2Index = 3){
-        
+    public function htmlRevision($structure, $tag, $nodeToClone, $attribute = null, $attrValue = null, $containerData = null, $node1Index = 1, $node2Index = 3) {
+
         $break = false; //To break the read loop.
         $type = false; //Error type
-        
-        if($structure){
-            
+
+        if ($structure) {
+
             $newStructure = new DOMDocument;  //Get the old structure in db
             $newStructure->loadHTML($structure['Structure']['structure_html']);
             $newStructure->preserveWhiteSpace = false;
-            
-            if(!$attribute && !$attrValue){
+
+            if (!$attribute && !$attrValue) {
                 $trsNewStructure = $newStructure->getElementsByTagName($tag);
-            }else{
+            } else {
                 $trsNewStructure = $this->getElements($newStructure, $tag, $attribute, $attrValue);
             }
-            
-            
+
+
             $saveStructure = new DOMDocument(); //CLone original structure in pfp paga
-            
             //print_r($containerData);
-            if($containerData){
-                if($containerData['attribute'] && $containerData['attrValue']){
+            if ($containerData) {
+                if ($containerData['attribute'] && $containerData['attrValue']) {
                     $nodeToClone = $this->getElements($containerData['dom'], $containerData['tag'], $containerData['attribute'], $containerData['attrValue'])[0];
                 } else {
                     $nodeToClone = $containerData['dom']->getElementsByTagName($containerData['tag'])[0];
                 }
             }
-            
+
             $clone = $nodeToClone->cloneNode(TRUE);
             $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
             $saveStructure->saveHTML();
-            
-            if(!$attribute && !$attrValue){
+
+            if (!$attribute && !$attrValue) {
                 $originalStructure = $saveStructure->getElementsByTagName($tag);
-             }else{
+            } else {
                 $originalStructure = $this->getElements($saveStructure, $tag, $attribute, $attrValue);
             }
-            
+
             $structureRevision = $this->structureRevision($trsNewStructure[$node1Index], $originalStructure[$node2Index]);
 
             echo 'structure: ' . $structureRevision . '<br>';
@@ -1966,15 +1961,15 @@ class p2pCompany {
             if (!$structureRevision) { //Save new structure
                 echo 'Structural error<br>';
                 $saveStructure = new DOMDocument();
-                
-                if($containerData){
-                    if($containerData['attribute'] && $containerData['attrValue']){
+
+                if ($containerData) {
+                    if ($containerData['attribute'] && $containerData['attrValue']) {
                         $nodeToClone = $this->getElements($containerData['dom'], $containerData['tag'], $containerData['attribute'], $containerData['attrValue'])[0];
                     } else {
                         $nodeToClone = $containerData['dom']->getElementsByTagName($containerData['tag'])[0];
                     }
                 }
-                
+
                 $clone = $nodeToClone->cloneNode(TRUE);
                 $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
 
@@ -1987,24 +1982,22 @@ class p2pCompany {
         if (!$structure) { //Save new structure if is first time
             echo 'no structure readed, saving structure <br>';
             $saveStructure = new DOMDocument();
-            
-            if($containerData){
-                if($containerData['attribute'] && $containerData['attrValue']){
-                        $nodeToClone = $this->getElements($containerData['dom'], $containerData['tag'], $containerData['attribute'], $containerData['attrValue'])[0];
-                    } else {
-                        $nodeToClone = $containerData['dom']->getElementsByTagName($containerData['tag'])[0];
-                    }
+
+            if ($containerData) {
+                if ($containerData['attribute'] && $containerData['attrValue']) {
+                    $nodeToClone = $this->getElements($containerData['dom'], $containerData['tag'], $containerData['attribute'], $containerData['attrValue'])[0];
+                } else {
+                    $nodeToClone = $containerData['dom']->getElementsByTagName($containerData['tag'])[0];
+                }
             }
-            
+
             $clone = $nodeToClone->cloneNode(TRUE);
             $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
             $structureRevision = $saveStructure->saveHTML();
         }
-        return [$structureRevision,$break,$type];
+        return [$structureRevision, $break, $type];
     }
 
-
-    
     /**
      * Compares json structure.
      * To success the two json keys must have the same name.
@@ -2014,36 +2007,36 @@ class p2pCompany {
      * @param array $jsonEntry json entry to compare
      * @return array [$structureRevision,$break,$type] $structureRevision - boolean $break - boolean $type - int
      */
-    public function jsonRevision($structure, $jsonEntry){
+    public function jsonRevision($structure, $jsonEntry) {
         $break = false;
         $type = false;
-        
+
         if ($structure) { //Compare structures, olny compare the first element
-            $compareStructure = json_decode($structure['Structure']['structure_html'],true);
+            $compareStructure = json_decode($structure['Structure']['structure_html'], true);
             print_r($compareStructure);
             $structureCountMax = count($compareStructure);
-            echo  $structureCountMax;
+            echo $structureCountMax;
             $jsonEntryCount = count($jsonEntry);
             print_r($jsonEntry);
             echo $jsonEntryCount;
-            
+
             $structureCount = 0;
             $type = false;
-            
+
             foreach ($jsonEntry as $key => $value) {
                 foreach ($compareStructure as $key2 => $value2) {
-                     if ($key == $key2) { //Compares key names
+                    if ($key == $key2) { //Compares key names
                         $structureCount++;
                         echo 'hecho ' . $structureCount;
                         break;
                     }
                 }
             }
-                     
-            if ($structureCountMax == $structureCount) { 
+
+            if ($structureCountMax == $structureCount) {
                 echo 'structure good';
                 $structureRevision = 1;
-                if($structureCountMax < $jsonEntryCount){
+                if ($structureCountMax < $jsonEntryCount) {
                     $type = INFORMATION;
                 }
             } else {
@@ -2053,13 +2046,12 @@ class p2pCompany {
                 $break = true;
                 $type = APP_ERROR;
             }
-            
         }
-        
+
         if (!$structure) {
             $structureRevision = json_encode($jsonEntry);
         }
-        return [$structureRevision,$break,$type];
+        return [$structureRevision, $break, $type];
     }
 
 }
