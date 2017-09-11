@@ -65,6 +65,18 @@ class CollectDataClientShell extends AppShell {
             $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
         }
         
+        $userLinkedaccount = [];
+        foreach ($linkedaccountsResults as $linkedaccount) {
+            foreach (COMPANY_TYPES as $key => $companyType) {
+                if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
+                    
+                }
+            }
+            $this->companyId[$i] = $linkedaccount['Linkedaccount']['company_id'];
+        }
+        
+        
+        
     }
     
     private function verifyFailTask(GearmanTask $task) {
