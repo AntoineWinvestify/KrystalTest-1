@@ -152,15 +152,15 @@ function showUserData($userIdentity, $number) {
 
  */
    
-        $inputFileType = 'CSV';
-        $inputFileName = '/var/www/html/compare_local/Finanzarel1.csv';
-        $objReader = PHPExcel_IOFactory::createReader($inputFileType);  
-        $objReader->setDelimiter(";");
-        $objPHPExcel = $objReader->load($inputFileName);
+  //      $inputFileType = 'CSV';
+        $inputFileName = '/var/www/html/compare_local/ecrowd.xls';
+  //      $objReader = PHPExcel_IOFactory::createReader($inputFileType);  
+//        $objReader->setDelimiter(";");
+//        $objPHPExcel = $objReader->load($inputFileName);
  
         //    exit;
 
-      //  $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/compare_local/Finanzarel.csv");            
+        $objPHPExcel = PHPExcel_IOFactory::load($inputFileName);            
    //     $objPHPExcel = PHPExcel_IOFactory::load("/var/www/html/compare_local/extracto-movimientos Circulantis-User 1.xlsx");
     $this->autoRender = false;
  //ini_set('memory_limit','1024M');
@@ -196,8 +196,8 @@ for ($row = 1; $row <= $highestRow; $row++){
 
 
 
-       $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-  //  $this->print_r2($sheetData);
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+//    $this->print_r2($sheetData);
   
         /*$loadedSheetNames = $objPHPExcel->getSheetNames();
         foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
@@ -208,63 +208,17 @@ for ($row = 1; $row <= $highestRow; $row++){
             echo '<br />';
         }*/
      
-        
-        $values_xxxx = [
-            "A" => "date",
-            "B" => "debe",
-            "C" => "haber",
-            "D" => "saldo",
-            "E" => [
-                [
-                    "name" => "cash_deposit",
-                    "regex" => "Provisión de fondos"
-                ],
-                [
-                    "name" => "cash_withdraw",
-                    "regex" => "Retirada de fondos"
-                ],
-                [
-                    "name" => "primary_market_investment",
-                    "regex" => "Participación en préstamo"
-                ],
-                [
-                    "name" => "principal_repayment",
-                    "regex" => "Abono rendimientos capital"
-                ],
-                [
-                    "name" => "regular_interest_income",
-                    "regex" => "Abono rendimientos intereses"
-                ],
-                [
-                    "name" => "Commission",
-                    "regex" => "administración"
-                ],
-                [
-                    "name" => "bank_charges",
-                    "regex" => "tarjeta"
-                ],
-                [
-                    "type" => "loanId",
-                    "regex" => "CPP_",
-                    "initPos" => 0,
-                    "finalPos" => "y Nº"
-                ]
-            ]
-        ];
-        
-        
-        
-        
-        
+ 
         
         
         
         
 // CIRCULANTIS
 // MOVIMIENTO                                                                   REFERENCIA IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
+// Traspaso                                                                     H03337	   1,000.00	5/9/2016   1,000.00	          0             0       	1,000.00
 // OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
-
-         
+// OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....	P154197	100	5/29/2017	2,936.42	300	12,264.55	15,500.97
+// OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....	C112205	159.63	5/30/2017	3,096.05	0	12,409.21	15,505.26
         $values_circulantis = [
             "A" => [
                 [
@@ -290,7 +244,7 @@ for ($row = 1; $row <= $highestRow; $row++){
                     "functionName" => "getTransactionDetail",  
                 ],
                 [
-                    "type" => "ID_Puja",                         // Complex format, calling external method
+                    "type" => "ID_Puja",                        // Complex format, calling external method
                     "inputData" => [
                                 "input2" => " ID Puja: ",       // May contain trailing spaces
                                 "input3" => ",",
@@ -298,7 +252,7 @@ for ($row = 1; $row <= $highestRow; $row++){
                     "functionName" => "extractDataFromString",  
                 ],
                 [
-                    "type" => "ID_Subasta",                         // Complex format, calling external method
+                    "type" => "ID_Subasta",                     // Complex format, calling external method
                     "inputData" => [
                                 "input2" => "ID Subasta: ",     // May contain trailing spaces
                                 "input3" => ",",
@@ -336,11 +290,13 @@ for ($row = 1; $row <= $highestRow; $row++){
             "G" => "invertido",
             "H" => "total"
         ];
-
-
+       
         
         
-        
+// FINANZAREL        
+// Id           A�o	Trimestre	Fecha           Subasta     Descripci�n                 Importe         Saldo
+// 20171678450	2017	2017T3          21/07/17	2817        Intereses                   �0,97           �55.314,02
+// 20171678440	2017	2017T3          21/07/17	2817        Amortizaci�n de efecto	-�153,94	�55.313,06
         $values_finanzarel = [     // All types/names will be defined as associative index in array
             "A" =>  [
                 "name" => "transaction_id"
@@ -380,11 +336,27 @@ for ($row = 1; $row <= $highestRow; $row++){
                                     ]   
                             ],
                     "functionName" => "getTransactionType",  
-                ],           
+                ],
+                 [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
+                                                ["Cargo por inversión en efecto", "Primary_market_investment"],
+                                                ["Abono por cobro parcial de efecto", "Partial_principal_repayment"],
+                                                ["Abono por cobro efecto","Principal_and_interest_payment"],
+                                                ["Intereses de demora", "Delayed_interest_income"],
+                                                ["Retrocesión de comisiones", "Other_income"],
+                                                ["Comisiones","Commission"],
+                                                ["IVA sobre Comisiones", "Tax_VAT"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ], 
             ],
             "H" =>  [
                 [
-                    "type" => "amount",                           // Winvestify standardized name 
+                    "type" => "amount",                         // Winvestify standardized name 
                     "inputData" => [
 				"input2" => ".",		// Thousands seperator, typically "."
                                 "input3" => ",",		// Decimal seperator, typically ","
@@ -394,25 +366,234 @@ for ($row = 1; $row <= $highestRow; $row++){
                     "functionName" => "getAmount",         
                 ],
                 [
-                    "type" => "currency",                           // Winvestify standardized name 
+                    "type" => "currency",                       // Winvestify standardized name 
                     "inputData" => [
 				"input2" => "D/M/y",		// Input parameters. The first parameter
                                                                 // is ALWAYS the contents of the cell
                                 ],
                     "functionName" => "getCurrency",         
                 ]
-             ],
-            ];
+            ]
+        ];
+        
+
         
         
+ // COMUNITAE  NOT FINISHED
+ // 
+ // unknown values for concept are:
+ //         participación en préstamo
+ //         bono de incentivos
+ // 
+ // 
+// Fecha de Operacion	Debe	Haber	Saldo	Concepto
+// 8/1/2017             0.50€	0.00€	49.61€	Cargo por comisión de administración
+// 7/25/2017            0.58€	0.00€	50.11€	Cargo por comisión de administración
+// 7/25/2017            0.00€	50.00€	50.69€	Abono rendimientos capital   ptmo. CPP_016231  y Nº de recibo 342097
+       $values_comunitae = [     // All types/names will be defined as associative index in array
+            "A" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "m-d-Y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+            ],
+            "B" => [
+                [
+                    "type" => "amount1",                        // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => ",",                // Thousands seperator, typically "."
+                                "input3" => ".",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount",  
+                ],
+            ],
+            "C" => [
+                [
+                    "type" => "amount2",                        // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => ",",                // Thousands seperator, typically "."
+                                "input3" => ".",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount" 
+                ]
+            ],
+            "D" => [
+                [
+                    "type" => "saldo",                         
+                    "inputData" => [
+				"input2" => ",",                // Thousands seperator, typically "."
+                                "input3" => ".",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]
+            ],              
+            "E" => [  
+                [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
+                                                ["Retirada de fondos", "Cash_withdrawal"],
+                                                ["Préstamo", "Primary_market_investment"],
+                                                ["Abono rendimientos capital","Principal_repayment"],
+                                                ["Abono rendimientos intereses", "Regular_interest_income"],
+                                                ["Abono rendimientos capital", "Delayed_interest_income"],
+                                                ["Cargo por comisión de administración", "Commission"],
+                                                ["Cargo por comisión de ingreso por tarjeta", "Bank_charges"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
+                                                ["Retirada de fondos", "Cash_withdrawal"],
+                                                ["Préstamo", "Primary_market_investment"],
+                                                ["Abono rendimientos capital","Principal_repayment"],
+                                                ["Abono rendimientos intereses", "Regular_interest_income"],
+                                                ["Abono rendimientos capital", "Delayed_interest_income"],
+                                                ["Cargo por comisión de administración", "Commission"],
+                                                ["Cargo por comisión de ingreso por tarjeta", "Bank_charges"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ],
+                [
+                    "type" => "loanId", 
+                    "inputData" => [
+                                "input2" => "CPP",        
+                                "input3" => " ",                // seperator character
+                                "input4" => true
+                            ],
+                    "functionName" => "extractDataFromString",   
+                ] 
+            ]
+        ];       
         
         
-        
-        
-        
-        
-        
-        
+// ECROWD
+// Fecha        Nombre del proyecto                                                     Cuota	Amortización de capital(€)	Intereses brutos(€) Retención IRPF(€)  Total(€)
+// 25-07-2017	Ampliación de la red de fibra óptica de l'Ametlla de Mar - Fase 5 -	2	0,00                              1,09               0,21                0,88
+       $values_ecrowd = [     // All types/names will be defined as associative index in array
+            "A" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D-M-Y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+            ],
+
+            "B" => [
+                [
+                    "type" => "purpose",                        // trick to get the complete cell data as purpose
+                    "inputData" => [
+                                "input2" => "",                 // May contain trailing spaces
+                                "input3" => ",",
+                            ],                   
+                    "functionName" => "extractDataFromString", 
+                ],
+                [
+                    "type" => "loanId",                         // Winvestify standardized name 
+                    "functionName" => "getHash",         
+                ]
+            ],          
+           
+            "C" => [
+                    "name" => "payment",
+                ],
+                
+  /*              [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+                                                ["Intereses brutos(€)", "Regular_interest_income"],
+                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+                                                ["Intereses brutos(€)", "Regular_interest_income"],
+                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],  
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ]
+            ],
+*/
+            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "amortization",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ],
+            "E" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "interest",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ],
+            "F" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "retencionTax",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ], 
+            "G" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "total",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]
+            ]
+        ];
+       
+       
+      
+     
         
         $values_mintos = [     // All types/names will be defined as associative index in array
             "A" =>  [
@@ -485,15 +666,15 @@ for ($row = 1; $row <= $highestRow; $row++){
                     "type" => "currency",                       // Complex format, calling external method
                     "functionName" => "getCurrency",  
                 ]
-            ],          
+            ]          
         ];       
  
             
-        $offset = 3;
-    //    $this->print_r2($sheetData);
+        $offset = 171;
+ //       $this->print_r2($sheetData);
    
         
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values_finanzarel, $offset);
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values_ecrowd, $offset);
         $this->print_r2($datas);
     }
     
@@ -516,14 +697,13 @@ for ($row = 1; $row <= $highestRow; $row++){
         /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
         $objReader->setReadFilter($chunkFilter);
        
-        $objPHPExcel = $objReader->load("/var/www/html/compare_local/extracto-movimientos Circulantis-User 1.xlsx");
+        $objPHPExcel = $objReader->load("/var/www/html/compare_local/Comunitae.xlsx");
       
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $this->print_r2($sheetData);
-  echo "PEDRO";      
-   exit;
+
+
         $datas = $this->saveExcelArrayToTemp($sheetData, $values);
-        echo "ANTOINE";
         $this->print_r2($datas);
     }
     
@@ -532,14 +712,14 @@ for ($row = 1; $row <= $highestRow; $row++){
     /**
      * Function to get the final position to get the variable from a string
      * @param string $rowDatas  the excel data in an array
-     * @param string $value     the array with configuration data for parsing
+     * @param string $values     the array with configuration data for parsing
      * @param int $offset       the number of indices at beginning of array which are NOT to be parsed
      * @return array $temparray the data after the parsing process
      * 
      */
     function saveExcelArrayToTemp($rowDatas, $values, $offset) {
         $tempArray = [];
-$offset = 1144;
+  
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $offset) {
@@ -550,42 +730,17 @@ $offset = 1144;
         }
 
         
-// CIRCULANTIS
-// MOVIMIENTO                                                                   REFERENCIA IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
-// Traspaso                                                                     H03337	   1,000.00	5/9/2016   1,000.00	          0             0       	1,000.00
-// // OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
-// OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....	P154197	100	5/29/2017	2,936.42	300	12,264.55	15,500.97
-// OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....	C112205	159.63	5/30/2017	3,096.05	0	12,409.21	15,505.26
-
-        
-// ECROWD
-// Fecha        Nombre del proyecto                                                     Cuota	Amortización de capital(€)	Intereses brutos(€) Retención IRPF(€)  Total(€)
-// 25-07-2017	Ampliación de la red de fibra óptica de l'Ametlla de Mar - Fase 5 -	2	0,00                              1,09               0,21                0,88
- 
-        
-// FINANZAREL        
-// Id           A�o	Trimestre	Fecha           Subasta     Descripci�n                 Importe         Saldo
-// 20171678450	2017	2017T3          21/07/17	2817        Intereses                   �0,97           �55.314,02
-// 20171678440	2017	2017T3          21/07/17	2817        Amortizaci�n de efecto	-�153,94	�55.313,06
-  
-        
-// COMUNITAE
-// Fecha de Operacion	Debe	Haber	Saldo	Concepto
-// 8/1/2017             0.50€	0.00€	49.61€	Cargo por comisión de administración
-// 7/25/2017            0.58€	0.00€	50.11€	Cargo por comisión de administración
-// 7/25/2017            0.00€	50.00€	50.69€	Abono rendimientos capital   ptmo. CPP_016231  y Nº de recibo 342097
-
         $i = 0;
         foreach ($rowDatas as $keyRow => $rowData) {
             foreach ($values as $key => $value) {
                 if (array_key_exists("name", $value)) {
                     $tempArray[$i][$value["name"]] = $rowData[$key];
                 }
-                else {
+                else { 
                     foreach ($value as $userFunction ) {
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
-                        }                        
+                        }                  
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
                         $tempArray[$i][$userFunction["type"]] = call_user_func_array(array(__NAMESPACE__ .'\TestsController',  
                                 $userFunction['functionName']), $userFunction['inputData']);
@@ -626,8 +781,12 @@ $offset = 1144;
        ((count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2]);
        
        $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
+       if (count($tempDate) == 1) {
+           return;
+       }
+       
        $finalDate = array();
-
+       
        $length = strlen($dateFormat);
        for ($i = 0; $i < $length; $i++) {
             switch ($dateFormat[$i]) {
@@ -650,7 +809,7 @@ $offset = 1144;
                     $finalDate[0] = $tempDate[$i]; 
                 break;              
             }
-        }    
+        } 
         return $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2];   
     }  
 
@@ -671,9 +830,9 @@ $offset = 1144;
 	return $val;
     }
  
-    /**
+    /**-
      * Gets an amount. The "length" of the number is determined by the required number
-     * of decimals. If there are more decimals then required the number is truncated and rounded
+     * of decimals. If there are more decimals then required, the number is truncated and rounded
      * else 0's are added.
      * Examples:
      * getAmount("1.234,56789€", ".", ",", 3) => 1234568
@@ -687,7 +846,6 @@ $offset = 1144;
      * 
      */
     function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
-      
         if ($decimalSep == ".") {
             $seperator = "\.";
         }
@@ -746,7 +904,36 @@ $offset = 1144;
         } 
     }
    
-
+  
+    
+    /**
+     * get hash of a string
+     * 
+     * @param string    $input
+     * @return string   $extractedString
+     *       
+     */
+    function getHash($input) {
+        return  hash ("md5", $input, false);
+    }  
+   
+   
+    /** 
+     * Reads the transaction type of the cashflow operation
+     * 
+     * @param string   $input
+     * @return array   $parameter2  List of all concepts of the platform
+     *       
+     */
+    function getTransactionDetail($input, $config) {
+        foreach ($config as $key => $configItem) {
+            $position = stripos($input, $configItem[0]);
+            if ($position !== false) {
+                return $configItem[1];
+            }
+        }
+    }     
+    
     /**
      * Get the amount of a column. The currency is omitted.
      * The number of decimals is defined in the Parser class.
@@ -762,36 +949,17 @@ $offset = 1144;
         $substrings = explode($seperator, substr($input, $position));
         return $substrings[0];
     }  
-   
-   
-    /** 
-     * Reads the transaction type of the cashflow operation
-     * 
-     * @param string   +$input
-     * @return array   $parameter2  List of all concepts of the platform
-     *       
-     */
-    function getTransactionDetail($input, $config) {
-        foreach ($config as $key => $configItem) {
-            $position = stripos($input, $configItem[0]);
-            if ($position !== false) {
-                return $configItem[1];
-            }
-        }
-    }     
-    
-    
+
    
     /**
      * 
      * Reads the transaction detail of the cashflow operation
      * 
-     * @param string   +$input
+     * @param string   $input
      * @return array   $parameter2  List of all concepts of the platform
      *       
      */
     function getTransactionType($input, $config) {  
-        echo "input = $input<br>";
         $details = new Parser();
         $transactionDetails = $details->getTransactionDetails();
         unset($details);
