@@ -259,6 +259,7 @@ for ($row = 1; $row <= $highestRow; $row++){
                             ],
                     "functionName" => "extractDataFromString",  
                 ],
+                
                 [
                     "type" => "loanId",                         // Complex format, calling external method
                     "inputData" => [
@@ -267,6 +268,17 @@ for ($row = 1; $row <= $highestRow; $row++){
                             ],
                     "functionName" => "extractDataFromString",  
                 ],
+               
+                
+// THIS IS A TEST                
+                 [
+                    "type" => "date",                           // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "#previous.date"    // The calculated field "date" from the previous excel row (i.e. previous aray index) is loaded
+                            ],                                  // Note that "date" must be a field defined in this config file
+                    "functionName" => "getPreviousRowData",  
+                ],               
+// END TEST                                              
                 
                 
             ],
@@ -940,13 +952,13 @@ for ($row = 1; $row <= $highestRow; $row++){
      * 
      * @param string    $input
      * @param string    $search
-     * @param string    $seperator   The seperator character
+     * @param string    $separator   The separator character
      * @return string   $extractedString
      *       
      */
-    function extractDataFromString($input, $search, $seperator ) {
+    function extractDataFromString($input, $search, $separator ) {
         $position = stripos($input, $search) + strlen($search);
-        $substrings = explode($seperator, substr($input, $position));
+        $substrings = explode($separator, substr($input, $position));
         return $substrings[0];
     }  
 
@@ -976,6 +988,38 @@ for ($row = 1; $row <= $highestRow; $row++){
         }         
     }  
 
+  
+    
+    
+    
+
+    /**
+     * 
+     * Reads a field from the previous row. Note that the field must be
+     * a "calculated" field, i.e it must be defined in the config file 
+     * 
+     * @param string   $input   inp
+     * @return array   $parameter2  List of all concepts of the platform
+     *       
+     */
+    function getPreviousRowData($input, $config) {  
+        $details = new Parser();
+        $transactionDetails = $details->getTransactionDetails();
+        unset($details);
+        
+        foreach ($config as $key => $configItem) {
+            $position = stripos($input, $configItem[0]);
+            if ($position !== false) {  // value is in $configItem[1];
+                foreach ($transactionDetails as $key => $detail) {
+                    if ($detail['detail'] == $configItem[1]) {
+                        return $detail['transactionType'];
+                    }
+                }
+            }
+        }         
+    }    
+    
+    
     
     
     function multiexplode ($delimiters,$string) {
