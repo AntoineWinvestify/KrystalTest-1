@@ -25,6 +25,7 @@
 
 class CollectDataClientShell extends AppShell {
     protected $GearmanClient;
+    private $newComp = [];
 
     public function startup() {
         $this->GearmanClient = new GearmanClient();
@@ -63,7 +64,40 @@ class CollectDataClientShell extends AppShell {
             $investorId = $resultInvestor['Investor']['id'];
             $filterConditions = array('investor_id' => $investorId);
             $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+            //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
         }
+        
+        $userLinkedaccounts = [];
+        $i = 0;
+        foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
+            foreach ($linkedaccountResult as $linkedaccount) {
+                foreach (COMPANY_TYPES as $key2 => $companyType) {
+                    if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
+                        $userLinkedaccounts[$key][$key2][$i] = $linkedaccount;
+                        break;
+                    }
+                }
+                //$i is the number of each company per user and per type of company
+                $i++;
+            }
+        }
+        
+        //$key is the number of each linkedaccounts
+        //$key is type of access to company (multicurl, casper, etc)
+        foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
+            foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
+                $data["companies"] = $linkedaccountsByType;
+                $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
+                $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
+                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_userReference"] . ".-;" . $key2);
+            }
+        }
+        
+        $this->GearmanClient->runTasks();
+        
+        
+        
+        
         
     }
     
