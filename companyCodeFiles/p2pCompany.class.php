@@ -1686,6 +1686,88 @@ class p2pCompany {
             echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
         }
     }
+    
+    /**
+     * 
+     * @param string $fileUrl url that download the file
+     * @param string $fileName name of the file to save
+     * @param string $fileType extension of the file
+     * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
+     * @param string $path path where you want save the file
+     */
+    public function downloadPfpFileMulticurl($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+
+        if (empty($pfpBaseUrl)) {
+            $pfpBaseUrl = array_shift($this->urlSequence);
+            //echo $pfpBaseUrl;
+        }
+        $this->errorInfo = $pfpBaseUrl;
+
+
+        $date = date("d-m-Y_H:i:sa");
+        $configPath = Configure::read('files');
+        $partialPath = $configPath['investorPath'];
+        $identity = 'testUser';
+        $path = $partialPath . $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
+
+        echo 'Saving in: ' . $path . HTML_ENDOFLINE;
+
+
+
+        $output_filename = $fileName . '_' . $date . "." . $fileType;
+        echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
+        $output_filename = 'prueba';
+        echo $fileUrl . HTML_ENDOFLINE;
+
+
+        $ch = curl_init(); //'cookie: __cfduid=d21a834ccb1e60740448f41c2268cf12e1501673244; PHPSESSID=h3jp268d06961sjlsiiuf8du11; _gat_UA-53926147-5=1; alive=1; _ga=GA1.2.199063307.1501673247; _gid=GA1.2.1698279269.1504852937; __zlcmid=hogdmMCQMh0blo'  
+        //--data 'currency=978&+=978&purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments='  --compressed");
+        $fp = fopen(APP . $path . DS . $output_filename, 'w+');
+        if (!file_exists($fp)) {
+            echo 'Creating dir' . HTML_ENDOFLINE;
+            mkdir($fp, 0770, true);
+        }
+
+        $header[] = 'accept-language: en-US,en;q=0.8';
+        $header[] = 'upgrade-insecure-requests: 1';
+        $header[] = 'origin: ' . $pfpBaseUrl;
+        $header[] = 'content-type: application/x-www-form-urlencoded';
+        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+        $header[] = 'authority: ' . $pfpBaseUrl;
+        $header[] = 'cache-control: max-age=0';
+
+
+        curl_setopt($ch, CURLOPT_URL, $fileUrl);
+        //curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate,br");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 OPR/44.0.2510.857');
+        curl_setopt($ch, CURLOPT_REFERER, $referer); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
+        curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
+        curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
+
+       if($credentials){
+          $postString = $credentials;
+          //set data to be posted
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
+        }
+        
+        $result = curl_exec($ch);
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        print_r($result); // prints the contents of the collected file before writing..
+        $fichero = fwrite($fp,$result);
+        echo "fichero" . $fichero;
+        fclose($fp);
+        
+        if ($statusCode == 200) {
+            echo 'Downloaded!' . HTML_ENDOFLINE;
+        } else {
+            echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
+        }
+    }
 
     /**
      * Compares two dom structures., attributes name and length 
@@ -2052,6 +2134,10 @@ class p2pCompany {
             $structureRevision = json_encode($jsonEntry);
         }
         return [$structureRevision, $break, $type];
+    }
+    
+    public function createNameForExcelFile() {
+        
     }
 
 }
