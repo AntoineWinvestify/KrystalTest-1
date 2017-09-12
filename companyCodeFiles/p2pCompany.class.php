@@ -1639,10 +1639,11 @@ class p2pCompany {
 
         $ch = curl_init(); //'cookie: __cfduid=d21a834ccb1e60740448f41c2268cf12e1501673244; PHPSESSID=h3jp268d06961sjlsiiuf8du11; _gat_UA-53926147-5=1; alive=1; _ga=GA1.2.199063307.1501673247; _gid=GA1.2.1698279269.1504852937; __zlcmid=hogdmMCQMh0blo'  
         //--data 'currency=978&+=978&purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments='  --compressed");
-        $fp = fopen($path . $output_filename, 'w+');
+        $fp = fopen($path . $output_filename, 'w');
         if (!file_exists($fp)) {
             echo 'Creating dir' . HTML_ENDOFLINE;
-            mkdir($fp, 0770, true);
+            mkdir($path, 0770, true);
+            $fp = fopen($path . $output_filename, 'w');
         }
 
         $header[] = 'accept-language: en-US,en;q=0.8';
@@ -1662,7 +1663,6 @@ class p2pCompany {
         curl_setopt($ch, CURLOPT_REFERER, $referer); 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
-        curl_setopt($ch, CURLOPT_FILE, $fp); 
         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
         curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
 
@@ -1676,7 +1676,7 @@ class p2pCompany {
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         print_r($result); // prints the contents of the collected file before writing..
-        //$fichero = fwrite($fp,$result);
+        $fichero = fwrite($fp,$result);
         //echo "file writed: " . $fichero . HTML_ENDOFLINE;
         fclose($fp);
         
