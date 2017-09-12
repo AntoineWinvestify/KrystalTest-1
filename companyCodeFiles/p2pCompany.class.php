@@ -151,6 +151,7 @@ class p2pCompany {
         $this->logDir = __DIR__ . "/log";   // Directory where the log files are stored
         $this->testConfig['active'] = false;  // test system activated	
 //	$this->testConfig['siteReadings'] = array('/var/www/compare_local/app/companyCodeFiles/tempTestFiles/lendix_marketplace');
+        $createdFolder = $this->createFolder('cookies');
         $this->cookiesDir = dirname(__FILE__) . "/cookies";
         $this->config['tracingActive'] = false;
         $this->headers = array();
@@ -1308,6 +1309,30 @@ class p2pCompany {
         $this->createCookiesFile($nameFileCookies);
         return $nameFileCookies;
     }
+    
+    /**
+     * Create the cookies folder if not exists 
+     * @param string $name It is the name for the folder
+     * @return boolean True if the folder is created
+     */
+    public function createFolder($name = null, $originPath = null) {
+        if (empty($name)) {
+            return false;
+        }
+        if (empty($originPath)) {
+            $originPath = dirname(__FILE__);
+        }
+        $dir = $originPath . $name;
+        $folderCreated = false;
+        if (!file_exists($dir)) {
+            $folderCreated = mkdir($dir, 0770);
+        }
+        else {
+            $folderCreated = true;
+        }
+        return $folderCreated;
+    }
+
 
     /**
      * Create the cookies file inside the directory selected with the permissions selected
@@ -1688,12 +1713,15 @@ class p2pCompany {
     }
     
     /**
-     * 
+     * Function to download a file with multicurl
      * @param string $fileUrl url that download the file
      * @param string $fileName name of the file to save
      * @param string $fileType extension of the file
      * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
-     * @param string $path path where you want save the file
+     * @param type $pfpName
+     * @param string $identity
+     * @param type $credentials
+     * @param type $referer
      */
     public function downloadPfpFileMulticurl($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
 
@@ -1703,57 +1731,103 @@ class p2pCompany {
         }
         $this->errorInfo = $pfpBaseUrl;
 
-
-        $date = date("d-m-Y_H:i:sa");
+        
+        $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $identity = 'testUser';
-        $path = $partialPath . $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
-
-        echo 'Saving in: ' . $path . HTML_ENDOFLINE;
-
-
+        $path = $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
+        $path = $this->createFolder($path, $partialPath);
+        //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
 
         $output_filename = $fileName . '_' . $date . "." . $fileType;
-        echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
-        $output_filename = 'prueba';
-        echo $fileUrl . HTML_ENDOFLINE;
+        $fp = fopen($path . $output_filename, 'w');
 
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                echo "currentScreen = $currentScreen";
+                $str = file_get_contents($currentScreen);
 
-        $ch = curl_init(); //'cookie: __cfduid=d21a834ccb1e60740448f41c2268cf12e1501673244; PHPSESSID=h3jp268d06961sjlsiiuf8du11; _gat_UA-53926147-5=1; alive=1; _ga=GA1.2.199063307.1501673247; _gid=GA1.2.1698279269.1504852937; __zlcmid=hogdmMCQMh0blo'  
-        //--data 'currency=978&+=978&purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments='  --compressed");
-        $fp = fopen(APP . $path . DS . $output_filename, 'w+');
-        if (!file_exists($fp)) {
-            echo 'Creating dir' . HTML_ENDOFLINE;
-            mkdir($fp, 0770, true);
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
         }
 
-        $header[] = 'accept-language: en-US,en;q=0.8';
-        $header[] = 'upgrade-insecure-requests: 1';
-        $header[] = 'origin: ' . $pfpBaseUrl;
-        $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
-        $header[] = 'authority: ' . $pfpBaseUrl;
-        $header[] = 'cache-control: max-age=0';
-
-
-        curl_setopt($ch, CURLOPT_URL, $fileUrl);
-        //curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate,br");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 OPR/44.0.2510.857');
-        curl_setopt($ch, CURLOPT_REFERER, $referer); 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
-        curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-
-       if($credentials){
-          $postString = $credentials;
-          //set data to be posted
-          curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
+        $request = new \cURL\Request();
+        
+        if ($this->config['postMessage'] == true) {
+            $request->getOptions()
+                    ->set(CURLOPT_POST, true);
+            //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
         }
         
+        $this->headers = array(
+            'accept-language: en-US,en;q=0.8',
+            'upgrade-insecure-requests: 1',
+            'origin: ' . $pfpBaseUrl,
+            'content-type: application/x-www-form-urlencoded',
+            'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'authority: ' . $pfpBaseUrl
+        );
+
+        if (!empty($this->headers)) {
+            echo "EXTRA HEADERS TO BE ADDED<br>";
+            $request->getOptions()
+                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
+                    ->set(CURLOPT_HTTPHEADER, $this->headers);
+
+            unset($this->headers);   // reset fields
+        }
+
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "DOWNLOADFILE"
+        ];
+        
+        $request->_page = json_encode($info);
+        
+        if($credentials){
+            //set data to be posted
+            $request->getOptions()
+                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
+                    ->set(CURLOPT_POSTFIELDS, $credentials);
+        }
+        
+        $request->getOptions()
+                // Set the file URL to fetch through cURL
+                ->set(CURLOPT_URL, $fileUrl)
+                // Set a different user agent string (Googlebot)
+                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                // Follow redirects, if any
+                ->set(CURLOPT_FOLLOWLOCATION, false)
+                // Fail the cURL request if response code = 400 (like 404 errors) 
+                ->set(CURLOPT_FAILONERROR, true)
+                ->set(CURLOPT_REFERER, $referer)
+                //->set(CURLOPT_VERBOSE, 1)
+                // Return the actual result of the curl result instead of success code
+                ->set(CURLOPT_RETURNTRANSFER, true)
+                // Wait for 10 seconds to connect, set 0 to wait indefinitely
+                ->set(CURLOPT_CONNECTTIMEOUT, 30)
+                // Execute the cURL request for a maximum of 50 seconds
+                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_ENCODING, "gzip,deflate,br")
+                // Do not check the SSL certificates
+                ->set(CURLOPT_SSL_VERIFYHOST, false)
+                ->set(CURLOPT_SSL_VERIFYPEER, false)
+                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
+                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
+        //Add the request to the queue in the marketplaces controller
+        $this->marketplaces->addRequetsToQueueCurls($request);
+        
+        
+        /*
+         * THIS IS FOR CURL BUT WE MUST TO CONVERT TO MULTICURL
         $result = curl_exec($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
@@ -1761,12 +1835,7 @@ class p2pCompany {
         $fichero = fwrite($fp,$result);
         echo "fichero" . $fichero;
         fclose($fp);
-        
-        if ($statusCode == 200) {
-            echo 'Downloaded!' . HTML_ENDOFLINE;
-        } else {
-            echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
-        }
+        */
     }
 
     /**
@@ -2134,10 +2203,6 @@ class p2pCompany {
             $structureRevision = json_encode($jsonEntry);
         }
         return [$structureRevision, $break, $type];
-    }
-    
-    public function createNameForExcelFile() {
-        
     }
 
 }
