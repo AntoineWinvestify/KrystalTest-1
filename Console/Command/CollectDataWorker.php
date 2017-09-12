@@ -77,11 +77,188 @@ class CollectDataWorkerShell extends AppShell {
             );
             $this->newComp[$i]->defineConfigParms($configurationParameters);
             $i++;
+            
+            $companyNumber = 0;
+            echo "MICROTIME_START = " . microtime() . "<br>";
+            //We start at the same time the queue on every company
+            foreach ($data["companies"] as $linkedaccount) {
+                $this->newComp[$companyNumber]->collectUserInvestmentDataParallel();
+                $companyNumber++;
+            }
+            
+            /*
+            * This is the callback's queue for the companies cURLs, when one request is processed
+            * Another enters the queue until finishes
+            */
+            $this->queueCurls->addListener('complete', function (\cURL\Event $event) {
+               echo "<br>";
+               // The ids[0] is the company id
+               // The ids[1] is the switch id
+               // The ids[2] is the type of request (WEBPAGE, LOGIN, LOGOUT)
+               $ids = explode(";", $event->request->_page);
+               //We get the response of the request
+               $response = $event->response;
+               //We get the web page string
+               $str = $response->getContent();
+               $error = "";
+               //if (!empty($this->testConfig['active']) == true) {
+               echo 'CompanyId:' . $this->companyId[$ids[0]] .
+               '   HTTPCODE:' . $response->getInfo(CURLINFO_HTTP_CODE)
+               . '<br>';
+
+               if ($response->hasError()) {
+                   $this->errorCurl($response->getError(), $ids, $response);
+                   $error = $response->getError();
+               } else {
+                   echo "<br>";
+                   //}
+                   //if ($this->config['tracingActive'] == true) {
+                   // $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
+                   //}
+                   if ($ids[2] != "LOGOUT") {
+                       $this->newComp[$ids[0]]->setIdForSwitch($ids[1]);
+                       $this->tempArray[$ids[0]] = $this->newComp[$ids[0]]->collectUserInvestmentDataParallel($str);
+                   }
+               }
+
+               if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$ids[0]]->getTries() == 0) {
+                   $this->logoutOnCompany($ids, $str);
+                   $this->newComp[$ids[0]]->setIdForSwitch(0); //Set the id for the switch of the function company
+                   $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
+                   $this->newComp[$ids[0]]->setTries(1);
+                   $this->newComp[$ids[0]]->deleteCookiesFile();
+                   //$this->newComp[$ids[0]]->generateCookiesFile();
+                   $this->newComp[$ids[0]]->collectUserInvestmentDataParallel();
+               } else if ($ids[2] == "LOGOUT") {
+                   echo "LOGOUT FINISHED <br>";
+                   //$this->newComp[$ids[0]]->deleteCookiesFile();
+               } else if ((!empty($this->tempArray[$ids[0]]) || ($response->hasError()) && $ids[2] != "LOGOUT")) {
+                   if ($response->hasError()) {
+                       //$this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
+                       $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2], $error);
+                   }
+                   $this->logoutOnCompany($ids, $str);
+                   if ($ids[2] == "LOGOUT") {
+                       unset($this->tempArray['global']['error']);
+                   }
+               }
+           });
+
+           //This is the queue. It is working until there are requests
+           while ($this->queueCurls->socketPerform()) {
+               echo '*';
+               $this->queueCurls->socketSelect();
+           }
         }
     }
     
-    public function getDataCasperFiles() {
+    public function getDataCasperFiles($job) {
+        $data = json_decode($job->workload(),true);
         
+        $index = 0;
+        $i = 0;
+        foreach ($data["companies"] as $linkedaccount) {
+            unset($newComp);
+            $index = $index + 1;
+            echo "<br>******** Executing the loop **********<br>";
+            $companyId = $linkedaccount['Linkedaccount']['company_id'];
+            echo "companyId = $companyId <br>";
+            $companyConditions = array('Company.id' => $companyId);
+
+            $result = $this->Company->getCompanyDataList($companyConditions);
+
+            $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
+            $newComp->defineConfigParms($result[$companyId]);  // Is this really needed??
+
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MY_INVESTMENTS_SEQUENCE);
+            $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+
+            $configurationParameters = array('tracingActive' => false,
+                'traceID' => $data["queue_userReference"],
+            );
+
+            $newComp->defineConfigParms($configurationParameters);
+
+
+            echo "MICROTIME_START = " . microtime() . "<br>";
+            $tempArray = $newComp->collectUserInvestmentData($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
+
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
+            $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+            $newComp->companyUserLogout();
+
+            echo "MICROTIME_STOP = " . microtime() . "<br>";
+            $tempArray['companyData'] = $result[$companyId];
+
+            $userInvestments = $tempArray;
+//prepare all globals on total dashboard level	
+//			$dashboardGlobals['amountInvested']	= $dashboardGlobals['amountInvested'] + $userInvestments['global']['activeInInvestments'];
+            $dashboardGlobals['amountInvested'] = $dashboardGlobals['amountInvested'] + $userInvestments['global']['totalInvestment'];
+            $dashboardGlobals['wallet'] = $dashboardGlobals['wallet'] + $userInvestments['global']['myWallet'];
+            $dashboardGlobals['totalEarnedInterest'] = $dashboardGlobals['totalEarnedInterest'] + $userInvestments['global']['totalEarnedInterest'];
+            $dashboardGlobals['profitibilityAccumulative'] = $dashboardGlobals['profitibilityAccumulative'] + $userInvestments['global']['profitibility'];
+
+// Amount that was invested totally in all the currently active investments
+            $dashboardGlobals['totalInvestments'] = $dashboardGlobals['totalInvestments'] + $userInvestments['global']['totalInvestments'];
+
+// The number of active investments in all companies:
+            $dashboardGlobals['activeInvestments'] = $dashboardGlobals['activeInvestments'] + count($userInvestments['investments']);
+
+            $dashboardGlobals['investments'][$result[$companyId]['company_name']] = $userInvestments;
+            unset($newComp);
+
+// *********************************************************************************************************		
+// Save "intermediate photos", so investor will always see something. The result is that for a user who has
+// investments in 4 platforms, the system will generate 4 photos, with each photo including the previous one
+// *********************************************************************************************************
+            $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
+            if ($this->Data->save(array('data_investorReference' => $resultQueue['Queue']['queue_userReference'],
+                        'data_JSONdata' => JSON_encode($dashboardGlobals),
+                        $validate = true))) {
+                // DO NOTHING
+                echo "WRITE AN INTERMEDIATE PHOTO OF INVESTMENTS OF USER <br>";
+            } else {
+                // log error
+            }
+
+            foreach ($dashboardGlobals['investments'] as $company => $value) {
+                $inversiones = count($dashboardGlobals['investments'][$company]['investments']);
+                echo '<h1>';
+                print_r($inversiones);
+                echo '</h1>';
+                for ($key = 0; $key < $inversiones; $key++) {
+                    echo "comprobando" . $key . "</br>";
+                    if ($dashboardGlobals['investments'][$company]['investments'][$key]['status'] == -1) {
+                        echo '<h1>' . $key . "eliminada</h1></br>";
+                        unset($dashboardGlobals['investments'][$company]['investments'][$key]);
+                        $dashboardGlobals['investments'][$company]['global']['investments'] --;
+                        $dashboardGlobals['activeInvestments'] --;
+                        continue;
+                    }
+                }
+                $dashboardGlobals['investments'][$company]['investments'] = array_values($dashboardGlobals['investments'][$company]['investments']);
+            }
+            echo "<h1>            aqui";
+            $this->print_r2($dashboardGlobals);
+            echo "</h1>";
+
+            echo "<br>******* End of Loop ****** <br>";
+        }
+
+        $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
+        echo __FILE__ . " " . __FUNCTION__ . " " . __LINE__ . "<br>";
+        $this->print_r2($dashboardGlobals);
+
+// Store the dashboard data for 
+        $this->Data = ClassRegistry::init('Data');
+        if ($this->Data->save(array('data_investorReference' => $data["queue_userReference"],
+                    'data_JSONdata' => JSON_encode($dashboardGlobals),
+                    $validate = true))) {
+            
+        } else {
+            // log error
+        } 
+
     }
     
     public function getDataMulticurlScraping() {
