@@ -232,7 +232,6 @@ class p2pCompany {
 
 
         $url = array_shift($this->urlSequence);
-        echo 'login url' . $url . HTML_ENDOFLINE;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
                 $currentScreen = array_shift($this->testConfig['siteReadings']);
@@ -525,7 +524,6 @@ class p2pCompany {
     function doCompanyLoginMultiCurl(array $loginCredentials) {
 
         $url = array_shift($this->urlSequence);
-        echo $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -593,7 +591,6 @@ class p2pCompany {
          */
         //  barzana@gmail.com 	939233Maco048 
         $url = array_shift($this->urlSequence);
-        echo $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -688,7 +685,6 @@ class p2pCompany {
 
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
-            echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
                     //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
