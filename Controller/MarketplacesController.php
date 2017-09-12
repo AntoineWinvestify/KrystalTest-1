@@ -643,7 +643,7 @@ class MarketPlacesController extends AppController {
             $result[$i] = $this->Company->getCompanyDataList($companyConditions);
             $this->newComp[$i] = $this->companyClass($result[$i][$this->companyId[$i]]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
             $this->newComp[$i]->defineConfigParms($result[$i][$this->companyId[$i]]);  // Is this really needed??
-            $this->newComp[$i]->setMarketPlaces($this);
+            $this->newComp[$i]->setClassForQueue($this);
             $this->newComp[$i]->setQueueId($resultQueue['Queue']['id']);
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], MY_INVESTMENTS_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
@@ -674,17 +674,17 @@ class MarketPlacesController extends AppController {
          */
         $this->queueCurls->addListener('complete', function (\cURL\Event $event) {
             echo "<br>";
-            // The ids[0] is the company id
-            // The ids[1] is the switch id
-            // The ids[2] is the type of request (WEBPAGE, LOGIN, LOGOUT)
-            $ids = explode(";", $event->request->_page);
+            // $info["companyIdForQueue"] is the company id
+           // $info["idForSwitch"] is the switch id
+           // $info["typeOfRequest"]  is the type of request (WEBPAGE, LOGIN, LOGOUT)
+            $info = json_decode($event->request->_page);
             //We get the response of the request
             $response = $event->response;
             //We get the web page string
             $str = $response->getContent();
             $error = "";
             //if (!empty($this->testConfig['active']) == true) {
-            echo 'CompanyId:' . $this->companyId[$ids[0]] .
+            echo 'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] .
             '   HTTPCODE:' . $response->getInfo(CURLINFO_HTTP_CODE)
             . '<br>';
 
@@ -697,30 +697,30 @@ class MarketPlacesController extends AppController {
                 //if ($this->config['tracingActive'] == true) {
                 // $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
                 //}
-                if ($ids[2] != "LOGOUT") {
-                    $this->newComp[$ids[0]]->setIdForSwitch($ids[1]);
-                    $this->tempArray[$ids[0]] = $this->newComp[$ids[0]]->collectUserInvestmentDataParallel($str);
+                if ($info["typeOfRequest"] != "LOGOUT") {
+                    $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
+                    $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel($str);
                 }
             }
 
-            if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$ids[0]]->getTries() == 0) {
+            if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
                 $this->logoutOnCompany($ids, $str);
-                $this->newComp[$ids[0]]->setIdForSwitch(0); //Set the id for the switch of the function company
-                $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
-                $this->newComp[$ids[0]]->setTries(1);
-                $this->newComp[$ids[0]]->deleteCookiesFile();
-                //$this->newComp[$ids[0]]->generateCookiesFile();
-                $this->newComp[$ids[0]]->collectUserInvestmentDataParallel();
-            } else if ($ids[2] == "LOGOUT") {
+                $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
+                $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
+                $this->newComp[$info["companyIdForQueue"]]->setTries(1);
+                $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+                //$this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
+                $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
+            } else if ($info["typeOfRequest"] == "LOGOUT") {
                 echo "LOGOUT FINISHED <br>";
-                //$this->newComp[$ids[0]]->deleteCookiesFile();
-            } else if ((!empty($this->tempArray[$ids[0]]) || ($response->hasError()) && $ids[2] != "LOGOUT")) {
+                //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+            } else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || ($response->hasError()) && $info["typeOfRequest"] != "LOGOUT")) {
                 if ($response->hasError()) {
-                    //$this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
-                    $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2], $error);
+                    //$this->tempArray[$info["companyIdForQueue"]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
+                    $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
                 }
                 $this->logoutOnCompany($ids, $str);
-                if ($ids[2] == "LOGOUT") {
+                if ($info["typeOfRequest"] == "LOGOUT") {
                     unset($this->tempArray['global']['error']);
                 }
             }
@@ -993,10 +993,10 @@ class MarketPlacesController extends AppController {
      * @param string $str It is the webpage on string format
      */
     function logoutOnCompany($ids, $str) {
-        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$ids[0]], LOGOUT_SEQUENCE);
-        //echo "Company = $this->companyId[$ids[0]]";
-        $this->newComp[$ids[0]]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $this->newComp[$ids[0]]->companyUserLogoutMultiCurl($str);
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$info["companyIdForQueue"]], LOGOUT_SEQUENCE);
+        //echo "Company = $this->companyId[$info["companyIdForQueue"]]";
+        $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+        $this->newComp[$info["companyIdForQueue"]]->companyUserLogoutMultiCurl($str);
     }
 
     /**
@@ -1009,15 +1009,15 @@ class MarketPlacesController extends AppController {
         echo
         'Error code: ' . $error->getCode() . "<br>" .
         'Message: "' . $error->getMessage() . '" <br>';
-        echo 'CompanyId:' . $this->companyId[$ids[0]] . '<br>';
-        $testConfig = $this->newComp[$ids[0]]->getTestConfig();
+        echo 'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '<br>';
+        $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
         if (!empty($testConfig['active']) == true) {
             print_r($response->getInfo());
             echo "<br>";
         }
-        $config = $this->newComp[$ids[0]]->getConfig();
+        $config = $this->newComp[$info["companyIdForQueue"]]->getConfig();
         if ($config['tracingActive'] == true) {
-            $this->newComp[$ids[0]]->doTracing($config['traceID'], $ids[2], $str);
+            $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
         }
     }
 
