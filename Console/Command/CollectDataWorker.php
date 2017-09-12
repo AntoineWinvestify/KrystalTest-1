@@ -92,22 +92,22 @@ class CollectDataWorkerShell extends AppShell {
             */
             $this->queueCurls->addListener('complete', function (\cURL\Event $event) {
                echo "<br>";
-               // The ids[0] is the company id
+               // The $info["companyIdForQueue"] is the company id
                // The ids[1] is the switch id
                // The ids[2] is the type of request (WEBPAGE, LOGIN, LOGOUT)
-               $ids = explode(";", $event->request->_page);
+               $info = json_decode($event->request->_page);
                //We get the response of the request
                $response = $event->response;
                //We get the web page string
                $str = $response->getContent();
                $error = "";
                //if (!empty($this->testConfig['active']) == true) {
-               echo 'CompanyId:' . $this->companyId[$ids[0]] .
+               echo 'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] .
                '   HTTPCODE:' . $response->getInfo(CURLINFO_HTTP_CODE)
                . '<br>';
 
                if ($response->hasError()) {
-                   $this->errorCurl($response->getError(), $ids, $response);
+                   $this->errorCurl($response->getError(), $info, $response);
                    $error = $response->getError();
                } else {
                    echo "<br>";
@@ -115,30 +115,30 @@ class CollectDataWorkerShell extends AppShell {
                    //if ($this->config['tracingActive'] == true) {
                    // $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
                    //}
-                   if ($ids[2] != "LOGOUT") {
-                       $this->newComp[$ids[0]]->setIdForSwitch($ids[1]);
-                       $this->tempArray[$ids[0]] = $this->newComp[$ids[0]]->collectUserInvestmentDataParallel($str);
+                   if ($info["typeOfRequest"] != "LOGOUT") {
+                       $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
+                       $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel($str);
                    }
                }
 
-               if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$ids[0]]->getTries() == 0) {
-                   $this->logoutOnCompany($ids, $str);
-                   $this->newComp[$ids[0]]->setIdForSwitch(0); //Set the id for the switch of the function company
-                   $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
-                   $this->newComp[$ids[0]]->setTries(1);
-                   $this->newComp[$ids[0]]->deleteCookiesFile();
-                   //$this->newComp[$ids[0]]->generateCookiesFile();
-                   $this->newComp[$ids[0]]->collectUserInvestmentDataParallel();
-               } else if ($ids[2] == "LOGOUT") {
+               if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
+                   $this->logoutOnCompany($info, $str);
+                   $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
+                   $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info]->getUrlSequenceBackup());  // provide all URLs for this sequence
+                   $this->newComp[$info["companyIdForQueue"]]->setTries(1);
+                   $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+                   //$this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
+                   $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
+               } else if ($info["typeOfRequest"] == "LOGOUT") {
                    echo "LOGOUT FINISHED <br>";
-                   //$this->newComp[$ids[0]]->deleteCookiesFile();
-               } else if ((!empty($this->tempArray[$ids[0]]) || ($response->hasError()) && $ids[2] != "LOGOUT")) {
+                   //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+               } else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || ($response->hasError()) && $info["typeOfRequest"] != "LOGOUT")) {
                    if ($response->hasError()) {
-                       //$this->tempArray[$ids[0]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
-                       $this->newComp[$ids[0]]->getError(__LINE__, __FILE__, $ids[2], $error);
+                       //$this->tempArray[$info["companyIdForQueue"]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
+                       $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
                    }
-                   $this->logoutOnCompany($ids, $str);
-                   if ($ids[2] == "LOGOUT") {
+                   $this->logoutOnCompany($info, $str);
+                   if ($info["typeOfRequest"] == "LOGOUT") {
                        unset($this->tempArray['global']['error']);
                    }
                }
