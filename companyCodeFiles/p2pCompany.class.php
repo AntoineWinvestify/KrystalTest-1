@@ -101,7 +101,7 @@ class p2pCompany {
     //Variable to use in this method
     // MarketplacesController
 
-    protected $marketplaces;
+    protected $classContainer;
     //Data for the queue
     protected $queueId;
     protected $idForQueue;
@@ -673,7 +673,7 @@ class p2pCompany {
 
         $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
         // Add the url to the queue
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->classContainer->addRequetsToQueueCurls($request);
     }
 
     /**
@@ -745,7 +745,7 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
 
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->classContainer->addRequetsToQueueCurls($request);
     }
 
     /**
@@ -819,8 +819,8 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-        //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        //Add the request to the queue in the classContainer controller
+        $this->classContainer->addRequetsToQueueCurls($request);
 
         if ($this->config['appDebug'] == true) {
             echo "VISITED COMPANY URL = $url <br>";
@@ -1226,12 +1226,12 @@ class p2pCompany {
     }
 
     /**
-     * Sets the controller that uses the queue
+     * Sets the class that uses multicurl queue
      * 
-     * @param object $marketPlacesController It is the controller to be used
+     * @param object $classContainer It is the class that uses multicurl queue
      */
-    public function setMarketPlaces($marketPlacesController) {
-        $this->marketplaces = $marketPlacesController;
+    public function setClassForQueue($classContainer) {
+        $this->classContainer = $classContainer;
     }
 
     /**
@@ -1822,8 +1822,8 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-        //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        //Add the request to the queue in the classContainer controller
+        $this->classContainer->addRequetsToQueueCurls($request);
         
         
         /*
