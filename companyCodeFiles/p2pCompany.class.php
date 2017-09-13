@@ -1343,7 +1343,7 @@ class p2pCompany {
         if (empty($originPath)) {
             $originPath = dirname(__FILE__);
         }
-        $dir = $originPath . $name;
+        $dir = $originPath . DS . $name;
         $folderCreated = false;
         if (!file_exists($dir)) {
             $folderCreated = mkdir($dir, 0770);
