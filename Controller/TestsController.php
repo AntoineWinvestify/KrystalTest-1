@@ -274,9 +274,17 @@ for ($row = 1; $row <= $highestRow; $row++){
                  [
                     "type" => "date",                           // Complex format, calling external method
                     "inputData" => [
-                                "input2" => "#previous.date"    // The calculated field "date" from the previous excel row (i.e. previous aray index) is loaded
-                            ],                                  // Note that "date" must be a field defined in this config file
-                    "functionName" => "getPreviousRowData",  
+                                "input2" => "#previous.date",   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                                                                // Note that "date" must be a field defined in this config file
+                                                                // keywords are "#previous", "#current" and "#next".
+                                                                // Be aware that #previous does NOT contain any data in case of parsing the
+                                                                // first line of the file.
+                                                                // #next does not have a value while we are parsing the last line of the file
+                                "input3" => false               // This parameter indicates if the defined field will be overwritten 
+                                                                // if it already contains a value.
+                                                                // 
+                                ],
+                    "functionName" => "getRowData",  
                 ],               
 // END TEST                                              
                 
@@ -507,7 +515,22 @@ for ($row = 1; $row <= $highestRow; $row++){
                                                                 // is ALWAYS the contents of the cell
                                 ],
                     "functionName" => "normalizeDate",         
-                ]
+                ],
+                [
+                    "type" => "date",                           // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "#previous.date",   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                                                                // Note that "date" must be a field defined in this config file
+                                                                // keywords are "#previous", "#current" and "#next".
+                                                                // Be aware that #previous does NOT contain any data in case of parsing the
+                                                                // first line of the file.
+                                                                // #next does not have a value while we are parsing the last line of the file
+                                "input3" => false               // This parameter indicates if the defined field will be overwritten 
+                                                                // if it already contains a value.
+                                                                // 
+                                ],
+                    "functionName" => "getRowData",  
+                ],              
             ],
 
             "B" => [
@@ -524,7 +547,8 @@ for ($row = 1; $row <= $highestRow; $row++){
                     "functionName" => "getHash",         
                 ]
             ],          
-           
+
+ 
             "C" => [
                     "name" => "payment",
                 ],
@@ -988,35 +1012,23 @@ for ($row = 1; $row <= $highestRow; $row++){
         }         
     }  
 
-  
-    
-    
-    
-
     /**
      * 
-     * Reads a field from the previous row. Note that the field must be
+     * Reads a field from a row. Note that the field must be
      * a "calculated" field, i.e it must be defined in the config file 
      * 
-     * @param string   $input   inp
-     * @return array   $parameter2  List of all concepts of the platform
+     * @param string    $input   cell data
+     * @param array     $field   field to read
+     * @param boolean   overwrite     overwrite current value of the $input
      *       
      */
-    function getPreviousRowData($input, $config) {  
-        $details = new Parser();
-        $transactionDetails = $details->getTransactionDetails();
-        unset($details);
+    function getRowData($input, $field, $overwrite) {  
+echo "inputs are: input = $input, field = $field and condition = $overwrite <br>";      
+
         
-        foreach ($config as $key => $configItem) {
-            $position = stripos($input, $configItem[0]);
-            if ($position !== false) {  // value is in $configItem[1];
-                foreach ($transactionDetails as $key => $detail) {
-                    if ($detail['detail'] == $configItem[1]) {
-                        return $detail['transactionType'];
-                    }
-                }
-            }
-        }         
+        
+        
+echo "______________ <br><br>";        
     }    
     
     
