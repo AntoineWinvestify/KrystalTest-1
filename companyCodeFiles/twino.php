@@ -85,8 +85,8 @@ class twino extends p2pCompany {
         switch ($this->idForSwitch) {
             /////////////LOGIN
             case 0:
-                $credentials['name'] = $user;
-                $credentials['password'] = $password;
+                $credentials['name'] = $this->user;
+                $credentials['password'] = $this->password;
                 $credentials['googleAnalyticClientId'] = '1778227581.1503479723';
                 $payload = json_encode($credentials);
                 $this->idForSwitch++;
@@ -101,7 +101,8 @@ class twino extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             case 3:
-                if ($str == true) {
+                echo $str;
+                /*if ($str == true) {
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Twino login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -110,7 +111,7 @@ class twino extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     exit;
-                }
+                }*/
                 echo 'twino login ok';
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();

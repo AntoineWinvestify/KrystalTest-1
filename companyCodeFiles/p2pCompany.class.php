@@ -621,7 +621,7 @@ class p2pCompany {
      * 	@return	string		$str	html string
      *
      */
-    function doCompanyLoginMultiCurl(array $loginCredentials) {
+    function doCompanyLoginMultiCurl(array $loginCredentials, $payload = null) {
         $url = array_shift($this->urlSequence);
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -638,23 +638,30 @@ class p2pCompany {
             }
         }
 
-        //traverse array and prepare data for posting (key1=value1)
-        foreach ($loginCredentials as $key => $value) {
-            $postItems[] = $key . '=' . $value;
-        }
-
-        //create the final string to be posted using implode()
-        $postString = implode('&', $postItems);
-        echo 'post-String: ' . $postString;
+        if(!empty($payload)){ //For pfp that use payloads instead forms(like twino)
+            $postString = $payload;
+            echo $postString;
+        }else{
+            //traverse array and prepare data for posting (key1=value1)
+            foreach ($loginCredentials as $key => $value) {
+                $postItems[] = $key . '=' . $value;
+            }
+            //create the final string to be posted using implode()
+            $postString = implode('&', $postItems);
+            echo 'post-String: ' . $postString;
+        }  
+        
         $request = new \cURL\Request();
-
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
             $request->getOptions()
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
         }
-
+        if(!empty($payload)){//We need this header in request payload
+            $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        }
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
                 ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
