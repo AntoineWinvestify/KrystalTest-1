@@ -133,6 +133,7 @@ class zank extends p2pCompany {
             exit;
         }
 
+        
         $form = [
             "length" => 20,
             "start" => $this->start
@@ -141,6 +142,7 @@ class zank extends p2pCompany {
         $url = array_shift($this->urlSequence);
         $this->url = $url;
         $totalArray = array();
+        $readControl = 0; //Read control, stop the loop if it find existing and completed inversions
         while ($reading) {
             $reading = false;
             //echo __FUNCTION__ . __LINE__ . "start with first read<br>";
@@ -160,13 +162,12 @@ class zank extends p2pCompany {
             $numberOfInversions = count($jsonResults);
             //echo 'el numero es ' . $numberOfInversions;
 
-
             if ($numberOfInversions == $form['length']) {
                 $reading = true;
                 $form['start'] = $form['start'] + $form['length'];
             }
             //echo 'aqui es' . $form['start'];
-            $readControl = 0; //Read control, stop the loop if it find existing and completed inversions
+          
             foreach ($jsonResults as $key => $jsonEntry) {
 
                 if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
@@ -306,12 +307,14 @@ class zank extends p2pCompany {
                 }
 
 
+                
 
                 if ($inversionReadController == 1) {
                     //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $readControl++;
-                    echo 'Advance';
-                } else if ($readControl > 2) {
+                    echo 'Advance:' . $readControl . HTML_ENDOFLINE;
+                } 
+                if ($readControl > 20) {
                     echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
                     $reading = false;
                     echo 'Break';
@@ -1188,7 +1191,14 @@ class zank extends p2pCompany {
         }
         $postString = implode('&', $postItems);
 
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "JSON_ZANK"
+        ];
+        
+        $request->_page = json_encode($info);
         $request->getOptions()
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
@@ -1213,7 +1223,7 @@ class zank extends p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
         //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->classContainer->addRequestToQueueCurls($request);
 
         if ($this->config['appDebug'] == true) {
             echo "VISITED COMPANY URL = $url <br>";

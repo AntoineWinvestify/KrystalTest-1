@@ -62,7 +62,7 @@ class CollectDataWorkerShell extends AppShell {
             $result[$i] = $this->Company->getCompanyDataList($companyConditions);
             $this->newComp[$i] = $this->companyClass($result[$i][$this->companyId[$i]]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
             $this->newComp[$i]->defineConfigParms($result[$i][$this->companyId[$i]]);  // Is this really needed??
-            $this->newComp[$i]->setMarketPlaces($this);
+            $this->newComp[$i]->setClassForQueue($this);
             $this->newComp[$i]->setQueueId($data["queue_id"]);
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], MY_INVESTMENTS_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
@@ -92,9 +92,9 @@ class CollectDataWorkerShell extends AppShell {
             */
             $this->queueCurls->addListener('complete', function (\cURL\Event $event) {
                echo "<br>";
-               // The $info["companyIdForQueue"] is the company id
-               // The ids[1] is the switch id
-               // The ids[2] is the type of request (WEBPAGE, LOGIN, LOGOUT)
+               // $info["companyIdForQueue"] is the company id
+               // $info["idForSwitch"] is the switch id
+               // $info["typeOfRequest"]  is the type of request (WEBPAGE, LOGIN, LOGOUT)
                $info = json_decode($event->request->_page);
                //We get the response of the request
                $response = $event->response;
@@ -102,9 +102,9 @@ class CollectDataWorkerShell extends AppShell {
                $str = $response->getContent();
                $error = "";
                //if (!empty($this->testConfig['active']) == true) {
-               echo 'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] .
+               /*echo 'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] .
                '   HTTPCODE:' . $response->getInfo(CURLINFO_HTTP_CODE)
-               . '<br>';
+               . '<br>';*/
 
                if ($response->hasError()) {
                    $this->errorCurl($response->getError(), $info, $response);
