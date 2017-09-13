@@ -284,6 +284,9 @@ class comunitae extends p2pCompany {
                         $url = $urlNextPage . $pageNumber;
                         $i--;
                     } else if ($subscriptionComplete) {
+                        if ($pageNumber == 1 && $i == 0) {
+                            array_shift($this->urlSequence);
+                        }
                         $subscriptionComplete = false;
                         $url = null;
                         $urlNextPage = null;
