@@ -1,68 +1,74 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+/**
+ * +-----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +-----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | GNU General Public License for more details.        			|
+ * +-----------------------------------------------------------------------------+
  *
  *
- * Contains all the code required for accessing the website of "Zank"
- *
- * 
- * @author Antoine de Poorter
- * @version 0.1
- * @date 2016-08-04
+ * @author 
+ * @version 0.3
+ * @date 2017-01-28
  * @package
-
-
-  function calculateLoanCost()										[OK, tested]
-  function collectCompanyMarketplaceData()								[OK, tested]
-  function companyUserLogin()										[OK, tested]
-  function companyUserLogout										[OK, tested]
-  function collectUserInvestmentData()									[OK, tested]
-  parallelization on collectUserInvestmentData                                                            [OK, tested]
-
-  2016-08-04	  version 2016_0.1
-  Basic version
-
-  2016-11-30	  version 2016_0.2
+ *
+ *
+ *
+ *
+ * function calculateLoanCost()										[OK, tested]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function companyUserLogout										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * parallelization on collectUserInvestmentData                                                            [OK, tested]
+ *
+ * 2016-08-04	  version 2016_0.1
+ * Basic version
+ *
+ * 2016-11-30	  version 2016_0.2
  * Zank introduced csrf code for improved security
-
-
-  2017-04-25
-  Estado amortizado
-
-  2017-04-26
-  Total invertido correcto, fecha
-
-  2017-05-16      version 2017_0.3
-
+ *
+ *
+ * 2017-04-25
+ * Estado amortizado
+ *
+ * 2017-04-26
+ * Total invertido correcto, fecha
+ *
+ * 2017-05-16      version 2017_0.3
+ *
  * Added parallelization to collectUserInvestmentData
  * Added dom verification to collectUserInvestmentData
-
-  2017/06/01
+ *
+ * 2017/06/01
  * Added loop when we take json investments                                     [OK, STILL TO CHECK]
-
-  2017/06/22
+ *
+ * 2017/06/22
  * Added mechanism to take more than 100 investments by Json
-
-  Pending:
-  Fecha en duda
-
-
+ *
+ * 2017/08/02
+ * zank code adaptation for 100%
+ * 
+ * 2017-08-14
+ * Structure Revision added
+ * Status definition added
+ * 
+ * 2017-08-29
+ * json revision
+ * 
+ * Pending:
+ * Fecha en duda
+ *
+ *
  */
-
 class zank extends p2pCompany {
 
     private $credentials = array();
@@ -102,57 +108,394 @@ class zank extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the marketplace data.
-     * 	ZANK is special as one has to logon in order to see all the details of the offers in their marketplace
-     * 	@return array	Each investment option as an element of an array
-     *
+     * Collects the marketplace data.
+     * 	ZANK is special as one has to login in order to see all the details of the offers in their marketplace
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return array
      */
-    function collectCompanyMarketplaceData() {
-        echo __FUNCTION__ . __LINE__ . "<br>";
-
+    function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
+        $reading = true; //Loop controller
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
-        echo __FUNCTION__ . __LINE__ . "<br>";
+        // echo __FUNCTION__ . __LINE__ . "<br>";
 //set_time_limit(25);		// Zank is very very slow
-        //echo $result;
-
+        //echo $result; 
+        $this->investmentDeletedList = $loanIdList;
         if (!$result) {   // Error while logging in
-            echo __FUNCTION__ . __LINE__ . "<br>";
-            $tracings = "Tracing:\n";
-            $tracings .= __FILE__ . " " . __LINE__ . " \n";
-            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
-            $tracings .= " \n";
-            $msg = "Error while entering user's portal. Wrong userid/password \n";
-            $msg = $msg . $tracings . " \n";
+            echo __FUNCTION__ . __LINE__ . "login fail" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings = "Tracing: " . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= __FILE__ . " " . __LINE__ . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $msg = "Error while entering user's portal. Wrong userid/password" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $msg = $msg . $tracings . HTML_ENDOFLINE . SHELL_ENDOFLINE;
             $this->logToFile("Warning", $msg);
             exit;
         }
 
+        
         $form = [
-            "length" => 100,
-            "start" => $this->start];
-        echo __FUNCTION__ . __LINE__ . "start with first read<br>";
-        $str = $this->getCompanyWebpageJson(null , $form);
+            "length" => 20,
+            "start" => $this->start
+        ];
+        //echo 'aqui es ' . $form['start'];
+        $url = array_shift($this->urlSequence);
+        $this->url = $url;
+        $totalArray = array();
+        $readControl = 0; //Read control, stop the loop if it find existing and completed inversions
+        while ($reading) {
+            $reading = false;
+            //echo __FUNCTION__ . __LINE__ . "start with first read<br>";
+            $str = $this->getCompanyWebpageJson($url, $form);
+
+
 //print_r($str);
-        echo __FUNCTION__ . __LINE__ . "start with second read<br>";
-//	$str = $this->getCompanyWebpage('https://www.zank.com.es/inversor/listaPrestamosAjax');		
-        $str = $this->getCompanyWebpageJson(null , $form);
-//print_r($str);
-        echo __FUNCTION__ . __LINE__ . "<br>";
+            //echo __FUNCTION__ . __LINE__ . "<br>";
+
+            $pos1 = stripos($str, '[');
+            $pos2 = stripos($str, ']');
+            $resultPreJSON = substr($str, $pos1, ($pos2 - $pos1 + 1));
+
+            $jsonResults = json_decode($resultPreJSON, true);
+
+            //If we have the page completed, load other page
+            $numberOfInversions = count($jsonResults);
+            //echo 'el numero es ' . $numberOfInversions;
+
+            if ($numberOfInversions == $form['length']) {
+                $reading = true;
+                $form['start'] = $form['start'] + $form['length'];
+            }
+            //echo 'aqui es' . $form['start'];
+          
+            foreach ($jsonResults as $key => $jsonEntry) {
+
+                if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
+                    $structureRevision = $this->jsonRevision($structure, $jsonEntry);
+                    if ($structureRevision[1]) { //Structural error
+                        $totalArray = false; //Stop reading in error
+                        $reading = false;
+                        break;
+                    }
+                }
+
+                $inversionReadController = 0; //Varible, unset a already existing and completed inversion in the backup
+
+                $tempArray = array();
+                $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
+                $tempArray['marketplace_loanReference'] = strip_tags($jsonEntry['Prestamo']);
+                $tempArray['marketplace_category'] = strtoupper(strip_tags($jsonEntry['Categoria']));
+                $tempArray['marketplace_rating'] = strtoupper(strip_tags($jsonEntry['Categoria']));
+                $tempArray['marketplace_interestRate'] = $this->getPercentage(strip_tags($jsonEntry['Rentabilidad']));
+
+                if (strtoupper(strip_tags($jsonEntry['Tipo'])) == 'F') {
+                    $tempArray['marketplace_productType'] = 3;
+                } else if (strtoupper(strip_tags($jsonEntry['Tipo'])) == 'P') {
+                    $tempArray['marketplace_productType'] = 2;
+                }
+                $tempInformation = explode("€", strip_tags($jsonEntry['Informacion']));
+                $tempArray['marketplace_amount'] = $this->getMonetaryValue($tempInformation[0]);
+
+                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($tempInformation[1]);
+
+                $dom = new DOMDocument;
+                $dom->loadHTML($jsonEntry['Completado']);
+                $dom->preserveWhiteSpace = false;
+                $divs = $dom->getElementsByTagName('div');
+
+
+                /* 	
+                  <div class="tabla-faltan info-tooltip clompletado">
+                  <a href="#" data-toggle="tooltip" data-original-title="Inversores que han invertido.">
+                  23
+                  <i class="fa fa-user">
+                  </i>
+                  </a>
+                  </div>
+
+                  <div class="progress">
+                  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width:24.66%">24,66 %
+                  </div>
+                  </div>
+
+                  <div class="tabla-faltan text-warning">Quedan 30 días
+                  </div>
+
+                  -------------------
+
+                  <div class="tabla-faltan info-tooltip clompletado">
+                  <a href="#" data-toggle="tooltip" data-original-title="Inversores que han invertido.">
+                  16
+                  <i class="fa fa-user">
+                  </i><
+                  /a>
+                  </div>
+
+                  <div class="progress">
+                  <div class="progress-bar progress-bar-success" role="progressbar" style="width:100%">Completado
+                  </div>
+                  </div>
+
+                 */
+
+
+
+                $index = 0;
+                foreach ($divs as $div) {
+                    switch ($index) {
+                        case 0:
+                            $tempArray['marketplace_numberOfInvestors'] = strtoupper($div->nodeValue);
+                            break;
+                        case 1:
+                            if (stristr(trim($div->nodeValue), "%") == true) {
+                                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($div->nodeValue);
+                                $tempArray['marketplace_statusLiteral'] = 'En Proceso';
+                            } else if ($div->nodeValue == 'Completado') {
+                                $tempArray['marketplace_subscriptionProgress'] = 10000;
+                                $tempArray['marketplace_statusLiteral'] = 'Completado';
+                                $tempArray['marketplace_status'] = PERCENT;
+                                //Read inversions limiter controller
+                                foreach ($companyBackup as $inversionBackup) {
+                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == 'Completado') {
+                                        $inversionReadController = 1;
+                                    }
+                                }
+                            } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
+
+                                $tempArray['marketplace_subscriptionProgress'] = 10000;
+                                $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
+
+                                if (strpos($div->nodeValue, 'mortiza') != false) {
+                                    $tempArray['marketplace_status'] = CONFIRMED;
+                                } else if ($div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
+                                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                                }
+
+                                //Read inversions limiter controller
+                                foreach ($companyBackup as $inversionBackup) {
+                                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && ($inversionBackup['Marketplacebackup']['marketplace_statusLiteral'] == $tempArray['marketplace_statusLiteral'])) {
+                                        $inversionReadController = 1;
+                                    }
+                                }
+                            } else if (!$div->nodeValue) {
+                                $tempArray['marketplace_subscriptionProgress'] = 0;
+                                $tempArray['marketplace_statusLiteral'] = 'Cancelado';
+                                $tempArray['marketplace_status'] = REJECTED;
+                            }
+                            break;
+                        case 2:
+                            // Error in HTML of ZANK website source. It generates and extra "/div" tag. Do not do anything
+                            break;
+                        case 4:  //
+                            list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit']) = $this->getDurationValue($div->nodeValue);
+                            break;
+                        case 3:  //
+                            list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit']) = $this->getDurationValue($div->nodeValue);
+                            break;
+                        default:
+                    }
+                    $index++;
+                }
+
+                $dom = new DOMDocument;
+                $dom->loadHTML($jsonEntry['Finalidad']);
+                $dom->preserveWhiteSpace = false;
+
+                $as = $dom->getElementsByTagName('a');
+                foreach ($as as $a) {
+                    $tempArray['marketplace_purpose'] = $a->getAttribute('data-original-title');
+                }
+
+
+                
+
+                if ($inversionReadController == 1) {
+                    //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                    $readControl++;
+                    echo 'Advance:' . $readControl . HTML_ENDOFLINE;
+                } 
+                if ($readControl > 20) {
+                    echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
+                    $reading = false;
+                    echo 'Break';
+                    break;
+                } else {
+                    // echo 'Add:<br>';  
+                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);                       
+                    array_push($totalArray, $tempArray);
+                    unset($tempArray);
+                    /* echo 'Total<br>';
+                      $this->print_r2($totalArray);
+                      echo 'Added : <br>';
+                      $this->print_r2($tempArray); */
+                    //echo __FILE__ . " " . __LINE__ . "<br>";
+                }
+            }
+        }
+
+           
+        $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
+        echo 'Hidden: ' . HTML_ENDOFLINE;
+        print_r($hiddenInvestments);
+
+        $this->companyUserLogout();
+        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        $this->print_r2($totalArray);  
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
+    }
+    
+     /**Read hidden investment.
+     * 
+     * @param array $investmentDeletedList loan id list
+     * @return array investments info list
+     */
+    function readHiddenInvestment ($investmentDeletedList){
+        
+        $url = array_shift($this->urlSequence);
+        
+        $tempArray = array();
+        $newTotalArray = array();
+        //Read investment info
+        foreach($investmentDeletedList as $loanId) {
+            echo 'loan id: ' .  substr($loanId,3) . HTML_ENDOFLINE;
+            echo $url . substr($loanId,3);
+            $str = $this->getCompanyWebpage($url . substr($loanId,3));
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = false;
+            $dom->loadHTML($str);
+   
+            $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');                   
+            foreach($container as $div){               
+                $subdivs = $div->getElementsByTagName('div');
+               /*foreach($subdivs as $subkey => $subdiv){
+                    echo 'Div: ' . HTML_ENDOFLINE;
+                    echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
+                }*/             
+                    $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
+                    $tempArray['marketplace_loanReference'] = $loanId;
+                    //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
+                    $tempArray['marketplace_rating'] = $subdivs[31]->nodeValue;
+                    $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
+                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
+                    $tempArray['marketplace_statusLiteral'] = $subdivs[15]->nodeValue;
+                    $status = $tempArray['marketplace_statusLiteral'];
+                    if($status == 'Completado'){   
+                        $tempArray['marketplace_status'] = PERCENT;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;
+                    }else if($status == 'Amortizado' || $status == 'Retrasado' ){
+                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000; 
+                    } else if(strpos($status, 'mortiza') != false){
+                        $tempArray['marketplace_status'] = CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;       
+                    }else if($status == 'Publicado'){   
+                        $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;     
+                    }                
+                    
+                    $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
+                    $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
+                    
+                    $tds =  $subdivs[126]->getElementsByTagName('td');
+                    $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+            }
+            //echo 'Hidden investment: ' . HTML_ENDOFLINE;
+            //print_r($tempArray);
+            $newTotalArray[] = $tempArray;
+            unset($tempArray);
+        }
+        /*echo 'return new array: ' . HTML_ENDOFLINE;
+        print_r($newTotalArray);*/
+        return $newTotalArray;
+    }
+    
+    
+
+    /**
+     * collect all investment
+     * @param Array $structure
+     * @param Int $start
+     * @return Array
+     */
+    function collectHistorical($structure, $start) {
+
+        $totalArray = array();
+        $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
+
+        if (!$result) {   // Error while logging in
+            echo __FUNCTION__ . __LINE__ . "login fail" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings = "Tracing: " . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= __FILE__ . " " . __LINE__ . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $tracings .= HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $msg = "Error while entering user's portal. Wrong userid/password" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $msg = $msg . $tracings . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+        $url = array_shift($this->urlSequence);
+        echo 'url: ' . $url . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+        $str = $this->getCompanyWebpage($url);
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        // if ($totalArray !== false) {
+        /* Zank pagination must be done using curl, form are parameters sent in curl */
+
+        $form = [
+            "length" => 100, //Number of investment for page
+            "start" => $start, //First investment of the page
+        ];
+
+        $str = $this->getCompanyWebpageJson($url, $form); //Data reading
+
         $totalArray = array();
         $pos1 = stripos($str, '[');
         $pos2 = stripos($str, ']');
         $resultPreJSON = substr($str, $pos1, ($pos2 - $pos1 + 1));
 
         $jsonResults = json_decode($resultPreJSON, true);
-//print_r($jsonEntry);
+        $numberOfInversions = count($jsonResults);
+
+        if ($numberOfInversions == $form['length']) {
+            $reading = true;
+            $form['start'] = $form['start'] + $form['length'];
+        } else {
+            $form['start'] = false;
+        }
+
+
         foreach ($jsonResults as $jsonEntry) {
+
+
+            
+            if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
+                $structureRevision = $this->jsonRevision($structure, $jsonEntry);
+                if ($structureRevision[1]) { //Structural error
+                    $totalArray = false; //Stop reading in error
+                    $form['start'] = false;
+                    break;
+                }
+            }
+
+
+            $inversionReadController = 0; //Varible, unset a already existing and completed inversion in the backup
+
             $tempArray = array();
+            $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
             $tempArray['marketplace_loanReference'] = strip_tags($jsonEntry['Prestamo']);
             $tempArray['marketplace_category'] = strtoupper(strip_tags($jsonEntry['Categoria']));
             $tempArray['marketplace_rating'] = strtoupper(strip_tags($jsonEntry['Categoria']));
             $tempArray['marketplace_interestRate'] = $this->getPercentage(strip_tags($jsonEntry['Rentabilidad']));
-
+            if (strtoupper(strip_tags($jsonEntry['Tipo'])) == 'F') {
+                $tempArray['marketplace_productType'] = 3;
+            } else if (strtoupper(strip_tags($jsonEntry['Tipo'])) == 'P') {
+                $tempArray['marketplace_productType'] = 2;
+            }
             $tempInformation = explode("€", strip_tags($jsonEntry['Informacion']));
             $tempArray['marketplace_amount'] = $this->getMonetaryValue($tempInformation[0]);
 
@@ -164,42 +507,6 @@ class zank extends p2pCompany {
             $divs = $dom->getElementsByTagName('div');
 
 
-            /* 	
-              <div class="tabla-faltan info-tooltip clompletado">
-              <a href="#" data-toggle="tooltip" data-original-title="Inversores que han invertido.">
-              23
-              <i class="fa fa-user">
-              </i>
-              </a>
-              </div>
-
-              <div class="progress">
-              <div class="progress-bar progress-bar-striped active" role="progressbar" style="width:24.66%">24,66 %
-              </div>
-              </div>
-
-              <div class="tabla-faltan text-warning">Quedan 30 días
-              </div>
-
-              -------------------
-
-              <div class="tabla-faltan info-tooltip clompletado">
-              <a href="#" data-toggle="tooltip" data-original-title="Inversores que han invertido.">
-              16
-              <i class="fa fa-user">
-              </i><
-              /a>
-              </div>
-
-              <div class="progress">
-              <div class="progress-bar progress-bar-success" role="progressbar" style="width:100%">Completado
-              </div>
-              </div>
-
-             */
-
-
-
             $index = 0;
             foreach ($divs as $div) {
                 switch ($index) {
@@ -209,14 +516,32 @@ class zank extends p2pCompany {
                     case 1:
                         if (stristr(trim($div->nodeValue), "%") == true) {
                             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($div->nodeValue);
-                        } else {
-                            $tempArray['marketplace_subscriptionProgress'] = 10000;  // completed, retrasado orr amortización ..
+                            $tempArray['marketplace_statusLiteral'] = 'En Proceso';
+                        } else if ($div->nodeValue == 'Completado') {
+                            $tempArray['marketplace_subscriptionProgress'] = 10000;
+                            $tempArray['marketplace_statusLiteral'] = 'Completado';
+                            $tempArray['marketplace_status'] = PERCENT;
+                        } else if (strpos($div->nodeValue, 'mortiza') != false || $div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
+                            $tempArray['marketplace_subscriptionProgress'] = 10000;
+                            $tempArray['marketplace_statusLiteral'] = $div->nodeValue;
+                            if (strpos($div->nodeValue, 'mortiza') != false) {
+                                $tempArray['marketplace_status'] = CONFIRMED;
+                            } else if ($div->nodeValue == 'Amortizado' || $div->nodeValue == 'Retrasado') {
+                                $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                            }
+                        } else if (!$div->nodeValue) {
+                            $tempArray['marketplace_subscriptionProgress'] = 0;
+                            $tempArray['marketplace_statusLiteral'] = 'Cancelado';
+                            $tempArray['marketplace_status'] = REJECTED;
                         }
                         break;
                     case 2:
                         // Error in HTML of ZANK website source. It generates and extra "/div" tag. Do not do anything
                         break;
                     case 4:  //
+                        list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit']) = $this->getDurationValue($div->nodeValue);
+                        break;
+                    case 3:  //
                         list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit']) = $this->getDurationValue($div->nodeValue);
                         break;
                     default:
@@ -232,13 +557,19 @@ class zank extends p2pCompany {
             foreach ($as as $a) {
                 $tempArray['marketplace_purpose'] = $a->getAttribute('data-original-title');
             }
-            $totalArray[] = $tempArray;
-            echo __FILE__ . " " . __LINE__ . "<br>";
+
+            array_push($totalArray, $tempArray);
+            //echo __FILE__ . " " . __LINE__ . "<br>";
             $this->print_r2($tempArray);
             unset($tempArray);
         }
+        //}
+        //echo 'AQUI ES ' . $reading;
         $this->companyUserLogout();
-        return $totalArray;
+        return [$totalArray, $form['start'], null, $structureRevision[0],$structureRevision[2]]; //$form['start'] is the next page, return false if is the last page
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
 
     /**
@@ -959,11 +1290,44 @@ class zank extends p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
         //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->marketplaces->addRequestToQueueCurls($request);
 
         if ($this->config['appDebug'] == true) {
             echo "VISITED COMPANY URL = $url <br>";
         }
+    }
+
+    /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
+        $node1 = $this->clean_dom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'span'),
+                ), array('src', 'alt', 'href', 'style', 'id', 'title'));
+
+        $node1 = $this->clean_dom($node1, array(//We only want delete class of the td tag, not class of the other tags
+            array('typeSearch' => 'element', 'tag' => 'td'),
+                ), array('class'));
+
+        $node2 = $this->clean_dom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'span'),
+                ), array('src', 'alt', 'href', 'style', 'id', 'title'));
+
+        $node2 = $this->clean_dom($node2, array(//We only want delete class of the td tag, not class of the other tags
+            array('typeSearch' => 'element', 'tag' => 'td'),
+                ), array('class'));
+
+        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        return $structureRevision;
     }
 
 }
