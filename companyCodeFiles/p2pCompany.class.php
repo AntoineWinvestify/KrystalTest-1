@@ -429,7 +429,7 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
 //  barzana@gmail.com 	939233Maco048 
-        if ($url == null) {
+        if (empty($url)) {
             $url = array_shift($this->urlSequence);
         }
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -697,7 +697,7 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
         //  barzana@gmail.com 	939233Maco048 
-        if ($url) {
+        if (empty($url)) {
             $url = array_shift($this->urlSequence);
         }
         echo $url;
