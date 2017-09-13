@@ -660,12 +660,18 @@ class MarketPlacesController extends AppController {
                 $dashboardGlobals['amountInvested'] = $dashboardGlobals['amountInvested'] + $userInvestments['global']['totalInvestment'];
                 $dashboardGlobals['wallet'] = $dashboardGlobals['wallet'] + $userInvestments['global']['myWallet'];
                 $dashboardGlobals['totalEarnedInterest'] = $dashboardGlobals['totalEarnedInterest'] + $userInvestments['global']['totalEarnedInterest'];
-    
-// Note that we only take values of the platforms that have a yield <> 0. Yield = 0 means you have not (yet) invested in
-// any loan
+
+// Mantis error: 0000009  date: 2017-09-12              
+// Note that we only take values of the platforms that have a yield <> 0. 
+// In theory it is possible to have some investments with positive yield and some
+// with negative yield, making the total result = 0. In this case the ""Yield" = 0 MUST be taken into consideration when calculating the global yield
+// for the user.
+// Conclusion. We don't only look at yield = 0, but also if active investments exist.
                 $dashboardGlobals['profitibilityAccumulative'] = $dashboardGlobals['profitibilityAccumulative'] + $userInvestments['global']['profitibility'];
                 if ($userInvestments['global']['profitibility'] == 0) {
-                    $platformsZeroYield = $platformsZeroYield + 1;
+                    if (count($userInvestments['investments']) == 0) {      // Only discard yield if user has NO active investments in platform
+                        $platformsZeroYield = $platformsZeroYield + 1;
+                    }
                 }
 
     // Amount that was invested totally in all the currently active investments
