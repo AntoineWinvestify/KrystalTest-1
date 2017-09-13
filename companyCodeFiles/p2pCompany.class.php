@@ -671,7 +671,14 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
 
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "LOGIN"
+        ];
+        
+        $request->_page = json_encode($info);
         // Add the url to the queue
         $this->classContainer->addRequetsToQueueCurls($request);
     }
@@ -730,7 +737,14 @@ class p2pCompany {
                     ->set(CURLOPT_POSTFIELDS, $postString);
         }
 
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGOUT";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGOUT";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "LOGOUT"
+        ];
+        
+        $request->_page = json_encode($info);
 
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
@@ -796,7 +810,14 @@ class p2pCompany {
 
             unset($this->headers);   // reset fields
         }
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "WEBPAGE"
+        ];
+        
+        $request->_page = json_encode($info);
         $request->getOptions()
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
