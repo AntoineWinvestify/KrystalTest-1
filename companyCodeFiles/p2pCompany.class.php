@@ -1700,7 +1700,7 @@ class p2pCompany {
         $result = curl_exec($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        print_r($result); // prints the contents of the collected file before writing..
+        //print_r($result); // prints the contents of the collected file before writing..
         $fichero = fwrite($fp,$result);
         //echo "file writed: " . $fichero . HTML_ENDOFLINE;
         fclose($fp);

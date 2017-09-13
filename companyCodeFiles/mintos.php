@@ -217,8 +217,19 @@ class mintos extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
-            //////LOGOUT
             case 5:
+                $fileUrl = array_shift($this->urlSequence);
+                $credentialsFile = "account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
+                $fileName = 'CashFlow';
+                $fileType = 'xlsx';
+                $pfpBaseUrl = 'https://www.mintos.com';
+                $referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
+                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile,$referer);
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;           
+            //////LOGOUT
+            case 6:
                 echo $this->idForSwitch . HTML_ENDOFLINE;
                 //Get logout url
                 $dom = new DOMDocument;
