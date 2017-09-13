@@ -527,7 +527,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpage($url) {
+    function getCompanyWebpage($url = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -1742,7 +1742,7 @@ class p2pCompany {
      * @param type $credentials
      * @param type $referer
      */
-    public function downloadPfpFileMulticurl($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+    public function getPfpFileMulticurl($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
 
         if (empty($pfpBaseUrl)) {
             $pfpBaseUrl = array_shift($this->urlSequence);
@@ -1830,7 +1830,8 @@ class p2pCompany {
                 ->set(CURLOPT_REFERER, $referer)
                 //->set(CURLOPT_VERBOSE, 1)
                 // Return the actual result of the curl result instead of success code
-                ->set(CURLOPT_RETURNTRANSFER, true)
+                ->set(CURLOPT_RETURNTRANSFER, false)
+                ->set(CURLOPT_FILE, $fp)
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
