@@ -269,8 +269,6 @@ for ($row = 1; $row <= $highestRow; $row++){
                     "functionName" => "extractDataFromString",  
                 ],
                
-                
-// THIS IS A TEST                
                  [
                     "type" => "date",                           // Complex format, calling external method
                     "inputData" => [
@@ -286,9 +284,7 @@ for ($row = 1; $row <= $highestRow; $row++){
                                 ],
                     "functionName" => "getRowData",  
                 ],               
-// END TEST                                              
-                
-                
+     
             ],
             "B" => [                                            // Simply changing name of column to the Winvestify standardized name
                     "name" => "loanId",                      
@@ -521,17 +517,36 @@ for ($row = 1; $row <= $highestRow; $row++){
                     "inputData" => [
                                 "input2" => "#previous.date",   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
                                                                 // Note that "date" must be a field defined in this config file
-                                                                // keywords are "#previous", "#current" and "#next".
+                                                                // keywords are "#previous" and "#current.
                                                                 // Be aware that #previous does NOT contain any data in case of parsing the
                                                                 // first line of the file.
-                                                                // #next does not have a value while we are parsing the last line of the file
+                                                                // #current.indexName is ONLY defined if this field is defined BEFORE this field in the
+                                                                // configuration file
                                 "input3" => false               // This parameter indicates if the defined field will be overwritten 
-                                                                // if it already contains a value.
+                                                                // if it already contains a value.     
                                                                 // 
                                 ],
                     "functionName" => "getRowData",  
-                ],              
-            ],
+                ],   
+ 
+                [
+                    "type" => "date1",                           // Complex format, example of duplicating an existing value
+                    "inputData" => [
+                                "input2" => "#current.date",    // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                                                                // Note that "date" must be a field defined in this config file
+                                                                // keywords are "#previous" and "#current".
+                                                                // Be aware that #previous does NOT contain any data in case of parsing the
+                                                                // first line of the file.
+                                                                // #current.indexName is ONLY defined if this field is defined BEFORE this field in the
+                                                                // configuration file
+                                "input3" => true                // This parameter indicates if the defined field will be overwritten 
+                                                                // if it already contains a value.      
+                                                                // 
+                                ],
+                    "functionName" => "getRowData",  
+                ],               
+ 
+             ],
 
             "B" => [
                 [
@@ -544,11 +559,10 @@ for ($row = 1; $row <= $highestRow; $row++){
                 ],
                 [
                     "type" => "loanId",                         // Winvestify standardized name 
-                    "functionName" => "getHash",         
+                    "functionName" => "getHash",                // An internal loanId is generated based on md5 hash of project name
                 ]
             ],          
 
- 
             "C" => [
                     "name" => "payment",
                 ],
@@ -706,11 +720,13 @@ for ($row = 1; $row <= $highestRow; $row++){
         ];       
  
             
-        $offset = 171;
- //       $this->print_r2($sheetData);
+        $offset = 165;
+        echo "Printing Original Data <br>";       
+   //     $this->print_r2($sheetData);
    
         
         $datas = $this->saveExcelArrayToTemp($sheetData, $values_ecrowd, $offset);
+
         $this->print_r2($datas);
     }
     
@@ -761,42 +777,101 @@ for ($row = 1; $row <= $highestRow; $row++){
             if ($i == $offset) {
                 break;
             }
-           unset($rowDatas[$key]);  
+            unset($rowDatas[$key]);  
             $i++;
         }
 
         
         $i = 0;
+        $outOfRange = false;
+        $this->print_r2($rowDatas);
+        
         foreach ($rowDatas as $keyRow => $rowData) {
+            echo "Reading a NEW ROW<br>";
             foreach ($values as $key => $value) {
+                $previousKey = $i - 1;
+                $currentKey = $i;
+                
                 if (array_key_exists("name", $value)) {
                     $tempArray[$i][$value["name"]] = $rowData[$key];
                 }
                 else { 
                     foreach ($value as $userFunction ) {
+                        echo "---------------------------------------------------------------------<br>";
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
-                        }                  
+                        }
+                        else {  // input parameters are defined in config file
+                        // check if any of the input parameters require data from
+                        // another cell in current row, or from the previous row
+                            foreach ($userFunction["inputData"] as $keyInputData => $input) {
+                                echo "Line " . __LINE__ . ":  input = $input , keyInputData = $keyInputData and currentKey = $currentKey<br>";                             
+                                if (stripos ($input, "#previous.") !== false) {
+                                    if ($previousKey == -1) {
+                                        $outOfRange = true;
+                                        break;
+                                    }
+                                    $temp = explode(".", $input);
+                                    echo " and value = " . $tempArray[$previousKey][$temp[1]] . "<br>";
+                                    $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
+                                }
+                                if (stripos ($input, "#current.") !== false) {
+                                    echo "Current row result required";
+                                    $this->print_r2($tempArray);
+                                    $temp = explode(".", $input);
+                                    echo " and value = " . $tempArray[$currentKey][$temp[1]] . "<br>";
+                                    $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
+                                }                                         
+                            }  
+                        }
+                        
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
-                        $tempArray[$i][$userFunction["type"]] = call_user_func_array(array(__NAMESPACE__ .'\TestsController',  
+           /*             
+                        if (!array_key_exists ($userFunction["type"], $tempArray[$i])) {
+                            echo "The main loop is going to write the key " . $userFunction["type"] .  "<br>";
+                        }    
+            */
+                        if ($outOfRange == false) {
+  //                          echo "The MAIN LOOP is writing the key " . $userFunction["type"] .  "<br>";
+ //                           echo "Main Loop Writing <br>";
+                            $tempResult = call_user_func_array(array(__NAMESPACE__ .'\TestsController',  
                                 $userFunction['functionName']), $userFunction['inputData']);
+                            echo "tempResult = $tempResult <br>";
+ //                           echo "checking existing rows: <br>";
+          //                  if (array_key_exists($userFunction["type"] , $tempArray[$i])) {
+           //                     echo "the index " . $userFunction["type"] . " already exists <br>";
+           //                 }
+                            if (!empty($tempResult)) {
+                                 echo "KEY " . $userFunction["type"] . " does not exist<br>";
+ //                               echo "I = $i and index = " . $userFunction["type"] . " and VALUE = " . $tempArray[$i][$userFunction["type"]] . " --> OK <br>";
+                                $tempArray[$i][$userFunction["type"]] = $tempResult; 
+                            }
+                        }
+                        else {
+                            $outOfRange = false;        // reset
+                        }
                     }
                 }
             }
-/*
+//            echo __FUNCTION__ . " " . __LINE__ . " index = $i<br>";
+//            $this->print_r2($tempArray[$i]);
+//            echo __FUNCTION__ . " " . __LINE__ . " <br>";
+echo "SLEEP";
             if (array_key_exists("loanId", $tempArray[$i]) ){
-                echo "Adding entry for loanId " . $tempArray[$i]['loanId'] . ", TransactionId =  " . $tempArray[$i]['transaction_id'] . "<br>";
-                $tempArray[ $tempArray[$i]['loanId'] ][]  = $tempArray[$i];
+                 $tempArray[ $tempArray[$i]['loanId'] ][]  = $tempArray[$i];
             }
             else {      // move to the global index
                 $tempArray['global'][] = $tempArray[$i];
             }
+            
+            echo __FUNCTION__ . " " . __LINE__ . " index = $i<br>";
+            $this->print_r2($tempArray);
+            echo __FUNCTION__ . " " . __LINE__ . " <br>";           
             unset($tempArray[$i]);
- */           
-          $i++; 
-     //   continue;       // short cut
+              
+            $i++; 
+
         }
- //       $this->print_r2($tempArray);
         return $tempArray;
     }
     
@@ -846,6 +921,7 @@ for ($row = 1; $row <= $highestRow; $row++){
                 break;              
             }
         } 
+//        echo __FUNCTION__ .  " " . __LINE__ . "  Calculated Date = " . $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2] . "<br>";   
         return $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2];   
     }  
 
@@ -1023,12 +1099,20 @@ for ($row = 1; $row <= $highestRow; $row++){
      *       
      */
     function getRowData($input, $field, $overwrite) {  
-echo "inputs are: input = $input, field = $field and condition = $overwrite <br>";      
+//echo "Line " . __LINE__ . " inputs are: input = $input, field = $field and condition = $overwrite <br>";      
 
-        
-        
-        
-echo "______________ <br><br>";        
+    if (empty($input)) {
+ //       echo __FUNCTION__ . " " . __LINE__ . "returned field = $field <br>";
+        return $field;
+    }    
+    else {
+        if ($overwrite) {
+  //          echo __FUNCTION__ . " " . __LINE__ . "returned [overwritten] field = $field <br>";
+            return $field;
+        }
+    } 
+  //           echo __FUNCTION__ . " " . __LINE__ . "ERROR, NOTHING DEFINED<br>";      
+     return "";
     }    
     
     
