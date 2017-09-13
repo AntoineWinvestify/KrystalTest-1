@@ -471,8 +471,16 @@ FRAGMENT
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentData() {
-        
+    function collectUserInvestmentData($str = null) {
+        echo __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN<br>";
+        $tracings = "Tracing:\n";
+        $tracings .= __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN\n";
+        $tracings .= "Comunitae login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+        $tracings .= " \n";
+        $msg = "Error while logging in user's portal. Wrong userid/password \n";
+        $msg = $msg . $tracings . " \n";
+        $this->logToFile("Warning", $msg);
+        return $this->getError(__LINE__, __FILE__);
     }
 
     /**
