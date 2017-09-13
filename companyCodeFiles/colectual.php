@@ -160,7 +160,7 @@ FRAGMENT
 
             if ($key == 0) { //Compare structures, only compare the first element
                       
-                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-lg-4',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'class', 'attrValue' => 'row'));
+                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-lg-4',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'class', 'attrValue' => 'row'),3,1);
                     if($structureRevision[1]){
                         $totalArray = false; //Stop reading in error    
                         break;
