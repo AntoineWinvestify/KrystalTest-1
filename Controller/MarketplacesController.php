@@ -677,7 +677,7 @@ class MarketPlacesController extends AppController {
             // $info["companyIdForQueue"] is the company id
            // $info["idForSwitch"] is the switch id
            // $info["typeOfRequest"]  is the type of request (WEBPAGE, LOGIN, LOGOUT)
-            $info = json_decode($event->request->_page);
+            $info = json_decode($event->request->_page, true);
             //We get the response of the request
             $response = $event->response;
             //We get the web page string
@@ -689,7 +689,7 @@ class MarketPlacesController extends AppController {
             . '<br>';
 
             if ($response->hasError()) {
-                $this->errorCurl($response->getError(), $ids, $response);
+                $this->errorCurl($response->getError(), $info, $response);
                 $error = $response->getError();
             } else {
                 echo "<br>";
@@ -704,11 +704,11 @@ class MarketPlacesController extends AppController {
             }
 
             if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
-                $this->logoutOnCompany($ids, $str);
+                $this->logoutOnCompany($info, $str);
                 $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
-                $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
+                $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info["companyIdForQueue"]]->getUrlSequenceBackup());  // provide all URLs for this sequence
                 $this->newComp[$info["companyIdForQueue"]]->setTries(1);
-                $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+                //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
                 //$this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
                 $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
             } else if ($info["typeOfRequest"] == "LOGOUT") {
@@ -719,7 +719,7 @@ class MarketPlacesController extends AppController {
                     //$this->tempArray[$info["companyIdForQueue"]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
                     $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
                 }
-                $this->logoutOnCompany($ids, $str);
+                $this->logoutOnCompany($info, $str);
                 if ($info["typeOfRequest"] == "LOGOUT") {
                     unset($this->tempArray['global']['error']);
                 }
@@ -989,10 +989,10 @@ class MarketPlacesController extends AppController {
 
     /**
      * Function to do logout of company
-     * @param array $ids They are the ids of the company
+     * @param array $info They are the info of the company
      * @param string $str It is the webpage on string format
      */
-    function logoutOnCompany($ids, $str) {
+    function logoutOnCompany($info, $str) {
         $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$info["companyIdForQueue"]], LOGOUT_SEQUENCE);
         //echo "Company = $this->companyId[$info["companyIdForQueue"]]";
         $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
@@ -1002,10 +1002,10 @@ class MarketPlacesController extends AppController {
     /**
      * Function to process if there is an error with the request on parallel
      * @param object $error It is the curl error
-     * @param array $ids They are the ids of the company
+     * @param array $info They are the info of the company
      * @param object $response It is the curl response from the request on parallel
      */
-    function errorCurl($error, $ids, $response) {
+    function errorCurl($error, $info, $response) {
         echo
         'Error code: ' . $error->getCode() . "<br>" .
         'Message: "' . $error->getMessage() . '" <br>';
