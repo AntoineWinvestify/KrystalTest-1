@@ -114,13 +114,13 @@ class zank extends p2pCompany {
      * @param Array $structure
      * @return array
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) {
+    function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
         $reading = true; //Loop controller
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
         // echo __FUNCTION__ . __LINE__ . "<br>";
 //set_time_limit(25);		// Zank is very very slow
-        //echo $result;
-
+        //echo $result; 
+        $this->investmentDeletedList = $loanIdList;
         if (!$result) {   // Error while logging in
             echo __FUNCTION__ . __LINE__ . "login fail" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
             $tracings = "Tracing: " . HTML_ENDOFLINE . SHELL_ENDOFLINE;
@@ -320,8 +320,10 @@ class zank extends p2pCompany {
                     echo 'Break';
                     break;
                 } else {
-                    // echo 'Add:<br>';
+                    // echo 'Add:<br>';  
+                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);                       
                     array_push($totalArray, $tempArray);
+                    unset($tempArray);
                     /* echo 'Total<br>';
                       $this->print_r2($totalArray);
                       echo 'Added : <br>';
@@ -331,13 +333,85 @@ class zank extends p2pCompany {
             }
         }
 
-        $this->print_r2($totalArray);
+           
+        $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
+        echo 'Hidden: ' . HTML_ENDOFLINE;
+        print_r($hiddenInvestments);
+
         $this->companyUserLogout();
+        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        $this->print_r2($totalArray);  
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
+    
+     /**Read hidden investment.
+     * 
+     * @param array $investmentDeletedList loan id list
+     * @return array investments info list
+     */
+    function readHiddenInvestment ($investmentDeletedList){
+        
+        $url = array_shift($this->urlSequence);
+        
+        $tempArray = array();
+        $newTotalArray = array();
+        //Read investment info
+        foreach($investmentDeletedList as $loanId) {
+            echo 'loan id: ' .  substr($loanId,3) . HTML_ENDOFLINE;
+            echo $url . substr($loanId,3);
+            $str = $this->getCompanyWebpage($url . substr($loanId,3));
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = false;
+            $dom->loadHTML($str);
+   
+            $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');                   
+            foreach($container as $div){               
+                $subdivs = $div->getElementsByTagName('div');
+               /*foreach($subdivs as $subkey => $subdiv){
+                    echo 'Div: ' . HTML_ENDOFLINE;
+                    echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
+                }*/             
+                    $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
+                    $tempArray['marketplace_loanReference'] = $loanId;
+                    //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
+                    $tempArray['marketplace_rating'] = $subdivs[31]->nodeValue;
+                    $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
+                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
+                    $tempArray['marketplace_statusLiteral'] = $subdivs[15]->nodeValue;
+                    $status = $tempArray['marketplace_statusLiteral'];
+                    if($status == 'Completado'){   
+                        $tempArray['marketplace_status'] = PERCENT;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;
+                    }else if($status == 'Amortizado' || $status == 'Retrasado' ){
+                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000; 
+                    } else if(strpos($status, 'mortiza') != false){
+                        $tempArray['marketplace_status'] = CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;       
+                    }else if($status == 'Publicado'){   
+                        $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;     
+                    }                
+                    
+                    $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
+                    $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
+                    
+                    $tds =  $subdivs[126]->getElementsByTagName('td');
+                    $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+            }
+            //echo 'Hidden investment: ' . HTML_ENDOFLINE;
+            //print_r($tempArray);
+            $newTotalArray[] = $tempArray;
+            unset($tempArray);
+        }
+        /*echo 'return new array: ' . HTML_ENDOFLINE;
+        print_r($newTotalArray);*/
+        return $newTotalArray;
+    }
+    
+    
 
     /**
      * collect all investment
