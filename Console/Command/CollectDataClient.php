@@ -26,6 +26,7 @@
 class CollectDataClientShell extends AppShell {
     protected $GearmanClient;
     private $newComp = [];
+    private $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
 
     public function startup() {
         $this->GearmanClient = new GearmanClient();
@@ -67,16 +68,23 @@ class CollectDataClientShell extends AppShell {
             //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
         }
         
+        $companyTypes = $this->Company->find('list', array(
+            'fields' => array('Company.company_type')
+        ));
+        
         $userLinkedaccounts = [];
         $i = 0;
         foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
             foreach ($linkedaccountResult as $linkedaccount) {
+                $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
+                $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
+                /*
                 foreach (COMPANY_TYPES as $key2 => $companyType) {
                     if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
                         $userLinkedaccounts[$key][$key2][$i] = $linkedaccount;
                         break;
                     }
-                }
+                }*/
                 //$i is the number of each company per user and per type of company
                 $i++;
             }
