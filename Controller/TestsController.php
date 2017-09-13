@@ -762,6 +762,7 @@ for ($row = 1; $row <= $highestRow; $row++){
     
     
     /**
+     * 
      * Function to get the final position to get the variable from a string
      * @param string $rowDatas  the excel data in an array
      * @param string $values     the array with configuration data for parsing
@@ -804,7 +805,7 @@ for ($row = 1; $row <= $highestRow; $row++){
                         else {  // input parameters are defined in config file
                         // check if any of the input parameters require data from
                         // another cell in current row, or from the previous row
-                            foreach ($userFunction["inputData"] as $keyInputData => $input) {
+                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file
                                 echo "Line " . __LINE__ . ":  input = $input , keyInputData = $keyInputData and currentKey = $currentKey<br>";                             
                                 if (stripos ($input, "#previous.") !== false) {
                                     if ($previousKey == -1) {
@@ -856,22 +857,29 @@ for ($row = 1; $row <= $highestRow; $row++){
 //            echo __FUNCTION__ . " " . __LINE__ . " index = $i<br>";
 //            $this->print_r2($tempArray[$i]);
 //            echo __FUNCTION__ . " " . __LINE__ . " <br>";
-echo "SLEEP";
+
             if (array_key_exists("loanId", $tempArray[$i]) ){
                  $tempArray[ $tempArray[$i]['loanId'] ][]  = $tempArray[$i];
             }
             else {      // move to the global index
                 $tempArray['global'][] = $tempArray[$i];
             }
-            
-            echo __FUNCTION__ . " " . __LINE__ . " index = $i<br>";
-            $this->print_r2($tempArray);
-            echo __FUNCTION__ . " " . __LINE__ . " <br>";           
-            unset($tempArray[$i]);
-              
+                    
+     //       unset($tempArray[$i]);
             $i++; 
-
         }
+echo "END OF LOOP <br>";   
+// Delete the numeric indices. This should not be necesary but the code above does
+// NOT work, the bad line is "unset($tempArray[$i]);".
+// So below is a stupid work-around
+        for ($i; $i >= 0; $i--) {
+            unset($tempArray[$i]);
+            echo "delete index $i <br>";
+        }
+        
+        echo __FUNCTION__ . " " . __LINE__ . " index = $i<br>";
+        $this->print_r2($tempArray);
+        echo __FUNCTION__ . " " . __LINE__ . " <br>";       
         return $tempArray;
     }
     
