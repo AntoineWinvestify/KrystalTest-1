@@ -304,7 +304,7 @@ class mytriplea extends p2pCompany {
                 }
             }
             $page++;
-            if ($readController > 2 || $investmentNumber < 12) {
+            if ($readController > 12 || $investmentNumber < 12) {
                 $reading = false;
             } //Stop reading
         }

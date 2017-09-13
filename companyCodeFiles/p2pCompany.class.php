@@ -101,7 +101,7 @@ class p2pCompany {
     //Variable to use in this method
     // MarketplacesController
 
-    protected $marketplaces;
+    protected $classContainer;
     //Data for the queue
     protected $queueId;
     protected $idForQueue;
@@ -429,7 +429,7 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
 //  barzana@gmail.com 	939233Maco048 
-        if ($url == null) {
+        if (empty($url)) {
             $url = array_shift($this->urlSequence);
         }
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -624,7 +624,6 @@ class p2pCompany {
     function doCompanyLoginMultiCurl(array $loginCredentials) {
         echo 'credentials: ' . print_r($loginCredentials);
         $url = array_shift($this->urlSequence);
-        echo 'login:' . $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -671,9 +670,16 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
 
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "LOGIN"
+        ];
+        
+        $request->_page = json_encode($info);
         // Add the url to the queue
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->classContainer->addRequestToQueueCurls($request);
     }
 
     /**
@@ -691,7 +697,7 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
         //  barzana@gmail.com 	939233Maco048 
-        if ($url) {
+        if (empty($url)) {
             $url = array_shift($this->urlSequence);
         }
         echo $url;
@@ -730,7 +736,14 @@ class p2pCompany {
                     ->set(CURLOPT_POSTFIELDS, $postString);
         }
 
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGOUT";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGOUT";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "LOGOUT"
+        ];
+        
+        $request->_page = json_encode($info);
 
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
@@ -745,7 +758,7 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
 
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->classContainer->addRequestToQueueCurls($request);
     }
 
     /**
@@ -789,14 +802,20 @@ class p2pCompany {
 
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
-            echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
                     //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
 
             unset($this->headers);   // reset fields
         }
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "WEBPAGE"
+        ];
+        
+        $request->_page = json_encode($info);
         $request->getOptions()
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
@@ -819,8 +838,8 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-        //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        //Add the request to the queue in the classContainer controller
+        $this->classContainer->addRequestToQueueCurls($request);
 
         if ($this->config['appDebug'] == true) {
             echo "VISITED COMPANY URL = $url <br>";
@@ -1226,12 +1245,12 @@ class p2pCompany {
     }
 
     /**
-     * Sets the controller that uses the queue
+     * Sets the class that uses multicurl queue
      * 
-     * @param object $marketPlacesController It is the controller to be used
+     * @param object $classContainer It is the class that uses multicurl queue
      */
-    public function setMarketPlaces($marketPlacesController) {
-        $this->marketplaces = $marketPlacesController;
+    public function setClassForQueue($classContainer) {
+        $this->classContainer = $classContainer;
     }
 
     /**
@@ -1322,7 +1341,7 @@ class p2pCompany {
         if (empty($originPath)) {
             $originPath = dirname(__FILE__);
         }
-        $dir = $originPath . $name;
+        $dir = $originPath . DS . $name;
         $folderCreated = false;
         if (!file_exists($dir)) {
             $folderCreated = mkdir($dir, 0770);
@@ -1359,7 +1378,7 @@ class p2pCompany {
      * Delete the cookies file generated for the request
      */
     public function deleteCookiesFile() {
-        if (file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
+        if ($this->cookies_name != "cookies.txt" && file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
             unlink($this->cookiesDir . '/' . $this->cookies_name);
         }
     }
@@ -1700,7 +1719,7 @@ class p2pCompany {
         $result = curl_exec($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        print_r($result); // prints the contents of the collected file before writing..
+        //print_r($result); // prints the contents of the collected file before writing..
         $fichero = fwrite($fp,$result);
         //echo "file writed: " . $fichero . HTML_ENDOFLINE;
         fclose($fp);
@@ -1822,8 +1841,8 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-        //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        //Add the request to the queue in the classContainer controller
+        $this->classContainer->addRequestToQueueCurls($request);
         
         
         /*
@@ -1870,11 +1889,11 @@ class p2pCompany {
                       echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>'; */
 
                     if ($nameAttrNode1 != $nameAttrNode2) {
-                        //echo 'Node attr name error';
+                        echo 'Node attr name error';
                         $this->same_structure = false;
                     }
                     if ($valueAttrNode1 != $valueAttrNode2) {
-                        //echo 'Node attr value error';
+                        echo 'Node attr value error';
                         $this->sameStructure = false;
                     }
                     if ($this->sameStructure) {
@@ -1895,12 +1914,12 @@ class p2pCompany {
                 $this->sameStructure = false;
             }
         } else if ($node1->hasAttributes() && !$node2->hasAttributes()) {
-            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            //echo 'Node2 has attr error';
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node2 has attr error';
             $this->sameStructure = false;
         } else if (!$node1->hasAttributes() && $node2->hasAttributes()) {
-            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            //echo 'Node1 has attr error';
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node1 has attr error';
             $this->sameStructure = false;
         }
         if ($this->sameStructure && !$repeatedStructureFound) {
@@ -1936,13 +1955,13 @@ class p2pCompany {
 
                     $this->verifyDomStructure($childrenNode1[$i], $childrenNode2[$i], $uniquesElement, $limit);
                 }
-            } else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
-                //echo 'Node has attr error 2';
+            } /*else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
+                echo 'Node has attr error 2';
                 $this->sameStructure = false;
             } else if ($node1->hasChildNodes() && !$node2->hasChildNodes()) {
-                //echo 'Node has attr error 2';
+                echo 'Node has attr error 2';
                 $this->sameStructure = false;
-            }
+            }*/
         }
         return $this->sameStructure;
     }
@@ -2204,6 +2223,26 @@ class p2pCompany {
         }
         return [$structureRevision, $break, $type];
     }
+    
+    
+    /**Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
+     * The array will contain the deleted/hidden invesment that we cant update from the pfp marketplace.
+     * @param array $loanReferenceList loan reference id list that we have in our marketplace
+     * @param array $investment single investment that we compare
+     */
+    public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
+        print_r($investment);
+        print_r($loanReferenceList);
+         foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
+            if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
+                echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;
+                unset($loanReferenceList[$key]); 
+            }
+        }
+        
+        return $loanReferenceList;
+    }
+    
 
 }
 

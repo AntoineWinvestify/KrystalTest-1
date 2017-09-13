@@ -135,7 +135,7 @@ FRAGMENT
         $casper->run();
         $str = $casper->getCurrentPageContent();
         //echo $str;
-        var_dump($casper->getOutput());
+        //($casper->getOutput());
         echo __FUNCTION__ . __LINE__ . " END MARKETPLACE<br>";
         $casper_logout = new Casper();
         $casper_logout->setOptions([
@@ -146,7 +146,7 @@ FRAGMENT
         $casper_logout->wait(2000);
         $casper_logout->run();
         echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
-        var_dump($casper_logout->getOutput());
+        //var_dump($casper_logout->getOutput());
         echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>";
         $dom = new DOMDocument;
         $classname = 'proyecto';
