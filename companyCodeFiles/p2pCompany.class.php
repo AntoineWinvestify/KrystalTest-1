@@ -622,9 +622,7 @@ class p2pCompany {
      *
      */
     function doCompanyLoginMultiCurl(array $loginCredentials) {
-        echo 'credentials: ' . print_r($loginCredentials);
         $url = array_shift($this->urlSequence);
-        echo 'login:' . $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -1647,7 +1645,7 @@ class p2pCompany {
         print_r($credentials);
         echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
 
-        $date = date("d-m-Y_H:i:sa");
+        $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $identity = 'testUser';
@@ -1701,11 +1699,11 @@ class p2pCompany {
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         //print_r($result); // prints the contents of the collected file before writing..
-        $fichero = fwrite($fp,$result);
+        $fichero = fwrite($fp,$result);//False if the file is not created
         //echo "file writed: " . $fichero . HTML_ENDOFLINE;
         fclose($fp);
         
-        if ($statusCode == 200 /*&& $fichero*/) {
+        if ($statusCode == 200 && $fichero) {
             echo 'Downloaded!' . HTML_ENDOFLINE;
         } else {
             echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
