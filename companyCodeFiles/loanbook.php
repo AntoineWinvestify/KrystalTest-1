@@ -706,7 +706,7 @@ class loanbook extends p2pCompany {
                     }
                     foreach ($tdsAmortizationTable as $tdAmortizationTable) {
                         $subIndex++;
-                        if ($subIndex == 2) {   // normalize the status, needed for payment calculations
+                        if ($subIndex == 3) {   // normalize the status, needed for payment calculations
                             $is = $tdAmortizationTable->getElementsByTagName('i');
                             $this->verifyNodeHasElements($is);
                             if (!$this->hasElements) {
@@ -839,7 +839,7 @@ class loanbook extends p2pCompany {
 
                 foreach ($tdsAmortizationTable as $tdAmortizationTable) {
                     $subIndex = $subIndex + 1;
-                    if ($subIndex == 2) {   // normalize the status, needed for payment calculations
+                    if ($subIndex == 3) {   // normalize the status, needed for payment calculations
                         $is = $tdAmortizationTable->getElementsByTagName('i');
                         $actualState = $is[0]->getAttribute("title");
                         $amortizationTable[$mainIndex][$subIndex] = $this->getLoanState($actualState);

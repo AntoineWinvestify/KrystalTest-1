@@ -359,7 +359,7 @@ class MarketPlacesController extends AppController {
             }
             
         }
-
+        $marketplaceArray[0] = array_unique( $marketplaceArray[0]);
 
         foreach ($marketplaceArray[0] as $investment) { //Read the investment
             $DontExist = true;
