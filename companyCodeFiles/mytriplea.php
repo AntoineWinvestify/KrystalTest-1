@@ -1,52 +1,56 @@
 <?php
 
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2016, http://beyond-language-skills.com                 |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
+/**
+ * +-----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +-----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | GNU General Public License for more details.        			|
+ * +-----------------------------------------------------------------------------+
  *
  *
- * Contains the code required for accessing the website of "MyTripleAAA"
- *
- * 
- * @author Antoine de Poorter
- * @version 0.1
- * @date 2016-08-04
+ * @author 
+ * @version 0.3
+ * @date 2017-01-28
  * @package
-  
-
-function calculateLoanCost()										[Not OK]
-function collectCompanyMarketplaceData()								[OK, tested]
-function companyUserLogin()										[OK, tested]
-function collectUserInvestmentData()									[OK, tested]
-introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK]
-function companyUserLogout()                                                                            [OK, tested]
-parallelization                                                                                         [OK, tested]
-
-2016-08-04	  version 2016_0.1
-Basic version
+ *
+ *
+ *
+ * function calculateLoanCost()										[Not OK]
+ * function collectCompanyMarketplaceData()								[OK, tested]
+ * function companyUserLogin()										[OK, tested]
+ * function collectUserInvestmentData()									[OK, tested]
+ * introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK]
+ * function companyUserLogout()                                                                            [OK, tested]
+ * parallelization                                                                                         [OK, tested]
+ *
+ * 2016-08-04	  version 2016_0.1
+ * Basic version
  * introduced the "rating" by doing an additional read of webpage with the detailed view of the loanrequest [OK] 
-2017-04-18
+ * 2017-04-18
  * Rating fixed
-2017-05-16      version 2017_0.2
+ * 2017-05-16      version 2017_0.2
  * Added parallelization
-
-  Pending
-  More Ratings
-
+ *
+ * 2017/08/04
+ * Code adaptation for 100%
+ *      collectCompanyMarketplaceData   -   Pagination loop added
+ *      collectHistorical       -       Added
+ * 
+ * 2017-08-16
+ * Structure Revision added
+ * Status definition added
+ * 
+ * Pending
+ * More Ratings
+ *
  */
-
 class mytriplea extends p2pCompany {
 
     function __construct() {
@@ -81,153 +85,532 @@ class mytriplea extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the marketplace data
-     * 	@return array	Each investment option as an element of an array
-     *
+     * 
+     * @param Array $companyBackup
+     * @param Array $structure
+     * @return Array
      */
-    function collectCompanyMarketplaceData() {
+    function collectCompanyMarketplaceData($companyBackup, $structure) {
+
+        $page = 0;
+        $reading = true;
+        $readController = 0;
+        $investmentController = false;
+        $totalArray = array();
+        $url = array_shift($this->urlSequence);
+
+        $str = $this->getCompanyWebpage($url);  // load Webpage into a string variable so it can be parsed;
+
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        //Structure comparation, not in the same place where we colect the data because we get the mytriplea data from ajax response.
+        if ($page == 0) { //Compare structures, only compare the first element
+
+            $structureRevision = $this->htmlRevision($structure,'article',null,null,null, array('dom' => $dom, 'tag' => 'div', 'attribute' => 'class', 'attrValue' => 'row divTarjetasPymeAjax' ));
+            if($structureRevision[1]){
+                $totalArray = false; //Stop reading in error
+                $reading = false;
+            }   
+        
+        }                
+                    
+            
+
+
+        while ($reading) { //Pagination loop
+            $investmentNumber = 0;
+            $form = [//MyTripleA is like zank, need curl.
+                'cargarMas' => true, //This must by true
+                'numeroPaginaMostrar' => $page, //Page number, first page is 0
+            ];
+
+            $str = $this->getCompanyWebpageAjax($url, $form);  // load Webpage into a string variable so it can be parsed;
+
+            $dom = new DOMDocument;
+            $dom->loadHTML($str);
+            $dom->preserveWhiteSpace = false;
+
+            $rows = $dom->getElementsByTagName('article');
+
+
+            if ($totalArray !== false) {
+                foreach ($rows as $key => $row) {
+
+                    $h3 = $row->getElementsByTagName('h3');  // Only 1 'h3' will be encountered
+                    foreach ($h3 as $item) {
+                        
+                    }
+                    $tempArray['marketplace_country'] = 'ES';
+                    $a = $row->getElementsByTagName('a');  // Get loanId. Only 1 'a' is required
+                    foreach ($a as $item) {
+                        $tempLoanId = $item->getAttribute('href');
+                        $temp = explode("-", $tempLoanId);
+                        $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', '', $temp[count($temp) - 1]));
+                        $tempArray['marketplace_href'] = $tempLoanId;   // contains the href with more details about loanrequest
+                        break;
+                    }
+
+                    $headers = $row->getElementsByTagName('header');
+                    foreach ($headers as $header) {
+                        $tempArray['marketplace_purpose'] = trim($header->nodeValue);
+                    }
+
+                    $li = $row->getElementsByTagName('li');
+
+                    foreach ($li as $item) {
+                        $checkedAttribute = trim($item->nodeValue);
+                        echo "<br>___checkedAttribute = $checkedAttribute<br>";
+                        $is = $item->getElementsByTagNAme('i');
+
+                        $contentCheckedAttribute = "";
+                        foreach ($is as $subItem) {
+                            $contentCheckedAttribute = trim($subItem->nodeValue);
+                        }
+
+                        if (strncasecmp($checkedAttribute, 'Sector', 6) == 0) {
+                            $tempArray['marketplace_sector'] = $contentCheckedAttribute;
+                        }
+
+                        if (strncasecmp($checkedAttribute, 'Lugar', 5) == 0) {
+                            $tempArray['marketplace_requestorLocation'] = $contentCheckedAttribute;
+                        }
+
+                        if (strncasecmp($checkedAttribute, 'Importe', 7) == 0) {
+                            $tempArray['marketplace_amount'] = $this->getMonetaryValue($contentCheckedAttribute);
+                        }
+
+                        if (strncasecmp($checkedAttribute, 'Tipo', 4) == 0) {
+                            $tempArray['marketplace_interestRate'] = $this->getPercentage($contentCheckedAttribute);
+                        }
+
+                        if (strncasecmp($checkedAttribute, 'Plazo', 5) == 0) {
+                            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($contentCheckedAttribute);
+                        }
+                        if (strncasecmp($checkedAttribute, 'Durac', 5) == 0) {
+                            list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($item->nodeValue));
+                        }
+
+                        if (strncasecmp($checkedAttribute, 'Completado', 10) == 0) {
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($checkedAttribute);
+                        }
+
+                        if (strncasecmp($checkedAttribute, 'Forma pago', 10) == 0) {
+//				echo "contentsChecked6 = $contentCheckedAttribute <br>";
+//				$tempArray['marketplace_interestRate4'] = $this->getPercentage(trim($item->nodeValue));
+                        }
+
+                        if (stripos($checkedAttribute, 'inversores')) {
+                            $tempArray['marketplace_inversores'] = $contentCheckedAttribute;
+                        }
+                    }
+
+                    $cols = $row->getElementsByTagName('span');
+                    foreach ($cols as $span) {
+                        $checkedAttribute = $span->getAttribute('class');
+                        if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
+                            echo "contentsChecked10 = $CheckedAttribute <br>";
+                            //		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
+                        }
+                    }
+
+                    $rating = $row->getElementsByTagName('div');
+                    foreach ($rating as $rating) {
+                        $checkedClass = $rating->getAttribute('class');
+                        $checkedAttribute = $rating->getAttribute('style');
+                        if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPENDIENTE' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPRORROGADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoCOMPLETADA') {
+
+                            if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA') {
+                                $tempArray['marketplace_statusLiteral'] = 'Formalizado';
+                                $tempArray['marketplace_status'] = CONFIRMED;
+                            } else if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoCOMPLETADA') {
+                                $tempArray['marketplace_statusLiteral'] = 'Completado';
+                                $tempArray['marketplace_status'] = PERCENT;
+                            }
+
+                            if (!$checkedAttribute) {
+                                $tempArray['marketplace_rating'] = 'SGR';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionA.png');") {
+                                $tempArray['marketplace_rating'] = 'A';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionA_MAS.png');") {
+                                $tempArray['marketplace_rating'] = 'A+';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionB.png');") {
+                                $tempArray['marketplace_rating'] = 'B';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionB_MAS.png');") {
+                                $tempArray['marketplace_rating'] = 'B+';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionC.png');") {
+                                $tempArray['marketplace_rating'] = 'C';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionC_MAS.png');") {
+                                $tempArray['marketplace_rating'] = 'C+';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD.png');") {
+                                $tempArray['marketplace_rating'] = 'D';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD_MAS.png');") {
+                                $tempArray['marketplace_rating'] = 'D+';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionE.png');") {
+                                $tempArray['marketplace_rating'] = 'E';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionE_MAS.png');") {
+                                $tempArray['marketplace_rating'] = 'E+';
+                            } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracion.png');") {
+                                $tempArray['marketplace_rating'] = 'Vacio';
+                            }
+                        }
+                    }
+
+// stored all available information in array, but rating is still missing, so fetch it from the detailed view		
+                    if (!empty($tempArray['marketplace_loanReference'])) {
+
+                        if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
+                            $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                            $pos = strpos($sequence, "/", 10);
+                            $host = substr($sequence, 0, $pos);
+
+                            $strTemp = $this->getCompanyWebpage($host . $tempArray['marketplace_href']); // load Webpage into a string variable so it can be parsed;
+                            $domTemp = new DOMDocument;
+                            $domTemp->loadHTML($strTemp);
+                            $domTemp->preserveWhiteSpace = false;
+                            $divs = $domTemp->getElementsByTagName('div');
+                            foreach ($divs as $div) {
+                                $className = $div->getAttribute('class');
+                                if (strcasecmp($className, 'inversionFicha') == 0) {  // correct div found
+                                    $lis = $div->getElementsByTagName('li');
+                                    foreach ($lis as $li) {
+                                        $bs = $li->getElementsByTagName('b');
+                                        foreach ($bs as $b) {
+                                            $tempArray['marketplace_rating'] = trim($b->nodeValue);
+                                            break 3;
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            foreach ($companyBackup as $inversionBackup) { //If we have the completed investment in backup with the same status
+                                if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                                    $readController++;
+                                    $investmentController = true;
+                                }
+                            }
+                        }
+                        $investmentNumber++; //Add investment
+                        if ($investmentController) { //Don't save a already existing investment
+                            unset($tempArray);
+                            $investmentController = false;
+                        } else {
+                            $totalArray[] = $tempArray;
+                            unset($tempArray);
+                        }
+                    }
+                    unset($tempArray);
+                }
+            }
+            $page++;
+            if ($readController > 12 || $investmentNumber < 12) {
+                $reading = false;
+            } //Stop reading
+        }
+        $this->print_r2($totalArray);
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
+    }
+
+    /**
+     * 
+     * @param Array $structure
+     * @param Int $pageNumber
+     * @return Array
+     */
+    function collectHistorical($structure, $pageNumber) {
+
 
         $totalArray = array();
+        $investmentNumber = 0;
+        $max = 12;
 
-        $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed;
+        $url = array_shift($this->urlSequence);
+
+        $str = $this->getCompanyWebpage($url);  // load Webpage into a string variable so it can be parsed;
+
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        //Structure comparation, not in the same place where we colect the data because we get the mytriplea data from ajax response.
+        if ($pageNumber == 0) { //Compare structures, only compare the first element
+            $structureRevision = $this->htmlRevision($structure,'article',null,null,null, array('dom' => $dom, 'tag' => 'div', 'attribute' => 'class', 'attrValue' => 'row divTarjetasPymeAjax' ));
+            if($structureRevision[1]){
+                $totalArray = false; //Stop reading in error
+                $pageNumber = false;
+            }     
+        }
+
+        if ($pageNumber == 0 && !$structure) { //Save new structure if is first time
+            echo 'no structure readed, saving structure <br>';
+            $saveStructure = new DOMDocument();
+            $container = $this->getElements($dom, 'div', 'class', 'row divTarjetasPymeAjax')[0];
+            $clone = $container->cloneNode(TRUE);
+            $saveStructure->appendChild($saveStructure->importNode($clone, TRUE));
+            $structureRevision = $saveStructure->saveHTML();
+        }
+        
+        
+        
+
+        $form = [//MyTripleA is like zank, need curl.
+            'cargarMas' => true, //Must be true
+            'numeroPaginaMostrar' => $pageNumber, //Start with 0 
+        ];
+
+        $str = $this->getCompanyWebpageAjax($url, $form);  // load ajax reponse
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
         $rows = $dom->getElementsByTagName('article');
 
-        foreach ($rows as $row) {
-            $h3 = $row->getElementsByTagName('h3');  // Only 1 'h3' will be encountered
-            foreach ($h3 as $item) {
-                
-            }
+        if ($totalArray !== false) {
+            foreach ($rows as $key => $row) {
 
-            $a = $row->getElementsByTagName('a');  // Get loanId. Only 1 'a' is required
-            foreach ($a as $item) {
-                $tempLoanId = $item->getAttribute('href');
-                $temp = explode("-", $tempLoanId);
-                $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', '', $temp[count($temp) - 1]));
-                $tempArray['marketplace_href'] = $tempLoanId;   // contains the href with more details about loanrequest
-                break;
-            }
-
-            $headers = $row->getElementsByTagName('header');
-            foreach ($headers as $header) {
-                $tempArray['marketplace_purpose'] = trim($header->nodeValue);
-            }
-
-            $li = $row->getElementsByTagName('li');
-
-            foreach ($li as $item) {
-                $checkedAttribute = trim($item->nodeValue);
-                echo "<br>___checkedAttribute = $checkedAttribute<br>";
-                $is = $item->getElementsByTagNAme('i');
-
-                $contentCheckedAttribute = "";
-                foreach ($is as $subItem) {
-                    $contentCheckedAttribute = trim($subItem->nodeValue);
+                $tempArray['marketplace_country'] = 'ES';
+                $a = $row->getElementsByTagName('a');  // Get loanId. Only 1 'a' is required
+                foreach ($a as $item) {
+                    $tempLoanId = $item->getAttribute('href');
+                    $temp = explode("-", $tempLoanId);
+                    $tempArray['marketplace_loanReference'] = trim(preg_replace('/\D/', '', $temp[count($temp) - 1]));
+                    $tempArray['marketplace_href'] = $tempLoanId;   // contains the href with more details about loanrequest
+                    break;
                 }
 
-                if (strncasecmp($checkedAttribute, 'Sector', 6) == 0) {
-                    $tempArray['marketplace_sector'] = $contentCheckedAttribute;
+                $headers = $row->getElementsByTagName('header');
+                foreach ($headers as $header) {
+                    $tempArray['marketplace_purpose'] = trim($header->nodeValue);
                 }
 
-                if (strncasecmp($checkedAttribute, 'Lugar', 5) == 0) {
-                    $tempArray['marketplace_requestorLocation'] = $contentCheckedAttribute;
-                }
+                $li = $row->getElementsByTagName('li');
 
-                if (strncasecmp($checkedAttribute, 'Importe', 7) == 0) {
-                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($contentCheckedAttribute);
-                }
+                foreach ($li as $item) {
+                    $checkedAttribute = trim($item->nodeValue);
+                    echo "<br>___checkedAttribute = $checkedAttribute<br>";
+                    $is = $item->getElementsByTagNAme('i');
 
-                if (strncasecmp($checkedAttribute, 'Tipo', 4) == 0) {
-                    $tempArray['marketplace_interestRate'] = $this->getPercentage($contentCheckedAttribute);
-                }
+                    $contentCheckedAttribute = "";
+                    foreach ($is as $subItem) {
+                        $contentCheckedAttribute = trim($subItem->nodeValue);
+                    }
 
-                if (strncasecmp($checkedAttribute, 'Plazo', 5) == 0) {
-                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($contentCheckedAttribute);
-                }
-                if (strncasecmp($checkedAttribute, 'Durac', 5) == 0) {
-                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($item->nodeValue));
-                }
+                    if (strncasecmp($checkedAttribute, 'Sector', 6) == 0) {
+                        $tempArray['marketplace_sector'] = $contentCheckedAttribute;
+                    }
 
-                if (strncasecmp($checkedAttribute, 'Completado', 10) == 0) {
-                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($checkedAttribute);
-                }
+                    if (strncasecmp($checkedAttribute, 'Lugar', 5) == 0) {
+                        $tempArray['marketplace_requestorLocation'] = $contentCheckedAttribute;
+                    }
 
-                if (strncasecmp($checkedAttribute, 'Forma pago', 10) == 0) {
+                    if (strncasecmp($checkedAttribute, 'Importe', 7) == 0) {
+                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($contentCheckedAttribute);
+                    }
+
+                    if (strncasecmp($checkedAttribute, 'Tipo', 4) == 0) {
+                        $tempArray['marketplace_interestRate'] = $this->getPercentage($contentCheckedAttribute);
+                    }
+
+                    if (strncasecmp($checkedAttribute, 'Plazo', 5) == 0) {
+                        list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($contentCheckedAttribute);
+                    }
+                    if (strncasecmp($checkedAttribute, 'Durac', 5) == 0) {
+                        list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($item->nodeValue));
+                    }
+
+                    if (strncasecmp($checkedAttribute, 'Completado', 10) == 0) {
+                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($checkedAttribute);
+                    }
+
+                    if (strncasecmp($checkedAttribute, 'Forma pago', 10) == 0) {
 //				echo "contentsChecked6 = $contentCheckedAttribute <br>";
 //				$tempArray['marketplace_interestRate4'] = $this->getPercentage(trim($item->nodeValue));
-                }
-
-                if (stripos($checkedAttribute, 'inversores')) {
-                    $tempArray['marketplace_inversores'] = $contentCheckedAttribute;
-                }
-            }
-
-            $cols = $row->getElementsByTagName('span');
-            foreach ($cols as $span) {
-                $checkedAttribute = $span->getAttribute('class');
-                if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
-                    echo "contentsChecked10 = $CheckedAttribute <br>";
-                    //		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
-                }
-            }
-
-            $rating = $row->getElementsByTagName('div');
-            foreach ($rating as $rating) {
-                $checkedClass = $rating->getAttribute('class');
-                $checkedAttribute = $rating->getAttribute('style');
-                if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPENDIENTE' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPRORROGADA') {
-                    if (!$checkedAttribute) {
-                        $tempArray['marketplace_rating'] = 'SGR';
                     }
-                    if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD.png');") {
-                        $tempArray['marketplace_rating'] = 'D';
-                    }
-                    if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD_MAS.png');") {
-                        $tempArray['marketplace_rating'] = 'D+';
+
+                    if (stripos($checkedAttribute, 'inversores')) {
+                        $tempArray['marketplace_inversores'] = $contentCheckedAttribute;
                     }
                 }
-            }
 
-// stored all available information in array, but rating is still missing, so fetch it from the detailed view		
-            if (!empty($tempArray['marketplace_loanReference'])) {
+                $cols = $row->getElementsByTagName('span');
+                foreach ($cols as $span) {
+                    $checkedAttribute = $span->getAttribute('class');
+                    if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
+                        echo "contentsChecked10 = $CheckedAttribute <br>";
+                        //		$tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($span->nodeValue));
+                    }
+                }
 
-                if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
-                    $pos = strpos($sequence, "/", 10);
-                    $host = substr($sequence, 0, $pos);
+                $rating = $row->getElementsByTagName('div');
+                foreach ($rating as $rating) {
+                    $checkedClass = $rating->getAttribute('class');
+                    $checkedAttribute = $rating->getAttribute('style');
+                    if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPENDIENTE' || $checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoPRORROGADA') {
 
-                    $strTemp = $this->getCompanyWebpage($host . $tempArray['marketplace_href']); // load Webpage into a string variable so it can be parsed;
-                    $domTemp = new DOMDocument;
-                    $domTemp->loadHTML($strTemp);
-                    $domTemp->preserveWhiteSpace = false;
-                    $divs = $domTemp->getElementsByTagName('div');
-                    foreach ($divs as $div) {
-                        $className = $div->getAttribute('class');
-                        if (strcasecmp($className, 'inversionFicha') == 0) {  // correct div found
-                            $lis = $div->getElementsByTagName('li');
-                            foreach ($lis as $li) {
-                                $bs = $li->getElementsByTagName('b');
-                                foreach ($bs as $b) {
-                                    $tempArray['marketplace_rating'] = trim($b->nodeValue);
-                                    break 3;
-                                }
-                            }
+                        if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoFINALIZADA') {
+                            $tempArray['marketplace_statusLiteral'] = 'Formalizado';
+                            $tempArray['marketplace_status'] = CONFIRMED;
+                        } else if ($checkedClass == 'avaladoTarjeta avaladoTarjetaEstadoCOMPLETADA') {
+                            $tempArray['marketplace_statusLiteral'] = 'Completado';
+                            $tempArray['marketplace_status'] = PERCENT;
+                        }
+
+                        if (!$checkedAttribute) {
+                            $tempArray['marketplace_rating'] = 'SGR';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionA.png');") {
+                            $tempArray['marketplace_rating'] = 'A';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionA_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'A+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionB.png');") {
+                            $tempArray['marketplace_rating'] = 'B';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionB_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'B+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionC.png');") {
+                            $tempArray['marketplace_rating'] = 'C';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionC_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'C+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD.png');") {
+                            $tempArray['marketplace_rating'] = 'D';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionD_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'D+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionE.png');") {
+                            $tempArray['marketplace_rating'] = 'E';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracionE_MAS.png');") {
+                            $tempArray['marketplace_rating'] = 'E+';
+                        } else if ($checkedAttribute == "background-image:url('https://d1b1eeq5q8spqf.cloudfront.net/recursos/images/background/valoracion.png');") {
+                            $tempArray['marketplace_rating'] = 'Vacio';
                         }
                     }
                 }
-                $totalArray[] = $tempArray;   // Do not store the last <article> tag as it contain no real data
-                $this->print_r2($tempArray);
+
+                if ($tempArray['marketplace_subscriptionProgress'] < 10000) {
+                    $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                }
+
+                $investmentNumber++; //Add investmet
+                $totalArray[] = $tempArray;
+                unset($tempArray);
             }
-            unset($tempArray);
+        }
+        echo 'Aqui ' . $investmentNumber;
+        if ($investmentNumber < $max) {
+            $pageNumber = false;
+        } //Stop reading
+        else {
+            echo 'Advance page ' . $pageNumber;
+            $pageNumber++;
+            echo 'to ' . $pageNumber;
         }
         $this->print_r2($totalArray);
-        return $totalArray;
+        return [$totalArray, $pageNumber, null, $structureRevision[0], $structureRevision[2]]; //$pageNumber is the next page, false when we read the last page
+        //$totalarray Contain the pfp investment or is false if we have an error
+        //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
+        //$structureRevision[2] return the type of error
     }
-    
-    
+
+    /**
+     * Function that is used to pick up inversions page of MytripleA because ajax response
+     * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
+     * @return string $str It is the website resulted of the curl petition
+     */
+    function getCompanyWebpageAjax($url, $form) {
+
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
+        }
+
+        if (!empty($this->testConfig['active']) == true) {    // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                echo "currentScreen = $currentScreen";
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
+        }
+
+        $curl = curl_init();
+
+        if (!$curl) {
+            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
+            $msg = $msg . " \n";
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+        if ($this->config['postMessage'] == true) {
+            curl_setopt($curl, CURLOPT_POST, true);
+//    echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
+        }
+
+// check if extra headers have to be added to the http message  
+        if (!empty($this->headers)) {
+            echo "EXTRA HEADERS TO BE ADDED<br>";
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+            unset($this->headers);      // reset fields
+        }
+
+        foreach ($form as $key => $value) {
+            $postItems[] = $key . '=' . $value;
+        }
+        $postString = implode('&', $postItems);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
+
+
+        // Set the file URL to fetch through cURL
+        curl_setopt($curl, CURLOPT_URL, $url);
+
+        // Set a different user agent string (Googlebot)
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
+
+        // Follow redirects, if any
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        // Fail the cURL request if response code = 400 (like 404 errors) 
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+
+        // Return the actual result of the curl result instead of success code
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        // Wait for 10 seconds to connect, set 0 to wait indefinitely
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
+
+        // Execute the cURL request for a maximum of 50 seconds
+        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+
+        // Do not check the SSL certificates
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);   // important
+        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);    // Important
+        // Fetch the URL and save the content
+        $str = curl_exec($curl);
+        if (!empty($this->testConfig['active']) == true) {
+            print_r(curl_getinfo($curl));
+            echo "<br>";
+            print_r(curl_error($curl));
+            echo "<br>";
+        }
+
+        if ($this->config['appDebug'] == true) {
+            echo "VISITED COMPANY URL = $url <br>";
+        }
+        if ($this->config['tracingActive'] == true) {
+            $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
+        }
+        return $str;
+    }
+
     /**
      *
      * 	Collects the investment data of the user
@@ -252,7 +635,7 @@ class mytriplea extends p2pCompany {
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-                
+
                 $hiddenInputFields = $this->getElements($dom, "input", "type", "hidden");
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
@@ -269,8 +652,8 @@ class mytriplea extends p2pCompany {
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($credentials);
                 break;
-                
-                
+
+
             case 2:
                 // check if user actually has entered the portal of the company
                 $dom = new DOMDocument;
@@ -282,7 +665,7 @@ class mytriplea extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                
+
                 $resultMyTripleAAA = false;
                 foreach ($labels as $label) {
                     if (strcasecmp($label->nodeValue, "Resumen") == 0) {
@@ -322,7 +705,7 @@ class mytriplea extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();  // page "mi-posicion/cartera-viva"
                 break;
             case 3:
-                
+
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
@@ -345,7 +728,7 @@ class mytriplea extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__);
                 }
                 $this->numberOfInvestments = 0;
-                for ($key = 0 ; $key < count($trs); $key++) { // cycle through all the investments and get the data, including amortization table
+                for ($key = 0; $key < count($trs); $key++) { // cycle through all the investments and get the data, including amortization table
                     $this->numberOfInvestments++;
                     $tds = $this->getElements($trs[$key], "td");
 //echo __FILE__ . " " . __LINE__ . "<br>";
@@ -357,7 +740,7 @@ class mytriplea extends p2pCompany {
                     $this->data1[$key]['invested'] = $this->getMonetaryValue($tds[1]->nodeValue);
                     $this->data1[$key]['date'] = trim($tds[4]->nodeValue);
                     $this->tempArray['global']['activeInInvestments'] = $this->tempArray['global']['activeInInvestments'] + $this->getMonetaryValue($tds[8]->nodeValue);
-                    
+
                     $tempStatus = trim($tds[6]->nodeValue);
                     if (strncasecmp($tempStatus, "Vivo / Al", 9) == 0) {
                         $this->data1[$key]['status'] = OK;
@@ -404,10 +787,10 @@ class mytriplea extends p2pCompany {
                     $subIndex = -1;
                     $tdsAmortizationTable = $trAmortizationTable->getElementsByTagName('td');
                     /* THIS ELEMENT DOESN'T HAVE TO BE ANALYZED
-                    $this->verifyNodeHasElements($tdsAmortizationTable);
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
-                    }*/
+                      $this->verifyNodeHasElements($tdsAmortizationTable);
+                      if (!$this->hasElements) {
+                      return $this->getError(__LINE__, __FILE__);
+                      } */
                     foreach ($tdsAmortizationTable as $tdAmortizationTable) {
                         $subIndex = $subIndex + 1;
                         if ($subIndex == 8) {
@@ -415,8 +798,7 @@ class mytriplea extends p2pCompany {
                             /*
                               getLoanState($actualState)
                              */
-                        } 
-                        else {
+                        } else {
                             $amortizationTable[$mainIndex][$subIndex] = trim($tdAmortizationTable->nodeValue);
                         }
                     }
@@ -432,21 +814,20 @@ class mytriplea extends p2pCompany {
 
                 $this->tempArray['global']['totalInvestment'] = $this->tempArray['global']['totalInvestment'] + $this->data1[$this->accountPosition]['invested'];
                 $this->tempArray['global']['totalEarnedInterest'] = $this->tempArray['global']['totalEarnedInterest'] +
-                $this->data1[$this->accountPosition]['profitGained'];
+                        $this->data1[$this->accountPosition]['profitGained'];
                 $this->tempArray['global']['totalInvestments'] = $this->tempArray['global']['totalInvestments'] +
-                $this->data1[$this->accountPosition]['invested'];
-                
-                if ($this->accountPosition != ($this->numberOfInvestments-1) ) {
+                        $this->data1[$this->accountPosition]['invested'];
+
+                if ($this->accountPosition != ($this->numberOfInvestments - 1)) {
                     $this->idForSwitch = 4;
                     $this->accountPosition++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl[$this->accountPosition]);     // Load amortization Table
                     break;
-                }
-                else {
+                } else {
                     $this->tempArray['global']['investments'] = $this->numberOfInvestments;
                     //echo __FILE__ . " " . __LINE__ . "<br>";
                     $this->tempArray['investments'] = $this->data1;
-                    return $this->tempArray; 
+                    return $this->tempArray;
                 }
         }
     }
@@ -678,6 +1059,45 @@ class mytriplea extends p2pCompany {
         return $normalizedState;
     }
 
-}
+    /**
+     * Dom clean for structure revision
+     * @param Dom $node1
+     * @param Dom $node2
+     * @return boolean
+     */
+    function structureRevision($node1, $node2) {
 
-?>
+        $node1 = $this->cleanDom($node1, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('src', 'href', 'style'));
+
+
+        $node1 = $this->cleanDom($node1, array(//We only want delete class of the div  tag because contain the status
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('class'));
+
+        $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'li'), //li lenght can change
+        ));
+
+        $node2 = $this->cleanDom($node2, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('src', 'href', 'style'));
+
+        $node2 = $this->cleanDom($node2, array(//We only want delete class of the div tag because contain the status
+            array('typeSearch' => 'element', 'tag' => 'div'),
+                ), array('class'));
+
+        $node2 = $this->cleanDomTag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'li'), //li lenght can change
+        ));
+        
+        $structureRevision = $this->verifyDomStructure($node1, $node2);
+        return $structureRevision;
+    }
+
+}

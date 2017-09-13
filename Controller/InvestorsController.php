@@ -25,10 +25,11 @@
   function acceptConditionsTempPanel                            			[OK]
   removed acceptConditionsTempPanel after finishing Beta testing period                 [OK, tested]
 
-
+  2017-09-06        version 0.2
+  Updated data saving to do again a query to show correctly the data 
+  
   Pending:
   Generate a miniview for the extended notification of the event "newAccountLinked"     [OK, not yet tested]
-  User cannot modify his mobile phone number.
  * A more consistent andpermanent solution will be implemented with 1CR for all "confirmed" data items,
  * like name, surname, telephone, dni, ....
  * 
@@ -177,8 +178,11 @@ public function editUserProfileData() {
             // UPDATE THE SESSION DATA
         }
 
-        $receivedDataTemp[0]['Investor'] = $receivedData;
-        $this->set('resultUserData', $receivedDataTemp);
+        //We do again the query to get correctly the data on plugins.
+        $resultInvestorTemp = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
+            'recursive' => -1,
+        ));
+        $this->set('resultUserData', $resultInvestorTemp);
         //}
     }
 
@@ -221,7 +225,7 @@ function linkAccount() {
             'traceID' => $this->Auth->user('Investor.investor_identity'),
         );
         $newComp->defineConfigParms($configurationParameters);
-        //$newComp->generateCookiesFile();
+        $newComp->generateCookiesFile();
         $userInvestment = $newComp->companyUserLogin($_REQUEST['userName'], $_REQUEST['password']);
 
         if (!$userInvestment) {                                                 // authentication error
@@ -231,7 +235,7 @@ function linkAccount() {
 
             $linkedaccountFilterConditions = array('investor_id' => $investorId);
             $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
-            //$newComp->deleteCookiesFile();
+            $newComp->deleteCookiesFile();
             $this->set('linkedAccountResult', $linkedAccountResult);
             $this->set('companyResults', $companyResults);
             $this->set('action', "error");      // add a new account
@@ -244,7 +248,7 @@ function linkAccount() {
                 $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
                 $newComp->setUrlSequence($urlSequenceList);
                 $newComp->companyUserLogout();
-                //$newComp->deleteCookiesFile();
+                $newComp->deleteCookiesFile();
 // load the list of all companies for display purposes
                 $companyFilterConditions = array('id >' => 0);  // Load ALL company data as array
                 $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);

@@ -267,12 +267,12 @@ class GlobalEmailListener implements CakeEventListener {
     public function appErrorEmail(CakeEvent $event) {
         Configure::load('p2pGestor.php', 'default');
         $adminData = Configure::read('admin');
-
+        $type = explode(':',$event->data['Applicationerror']['applicationerror_typeOfError'])[0];
         try {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($adminData['systemAdmin'] => __("Admin")));
-            $Email->subject(__("An application error has been logged."));
+            $Email->subject(__("An " . $type . " has been logged."));
             $Email->template('applicationError', 'standard_email_layout');
             $Email->viewVars(array('applicationerrorFile' => $event->data['Applicationerror']['applicationerror_file'],
                                            'id' => $event->data['Applicationerror']['id']));

@@ -28,12 +28,12 @@
         <?php //Tooltip clicks ?>
         $(document).on("mouseenter", ".teamBox", function() {
             id = $(this).attr("id");
-            $("#team_" + id).slideDown(1000);
+            $("#team_" + id).fadeIn(1000);
             $(".teamBox" + id).addClass("teamBoxColor");
         });
         $(document).on("mouseleave", ".teamBox", function() {
             id = $(this).attr("id");
-            $("#team_" + id).slideUp(1000);
+            $("#team_" + id).fadeOut(1000);
             $(".teamBox" + id).removeClass("teamBoxColor");
         });
     });
