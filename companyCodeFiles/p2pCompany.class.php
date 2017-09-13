@@ -524,7 +524,6 @@ class p2pCompany {
     function doCompanyLoginMultiCurl(array $loginCredentials) {
 
         $url = array_shift($this->urlSequence);
-        echo $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -573,7 +572,7 @@ class p2pCompany {
 
         $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
         // Add the url to the queue
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->marketplaces->addRequestToQueueCurls($request);
     }
 
     /**
@@ -592,7 +591,6 @@ class p2pCompany {
          */
         //  barzana@gmail.com 	939233Maco048 
         $url = array_shift($this->urlSequence);
-        echo $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -643,7 +641,7 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
 
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->marketplaces->addRequestToQueueCurls($request);
     }
 
     /**
@@ -687,7 +685,6 @@ class p2pCompany {
 
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
-            echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
                     //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
@@ -718,7 +715,7 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
         //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->marketplaces->addRequestToQueueCurls($request);
 
         if ($this->config['appDebug'] == true) {
             echo "VISITED COMPANY URL = $url <br>";
@@ -1239,7 +1236,7 @@ class p2pCompany {
      * Delete the cookies file generated for the request
      */
     public function deleteCookiesFile() {
-        if (file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
+        if ($this->cookies_name != "cookies.txt" && file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
             unlink($this->cookiesDir . '/' . $this->cookies_name);
         }
     }
@@ -1371,16 +1368,16 @@ class p2pCompany {
                     $valueAttrNode1 = $node1Attr[$i]->nodeValue;
                     $valueAttrNode2 = $node2Attr[$i]->nodeValue;
 
-                   /*echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                   echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
                     echo $nameAttrNode1 . '=>' . $valueAttrNode1 . '<br>';
-                    echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>';*/
+                    echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>';
 
                     if ($nameAttrNode1 != $nameAttrNode2) {
-                        //echo 'Node attr name error';
+                        echo 'Node attr name error';
                         $this->same_structure = false;
                     }
                     if ($valueAttrNode1 != $valueAttrNode2) {
-                        //echo 'Node attr value error';
+                        echo 'Node attr value error';
                         $this->sameStructure = false;
                     }
                     if ($this->sameStructure) {
@@ -1394,19 +1391,19 @@ class p2pCompany {
                     }
                 }
             } else if ($node1Attr->length != $node2Attr->length) {
-                /*echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
                 echo $node1Attr->length . '<br>';
                 echo $node2Attr->length . '<br>';
-                echo 'Node attr length error';*/
+                echo 'Node attr length error';
                 $this->sameStructure = false;
             }
         } else if ($node1->hasAttributes() && !$node2->hasAttributes()) {
-            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            //echo 'Node2 has attr error';
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node2 has attr error';
             $this->sameStructure = false;
         } else if (!$node1->hasAttributes() && $node2->hasAttributes()) {
-            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            //echo 'Node1 has attr error';
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node1 has attr error';
             $this->sameStructure = false;
         }
         if ($this->sameStructure && !$repeatedStructureFound) {
@@ -1423,15 +1420,15 @@ class p2pCompany {
                     }
                     
                     if (!$childrenNode1[$i] && $childrenNode2[$i]) { //First we verify if node exist
-                        /*echo 'Node1 doesnt exist: <br>';
+                        echo 'Node1 doesnt exist: <br>';
                         echo 'parent => ' . $childrenNode1[$i]->parentNode->nodeName . ' of ' . $childrenNode1[$i]->nodeName . ' value ' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';*/
+                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';
 
                         $this->sameStructure = false;
                     } else if($childrenNode1[$i] && !$childrenNode2[$i]){
-                        /*echo 'Node2 doesnt exist: <br>';
+                        echo 'Node2 doesnt exist: <br>';
                         echo $childrenNode1[$i]->parentNode->nodeName . ' ' . $childrenNode1[$i]->nodeName . ' is 1' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';*/
+                        echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';
 
                         $this->sameStructure = false;
                     }
@@ -1442,13 +1439,13 @@ class p2pCompany {
 
                     $this->verifyDomStructure($childrenNode1[$i], $childrenNode2[$i], $uniquesElement, $limit);
                 }
-            } else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
-                //echo 'Node has attr error 2';
+            } /*else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
+                echo 'Node has attr error 2';
                 $this->sameStructure = false;
             } else if ($node1->hasChildNodes() && !$node2->hasChildNodes()) {
-                //echo 'Node has attr error 2';
+                echo 'Node has attr error 2';
                 $this->sameStructure = false;
-            }
+            }*/
         }
         return $this->sameStructure;
     }
@@ -1716,6 +1713,26 @@ class p2pCompany {
         }
         return [$structureRevision,$break,$type];
     }
+    
+    
+    /**Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
+     * The array will contain the deleted/hidden invesment that we cant update from the pfp marketplace.
+     * @param array $loanReferenceList loan reference id list that we have in our marketplace
+     * @param array $investment single investment that we compare
+     */
+    public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
+        print_r($investment);
+        print_r($loanReferenceList);
+         foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
+            if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
+                echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;
+                unset($loanReferenceList[$key]); 
+            }
+        }
+        
+        return $loanReferenceList;
+    }
+    
 
 }
 

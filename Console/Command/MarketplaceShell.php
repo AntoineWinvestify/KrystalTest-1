@@ -78,6 +78,13 @@ class MarketplaceShell extends AppShell {
         $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
         $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
 
+        $loanIdList = array(); //This array contains the loan_reference of each investment, we need it to search in the pfp marketplace if the investment have been deleted. (COMUNITAE delete some finished investmenet)
+        foreach($companyMarketplace as $ivestment){
+            $loanId = $ivestment['Marketplace']['marketplace_loanReference'];
+            array_push($loanIdList, $loanId);
+        }
+        
+        
         $this->out(print_r($result[$companyId]['company_codeFile']) . " " . SHELL_ENDOFLINE);
         $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
         $newComp->defineConfigParms($result[$companyId]);
@@ -86,7 +93,7 @@ class MarketplaceShell extends AppShell {
         $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MARKETPLACE_SEQUENCE);
 
         $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure);
+        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList);
 
 
         if ($marketplaceArray[1] && $marketplaceArray[1] != 1) {
