@@ -325,7 +325,13 @@ class MarketPlacesController extends AppController {
 
         $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
         $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
-
+        
+        $loanIdList = array(); //This array contains the loan_reference of each investment, we need it to search in the pfp marketplace if the investment have been deleted. (COMUNITAE delete some finished investmenet)
+        foreach($companyMarketplace as $ivestment){
+            $loanId = $ivestment['Marketplace']['marketplace_loanReference'];
+            array_push($loanIdList, $loanId);
+        }
+        
         $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.	
         $newComp->defineConfigParms($result[$companyId]);
 
@@ -334,7 +340,7 @@ class MarketPlacesController extends AppController {
 
         $this->print_r2($urlSequenceList);
         $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure);
+        $marketplaceArray = $newComp->collectCompanyMarketplaceData($companyBackup, $structure,$loanIdList);
 
 
         //echo 'Marketplace Result: ';
@@ -648,7 +654,7 @@ class MarketPlacesController extends AppController {
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], MY_INVESTMENTS_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
-            //$this->newComp[$i]->generateCookiesFile();
+            $this->newComp[$i]->generateCookiesFile();
             $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
             $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
             $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class
@@ -708,12 +714,12 @@ class MarketPlacesController extends AppController {
                 $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
                 $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info["companyIdForQueue"]]->getUrlSequenceBackup());  // provide all URLs for this sequence
                 $this->newComp[$info["companyIdForQueue"]]->setTries(1);
-                //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
-                //$this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
+                $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+                $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
                 $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
             } else if ($info["typeOfRequest"] == "LOGOUT") {
                 echo "LOGOUT FINISHED <br>";
-                //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+                $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
             } else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || ($response->hasError()) && $info["typeOfRequest"] != "LOGOUT")) {
                 if ($response->hasError()) {
                     //$this->tempArray[$info["companyIdForQueue"]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
@@ -1035,7 +1041,7 @@ class MarketPlacesController extends AppController {
      * Add a request to the queue to initiate the multi_curl
      * @param type $request It's the request to process
      */
-    public function addRequetsToQueueCurls($request) {
+    public function addRequestToQueueCurls($request) {
         $this->queueCurls->attach($request);
     }
 

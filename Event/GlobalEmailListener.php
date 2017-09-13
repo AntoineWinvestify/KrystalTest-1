@@ -272,7 +272,7 @@ class GlobalEmailListener implements CakeEventListener {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($adminData['systemAdmin'] => __("Admin")));
-            $Email->subject(__("An" . $type . "has been logged."));
+            $Email->subject(__("An " . $type . " has been logged."));
             $Email->template('applicationError', 'standard_email_layout');
             $Email->viewVars(array('applicationerrorFile' => $event->data['Applicationerror']['applicationerror_file'],
                                            'id' => $event->data['Applicationerror']['id']));
