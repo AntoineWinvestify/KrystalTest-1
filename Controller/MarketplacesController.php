@@ -645,7 +645,7 @@ class MarketPlacesController extends AppController {
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
         $this->Data = ClassRegistry::init('Data');     // needed for storing 
-
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
 
         $userInvestment = array();
         $result = array();
@@ -748,7 +748,7 @@ class MarketPlacesController extends AppController {
             if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$ids[0]]->getTries() == 0) {
                 $this->logoutOnCompany($ids, $str);
                 $this->newComp[$ids[0]]->setIdForSwitch(0); //Set the id for the switch of the function company
-                $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
+                $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids[0]]->getUrlSequenceBackup());  // provide all URLs for this sequence
                 $this->newComp[$ids[0]]->setTries(1);
                 $this->newComp[$ids[0]]->deleteCookiesFile();
                 $this->newComp[$ids[0]]->generateCookiesFile();
