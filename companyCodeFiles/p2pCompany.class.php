@@ -623,8 +623,7 @@ class p2pCompany {
      * 	@return	string		$str	html string
      *
      */
-    function doCompanyLoginMultiCurl(array $loginCredentials) {
-        echo 'credentials: ' . print_r($loginCredentials);
+    function doCompanyLoginMultiCurl(array $loginCredentials, $payload = null) {
         $url = array_shift($this->urlSequence);
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -641,23 +640,30 @@ class p2pCompany {
             }
         }
 
-        //traverse array and prepare data for posting (key1=value1)
-        foreach ($loginCredentials as $key => $value) {
-            $postItems[] = $key . '=' . $value;
-        }
-
-        //create the final string to be posted using implode()
-        $postString = implode('&', $postItems);
-        echo 'post-String: ' . $postString;
+        if(!empty($payload)){ //For pfp that use payloads instead forms(like twino)
+            $postString = $payload;
+            echo 'Payload: ' . $postString;
+        }else{
+            //traverse array and prepare data for posting (key1=value1)
+            foreach ($loginCredentials as $key => $value) {
+                $postItems[] = $key . '=' . $value;
+            }
+            //create the final string to be posted using implode()
+            $postString = implode('&', $postItems);
+            echo 'post-String: ' . $postString;
+        }  
+        
         $request = new \cURL\Request();
-
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
             $request->getOptions()
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
         }
-
+        if(!empty($payload)){//We need this header in request payload
+            $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        }
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
                 ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
@@ -770,7 +776,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpageMultiCurl($url) {
+    function getCompanyWebpageMultiCurl($url,$credentials = null, $payload = false) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -840,6 +846,15 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
+            if(!empty($credentials)){
+                $request->getOptions()
+                    ->set(CURLOPT_POSTFIELDS, $credentials);
+            }
+            if($payload){
+                $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            }
+                
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
 
@@ -1668,7 +1683,7 @@ class p2pCompany {
         print_r($credentials);
         echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
 
-        $date = date("d-m-Y_H:i:sa");
+        $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $identity = 'testUser';
@@ -1695,11 +1710,9 @@ class p2pCompany {
         $header[] = 'accept-language: en-US,en;q=0.8';
         $header[] = 'upgrade-insecure-requests: 1';
         $header[] = 'origin: ' . $pfpBaseUrl;
-        $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+        $header[] = 'content-type: application/json;charset=UTF-8';
+        $header[] = 'accept: application/json, text/plain, */*';
         $header[] = 'authority: ' . $pfpBaseUrl;
-        $header[] = 'cache-control: max-age=0';
-
 
         curl_setopt($ch, CURLOPT_URL, $fileUrl);
         //curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -1708,7 +1721,7 @@ class p2pCompany {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 OPR/44.0.2510.857');
         curl_setopt($ch, CURLOPT_REFERER, $referer); 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); 
         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
         curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
 
@@ -1719,14 +1732,17 @@ class p2pCompany {
         }
         
         $result = curl_exec($ch);
+        
+
+        $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        //print_r($result); // prints the contents of the collected file before writing..
-        $fichero = fwrite($fp,$result);
+        print_r($result); // prints the contents of the collected file before writing..
+        $fichero = fwrite($fp,$result);//False if the file is not created
         //echo "file writed: " . $fichero . HTML_ENDOFLINE;
         fclose($fp);
         
-        if ($statusCode == 200 /*&& $fichero*/) {
+        if ($statusCode == 200 && $fichero) {
             echo 'Downloaded!' . HTML_ENDOFLINE;
         } else {
             echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
@@ -1756,7 +1772,6 @@ class p2pCompany {
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $identity = 'testUser';
         $path = $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
         $path = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;

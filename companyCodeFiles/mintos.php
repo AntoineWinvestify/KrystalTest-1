@@ -186,7 +186,7 @@ class mintos extends p2pCompany {
                     }
                 }
 
-                 if (!$resultLogin) {   // Error while logging in
+                 /*if (!$resultLogin) {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -195,7 +195,7 @@ class mintos extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     exit;
-                } 
+                } */
                 
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
