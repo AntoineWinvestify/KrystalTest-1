@@ -48,6 +48,17 @@ class CollectDataWorkerShell extends AppShell {
         while( $this->GearmanWorker->work() );
     }
     
+    /*$data["companies"] = $linkedaccountsByType;
+    $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
+    $data["queue_id"] = $resultQueue[$key]['Queue']['id'];*/
+    
+    /**
+     * Function to initiate the process to save the files of a company
+     * @param object $job It is the object of Gearmanjob that contains
+     * companies It is the id of the company;
+     * queue_userReference It is the userReference
+     * queue_id It is the id of the queue
+     */
     public function getDataMulticurlFiles($job) {
         $data = json_decode($job->workload(),true);
         
