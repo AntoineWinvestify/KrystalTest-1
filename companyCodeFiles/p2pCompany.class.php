@@ -427,7 +427,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpage($url) {
+    function getCompanyWebpage($url, $credentials = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -467,6 +467,15 @@ class p2pCompany {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
+        }
+        
+        if (!empty($credentials)) {
+                foreach ($credentials as $key => $value) {
+                $postItems[] = $key . '=' . $value;
+            }
+            $postString = implode('&', $postItems);
+            //set data to be posted
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
         }
 
         // Set the file URL to fetch through cURL
@@ -651,7 +660,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpageMultiCurl($url) {
+    function getCompanyWebpageMultiCurl($url, $credentials = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -691,6 +700,16 @@ class p2pCompany {
 
             unset($this->headers);   // reset fields
         }
+        
+        if (!empty($credentials)) {
+                foreach ($credentials as $key => $value) {
+                $postItems[] = $key . '=' . $value;
+            }
+            $postString = implode('&', $postItems);
+            $request->getOptions()
+            ->set(CURLOPT_POSTFIELDS, $postString);
+        }
+        
         $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
         $request->getOptions()
                 // Set the file URL to fetch through cURL
@@ -1310,7 +1329,7 @@ class p2pCompany {
         $company = explode(".", $substring)[0];
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
-        $this->marketplaces->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP: ' .  $company . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
+        $this->marketplaces->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $company . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
         return $this->tempArray;
     }
 
