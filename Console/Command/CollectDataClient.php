@@ -50,9 +50,7 @@ class CollectDataClientShell extends AppShell {
             echo __FILE__ . " " . __FUNCTION__ . " " . __LINE__ . "<br>";
             exit;
         }
-        
-        
-        
+
         $this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $linkedaccountsResults = [];
@@ -69,7 +67,7 @@ class CollectDataClientShell extends AppShell {
         }
         
         $companyTypes = $this->Company->find('list', array(
-            'fields' => array('Company.company_type')
+            'fields' => array('Company.company_typeOfAccess')
         ));
         
         $userLinkedaccounts = [];
@@ -80,15 +78,6 @@ class CollectDataClientShell extends AppShell {
             foreach ($linkedaccountResult as $linkedaccount) {
                 $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
                 $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
-                /*
-                 * This code it is not good
-                foreach (COMPANY_TYPES as $key2 => $companyType) {
-                    if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
-                        $userLinkedaccounts[$key][$key2][$i] = $linkedaccount;
-                        break;
-                    }
-                }*/
-                //$i is the number of each company per user and per type of company
                 $i++;
             }
         }
