@@ -218,10 +218,46 @@ class finanzarel extends p2pCompany {
                     exit;
                 }
                 echo 'Login ok';
+                
+                //Get credentials to download the file
+                $inputs = $dom->getElementsByTagName('input');
+                foreach ($inputs as $input) {
+                    $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                }
+                //print_r($credentials);
+                //Get the request to download the file
+                $as = $dom->getElementsByTagName('a');
+                foreach ($as as $key => $a) {
+                    //echo $key . " => " . $a->getAttribute('href') . "   " . $a->nodeValue .  HTML_ENDOFLINE;
+                    if (trim($a->nodeValue) == 'Descargar en csv') {
+                        $request[] = explode("'", $a->getAttribute('href'))[1];
+                        
+                    }
+                }
+                
+                $fileUrl =  array_shift($this->urlSequence);
+                $credentialsFile = array(
+                        'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
+                        'p_flow_step_id' => $credentials['p_flow_step_id'], 
+                        'p_instance' => $this->credentialsGlobal['p_instance'],  
+                        'p_debug' => '',
+                        'p_request' => $request[1]);
+                
+                echo $fileUrl . HTML_ENDOFLINE;
+                $fileName = 'Investment';
+                $fileType = 'csv';
+                $referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'] . '::NO:::';
+                $pfpBaseUrl = 'marketplace.finanzarel.com';
+                $path = 'prueba';
+                
+                //$this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
+                echo 'Downloaded';
+                
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
+                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba', $credentialsFile,$referer);
                 break; 
-            case 4:
+            /*case 4:
+                echo "case 4!!!!!!!";
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 //$this->print_r2($dom);
@@ -254,7 +290,7 @@ class finanzarel extends p2pCompany {
                 
                 //$this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
                 echo 'Downloaded';
-                break;
+                break;*/
         }
     }
 
