@@ -1107,20 +1107,16 @@ echo "END OF LOOP <br>";
      *       
      */
     function getRowData($input, $field, $overwrite) {  
-//echo "Line " . __LINE__ . " inputs are: input = $input, field = $field and condition = $overwrite <br>";      
 
-    if (empty($input)) {
- //       echo __FUNCTION__ . " " . __LINE__ . "returned field = $field <br>";
-        return $field;
-    }    
-    else {
-        if ($overwrite) {
-  //          echo __FUNCTION__ . " " . __LINE__ . "returned [overwritten] field = $field <br>";
+        if (empty($input)) {
             return $field;
-        }
-    } 
-  //           echo __FUNCTION__ . " " . __LINE__ . "ERROR, NOTHING DEFINED<br>";      
-     return "";
+        }    
+        else {
+            if ($overwrite) {
+                return $field;
+            }
+        }      
+         return "";
     }    
     
     

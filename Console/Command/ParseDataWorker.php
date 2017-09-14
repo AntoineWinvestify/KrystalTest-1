@@ -1,0 +1,149 @@
+<?php
+
+/**
+ * +----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
+ * | GNU General Public License for more details.        			|
+ * +----------------------------------------------------------------------------+
+ *
+ * 
+ * 
+ * Each user has queueId, investorID
+ * number of child processes, each childprocess takes a full sequence of a user
+ * and writes the new job status for the user
+ * Start instance of parser with configfile
+ * 
+ * constructor (configfile) cashflow
+ * load xls file
+ * start analysing
+ * store resulting array as json file
+ * 
+ * 
+ *  * constructor (configfile) investments
+ * load xls file
+ * start analysing
+ * store resulting array as json file
+ * 
+ * startParsing
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ *
+ * @author 
+ * @version
+ * @date
+ * @package
+ */
+
+class ParseDataWorkerShell extends AppShell {
+    
+    protected $GearmanWorker;
+    
+    var $uses = array('Marketplace', 'Company', 'Urlsequence');
+    
+    public function startup() {
+            $this->GearmanWorker = new GearmanWorker();
+    }
+    
+    public function main() {
+        $this->GearmanWorker->addServers('127.0.0.1');
+        $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
+        $this->GearmanWorker->addFunction('casperFiles', array($this, 'getDataCasperFiles'));
+        $this->GearmanWorker->addFunction('testFail', function(GearmanJob $job) {
+            try {
+                throw new Exception('Boom');
+            } catch (Exception $e) {
+                $job->sendException($e->getMessage());
+                $job->sendFail();
+
+            }
+        });
+        
+        $this->GearmanWorker->addFunction('parseFiles', array($this, 'parseFile'));   
+        
+        while( $this->GearmanWorker->work() );
+    }
+            
+  
+    
+    
+    
+    /**
+     * Parse the content of a file (xls, xlsx, csv) into an array 
+     * The $job->workload() function read the input data as sent by the Gearman client
+     * This is json_encoded data with the following structure:
+     *      data['filenames'[]]       array of filenames, FQDN's
+     *      data['userReference']
+     * 
+     * 
+     * 
+     * @return array  
+     * 
+     * filerParser   constructor with filename  FQDN  loads the file and convert it into an array
+     *           array     analyse    convert internal array to external format using definitions of configuration file
+     *                      true  analysis done with success
+     *                  readErrorData 
+     *                      array with all errorData related to occurred error
+     * 
+     */   
+    public function parseFile($job) {
+        $data = json_decode($job->workload(),true);
+        
+    //    loadFile
+
+        foreach ($data[filenames] as $key => $filename) {
+            $myParser = new Parser(data['filename']);                       // load the file and convert it into an array
+            if (empty($parsedFileStructure = $myParser->analyse()) ) {      // successfull analysis, result is an array 
+                                                                            // with loanId's as indice 
+                //run through the array and search for new loans
+                $loans = array_keys($parsedFileStructure);
+                foreach ($loans as $loan) {
+                    // check if loanId already exists for the current user
+                    
+                    
+                    
+                    
+                }
+            }
+            else {                                                      // Error encountered
+                $myParser->analysisErrors();
+                
+            }
+        }
+        unset($myParser);
+        $myParser->
+                
+        $myParser->
+        $myParser-> 
+        $myParser->
+        
+    }    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+}
+
+
+
