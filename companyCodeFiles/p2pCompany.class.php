@@ -1300,8 +1300,17 @@ class p2pCompany {
                 . $error_request
                 . "$newLine The time is : " . date("Y-m-d H:i:s")
                 . "$newLine ERROR FINISHED<br>";
+        $errorDetailed = "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
+                . ". The queueId is " . $this->queueId['Queue']['id']
+                . ". The error was caused in the urlsequence: " . $this->errorInfo
+                . " " . $type_sequence
+                . " " . $error_request;
+        $position = stripos($file, 'companyCodeFiles');
+        $substring = substr($file, $position+17);
+        $company = explode(".", $substring)[0];
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
+        $this->marketplaces->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP: ' .  $company . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
         return $this->tempArray;
     }
 
