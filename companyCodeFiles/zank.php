@@ -761,7 +761,7 @@ class zank extends p2pCompany {
 
                 $this->idForSwitch++;
                 //Add here the Edu's adaption to the url, we add the form into the call
-                $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
+                $this->getCompanyWebpageMultiCurl($this->url, $form);
                 break;
             case 6:
                 $temp = json_decode($str, $assoc = true);
@@ -837,7 +837,7 @@ class zank extends p2pCompany {
 
                     $this->idForSwitch = 6;
                     //Add here the Edu's adaption to the url
-                    $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
+                    $this->getCompanyWebpageMultiCurl($this->url, $form);
                 } else {
                     $this->data1 = array_values($this->data1);
                     $this->tempArray['global']['investments'] = count($this->data1);
@@ -960,7 +960,7 @@ class zank extends p2pCompany {
         //This value is 100 to enter in the while but when we are inside we change to the real number of investments
         $numberJsonInvestments = 100;
         while ($numberJsonInvestments % 100 == 0) {
-            $str = $this->getCompanyWebpageJson($url, $form);
+            $str = $this->getCompanyWebpage($url, $form);
             $temp = json_decode($str, $assoc = true);
             //We take the real number of investments
             $numberJsonInvestments = count($temp['data']);
@@ -1111,190 +1111,6 @@ class zank extends p2pCompany {
         //$str = $this->doCompanyLogout();
         $this->getCompanyWebpage();
         return true;
-    }
-
-    /**
-     * Function that is used to pick up inversions by 100 instead of 25 with a json
-     * The normal function of Zank is to give 25 but we change the petition with the posts item
-     * with curl
-     * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
-     * @return string $str It is the website resulted of the curl petition
-     */
-    function getCompanyWebpageJson($url, $form) {
-
-        if (empty($url)) {
-            $url = array_shift($this->urlSequence);
-        }
-
-        if (!empty($this->testConfig['active']) == true) {    // test system active, so read input from prepared files
-            if (!empty($this->testConfig['siteReadings'])) {
-                $currentScreen = array_shift($this->testConfig['siteReadings']);
-                echo "currentScreen = $currentScreen";
-                $str = file_get_contents($currentScreen);
-
-                if ($str === false) {
-                    echo "cannot find file<br>";
-                    exit;
-                }
-                echo "TestSystem: file = $currentScreen<br>";
-                return $str;
-            }
-        }
-
-        $curl = curl_init();
-
-        if (!$curl) {
-            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
-            $msg = $msg . " \n";
-            $this->logToFile("Warning", $msg);
-            exit;
-        }
-
-        if ($this->config['postMessage'] == true) {
-            curl_setopt($curl, CURLOPT_POST, true);
-//    echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
-        }
-
-// check if extra headers have to be added to the http message  
-        if (!empty($this->headers)) {
-            echo "EXTRA HEADERS TO BE ADDED<br>";
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-            unset($this->headers);      // reset fields
-        }
-
-        foreach ($form as $key => $value) {
-            $postItems[] = $key . '=' . $value;
-        }
-        $postString = implode('&', $postItems);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-
-
-        // Set the file URL to fetch through cURL
-        curl_setopt($curl, CURLOPT_URL, $url);
-
-        // Set a different user agent string (Googlebot)
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
-
-        // Follow redirects, if any
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-
-        // Fail the cURL request if response code = 400 (like 404 errors) 
-        curl_setopt($curl, CURLOPT_FAILONERROR, true);
-
-        // Return the actual result of the curl result instead of success code
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-        // Wait for 10 seconds to connect, set 0 to wait indefinitely
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-
-        // Execute the cURL request for a maximum of 50 seconds
-        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
-
-        // Do not check the SSL certificates
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);   // important
-        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);    // Important
-        // Fetch the URL and save the content
-        $str = curl_exec($curl);
-        if (!empty($this->testConfig['active']) == true) {
-            print_r(curl_getinfo($curl));
-            echo "<br>";
-            print_r(curl_error($curl));
-            echo "<br>";
-        }
-
-        if ($this->config['appDebug'] == true) {
-            echo "VISITED COMPANY URL = $url <br>";
-        }
-        if ($this->config['tracingActive'] == true) {
-            $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
-        }
-        return $str;
-    }
-
-    /**
-     * Function that is used to pick up inversions by 100 instead of 25 with a json
-     * The normal function of Zank is to give 25 but we change the petition with the posts item
-     * with curl
-     * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
-     * @return string $str It is the website resulted of the curl petition
-     */
-    function getCompanyWebpageJsonMultiCurl($url, $form) {
-
-        if (empty($url)) {
-            $url = array_shift($this->urlSequence);
-        }
-        $this->errorInfo = $url;
-        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
-            if (!empty($this->testConfig['siteReadings'])) {
-                $currentScreen = array_shift($this->testConfig['siteReadings']);
-                echo "currentScreen = $currentScreen";
-                $str = file_get_contents($currentScreen);
-
-                if ($str === false) {
-                    echo "cannot find file<br>";
-                    exit;
-                }
-                echo "TestSystem: file = $currentScreen<br>";
-                return $str;
-            }
-        }
-
-        $request = new \cURL\Request();
-
-        if ($this->config['postMessage'] == true) {
-            $request->getOptions()
-                    ->set(CURLOPT_POST, true);
-            //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
-        }
-
-        // check if extra headers have to be added to the http message  
-        if (!empty($this->headers)) {
-            echo "EXTRA HEADERS TO BE ADDED<br>";
-            $request->getOptions()
-                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
-                    ->set(CURLOPT_HTTPHEADER, $this->headers);
-
-            unset($this->headers);   // reset fields
-        }
-
-        foreach ($form as $key => $value) {
-            $postItems[] = $key . '=' . $value;
-        }
-        $postString = implode('&', $postItems);
-
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
-        $request->getOptions()
-                // Set the file URL to fetch through cURL
-                ->set(CURLOPT_URL, $url)
-                // Set a different user agent string (Googlebot)
-                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
-                // Follow redirects, if any
-                ->set(CURLOPT_FOLLOWLOCATION, true)
-                ->set(CURLOPT_POSTFIELDS, $postString)
-                // Fail the cURL request if response code = 400 (like 404 errors) 
-                ->set(CURLOPT_FAILONERROR, true)
-                ->set(CURLOPT_AUTOREFERER, true)
-                //->set(CURLOPT_VERBOSE, 1)
-                // Return the actual result of the curl result instead of success code
-                ->set(CURLOPT_RETURNTRANSFER, true)
-                // Wait for 10 seconds to connect, set 0 to wait indefinitely
-                ->set(CURLOPT_CONNECTTIMEOUT, 30)
-                // Execute the cURL request for a maximum of 50 seconds
-                ->set(CURLOPT_TIMEOUT, 100)
-                // Do not check the SSL certificates
-                ->set(CURLOPT_SSL_VERIFYHOST, false)
-                ->set(CURLOPT_SSL_VERIFYPEER, false)
-                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
-                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-        //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequestToQueueCurls($request);
-
-        if ($this->config['appDebug'] == true) {
-            echo "VISITED COMPANY URL = $url <br>";
-        }
     }
 
     /**
