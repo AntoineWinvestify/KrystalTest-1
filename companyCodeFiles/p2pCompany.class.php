@@ -137,6 +137,8 @@ class p2pCompany {
     protected $typeNotMoreScanning = [];
     protected $valueNotMoreScanning = [];
     protected $sameStructure = true;
+    //Variables to open stream to write a file
+    protected $fp;
 
     /**
      *
@@ -1775,7 +1777,7 @@ class p2pCompany {
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
 
         $output_filename = $fileName . '_' . $date . "." . $fileType;
-        $fp = fopen($path . $output_filename, 'w');
+        $this->fp = fopen($path . $output_filename, 'w');
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -1846,7 +1848,7 @@ class p2pCompany {
                 //->set(CURLOPT_VERBOSE, 1)
                 // Return the actual result of the curl result instead of success code
                 ->set(CURLOPT_RETURNTRANSFER, false)
-                ->set(CURLOPT_FILE, $fp)
+                ->set(CURLOPT_FILE, $this->fp)
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
@@ -2257,6 +2259,14 @@ class p2pCompany {
         }
         
         return $loanReferenceList;
+    }
+    
+    public function getFopen() {
+        return $this->fp;
+    }
+    
+    public function setFopen($fp) {
+        $this->fp = $fp;
     }
     
 
