@@ -74,11 +74,14 @@ class CollectDataClientShell extends AppShell {
         
         $userLinkedaccounts = [];
         $i = 0;
+        
         foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
+            //In this case $key is the number of the linkaccount inside the array 0,1,2,3
             foreach ($linkedaccountResult as $linkedaccount) {
                 $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
                 $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                 /*
+                 * This code it is not good
                 foreach (COMPANY_TYPES as $key2 => $companyType) {
                     if (in_array($linkedaccount['Linkedaccount']['company_id'], $companyType)) {
                         $userLinkedaccounts[$key][$key2][$i] = $linkedaccount;
