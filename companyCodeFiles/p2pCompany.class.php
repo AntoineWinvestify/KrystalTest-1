@@ -640,7 +640,7 @@ class p2pCompany {
 
         if(!empty($payload)){ //For pfp that use payloads instead forms(like twino)
             $postString = $payload;
-            echo $postString;
+            echo 'Payload: ' . $postString;
         }else{
             //traverse array and prepare data for posting (key1=value1)
             foreach ($loginCredentials as $key => $value) {
@@ -774,7 +774,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpageMultiCurl($url) {
+    function getCompanyWebpageMultiCurl($url,$credentials = null, $payload = false) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -844,6 +844,15 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
+            if(!empty($credentials)){
+                $request->getOptions()
+                    ->set(CURLOPT_POSTFIELDS, $credentials);
+            }
+            if($payload){
+                $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            }
+                
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
 
@@ -1699,11 +1708,9 @@ class p2pCompany {
         $header[] = 'accept-language: en-US,en;q=0.8';
         $header[] = 'upgrade-insecure-requests: 1';
         $header[] = 'origin: ' . $pfpBaseUrl;
-        $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+        $header[] = 'content-type: application/json;charset=UTF-8';
+        $header[] = 'accept: application/json, text/plain, */*';
         $header[] = 'authority: ' . $pfpBaseUrl;
-        $header[] = 'cache-control: max-age=0';
-
 
         curl_setopt($ch, CURLOPT_URL, $fileUrl);
         //curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -1712,7 +1719,7 @@ class p2pCompany {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 OPR/44.0.2510.857');
         curl_setopt($ch, CURLOPT_REFERER, $referer); 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); 
         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
         curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
 
@@ -1723,9 +1730,12 @@ class p2pCompany {
         }
         
         $result = curl_exec($ch);
+        
+
+        $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        //print_r($result); // prints the contents of the collected file before writing..
+        print_r($result); // prints the contents of the collected file before writing..
         $fichero = fwrite($fp,$result);//False if the file is not created
         //echo "file writed: " . $fichero . HTML_ENDOFLINE;
         fclose($fp);
@@ -1760,7 +1770,6 @@ class p2pCompany {
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $identity = 'testUser';
         $path = $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
         $path = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;

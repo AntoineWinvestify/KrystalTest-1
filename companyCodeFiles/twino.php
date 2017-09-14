@@ -27,12 +27,14 @@
  * link account
  */
 class twino extends p2pCompany {
-
+    protected $statusDownloadUrl = null;
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
 
+    
+    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY twino DURING LOGIN PROCESS
@@ -42,7 +44,7 @@ class twino extends p2pCompany {
 
         $credentials['name'] = $user;
         $credentials['password'] = $password;
-        $credentials['googleAnalyticClientId'] = '1778227581.1503479723';
+        //$credentials['googleAnalyticClientId'] = '1778227581.1503479723';
         $payload = json_encode($credentials);
 
         //echo $payload;
@@ -87,7 +89,7 @@ class twino extends p2pCompany {
             case 0:
                 $credentials['name'] = $this->user;
                 $credentials['password'] = $this->password;
-                $credentials['googleAnalyticClientId'] = '1778227581.1503479723';
+                //$credentials['googleAnalyticClientId'] = '1778227581.1503479723';
                 $payload = json_encode($credentials);
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl(array(),$payload);
@@ -102,7 +104,7 @@ class twino extends p2pCompany {
                 break;
             case 3:
                 echo $str;
-                /*if ($str == true) {
+                /*if ($str == false) {
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Twino login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -112,12 +114,56 @@ class twino extends p2pCompany {
                     $this->logToFile("Warning", $msg);
                     exit;
                 }*/
-                echo 'twino login ok';
+                if ($str == false) {
+                    echo 'twino login fail';
+                }else{
+                    echo 'twino login ok';
+                }
+                
+                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["CURRENT","EXTENDED","DELAYED","DEFAULTED"]}}';
                 $this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl();
+                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile,true);
+                break;
+            case 4:
+                echo $str;
+                $response = json_decode($str, true);
+                print_r($response);
+                if(empty($this->statusDownloadUrl)){
+                    echo 'Reading download status: ' . HTML_ENDOFLINE;
+                    $this->statusDownloadUrl = array_shift($this->urlSequence);
+                    $this->idForSwitch++;
+                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
+                }       
+                $this->idForSwitch++;
+                break;
+            case 5:
+                echo $str;
+                $response = json_decode($str, true);   
+                print_r($response);
+                if($response['reportReady'] == true){
+                    echo 'Status true, downloading';
+                    $this->idForSwitch++;
+                    $this->downloadPfpFile($this->statusDownloadUrl . $response['reportId']. '/download' , 'prueba', 'xlsx', 'www.twino.eu', 'Twino', 'TestUser', null, 'https://www.twino.eu/en/profile/investor/my-investments/individual-investments');
+                }else{
+                    echo 'Not ready yet';
+                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
+                    $this->idForSwitch--;
+                    echo 'Repeat Case: ' . $this->idForSwitch;
+                }
                 break;
 
-
+                /*echo 'NOW:' . $str . HTML_ENDOFLINE;
+                $fileUrl = array_shift($this->urlSequence);
+                echo 'Download url: ' . $fileUrl . HTML_ENDOFLINE;
+                
+                $fileName = 'Investment';
+                $fileType = 'xlsx';
+                $pfpBaseUrl = 'https://www.twino.eu';
+                $referer = 'https://www.twino.eu/en/profile/investor/my-investments/individual-investments';
+                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Twino', 'prueba', $credentialsFile,$referer);
+                //echo 'Downloaded';
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();*/
             /* case 3:
               echo $this->idForSwitch . HTML_ENDOFLINE;
               $dom = new DOMDocument;  //Check if works
