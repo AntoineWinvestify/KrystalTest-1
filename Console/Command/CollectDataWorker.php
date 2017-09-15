@@ -105,11 +105,16 @@ class CollectDataWorkerShell extends AppShell {
             
             //We get the response of the request
             $response = $event->response;
-            $error = nullS;
+            $error = null;
             // $info["companyIdForQueue"] is the company id
             // $info["idForSwitch"] is the switch id
             // $info["typeOfRequest"]  is the type of request (WEBPAGE, DOWNLOADFILE, LOGIN, LOGOUT)
             $info = json_decode($event->request->_page);
+            
+            if ($info["typeOfRequest"] == "DOWNLOADFILE") {
+                fclose($this->newComp[$info["companyIdForQueue"]]->getFopen());
+            }
+            
             if ($response->hasError()) {
                $this->errorCurl($response->getError(), $info, $response);
                $error = $response->getError();
