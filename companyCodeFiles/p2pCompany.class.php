@@ -139,6 +139,8 @@ class p2pCompany {
     protected $sameStructure = true;
     //Variables to open stream to write a file
     protected $fp;
+    //Variables to download files
+    protected $fileType;
 
     /**
      *
@@ -1753,14 +1755,13 @@ class p2pCompany {
      * Function to download a file with multicurl
      * @param string $fileUrl url that download the file
      * @param string $fileName name of the file to save
-     * @param string $fileType extension of the file
      * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
      * @param type $pfpName
      * @param string $identity
      * @param type $credentials
      * @param type $referer
      */
-    public function getPfpFileMulticurl($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+    public function getPfpFileMulticurl($fileUrl, $fileName, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
 
         if (empty($pfpBaseUrl)) {
             $pfpBaseUrl = array_shift($this->urlSequence);
@@ -1776,7 +1777,7 @@ class p2pCompany {
         $path = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
 
-        $output_filename = $fileName . '_' . $date . "." . $fileType;
+        $output_filename = $fileName . '_' . $date . "." . $this->fileType;
         $this->fp = fopen($path . $output_filename, 'w');
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -2268,6 +2269,16 @@ class p2pCompany {
     public function setFopen($fp) {
         $this->fp = $fp;
     }
+    
+    function getFileType() {
+        return $this->fileType;
+    }
+
+    function setFileType($fileType) {
+        $this->fileType = $fileType;
+    }
+
+
     
 
 }
