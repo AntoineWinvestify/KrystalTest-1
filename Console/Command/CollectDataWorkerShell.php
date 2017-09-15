@@ -293,7 +293,7 @@ class CollectDataWorkerShell extends AppShell {
      * @param int $companyIdForQueue It is the companyId inside the array of newComp
      * @param string $str It is the webpage on string format
      */
-    function logoutOnCompany($companyIdForQueue, $str) {
+    public function logoutOnCompany($companyIdForQueue, $str) {
         $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$companyIdForQueue], LOGOUT_SEQUENCE);
         //echo "Company = $this->companyId[$info["companyIdForQueue"]]";
         $this->newComp[$companyIdForQueue]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence

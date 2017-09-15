@@ -1761,7 +1761,7 @@ class p2pCompany {
      * @param type $credentials
      * @param type $referer
      */
-    public function getPfpFileMulticurl($fileUrl, $fileName, $pfpName, $identity, $credentials, $referer) {
+    public function getPfpFileMulticurl($url = null, $fileName, $pfpName, $identity, $credentials, $referer) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -1838,7 +1838,7 @@ class p2pCompany {
         
         $request->getOptions()
                 // Set the file URL to fetch through cURL
-                ->set(CURLOPT_URL, $fileUrl)
+                ->set(CURLOPT_URL, $url)
                 // Set a different user agent string (Googlebot)
                 ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 // Follow redirects, if any
