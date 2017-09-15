@@ -121,6 +121,8 @@ class colectual extends p2pCompany {
             'Password' => $password
                 ), false);
         $casper->click('.md-btn');
+        
+        
 
         $casper->addToScript(<<<FRAGMENT
 casper.waitUntilVisible(".step-instructions", function() {
@@ -310,6 +312,38 @@ FRAGMENT
             'Password' => $password
                 ), false);
         $casper->click('.md-btn');
+        
+        $casper->addToScript(<<<FRAGMENT
+casper.waitUntilVisible(".step-instructions", function() {
+                     this.echo("I am in");
+		});
+FRAGMENT
+        );
+        
+        $str = $casper->getCurrentPageContent();
+        $dom = new DOMDocument;
+        $classname = 'step-instructions';
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $dom_xpath = new DOMXPath($dom);
+        $resultColectual = false;
+        $login = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
+        if ($login->length > 0) {
+            $resultColectual = true;
+            //echo "LOGIN CORRECT";
+        }
+        
+         if (!$resultColectual) {   // Error while logging in
+            echo __FUNCTION__ . __LINE__ . "login fail" . SHELL_ENDOFLINE;
+            $tracings = "Tracing: " . SHELL_ENDOFLINE;
+            $tracings .= __FILE__ . " " . __LINE__ . SHELL_ENDOFLINE;
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . SHELL_ENDOFLINE;
+            $tracings .= SHELL_ENDOFLINE;
+            $msg = "Error while entering user's portal. Wrong userid/password" . SHELL_ENDOFLINE;
+            $msg = $msg . $tracings . SHELL_ENDOFLINE;
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
 
         $casper->addToScript(<<<FRAGMENT
 casper.waitUntilVisible(".step-instructions", function() {
@@ -524,7 +558,6 @@ FRAGMENT
 
           look for the class "step-instructions"
          */
-        $loginIn = false;
         $url = $this->urlSequence;
         $username = $user;
         $password = $password;
@@ -554,21 +587,22 @@ FRAGMENT
         // run the casper script
         $casper->run();
         $str = $casper->getCurrentPageContent();
-        //This two lines are for debug purpose
-        //var_dump($casper->getOutput());
-        //echo __FUNCTION__ . __LINE__ . " LOGIN<br>";
-        $this->companyUserLogout($url[1]);
         $dom = new DOMDocument;
         $classname = 'step-instructions';
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
         $dom_xpath = new DOMXPath($dom);
+        $loginIn = false;
         $login = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
         if ($login->length > 0) {
             $loginIn = true;
         }
-
+        //This two lines are for debug purpose
+        //var_dump($casper->getOutput());
+        //echo __FUNCTION__ . __LINE__ . " LOGIN<br>";
+        $this->companyUserLogout($url[1]);
         return $loginIn;
+        
     }
 
     /**
