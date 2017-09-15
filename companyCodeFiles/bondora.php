@@ -166,11 +166,27 @@ class bondora extends p2pCompany {
 
                 $confirm = false;
 
-                $urls = $this->getElements($dom, 'a', 'class', 'btn btn-bondora-default btn-sm');
-
-                foreach ($urls as $key => $url) {
-                    echo $key . " " . $url->getAttribute('href') . HTML_ENDOFLINE;
+                $trs = $dom->getElementsByTagName('tr');
+                foreach($trs as $tr){
+                    echo $tr->nodeValue . HTML_ENDOFLINE;
+                    if(strpos($tr->nodeValue,"Investments list")){
+                        $urls = $tr->getElementsByTagName('a');
+                        $this->tempUrl['downloadInvesment'] = $urls[0]->getAttribute('href');
+                        $this->tempUrl['deleteInvesment'] = $urls[1]->getAttribute('href');
+                    }
+                    if(strpos($tr->nodeValue,"Account statement")){
+                        $urls = $tr->getElementsByTagName('a');
+                        $this->tempUrl['downloadCashFlow'] = $urls[0]->getAttribute('href');
+                        $this->tempUrl['deleteCashFlow'] = $urls[1]->getAttribute('href');
+                    }
                 }
+
+                if(empty($this->downloadDeleteUrl)){
+                    $this->tempUrl['baseDownloadDelete'] = array_shift($this->urlSequence);
+                }
+                
+                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
+                $this->downloadPfpFile($url, 'prueba', 'xlsx', 'https://www.bondora.com', 'bondora', 'testuser', null, 'https://www.bondora.com/en/reports/');
                 break;
         }
     }
