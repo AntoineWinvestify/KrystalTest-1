@@ -95,7 +95,7 @@ class bondora extends p2pCompany {
         $this->getCompanyWebpage();
         return true;
     }
-    
+
     /**
      *
      * 	Collects the investment data of the user
@@ -115,7 +115,7 @@ class bondora extends p2pCompany {
                 $inputs = $dom->getElementsByTagName('input');
 
                 foreach ($inputs as $key => $input) {
-                    //echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
                     if ($key == 0) {
                         continue;
                     }
@@ -128,8 +128,9 @@ class bondora extends p2pCompany {
                 print_r($credentials);
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($credentials); //do login
-               break;
+                break;
             case 2:
+                echo 'Doing loging' . HTML_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
@@ -141,27 +142,37 @@ class bondora extends p2pCompany {
 
                 $confirm = false;
 
-                $h2s = $dom->getElementsByTagName('h2');
-                foreach ($h2s as $h2) {
-                    echo $h2->nodeValue . HTML_ENDOFLINE;
-                    if (trim($h2->nodeValue) == 'Saldo en cuenta') {                   
+                $spans = $dom->getElementsByTagName('span');
+                foreach ($spans as $span) {
+                    echo $span->nodeValue . HTML_ENDOFLINE;
+                    if (trim($span->nodeValue) == 'Account value') {
                         $confirm = true;
                         break;
                     }
                 }
-                
+
+
                 if ($confirm) {
+                    echo 'Login ok' . HTML_ENDOFLINE;
                     $this->idForSwitch++;
-                    $this->getCompanyWebpageMultiCurl(); 
+                    $this->getCompanyWebpageMultiCurl();
                 }
                 break;
             case 4:
-                echo "CODEEEEEEEEEEEEEE" . $str;
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+
+                $confirm = false;
+
+                $urls = $this->getElements($dom, 'a', 'class', 'btn btn-bondora-default btn-sm');
+
+                foreach ($urls as $key => $url) {
+                    echo $key . " " . $url->getAttribute('href') . HTML_ENDOFLINE;
+                }
                 break;
-            
         }
-        
-        
     }
 
 }
