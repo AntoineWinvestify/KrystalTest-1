@@ -20,12 +20,19 @@
  * @date
  * @package
  */
+require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 
 class CollectDataWorkerShell extends AppShell {
     
     protected $GearmanWorker;
     
     var $uses = array('Marketplace', 'Company', 'Urlsequence');
+    
+    public $queueCurls;
+    public $newComp = array();
+    public $tempArray = array();
+    public $companyId = array();
+
     
     public function startup() {
             $this->GearmanWorker = new GearmanWorker();
@@ -61,7 +68,9 @@ class CollectDataWorkerShell extends AppShell {
      */
     public function getDataMulticurlFiles($job) {
         $data = json_decode($job->workload(),true);
-        
+        print_r($data);
+        $this->queueCurls = new \cURL\RequestsQueue;
+        //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
         $index = 0;
         $i = 0;
         foreach ($data["companies"] as $linkedaccount) {
@@ -88,7 +97,7 @@ class CollectDataWorkerShell extends AppShell {
             );
             $this->newComp[$i]->defineConfigParms($configurationParameters);
             $i++;
-        }    
+        }
         $companyNumber = 0;
         echo "MICROTIME_START = " . microtime() . "<br>";
         //We start at the same time the queue on every company
@@ -109,7 +118,7 @@ class CollectDataWorkerShell extends AppShell {
             // $info["companyIdForQueue"] is the company id
             // $info["idForSwitch"] is the switch id
             // $info["typeOfRequest"]  is the type of request (WEBPAGE, DOWNLOADFILE, LOGIN, LOGOUT)
-            $info = json_decode($event->request->_page);
+            $info = json_decode($event->request->_page, true);
             
             if ($info["typeOfRequest"] == "DOWNLOADFILE") {
                 fclose($this->newComp[$info["companyIdForQueue"]]->getFopen());
@@ -155,6 +164,9 @@ class CollectDataWorkerShell extends AppShell {
            echo '*';
            $this->queueCurls->socketSelect();
        }
+       
+       return "ok";
+        exit();
     }
     
     public function getDataCasperFiles($job) {
@@ -285,5 +297,46 @@ class CollectDataWorkerShell extends AppShell {
         $this->newComp[$companyIdForQueue]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
         $this->newComp[$companyIdForQueue]->companyUserLogoutMultiCurl($str);
     }
+    
+    /*
+     * 
+     * Get the variable queueCurls
+     */
+    public function getQueueCurls() {
+        return $this->queueCurls;
+    }
+    
+    /**
+     * 
+     * Add a request to the queue to initiate the multi_curl
+     * @param request $request It's the request to process
+     */
+    public function addRequestToQueueCurls($request) {
+        $this->queueCurls->attach($request);
+    }
+    
+    /**
+     * Function to process if there is an error with the request on parallel
+     * @param object $error It is the curl error
+     * @param array $info They are the info of the company
+     * @param object $response It is the curl response from the request on parallel
+     */
+    function errorCurl($error, $info, $response) {
+        echo
+        'Error code: ' . $error->getCode() . "<br>" .
+        'Message: "' . $error->getMessage() . '" <br>';
+        echo 'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '<br>';
+        $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
+        if (!empty($testConfig['active']) == true) {
+            print_r($response->getInfo());
+            echo "<br>";
+        }
+        $config = $this->newComp[$info["companyIdForQueue"]]->getConfig();
+        if ($config['tracingActive'] == true) {
+            $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
+        }
+    }
+
+
     
 }
