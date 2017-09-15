@@ -58,13 +58,13 @@ class bondora extends p2pCompany {
         $credentials['Email'] = $user;
         $credentials['Password'] = $password;
 
-        print_r($credentials);
+        //print_r($credentials);
 
         $str = $this->doCompanyLogin($credentials); //do login
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        echo $str;
+        //echo $str;
 
         $confirm = false;
 
@@ -113,30 +113,38 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 $inputs = $dom->getElementsByTagName('input');
-                /*foreach($inputs as $key => $input){
-                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
-                }*/
-                $token = $inputs[2]->getAttribute('value'); //this is the token
 
-                $credentials['username'] = $this->user;
-                $credentials['password'] = $this->password;
-                $credentials['__RequestVerificationToken'] = $token;
-                //print_r($credentials);
+                foreach ($inputs as $key => $input) {
+                    //echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+                    if ($key == 0) {
+                        continue;
+                    }
+                    $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                }
+
+                $credentials['Email'] = $this->user;
+                $credentials['Password'] = $this->password;
+
+                print_r($credentials);
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($credentials); //do login
                break;
             case 2:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            case 3:
                 $dom = new DOMDocument;  //Check if works
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-                echo $str;
+
 
                 $confirm = false;
 
                 $h2s = $dom->getElementsByTagName('h2');
                 foreach ($h2s as $h2) {
                     echo $h2->nodeValue . HTML_ENDOFLINE;
-                    if (trim($h2->nodeValue) == 'Saldo en cuenta') {
+                    if (trim($h2->nodeValue) == 'Saldo en cuenta') {                   
                         $confirm = true;
                         break;
                     }
@@ -147,7 +155,7 @@ class bondora extends p2pCompany {
                     $this->getCompanyWebpageMultiCurl(); 
                 }
                 break;
-            case 3:
+            case 4:
                 echo "CODEEEEEEEEEEEEEE" . $str;
                 break;
             

@@ -69,6 +69,14 @@ class estateguru extends p2pCompany {
         return $confirm;
     }
 
+    
+     /**
+     * Download the file with the user investment
+     * @param string $user
+     * @param string $password
+     */
+    function collectUserInvestmentDataParallel($str) {}
+    
     /**
      *
      * 	Logout of user from the company portal.
