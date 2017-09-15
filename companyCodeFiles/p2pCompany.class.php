@@ -72,7 +72,7 @@
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 //Configure::load('constants'); //Load all global constants
 
-require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
+//require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'Reader' . DS . 'IReadFilterWinvestify.php'));
@@ -778,7 +778,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpageMultiCurl($url,$credentials = null, $payload = false) {
+    function getCompanyWebpageMultiCurl($url = null,$credentials = null, $payload = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -830,7 +830,7 @@ class p2pCompany {
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
                 // Set a different user agent string (Googlebot)
-                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 // Follow redirects, if any
                 ->set(CURLOPT_FOLLOWLOCATION, true)
                 // Fail the cURL request if response code = 400 (like 404 errors) 
@@ -848,14 +848,14 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-            if(!empty($credentials)){
+            /*if(!empty($credentials)){
                 $request->getOptions()
                     ->set(CURLOPT_POSTFIELDS, $credentials);
             }
-            if($payload){
+            if(!empty($payload)){
                 $request->getOptions()
                     ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-            }
+            }*/
                 
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
@@ -1840,7 +1840,7 @@ class p2pCompany {
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $fileUrl)
                 // Set a different user agent string (Googlebot)
-                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 // Follow redirects, if any
                 ->set(CURLOPT_FOLLOWLOCATION, false)
                 // Fail the cURL request if response code = 400 (like 404 errors) 
