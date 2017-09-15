@@ -122,13 +122,13 @@ class zank extends p2pCompany {
         //echo $result; 
         $this->investmentDeletedList = $loanIdList;
         if (!$result) {   // Error while logging in
-            echo __FUNCTION__ . __LINE__ . "login fail" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $tracings = "Tracing: " . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $tracings .= __FILE__ . " " . __LINE__ . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $tracings .= HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $msg = "Error while entering user's portal. Wrong userid/password" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $msg = $msg . $tracings . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            echo __FUNCTION__ . __LINE__ . "login fail" . SHELL_ENDOFLINE;
+            $tracings = "Tracing: " . SHELL_ENDOFLINE;
+            $tracings .= __FILE__ . " " . __LINE__ . SHELL_ENDOFLINE;
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . SHELL_ENDOFLINE;
+            $tracings .= SHELL_ENDOFLINE;
+            $msg = "Error while entering user's portal. Wrong userid/password" . SHELL_ENDOFLINE;
+            $msg = $msg . $tracings . SHELL_ENDOFLINE;
             $this->logToFile("Warning", $msg);
             exit;
         }
