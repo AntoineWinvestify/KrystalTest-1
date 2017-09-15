@@ -126,7 +126,7 @@ class mintos extends p2pCompany {
      * @param string $user
      * @param string $password
      */
-    function collectUserInvestmentDataParallel($str = null) {
+    /*function collectUserInvestmentDataParallel($str = null) {
 
 
         switch ($this->idForSwitch) {
@@ -197,7 +197,7 @@ class mintos extends p2pCompany {
                     exit;
                 } */
                 
-                $this->idForSwitch++;
+                /*$this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 echo 'Next: ' . $next . HTML_ENDOFLINE;
                 break;
@@ -210,8 +210,9 @@ class mintos extends p2pCompany {
                 $credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
                 $fileName = 'Investment';
                 $fileType = 'xlsx';
+                $pfpBaseUrl = 'https://www.mintos.com';
                 $referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, 'Mintos', 'prueba', $credentialsFile,$referer);
+                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile,$referer);
                 //echo 'Downloaded';
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -221,8 +222,9 @@ class mintos extends p2pCompany {
                 $credentialsFile = "account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
                 $fileName = 'CashFlow';
                 $fileType = 'xlsx';
+                $pfpBaseUrl = 'https://www.mintos.com';
                 $referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, 'Mintos', 'prueba', $credentialsFile,$referer);
+                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile,$referer);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;           
@@ -245,7 +247,7 @@ class mintos extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($logoutUrl); //Logout
                 break;
         }
-    }
+    }*/
     
      /**
      * Function to download every file that is needed to read the investment of an investor
@@ -334,10 +336,8 @@ class mintos extends p2pCompany {
                 echo $fileUrl . HTML_ENDOFLINE;
                 $credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
                 $fileName = 'Investment';
-                $fileType = 'xlsx';
-                $pfpBaseUrl = 'https://www.mintos.com';
                 $referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile,$referer);
+                $this->getPfpFileMulticurl($fileUrl, $fileName, 'Mintos', 'prueba', $credentialsFile,$referer);
                 //echo 'Downloaded';
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -346,10 +346,8 @@ class mintos extends p2pCompany {
                 $fileUrl = array_shift($this->urlSequence);
                 $credentialsFile = "account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
                 $fileName = 'CashFlow';
-                $fileType = 'xlsx';
-                $pfpBaseUrl = 'https://www.mintos.com';
                 $referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile,$referer);
+                $this->getPfpFileMulticurl($fileUrl, $fileName, 'Mintos', 'prueba', $credentialsFile,$referer);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;           
