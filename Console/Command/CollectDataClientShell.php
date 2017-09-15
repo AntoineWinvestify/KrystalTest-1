@@ -43,7 +43,8 @@ class CollectDataClientShell extends AppShell {
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         
         $this->Queue = ClassRegistry::init('Queue');
-        $resultQueue = $this->Queue->getUsersByStatus(FIFO, START_COLLECTING);
+        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, START_COLLECTING);
+        $resultQueue = $this->Queue->getNextFromQueue(FIFO);
         
         if (empty($resultQueue)) {  // Nothing in the queue
             echo "empty queue<br>";
