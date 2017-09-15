@@ -193,6 +193,7 @@ class finanzarel extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
                 break;
             case 3:
+                echo "EL STR VALEEEEEEEEEEEEEEEE:" . $str;
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
@@ -239,14 +240,15 @@ class finanzarel extends p2pCompany {
                 $credentialsFile = array(
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
                         'p_flow_step_id' => $credentials['p_flow_step_id'], 
-                        'p_instance' => $this->credentialsGlobal['p_instance'],  
+                        'p_instance' => $credentials['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $request[1]);
-                
+                        'p_request' => $request[0]);
+                echo "HOLAAAAAAAAAAAAAAAAAAA";
+                print_r($credentialsFile);
                 echo $fileUrl . HTML_ENDOFLINE;
                 $fileName = 'Investment';
                 $fileType = 'csv';
-                $referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'] . '::NO:::';
+                $referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
                 $pfpBaseUrl = 'marketplace.finanzarel.com';
                 $path = 'prueba';
                 

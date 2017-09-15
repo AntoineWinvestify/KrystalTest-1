@@ -1647,23 +1647,23 @@ class p2pCompany {
             $fp = fopen($path . DS . $output_filename, 'w+');
         }
 
-        $header[] = 'accept-language: es-ES,es;q=0.8';
+        /*$header[] = 'accept-language: es-ES,es;q=0.8';
         $header[] = 'upgrade-insecure-requests: 1';
         $header[] = 'host: ' . $pfpBaseUrl;
         $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
+        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*//*;q=0.8';
         //$header[] = 'authority: ' . $pfpBaseUrl;
         //$header[] = 'cache-control: max-age=0';
         $header[] = 'Connection: keep-alive';
-        $header[] = 'Upgrade-Insecure-Requests: 1';
+        $header[] = 'Upgrade-Insecure-Requests: 1';*/
         //$header[] = 'Cookie:LOGIN_USERNAME_COOKIE=kkukovetz%40mli-ltd.com; FNZRL_WORLD=ORA_WWV-ZAgVByw0EpmLmzqlT-HVNunp; _ga=GA1.2.66072991.1505302706; _gid=GA1.2.993900017.1505302706; mp_5cc54fb25fbf8152c17f1bd71396f8fa_mixpanel=%7B%22distinct_id%22%3A%20%22kkukovetz%40mli-ltd.com%22%2C%22%24initial_referrer%22%3A%20%22%24direct%22%2C%22%24initial_referring_domain%22%3A%20%22%24direct%22%7D; mp_mixpanel__c=2';
         curl_setopt($ch, CURLOPT_URL, $fileUrl . '?' . http_build_query($credentials));
        //curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate,br");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_ENCODING, "gzip, deflate, br");
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36');
         curl_setopt($ch, CURLOPT_REFERER, $referer); 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
         curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
