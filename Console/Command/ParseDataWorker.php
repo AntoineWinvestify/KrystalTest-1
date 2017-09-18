@@ -71,9 +71,9 @@ class ParseDataWorkerShell extends AppShell {
             }
         });
         
-        $this->GearmanWorker->addFunction('parseFiles', array($this, 'parseFile'));   
+        $this->GearmanWorker->addFunction('parseFile', array($this, 'parseFile'));   
         
-        while( $this->GearmanWorker->work() );
+        while($this->GearmanWorker->work());
     }
             
   
@@ -91,44 +91,50 @@ class ParseDataWorkerShell extends AppShell {
      * 
      * @return array  
      * 
-     * filerParser   constructor with filename  FQDN  loads the file and convert it into an array
      *           array     analyse    convert internal array to external format using definitions of configuration file
      *                      true  analysis done with success
      *                  readErrorData 
      *                      array with all errorData related to occurred error
-     * 
+     * load config (perhaps via constructor: index = loanId
      */   
     public function parseFile($job) {
-        $data = json_decode($job->workload(),true);
-        
-    //    loadFile
+        $data = json_decode($job->workload(), true);
+        $collectLoanIds = array();
 
         foreach ($data[filenames] as $key => $filename) {
-            $myParser = new Parser(data['filename']);                       // load the file and convert it into an array
-            if (empty($parsedFileStructure = $myParser->analyse()) ) {      // successfull analysis, result is an array 
-                                                                            // with loanId's as indice 
-                //run through the array and search for new loans
+            $config = array('seperatorChar' => ";",         // Only makes sense in case input file is a CSV.
+                            'sortByLoanId'  => true,        // Make the loanId the main index and all XLS/CSV entries of
+                                                            // same loan are stored under the same index.
+                            'offset'    => 3,               // Number of "lines" to be discarded at beginning of file
+                
+                            );
+            
+            $myParser = new FileParser($config);
+            
+            if (!empty($parsedFileStructure = $myParser->analyse(data['filename'], $configFile)) ) {    // if successfull analysis, result is an array 
+                                                                                                        // with loanId's as indice 
+                //run through the array and search for new loans.
                 $loans = array_keys($parsedFileStructure);
+                $this->Investment = ClassRegistry::init('Investment');
+                
                 foreach ($loans as $loan) {
+                    $this->Investment->create();
                     // check if loanId already exists for the current user
+                    $conditions = array('investment_loanReference' => $loan); // for the user
                     
-                    
-                    
-                    
+                    $resultInvestment = $this->Investment->find("all", $params = array('recursive' =>  -1,
+							                              'conditions' => $conditions,
+									));
+                    if (empty($resultInvestment)) {                         // loanId does not yet exist for current user
+                        $collectLoanIds[] = $loan;                          // A Gearman worker has to collect the amortization Tables
+                    } 
                 }
             }
-            else {                                                      // Error encountered
+            else {                                                          // Error encountered
                 $myParser->analysisErrors();
-                
             }
         }
-        unset($myParser);
-        $myParser->
-                
-        $myParser->
-        $myParser-> 
-        $myParser->
-        
+        unset($myParser);  
     }    
     
     
@@ -136,7 +142,7 @@ class ParseDataWorkerShell extends AppShell {
     
     
     
-    
+   
     
     
     
