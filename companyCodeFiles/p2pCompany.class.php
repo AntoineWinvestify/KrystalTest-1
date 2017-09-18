@@ -2319,39 +2319,43 @@ class p2pCompany {
 
     /** 
      * Callback functions required for Dashboard 2. 
-     * Calculate the Winvestify normalized loan status 
+     * The main flow loops through all the new loans in which the investor has invested during the data reading period
+     * and will calculate the Winvestify normalized loan status 
      * 
-     * @param array $amortizationTables    The array that contains the data of the amortization tables. Main index is
-     *                                     the loanId
+     * @param string $loanStatus    Ccontains the data of the amortization tables. Main index is the loanId
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */ 
-    public function normalizeLoanstatus(array $amortizationTables) {
+    public function normalizeLoanstatus($loanStatus) {
         return $loanStatus;
     }
 
     /** 
      * Callback functions required for Dashboard 2. 
-     * Calculate the Winvestify normalized loan rate 
+     * The main flow loops through all the new loans in which the investor has invested during the data reading period
+     * and will calculate the Winvestify normalized loan rate 
      * 
-     * @param array $amortizationTables    The array that contains the data of the amortization tables. Main index is
-     *                                     the loanId
+     * @param string    Contains the data of the amortization tables. Main index is the loanId
      * @return  integer     Loan duration as defined by Winvestify
      */ 
-    public function normalizeLoanRate(array $amortizationTables) {
+    public function normalizeLoanRate($loanRate) {
         return $loanRate;
     }
 
     /** 
      * Callback functions required for Dashboard 2. 
-     * Calculate the Winvestify normalized loan duration 
+     * The main flow loops through all the new loans in which the investor has invested during the data reading period
+     * and will calculate the Winvestify normalized loan duration 
      * 
-     * @param array $amortizationTables    The array that contains the data of the amortization tables. Main index is
-     *                                     the loanId
+     * @param string $durationString    Contains the data of the amortization tables. Main index is
+     *                                  the loanId
      * @return  array $duration  $duration['value']
      *                           $duration['unit']   
      */ 
-    public function normalizeLoanDuration(array $amortizationTables) {
+    public function normalizeLoanDuration($durationString) {
+        
+        //$amortiza 
+        
         return ;
     }
 
@@ -2360,3 +2364,4 @@ class p2pCompany {
 
 }
 ?>
+

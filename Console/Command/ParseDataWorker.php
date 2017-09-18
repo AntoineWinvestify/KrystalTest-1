@@ -71,7 +71,7 @@ class ParseDataWorkerShell extends AppShell {
             }
         });
         
-        $this->GearmanWorker->addFunction('parseFile', array($this, 'parseFile'));   
+        $this->GearmanWorker->addFunction('parseFileFlow', array($this, 'parseFileFlow'));   
         
         while($this->GearmanWorker->work());
     }
@@ -84,9 +84,12 @@ class ParseDataWorkerShell extends AppShell {
      * Parse the content of a file (xls, xlsx, csv) into an array 
      * The $job->workload() function read the input data as sent by the Gearman client
      * This is json_encoded data with the following structure:
-     *      data['filenames'[]]       array of filenames, FQDN's
+     *      data['files']                  array of filenames, FQDN's
+     *      data['files'][filename']       array of filenames, FQDN's
+     *      data['files'][typeOfFile']     type of file, CASHFLOW, INVESTMENT,...
+     *      data['files']['filetype']      CSV or XLS
      *      data['userReference']
-     * 
+     *      data['PFPname']
      * 
      * 
      * @return array  
@@ -97,27 +100,62 @@ class ParseDataWorkerShell extends AppShell {
      *                      array with all errorData related to occurred error
      * load config (perhaps via constructor: index = loanId
      */   
-    public function parseFile($job) {
+    public function parseFileFlow($job) {
         $data = json_decode($job->workload(), true);
         $collectLoanIds = array();
-
-        foreach ($data[filenames] as $key => $filename) {
-            $config = array('seperatorChar' => ";",         // Only makes sense in case input file is a CSV.
-                            'sortByLoanId'  => true,        // Make the loanId the main index and all XLS/CSV entries of
-                                                            // same loan are stored under the same index.
-                            'offset'    => 3,               // Number of "lines" to be discarded at beginning of file
+        foreach ($data['files'] as $key => $filename) {             // check all the platform of the investor
+            if ($data['files'['filetype']] == "CSV") {
+                    $config = array('seperatorChar' => ";",         // Only makes sense in case input file is a CSV.
+                            'sortByLoanId'  => true,                // Make the loanId the main index and all XLS/CSV entries of
+                                                                    // same loan are stored under the same index.
+                            'offset'    => 3,                       // Number of "lines" to be discarded at beginning of file
                 
                             );
+                    //parse cvs
+            }
+            else {
+                //parse XLS
+            }
             
             $myParser = new FileParser($config);
             
+            
+            
+            $myCompany = companyClass($data['PFPname']);        // create instance of companyCodeClass
+            
+  
+            
             if (!empty($parsedFileStructure = $myParser->analyse(data['filename'], $configFile)) ) {    // if successfull analysis, result is an array 
                                                                                                         // with loanId's as indice 
+                 /*
+                 * 
+                 *     
+    
+    amortizationtablesdownloaded(array $amortizationTables) {
+    normalizeLoanstatus(array $amortizationTables) {
+    normalizeLoanRate(array $amortizationTables) {
+    normalizeLoanDuration(array $amortizationTables) {
+                 */               
+                if ($myCompany->fileanalyzed($fileName, $typeOfFile, $fileContent)) {                   // Generate the callback function
+                    // continue 
+                }
+                else {
+                    // an error has occurred or been detected by companycode file. Exit gracefully
+                    return false;
+                }
+                
                 //run through the array and search for new loans.
                 $loans = array_keys($parsedFileStructure);
                 $this->Investment = ClassRegistry::init('Investment');
+  
+               // $mycompany->beforeamortizationlist( aaray as reasult from reading cpntents)
                 
-                foreach ($loans as $loan) {
+                
+                foreach ($loans as $key => $loan) {
+                    if ($key == "global") {
+                        continue;
+                    }
+                    
                     $this->Investment->create();
                     // check if loanId already exists for the current user
                     $conditions = array('investment_loanReference' => $loan); // for the user
@@ -125,16 +163,41 @@ class ParseDataWorkerShell extends AppShell {
                     $resultInvestment = $this->Investment->find("all", $params = array('recursive' =>  -1,
 							                              'conditions' => $conditions,
 									));
-                    if (empty($resultInvestment)) {                         // loanId does not yet exist for current user
-                        $collectLoanIds[] = $loan;                          // A Gearman worker has to collect the amortization Tables
+                    if (empty($resultInvestment)) {                                                     // loanId does not yet exist for current user
+                        $collectLoanIds[$data['PFPname']] = $loan;                                      // A Gearman worker has to collect the amortization Tables
                     } 
+
+                    
+                    
                 }
+                if ($mycompany->amortizationtablesdownloaded($ddafsfsafsafsd) ) {
+                    
+                }
+                else {
+                    // store error
+                }
+                
+                
             }
             else {                                                          // Error encountered
                 $myParser->analysisErrors();
+                store error
             }
         }
-        unset($myParser);  
+        unset($myParser); 
+        
+        
+        if (empty($collectLoanIds)) {
+            state = 6
+        }
+        else {
+            state -> 4
+        }
+        
+        
+        
+        
+        
     }    
     
     
@@ -143,7 +206,24 @@ class ParseDataWorkerShell extends AppShell {
     
     
    
-    
+    /** COPIED FROM APP.CONTROLLER
+     *
+     * 	Creates a new instance of class with name company, like zank, or comunitae....
+     *
+     * 	@param 		int 	$companyCodeFile		Name of "company"
+     * 	@return 	object 	instance of class "company"
+     *
+     */
+    function companyClass($companyCodeFile) {
+
+        $dir = Configure::read('companySpecificPhpCodeBaseDir');
+        $includeFile = $dir . $companyCodeFile . ".php";
+        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
+        require_once($includeFile);
+        $newClass = $companyCodeFile;
+        $newComp = new $newClass;
+        return $newComp;
+    }    
     
     
     
