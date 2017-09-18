@@ -77,7 +77,7 @@
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 //Configure::load('constants'); //Load all global constants
 
-require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
+//require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'Reader' . DS . 'IReadFilterWinvestify.php'));
@@ -107,6 +107,7 @@ class p2pCompany {
     // MarketplacesController
 
     protected $classContainer;
+    protected $baseUrl;
     //Data for the queue
     protected $queueId;
     protected $idForQueue;
@@ -142,6 +143,12 @@ class p2pCompany {
     protected $typeNotMoreScanning = [];
     protected $valueNotMoreScanning = [];
     protected $sameStructure = true;
+    //Variables to open stream to write a file
+    protected $fp;
+    //Variables to download files
+    protected $fileType;
+    protected $companyName;
+    protected $userReference;
 
     /**
      *
@@ -157,9 +164,10 @@ class p2pCompany {
         $this->testConfig['active'] = false;  // test system activated	
 //	$this->testConfig['siteReadings'] = array('/var/www/compare_local/app/companyCodeFiles/tempTestFiles/lendix_marketplace');
         $createdFolder = $this->createFolder('cookies');
-        $this->cookiesDir = dirname(__FILE__) . "/cookies";
+        $this->cookiesDir = $createdFolder;
         $this->config['tracingActive'] = false;
         $this->headers = array();
+        $this->companyName = $this->getPFPName();
 
 
 // ******************************** end of configuration parameters *************************************
@@ -626,8 +634,7 @@ class p2pCompany {
      * 	@return	string		$str	html string
      *
      */
-    function doCompanyLoginMultiCurl(array $loginCredentials) {
-        echo 'credentials: ' . print_r($loginCredentials);
+    function doCompanyLoginMultiCurl(array $loginCredentials, $payload = null) {
         $url = array_shift($this->urlSequence);
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -644,23 +651,30 @@ class p2pCompany {
             }
         }
 
-        //traverse array and prepare data for posting (key1=value1)
-        foreach ($loginCredentials as $key => $value) {
-            $postItems[] = $key . '=' . $value;
-        }
-
-        //create the final string to be posted using implode()
-        $postString = implode('&', $postItems);
-        echo 'post-String: ' . $postString;
+        if(!empty($payload)){ //For pfp that use payloads instead forms(like twino)
+            $postString = $payload;
+            echo 'Payload: ' . $postString;
+        }else{
+            //traverse array and prepare data for posting (key1=value1)
+            foreach ($loginCredentials as $key => $value) {
+                $postItems[] = $key . '=' . $value;
+            }
+            //create the final string to be posted using implode()
+            $postString = implode('&', $postItems);
+            echo 'post-String: ' . $postString;
+        }  
+        
         $request = new \cURL\Request();
-
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
             $request->getOptions()
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
         }
-
+        if(!empty($payload)){//We need this header in request payload
+            $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        }
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
                 ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
@@ -773,7 +787,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpageMultiCurl($url) {
+    function getCompanyWebpageMultiCurl($url = null,$credentials = null, $payload = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -798,6 +812,16 @@ class p2pCompany {
 
         $request = new \cURL\Request();
 
+        if(!empty($payload)){
+            $request->getOptions()
+                ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        }else{
+            $credentials = http_build_query($credentials);
+        }    
+        if(!empty($credentials)){
+            $request->getOptions()
+                ->set(CURLOPT_POSTFIELDS, $credentials);
+        }
 
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
@@ -825,7 +849,7 @@ class p2pCompany {
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
                 // Set a different user agent string (Googlebot)
-                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 // Follow redirects, if any
                 ->set(CURLOPT_FOLLOWLOCATION, true)
                 // Fail the cURL request if response code = 400 (like 404 errors) 
@@ -843,6 +867,8 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
+
+                
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
 
@@ -1093,6 +1119,13 @@ class p2pCompany {
             return $tempValue * 100;
         }
         return $tempValue * 1;
+    }
+    
+    public function getPFPName() {
+        $position = stripos($file, 'companyCodeFiles');
+        $substring = substr($file, $position+17);
+        $company = explode(".", $substring)[0];
+        return $company;
     }
 
     /**
@@ -1349,12 +1382,16 @@ class p2pCompany {
         $dir = $originPath . DS . $name;
         $folderCreated = false;
         if (!file_exists($dir)) {
-            $folderCreated = mkdir($dir, 0770);
+            $folderCreated = mkdir($dir, 0770, true);
         }
         else {
             $folderCreated = true;
         }
-        return $folderCreated;
+        if ($folderCreated) {
+            return $dir;
+        } else {
+            return null;
+        }
     }
 
 
@@ -1671,7 +1708,7 @@ class p2pCompany {
         print_r($credentials);
         echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
 
-        $date = date("d-m-Y_H:i:sa");
+        $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $identity = 'testUser';
@@ -1695,19 +1732,17 @@ class p2pCompany {
             $fp = fopen($path . $output_filename, 'w');
         }
 
-        $header[] = 'accept-language: en-US,en;q=0.8';
+       /* $header[] = 'accept-language: en-US,en;q=0.8';
         $header[] = 'upgrade-insecure-requests: 1';
         $header[] = 'origin: ' . $pfpBaseUrl;
-        $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
-        $header[] = 'authority: ' . $pfpBaseUrl;
-        $header[] = 'cache-control: max-age=0';
-
+        $header[] = 'content-type: application/json;charset=UTF-8';
+        $header[] = 'accept: application/json, text/plain, *//*';
+        $header[] = 'authority: ' . $pfpBaseUrl;*/
 
         curl_setopt($ch, CURLOPT_URL, $fileUrl);
         //curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate,br");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 OPR/44.0.2510.857');
         curl_setopt($ch, CURLOPT_REFERER, $referer); 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -1722,14 +1757,17 @@ class p2pCompany {
         }
         
         $result = curl_exec($ch);
+        
+
+        $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        //print_r($result); // prints the contents of the collected file before writing..
-        $fichero = fwrite($fp,$result);
+        print_r($result); // prints the contents of the collected file before writing..
+        $fichero = fwrite($fp,$result);//False if the file is not created
         //echo "file writed: " . $fichero . HTML_ENDOFLINE;
         fclose($fp);
         
-        if ($statusCode == 200 /*&& $fichero*/) {
+        if ($statusCode == 200 && $fichero) {
             echo 'Downloaded!' . HTML_ENDOFLINE;
         } else {
             echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
@@ -1738,34 +1776,45 @@ class p2pCompany {
     
     /**
      * Function to download a file with multicurl
-     * @param string $fileUrl url that download the file
-     * @param string $fileName name of the file to save
-     * @param string $fileType extension of the file
-     * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
-     * @param type $pfpName
-     * @param string $identity
-     * @param type $credentials
-     * @param type $referer
+     * @param string $url It is the url to download the file
+     * @param string $credentials They are the credentials to download the file
+     * @param strin $referer They are the referer to download the file
+     * @param string $fileName It is the name of the file to save with
      */
-    public function getPfpFileMulticurl($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+    public function getPFPFileMulticurl($url = null, $credentials = null, $referer = null, $fileName = null) {
 
-        if (empty($pfpBaseUrl)) {
-            $pfpBaseUrl = array_shift($this->urlSequence);
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
-        $this->errorInfo = $pfpBaseUrl;
+        if (empty($referer)) {
+            $referer = array_shift($this->urlSequence);
+            //echo $pfpBaseUrl;
+        }
+        if (empty($credentials)) {
+            $credentials = array_shift($this->urlSequence);
+            //echo $pfpBaseUrl;
+        }
+        $this->errorInfo = $url;
 
         
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $identity = 'testUser';
-        $path = $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
-        $path = $this->createFolder($path, $partialPath);
+        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName;
+        $pathCreated = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
-
-        $output_filename = $fileName . '_' . $date . "." . $fileType;
-        $fp = fopen($path . $output_filename, 'w');
+        if (empty($pathCreated)) {
+            //$path = $partialPath . DS . $path;
+            //echo "The path is " . $partialPath . $path;
+            echo "url download File: " . $this->errorInfo . " \n";
+            echo "Cannot create folder \n";
+        }
+        $output_filename = $fileName . '_' . $date . "." . $this->fileType;
+        $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
+        if (!$this->fp) {
+            echo "Couldn't created the file \n";
+        }
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -1793,10 +1842,10 @@ class p2pCompany {
         $this->headers = array(
             'accept-language: en-US,en;q=0.8',
             'upgrade-insecure-requests: 1',
-            'origin: ' . $pfpBaseUrl,
+            'origin: ' . $this->baseUrl,
             'content-type: application/x-www-form-urlencoded',
             'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'authority: ' . $pfpBaseUrl
+            'authority: ' . $this->baseUrl
         );
 
         if (!empty($this->headers)) {
@@ -1825,9 +1874,9 @@ class p2pCompany {
         
         $request->getOptions()
                 // Set the file URL to fetch through cURL
-                ->set(CURLOPT_URL, $fileUrl)
+                ->set(CURLOPT_URL, $url)
                 // Set a different user agent string (Googlebot)
-                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 // Follow redirects, if any
                 ->set(CURLOPT_FOLLOWLOCATION, false)
                 // Fail the cURL request if response code = 400 (like 404 errors) 
@@ -1836,7 +1885,7 @@ class p2pCompany {
                 //->set(CURLOPT_VERBOSE, 1)
                 // Return the actual result of the curl result instead of success code
                 ->set(CURLOPT_RETURNTRANSFER, false)
-                ->set(CURLOPT_FILE, $fp)
+                ->set(CURLOPT_FILE, $this->fp)
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
@@ -2248,6 +2297,42 @@ class p2pCompany {
         
         return $loanReferenceList;
     }
+    
+    public function getFopen() {
+        return $this->fp;
+    }
+    
+    public function setFopen($fp) {
+        $this->fp = $fp;
+    }
+    
+    function getFileType() {
+        return $this->fileType;
+    }
+
+    function setFileType($fileType) {
+        $this->fileType = $fileType;
+    }
+    
+    function getBaseUrl() {
+        return $this->baseUrl;
+    }
+
+    function setBaseUrl($baseUrl) {
+        $this->baseUrl = $baseUrl;
+    }
+
+    function getUserReference() {
+        return $this->userReference;
+    }
+
+    function setUserReference($userReference) {
+        $this->userReference = $userReference;
+    }
+
+
+
+
     
 
 
