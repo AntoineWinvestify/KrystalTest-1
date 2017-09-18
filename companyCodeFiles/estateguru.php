@@ -75,6 +75,7 @@ class estateguru extends p2pCompany {
      * @param string $password
      */
     function collectUserInvestmentDataParallel($str) {
+        $this->tempArray['global']['activeInInvestments'] = 0;
         switch ($this->idForSwitch) {
             case 0:
 
@@ -117,23 +118,60 @@ class estateguru extends p2pCompany {
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-                
+                //echo $str;
                 $inputs = $dom->getElementsByTagName('input');
                 foreach($inputs as $input){
                     if($input->getAttribute('name') == 'filterProject'){
                         $id = $input->getAttribute('onclick');
                     }
                 }
-                $id = preg_replace("/[^0-9]/", "", $id) . HTML_ENDOFLINE;
-                $id = substr($id, 1); 
+                $id = preg_replace("/[^0-9]/", "", $id);
+                $id = trim(substr($id, 1));
+                echo $id;
                 $url = array_shift($this->urlSequence);
-                $credentials = "filterProjectValue=0&userId=";
-                echo $url  . '?' . $credentials;
+                $credentials = array(
+                    "filterProjectValue" => 0,
+                    "userId" => $id,
+                );
+                echo $url  . '?' . http_build_query($credentials);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url, $credentials);
                 break;
             case 4:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
                 echo $str;
+                $tbody = $dom->getElementsByTagName('tbody');
+                $trs = $tbody[0]->getElementsByTagName('tr');
+                
+                //Individual invesmnet data
+                foreach($trs as $tr){
+                    $tds = $tr->getElementsByTagName('td');
+                    foreach($tds as $key=>$td){
+                        //Invesment data
+                        echo $key . " " . $td->nodeValue . HTML_ENDOFLINE;
+                        
+                        
+                    }
+                    $as = $tr->getElementsByTagName('a');
+                    if(!empty($as)){
+                        //Invesmnet id
+                        $loanId = explode(" ",$as[0]->getAttribute('href'))[0];
+                        $loanId = explode("/",$as[0]->getAttribute('href'))[3];
+                        echo print_r($loanId) . HTML_ENDOFLINE;
+                        
+                        
+                    }
+                    $this->tempArray['global']['activeInInvestments']++;
+                }
+                
+                //Global data
+                $tfoot = $dom->getElementsByTagName('tfoot');
+                $tdsFoot = $tfoot[0]->getElementsByTagName('td');
+                foreach($tdsFoot as $keyFoot=>$tdFoot){
+                     echo $keyFoot . " " . $tdFoot->nodeValue;
+                }
                 break;
         }
     }

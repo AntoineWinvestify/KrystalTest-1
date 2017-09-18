@@ -804,6 +804,16 @@ class p2pCompany {
 
         $request = new \cURL\Request();
 
+        if(!empty($payload)){
+            $request->getOptions()
+                ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        }else{
+            $credentials = http_build_query($credentials);
+        }    
+        if(!empty($credentials)){
+            $request->getOptions()
+                ->set(CURLOPT_POSTFIELDS, $credentials);
+        }
 
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
@@ -849,14 +859,7 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-            /*if(!empty($credentials)){
-                $request->getOptions()
-                    ->set(CURLOPT_POSTFIELDS, $credentials);
-            }
-            if(!empty($payload)){
-                $request->getOptions()
-                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-            }*/
+
                 
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
