@@ -142,6 +142,8 @@ class p2pCompany {
     protected $fp;
     //Variables to download files
     protected $fileType;
+    protected $companyName;
+    protected $userReference;
 
     /**
      *
@@ -160,6 +162,7 @@ class p2pCompany {
         $this->cookiesDir = $createdFolder;
         $this->config['tracingActive'] = false;
         $this->headers = array();
+        $this->companyName = $this->getPFPName();
 
 
 // ******************************** end of configuration parameters *************************************
@@ -1109,6 +1112,13 @@ class p2pCompany {
         }
         return $tempValue * 1;
     }
+    
+    public function getPFPName() {
+        $position = stripos($file, 'companyCodeFiles');
+        $substring = substr($file, $position+17);
+        $company = explode(".", $substring)[0];
+        return $company;
+    }
 
     /**
      *
@@ -1758,17 +1768,23 @@ class p2pCompany {
     
     /**
      * Function to download a file with multicurl
-     * @param string $url url that download the file
-     * @param string $fileName name of the file to save
-     * @param type $pfpName
-     * @param string $identity
-     * @param type $credentials
-     * @param type $referer
+     * @param string $url It is the url to download the file
+     * @param string $credentials They are the credentials to download the file
+     * @param strin $referer They are the referer to download the file
+     * @param string $fileName It is the name of the file to save with
      */
-    public function getPFPFileMulticurl($url = null, $fileName, $pfpName, $identity, $credentials, $referer) {
+    public function getPFPFileMulticurl($url = null, $credentials = null, $referer = null, $fileName = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
+            //echo $pfpBaseUrl;
+        }
+        if (empty($referer)) {
+            $referer = array_shift($this->urlSequence);
+            //echo $pfpBaseUrl;
+        }
+        if (empty($credentials)) {
+            $credentials = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
         $this->errorInfo = $url;
@@ -1777,7 +1793,7 @@ class p2pCompany {
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
+        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName;
         $pathCreated = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
@@ -2296,6 +2312,14 @@ class p2pCompany {
 
     function setBaseUrl($baseUrl) {
         $this->baseUrl = $baseUrl;
+    }
+
+    function getUserReference() {
+        return $this->userReference;
+    }
+
+    function setUserReference($userReference) {
+        $this->userReference = $userReference;
     }
 
 
