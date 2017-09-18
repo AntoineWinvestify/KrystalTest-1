@@ -255,7 +255,6 @@ class mintos extends p2pCompany {
      */
     function collectUserGlobalFilesParallel($str = null) {
 
-
         switch ($this->idForSwitch) {
             /////////////LOGIN
             case 0:
@@ -307,7 +306,7 @@ class mintos extends p2pCompany {
                     }
                 }
 
-                 /*if (!$resultLogin) {   // Error while logging in
+                if (!$resultLogin) {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -315,8 +314,8 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    exit;
-                } */
+                    return $this->getError(__LINE__, __FILE__);
+                }
                 
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
