@@ -2302,10 +2302,26 @@ class p2pCompany {
          return ;   
     }
 
+    
+    /** 
+     * Callback functions required for Dashboard 2. 
+     * The system has constructed the list of amortization tables to be downloaded. 
+     * This callback is only called if a amortizationtables need to be donwloaded. 
+     * Also note that this callbased is ALSO called in case the companycodefile has facilitated the list using the
+     * "beforeamortizationList" callback function. 
+     * 
+     * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
+     * @return ??
+     */ 
+    public function afteramortizationlist(array $amortizationtables){
+         return ;   
+    }    
+    
 
     /** 
      * Callback functions required for Dashboard 2.  
-     * The amortizationtables have been downloaded and are available in $amortizationTables
+     * The amortizationtables have been downloaded and are available in $amortizationTables. No processing of the
+     * table has been done yet.
      * 
      * @param array $amortizationTables    The array that contains the data of the amortization tables. Main index is
      *                                     the loanId

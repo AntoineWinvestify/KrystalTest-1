@@ -14,32 +14,6 @@
  * | GNU General Public License for more details.        			|
  * +----------------------------------------------------------------------------+
  *
- * 
- * 
- * Each user has queueId, investorID
- * number of child processes, each childprocess takes a full sequence of a user
- * and writes the new job status for the user
- * Start instance of parser with configfile
- * 
- * constructor (configfile) cashflow
- * load xls file
- * start analysing
- * store resulting array as json file
- * 
- * 
- *  * constructor (configfile) investments
- * load xls file
- * start analysing
- * store resulting array as json file
- * 
- * startParsing
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  *
  * @author 
  * @version
@@ -47,11 +21,11 @@
  * @package
  */
 
-class ParseDataWorkerShell extends AppShell {
+class CollectAmortizatioDataWorkerShell extends AppShell {
     
     protected $GearmanWorker;
     
-    var $uses = array('Company');
+    var $uses = array('Marketplace', 'Company', 'Urlsequence');
     
     public function startup() {
             $this->GearmanWorker = new GearmanWorker();
@@ -71,8 +45,8 @@ class ParseDataWorkerShell extends AppShell {
             }
         });
         
-        $this->GearmanWorker->addFunction('parseFileFlow', array($this, 'parseFileFlow'));   
-        
+        $this->GearmanWorker->addFunction('collectamortizationtablesFileFlow', array($this, 'collectamortizationtablesFileFlow'));   
+              
         while($this->GearmanWorker->work());
     }
             
@@ -96,12 +70,54 @@ class ParseDataWorkerShell extends AppShell {
      * 
      *           array     analyse    convert internal array to external format using definitions of configuration file
      *                      true  analysis done with success
+     *                  readErrorData 
      *                      array with all errorData related to occurred error
      * load config (perhaps via constructor: index = loanId
      */   
-    public function parseFileFlow($job) {
+    public function collectamortizationtablesFileFlow($job) {
+
         $data = json_decode($job->workload(), true);
         $collectLoanIds = array();
+ 
+        
+        
+ // use of multicurl for collecting the amortization tables, all platforms in parallel
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+//        tempArray['zank']['schedule'][]
+//        tempArray['growly']['schedule'][]        
+/*        etc.
+                
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        all tables ready
+ */       
+        amortizationtablesdownloaded(array $amortizationTables) {amortizationtablesdownloaded(array $amortizationTables) {
+            
+    }
         foreach ($data['files'] as $key => $filename) {             // check all the platform of the investor
             if ($data['files'['filetype']] == "CSV") {
                     $config = array('seperatorChar' => ";",         // Only makes sense in case input file is a CSV.
@@ -186,7 +202,8 @@ class ParseDataWorkerShell extends AppShell {
         else {
             $state = DATA_EXTRACTED;
         }
-          
+        // write new jobstatus
+        
     }    
     
     
