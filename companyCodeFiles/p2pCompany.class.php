@@ -72,7 +72,7 @@
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 //Configure::load('constants'); //Load all global constants
 
-require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
+//require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'Reader' . DS . 'IReadFilterWinvestify.php'));
@@ -102,6 +102,7 @@ class p2pCompany {
     // MarketplacesController
 
     protected $classContainer;
+    protected $baseUrl;
     //Data for the queue
     protected $queueId;
     protected $idForQueue;
@@ -778,7 +779,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpageMultiCurl($url,$credentials = null, $payload = false) {
+    function getCompanyWebpageMultiCurl($url = null,$credentials = null, $payload = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -830,7 +831,7 @@ class p2pCompany {
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
                 // Set a different user agent string (Googlebot)
-                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 // Follow redirects, if any
                 ->set(CURLOPT_FOLLOWLOCATION, true)
                 // Fail the cURL request if response code = 400 (like 404 errors) 
@@ -848,14 +849,14 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-            if(!empty($credentials)){
+            /*if(!empty($credentials)){
                 $request->getOptions()
                     ->set(CURLOPT_POSTFIELDS, $credentials);
             }
-            if($payload){
+            if(!empty($payload)){
                 $request->getOptions()
                     ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-            }
+            }*/
                 
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
@@ -1755,19 +1756,18 @@ class p2pCompany {
      * Function to download a file with multicurl
      * @param string $fileUrl url that download the file
      * @param string $fileName name of the file to save
-     * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
      * @param type $pfpName
      * @param string $identity
      * @param type $credentials
      * @param type $referer
      */
-    public function getPfpFileMulticurl($fileUrl, $fileName, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+    public function getPfpFileMulticurl($url = null, $fileName, $pfpName, $identity, $credentials, $referer) {
 
-        if (empty($pfpBaseUrl)) {
-            $pfpBaseUrl = array_shift($this->urlSequence);
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
-        $this->errorInfo = $pfpBaseUrl;
+        $this->errorInfo = $url;
 
         
         $date = date("d-m-Y");
@@ -1806,10 +1806,10 @@ class p2pCompany {
         $this->headers = array(
             'accept-language: en-US,en;q=0.8',
             'upgrade-insecure-requests: 1',
-            'origin: ' . $pfpBaseUrl,
+            'origin: ' . $this->baseUrl,
             'content-type: application/x-www-form-urlencoded',
             'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'authority: ' . $pfpBaseUrl
+            'authority: ' . $this->baseUrl
         );
 
         if (!empty($this->headers)) {
@@ -1838,9 +1838,9 @@ class p2pCompany {
         
         $request->getOptions()
                 // Set the file URL to fetch through cURL
-                ->set(CURLOPT_URL, $fileUrl)
+                ->set(CURLOPT_URL, $url)
                 // Set a different user agent string (Googlebot)
-                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 // Follow redirects, if any
                 ->set(CURLOPT_FOLLOWLOCATION, false)
                 // Fail the cURL request if response code = 400 (like 404 errors) 
@@ -2277,6 +2277,16 @@ class p2pCompany {
     function setFileType($fileType) {
         $this->fileType = $fileType;
     }
+    
+    function getBaseUrl() {
+        return $this->baseUrl;
+    }
+
+    function setBaseUrl($baseUrl) {
+        $this->baseUrl = $baseUrl;
+    }
+
+
 
 
     
