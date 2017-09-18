@@ -807,6 +807,16 @@ class p2pCompany {
 
         $request = new \cURL\Request();
 
+        if(!empty($payload)){
+            $request->getOptions()
+                ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        }else{
+            $credentials = http_build_query($credentials);
+        }    
+        if(!empty($credentials)){
+            $request->getOptions()
+                ->set(CURLOPT_POSTFIELDS, $credentials);
+        }
 
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
@@ -852,14 +862,7 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-            /*if(!empty($credentials)){
-                $request->getOptions()
-                    ->set(CURLOPT_POSTFIELDS, $credentials);
-            }
-            if(!empty($payload)){
-                $request->getOptions()
-                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-            }*/
+
                 
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
@@ -1724,21 +1727,21 @@ class p2pCompany {
             $fp = fopen($path . $output_filename, 'w');
         }
 
-        $header[] = 'accept-language: en-US,en;q=0.8';
+       /* $header[] = 'accept-language: en-US,en;q=0.8';
         $header[] = 'upgrade-insecure-requests: 1';
         $header[] = 'origin: ' . $pfpBaseUrl;
         $header[] = 'content-type: application/json;charset=UTF-8';
-        $header[] = 'accept: application/json, text/plain, */*';
-        $header[] = 'authority: ' . $pfpBaseUrl;
+        $header[] = 'accept: application/json, text/plain, *//*';
+        $header[] = 'authority: ' . $pfpBaseUrl;*/
 
         curl_setopt($ch, CURLOPT_URL, $fileUrl);
         //curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate,br");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36 OPR/44.0.2510.857');
         curl_setopt($ch, CURLOPT_REFERER, $referer); 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); 
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
         curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
 
