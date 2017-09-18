@@ -157,7 +157,7 @@ class p2pCompany {
         $this->testConfig['active'] = false;  // test system activated	
 //	$this->testConfig['siteReadings'] = array('/var/www/compare_local/app/companyCodeFiles/tempTestFiles/lendix_marketplace');
         $createdFolder = $this->createFolder('cookies');
-        $this->cookiesDir = dirname(__FILE__) . "/cookies";
+        $this->cookiesDir = $createdFolder;
         $this->config['tracingActive'] = false;
         $this->headers = array();
 
@@ -1364,12 +1364,16 @@ class p2pCompany {
         $dir = $originPath . DS . $name;
         $folderCreated = false;
         if (!file_exists($dir)) {
-            $folderCreated = mkdir($dir, 0770);
+            $folderCreated = mkdir($dir, 0770, true);
         }
         else {
             $folderCreated = true;
         }
-        return $folderCreated;
+        if ($folderCreated) {
+            return $dir;
+        } else {
+            return null;
+        }
     }
 
 
@@ -1754,14 +1758,14 @@ class p2pCompany {
     
     /**
      * Function to download a file with multicurl
-     * @param string $fileUrl url that download the file
+     * @param string $url url that download the file
      * @param string $fileName name of the file to save
      * @param type $pfpName
      * @param string $identity
      * @param type $credentials
      * @param type $referer
      */
-    public function getPfpFileMulticurl($url = null, $fileName, $pfpName, $identity, $credentials, $referer) {
+    public function getPFPFileMulticurl($url = null, $fileName, $pfpName, $identity, $credentials, $referer) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -1774,11 +1778,19 @@ class p2pCompany {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $path = $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
-        $path = $this->createFolder($path, $partialPath);
+        $pathCreated = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
-
+        if (empty($pathCreated)) {
+            //$path = $partialPath . DS . $path;
+            //echo "The path is " . $partialPath . $path;
+            echo "url download File: " . $this->errorInfo . " \n";
+            echo "Cannot create folder \n";
+        }
         $output_filename = $fileName . '_' . $date . "." . $this->fileType;
-        $this->fp = fopen($path . $output_filename, 'w');
+        $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
+        if (!$this->fp) {
+            echo "Couldn't created the file \n";
+        }
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
