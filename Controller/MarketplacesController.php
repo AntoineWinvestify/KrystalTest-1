@@ -60,6 +60,41 @@
  * Send an email in case of error while writing to the database in function cronMarketPlaceLoop
  * function cronMarketStart: check the issue of "country"
  * function "storeBetaTester": check the validility of email address using "mailgun.com" email verifier interface
+
+
+  2016-08-05		version 0.1
+  basic version
+
+  Remove all records which no longer appear in company market places, because they were		[OK, tested]
+  fully subscribed or were not fully subscribed during the publication phase
+
+  function getNext																			[OK, tested]
+
+
+
+  2016-12-12		version 0.2
+  Added new field: "marketplace_origCreated" in database backup. At the same time rectified error:
+  missing records in the marketplace_backup DB. -> added Model->clear in function "backupRecord"	[OK, tested]
+
+
+  2017-01-12
+  added functions xxx yyy zzz . These are AJAX functions which the browser sends for requesting Dashboard data
+
+  2017-05-02      version 0.3                                                                     [OK, tested]
+  Removed initLoad and replaced with $this->getGeoLocationData in function getGlobalMarketPlaceData()
+
+
+  2017-08-09    version 0.31
+  Rectified Error 0009 as reported in Mantis.
+  "incorrect calculation of average yield in case one or more platforms don't have any active investment
+  Added new index counter variable $platformsZeroYield
+ 
+
+  Pending:
+  Checking for "country of residence" and show only marketplace for that country				[Not OK]
+  Send an email in case of error while writing to the database in function cronMarketPlaceLoop
+  function cronMarketStart: check the issue of "country"
+  function "storeBetaTester": check the validility of email address using "mailgun.com" email verifier interface
  */
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
@@ -610,7 +645,7 @@ class MarketPlacesController extends AppController {
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
         $this->Data = ClassRegistry::init('Data');     // needed for storing 
-
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
 
         $userInvestment = array();
         $result = array();
@@ -638,6 +673,7 @@ class MarketPlacesController extends AppController {
 
         $filterConditions = array('investor_id' => $investorId);
         $linkedaccountsResults = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+        $platformsZeroYield = 0;
         $index = 0;
         $i = 0;
         foreach ($linkedaccountsResults as $linkedaccount) {
@@ -712,7 +748,7 @@ class MarketPlacesController extends AppController {
             if ($response->hasError() && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$ids[0]]->getTries() == 0) {
                 $this->logoutOnCompany($ids, $str);
                 $this->newComp[$ids[0]]->setIdForSwitch(0); //Set the id for the switch of the function company
-                $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids]->getUrlSequenceBackup());  // provide all URLs for this sequence
+                $this->newComp[$ids[0]]->setUrlSequence($this->newComp[$ids[0]]->getUrlSequenceBackup());  // provide all URLs for this sequence
                 $this->newComp[$ids[0]]->setTries(1);
                 $this->newComp[$ids[0]]->deleteCookiesFile();
                 $this->newComp[$ids[0]]->generateCookiesFile();
@@ -769,7 +805,19 @@ class MarketPlacesController extends AppController {
                 $dashboardGlobals['amountInvested'] = $dashboardGlobals['amountInvested'] + $userInvestments['global']['totalInvestment'];
                 $dashboardGlobals['wallet'] = $dashboardGlobals['wallet'] + $userInvestments['global']['myWallet'];
                 $dashboardGlobals['totalEarnedInterest'] = $dashboardGlobals['totalEarnedInterest'] + $userInvestments['global']['totalEarnedInterest'];
+
+// Mantis error: 0000009  date: 2017-09-12              
+// Note that we only take values of the platforms that have a yield <> 0. 
+// In theory it is possible to have some investments with positive yield and some
+// with negative yield, making the total result = 0. In this case the ""Yield" = 0 MUST be taken into consideration when calculating the global yield
+// for the user.
+// Conclusion. We don't only look at yield = 0, but also if active investments exist.
                 $dashboardGlobals['profitibilityAccumulative'] = $dashboardGlobals['profitibilityAccumulative'] + $userInvestments['global']['profitibility'];
+                if ($userInvestments['global']['profitibility'] == 0) {
+                    if (count($userInvestments['investments']) == 0) {      // Only discard yield if user has NO active investments in platform
+                        $platformsZeroYield = $platformsZeroYield + 1;
+                    }
+                }
 
                 // Amount that was invested totally in all the currently active investments
                 $dashboardGlobals['totalInvestments'] = $dashboardGlobals['totalInvestments'] + $userInvestments['global']['totalInvestments'];
@@ -801,7 +849,13 @@ class MarketPlacesController extends AppController {
             echo "<br>******* End of Loop ****** <br>";
         }
 
-        $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
+        if ($index == $platformsZeroYield) {                               
+            $dashboardGlobals['meanProfitibility'] = 0;
+        }
+        else {
+            $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / ($index - $platformsZeroYield));
+        }
+        
         echo __FILE__ . " " . __FUNCTION__ . " " . __LINE__ . "<br>";
         $this->print_r2($dashboardGlobals);
 

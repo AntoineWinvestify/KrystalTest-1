@@ -141,13 +141,13 @@ class comunitae extends p2pCompany {
         $pageNumber = 1;
         $url = null;
         $urlNextPage = null;
-        $urlSequenceNumber = 0;
+        //$urlSequenceNumber = 0;
         $type = 1; // 1 = pagare, comunitae have 'pagares' and 'Factoring'
         for ($i = 0; $i < 2; $i++) {
             $numberOfInvestmentInPage = 0;
-            if(empty($url)){
+            /*if(empty($url)){
                 $urlSequenceNumber++;
-            }
+            }*/
             $str = $this->getCompanyWebpage($url);
             
             $dom = new DOMDocument;
@@ -277,13 +277,17 @@ class comunitae extends p2pCompany {
                     if (!$subscriptionComplete && $numberOfInvestmentInPage == 15) {
                         if (empty($urlNextPage)) {
                             $urlNextPage = array_shift($this->urlSequence);
-                            $urlSequenceNumber++;
+                            //$urlSequenceNumber++;
                         }
                         $numberOfInvestmentInPage = 0;
                         $pageNumber++;
                         $url = $urlNextPage . $pageNumber;
                         $i--;
                     } else if ($subscriptionComplete) {
+                        if ($pageNumber == 1 && $i == 0) {
+                            array_shift($this->urlSequence);
+                            //$urlSequenceNumber++;
+                        }
                         $subscriptionComplete = false;
                         $url = null;
                         $urlNextPage = null;
@@ -295,7 +299,10 @@ class comunitae extends p2pCompany {
             }
         }
         
-        for($urlSequenceNumber ;$urlSequenceNumber < 4;$urlSequenceNumber++){ //Fix url sequence error. Factoring only have one page yet.
+        /*for($urlSequenceNumber ;$urlSequenceNumber < 4;$urlSequenceNumber++){ //Fix url sequence error. Factoring only have one page yet.
+            array_shift($this->urlSequence);
+        }*/
+        while(count($this->urlSequence) > 3){
             array_shift($this->urlSequence);
         }
         
@@ -330,7 +337,7 @@ class comunitae extends p2pCompany {
             //echo 'Login fail';
             return $this->getError(__LINE__, __FILE__);
         }
-        
+        echo 'Login ok' . HTML_ENDOFLINE;
         
         $url = array_shift($this->urlSequence);
         
@@ -1312,6 +1319,7 @@ class comunitae extends p2pCompany {
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
+
 
 }
 
