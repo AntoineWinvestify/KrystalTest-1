@@ -101,7 +101,7 @@ class p2pCompany {
     //Variable to use in this method
     // MarketplacesController
 
-    protected $marketplaces;
+    protected $classContainer;
     //Data for the queue
     protected $queueId;
     protected $idForQueue;
@@ -137,6 +137,10 @@ class p2pCompany {
     protected $typeNotMoreScanning = [];
     protected $valueNotMoreScanning = [];
     protected $sameStructure = true;
+    //Variables to open stream to write a file
+    protected $fp;
+    //Variables to download files
+    protected $fileType;
 
     /**
      *
@@ -151,6 +155,7 @@ class p2pCompany {
         $this->logDir = __DIR__ . "/log";   // Directory where the log files are stored
         $this->testConfig['active'] = false;  // test system activated	
 //	$this->testConfig['siteReadings'] = array('/var/www/compare_local/app/companyCodeFiles/tempTestFiles/lendix_marketplace');
+        $createdFolder = $this->createFolder('cookies');
         $this->cookiesDir = dirname(__FILE__) . "/cookies";
         $this->config['tracingActive'] = false;
         $this->headers = array();
@@ -428,7 +433,7 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
 //  barzana@gmail.com 	939233Maco048 
-        if ($url == null) {
+        if (empty($url)) {
             $url = array_shift($this->urlSequence);
         }
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -526,7 +531,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpage($url) {
+    function getCompanyWebpage($url = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -620,10 +625,8 @@ class p2pCompany {
      * 	@return	string		$str	html string
      *
      */
-    function doCompanyLoginMultiCurl(array $loginCredentials) {
-        echo 'credentials: ' . print_r($loginCredentials);
+    function doCompanyLoginMultiCurl(array $loginCredentials, $payload = null) {
         $url = array_shift($this->urlSequence);
-        echo 'login:' . $url;
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
@@ -639,23 +642,30 @@ class p2pCompany {
             }
         }
 
-        //traverse array and prepare data for posting (key1=value1)
-        foreach ($loginCredentials as $key => $value) {
-            $postItems[] = $key . '=' . $value;
-        }
-
-        //create the final string to be posted using implode()
-        $postString = implode('&', $postItems);
-        echo 'post-String: ' . $postString;
+        if(!empty($payload)){ //For pfp that use payloads instead forms(like twino)
+            $postString = $payload;
+            echo 'Payload: ' . $postString;
+        }else{
+            //traverse array and prepare data for posting (key1=value1)
+            foreach ($loginCredentials as $key => $value) {
+                $postItems[] = $key . '=' . $value;
+            }
+            //create the final string to be posted using implode()
+            $postString = implode('&', $postItems);
+            echo 'post-String: ' . $postString;
+        }  
+        
         $request = new \cURL\Request();
-
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
             $request->getOptions()
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
         }
-
+        if(!empty($payload)){//We need this header in request payload
+            $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        }
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
                 ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
@@ -670,9 +680,16 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
 
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGIN";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "LOGIN"
+        ];
+        
+        $request->_page = json_encode($info);
         // Add the url to the queue
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->classContainer->addRequestToQueueCurls($request);
     }
 
     /**
@@ -690,7 +707,7 @@ class p2pCompany {
           $postString = implode ('&', $postItems);
          */
         //  barzana@gmail.com 	939233Maco048 
-        if ($url) {
+        if (empty($url)) {
             $url = array_shift($this->urlSequence);
         }
         echo $url;
@@ -729,7 +746,14 @@ class p2pCompany {
                     ->set(CURLOPT_POSTFIELDS, $postString);
         }
 
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGOUT";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";" . "LOGOUT";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "LOGOUT"
+        ];
+        
+        $request->_page = json_encode($info);
 
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
@@ -744,7 +768,7 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);
 
-        $this->marketplaces->addRequetsToQueueCurls($request);
+        $this->classContainer->addRequestToQueueCurls($request);
     }
 
     /**
@@ -754,7 +778,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpageMultiCurl($url) {
+    function getCompanyWebpageMultiCurl($url,$credentials = null, $payload = false) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -788,14 +812,20 @@ class p2pCompany {
 
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
-            echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
                     //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
 
             unset($this->headers);   // reset fields
         }
-        $request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
+        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "WEBPAGE"
+        ];
+        
+        $request->_page = json_encode($info);
         $request->getOptions()
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
@@ -818,8 +848,17 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-        //Add the request to the queue in the marketplaces controller
-        $this->marketplaces->addRequetsToQueueCurls($request);
+            if(!empty($credentials)){
+                $request->getOptions()
+                    ->set(CURLOPT_POSTFIELDS, $credentials);
+            }
+            if($payload){
+                $request->getOptions()
+                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            }
+                
+        //Add the request to the queue in the classContainer controller
+        $this->classContainer->addRequestToQueueCurls($request);
 
         if ($this->config['appDebug'] == true) {
             echo "VISITED COMPANY URL = $url <br>";
@@ -1225,12 +1264,12 @@ class p2pCompany {
     }
 
     /**
-     * Sets the controller that uses the queue
+     * Sets the class that uses multicurl queue
      * 
-     * @param object $marketPlacesController It is the controller to be used
+     * @param object $classContainer It is the class that uses multicurl queue
      */
-    public function setMarketPlaces($marketPlacesController) {
-        $this->marketplaces = $marketPlacesController;
+    public function setClassForQueue($classContainer) {
+        $this->classContainer = $classContainer;
     }
 
     /**
@@ -1308,6 +1347,30 @@ class p2pCompany {
         $this->createCookiesFile($nameFileCookies);
         return $nameFileCookies;
     }
+    
+    /**
+     * Create the cookies folder if not exists 
+     * @param string $name It is the name for the folder
+     * @return boolean True if the folder is created
+     */
+    public function createFolder($name = null, $originPath = null) {
+        if (empty($name)) {
+            return false;
+        }
+        if (empty($originPath)) {
+            $originPath = dirname(__FILE__);
+        }
+        $dir = $originPath . DS . $name;
+        $folderCreated = false;
+        if (!file_exists($dir)) {
+            $folderCreated = mkdir($dir, 0770);
+        }
+        else {
+            $folderCreated = true;
+        }
+        return $folderCreated;
+    }
+
 
     /**
      * Create the cookies file inside the directory selected with the permissions selected
@@ -1334,7 +1397,7 @@ class p2pCompany {
      * Delete the cookies file generated for the request
      */
     public function deleteCookiesFile() {
-        if (file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
+        if ($this->cookies_name != "cookies.txt" && file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
             unlink($this->cookiesDir . '/' . $this->cookies_name);
         }
     }
@@ -1392,7 +1455,7 @@ class p2pCompany {
         }
         $this->tempArray['global']['error'] = "ERROR START $newLine"
                 . "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
-                . "$newLine The queueId is " . $this->queueId['Queue']['id']
+                . "$newLine The queueId is " . $this->queueId
                 . "$newLine The error was caused in the urlsequence: " . $this->errorInfo
                 . $type_sequence
                 . $error_request
@@ -1626,7 +1689,7 @@ class p2pCompany {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $identity = 'testUser';
-        $path = $partialPath . $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
+        $path = $partialPath . $identity . DS . 'Investments' . DS . $date . DS . $pfpName . DS;
 
         echo 'Saving in: ' . $path . HTML_ENDOFLINE;
 
@@ -1636,7 +1699,7 @@ class p2pCompany {
         echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
         $output_filename = 'prueba.' . $fileType;
         echo $fileUrl . HTML_ENDOFLINE;
-
+        echo $path . $output_filename . HTML_ENDOFLINE;
 
         $ch = curl_init(); //'cookie: __cfduid=d21a834ccb1e60740448f41c2268cf12e1501673244; PHPSESSID=h3jp268d06961sjlsiiuf8du11; _gat_UA-53926147-5=1; alive=1; _ga=GA1.2.199063307.1501673247; _gid=GA1.2.1698279269.1504852937; __zlcmid=hogdmMCQMh0blo'  
         //--data 'currency=978&+=978&purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments='  --compressed");
@@ -1647,24 +1710,28 @@ class p2pCompany {
             $fp = fopen($path . DS . $output_filename, 'w+');
         }
 
-        /*$header[] = 'accept-language: es-ES,es;q=0.8';
+        $header[] = 'accept-language: es-ES,es;q=0.8';
         $header[] = 'upgrade-insecure-requests: 1';
         $header[] = 'host: ' . $pfpBaseUrl;
         $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*//*;q=0.8';
+        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
         //$header[] = 'authority: ' . $pfpBaseUrl;
         //$header[] = 'cache-control: max-age=0';
         $header[] = 'Connection: keep-alive';
-        $header[] = 'Upgrade-Insecure-Requests: 1';*/
+        $header[] = 'Upgrade-Insecure-Requests: 1';
         //$header[] = 'Cookie:LOGIN_USERNAME_COOKIE=kkukovetz%40mli-ltd.com; FNZRL_WORLD=ORA_WWV-ZAgVByw0EpmLmzqlT-HVNunp; _ga=GA1.2.66072991.1505302706; _gid=GA1.2.993900017.1505302706; mp_5cc54fb25fbf8152c17f1bd71396f8fa_mixpanel=%7B%22distinct_id%22%3A%20%22kkukovetz%40mli-ltd.com%22%2C%22%24initial_referrer%22%3A%20%22%24direct%22%2C%22%24initial_referring_domain%22%3A%20%22%24direct%22%7D; mp_mixpanel__c=2';
-        curl_setopt($ch, CURLOPT_URL, $fileUrl . '?' . http_build_query($credentials));
-       //curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_URL, $fileUrl);
+        //¡curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_ENCODING, "gzip, deflate, br");
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($credentials));
         curl_setopt($ch, CURLOPT_REFERER, $referer); 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 40);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+        
         curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
         curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
 
@@ -1674,8 +1741,139 @@ class p2pCompany {
           curl_setopt($ch, CURLOPT_POST, true);
           curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
         }*/
-        echo "AHHHHHHHHHHHHHHHHHHHHHHHHHHH";
-        print_r($ch);
+        $result = curl_exec($ch);
+        
+
+        $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        print_r($result); // prints the contents of the collected file before writing..
+        $fichero = fwrite($fp,$result);//False if the file is not created
+        //echo "file writed: " . $fichero . HTML_ENDOFLINE;
+        fclose($fp);
+        
+        if ($statusCode == 200 && $fichero) {
+            echo 'Downloaded!' . HTML_ENDOFLINE;
+        } else {
+            echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
+        }
+    }
+    
+    /**
+     * Function to download a file with multicurl
+     * @param string $fileUrl url that download the file
+     * @param string $fileName name of the file to save
+     * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
+     * @param type $pfpName
+     * @param string $identity
+     * @param type $credentials
+     * @param type $referer
+     */
+    public function getPfpFileMulticurl($fileUrl, $fileName, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+
+        if (empty($pfpBaseUrl)) {
+            $pfpBaseUrl = array_shift($this->urlSequence);
+            //echo $pfpBaseUrl;
+        }
+        $this->errorInfo = $pfpBaseUrl;
+
+        
+        $date = date("d-m-Y");
+        $configPath = Configure::read('files');
+        $partialPath = $configPath['investorPath'];
+        $path = $identity . DS . 'Investments' . DS . $date . DS . $pfpName;
+        $path = $this->createFolder($path, $partialPath);
+        //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
+
+        $output_filename = $fileName . '_' . $date . "." . $this->fileType;
+        $this->fp = fopen($path . $output_filename, 'w');
+
+        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
+            if (!empty($this->testConfig['siteReadings'])) {
+                $currentScreen = array_shift($this->testConfig['siteReadings']);
+                echo "currentScreen = $currentScreen";
+                $str = file_get_contents($currentScreen);
+
+                if ($str === false) {
+                    echo "cannot find file<br>";
+                    exit;
+                }
+                echo "TestSystem: file = $currentScreen<br>";
+                return $str;
+            }
+        }
+
+        $request = new \cURL\Request();
+        
+        if ($this->config['postMessage'] == true) {
+            $request->getOptions()
+                    ->set(CURLOPT_POST, true);
+            //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
+        }
+        
+        $this->headers = array(
+            'accept-language: en-US,en;q=0.8',
+            'upgrade-insecure-requests: 1',
+            'origin: ' . $pfpBaseUrl,
+            'content-type: application/x-www-form-urlencoded',
+            'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'authority: ' . $pfpBaseUrl
+        );
+
+        if (!empty($this->headers)) {
+            echo "EXTRA HEADERS TO BE ADDED<br>";
+            $request->getOptions()
+                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
+                    ->set(CURLOPT_HTTPHEADER, $this->headers);
+
+            unset($this->headers);   // reset fields
+        }
+
+        $info = [
+            "companyIdForQueue" => $this->idForQueue,
+            "idForSwitch" => $this->idForSwitch,
+            "typeOfRequest" => "DOWNLOADFILE"
+        ];
+        
+        $request->_page = json_encode($info);
+        
+        if($credentials){
+            //set data to be posted
+            $request->getOptions()
+                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
+                    ->set(CURLOPT_POSTFIELDS, $credentials);
+        }
+        
+        $request->getOptions()
+                // Set the file URL to fetch through cURL
+                ->set(CURLOPT_URL, $fileUrl)
+                // Set a different user agent string (Googlebot)
+                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                // Follow redirects, if any
+                ->set(CURLOPT_FOLLOWLOCATION, false)
+                // Fail the cURL request if response code = 400 (like 404 errors) 
+                ->set(CURLOPT_FAILONERROR, true)
+                ->set(CURLOPT_REFERER, $referer)
+                //->set(CURLOPT_VERBOSE, 1)
+                // Return the actual result of the curl result instead of success code
+                ->set(CURLOPT_RETURNTRANSFER, false)
+                ->set(CURLOPT_FILE, $this->fp)
+                // Wait for 10 seconds to connect, set 0 to wait indefinitely
+                ->set(CURLOPT_CONNECTTIMEOUT, 30)
+                // Execute the cURL request for a maximum of 50 seconds
+                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_ENCODING, "gzip,deflate,br")
+                // Do not check the SSL certificates
+                ->set(CURLOPT_SSL_VERIFYHOST, false)
+                ->set(CURLOPT_SSL_VERIFYPEER, false)
+                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
+                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
+        //Add the request to the queue in the classContainer controller
+        $this->classContainer->addRequestToQueueCurls($request);
+        
+        
+        /*
+         * THIS IS FOR CURL BUT WE MUST TO CONVERT TO MULTICURL
         $result = curl_exec($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         echo "BHHHHHHHHHHHHHHHHHHHHHHHHHHH";
@@ -1685,12 +1883,7 @@ class p2pCompany {
         $fichero = fwrite($fp,$result);
          echo "fichero" . $fichero;
         fclose($fp);
-        
-        if ($statusCode == 200) {
-            echo 'Downloaded!' . HTML_ENDOFLINE;
-        } else {
-            echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
-        }
+        */
     }
 
     /**
@@ -1725,11 +1918,11 @@ class p2pCompany {
                       echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>'; */
 
                     if ($nameAttrNode1 != $nameAttrNode2) {
-                        //echo 'Node attr name error';
+                        echo 'Node attr name error';
                         $this->same_structure = false;
                     }
                     if ($valueAttrNode1 != $valueAttrNode2) {
-                        //echo 'Node attr value error';
+                        echo 'Node attr value error';
                         $this->sameStructure = false;
                     }
                     if ($this->sameStructure) {
@@ -1750,12 +1943,12 @@ class p2pCompany {
                 $this->sameStructure = false;
             }
         } else if ($node1->hasAttributes() && !$node2->hasAttributes()) {
-            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            //echo 'Node2 has attr error';
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node2 has attr error';
             $this->sameStructure = false;
         } else if (!$node1->hasAttributes() && $node2->hasAttributes()) {
-            //echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
-            //echo 'Node1 has attr error';
+            echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+            echo 'Node1 has attr error';
             $this->sameStructure = false;
         }
         if ($this->sameStructure && !$repeatedStructureFound) {
@@ -1791,13 +1984,13 @@ class p2pCompany {
 
                     $this->verifyDomStructure($childrenNode1[$i], $childrenNode2[$i], $uniquesElement, $limit);
                 }
-            } else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
-                //echo 'Node has attr error 2';
+            } /*else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
+                echo 'Node has attr error 2';
                 $this->sameStructure = false;
             } else if ($node1->hasChildNodes() && !$node2->hasChildNodes()) {
-                //echo 'Node has attr error 2';
+                echo 'Node has attr error 2';
                 $this->sameStructure = false;
-            }
+            }*/
         }
         return $this->sameStructure;
     }
@@ -2059,6 +2252,44 @@ class p2pCompany {
         }
         return [$structureRevision, $break, $type];
     }
+    
+    
+    /**Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
+     * The array will contain the deleted/hidden invesment that we cant update from the pfp marketplace.
+     * @param array $loanReferenceList loan reference id list that we have in our marketplace
+     * @param array $investment single investment that we compare
+     */
+    public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
+        print_r($investment);
+        print_r($loanReferenceList);
+         foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
+            if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
+                echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;
+                unset($loanReferenceList[$key]); 
+            }
+        }
+        
+        return $loanReferenceList;
+    }
+    
+    public function getFopen() {
+        return $this->fp;
+    }
+    
+    public function setFopen($fp) {
+        $this->fp = $fp;
+    }
+    
+    function getFileType() {
+        return $this->fileType;
+    }
+
+    function setFileType($fileType) {
+        $this->fileType = $fileType;
+    }
+
+
+    
 
 }
 

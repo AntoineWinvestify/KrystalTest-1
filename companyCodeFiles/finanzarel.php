@@ -193,7 +193,6 @@ class finanzarel extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
                 break;
             case 3:
-                echo "EL STR VALEEEEEEEEEEEEEEEE:" . $str;
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
@@ -256,6 +255,7 @@ class finanzarel extends p2pCompany {
                 echo 'Downloaded';
                 
                 $this->idForSwitch++;
+                echo 'URL: ' . $fileUrl;
                 $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba', $credentialsFile,$referer);
                 break; 
             /*case 4:
