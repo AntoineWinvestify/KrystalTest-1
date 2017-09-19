@@ -201,7 +201,7 @@ class CollectDataWorkerShell extends AppShell {
 
 
             echo "MICROTIME_START = " . microtime() . "<br>";
-            $tempArray = $newComp->collectUserInvestmentData($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
+            $tempArray = $newComp->collectUserGlobalFilesCasper($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
 
             $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
@@ -232,7 +232,7 @@ class CollectDataWorkerShell extends AppShell {
 // investments in 4 platforms, the system will generate 4 photos, with each photo including the previous one
 // *********************************************************************************************************
             $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
-            if ($this->Data->save(array('data_investorReference' => $resultQueue['Queue']['queue_userReference'],
+            if ($this->Data->save(array('data_investorReference' => $data["queue_userReference"],
                         'data_JSONdata' => JSON_encode($dashboardGlobals),
                         $validate = true))) {
                 // DO NOTHING
@@ -243,11 +243,11 @@ class CollectDataWorkerShell extends AppShell {
 
             foreach ($dashboardGlobals['investments'] as $company => $value) {
                 $inversiones = count($dashboardGlobals['investments'][$company]['investments']);
-                echo '<h1>';
+
                 print_r($inversiones);
-                echo '</h1>';
+
                 for ($key = 0; $key < $inversiones; $key++) {
-                    echo "comprobando" . $key . "</br>";
+                    echo "Verified key" . $key . "</br>";
                     if ($dashboardGlobals['investments'][$company]['investments'][$key]['status'] == -1) {
                         echo '<h1>' . $key . "eliminada</h1></br>";
                         unset($dashboardGlobals['investments'][$company]['investments'][$key]);
@@ -258,9 +258,7 @@ class CollectDataWorkerShell extends AppShell {
                 }
                 $dashboardGlobals['investments'][$company]['investments'] = array_values($dashboardGlobals['investments'][$company]['investments']);
             }
-            echo "<h1>            aqui";
             $this->print_r2($dashboardGlobals);
-            echo "</h1>";
 
             echo "<br>******* End of Loop ****** <br>";
         }
@@ -275,7 +273,8 @@ class CollectDataWorkerShell extends AppShell {
                     'data_JSONdata' => JSON_encode($dashboardGlobals),
                     $validate = true))) {
             
-        } else {
+        } 
+        else {
             // log error
         } 
 
