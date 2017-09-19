@@ -1789,20 +1789,26 @@ class p2pCompany {
      * @param strin $referer They are the referer to download the file
      * @param string $fileName It is the name of the file to save with
      */
-    public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $fileName = null) {
+    public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
-        if (empty($referer)) {
+        if ($referer != false && empty($referer)) {
             $referer = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
-        if (empty($credentials)) {
+        if ($credentials != false && empty($credentials)) {
             $credentials = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
+        
+        if ($headers != false && empty($headers)) {
+            $headers = array_shift($this->urlSequence);
+            $headers = json_decode($headers, true);
+        }
+        
         $this->errorInfo = $url;
 
         
@@ -1847,22 +1853,22 @@ class p2pCompany {
             //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
         }
         
-        $this->headers = array(
+        /*$this->headers = array(
             'accept-language: en-US,en;q=0.8',
             'upgrade-insecure-requests: 1',
             'origin: ' . $this->baseUrl,
-            'content-type: application/x-www-form-urlencoded',
-            'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'content-type: application/x-www-form-urlencoded',                  quitar doble barra de aqui
+            //'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*//*;q=0.8',
             'authority: ' . $this->baseUrl
-        );
+        );*/
 
-        if (!empty($this->headers)) {
+        if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
                     //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
 
-            unset($this->headers);   // reset fields
+            unset($headers);   // reset fields
         }
 
         $info = [
