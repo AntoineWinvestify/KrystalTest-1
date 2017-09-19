@@ -146,7 +146,7 @@ class zank extends p2pCompany {
         while ($reading) {
             $reading = false;
             //echo __FUNCTION__ . __LINE__ . "start with first read<br>";
-            $str = $this->getCompanyWebpageJson($url, $form);
+            $str = $this->getCompanyWebpage($url, $form);
 
 
 //print_r($str);
@@ -451,7 +451,7 @@ class zank extends p2pCompany {
             "start" => $start, //First investment of the page
         ];
 
-        $str = $this->getCompanyWebpageJson($url, $form); //Data reading
+        $str = $this->getCompanyWebpage($url, $form); //Data reading
 
         $totalArray = array();
         $pos1 = stripos($str, '[');
