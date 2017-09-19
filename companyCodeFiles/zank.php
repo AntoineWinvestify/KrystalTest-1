@@ -116,6 +116,7 @@ class zank extends p2pCompany {
      */
     function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
         $reading = true; //Loop controller
+        echo "Username: " . $this->config['company_username'] . " Password: " . $this->config['company_password'];
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
         // echo __FUNCTION__ . __LINE__ . "<br>";
 //set_time_limit(25);		// Zank is very very slow
