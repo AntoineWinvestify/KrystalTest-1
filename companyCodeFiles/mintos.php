@@ -255,7 +255,6 @@ class mintos extends p2pCompany {
      */
     function collectUserGlobalFilesParallel($str = null) {
 
-
         switch ($this->idForSwitch) {
             /////////////LOGIN
             case 0:
@@ -307,7 +306,7 @@ class mintos extends p2pCompany {
                     }
                 }
 
-                 /*if (!$resultLogin) {   // Error while logging in
+                if (!$resultLogin) {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -315,32 +314,44 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    exit;
-                } */
+                    return $this->getError(__LINE__, __FILE__);
+                }
                 
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             ////////DOWNLOAD FILE
             case 4:
-                $credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
+                //$credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
                 $fileName = 'Investment';
-                $referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
-                $this->getPfpFileMulticurl(null, $fileName, 'Mintos', 'prueba', $credentialsFile,$referer);
+                //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl(null, null, null, $fileName);
                 //echo 'Downloaded';
+                break;
+            case 5:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
-            case 5:
-                $credentialsFile = "account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
+            case 6:
+                $today = date("d.m.y");  
+                //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
+                $url = array_shift($this->urlSequence);
+                $referer = array_shift($this->urlSequence);
+                $referer = strtr($referer, array('{$today}' => $today));
+                $credentials = array_shift($this->urlSequence);
+                $credentials = strtr($credentials, array('{$today}' => $today));
                 $fileName = 'CashFlow';
-                $referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
-                $this->getPfpFileMulticurl(null, $fileName, 'Mintos', 'prueba', $credentialsFile,$referer);
+                //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url, $referer, $credentials, $fileName);
+                break;
+            case 7:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;           
             //////LOGOUT
-            case 6: 
+            case 8: 
                 return $tempArray["global"] = "hola";
         }
     }

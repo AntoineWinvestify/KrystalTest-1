@@ -167,7 +167,7 @@ initial test version
                         <div class="tab-content">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <p align="justify"><?php echo __('You entred the homepage of winadm') ?></p>
+                                    <p align="justify"><?php echo __('You entered the homepage of winadm') ?></p>
                                     <ul>
                                         <?php foreach ($companies as $companies) { ?>
                                             <li><?php echo __($companies["company_name"]) ?></li>
