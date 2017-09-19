@@ -1047,8 +1047,15 @@ echo "END OF LOOP <br>";
                     $finalDate[0] = $tempDate[$i]; 
                 break;              
             }
-        }   
-        return $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2];   
+        }  
+        
+        $returnDate = $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2];   
+        list($y, $m, $d) = array_pad(explode('-', $returnDate, 3), 3, 0);
+        
+        if (ctype_digit("$y$m$d") && checkdate($m, $d, $y)) {                           // check if date is a real date according to internal format
+            return returnDate;
+        }
+        return;
     }  
 
    

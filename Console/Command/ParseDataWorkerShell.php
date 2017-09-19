@@ -19,8 +19,9 @@
  * number of child processes, each childprocess takes a full sequence of a user
  * and writes the new job status for the user
  * Start instance of parser with configfile
- * 
- *
+ * Errors are taken care of in the worker and will spark the exception Callback with
+ * some extra user data
+ * Normal return also include some basic return data, like queue_id and user_reference
  * @author 
  * @version
  * @date
@@ -54,6 +55,7 @@ class ParseDataWorkerShell extends AppShell {
         $this->GearmanWorker->addFunction('parseFileFlow', array($this, 'parseFileFlow'));   
         
         while($this->GearmanWorker->work());
+        
     }
             
   
@@ -69,9 +71,12 @@ class ParseDataWorkerShell extends AppShell {
      *      $data['PFPname']['files'][typeOfFile']     type of file, CASHFLOW, INVESTMENT,...
      *      $data['PFPname']['files']['filetype']      CSV or XLS
      *      $data['userReference']
+     *      $data['queue_id']
+     *      
      * 
      * 
-     * @return array  
+     * @return array queue_id, userreference, también en el exception error
+     * el worker genera tb los applicationerrors
      * 
      *           array     analyse    convert internal array to external format using definitions of configuration file
      *                      true  analysis done with success
@@ -117,7 +122,6 @@ class ParseDataWorkerShell extends AppShell {
                 // execute callback
                 $result = $mycompany->beforeamortizationlist($parsedFile);
                 
-                
                 foreach ($loans as $key => $loan) {
                     if ($key == "global") {
                         continue;
@@ -153,6 +157,7 @@ class ParseDataWorkerShell extends AppShell {
                 $par4 = __FILE__;
                 $par5 = "";
                 $this->applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
+                // do cleaning up of all files which have been generated so far
 //echo error back to Gearman client
             }
         }
@@ -160,12 +165,32 @@ class ParseDataWorkerShell extends AppShell {
         
         
         if (empty($collectLoanIds)) {
-            $state = AMORTIZATION_TABLES_DOWNLOADED;                        // Do not collect amortization tables
+            $newState = AMORTIZATION_TABLES_DOWNLOADED;                        // Do not collect amortization tables
         }
         else {
-            $state = DATA_EXTRACTED;
+            $newState = DATA_EXTRACTED;
         }
-          
+
+        // write new status
+        $resultQueue = $this->Queue->find('all', array('conditions' => array('queue_userReference' => $data['queue_id']),
+                'recursive' => -1,
+            ));
+        $this->Queue->id = $resultQueue[0]['id'];
+
+        if ($this->Queue->save(array('queue_status' => $newState), $validate = true)) {
+            $params = array('investor_investorReference' => $data['userReference'],
+                            'queue_id'  => $data['queue_id']
+                            );
+            return json_encode($params);                                        // normal end of execution of worker         
+        }
+        
+        // generate exception
+        // return
+        
+        
+        
+        
+        
     }    
     
     
