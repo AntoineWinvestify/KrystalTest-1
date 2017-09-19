@@ -25,8 +25,8 @@
 
 class CollectDataClientShell extends AppShell {
     protected $GearmanClient;
-    private $newComp = [];
-    private $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
+    protected $newComp = [];
+    public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
 
     public function startup() {
         $this->GearmanClient = new GearmanClient();
@@ -38,13 +38,24 @@ class CollectDataClientShell extends AppShell {
 
     public function main() {
         $this->GearmanClient->addServers();
-        $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
-        $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
+        $this->GearmanClient->setExceptionCallback(function(GearmanTask $task) {
+            $m = $task->data();
+            echo "ID Unique: " . $task->unique() . "\n";
+            echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
+            //return GEARMAN_WORK_EXCEPTION;
+        });
+        
+        $this->GearmanClient->setFailCallback(function(GearmanTask $task) {
+            $m = $task->data();
+            echo "ID Unique: " . $task->unique() . "\n";
+            echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
+            //echo GEARMAN_WORK_FAIL;
+        });
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         
         $this->Queue = ClassRegistry::init('Queue');
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, START_COLLECTING);
-        $resultQueue = $this->Queue->getNextFromQueue(FIFO);
+        $resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
         
         if (empty($resultQueue)) {  // Nothing in the queue
             echo "empty queue<br>";
@@ -84,12 +95,22 @@ class CollectDataClientShell extends AppShell {
         }
         
         //$key is the number of each linkedaccounts
-        //$key is type of access to company (multicurl, casper, etc)
+        //$key2 is type of access to company (multicurl, casper, etc)
         foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
             foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
                 $data["companies"] = $linkedaccountsByType;
                 $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
                 $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
+                print_r($data["companies"]);
+                echo "\n";
+                echo "userReference ". $data["queue_userReference"];
+                echo "\n";
+                echo "queueId " . $data["queue_id"];
+                echo "\n";
+                echo json_encode($data);
+                echo "\n";
+                echo $key2;
+                echo "\n aquiiiiiiiiiiiiiii";
                 $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_userReference"] . ".-;" . $key2);
             }
         }
@@ -102,20 +123,20 @@ class CollectDataClientShell extends AppShell {
         
     }
     
-    private function verifyFailTask(GearmanTask $task) {
+    public function verifyFailTask(GearmanTask $task) {
         $m = $task->data();
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
     }
     
-    private function verifyExceptionTask (GearmanTask $task) {
+    public function verifyExceptionTask (GearmanTask $task) {
         $m = $task->data();
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
     }
     
-    private function verifyCompleteTask (GearmanTask $task) {
+    public function verifyCompleteTask (GearmanTask $task) {
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
     }

@@ -58,13 +58,13 @@ class bondora extends p2pCompany {
         $credentials['Email'] = $user;
         $credentials['Password'] = $password;
 
-        print_r($credentials);
+        //print_r($credentials);
 
         $str = $this->doCompanyLogin($credentials); //do login
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        echo $str;
+        //echo $str;
 
         $confirm = false;
 
@@ -95,7 +95,7 @@ class bondora extends p2pCompany {
         $this->getCompanyWebpage();
         return true;
     }
-    
+
     /**
      *
      * 	Collects the investment data of the user
@@ -113,47 +113,82 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 $inputs = $dom->getElementsByTagName('input');
-                /*foreach($inputs as $key => $input){
-                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
-                }*/
-                $token = $inputs[2]->getAttribute('value'); //this is the token
 
-                $credentials['username'] = $this->user;
-                $credentials['password'] = $this->password;
-                $credentials['__RequestVerificationToken'] = $token;
-                //print_r($credentials);
+                foreach ($inputs as $key => $input) {
+                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+                    if ($key == 0) {
+                        continue;
+                    }
+                    $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                }
+
+                $credentials['Email'] = $this->user;
+                $credentials['Password'] = $this->password;
+
+                print_r($credentials);
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($credentials); //do login
-               break;
+                break;
             case 2:
+                echo 'Doing loging' . HTML_ENDOFLINE;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            case 3:
                 $dom = new DOMDocument;  //Check if works
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-                echo $str;
+
 
                 $confirm = false;
 
-                $h2s = $dom->getElementsByTagName('h2');
-                foreach ($h2s as $h2) {
-                    echo $h2->nodeValue . HTML_ENDOFLINE;
-                    if (trim($h2->nodeValue) == 'Saldo en cuenta') {
+                $spans = $dom->getElementsByTagName('span');
+                foreach ($spans as $span) {
+                    echo $span->nodeValue . HTML_ENDOFLINE;
+                    if (trim($span->nodeValue) == 'Account value') {
                         $confirm = true;
                         break;
                     }
                 }
-                
+
+
                 if ($confirm) {
+                    echo 'Login ok' . HTML_ENDOFLINE;
                     $this->idForSwitch++;
-                    $this->getCompanyWebpageMultiCurl(); 
+                    $this->getCompanyWebpageMultiCurl();
                 }
                 break;
-            case 3:
-                echo "CODEEEEEEEEEEEEEE" . $str;
+            case 4:
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+
+                $confirm = false;
+
+                $trs = $dom->getElementsByTagName('tr');
+                foreach($trs as $tr){
+                    echo $tr->nodeValue . HTML_ENDOFLINE;
+                    if(strpos($tr->nodeValue,"Investments list")){
+                        $urls = $tr->getElementsByTagName('a');
+                        $this->tempUrl['downloadInvesment'] = $urls[0]->getAttribute('href');
+                        $this->tempUrl['deleteInvesment'] = $urls[1]->getAttribute('href');
+                    }
+                    if(strpos($tr->nodeValue,"Account statement")){
+                        $urls = $tr->getElementsByTagName('a');
+                        $this->tempUrl['downloadCashFlow'] = $urls[0]->getAttribute('href');
+                        $this->tempUrl['deleteCashFlow'] = $urls[1]->getAttribute('href');
+                    }
+                }
+
+                if(empty($this->downloadDeleteUrl)){
+                    $this->tempUrl['baseDownloadDelete'] = array_shift($this->urlSequence);
+                }
+                
+                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
+                $this->downloadPfpFile($url, 'prueba', 'xlsx', 'https://www.bondora.com', 'bondora', 'testuser', null, 'https://www.bondora.com/en/reports/');
                 break;
-            
         }
-        
-        
     }
 
 }
