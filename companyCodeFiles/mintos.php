@@ -334,6 +334,7 @@ class mintos extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();
                 break;
             case 6:
+                $yesterday = date('d.m.Y',strtotime("-1 days"));
                 $today = date("d.m.y");  
                 //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $url = array_shift($this->urlSequence);
@@ -352,7 +353,7 @@ class mintos extends p2pCompany {
                 break;           
             //////LOGOUT
             case 8: 
-                return $tempArray["global"] = "hola";
+                return $tempArray["global"] = "waiting_for_global";
         }
     }
 
