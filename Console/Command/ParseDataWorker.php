@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -21,25 +20,6 @@
  * and writes the new job status for the user
  * Start instance of parser with configfile
  * 
- * constructor (configfile) cashflow
- * load xls file
- * start analysing
- * store resulting array as json file
- * 
- * 
- *  * constructor (configfile) investments
- * load xls file
- * start analysing
- * store resulting array as json file
- * 
- * startParsing
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  *
  * @author 
  * @version
@@ -51,7 +31,7 @@ class ParseDataWorkerShell extends AppShell {
     
     protected $GearmanWorker;
     
-    var $uses = array('Company');
+    var $uses = array('Investment', 'Userinvestmentdata', 'Queue');
     
     public function startup() {
             $this->GearmanWorker = new GearmanWorker();
@@ -84,12 +64,11 @@ class ParseDataWorkerShell extends AppShell {
      * Parse the content of a file (xls, xlsx, csv) into an array 
      * The $job->workload() function read the input data as sent by the Gearman client
      * This is json_encoded data with the following structure:
-     *      data['PFPname'['files']                  array of filenames, FQDN's
-     *      data['PFPname'['files'][filename']       array of filenames, FQDN's
-     *      data['PFPname'['files'][typeOfFile']     type of file, CASHFLOW, INVESTMENT,...
-     *      data['PFPname'['files']['filetype']      CSV or XLS
-     *      data['userReference']
-     *      data['PFPname']
+     *      $data['PFPname']['files']                  array 
+     *      $data['PFPname']['files'][filename']       array of filenames, FQDN's
+     *      $data['PFPname']['files'][typeOfFile']     type of file, CASHFLOW, INVESTMENT,...
+     *      $data['PFPname']['files']['filetype']      CSV or XLS
+     *      $data['userReference']
      * 
      * 
      * @return array  
@@ -102,7 +81,7 @@ class ParseDataWorkerShell extends AppShell {
     public function parseFileFlow($job) {
         $data = json_decode($job->workload(), true);
         $collectLoanIds = array();
-        foreach ($data['files'] as $key => $filename) {             // check all the platform of the investor
+        foreach ($data['files'] as $key => $filename) {             // check all the platforms of the investor
             if ($data['files'['filetype']] == "CSV") {
                     $config = array('seperatorChar' => ";",         // Only makes sense in case input file is a CSV.
                             'sortByLoanId'  => true,                // Make the loanId the main index and all XLS/CSV entries of
@@ -136,7 +115,7 @@ class ParseDataWorkerShell extends AppShell {
                 $this->Investment = ClassRegistry::init('Investment');
                 
                 // execute callback
-                $mycompany->beforeamortizationlist($parsedFile);
+                $result = $mycompany->beforeamortizationlist($parsedFile);
                 
                 
                 foreach ($loans as $key => $loan) {
