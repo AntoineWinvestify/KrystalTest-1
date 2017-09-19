@@ -146,17 +146,25 @@ class bondora extends p2pCompany {
                 foreach ($spans as $span) {
                     echo $span->nodeValue . HTML_ENDOFLINE;
                     if (trim($span->nodeValue) == 'Account value') {
+                        echo 'Login ok' . HTML_ENDOFLINE;
                         $confirm = true;
                         break;
                     }
                 }
 
+                if (!$confirm) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Bondora login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }                              
 
-                if ($confirm) {
-                    echo 'Login ok' . HTML_ENDOFLINE;
-                    $this->idForSwitch++;
-                    $this->getCompanyWebpageMultiCurl();
-                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 4:
                 $dom = new DOMDocument;  //Check if works
@@ -186,12 +194,13 @@ class bondora extends p2pCompany {
                 }
                 
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
-                $referer = "https://www.bondora.com/en/reports/";
+                //$referer = "https://www.bondora.com/en/reports/";
                 //getPfpFileMulticurl($url = null, $fileName, $pfpName, $identity, $credentials, $referer)
                 /*$this->headers = array(
                     
                 );*/
-                $this->getPfpFileMulticurl($url, 'Invesment', 'Bondora', 'TestUser', null, $referer); //'xlsx', 'https://www.bondora.com', 'bondora', 'testuser', null, 'https://www.bondora.com/en/reports/');
+                $this->getPFPFileMulticurl($url,null, null, 'investment')
+                //$this->getPfpFileMulticurl($url, 'Invesment', 'Bondora', 'TestUser', null, $referer);
                 break;
         }
     }
