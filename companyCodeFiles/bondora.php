@@ -38,14 +38,14 @@ class bondora extends p2pCompany {
           FIELDS USED BY Bondora DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
          */
-
+        echo '1';
         //First we need get te token
         $str = $this->getCompanyWebpage();
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
-
+         echo '2';
         $inputs = $dom->getElementsByTagName('input');
         foreach ($inputs as $key => $input) {
             //echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
@@ -54,7 +54,7 @@ class bondora extends p2pCompany {
             }
             $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
         }
-
+         echo '3';
         $credentials['Email'] = $user;
         $credentials['Password'] = $password;
 
@@ -64,6 +64,7 @@ class bondora extends p2pCompany {
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
+         echo '4';
         //echo $str;
 
         $confirm = false;
@@ -199,7 +200,7 @@ class bondora extends p2pCompany {
                 /*$this->headers = array(
                     
                 );*/
-                $this->getPFPFileMulticurl($url,null, null, 'investment')
+                $this->getPFPFileMulticurl($url,null, false, 'investment');
                 //$this->getPfpFileMulticurl($url, 'Invesment', 'Bondora', 'TestUser', null, $referer);
                 break;
         }

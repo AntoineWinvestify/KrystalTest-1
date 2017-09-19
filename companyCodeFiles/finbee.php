@@ -45,7 +45,7 @@ class finbee extends p2pCompany {
         //echo $str;
         $inputs = $dom->getElementsByTagName('input');
         foreach ($inputs as $input) {
-            echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;
+            //echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;
             $name = $input->getAttribute('name');
             switch ($name) {
                 case 'option':
