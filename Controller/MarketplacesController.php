@@ -394,13 +394,17 @@ class MarketPlacesController extends AppController {
             }
             
         }
-        $marketplaceArray[0] = array_unique( $marketplaceArray[0]);
+      
 
-        foreach ($marketplaceArray[0] as $investment) { //Read the investment
+        echo 'Total investment array: ' . HTML_ENDOFLINE;
+        $this->print_r2($marketplaceArray[0]);
+        
+        foreach ($marketplaceArray[0] as $investmentArrayKey=>$investment) { //Read the investment
             $DontExist = true;
             $backup = true;
             $investment['company_id'] = $companyId;
-
+            echo 'Reading investment number: ' . $investmentArrayKey . HTML_ENDOFLINE;
+            $this->print_r2($investment);
             foreach ($companyMarketplace as $marketplaceInvestment) {
 
                 if ($investment['marketplace_loanReference'] == $marketplaceInvestment['Marketplace']['marketplace_loanReference']) { //If exist in winvestify marketplace
@@ -477,7 +481,7 @@ class MarketPlacesController extends AppController {
                     $this->Marketplacebackup->create();
                     $this->Marketplacebackup->save($investment);
                     echo __FUNCTION__ . __LINE__ . "PFP Investment saving:<br>";
-                    $this->print_r2($investment);
+                    //$this->print_r2($investment);
                     continue;
                 }
             }

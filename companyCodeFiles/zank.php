@@ -334,14 +334,14 @@ class zank extends p2pCompany {
             }
         }
 
-           
+        echo 'Search this investments: ' . print_r($this->investmentDeletedList);
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         echo 'Hidden: ' . HTML_ENDOFLINE;
         print_r($hiddenInvestments);
 
         $this->companyUserLogout();
         $totalArray = array_merge($totalArray,$hiddenInvestments);
-        $this->print_r2($totalArray);  
+        //$this->print_r2($totalArray);  
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
@@ -378,10 +378,10 @@ class zank extends p2pCompany {
                     $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
                     $tempArray['marketplace_loanReference'] = $loanId;
                     //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
-                    $tempArray['marketplace_rating'] = $subdivs[31]->nodeValue;
+                    $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
                     $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
                     list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
-                    $tempArray['marketplace_statusLiteral'] = $subdivs[15]->nodeValue;
+                    $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
                     $status = $tempArray['marketplace_statusLiteral'];
                     if($status == 'Completado'){   
                         $tempArray['marketplace_status'] = PERCENT;
@@ -399,11 +399,12 @@ class zank extends p2pCompany {
                     $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
                     $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
                     
+                    echo  $subdivs[126]->nodeValue;
                     $tds =  $subdivs[126]->getElementsByTagName('td');
                     $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
             }
-            //echo 'Hidden investment: ' . HTML_ENDOFLINE;
-            //print_r($tempArray);
+            echo 'Hidden investment: ' . HTML_ENDOFLINE;
+            print_r($tempArray);
             $newTotalArray[] = $tempArray;
             unset($tempArray);
         }
