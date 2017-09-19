@@ -102,7 +102,7 @@ class bondora extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentDataParallel($str) {
+    function collectUserGlobalFilesParallel($str) {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -186,7 +186,12 @@ class bondora extends p2pCompany {
                 }
                 
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
-                $this->downloadPfpFile($url, 'prueba', 'xlsx', 'https://www.bondora.com', 'bondora', 'testuser', null, 'https://www.bondora.com/en/reports/');
+                $referer = "https://www.bondora.com/en/reports/";
+                //getPfpFileMulticurl($url = null, $fileName, $pfpName, $identity, $credentials, $referer)
+                /*$this->headers = array(
+                    
+                );*/
+                $this->getPfpFileMulticurl($url, 'Invesment', 'Bondora', 'TestUser', null, $referer); //'xlsx', 'https://www.bondora.com', 'bondora', 'testuser', null, 'https://www.bondora.com/en/reports/');
                 break;
         }
     }
