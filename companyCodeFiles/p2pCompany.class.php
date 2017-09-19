@@ -1776,7 +1776,7 @@ class p2pCompany {
      * @param strin $referer They are the referer to download the file
      * @param string $fileName It is the name of the file to save with
      */
-    public function getPFPFileMulticurl($url = null, $credentials = null, $referer = null, $fileName = null) {
+    public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $fileName = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);

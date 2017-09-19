@@ -326,7 +326,7 @@ class mintos extends p2pCompany {
                 $fileName = 'Investment';
                 //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
                 $this->idForSwitch++;
-                $this->getPfpFileMulticurl(null, null, null, $fileName);
+                $this->getPFPFileMulticurl(null, null, null, $fileName);
                 //echo 'Downloaded';
                 break;
             case 5:
@@ -344,7 +344,7 @@ class mintos extends p2pCompany {
                 $fileName = 'CashFlow';
                 //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $this->idForSwitch++;
-                $this->getPfpFileMulticurl($url, $credentials, $referer, $fileName);
+                $this->getPFPFileMulticurl($url, $referer, $credentials, $fileName);
                 break;
             case 7:
                 $this->idForSwitch++;
