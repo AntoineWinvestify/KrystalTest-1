@@ -264,6 +264,10 @@ class comunitae extends p2pCompany {
 
                     if ($tempArray) {
                         $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);       
+                        if(substr("TAE",$tempArray['marketplace_name'])){
+                            unset($tempArray);
+                            continue;
+                        }
                         $totalArray[] = $tempArray;
                         unset($tempArray);
                         $numberOfInvestmentInPage++;
