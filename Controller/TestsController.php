@@ -153,7 +153,7 @@ function showUserData($userIdentity, $number) {
  */
    
   //      $inputFileType = 'CSV';
-        $inputFileName = '/var/www/html/compare_local/ecrowd.xls';
+        $inputFileName = '/var/www/html/compare_local/twino-investments.xlsx';
   //      $objReader = PHPExcel_IOFactory::createReader($inputFileType);  
 //        $objReader->setDelimiter(";");
 //        $objPHPExcel = $objReader->load($inputFileName);
@@ -641,9 +641,146 @@ for ($row = 1; $row <= $highestRow; $row++){
             ]
         ];
        
-       
+// TWINO
+// Processing Date	Booking Date	Type	Description	Loan Number	amount
+// 8/3/2017 20:39	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-185114001	1.0544
+// 8/3/2017 18:52	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-337436001	5.2947
+
+       $values_twino_cashflow = [     // All types/names will be defined as associative index in array
+            "A" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "d/m/Y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ],
+                
+ 
+             ],
+
+            "B" => [
+                [
+                    "type" => "purpose",                        // trick to get the complete cell data as purpose
+                    "inputData" => [
+                                "input2" => "",                 // May contain trailing spaces
+                                "input3" => ",",
+                            ],                   
+                    "functionName" => "extractDataFromString", 
+                ],
+                [
+                    "type" => "loanId",                         // Winvestify standardized name 
+                    "functionName" => "getHash",                // An internal loanId is generated based on md5 hash of project name
+                ]
+            ],          
+
+            "C" => [
+                    "name" => "payment",
+                ],
+                
+  /*              [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+                                                ["Intereses brutos(€)", "Regular_interest_income"],
+                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+                                                ["Intereses brutos(€)", "Regular_interest_income"],
+                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],  
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ]
+            ],
+*/
+            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "amortization",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ],
+            "E" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "interest",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ],
+            "F" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "retencionTax",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ], 
+            "G" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "total",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]
+            ]
+        ];       
       
-     
+       
+// Not finished
+        $values_twino_investment = [                            // All types/names will be defined as associative index in array
+            
+            "A" => [
+                    "name" => "origin.loan",
+                ],
+            "B" => [
+                    "name" => "loanId",
+                ],           
+            "C" => [
+                [
+                    "type" => "origin.date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "m/d/Y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ],
+             ],
+            "D" => [
+                    "name" => "riskclass",             
+                ],
+            "E" => [
+                    "name" => "status",             
+                ]
+        ];
+       
         
         $values_mintos = [     // All types/names will be defined as associative index in array
             "A" =>  [
@@ -720,12 +857,12 @@ for ($row = 1; $row <= $highestRow; $row++){
         ];       
  
             
-        $offset = 165;
+        $offset = 762;
         echo "Printing Original Data <br>";       
    //     $this->print_r2($sheetData);
    
         
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values_ecrowd, $offset);
+        $datas = $this->saveExcelArrayToTemp($sheetData, $values_twino_investment, $offset);
 
         $this->print_r2($datas);
     }
@@ -792,9 +929,11 @@ for ($row = 1; $row <= $highestRow; $row++){
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
-                
+                // check for subindices and construct them
                 if (array_key_exists("name", $value)) {
-                    $tempArray[$i][$value["name"]] = $rowData[$key];
+                    $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']"; 
+                    $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
+                    eval($tempString);
                 }
                 else { 
                     foreach ($value as $userFunction ) {
@@ -805,47 +944,31 @@ for ($row = 1; $row <= $highestRow; $row++){
                         else {  // input parameters are defined in config file
                         // check if any of the input parameters require data from
                         // another cell in current row, or from the previous row
-                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file
-                                echo "Line " . __LINE__ . ":  input = $input , keyInputData = $keyInputData and currentKey = $currentKey<br>";                             
+                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file                      
                                 if (stripos ($input, "#previous.") !== false) {
                                     if ($previousKey == -1) {
                                         $outOfRange = true;
                                         break;
                                     }
                                     $temp = explode(".", $input);
-                                    echo " and value = " . $tempArray[$previousKey][$temp[1]] . "<br>";
                                     $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
                                 }
                                 if (stripos ($input, "#current.") !== false) {
-                                    echo "Current row result required";
                                     $this->print_r2($tempArray);
                                     $temp = explode(".", $input);
-                                    echo " and value = " . $tempArray[$currentKey][$temp[1]] . "<br>";
                                     $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
                                 }                                         
                             }  
                         }
-                        
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
-           /*             
-                        if (!array_key_exists ($userFunction["type"], $tempArray[$i])) {
-                            echo "The main loop is going to write the key " . $userFunction["type"] .  "<br>";
-                        }    
-            */
+
                         if ($outOfRange == false) {
-  //                          echo "The MAIN LOOP is writing the key " . $userFunction["type"] .  "<br>";
- //                           echo "Main Loop Writing <br>";
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'\TestsController',  
                                 $userFunction['functionName']), $userFunction['inputData']);
-                            echo "tempResult = $tempResult <br>";
- //                           echo "checking existing rows: <br>";
-          //                  if (array_key_exists($userFunction["type"] , $tempArray[$i])) {
-           //                     echo "the index " . $userFunction["type"] . " already exists <br>";
-           //                 }
                             if (!empty($tempResult)) {
-                                 echo "KEY " . $userFunction["type"] . " does not exist<br>";
- //                               echo "I = $i and index = " . $userFunction["type"] . " and VALUE = " . $tempArray[$i][$userFunction["type"]] . " --> OK <br>";
-                                $tempArray[$i][$userFunction["type"]] = $tempResult; 
+                                $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']"; 
+                                $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
+                                eval($tempString);
                             }
                         }
                         else {
@@ -854,9 +977,6 @@ for ($row = 1; $row <= $highestRow; $row++){
                     }
                 }
             }
-//            echo __FUNCTION__ . " " . __LINE__ . " index = $i<br>";
-//            $this->print_r2($tempArray[$i]);
-//            echo __FUNCTION__ . " " . __LINE__ . " <br>";
 
             if (array_key_exists("loanId", $tempArray[$i]) ){
                  $tempArray[ $tempArray[$i]['loanId'] ][]  = $tempArray[$i];
@@ -877,7 +997,6 @@ echo "END OF LOOP <br>";
             echo "delete index $i <br>";
         }
         
-        echo __FUNCTION__ . " " . __LINE__ . " index = $i<br>";
         $this->print_r2($tempArray);
         echo __FUNCTION__ . " " . __LINE__ . " <br>";       
         return $tempArray;
@@ -896,16 +1015,16 @@ echo "END OF LOOP <br>";
      * 
      */
     function normalizeDate($date, $currentFormat) {
-       $internalFormat = $this->multiexplode(array(".", "-", "/"), $currentFormat);
-       ((count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2]);
-       
+       $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
+       (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
        $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
+       
        if (count($tempDate) == 1) {
            return;
        }
        
        $finalDate = array();
-       
+    
        $length = strlen($dateFormat);
        for ($i = 0; $i < $length; $i++) {
             switch ($dateFormat[$i]) {
@@ -928,8 +1047,7 @@ echo "END OF LOOP <br>";
                     $finalDate[0] = $tempDate[$i]; 
                 break;              
             }
-        } 
-//        echo __FUNCTION__ .  " " . __LINE__ . "  Calculated Date = " . $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2] . "<br>";   
+        }   
         return $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2];   
     }  
 
@@ -1107,20 +1225,16 @@ echo "END OF LOOP <br>";
      *       
      */
     function getRowData($input, $field, $overwrite) {  
-//echo "Line " . __LINE__ . " inputs are: input = $input, field = $field and condition = $overwrite <br>";      
 
-    if (empty($input)) {
- //       echo __FUNCTION__ . " " . __LINE__ . "returned field = $field <br>";
-        return $field;
-    }    
-    else {
-        if ($overwrite) {
-  //          echo __FUNCTION__ . " " . __LINE__ . "returned [overwritten] field = $field <br>";
+        if (empty($input)) {
             return $field;
-        }
-    } 
-  //           echo __FUNCTION__ . " " . __LINE__ . "ERROR, NOTHING DEFINED<br>";      
-     return "";
+        }    
+        else {
+            if ($overwrite) {
+                return $field;
+            }
+        }      
+         return "";
     }    
     
     
