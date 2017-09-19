@@ -104,7 +104,7 @@ class twino extends p2pCompany {
                 break;
             case 3:
                 echo $str;
-                /*if ($str == false) {
+                if (!$str) {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Twino login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -112,10 +112,7 @@ class twino extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    exit;
-                }*/
-                if ($str == false) {
-                    echo 'twino login fail';
+                    return $this->getError(__LINE__, __FILE__);
                 }else{
                     echo 'twino login ok';
                 }
@@ -143,7 +140,7 @@ class twino extends p2pCompany {
                 if($response['reportReady'] == true){
                     echo 'Status true, downloading';
                     $this->idForSwitch++;
-                    $this->downloadPfpFile($this->statusDownloadUrl . $response['reportId']. '/download' , 'prueba', 'xlsx', 'www.twino.eu', 'Twino', 'TestUser', null, 'https://www.twino.eu/en/profile/investor/my-investments/individual-investments');
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, 'Invesment');
                 }else{
                     echo 'Not ready yet';
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');

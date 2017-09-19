@@ -1800,7 +1800,9 @@ class p2pCompany {
             //echo $pfpBaseUrl;
         }
         if (empty($credentials)) {
-            $credentials = array_shift($this->urlSequence);
+            if($credentials != false){
+              $credentials = array_shift($this->urlSequence);
+            }
             //echo $pfpBaseUrl;
         }
         $this->errorInfo = $url;
