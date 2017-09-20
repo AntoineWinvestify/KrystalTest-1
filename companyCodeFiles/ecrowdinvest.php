@@ -46,7 +46,148 @@
  *
  */
 class ecrowdinvest extends p2pCompany {
+        
+// ECROWD
+// Fecha        Nombre del proyecto                                                     Cuota	Amortización de capital(€)	Intereses brutos(€) Retención IRPF(€)  Total(€)
+// 25-07-2017	Ampliación de la red de fibra óptica de l'Ametlla de Mar - Fase 5 -	2	0,00                              1,09               0,21                0,88
+    protected $values_ecrowd = [     // All types/names will be defined as associative index in array
+            "A" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D-M-Y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ],
+                [
+                    "type" => "date",                           // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "#previous.date",   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                                                                // Note that "date" must be a field defined in this config file
+                                                                // keywords are "#previous" and "#current.
+                                                                // Be aware that #previous does NOT contain any data in case of parsing the
+                                                                // first line of the file.
+                                                                // #current.indexName is ONLY defined if this field is defined BEFORE this field in the
+                                                                // configuration file
+                                "input3" => false               // This parameter indicates if the defined field will be overwritten 
+                                                                // if it already contains a value.     
+                                                                // 
+                                ],
+                    "functionName" => "getRowData",  
+                ],   
+ 
+                [
+                    "type" => "date1",                           // Complex format, example of duplicating an existing value
+                    "inputData" => [
+                                "input2" => "#current.date",    // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                                                                // Note that "date" must be a field defined in this config file
+                                                                // keywords are "#previous" and "#current".
+                                                                // Be aware that #previous does NOT contain any data in case of parsing the
+                                                                // first line of the file.
+                                                                // #current.indexName is ONLY defined if this field is defined BEFORE this field in the
+                                                                // configuration file
+                                "input3" => true                // This parameter indicates if the defined field will be overwritten 
+                                                                // if it already contains a value.      
+                                                                // 
+                                ],
+                    "functionName" => "getRowData",  
+                ],               
+ 
+             ],
 
+            "B" => [
+                [
+                    "type" => "purpose",                        // trick to get the complete cell data as purpose
+                    "inputData" => [
+                                "input2" => "",                 // May contain trailing spaces
+                                "input3" => ",",
+                            ],                   
+                    "functionName" => "extractDataFromString", 
+                ],
+                [
+                    "type" => "loanId",                         // Winvestify standardized name 
+                    "functionName" => "getHash",                // An internal loanId is generated based on md5 hash of project name
+                ]
+            ],          
+
+            "C" => [
+                    "name" => "payment",
+                ],
+                
+  /*              [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+                                                ["Intereses brutos(€)", "Regular_interest_income"],
+                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+                                                ["Intereses brutos(€)", "Regular_interest_income"],
+                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],  
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ]
+            ],
+*/
+            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "amortization",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ],
+            "E" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "interest",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ],
+            "F" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "retencionTax",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ], 
+            "G" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "total",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]
+            ]
+        ];
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass

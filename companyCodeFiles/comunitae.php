@@ -93,6 +93,114 @@ class comunitae extends p2pCompany {
         5, //OK(1-2)
     ];
 
+       
+ // COMUNITAE  NOT FINISHED
+ // 
+ // unknown values for concept are:
+ //         participación en préstamo
+ //         bono de incentivos
+ // 
+ // 
+// Fecha de Operacion	Debe	Haber	Saldo	Concepto
+// 8/1/2017             0.50€	0.00€	49.61€	Cargo por comisión de administración
+// 7/25/2017            0.58€	0.00€	50.11€	Cargo por comisión de administración
+// 7/25/2017            0.00€	50.00€	50.69€	Abono rendimientos capital   ptmo. CPP_016231  y Nº de recibo 342097
+    protected $values_comunitae = [     // All types/names will be defined as associative index in array
+            "A" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "m-d-Y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+            ],
+            "B" => [
+                [
+                    "type" => "amount1",                        // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => ",",                // Thousands seperator, typically "."
+                                "input3" => ".",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount",  
+                ],
+            ],
+            "C" => [
+                [
+                    "type" => "amount2",                        // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => ",",                // Thousands seperator, typically "."
+                                "input3" => ".",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount" 
+                ]
+            ],
+            "D" => [
+                [
+                    "type" => "saldo",                         
+                    "inputData" => [
+				"input2" => ",",                // Thousands seperator, typically "."
+                                "input3" => ".",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]
+            ],              
+            "E" => [  
+                [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
+                                                ["Retirada de fondos", "Cash_withdrawal"],
+                                                ["Préstamo", "Primary_market_investment"],
+                                                ["Abono rendimientos capital","Principal_repayment"],
+                                                ["Abono rendimientos intereses", "Regular_interest_income"],
+                                                ["Abono rendimientos capital", "Delayed_interest_income"],
+                                                ["Cargo por comisión de administración", "Commission"],
+                                                ["Cargo por comisión de ingreso por tarjeta", "Bank_charges"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
+                                                ["Retirada de fondos", "Cash_withdrawal"],
+                                                ["Préstamo", "Primary_market_investment"],
+                                                ["Abono rendimientos capital","Principal_repayment"],
+                                                ["Abono rendimientos intereses", "Regular_interest_income"],
+                                                ["Abono rendimientos capital", "Delayed_interest_income"],
+                                                ["Cargo por comisión de administración", "Commission"],
+                                                ["Cargo por comisión de ingreso por tarjeta", "Bank_charges"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ],
+                [
+                    "type" => "loanId", 
+                    "inputData" => [
+                                "input2" => "CPP",        
+                                "input3" => " ",                // seperator character
+                                "input4" => true
+                            ],
+                    "functionName" => "extractDataFromString",   
+                ] 
+            ]
+        ];       
+        
+
+    
+    
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass

@@ -2361,7 +2361,7 @@ class p2pCompany {
 
 
 
-/** Not all of them are currently used. 
+/** 
  * 
  * 
  * Callback functions required for Dashboard 2. The companycodeFile class can override these methods
@@ -2376,6 +2376,9 @@ class p2pCompany {
      * The companycodeFile class can override these methods.
      * these callback also exist in case the platform does not support xls/csv file download and the information
      * had to be collected using webscraping
+     * The companycodefiles can "delete or modify" any index of the array $fileContent and as such influence "the 
+     * process of writing the data to the database. Could be used to delete one or more indices at beginning or 1 or 
+     * more at end of array.
      * 
      * @param string $fileName      The filename (as FQDN) which has been analyzed
      * @param string $typeOfFile    the type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
@@ -2409,8 +2412,8 @@ class p2pCompany {
     /** 
      * Callback functions required for Dashboard 2. 
      * The system has constructed the list of amortization tables to be downloaded. 
-     * This callback is only called if a amortizationtables need to be donwloaded. 
-     * Also note that this callbased is ALSO called in case the companycodefile has facilitated the list using the
+     * This callback is only called if one or more amortizationtable(s) need(s) to be downloaded. 
+     * Also note that this callback is ALSO called in case the companycodefile has facilitated the list using the
      * "beforeamortizationList" callback function. 
      * 
      * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
@@ -2423,7 +2426,7 @@ class p2pCompany {
 
     /** 
      * Callback functions required for Dashboard 2.  
-     * All the amortizationtables have been downloaded and analyzed and are available in array $amortizationTables. 
+     * All the amortization tables have been downloaded and analyzed and are available in array $amortizationTables. 
      * No processing of the table(s) has yet been done.
      * 
      * @param array $amortizationTables    The array that contains the data of the amortization tables. Main index is
@@ -2438,7 +2441,7 @@ class p2pCompany {
 
     /** 
      * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during the data reading period
+     * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan status 
      * 
      * @param string pfp            Name of the PFP, zank,growly etc. 
@@ -2452,7 +2455,7 @@ class p2pCompany {
 
     /** 
      * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during the data reading period
+     * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan rate 
      * 
      * @param string pfp            Name of the PFP, zank,growly etc. 
@@ -2465,7 +2468,7 @@ class p2pCompany {
 
     /** 
      * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during the data reading period
+     * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan duration 
      * 
      * @param string pfp            Name of the PFP, zank,growly etc. 

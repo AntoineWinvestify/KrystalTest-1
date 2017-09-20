@@ -74,9 +74,7 @@ class CollectAmortizatioDataWorkerShell extends AppShell {
      * load config (perhaps via constructor: index = loanId
      */   
     public function collectamortizationtablesFileFlow($job) {
-//define('AMORTIZATION_TABLE_FILE', 4);
-//define('AMORTIZATION_TABLE_ARRAY',5);
-//define('AMORTIZATION_TABLE_FILE',6);
+
         $data = json_decode($job->workload(), true);
         $collectLoanIds = array();
  

@@ -63,7 +63,7 @@ class ParseDataClientShell extends AppShell {
         
         $inActivityCounter++;           // Gearman client 
         
-        
+        $response = [];
         while (true){
         $pendingJobs = $this->checkJobs(GLOBAL_DATA_DOWNLOADED, EXTRACTING_DATA_FROM_FILE, MAX_PARSERJOBS_IN_PARALLEL);     // One job at the time
             if (!empty($pendingJobs)) {
@@ -72,6 +72,14 @@ class ParseDataClientShell extends AppShell {
                 $FQDNfile = 6;
                 $parseResult = $this->parseFile($FQDNfile);
                 if ($parseResult)  {
+ // add jobs on Gearman level
+                    // first collect all the relevant data (per investor) to be sent to Gearman worker
+                    // queue_id, investorId, files to be decoded,
+                    $response[] = $this->GearmanClient->addTask("parseFileFlow", json_encode($params));
+                  parseFileFlow;
+                    
+                    
+                    
                     
                     
                     

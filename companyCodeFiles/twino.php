@@ -28,6 +28,151 @@
  */
 class twino extends p2pCompany {
     protected $statusDownloadUrl = null;
+    
+         
+// TWINO
+// Processing Date	Booking Date	Type	Description	Loan Number	amount
+// 8/3/2017 20:39	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-185114001	1.0544
+// 8/3/2017 18:52	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-337436001	5.2947
+
+    protected $values_twino_cashflow = [     // All types/names will be defined as associative index in array
+            "A" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "d/m/Y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ],
+                
+ 
+             ],
+
+            "B" => [
+                [
+                    "type" => "purpose",                        // trick to get the complete cell data as purpose
+                    "inputData" => [
+                                "input2" => "",                 // May contain trailing spaces
+                                "input3" => ",",
+                            ],                   
+                    "functionName" => "extractDataFromString", 
+                ],
+                [
+                    "type" => "loanId",                         // Winvestify standardized name 
+                    "functionName" => "getHash",                // An internal loanId is generated based on md5 hash of project name
+                ]
+            ],          
+
+            "C" => [
+                    "name" => "payment",
+                ],
+                
+  /*              [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+                                                ["Intereses brutos(€)", "Regular_interest_income"],
+                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+                                                ["Intereses brutos(€)", "Regular_interest_income"],
+                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],  
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ]
+            ],
+*/
+            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "amortization",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ],
+            "E" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "interest",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ],
+            "F" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "retencionTax",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]                    
+            ], 
+            "G" => [                                            // Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "total",                         
+                    "inputData" => [
+				"input2" => ".",                // Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of required decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount"
+                ]
+            ]
+        ];       
+      
+       
+// Not finished
+    protected $values_twino_investment = [                            // All types/names will be defined as associative index in array
+            
+            "A" => [
+                    "name" => "origin.loan",
+                ],
+            "B" => [
+                    "name" => "loanId",
+                ],           
+            "C" => [
+                [
+                    "type" => "origin.date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "m/d/Y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ],
+             ],
+            "D" => [
+                    "name" => "riskclass",             
+                ],
+            "E" => [
+                    "name" => "status",             
+                ]
+        ];
+       
+   
+    
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
