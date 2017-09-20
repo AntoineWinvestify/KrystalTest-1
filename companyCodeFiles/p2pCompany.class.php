@@ -149,6 +149,7 @@ class p2pCompany {
     protected $fileType;
     protected $companyName;
     protected $userReference;
+    protected $linkAccountId;
 
     /**
      *
@@ -1822,7 +1823,7 @@ class p2pCompany {
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName;
+        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
         $pathCreated = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
@@ -2351,7 +2352,16 @@ class p2pCompany {
     function setCompanyName($companyName) {
         $this->companyName = $companyName;
     }
+    
+    function getLinkAccountId() {
+        return $this->linkAccountId;
+    }
 
+    function setLinkAccountId($linkAccountId) {
+        $this->linkAccountId = $linkAccountId;
+    }
+
+    
     
 
     
