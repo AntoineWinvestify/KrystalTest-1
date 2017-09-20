@@ -1784,9 +1784,11 @@ class p2pCompany {
     
     /**
      * Function to download a file with multicurl
+     * The referer, credentials or headers if null, it will used from urlSequence, if false, it is not used
      * @param string $url It is the url to download the file
+     * @param string $referer They are the referer to download the file
      * @param string $credentials They are the credentials to download the file
-     * @param strin $referer They are the referer to download the file
+     * @param array $headers The headers needed to download the file
      * @param string $fileName It is the name of the file to save with
      */
     public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
