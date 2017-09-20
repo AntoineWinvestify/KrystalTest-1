@@ -781,9 +781,11 @@ class p2pCompany {
 
     /**
      *
-     * 	Load the received Webpage into a string.
-     * 	If an url is provided then that url is used instead of reading it from the urlSequence array
-     * 	@param string 		$url	The url the connect to
+     * 	Add a request to the multicurl Queue
+     * 	If an url is  provided then that url is used instead of reading it from the urlSequence array
+     * 	@param string $url The url the connect to
+     *  @param string $credentials The credentials used to connect to the url provided
+     *  @param boolean $payload If payload is true, then, the credentials are json type
      *
      */
     function getCompanyWebpageMultiCurl($url = null,$credentials = null, $payload = null) {
