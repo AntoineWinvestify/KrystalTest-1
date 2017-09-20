@@ -167,7 +167,6 @@ class p2pCompany {
         $this->cookiesDir = $createdFolder;
         $this->config['tracingActive'] = false;
         $this->headers = array();
-        $this->companyName = $this->getPFPName();
 
 
 // ******************************** end of configuration parameters *************************************
@@ -782,9 +781,11 @@ class p2pCompany {
 
     /**
      *
-     * 	Load the received Webpage into a string.
-     * 	If an url is provided then that url is used instead of reading it from the urlSequence array
-     * 	@param string 		$url	The url the connect to
+     * 	Add a request to the multicurl Queue
+     * 	If an url is  provided then that url is used instead of reading it from the urlSequence array
+     * 	@param string $url The url the connect to
+     *  @param string $credentials The credentials used to connect to the url provided
+     *  @param boolean $payload If payload is true, then, the credentials are json type
      *
      */
     function getCompanyWebpageMultiCurl($url = null,$credentials = null, $payload = null) {
@@ -1786,13 +1787,18 @@ class p2pCompany {
     
     /**
      * Function to download a file with multicurl
+     * The referer, credentials or headers if null, it will used from urlSequence, if false, it is not used
      * @param string $url It is the url to download the file
+     * @param string $referer They are the referer to download the file
      * @param string $credentials They are the credentials to download the file
-     * @param strin $referer They are the referer to download the file
+     * @param array $headers The headers needed to download the file
      * @param string $fileName It is the name of the file to save with
      */
     public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
 
+        echo "urls: ";
+        print_r($this->urlSequence);
+        
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
@@ -1808,11 +1814,10 @@ class p2pCompany {
         
         if ($headers != false && empty($headers)) {
             $headers = array_shift($this->urlSequence);
-            $headers = json_decode($headers, true);
         }
-        
-        $this->errorInfo = $url;
 
+        $this->errorInfo = $url;
+        echo "File name is " . $fileName;
         
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
@@ -1826,7 +1831,7 @@ class p2pCompany {
             echo "url download File: " . $this->errorInfo . " \n";
             echo "Cannot create folder \n";
         }
-        $output_filename = $fileName . '_' . $date . "." . $this->fileType;
+        $output_filename = $fileName . '_' . $date . '.' . $this->fileType;
         $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
         if (!$this->fp) {
             echo "Couldn't created the file \n";
@@ -1854,15 +1859,6 @@ class p2pCompany {
                     ->set(CURLOPT_POST, true);
             //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
         }
-        
-        /*$this->headers = array(
-            'accept-language: en-US,en;q=0.8',
-            'upgrade-insecure-requests: 1',
-            'origin: ' . $this->baseUrl,
-            'content-type: application/x-www-form-urlencoded',                  quitar doble barra de aqui
-            //'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*//*;q=0.8',
-            'authority: ' . $this->baseUrl
-        );*/
 
         if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
@@ -2348,8 +2344,15 @@ class p2pCompany {
         $this->userReference = $userReference;
     }
 
+    function getCompanyName() {
+        return $this->companyName;
+    }
 
+    function setCompanyName($companyName) {
+        $this->companyName = $companyName;
+    }
 
+    
 
     
 
