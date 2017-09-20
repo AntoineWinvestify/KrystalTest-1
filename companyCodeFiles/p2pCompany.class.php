@@ -1791,6 +1791,8 @@ class p2pCompany {
      */
     public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
 
+        echo "urls: " . print_r($this->urlSequence);
+        
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
@@ -1801,14 +1803,16 @@ class p2pCompany {
         }
         if ($credentials != false && empty($credentials)) {
             $credentials = array_shift($this->urlSequence);
+            echo $credentials;
             //echo $pfpBaseUrl;
         }
         
         if ($headers != false && empty($headers)) {
             $headers = array_shift($this->urlSequence);
+            echo '+++++++' . print_r($headers) . '+++++++++++++' . HTML_ENDOFLINE;
             $headers = json_decode($headers, true);
         }
-        
+        echo '+++++++' . print_r($headers) . '+++++++++++++' . HTML_ENDOFLINE;
         $this->errorInfo = $url;
 
         
@@ -1824,6 +1828,7 @@ class p2pCompany {
             echo "url download File: " . $this->errorInfo . " \n";
             echo "Cannot create folder \n";
         }
+        echo 'NAME: ' . $fileName;
         $output_filename = $fileName . '_' . $date . "." . $this->fileType;
         $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
         if (!$this->fp) {

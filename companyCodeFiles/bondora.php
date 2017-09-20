@@ -200,7 +200,7 @@ class bondora extends p2pCompany {
                 /*$this->headers = array(
                     
                 );*/
-                $this->getPFPFileMulticurl($url,null, false, 'investment');
+                $this->getPFPFileMulticurl($url,null, false, null , 'investment');
                 //$this->getPfpFileMulticurl($url, 'Invesment', 'Bondora', 'TestUser', null, $referer);
                 break;
         }
