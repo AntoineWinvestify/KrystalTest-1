@@ -36,8 +36,20 @@ class CollectDataClientShell extends AppShell {
     public function help() {
         $this->out('Gearman Client as a CakePHP Shell');
     }
-
+    
     public function main() {
+        echo "Nothing to do here";
+    }
+
+    /**
+     * Function to init the process to recollect all the user investment data
+    *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
+    *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
+     */
+    public function initClient() {
+        $queueStatus = $this->args[0];
+        $queueAcessType = $this->args[1];
+        
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(function(GearmanTask $task) {
             $m = $task->data();
@@ -55,7 +67,7 @@ class CollectDataClientShell extends AppShell {
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         
         $this->Queue = ClassRegistry::init('Queue');
-        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, START_COLLECTING);
+        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
         $resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
         
         if (empty($resultQueue)) {  // Nothing in the queue
