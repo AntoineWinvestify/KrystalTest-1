@@ -267,6 +267,7 @@ class twino extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile,true);
                 break;
             case 4:
+                //Download investment
                 echo $str;
                 $response = json_decode($str, true);
                 print_r($response);
@@ -286,7 +287,7 @@ class twino extends p2pCompany {
                 if($response['reportReady'] == true){
                     echo 'Status true, downloading';
                     $this->idForSwitch++;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'Investment');
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoInvestment');
                 }else{
                     echo 'Not ready yet';
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
@@ -294,8 +295,50 @@ class twino extends p2pCompany {
                     echo 'Repeat Case: ' . $this->idForSwitch;
                 }
                 break;
-            case 6:
-                
+            case 6:     
+                //Download cash flow
+                $date1 = "[2017,9,1]";
+                $date2 = "[2017,9,20]";      
+                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":{$date1},"processingDateTo":{$date2},"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
+                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $date1)); //date must be [year,month.day]
+                $credentialsFile = strtr($credentialsFile, array('{$date2}' => $date2));
+                $this->idForSwitch++;
+                array_shift($this->urlSequence);
+                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
+                break;
+            case 7:
+                echo $str;
+                $response = json_decode($str, true);
+                print_r($response);     
+                if($response['reportReady'] == false){
+                    echo 'Not ready yet';
+                    $this->idForSwitch++;
+                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
+                    echo 'Repeat Case: ' . $this->idForSwitch;
+                    break;
+                } else{
+                    echo 'Status true, downloading';
+                    $this->idForSwitch  = 9;
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoCashFlow');
+                    break;
+                }    
+            case 8:
+                echo $str;
+                $response = json_decode($str, true);   
+                print_r($response);
+                if($response['reportReady'] == true){
+                    echo 'Status true, downloading';
+                    $this->idForSwitch++;
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoCashFlow');
+                } else{
+                    echo 'Not ready yet';
+                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
+                    $this->idForSwitch--;
+                    echo 'Repeat Case: ' . $this->idForSwitch;
+                }
+                break;
+            case 9:
+                return $tempArray["global"] = "waiting_for_global";
                 break;
         }
     }

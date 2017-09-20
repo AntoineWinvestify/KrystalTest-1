@@ -172,9 +172,6 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
-
-                $confirm = false;
-
                 $trs = $dom->getElementsByTagName('tr');
                 foreach($trs as $tr){
                     echo $tr->nodeValue . HTML_ENDOFLINE;
@@ -200,8 +197,14 @@ class bondora extends p2pCompany {
                 /*$this->headers = array(
                     
                 );*/
-                $this->getPFPFileMulticurl($url,null, false, null , 'investment');
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url,null, false, null , 'Bondora_Investment');
                 //$this->getPfpFileMulticurl($url, 'Invesment', 'Bondora', 'TestUser', null, $referer);
+                break;
+            case 5:       
+                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadCashFlow'];
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url,null, false, null , 'Bondora_CashFlow');
                 break;
         }
     }
