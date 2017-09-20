@@ -86,6 +86,7 @@ class CollectDataWorkerShell extends AppShell {
             $this->newComp[$i]->setQueueId($data["queue_id"]);
             $this->newComp[$i]->setBaseUrl($result[$i][$this->companyId[$i]]['company_url']);
             $this->newComp[$i]->setFileType($result[$i][$this->companyId[$i]]['company_typeOfFile']);
+            $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], MY_INVESTMENTS_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence

@@ -187,7 +187,7 @@ public function beforeSave1($options = array()) {
     return true;
 }
 
-    public function getUsersByStatus($queuetype, $status, $limit = null, $usertype = null) {
+    public function getUsersByStatus($queuetype, $status, $userAccess = null, $limit = null) {
         
         switch ($queuetype) {
             case FIFO:
@@ -204,13 +204,14 @@ public function beforeSave1($options = array()) {
         if (empty($limit)) {
             $limit = 100;
         }
-        if (empty($usertype)) {
-            $usertype = WEEKLY_USER;
+        if (empty($userAccess)) {
+            $usertype = DAILY_USER;
         }
-        
-        
-        $result = $this->find("all", array("conditions" => array("queue_type" => $queuetype,
-                                            "queue_status" => $status),
+
+        $result = $this->find("all", array("conditions" => array(
+                                                        "queue_type" => $queuetype,
+                                                        "queue_status" => $status,
+                                                        "queue_accessType" => $userAccess),
                                             "order" => $order,
                                             "limit" => $limit)
                             );

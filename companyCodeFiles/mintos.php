@@ -399,9 +399,15 @@ class mintos extends p2pCompany {
             case 4:
                 //$credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
                 $fileName = 'Investment';
+                $url = array_shift($this->urlSequence);
+                $referer = array_shift($this->urlSequence);
+                $credentials = array_shift($this->urlSequence);
+                $headers = array_shift($this->urlSequence);
+                $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
+                $headers = json_decode($headers, true);
                 //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl(null, null, null, $fileName);
+                $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $fileName);
                 //echo 'Downloaded';
                 break;
             case 5:
@@ -414,13 +420,16 @@ class mintos extends p2pCompany {
                 //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array('{$today}' => $today));
+                $referer = strtr($referer, array('{$today}' => $yesterday));
                 $credentials = array_shift($this->urlSequence);
-                $credentials = strtr($credentials, array('{$today}' => $today));
+                $credentials = strtr($credentials, array('{$today}' => $yesterday));
+                $headersJson = array_shift($this->urlSequence);
+                $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
+                $headers = json_decode($headers, true);
                 $fileName = 'CashFlow';
                 //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, $referer, $credentials, $fileName);
+                $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $fileName);
                 break;
             case 7:
                 $this->idForSwitch++;
