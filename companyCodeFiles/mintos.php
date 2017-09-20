@@ -34,6 +34,81 @@
  */
 class mintos extends p2pCompany {
 
+    protected $values_mintos = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+            "B" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "Y-m-d",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                  // etc etc  ...
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+            ],
+            "C" => [
+                [
+                    "type" => "loanId",                         // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "Loan ID: ",        // May contain trailing spaces
+                                "input3" => ",",
+                            ],
+                    "functionName" => "extractDataFromString",  
+                ],
+                [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Incoming client payment", "Cash_deposit"],
+                                                ["Investment principal increase", "Primary_market_investment"],
+                                                ["Investment principal repayment", "Principal_repayment"],
+                                                ["Investment principal rebuy","Principal_buyback"],
+                                                ["Interest income", "Regular_interest_income"],
+                                                ["Delayed interest income", "Delayed_interest_income"],
+                                                ["Late payment fee income","Late_payment_fee_income"],
+                                                ["Interest income on rebuy", "Interest_income_buyback"],
+                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Incoming client payment", "Cash_deposit"],
+                                                ["Investment principal increase", "Primary_market_investment"],
+                                                ["Investment principal repayment", "Principal_repayment"],
+                                                ["Investment principal rebuy","Principal_buyback"],
+                                                ["Interest income", "Regular_interest_income"],
+                                                ["Delayed interest income", "Delayed_interest_income"],
+                                                ["Late payment fee income","Late_payment_fee_income"],
+                                                ["Interest income on rebuy", "Interest_income_buyback"],
+                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
+                                        
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ]
+            ],
+            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
+                    "name" => "turnover",                      
+                ],
+            "E" => [
+                    "name" => "balance",
+                ],
+            "F" => [
+                [
+                    "type" => "currency",                       // Complex format, calling external method
+                    "functionName" => "getCurrency",  
+                ]
+            ]          
+        ];       
+ 
+    
     function __construct() {
         parent::__construct();
         // Do whatever is needed for this subsclass

@@ -28,6 +28,92 @@
 class finanzarel extends p2pCompany {
 
     protected $InstanceGlobal = '';
+ 
+// FINANZAREL        
+// Id           A�o	Trimestre	Fecha           Subasta     Descripci�n                 Importe         Saldo
+// 20171678450	2017	2017T3          21/07/17	2817        Intereses                   �0,97           �55.314,02
+// 20171678440	2017	2017T3          21/07/17	2817        Amortizaci�n de efecto	-�153,94	�55.313,06
+    protected $values_finanzarel = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+            "B" =>  [
+                "name" => "year"
+             ],
+            "C" =>  [
+                "name" => "trimestre"
+             ],            
+            "D" => [
+                [
+                    "type" => "date",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D/M/y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+            ], 
+            "E" =>  [
+                "name" => "loanId"
+             ], 
+            "F" =>  [
+                 [
+                    "type" => "transactionType",                // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
+                                                ["Cargo por inversión en efecto", "Primary_market_investment"],
+                                                ["Abono por cobro parcial de efecto", "Partial_principal_repayment"],
+                                                ["Abono por cobro efecto","Principal_and_interest_payment"],
+                                                ["Intereses de demora", "Delayed_interest_income"],
+                                                ["Retrocesión de comisiones", "Other_income"],
+                                                ["Comisiones","Commission"],
+                                                ["IVA sobre Comisiones", "Tax_VAT"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                 [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
+                                                ["Cargo por inversión en efecto", "Primary_market_investment"],
+                                                ["Abono por cobro parcial de efecto", "Partial_principal_repayment"],
+                                                ["Abono por cobro efecto","Principal_and_interest_payment"],
+                                                ["Intereses de demora", "Delayed_interest_income"],
+                                                ["Retrocesión de comisiones", "Other_income"],
+                                                ["Comisiones","Commission"],
+                                                ["IVA sobre Comisiones", "Tax_VAT"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ], 
+            ],
+            "H" =>  [
+                [
+                    "type" => "amount",                         // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => ".",		// Thousands seperator, typically "."
+                                "input3" => ",",		// Decimal seperator, typically ","
+                                "input4" => 5,                  // Number of decimals, typically 5
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getAmount",         
+                ],
+                [
+                    "type" => "currency",                       // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D/M/y",		// Input parameters. The first parameter
+                                                                // is ALWAYS the contents of the cell
+                                ],
+                    "functionName" => "getCurrency",         
+                ]
+            ]
+        ];
+        
+    
+    
     
     function __construct() {
         parent::__construct();

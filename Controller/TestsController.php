@@ -209,437 +209,9 @@ for ($row = 1; $row <= $highestRow; $row++){
         }*/
      
  
+  
         
-        
-        
-        
-// CIRCULANTIS
-// MOVIMIENTO                                                                   REFERENCIA IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
-// Traspaso                                                                     H03337	   1,000.00	5/9/2016   1,000.00	          0             0       	1,000.00
-// OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
-// OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....	P154197	100	5/29/2017	2,936.42	300	12,264.55	15,500.97
-// OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....	C112205	159.63	5/30/2017	3,096.05	0	12,409.21	15,505.26
-        $values_circulantis = [
-            "A" => [
-                [
-                    "type" => "transactionType",                // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Traspaso", "Cash_deposit"],
-                                                ["Investment principal increase", "Primary_market_investment"],
-                                                ["Operación cobrada", "Principal_repayment"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionType",  
-                ],
-                [
-                    "type" => "transactionDetail",              // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Incoming client payment", "Cash_deposit"],
-                                                ["Investment principal increase", "Primary_market_investment"],
-                                                ["Investment principal repayment", "Principal_repayment"],                
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionDetail",  
-                ],
-                [
-                    "type" => "ID_Puja",                        // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => " ID Puja: ",       // May contain trailing spaces
-                                "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
-                ],
-                [
-                    "type" => "ID_Subasta",                     // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => "ID Subasta: ",     // May contain trailing spaces
-                                "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
-                ],
-                
-                [
-                    "type" => "loanId",                         // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => "Loan ID: ",        // May contain trailing spaces
-                                "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
-                ],
-               
-                 [
-                    "type" => "date",                           // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => "#previous.date",   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
-                                                                // Note that "date" must be a field defined in this config file
-                                                                // keywords are "#previous", "#current" and "#next".
-                                                                // Be aware that #previous does NOT contain any data in case of parsing the
-                                                                // first line of the file.
-                                                                // #next does not have a value while we are parsing the last line of the file
-                                "input3" => false               // This parameter indicates if the defined field will be overwritten 
-                                                                // if it already contains a value.
-                                                                // 
-                                ],
-                    "functionName" => "getRowData",  
-                ],               
-     
-            ],
-            "B" => [                                            // Simply changing name of column to the Winvestify standardized name
-                    "name" => "loanId",                      
-                ],
-            "C" => "importe",
-            "D" => [
-                [
-                    "type" => "date",                           // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "d/m/Y",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                  // etc etc  ...
-                                ],
-                    "functionName" => "normalizeDate",         
-                ]
-            ],
-            "E" => "disponible",
-            "F" => "ofertado",
-            "G" => "invertido",
-            "H" => "total"
-        ];
-       
-        
-        
-// FINANZAREL        
-// Id           A�o	Trimestre	Fecha           Subasta     Descripci�n                 Importe         Saldo
-// 20171678450	2017	2017T3          21/07/17	2817        Intereses                   �0,97           �55.314,02
-// 20171678440	2017	2017T3          21/07/17	2817        Amortizaci�n de efecto	-�153,94	�55.313,06
-        $values_finanzarel = [     // All types/names will be defined as associative index in array
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-            "B" =>  [
-                "name" => "year"
-             ],
-            "C" =>  [
-                "name" => "trimestre"
-             ],            
-            "D" => [
-                [
-                    "type" => "date",                           // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "D/M/y",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "normalizeDate",         
-                ]
-            ], 
-            "E" =>  [
-                "name" => "loanId"
-             ], 
-            "F" =>  [
-                 [
-                    "type" => "transactionType",                // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
-                                                ["Cargo por inversión en efecto", "Primary_market_investment"],
-                                                ["Abono por cobro parcial de efecto", "Partial_principal_repayment"],
-                                                ["Abono por cobro efecto","Principal_and_interest_payment"],
-                                                ["Intereses de demora", "Delayed_interest_income"],
-                                                ["Retrocesión de comisiones", "Other_income"],
-                                                ["Comisiones","Commission"],
-                                                ["IVA sobre Comisiones", "Tax_VAT"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionType",  
-                ],
-                 [
-                    "type" => "transactionDetail",              // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
-                                                ["Cargo por inversión en efecto", "Primary_market_investment"],
-                                                ["Abono por cobro parcial de efecto", "Partial_principal_repayment"],
-                                                ["Abono por cobro efecto","Principal_and_interest_payment"],
-                                                ["Intereses de demora", "Delayed_interest_income"],
-                                                ["Retrocesión de comisiones", "Other_income"],
-                                                ["Comisiones","Commission"],
-                                                ["IVA sobre Comisiones", "Tax_VAT"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionDetail",  
-                ], 
-            ],
-            "H" =>  [
-                [
-                    "type" => "amount",                         // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => ".",		// Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount",         
-                ],
-                [
-                    "type" => "currency",                       // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "D/M/y",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getCurrency",         
-                ]
-            ]
-        ];
-        
-
-        
-        
- // COMUNITAE  NOT FINISHED
- // 
- // unknown values for concept are:
- //         participación en préstamo
- //         bono de incentivos
- // 
- // 
-// Fecha de Operacion	Debe	Haber	Saldo	Concepto
-// 8/1/2017             0.50€	0.00€	49.61€	Cargo por comisión de administración
-// 7/25/2017            0.58€	0.00€	50.11€	Cargo por comisión de administración
-// 7/25/2017            0.00€	50.00€	50.69€	Abono rendimientos capital   ptmo. CPP_016231  y Nº de recibo 342097
-       $values_comunitae = [     // All types/names will be defined as associative index in array
-            "A" => [
-                [
-                    "type" => "date",                           // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "m-d-Y",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "normalizeDate",         
-                ]
-            ],
-            "B" => [
-                [
-                    "type" => "amount1",                        // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => ",",                // Thousands seperator, typically "."
-                                "input3" => ".",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount",  
-                ],
-            ],
-            "C" => [
-                [
-                    "type" => "amount2",                        // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => ",",                // Thousands seperator, typically "."
-                                "input3" => ".",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount" 
-                ]
-            ],
-            "D" => [
-                [
-                    "type" => "saldo",                         
-                    "inputData" => [
-				"input2" => ",",                // Thousands seperator, typically "."
-                                "input3" => ".",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]
-            ],              
-            "E" => [  
-                [
-                    "type" => "transactionType",                // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
-                                                ["Retirada de fondos", "Cash_withdrawal"],
-                                                ["Préstamo", "Primary_market_investment"],
-                                                ["Abono rendimientos capital","Principal_repayment"],
-                                                ["Abono rendimientos intereses", "Regular_interest_income"],
-                                                ["Abono rendimientos capital", "Delayed_interest_income"],
-                                                ["Cargo por comisión de administración", "Commission"],
-                                                ["Cargo por comisión de ingreso por tarjeta", "Bank_charges"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionType",  
-                ],
-                [
-                    "type" => "transactionDetail",              // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Provisión de fondos", "Cash_deposit"],
-                                                ["Retirada de fondos", "Cash_withdrawal"],
-                                                ["Préstamo", "Primary_market_investment"],
-                                                ["Abono rendimientos capital","Principal_repayment"],
-                                                ["Abono rendimientos intereses", "Regular_interest_income"],
-                                                ["Abono rendimientos capital", "Delayed_interest_income"],
-                                                ["Cargo por comisión de administración", "Commission"],
-                                                ["Cargo por comisión de ingreso por tarjeta", "Bank_charges"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionDetail",  
-                ],
-                [
-                    "type" => "loanId", 
-                    "inputData" => [
-                                "input2" => "CPP",        
-                                "input3" => " ",                // seperator character
-                                "input4" => true
-                            ],
-                    "functionName" => "extractDataFromString",   
-                ] 
-            ]
-        ];       
-        
-        
-// ECROWD
-// Fecha        Nombre del proyecto                                                     Cuota	Amortización de capital(€)	Intereses brutos(€) Retención IRPF(€)  Total(€)
-// 25-07-2017	Ampliación de la red de fibra óptica de l'Ametlla de Mar - Fase 5 -	2	0,00                              1,09               0,21                0,88
-       $values_ecrowd = [     // All types/names will be defined as associative index in array
-            "A" => [
-                [
-                    "type" => "date",                           // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "D-M-Y",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "normalizeDate",         
-                ],
-                [
-                    "type" => "date",                           // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => "#previous.date",   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
-                                                                // Note that "date" must be a field defined in this config file
-                                                                // keywords are "#previous" and "#current.
-                                                                // Be aware that #previous does NOT contain any data in case of parsing the
-                                                                // first line of the file.
-                                                                // #current.indexName is ONLY defined if this field is defined BEFORE this field in the
-                                                                // configuration file
-                                "input3" => false               // This parameter indicates if the defined field will be overwritten 
-                                                                // if it already contains a value.     
-                                                                // 
-                                ],
-                    "functionName" => "getRowData",  
-                ],   
  
-                [
-                    "type" => "date1",                           // Complex format, example of duplicating an existing value
-                    "inputData" => [
-                                "input2" => "#current.date",    // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
-                                                                // Note that "date" must be a field defined in this config file
-                                                                // keywords are "#previous" and "#current".
-                                                                // Be aware that #previous does NOT contain any data in case of parsing the
-                                                                // first line of the file.
-                                                                // #current.indexName is ONLY defined if this field is defined BEFORE this field in the
-                                                                // configuration file
-                                "input3" => true                // This parameter indicates if the defined field will be overwritten 
-                                                                // if it already contains a value.      
-                                                                // 
-                                ],
-                    "functionName" => "getRowData",  
-                ],               
- 
-             ],
-
-            "B" => [
-                [
-                    "type" => "purpose",                        // trick to get the complete cell data as purpose
-                    "inputData" => [
-                                "input2" => "",                 // May contain trailing spaces
-                                "input3" => ",",
-                            ],                   
-                    "functionName" => "extractDataFromString", 
-                ],
-                [
-                    "type" => "loanId",                         // Winvestify standardized name 
-                    "functionName" => "getHash",                // An internal loanId is generated based on md5 hash of project name
-                ]
-            ],          
-
-            "C" => [
-                    "name" => "payment",
-                ],
-                
-  /*              [
-                    "type" => "transactionType",                // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
-                                                ["Intereses brutos(€)", "Regular_interest_income"],
-                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionType",  
-                ],
-                [
-                    "type" => "transactionDetail",              // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
-                                                ["Intereses brutos(€)", "Regular_interest_income"],
-                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],  
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionDetail",  
-                ]
-            ],
-*/
-            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "amortization",                         
-                    "inputData" => [
-				"input2" => ".",                // Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]                    
-            ],
-            "E" => [                                            // Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "interest",                         
-                    "inputData" => [
-				"input2" => ".",                // Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]                    
-            ],
-            "F" => [                                            // Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "retencionTax",                         
-                    "inputData" => [
-				"input2" => ".",                // Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]                    
-            ], 
-            "G" => [                                            // Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "total",                         
-                    "inputData" => [
-				"input2" => ".",                // Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]
-            ]
-        ];
        
 // TWINO
 // Processing Date	Booking Date	Type	Description	Loan Number	amount
@@ -781,80 +353,6 @@ for ($row = 1; $row <= $highestRow; $row++){
                 ]
         ];
        
-        
-        $values_mintos = [     // All types/names will be defined as associative index in array
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-            "B" => [
-                [
-                    "type" => "date",                           // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "Y-m-d",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                  // etc etc  ...
-                                ],
-                    "functionName" => "normalizeDate",         
-                ]
-            ],
-            "C" => [
-                [
-                    "type" => "loanId",                         // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => "Loan ID: ",        // May contain trailing spaces
-                                "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
-                ],
-                [
-                    "type" => "transactionType",                // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Incoming client payment", "Cash_deposit"],
-                                                ["Investment principal increase", "Primary_market_investment"],
-                                                ["Investment principal repayment", "Principal_repayment"],
-                                                ["Investment principal rebuy","Principal_buyback"],
-                                                ["Interest income", "Regular_interest_income"],
-                                                ["Delayed interest income", "Delayed_interest_income"],
-                                                ["Late payment fee income","Late_payment_fee_income"],
-                                                ["Interest income on rebuy", "Interest_income_buyback"],
-                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionType",  
-                ],
-                [
-                    "type" => "transactionDetail",              // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Incoming client payment", "Cash_deposit"],
-                                                ["Investment principal increase", "Primary_market_investment"],
-                                                ["Investment principal repayment", "Principal_repayment"],
-                                                ["Investment principal rebuy","Principal_buyback"],
-                                                ["Interest income", "Regular_interest_income"],
-                                                ["Delayed interest income", "Delayed_interest_income"],
-                                                ["Late payment fee income","Late_payment_fee_income"],
-                                                ["Interest income on rebuy", "Interest_income_buyback"],
-                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
-                                        
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionDetail",  
-                ]
-            ],
-            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
-                    "name" => "turnover",                      
-                ],
-            "E" => [
-                    "name" => "balance",
-                ],
-            "F" => [
-                [
-                    "type" => "currency",                       // Complex format, calling external method
-                    "functionName" => "getCurrency",  
-                ]
-            ]          
-        ];       
  
             
         $offset = 762;
@@ -1002,6 +500,10 @@ echo "END OF LOOP <br>";
         return $tempArray;
     }
     
+  
+    
+    
+    
     
     /**
      * Converts any type of date format to internal format yyyy-mm-dd
@@ -1011,7 +513,7 @@ echo "END OF LOOP <br>";
      *                                M = 2 digit month, m = 1 OR 2 digit month (no leading 0)
      *                                D = 2 digit day, d = 1 OR 2 digit day (no leading 0)
      *                         
-     * @return string 
+     * @return string   date in format yyyy-mm-dd
      * 
      */
     function normalizeDate($date, $currentFormat) {
@@ -1094,11 +596,11 @@ echo "END OF LOOP <br>";
         if ($decimalSep == ".") {
             $seperator = "\.";
         }
-        else {      // seperator =>  ","
+        else {                                                              // seperator =>  ","
             $seperator = ",";
         }
         $allowedChars =  "/[^0-9" . $seperator . "]/";
-        $normalizedInput = preg_replace($allowedChars, "", $input);  // only keep digits, and decimal seperator
+        $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput); 
 
         // determine how many decimals are actually used
@@ -1140,10 +642,10 @@ echo "END OF LOOP <br>";
         $currencySymbol = str_replace($filter, "", $loanCurrency);
         
         foreach ($currencyDetails as $currencyIndex => $currency) {
-            if ($loanCurrency == $currency[0]) {
+            if ($loanCurrency == $currency[0]) {                // check the ISO code
               return $currencyIndex;
             }   
-            if ($currencySymbol == $currency[1]) {
+            if ($currencySymbol == $currency[1]) {              // check the symbol
               return $currencyIndex;
             }  
         } 
@@ -1264,7 +766,7 @@ echo "END OF LOOP <br>";
     function convertPdf () {
         // Parse pdf file and build necessary objects.
         $parser = new \Smalot\PdfParser\Parser();
-        $pdf    = $parser->parseFile('/var/www/html/cake_branch/comunitae.pdf');
+        $pdf    = $parser->parseFile('/var/www/html/compare_local/OSchedule.pdf');
         // Retrieve all pages from the pdf file.
         $pages  = $pdf->getPages();
         // Loop over each page to extract text.

@@ -76,7 +76,7 @@ class ParseDataClientShell extends AppShell {
                     // first collect all the relevant data (per investor) to be sent to Gearman worker
                     // queue_id, investorId, files to be decoded,
                     $response[] = $this->GearmanClient->addTask("parseFileFlow", json_encode($params));
-                  parseFileFlow
+                  parseFileFlow;
                     
                     
                     

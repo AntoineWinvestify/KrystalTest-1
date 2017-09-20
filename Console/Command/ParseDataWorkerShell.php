@@ -69,7 +69,7 @@ class ParseDataWorkerShell extends AppShell {
      *      $data['PFPname']['files']                  array 
      *      $data['PFPname']['files'][filename']       array of filenames, FQDN's
      *      $data['PFPname']['files'][typeOfFile']     type of file, CASHFLOW, INVESTMENT,...
-     *      $data['PFPname']['files']['filetype']      CSV or XLS
+     *      $data['PFPname']['files']['filetype']      CSV, XLS or PDF
      *      $data['userReference']
      *      $data['queue_id']
      *      

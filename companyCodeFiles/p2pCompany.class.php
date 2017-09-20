@@ -2358,6 +2358,9 @@ class p2pCompany {
      * The companycodeFile class can override these methods.
      * these callback also exist in case the platform does not support xls/csv file download and the information
      * had to be collected using webscraping
+     * The companycodefiles can "delete or modify" any index of the array $fileContent and as such influence "the 
+     * process of writing the data to the database. Could be used to delete one or more indices at beginning or 1 or 
+     * more at end of array.
      * 
      * @param string $fileName      The filename (as FQDN) which has been analyzed
      * @param string $typeOfFile    the type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
@@ -2391,7 +2394,7 @@ class p2pCompany {
     /** 
      * Callback functions required for Dashboard 2. 
      * The system has constructed the list of amortization tables to be downloaded. 
-     * This callback is only called if an amortizationtables need to be downloaded. 
+     * This callback is only called if one or more amortizationtable(s) need(s) to be downloaded. 
      * Also note that this callback is ALSO called in case the companycodefile has facilitated the list using the
      * "beforeamortizationList" callback function. 
      * 
