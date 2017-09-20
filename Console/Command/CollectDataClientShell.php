@@ -25,6 +25,7 @@
 
 class CollectDataClientShell extends AppShell {
     protected $GearmanClient;
+    protected $userResult = [];
     protected $newComp = [];
     public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
 
@@ -83,18 +84,20 @@ class CollectDataClientShell extends AppShell {
         ));
         
         $userLinkedaccounts = [];
-        $i = 0;
+        //$i = 0;
         
         foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
             //In this case $key is the number of the linkaccount inside the array 0,1,2,3
+            $i = 0;
             foreach ($linkedaccountResult as $linkedaccount) {
                 $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
                 $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                 $i++;
             }
+            
         }
         
-        //$key is the number of each linkedaccounts
+        //$key is the number of the internal id of the array (0,1,2)
         //$key2 is type of access to company (multicurl, casper, etc)
         foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
             foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
@@ -119,24 +122,32 @@ class CollectDataClientShell extends AppShell {
         
         
         
-        
-        
     }
     
     public function verifyFailTask(GearmanTask $task) {
         $m = $task->data();
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = $task->data();
+        print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
     }
     
     public function verifyExceptionTask (GearmanTask $task) {
         $m = $task->data();
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = $task->data();
+        print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
     }
     
     public function verifyCompleteTask (GearmanTask $task) {
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = $task->data();
+        print_r($this->userResult);
+        echo "ID Unique: " . $task->unique() . "\n";
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
     }
