@@ -256,7 +256,20 @@ class finanzarel extends p2pCompany {
                 
                 $this->idForSwitch++;
                 echo 'URL: ' . $fileUrl;
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba', $credentialsFile,$referer);
+                $cookiesFileOpened = fopen($this->cookiesDir . DS . $this->cookies_name, "r");
+                $stringCookies = file_get_contents($this->cookiesDir . DS . $this->cookies_name);
+                $stringCookieOne = "FNZRL_WORLD";
+                $cookiePosFirst = stripos($stringCookies, $stringCookieOne);
+                $cookieSubstr = substr($stringCookies, $cookiePosFirst + strlen($stringCookieOne) + 1);
+                $separator = "#HttpOnly";
+                $cookiePosSecond = stripos($cookieSubstr, $separator);
+                $firstCookie = str_split($cookieSubstr, $cookiePosSecond);
+                $stringCookieTwo = "LOGIN_USERNAME_COOKIE";
+                $cookiePosThird = stripos($stringCookies, $stringCookieTwo);
+                $secondCookie = substr($stringCookies, $cookiePosThird + strlen($stringCookieTwo) + 1);
+                              
+                
+                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba', $credentialsFile,$referer, $firstCookie[0], $secondCookie);
                 break; 
             /*case 4:
                 echo "case 4!!!!!!!";
