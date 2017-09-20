@@ -226,7 +226,7 @@ class twino extends p2pCompany {
      * @param string $user
      * @param string $password
      */
-    function collectUserInvestmentDataParallel($str) {
+    function collectUserGlobalFilesParallel($str) {
 
 
         switch ($this->idForSwitch) {
@@ -267,6 +267,7 @@ class twino extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile,true);
                 break;
             case 4:
+                //Download investment
                 echo $str;
                 $response = json_decode($str, true);
                 print_r($response);
@@ -275,6 +276,7 @@ class twino extends p2pCompany {
                     $this->statusDownloadUrl = array_shift($this->urlSequence);
                     $this->idForSwitch++;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
+                    break;
                 }       
                 $this->idForSwitch++;
                 break;
@@ -285,7 +287,7 @@ class twino extends p2pCompany {
                 if($response['reportReady'] == true){
                     echo 'Status true, downloading';
                     $this->idForSwitch++;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, 'Invesment');
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoInvestment');
                 }else{
                     echo 'Not ready yet';
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
@@ -293,98 +295,51 @@ class twino extends p2pCompany {
                     echo 'Repeat Case: ' . $this->idForSwitch;
                 }
                 break;
-
-                /*echo 'NOW:' . $str . HTML_ENDOFLINE;
-                $fileUrl = array_shift($this->urlSequence);
-                echo 'Download url: ' . $fileUrl . HTML_ENDOFLINE;
-                
-                $fileName = 'Investment';
-                $fileType = 'xlsx';
-                $pfpBaseUrl = 'https://www.twino.eu';
-                $referer = 'https://www.twino.eu/en/profile/investor/my-investments/individual-investments';
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Twino', 'prueba', $credentialsFile,$referer);
-                //echo 'Downloaded';
+            case 6:     
+                //Download cash flow
+                $date1 = "[2017,9,1]";
+                $date2 = "[2017,9,20]";      
+                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":{$date1},"processingDateTo":{$date2},"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
+                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $date1)); //date must be [year,month.day]
+                $credentialsFile = strtr($credentialsFile, array('{$date2}' => $date2));
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();*/
-            /* case 3:
-              echo $this->idForSwitch . HTML_ENDOFLINE;
-              $dom = new DOMDocument;  //Check if works
-              libxml_use_internal_errors(true);
-              $dom->loadHTML($str);
-              $dom->preserveWhiteSpace = false;
-              //echo $str;
-              $resultLogin = false;
-              echo 'CHeck login' . HTML_ENDOFLINE;
-              $as = $dom->getElementsByTagName('a');
-              foreach ($as as $a) {
-              echo $a->nodeValue . HTML_ENDOFLINE;
-              if (trim($a->nodeValue) == 'Overview') {
-              echo 'Find' . HTML_ENDOFLINE;
-              $resultLogin = true;
-              break;
-              }
-              }
-
-              if (!$resultLogin) {   // Error while logging in
-              $tracings = "Tracing:\n";
-              $tracings .= __FILE__ . " " . __LINE__ . " \n";
-              $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
-              $tracings .= " \n";
-              $msg = "Error while logging in user's portal. Wrong userid/password \n";
-              $msg = $msg . $tracings . " \n";
-              $this->logToFile("Warning", $msg);
-              exit;
-              }
-
-              $this->idForSwitch++;
-              $next = $this->getCompanyWebpageMultiCurl();
-              echo 'Next: ' . $next . HTML_ENDOFLINE;
-              break;
-              ////////DOWNLOAD FILE
-              case 4:
-              echo $this->idForSwitch . HTML_ENDOFLINE;
-              echo 'Login ok';
-              $fileUrl = array_shift($this->urlSequence);
-              echo $fileUrl . HTML_ENDOFLINE;
-              $credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
-              $fileName = 'Investment';
-              $fileType = 'xlsx';
-              $pfpBaseUrl = 'https://www.mintos.com';
-              $referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
-              $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile, $referer);
-              //echo 'Downloaded';
-              $this->idForSwitch++;
-              $this->getCompanyWebpageMultiCurl();
-              break;
-              case 5:
-              $fileUrl = array_shift($this->urlSequence);
-              $credentialsFile = "account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
-              $fileName = 'CashFlow';
-              $fileType = 'xlsx';
-              $pfpBaseUrl = 'https://www.mintos.com';
-              $referer = "https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
-              $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile, $referer);
-              $this->idForSwitch++;
-              $this->getCompanyWebpageMultiCurl();
-              break;
-              //////LOGOUT
-              case 6:
-              echo $this->idForSwitch . HTML_ENDOFLINE;
-              //Get logout url
-              $dom = new DOMDocument;
-              $dom->loadHTML($str);
-              $dom->preserveWhiteSpace = false;
-              $as = $dom->getElementsByTagName('a');
-              foreach ($as as $a) {
-              echo $a->getAttribute('class') . HTML_ENDOFLINE;
-              if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
-              $logoutUrl = $a->getAttribute('href');
-              break;
-              }
-              }
-              echo 'Logout:' . $logoutUrl . HTML_ENDOFLINE;
-              $this->getCompanyWebpageMultiCurl($logoutUrl); //Logout
-              break; */
+                array_shift($this->urlSequence);
+                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
+                break;
+            case 7:
+                echo $str;
+                $response = json_decode($str, true);
+                print_r($response);     
+                if($response['reportReady'] == false){
+                    echo 'Not ready yet';
+                    $this->idForSwitch++;
+                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
+                    echo 'Repeat Case: ' . $this->idForSwitch;
+                    break;
+                } else{
+                    echo 'Status true, downloading';
+                    $this->idForSwitch  = 9;
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoCashFlow');
+                    break;
+                }    
+            case 8:
+                echo $str;
+                $response = json_decode($str, true);   
+                print_r($response);
+                if($response['reportReady'] == true){
+                    echo 'Status true, downloading';
+                    $this->idForSwitch++;
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoCashFlow');
+                } else{
+                    echo 'Not ready yet';
+                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
+                    $this->idForSwitch--;
+                    echo 'Repeat Case: ' . $this->idForSwitch;
+                }
+                break;
+            case 9:
+                return $tempArray["global"] = "waiting_for_global";
+                break;
         }
     }
 

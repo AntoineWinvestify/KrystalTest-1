@@ -1704,7 +1704,7 @@ class p2pCompany {
      * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
      * @param string $path path where you want save the file
      */
-    public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+    public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer, $cookie1, $cookie2) {
 
         print_r(http_build_query($credentials));
         echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
@@ -1734,11 +1734,12 @@ class p2pCompany {
             $fp = fopen($path . DS . $output_filename, 'w+');
         }
 
-        $header[] = 'accept-language: es-ES,es;q=0.8';
-        $header[] = 'upgrade-insecure-requests: 1';
-        $header[] = 'host: ' . $pfpBaseUrl;
-        $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
+        $header[] = 'Accept-language: es-ES,es;q=0.8';
+        $header[] = 'Upgrade-insecure-requests: 1';
+        $header[] = 'Host: ' . $pfpBaseUrl;
+        //$header[] = 'Content-type: application/x-www-form-urlencoded';
+        $header[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
+        $header[] = 'Cookie: LOGIN_USERNAME_COOKIE=' . trim($cookie2) . '; FNZRL_WORLD=' . trim($cookie1) . ';_ga=GA1.2.713541812.1505889482; _gid=GA1.2.1100622870.1505889482; mp_5cc54fb25fbf8152c17f1bd71396f8fa_mixpanel=%7B%22distinct_id%22%3A%20%22kkukovetz%40mli-ltd.com%22%2C%22%24initial_referrer%22%3A%20%22%24direct%22%2C%22%24initial_referring_domain%22%3A%20%22%24direct%22%7D; mp_mixpanel__c=1';
         //$header[] = 'authority: ' . $pfpBaseUrl;
         //$header[] = 'cache-control: max-age=0';
         $header[] = 'Connection: keep-alive';
@@ -1766,7 +1767,8 @@ class p2pCompany {
           curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
         }*/
         $result = curl_exec($ch);
-        
+        echo "ohgfjkfkhgfAAAAAAAAAAAAAAAAAAAAAAAA";
+        print_r($header);
 
         $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -1794,6 +1796,9 @@ class p2pCompany {
      */
     public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
 
+        echo "urls: ";
+        print_r($this->urlSequence);
+        
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
@@ -1809,9 +1814,8 @@ class p2pCompany {
         
         if ($headers != false && empty($headers)) {
             $headers = array_shift($this->urlSequence);
-            $headers = json_decode($headers, true);
         }
-        
+
         $this->errorInfo = $url;
         echo "File name is " . $fileName;
         
