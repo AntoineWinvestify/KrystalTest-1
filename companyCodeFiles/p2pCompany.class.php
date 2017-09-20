@@ -167,7 +167,6 @@ class p2pCompany {
         $this->cookiesDir = $createdFolder;
         $this->config['tracingActive'] = false;
         $this->headers = array();
-        $this->companyName = $this->getPFPName();
 
 
 // ******************************** end of configuration parameters *************************************
@@ -1812,7 +1811,7 @@ class p2pCompany {
         }
         
         $this->errorInfo = $url;
-
+        echo "File name is " . $fileName;
         
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
@@ -1826,7 +1825,7 @@ class p2pCompany {
             echo "url download File: " . $this->errorInfo . " \n";
             echo "Cannot create folder \n";
         }
-        $output_filename = $fileName . '_' . $date . "." . $this->fileType;
+        $output_filename = $fileName . '_' . $date . '.' . $this->fileType;
         $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
         if (!$this->fp) {
             echo "Couldn't created the file \n";
@@ -1854,15 +1853,6 @@ class p2pCompany {
                     ->set(CURLOPT_POST, true);
             //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
         }
-        
-        /*$this->headers = array(
-            'accept-language: en-US,en;q=0.8',
-            'upgrade-insecure-requests: 1',
-            'origin: ' . $this->baseUrl,
-            'content-type: application/x-www-form-urlencoded',                  quitar doble barra de aqui
-            //'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*//*;q=0.8',
-            'authority: ' . $this->baseUrl
-        );*/
 
         if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
@@ -2348,8 +2338,15 @@ class p2pCompany {
         $this->userReference = $userReference;
     }
 
+    function getCompanyName() {
+        return $this->companyName;
+    }
 
+    function setCompanyName($companyName) {
+        $this->companyName = $companyName;
+    }
 
+    
 
     
 
