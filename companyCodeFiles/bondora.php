@@ -38,14 +38,14 @@ class bondora extends p2pCompany {
           FIELDS USED BY Bondora DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
          */
-
+        echo '1';
         //First we need get te token
         $str = $this->getCompanyWebpage();
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
 
-
+         echo '2';
         $inputs = $dom->getElementsByTagName('input');
         foreach ($inputs as $key => $input) {
             //echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
@@ -54,7 +54,7 @@ class bondora extends p2pCompany {
             }
             $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
         }
-
+         echo '3';
         $credentials['Email'] = $user;
         $credentials['Password'] = $password;
 
@@ -64,6 +64,7 @@ class bondora extends p2pCompany {
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
+         echo '4';
         //echo $str;
 
         $confirm = false;
@@ -102,7 +103,7 @@ class bondora extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserInvestmentDataParallel($str) {
+    function collectUserGlobalFilesParallel($str) {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -146,17 +147,25 @@ class bondora extends p2pCompany {
                 foreach ($spans as $span) {
                     echo $span->nodeValue . HTML_ENDOFLINE;
                     if (trim($span->nodeValue) == 'Account value') {
+                        echo 'Login ok' . HTML_ENDOFLINE;
                         $confirm = true;
                         break;
                     }
                 }
 
+                if (!$confirm) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Bondora login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }                              
 
-                if ($confirm) {
-                    echo 'Login ok' . HTML_ENDOFLINE;
-                    $this->idForSwitch++;
-                    $this->getCompanyWebpageMultiCurl();
-                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 4:
                 $dom = new DOMDocument;  //Check if works
@@ -186,7 +195,13 @@ class bondora extends p2pCompany {
                 }
                 
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
-                $this->downloadPfpFile($url, 'prueba', 'xlsx', 'https://www.bondora.com', 'bondora', 'testuser', null, 'https://www.bondora.com/en/reports/');
+                //$referer = "https://www.bondora.com/en/reports/";
+                //getPfpFileMulticurl($url = null, $fileName, $pfpName, $identity, $credentials, $referer)
+                /*$this->headers = array(
+                    
+                );*/
+                $this->getPFPFileMulticurl($url,null, false, 'investment');
+                //$this->getPfpFileMulticurl($url, 'Invesment', 'Bondora', 'TestUser', null, $referer);
                 break;
         }
     }
