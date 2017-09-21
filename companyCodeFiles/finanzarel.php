@@ -120,7 +120,7 @@ class finanzarel extends p2pCompany {
      * @param string $user
      * @param string $password
      */
-    function collectUserInvestmentDataParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
         switch ($this->idForSwitch) {
             /////////////LOGIN
             case 0:
@@ -165,15 +165,7 @@ class finanzarel extends p2pCompany {
                         $pPageItemsProtected = $input->getAttribute('value');
                     }
                 }
-
-
-                /*$credentials['p_json'] = '{"salt":"' . $pSalt . '","pageItems":{"itemsToSubmit":[{"n":"P101_USERNAME","v":"' . $this->user . '"},{"n":"P101_PASSWORD","v":"' . $this->password . '"}],"protected":"' . $pPageItemsProtected . '","rowVersion":""}}';
-                $credentials['p_flow_id'] = $pFlowId;
-                $credentials['p_flow_step_id'] = $pFlowStepId;
-                $credentials['p_instance'] = $pInstance;
-                $credentials['p_page_submission_id'] = $pPageSubmissionId;
-                $credentials['p_request'] = 'Login';
-                $credentials['p_reload_on_submit'] = $pReloadOnSubmit;*/
+                
                 $this->credentialsGlobal['p_json'] = '{"salt":"' . $pSalt . '","pageItems":{"itemsToSubmit":[{"n":"P101_USERNAME","v":"' . $this->user . '"},{"n":"P101_PASSWORD","v":"' . $this->password . '"}],"protected":"' . $pPageItemsProtected . '","rowVersion":""}}';
                 $this->credentialsGlobal['p_flow_id'] = $pFlowId;
                 $this->credentialsGlobal['p_flow_step_id'] = $pFlowStepId;
@@ -210,12 +202,12 @@ class finanzarel extends p2pCompany {
                 if (!$resultLogin) {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
-                    $tracings .= "Finazarel login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= "Finanzarel login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
                     $tracings .= " \n";
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    exit;
+                    return $this->getError(__LINE__, __FILE__);
                 }
                 echo 'Login ok';
                 
@@ -242,19 +234,19 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $credentials['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $request[0]);
-                echo "HOLAAAAAAAAAAAAAAAAAAA";
                 print_r($credentialsFile);
-                echo $fileUrl . HTML_ENDOFLINE;
+                //echo $fileUrl . HTML_ENDOFLINE;
                 $fileName = 'Investment';
-                $fileType = 'csv';
+                //$fileType = 'csv';
                 $referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
-                $pfpBaseUrl = 'marketplace.finanzarel.com';
-                $path = 'prueba';
+                //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:{$credential_p_flow_step_id}:{$credential_p_instance}';
+                $this->baseUrl = 'marketplace.finanzarel.com';
+                //$path = 'prueba';
                 
                 //$this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
-                echo 'Downloaded';
+                //echo 'Downloaded';
                 
-                $this->idForSwitch++;
+                
                 echo 'URL: ' . $fileUrl;
                 $cookiesFileOpened = fopen($this->cookiesDir . DS . $this->cookies_name, "r");
                 $stringCookies = file_get_contents($this->cookiesDir . DS . $this->cookies_name);
@@ -267,11 +259,27 @@ class finanzarel extends p2pCompany {
                 $stringCookieTwo = "LOGIN_USERNAME_COOKIE";
                 $cookiePosThird = stripos($stringCookies, $stringCookieTwo);
                 $secondCookie = substr($stringCookies, $cookiePosThird + strlen($stringCookieTwo) + 1);
-                              
-                
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba', $credentialsFile,$referer, $firstCookie[0], $secondCookie);
+                /*$header[] = 'Accept-language: es-ES,es;q=0.8';
+                $header[] = 'Upgrade-insecure-requests: 1';
+                $header[] = 'Host: ' . $this->baseUrl;
+                //$header[] = 'Content-type: application/x-www-form-urlencoded';                                    
+                $header[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*//*Delete a SLASH frombefore;q=0.8';
+                $header[] = 'Cookie: LOGIN_USERNAME_COOKIE=' . trim($secondCookie) . '; FNZRL_WORLD=' . trim($firstCookie) . '; ' 
+                        . '_ga=GA1.2.127419396.1505923123; _gid=GA1.2.984339975.1505923123; mp_5cc54fb25fbf8152c17f1bd71396f8fa_mixpanel=%7B%22distinct_id%22%3A%20%22kkukovetz%40mli-ltd.com%22%2C%22%24search_engine%22%3A%20%22duckduckgo%22%2C%22%24initial_referrer%22%3A%20%22https%3A%2F%2Fduckduckgo.com%2F%22%2C%22%24initial_referring_domain%22%3A%20%22duckduckgo.com%22%7D; mp_mixpanel__c=1';
+                //$header[] = 'authority: ' . $pfpBaseUrl;
+                //$header[] = 'cache-control: max-age=0';
+                $header[] = 'Connection: keep-alive';
+                $header[] = 'Upgrade-Insecure-Requests: 1';*/
+                $header = array('Expect:');
+                //How we get fix Finanzarel
+                //https://chrismckee.co.uk/curl-http-417-expectation-failed/
+                //https://stackoverflow.com/questions/3755786/php-curl-post-request-and-error-417
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($fileUrl,$referer, $credentialsFile, $header, $fileName);
                 break; 
-            /*case 4:
+            case 4:
+                return $tempArray["global"] = "waiting_for_global";
+                /*
                 echo "case 4!!!!!!!";
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
