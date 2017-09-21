@@ -323,7 +323,7 @@ class CollectDataWorkerShell extends AppShell {
         echo "MICROTIME_START = " . microtime() . "<br>";
         //We start at the same time the queue on every company
         foreach ($data["companies"] as $linkedaccount) {
-            $this->newComp[$companyNumber]->UserInvestmentDataParallel();
+            $this->newComp[$companyNumber]->collectUserInvestmentDataParallel();
             $companyNumber++;
         }
 
