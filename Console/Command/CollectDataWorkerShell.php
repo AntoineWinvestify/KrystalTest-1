@@ -170,8 +170,15 @@ class CollectDataWorkerShell extends AppShell {
            $this->queueCurls->socketSelect();
        }
        
-       return "ok";
-        exit();
+       $lengthTempArray = count($this->tempArray);
+       $statusCollect = "1";
+       for ($i = 0; $i < $lengthTempArray; $i++) {
+           if (!empty($this->tempArray[$i]['global']['error'])) {
+               $statusCollect = "0";
+           }
+       }
+       
+       return $statusCollect;
     }
     
     public function getDataCasperFiles($job) {
