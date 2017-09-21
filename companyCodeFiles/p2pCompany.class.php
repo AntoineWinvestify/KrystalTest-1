@@ -795,6 +795,7 @@ class p2pCompany {
             $url = array_shift($this->urlSequence);
             echo $url;
         }
+        echo 'The url is: ' . $url;
         $this->errorInfo = $url;
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -813,16 +814,18 @@ class p2pCompany {
         }
 
         $request = new \cURL\Request();
-
-        if(!empty($payload)){
+        
+        if(!empty($payload)){  //For pfp that use payloads instead forms(like twino)
+            $postString = $credentials;
+            echo 'Payload: ' . $postString;
             $request->getOptions()
                 ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         }else{
-            $credentials = http_build_query($credentials);
+            $postString = http_build_query($credentials);
         }    
         if(!empty($credentials)){
             $request->getOptions()
-                ->set(CURLOPT_POSTFIELDS, $credentials);
+                ->set(CURLOPT_POSTFIELDS, $postString);
         }
 
         if ($this->config['postMessage'] == true) {
