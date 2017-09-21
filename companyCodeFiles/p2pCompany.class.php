@@ -815,15 +815,15 @@ class p2pCompany {
 
         $request = new \cURL\Request();
         
-        if(!empty($payload)){  //For pfp that use payloads instead forms(like twino)
+        if(!empty($credentials)) {
+            if ($payload) {
             $postString = $credentials;
-            echo 'Payload: ' . $postString;
             $request->getOptions()
                 ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        }else{
-            $postString = http_build_query($credentials);
-        }    
-        if(!empty($credentials)){
+            }
+            else {
+                $postString = http_build_query($credentials);
+            }    
             $request->getOptions()
                 ->set(CURLOPT_POSTFIELDS, $postString);
         }
