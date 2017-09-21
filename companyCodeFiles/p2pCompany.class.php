@@ -1740,7 +1740,7 @@ class p2pCompany {
         $header[] = 'Host: ' . $pfpBaseUrl;
         //$header[] = 'Content-type: application/x-www-form-urlencoded';
         $header[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
-        $header[] = 'Cookie: LOGIN_USERNAME_COOKIE=' . trim($cookie2) . '; FNZRL_WORLD=' . trim($cookie1) . ';_ga=GA1.2.713541812.1505889482; _gid=GA1.2.1100622870.1505889482; mp_5cc54fb25fbf8152c17f1bd71396f8fa_mixpanel=%7B%22distinct_id%22%3A%20%22kkukovetz%40mli-ltd.com%22%2C%22%24initial_referrer%22%3A%20%22%24direct%22%2C%22%24initial_referring_domain%22%3A%20%22%24direct%22%7D; mp_mixpanel__c=1';
+        //$header[] = 'Cookie: LOGIN_USERNAME_COOKIE=' . trim($cookie2) . '; FNZRL_WORLD=' . trim($cookie1) . ';';
         //$header[] = 'authority: ' . $pfpBaseUrl;
         //$header[] = 'cache-control: max-age=0';
         $header[] = 'Connection: keep-alive';
