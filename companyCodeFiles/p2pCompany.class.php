@@ -1409,6 +1409,15 @@ class p2pCompany {
             return null;
         }
     }
+    
+    public function createFolderPFPFile() {
+        $date = date("Ymd");
+        $configPath = Configure::read('files');
+        $partialPath = $configPath['investorPath'];
+        $path = $this->userReference . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
+        $pathCreated = $this->createFolder($path, $partialPath);
+        return $pathCreated;
+    }
 
 
     /**
@@ -1843,19 +1852,17 @@ class p2pCompany {
         $this->errorInfo = $url;
         echo "File name is " . $fileName;
         
-        $date = date("Ymd");
-        $configPath = Configure::read('files');
-        $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
-        $pathCreated = $this->createFolder($path, $partialPath);
+        $pathCreated = $this->createFolderPFPFile();
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
             //$path = $partialPath . DS . $path;
             //echo "The path is " . $partialPath . $path;
             echo "url download File: " . $this->errorInfo . " \n";
             echo "Cannot create folder \n";
+            //We should implement a method to fail
         }
-        $output_filename = $fileName . '_' . $date . '.' . $this->fileType;
+        $date = date("Ymd");
+        $output_filename = $fileName . '.' . $this->fileType;
         $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
         if (!$this->fp) {
             echo "Couldn't created the file \n";
