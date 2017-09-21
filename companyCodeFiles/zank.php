@@ -313,7 +313,7 @@ class zank extends p2pCompany {
                 if ($inversionReadController == 1) {
                     //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $readControl++;
-                    echo 'Advance:' . $readControl . HTML_ENDOFLINE;
+                    echo 'Advance:' . $readControl . SHELL_ENDOFLINE;
                 } 
                 if ($readControl > 20) {
                     echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
@@ -334,10 +334,11 @@ class zank extends p2pCompany {
             }
         }
 
-        echo 'Search this investments: ' . print_r($this->investmentDeletedList);
+        echo 'Search this investments: ' . SHELL_ENDOFLINE;
+        $this->print_r2($this->investmentDeletedList); 
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
-        echo 'Hidden: ' . HTML_ENDOFLINE;
-        print_r($hiddenInvestments);
+        echo 'Hidden: ' . SHELL_ENDOFLINE;
+        $this->print_r2($hiddenInvestments);
 
         $this->companyUserLogout();
         $totalArray = array_merge($totalArray,$hiddenInvestments);
@@ -361,8 +362,8 @@ class zank extends p2pCompany {
         $newTotalArray = array();
         //Read investment info
         foreach($investmentDeletedList as $loanId) {
-            echo 'loan id: ' .  substr($loanId,3) . HTML_ENDOFLINE;
-            echo $url . substr($loanId,3);
+            echo 'loan id: ' .  substr($loanId,3) . SHELL_ENDOFLINE;
+            echo $url . substr($loanId,3) . SHELL_ENDOFLINE;
             $str = $this->getCompanyWebpage($url . substr($loanId,3));
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
@@ -399,12 +400,12 @@ class zank extends p2pCompany {
                     $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
                     $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
                     
-                    echo  $subdivs[126]->nodeValue;
+                    echo  $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
                     $tds =  $subdivs[126]->getElementsByTagName('td');
                     $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
             }
-            echo 'Hidden investment: ' . HTML_ENDOFLINE;
-            print_r($tempArray);
+            echo 'Hidden investment: ' . SHELL_ENDOFLINE;
+            echo print_r($tempArray) . SHELL_ENDOFLINE;
             $newTotalArray[] = $tempArray;
             unset($tempArray);
         }
