@@ -31,6 +31,7 @@
                     <li style="float:left"><a href="https://www.linkedin.com/company-beta/11000640/"><small><i class="g-padding-r-5--xs ti-linkedin"></i></small></a></li>
                     <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                 </ul>
+
             </div><!-- /.navbar-collapse -->
         </div> <!--/container-fluid-->
     </nav>
