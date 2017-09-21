@@ -555,7 +555,7 @@ echo "END OF LOOP <br>";
         list($y, $m, $d) = array_pad(explode('-', $returnDate, 3), 3, 0);
         
         if (ctype_digit("$y$m$d") && checkdate($m, $d, $y)) {                           // check if date is a real date according to internal format
-            return returnDate;
+            return $returnDate;
         }
         return;
     }  

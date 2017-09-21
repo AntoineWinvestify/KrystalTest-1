@@ -68,7 +68,7 @@ class ParseDataWorkerShell extends AppShell {
      * This is json_encoded data with the following structure:
      *      $data['PFPname']['files']                  array 
      *      $data['PFPname']['files'][filename']       array of filenames, FQDN's
-     *      $data['PFPname']['files'][typeOfFile']     type of file, CASHFLOW, INVESTMENT,...
+     *      $data['PFPname']['files'][typeOfFile']     type of file, CASHFLOW, INVESTMEN [one or more can be present,...
      *      $data['PFPname']['files']['filetype']      CSV, XLS or PDF
      *      $data['userReference']
      *      $data['queue_id']
