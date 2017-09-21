@@ -1822,10 +1822,10 @@ class p2pCompany {
         $this->errorInfo = $url;
         echo "File name is " . $fileName;
         
-        $date = date("d-m-Y");
+        $date = date("YMD");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
+        $path = $this->userReference . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
         $pathCreated = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
