@@ -47,8 +47,8 @@ class CollectDataClientShell extends AppShell {
     *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
      */
     public function initClient() {
-        $queueStatus = $this->args[0];
-        $queueAcessType = $this->args[1];
+        //$queueStatus = $this->args[0];
+        //$queueAcessType = $this->args[1];
         
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
