@@ -2442,12 +2442,11 @@ class p2pCompany {
      * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan status 
      * 
-     * @param string pfp            Name of the PFP, zank,growly etc. 
      * @param string $loanStatus    Ccontains the data of the amortization tables. Main index is the loanId
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */ 
-    public function normalizeLoanStatus($pfp, $loanStatus) {
+    public function normalizeLoanStatus($loanStatus) {
         return $loanStatus;
     }
 
@@ -2456,11 +2455,10 @@ class p2pCompany {
      * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan rate 
      * 
-     * @param string pfp            Name of the PFP, zank,growly etc. 
      * @param string    Contains the data of the amortization tables. Main index is the loanId
      * @return  integer     Loan duration as defined by Winvestify
      */ 
-    public function normalizeLoanRate($pfp, $loanRate) {
+    public function normalizeLoanRate($loanRate) {
         return $loanRate;
     }
 
@@ -2469,13 +2467,12 @@ class p2pCompany {
      * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan duration 
      * 
-     * @param string pfp            Name of the PFP, zank,growly etc. 
      * @param string $durationString    Contains the data of the amortization tables. Main index is
      *                                  the loanId
      * @return  array $duration  $duration['value']
      *                           $duration['unit']   
      */ 
-    public function normalizeLoanDuration($pfp, $durationString) {
+    public function normalizeLoanDuration($durationString) {
         
         //$amortiza 
         
@@ -2483,6 +2480,55 @@ class p2pCompany {
     }
 
 
+    
+    
+    
+    
+    
+    
+    
+    /** 
+     * Callback functions required for Dashboard 2. 
+     * The table was downloaded in pdf format and its content is available as pure text. This must be converted to
+     * html >table> format
+     * 
+     * @param string $contentsString    Contains the data of the amortization tables. Main index is
+     *                                  the loanId
+     * @return  boolean  true   All Ok
+     *                   false  An error has occurred during the processing
+     */ 
+    public function amortizationTableDownloaded($contentsString) {
+        
+    
+        
+        return ;
+    }    
+    
+    
+    /** 
+     * Callback functions required for Dashboard 2. 
+     * The amortization table has been analyzed 
+     * 
+     * @param string $durationString    Contains the data of the amortization tables. Main index is
+     *                                  the loanId
+     * @return  boolean  true   All Ok
+     *                   false  An error has occurred during the processing 
+     */ 
+    public function amortizationTableAnalyzed(array $table) {
+        
+        //$amortiza 
+        
+        return ;
+    }    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 }
