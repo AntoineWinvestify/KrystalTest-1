@@ -149,6 +149,7 @@ class p2pCompany {
     protected $fileType;
     protected $companyName;
     protected $userReference;
+    protected $linkAccountId;
 
     /**
      *
@@ -167,7 +168,6 @@ class p2pCompany {
         $this->cookiesDir = $createdFolder;
         $this->config['tracingActive'] = false;
         $this->headers = array();
-        $this->companyName = $this->getPFPName();
 
 
 // ******************************** end of configuration parameters *************************************
@@ -782,9 +782,11 @@ class p2pCompany {
 
     /**
      *
-     * 	Load the received Webpage into a string.
-     * 	If an url is provided then that url is used instead of reading it from the urlSequence array
-     * 	@param string 		$url	The url the connect to
+     * 	Add a request to the multicurl Queue
+     * 	If an url is  provided then that url is used instead of reading it from the urlSequence array
+     * 	@param string $url The url the connect to
+     *  @param string $credentials The credentials used to connect to the url provided
+     *  @param boolean $payload If payload is true, then, the credentials are json type
      *
      */
     function getCompanyWebpageMultiCurl($url = null,$credentials = null, $payload = null) {
@@ -811,17 +813,19 @@ class p2pCompany {
         }
 
         $request = new \cURL\Request();
-
-        if(!empty($payload)){
+        
+        if(!empty($credentials)) {
+            if ($payload) {
             $request->getOptions()
                 ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        }else{
-            $credentials = http_build_query($credentials);
-        }    
-        if(!empty($credentials)){
+            }
+            else {
+                $credentials = http_build_query($credentials);
+            }    
             $request->getOptions()
                 ->set(CURLOPT_POSTFIELDS, $credentials);
         }
+        
 
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
@@ -1703,7 +1707,7 @@ class p2pCompany {
      * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
      * @param string $path path where you want save the file
      */
-    public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+    public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer, $cookie1, $cookie2) {
 
         print_r(http_build_query($credentials));
         echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
@@ -1733,11 +1737,12 @@ class p2pCompany {
             $fp = fopen($path . DS . $output_filename, 'w+');
         }
 
-        $header[] = 'accept-language: es-ES,es;q=0.8';
-        $header[] = 'upgrade-insecure-requests: 1';
-        $header[] = 'host: ' . $pfpBaseUrl;
-        $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
+        $header[] = 'Accept-language: es-ES,es;q=0.8';
+        $header[] = 'Upgrade-insecure-requests: 1';
+        $header[] = 'Host: ' . $pfpBaseUrl;
+        //$header[] = 'Content-type: application/x-www-form-urlencoded';
+        $header[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
+        //$header[] = 'Cookie: LOGIN_USERNAME_COOKIE=' . trim($cookie2) . '; FNZRL_WORLD=' . trim($cookie1) . ';';
         //$header[] = 'authority: ' . $pfpBaseUrl;
         //$header[] = 'cache-control: max-age=0';
         $header[] = 'Connection: keep-alive';
@@ -1765,7 +1770,8 @@ class p2pCompany {
           curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
         }*/
         $result = curl_exec($ch);
-        
+        echo "ohgfjkfkhgfAAAAAAAAAAAAAAAAAAAAAAAA";
+        print_r($header);
 
         $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -1784,13 +1790,18 @@ class p2pCompany {
     
     /**
      * Function to download a file with multicurl
+     * If the referer, credentials or headers are null, it will used from urlSequence, if false, it is not used
      * @param string $url It is the url to download the file
+     * @param string $referer They are the referer to download the file
      * @param string $credentials They are the credentials to download the file
-     * @param strin $referer They are the referer to download the file
+     * @param array $headers The headers needed to download the file
      * @param string $fileName It is the name of the file to save with
      */
     public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
 
+        echo "urls: ";
+        print_r($this->urlSequence);
+        
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
@@ -1806,16 +1817,15 @@ class p2pCompany {
         
         if ($headers != false && empty($headers)) {
             $headers = array_shift($this->urlSequence);
-            $headers = json_decode($headers, true);
         }
-        
-        $this->errorInfo = $url;
 
+        $this->errorInfo = $url;
+        echo "File name is " . $fileName;
         
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName;
+        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
         $pathCreated = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
@@ -1824,7 +1834,7 @@ class p2pCompany {
             echo "url download File: " . $this->errorInfo . " \n";
             echo "Cannot create folder \n";
         }
-        $output_filename = $fileName . '_' . $date . "." . $this->fileType;
+        $output_filename = $fileName . '_' . $date . '.' . $this->fileType;
         $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
         if (!$this->fp) {
             echo "Couldn't created the file \n";
@@ -1852,20 +1862,10 @@ class p2pCompany {
                     ->set(CURLOPT_POST, true);
             //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
         }
-        
-        /*$this->headers = array(
-            'accept-language: en-US,en;q=0.8',
-            'upgrade-insecure-requests: 1',
-            'origin: ' . $this->baseUrl,
-            'content-type: application/x-www-form-urlencoded',                  quitar doble barra de aqui
-            //'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*//*;q=0.8',
-            'authority: ' . $this->baseUrl
-        );*/
 
         if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
-                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
 
             unset($headers);   // reset fields
@@ -1912,30 +1912,16 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
-        
-        
-        /*
-         * THIS IS FOR CURL BUT WE MUST TO CONVERT TO MULTICURL
-        $result = curl_exec($ch);
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        echo "BHHHHHHHHHHHHHHHHHHHHHHHHHHH";
-        print_r($ch);
-        curl_close($ch);
-        print_r($result); // prints the contents of the collected file before writing..
-        $fichero = fwrite($fp,$result);
-         echo "fichero" . $fichero;
-        fclose($fp);
-        */
     }
 
     /**
      * Compares two dom structures., attributes name and length 
      * 
-     * @param dom $node1
-     * @param dom $node2
-     * @param type $uniquesElement
-     * @param int $limit
-     * @return bool
+     * @param dom $node1 It is the dom node that we get from our DB
+     * @param dom $node2 It is the dom node that we get from the website
+     * @param array $uniquesElement It is an array with elements that we must not verify
+     * @param int $limit It is the limit to read a element of the uniqueElement
+     * @return bool True if it is the same structure or false if it is not
      */
     function verifyDomStructure($node1, $node2, $uniquesElement = null, $limit = null) {
         //echo 'Begin comparation<br>';
@@ -2038,8 +2024,8 @@ class p2pCompany {
     }
 
     /**
-     * 
-     * @param type $nameAttrNode1
+     * Function to get the repeated nodes
+     * @param  $nameAttrNode1
      * @param type $valueAttrNode1
      * @return type
      */
@@ -2059,10 +2045,10 @@ class p2pCompany {
 
     /**
      * Function to delete unnecessary elements before we compared the two dom elements
-     * @param dom $dom
-     * @param array $elementsToSearch
-     * @param array $attributesToClean
-     * @return dom
+     * @param dom $dom It is the dom to clean
+     * @param array $elementsToSearch Elements to search on the dom
+     * @param array $attributesToClean Attributes to clean of the dom
+     * @return dom $dom Return cleaned dom object
      */
     function cleanDom($dom, $elementsToSearch, $attributesToClean) { //CLEAR ATTRIBUTES
         //https://stackoverflow.com/questions/35534654/php-domdocument-delete-elements
@@ -2089,8 +2075,8 @@ class p2pCompany {
     }
 
     /**
-     *  Function to delete unnecessary  tags
-     * @param dom $dom
+     * Function to delete unnecessary tags
+     * @param dom $dom 
      * @param array $elementsToDelete
      * @return dom
      */
@@ -2314,40 +2300,104 @@ class p2pCompany {
         return $loanReferenceList;
     }
     
+    /**
+     * Function to get the stream open when we download a file
+     * @return function fopen It is the stream opened when download a file
+     */
     public function getFopen() {
         return $this->fp;
     }
     
+    /**
+     * Function to set the stream open or close
+     * @param fopen $fp It is the stream fopen
+     */
     public function setFopen($fp) {
         $this->fp = $fp;
     }
     
+    /**
+     * Function to get the extension for the files downloaded for a PFP company
+     * @return string It is the extension of the file
+     */
     function getFileType() {
         return $this->fileType;
     }
 
+    /**
+     * Function to set the extension for files downloaded for a PFP company
+     * @param string $fileType It is the extension of a file
+     */
     function setFileType($fileType) {
         $this->fileType = $fileType;
     }
     
+    /**
+     * Function to get the base url of a PFP company
+     * @return string It is the base url
+     */
     function getBaseUrl() {
         return $this->baseUrl;
     }
 
+    /**
+     * Function to set the base url of a PFP company
+     * @param string $baseUrl It is the base url
+     */
     function setBaseUrl($baseUrl) {
         $this->baseUrl = $baseUrl;
     }
 
+    /**
+     * Function to get the user reference that initiates the queue
+     * @return string It is the user reference
+     */
     function getUserReference() {
         return $this->userReference;
     }
 
+    /**
+     * Function to set the user reference
+     * @param string $userReference It is the user reference
+     */
     function setUserReference($userReference) {
         $this->userReference = $userReference;
     }
 
+    /**
+     * Function to get the name of the company
+     * @return string It is the name of the company
+     */
+    function getCompanyName() {
+        return $this->companyName;
+    }
 
+    /**
+     * Function to set the name of the company
+     * @param string $companyName It is the name of the company
+     */
+    function setCompanyName($companyName) {
+        $this->companyName = $companyName;
+    }
+    
+    /**
+     * Function to get the linkaccount id of the petition
+     * @return integer It is the linkaccount id
+     */
+    function getLinkAccountId() {
+        return $this->linkAccountId;
+    }
 
+    /**
+     * Function to set the linkaccount id
+     * @param integer $linkAccountId It is the linkaccount id
+     */
+    function setLinkAccountId($linkAccountId) {
+        $this->linkAccountId = $linkAccountId;
+    }
+
+    
+    
 
     
 

@@ -25,6 +25,7 @@
 
 class CollectDataClientShell extends AppShell {
     protected $GearmanClient;
+    protected $userResult = [];
     protected $newComp = [];
     public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
 
@@ -35,26 +36,28 @@ class CollectDataClientShell extends AppShell {
     public function help() {
         $this->out('Gearman Client as a CakePHP Shell');
     }
-
+    
     public function main() {
-        $this->GearmanClient->addServers();
-        $this->GearmanClient->setExceptionCallback(function(GearmanTask $task) {
-            $m = $task->data();
-            echo "ID Unique: " . $task->unique() . "\n";
-            echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
-            //return GEARMAN_WORK_EXCEPTION;
-        });
+        echo "Nothing to do here";
+    }
+
+    /**
+     * Function to init the process to recollect all the user investment data
+    *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
+    *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
+     */
+    public function initClient() {
+        //$queueStatus = $this->args[0];
+        //$queueAcessType = $this->args[1];
         
-        $this->GearmanClient->setFailCallback(function(GearmanTask $task) {
-            $m = $task->data();
-            echo "ID Unique: " . $task->unique() . "\n";
-            echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
-            //echo GEARMAN_WORK_FAIL;
-        });
+        $this->GearmanClient->addServers();
+        $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
+        
+        $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         
         $this->Queue = ClassRegistry::init('Queue');
-        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, START_COLLECTING);
+        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
         $resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
         
         if (empty($resultQueue)) {  // Nothing in the queue
@@ -83,18 +86,20 @@ class CollectDataClientShell extends AppShell {
         ));
         
         $userLinkedaccounts = [];
-        $i = 0;
+        //$i = 0;
         
         foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
             //In this case $key is the number of the linkaccount inside the array 0,1,2,3
+            $i = 0;
             foreach ($linkedaccountResult as $linkedaccount) {
                 $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
                 $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                 $i++;
             }
+            
         }
         
-        //$key is the number of each linkedaccounts
+        //$key is the number of the internal id of the array (0,1,2)
         //$key2 is type of access to company (multicurl, casper, etc)
         foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
             foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
@@ -117,27 +122,55 @@ class CollectDataClientShell extends AppShell {
         
         $this->GearmanClient->runTasks();
         
-        
-        
-        
+        foreach ($this->userResult as $key => $userResult) {
+            $statusProcess = $this->consolidationResult($userResult);
+            if (!$statusProcess) {
+                $statusDelete = $this->safeDelete($key, $todayDate);
+            }
+        }
         
     }
     
     public function verifyFailTask(GearmanTask $task) {
         $m = $task->data();
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = $task->data();
+        print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
     }
     
     public function verifyExceptionTask (GearmanTask $task) {
         $m = $task->data();
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = $task->data();
+        print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
     }
     
     public function verifyCompleteTask (GearmanTask $task) {
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = $task->data();
+        print_r($this->userResult);
+        echo "ID Unique: " . $task->unique() . "\n";
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
+    }
+    
+    public function consolidationResult($userResult) {
+        $statusProcess = true;
+        foreach ($userResult as $key => $result) {
+            if (!$result) {
+                $statusProcess = false;
+                break;
+            }
+        }
+        return $statusProcess;
+    }
+    
+    public function safeDelete($data, $date) {
+        echo "Delete all";
     }
 }
