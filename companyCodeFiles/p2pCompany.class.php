@@ -813,17 +813,19 @@ class p2pCompany {
         }
 
         $request = new \cURL\Request();
-
-        if(!empty($payload)){
+        
+        if(!empty($credentials)) {
+            if ($payload) {
             $request->getOptions()
                 ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        }else{
-            $credentials = http_build_query($credentials);
-        }    
-        if(!empty($credentials)){
+            }
+            else {
+                $credentials = http_build_query($credentials);
+            }    
             $request->getOptions()
                 ->set(CURLOPT_POSTFIELDS, $credentials);
         }
+        
 
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
