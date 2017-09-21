@@ -2298,50 +2298,98 @@ class p2pCompany {
         return $loanReferenceList;
     }
     
+    /**
+     * Function to get the stream open when we download a file
+     * @return function fopen It is the stream opened when download a file
+     */
     public function getFopen() {
         return $this->fp;
     }
     
+    /**
+     * Function to set the stream open or close
+     * @param fopen $fp It is the stream fopen
+     */
     public function setFopen($fp) {
         $this->fp = $fp;
     }
     
+    /**
+     * Function to get the extension for the files downloaded for a PFP company
+     * @return string It is the extension of the file
+     */
     function getFileType() {
         return $this->fileType;
     }
 
+    /**
+     * Function to set the extension for files downloaded for a PFP company
+     * @param string $fileType It is the extension of a file
+     */
     function setFileType($fileType) {
         $this->fileType = $fileType;
     }
     
+    /**
+     * Function to get the base url of a PFP company
+     * @return string It is the base url
+     */
     function getBaseUrl() {
         return $this->baseUrl;
     }
 
+    /**
+     * Function to set the base url of a PFP company
+     * @param string $baseUrl It is the base url
+     */
     function setBaseUrl($baseUrl) {
         $this->baseUrl = $baseUrl;
     }
 
+    /**
+     * Function to get the user reference that initiates the queue
+     * @return string It is the user reference
+     */
     function getUserReference() {
         return $this->userReference;
     }
 
+    /**
+     * Function to set the user reference
+     * @param string $userReference It is the user reference
+     */
     function setUserReference($userReference) {
         $this->userReference = $userReference;
     }
 
+    /**
+     * Function to get the name of the company
+     * @return string It is the name of the company
+     */
     function getCompanyName() {
         return $this->companyName;
     }
 
+    /**
+     * Function to set the name of the company
+     * @param string $companyName It is the name of the company
+     */
     function setCompanyName($companyName) {
         $this->companyName = $companyName;
     }
     
+    /**
+     * Function to get the linkaccount id of the petition
+     * @return integer It is the linkaccount id
+     */
     function getLinkAccountId() {
         return $this->linkAccountId;
     }
 
+    /**
+     * Function to set the linkaccount id
+     * @param integer $linkAccountId It is the linkaccount id
+     */
     function setLinkAccountId($linkAccountId) {
         $this->linkAccountId = $linkAccountId;
     }
