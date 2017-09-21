@@ -827,6 +827,7 @@ class p2pCompany {
             $request->getOptions()
                 ->set(CURLOPT_POSTFIELDS, $postString);
         }
+        
 
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
@@ -1791,7 +1792,7 @@ class p2pCompany {
     
     /**
      * Function to download a file with multicurl
-     * The referer, credentials or headers if null, it will used from urlSequence, if false, it is not used
+     * If the referer, credentials or headers are null, it will used from urlSequence, if false, it is not used
      * @param string $url It is the url to download the file
      * @param string $referer They are the referer to download the file
      * @param string $credentials They are the credentials to download the file
@@ -1867,7 +1868,6 @@ class p2pCompany {
         if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
-                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
 
             unset($headers);   // reset fields
@@ -1914,30 +1914,16 @@ class p2pCompany {
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
-        
-        
-        /*
-         * THIS IS FOR CURL BUT WE MUST TO CONVERT TO MULTICURL
-        $result = curl_exec($ch);
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        echo "BHHHHHHHHHHHHHHHHHHHHHHHHHHH";
-        print_r($ch);
-        curl_close($ch);
-        print_r($result); // prints the contents of the collected file before writing..
-        $fichero = fwrite($fp,$result);
-         echo "fichero" . $fichero;
-        fclose($fp);
-        */
     }
 
     /**
      * Compares two dom structures., attributes name and length 
      * 
-     * @param dom $node1
-     * @param dom $node2
-     * @param type $uniquesElement
-     * @param int $limit
-     * @return bool
+     * @param dom $node1 It is the dom node that we get from our DB
+     * @param dom $node2 It is the dom node that we get from the website
+     * @param array $uniquesElement It is an array with elements that we must not verify
+     * @param int $limit It is the limit to read a element of the uniqueElement
+     * @return bool True if it is the same structure or false if it is not
      */
     function verifyDomStructure($node1, $node2, $uniquesElement = null, $limit = null) {
         //echo 'Begin comparation<br>';
@@ -2040,8 +2026,8 @@ class p2pCompany {
     }
 
     /**
-     * 
-     * @param type $nameAttrNode1
+     * Function to get the repeated nodes
+     * @param  $nameAttrNode1
      * @param type $valueAttrNode1
      * @return type
      */
@@ -2061,10 +2047,10 @@ class p2pCompany {
 
     /**
      * Function to delete unnecessary elements before we compared the two dom elements
-     * @param dom $dom
-     * @param array $elementsToSearch
-     * @param array $attributesToClean
-     * @return dom
+     * @param dom $dom It is the dom to clean
+     * @param array $elementsToSearch Elements to search on the dom
+     * @param array $attributesToClean Attributes to clean of the dom
+     * @return dom $dom Return cleaned dom object
      */
     function cleanDom($dom, $elementsToSearch, $attributesToClean) { //CLEAR ATTRIBUTES
         //https://stackoverflow.com/questions/35534654/php-domdocument-delete-elements
@@ -2091,8 +2077,8 @@ class p2pCompany {
     }
 
     /**
-     *  Function to delete unnecessary  tags
-     * @param dom $dom
+     * Function to delete unnecessary tags
+     * @param dom $dom 
      * @param array $elementsToDelete
      * @return dom
      */
@@ -2316,50 +2302,98 @@ class p2pCompany {
         return $loanReferenceList;
     }
     
+    /**
+     * Function to get the stream open when we download a file
+     * @return function fopen It is the stream opened when download a file
+     */
     public function getFopen() {
         return $this->fp;
     }
     
+    /**
+     * Function to set the stream open or close
+     * @param fopen $fp It is the stream fopen
+     */
     public function setFopen($fp) {
         $this->fp = $fp;
     }
     
+    /**
+     * Function to get the extension for the files downloaded for a PFP company
+     * @return string It is the extension of the file
+     */
     function getFileType() {
         return $this->fileType;
     }
 
+    /**
+     * Function to set the extension for files downloaded for a PFP company
+     * @param string $fileType It is the extension of a file
+     */
     function setFileType($fileType) {
         $this->fileType = $fileType;
     }
     
+    /**
+     * Function to get the base url of a PFP company
+     * @return string It is the base url
+     */
     function getBaseUrl() {
         return $this->baseUrl;
     }
 
+    /**
+     * Function to set the base url of a PFP company
+     * @param string $baseUrl It is the base url
+     */
     function setBaseUrl($baseUrl) {
         $this->baseUrl = $baseUrl;
     }
 
+    /**
+     * Function to get the user reference that initiates the queue
+     * @return string It is the user reference
+     */
     function getUserReference() {
         return $this->userReference;
     }
 
+    /**
+     * Function to set the user reference
+     * @param string $userReference It is the user reference
+     */
     function setUserReference($userReference) {
         $this->userReference = $userReference;
     }
 
+    /**
+     * Function to get the name of the company
+     * @return string It is the name of the company
+     */
     function getCompanyName() {
         return $this->companyName;
     }
 
+    /**
+     * Function to set the name of the company
+     * @param string $companyName It is the name of the company
+     */
     function setCompanyName($companyName) {
         $this->companyName = $companyName;
     }
     
+    /**
+     * Function to get the linkaccount id of the petition
+     * @return integer It is the linkaccount id
+     */
     function getLinkAccountId() {
         return $this->linkAccountId;
     }
 
+    /**
+     * Function to set the linkaccount id
+     * @param integer $linkAccountId It is the linkaccount id
+     */
     function setLinkAccountId($linkAccountId) {
         $this->linkAccountId = $linkAccountId;
     }
@@ -2460,12 +2494,11 @@ class p2pCompany {
      * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan status 
      * 
-     * @param string pfp            Name of the PFP, zank,growly etc. 
      * @param string $loanStatus    Ccontains the data of the amortization tables. Main index is the loanId
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */ 
-    public function normalizeLoanStatus($pfp, $loanStatus) {
+    public function normalizeLoanStatus($loanStatus) {
         return $loanStatus;
     }
 
@@ -2474,11 +2507,10 @@ class p2pCompany {
      * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan rate 
      * 
-     * @param string pfp            Name of the PFP, zank,growly etc. 
      * @param string    Contains the data of the amortization tables. Main index is the loanId
      * @return  integer     Loan duration as defined by Winvestify
      */ 
-    public function normalizeLoanRate($pfp, $loanRate) {
+    public function normalizeLoanRate($loanRate) {
         return $loanRate;
     }
 
@@ -2487,13 +2519,12 @@ class p2pCompany {
      * The main flow loops through all the new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan duration 
      * 
-     * @param string pfp            Name of the PFP, zank,growly etc. 
      * @param string $durationString    Contains the data of the amortization tables. Main index is
      *                                  the loanId
      * @return  array $duration  $duration['value']
      *                           $duration['unit']   
      */ 
-    public function normalizeLoanDuration($pfp, $durationString) {
+    public function normalizeLoanDuration($durationString) {
         
         //$amortiza 
         
@@ -2501,6 +2532,55 @@ class p2pCompany {
     }
 
 
+    
+    
+    
+    
+    
+    
+    
+    /** 
+     * Callback functions required for Dashboard 2. 
+     * The table was downloaded in pdf format and its content is available as pure text. This must be converted to
+     * html >table> format
+     * 
+     * @param string $contentsString    Contains the data of the amortization tables. Main index is
+     *                                  the loanId
+     * @return  boolean  true   All Ok
+     *                   false  An error has occurred during the processing
+     */ 
+    public function amortizationTableDownloaded($contentsString) {
+        
+    
+        
+        return ;
+    }    
+    
+    
+    /** 
+     * Callback functions required for Dashboard 2. 
+     * The amortization table has been analyzed 
+     * 
+     * @param string $durationString    Contains the data of the amortization tables. Main index is
+     *                                  the loanId
+     * @return  boolean  true   All Ok
+     *                   false  An error has occurred during the processing 
+     */ 
+    public function amortizationTableAnalyzed(array $table) {
+        
+        //$amortiza 
+        
+        return ;
+    }    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 }

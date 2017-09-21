@@ -534,7 +534,6 @@ class AppController extends Controller {
         if (empty($globalInvestorReference)) {
             return;
         }
-
         if ($this->Queue->checkQueue($globalInvestorReference)) {  // a request already exists in the queue
             return;
         }
