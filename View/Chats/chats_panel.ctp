@@ -193,7 +193,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
 
 
 <style>
-// AJAX spinner are at  http://cssload.net/	
+/* AJAX spinner are at  http://cssload.net/	*/
 	
 .investmenttable td span{
 	text-align: left;	

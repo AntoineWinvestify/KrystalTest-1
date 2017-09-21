@@ -122,7 +122,7 @@ echo "serviceId = $serviceId <br>";
 			echo "</div";
 			}
 		}
-	}
+	
 
 ?>
 </div>

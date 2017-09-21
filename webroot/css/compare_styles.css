@@ -1355,6 +1355,7 @@ hr.nomargin {
     background-repeat: no-repeat;
     height: 780px;
     background-size: cover;
+    background-size: cover;
 }
 .loginBox {
     background-color: white;

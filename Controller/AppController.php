@@ -265,6 +265,18 @@ App::uses('Controller', 'Controller');
   define('EUR', 1);           // Euro
   define('GBP', 2);           // UK Pound Sterling
   define('USD', 3);           // US Dollar
+  define('ARS', 4);           // Argentinian peso
+  define('AUD', 5);           // Australina dollar  
+  define('NZD', 6);           // New zeeland dollar                                            
+  define('BYN', 7);           // Belarusian ruble         
+  define('BGN', 8);           // Bulgarian lev   
+  define('CZK', 9);           // Czech koruna                                         
+  define('DKK', 10);          // Danish krone                                         
+  define('CHF', 11);          // Swiss franc                                             
+  define('MXN', 12);          // Mexican peso  
+  define('RUB', 13);          // Russian ruble  
+
+
 
   // APPLICATION THAT CAN PRODUCE BILLING DATA
   define('TALLYMAN_APP', 1);
@@ -299,8 +311,8 @@ App::uses('Controller', 'Controller');
 
 //
 
-
 class AppController extends Controller {
+
 
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
@@ -349,8 +361,29 @@ class AppController extends Controller {
         );
 
         // TRANSLATE CURRENCY NAME
-        $this->currencyName = array(0 => "(select)", 1 => "€", 2 => "£", 3 => "$");
-
+        $this->currencyName = array(EUR => "€", 
+                                    GBP => "£", 
+                                    USD => "$",
+                                    ARS => "$",
+                                    AUD => "$",
+                                    NZD => "$",                                           
+                                    BYN => "BR",       
+                                    BGN => "лв", 
+                                    CZK => "Kč",                                        
+                                    DKK => "Kr",                                       
+                                    CHF => "Fr",                                        
+                                    MXN => "$", 
+                                    RUB => "₽",              
+                                    );
+        
+                                     
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
         //Investor Status to PFP Admin
         $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
 
@@ -362,7 +395,7 @@ class AppController extends Controller {
 
         
         //Investment Status in marketplace
-        $this->marketpalceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
+        $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
 
         
         //Country for excel export
@@ -533,9 +566,7 @@ class AppController extends Controller {
 
     public function session() {
         $this->autoRender = FALSE;
-
-        $test1 = "apple " . "peer";
-        echo $test1;
+Configure::write('debug', 2); 
         echo "Now = : " . date('Y-m-d H:i:s', strtotime(now)) . "<br>";
         echo '5 minutes ago = : ' . date('Y-m-d h:i:s', strtotime('- 5 minutes')) . "<br><br>";
 

@@ -41,6 +41,9 @@ function beforeFilter() {
         parent::beforeFilter();
 
 	$this->Security->requireAuth();
+        
+ 	$this->Auth->allow('linkCheckRecords', 'errorTesting');        
+        
 }
 
    
@@ -112,6 +115,102 @@ function showUserData($userIdentity, $number) {
 }
 
     
+
+
+
+
+function linkCheckRecords() {
+    $this->autoRender = false;
+    Configure::write('debug', 2);  
     
+    $this->User = ClassRegistry::init('User'); 
+  $dataFilterConditions = array("investor_id >"  => 0);
+    
+    $userResults = $this->User->find("all", array('conditions'  => $dataFilterConditions,
+                                                    'fields' => array('id', 'email', 'investor_id' , 'username'),
+                                                    'recursive' => -1,
+                                    ));
+     
+$this->print_r2($userResults);    
+     foreach ($userResults as $key => $result) {
+         
+         $this->print_r2($result);
+         echo "key = $key, id = " . $result['User']['id'] . " investor_id = " .  $result['User']['investor_id'] . " and username = " .  $result['User']['username'] . "<br>";
+         $this->createCheckdataTable($result['User']['investor_id']);
+         echo "table create for investor_Id = " .  $result['User']['investor_id'] . "<br>"; 
+     }
+    
+    
+    
+
+     
+     
+}
+
+
+
+   /**
+     * Create a check line in the checks table for the user
+     * @param type $id  id of related User table
+     * @return boolean
+     */
+    public function createCheckdataTable($id) {
+        //Checks data
+        
+    $this->Check = ClassRegistry::init('Check'); 
+    $this->Check->create();
+        $checksArray = Array(
+            'investor_id' => $id,
+            'check_name' => 0,
+            'check_surname' => 0,
+            'check_dni' => 0,
+            'check_dateOfBirth' => 0,
+            'check_email' => 1,                 // Cannot be changed directly by user
+            'check_telephone' => 1,             // Cannot be changed directly by user
+            'check_postCode' => 0,
+            'check_address' => 0,
+            'check_city' => 0,
+            'check_country' => 0,
+            'check_iban' => 0,
+            'check_ibanTime' => 0,
+            'check_cif' => 0,
+            'check_businessName' => 0,
+        );
+
+        if ($this->Check->save($checksArray)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    
+    
+public function errorTesting() {
+    $this->autoRender = false;
+    Configure::write('debug', 2);   
+    $this->Applicationerror = ClassRegistry::init('Applicationerror'); 
+    
+    $par1 = "typeoferror";
+     
+    $par2 = "details";
+    $par3 = "line 333";
+    $par4 = "filenameaAAAA";
+    $par5 = "sequences";           
+    
+    $Applicationerror = $this->Applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
+    
+    
+    
+    
+}  
+    
+    
+    
+    
+   
+ 
+ 
     
 }
