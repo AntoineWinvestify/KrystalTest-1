@@ -47,23 +47,13 @@ class CollectDataClientShell extends AppShell {
     *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
      */
     public function initClient() {
-        $queueStatus = $this->args[0];
-        $queueAcessType = $this->args[1];
+        //$queueStatus = $this->args[0];
+        //$queueAcessType = $this->args[1];
         
         $this->GearmanClient->addServers();
-        $this->GearmanClient->setExceptionCallback(function(GearmanTask $task) {
-            $m = $task->data();
-            echo "ID Unique: " . $task->unique() . "\n";
-            echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
-            //return GEARMAN_WORK_EXCEPTION;
-        });
+        $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         
-        $this->GearmanClient->setFailCallback(function(GearmanTask $task) {
-            $m = $task->data();
-            echo "ID Unique: " . $task->unique() . "\n";
-            echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
-            //echo GEARMAN_WORK_FAIL;
-        });
+        $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         
         $this->Queue = ClassRegistry::init('Queue');
@@ -132,7 +122,12 @@ class CollectDataClientShell extends AppShell {
         
         $this->GearmanClient->runTasks();
         
-        
+        foreach ($this->userResult as $key => $userResult) {
+            $statusProcess = $this->consolidationResult($userResult);
+            if (!$statusProcess) {
+                $statusDelete = $this->safeDelete($key, $todayDate);
+            }
+        }
         
     }
     
@@ -162,5 +157,20 @@ class CollectDataClientShell extends AppShell {
         echo "ID Unique: " . $task->unique() . "\n";
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
+    }
+    
+    public function consolidationResult($userResult) {
+        $statusProcess = true;
+        foreach ($userResult as $key => $result) {
+            if (!$result) {
+                $statusProcess = false;
+                break;
+            }
+        }
+        return $statusProcess;
+    }
+    
+    public function safeDelete($data, $date) {
+        echo "Delete all";
     }
 }

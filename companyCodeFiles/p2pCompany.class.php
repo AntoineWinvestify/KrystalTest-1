@@ -149,6 +149,7 @@ class p2pCompany {
     protected $fileType;
     protected $companyName;
     protected $userReference;
+    protected $linkAccountId;
 
     /**
      *
@@ -1704,7 +1705,7 @@ class p2pCompany {
      * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
      * @param string $path path where you want save the file
      */
-    public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer) {
+    public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer, $cookie1, $cookie2) {
 
         print_r(http_build_query($credentials));
         echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
@@ -1734,11 +1735,12 @@ class p2pCompany {
             $fp = fopen($path . DS . $output_filename, 'w+');
         }
 
-        $header[] = 'accept-language: es-ES,es;q=0.8';
-        $header[] = 'upgrade-insecure-requests: 1';
-        $header[] = 'host: ' . $pfpBaseUrl;
-        $header[] = 'content-type: application/x-www-form-urlencoded';
-        $header[] = 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
+        $header[] = 'Accept-language: es-ES,es;q=0.8';
+        $header[] = 'Upgrade-insecure-requests: 1';
+        $header[] = 'Host: ' . $pfpBaseUrl;
+        //$header[] = 'Content-type: application/x-www-form-urlencoded';
+        $header[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
+        //$header[] = 'Cookie: LOGIN_USERNAME_COOKIE=' . trim($cookie2) . '; FNZRL_WORLD=' . trim($cookie1) . ';';
         //$header[] = 'authority: ' . $pfpBaseUrl;
         //$header[] = 'cache-control: max-age=0';
         $header[] = 'Connection: keep-alive';
@@ -1766,7 +1768,8 @@ class p2pCompany {
           curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
         }*/
         $result = curl_exec($ch);
-        
+        echo "ohgfjkfkhgfAAAAAAAAAAAAAAAAAAAAAAAA";
+        print_r($header);
 
         $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -1820,7 +1823,7 @@ class p2pCompany {
         $date = date("d-m-Y");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName;
+        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
         $pathCreated = $this->createFolder($path, $partialPath);
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
@@ -2349,7 +2352,16 @@ class p2pCompany {
     function setCompanyName($companyName) {
         $this->companyName = $companyName;
     }
+    
+    function getLinkAccountId() {
+        return $this->linkAccountId;
+    }
 
+    function setLinkAccountId($linkAccountId) {
+        $this->linkAccountId = $linkAccountId;
+    }
+
+    
     
 
     
