@@ -1519,7 +1519,7 @@ class p2pCompany {
         $company = explode(".", $substring)[0];
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
-        $this->marketplaces->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $company . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
+        $this->classContainer->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $company . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
         return $this->tempArray;
     }
 
@@ -1894,7 +1894,7 @@ class p2pCompany {
         if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
-                    ->set(CURLOPT_HTTPHEADER, $this->headers);
+                    ->set(CURLOPT_HTTPHEADER, $headers);
 
             unset($headers);   // reset fields
         }
