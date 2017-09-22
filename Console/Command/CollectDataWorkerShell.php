@@ -55,16 +55,15 @@ class CollectDataWorkerShell extends AppShell {
         while( $this->GearmanWorker->work() );
     }
     
-    /*$data["companies"] = $linkedaccountsByType;
-    $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
-    $data["queue_id"] = $resultQueue[$key]['Queue']['id'];*/
-    
     /**
      * Function to initiate the process to save the files of a company
      * @param object $job It is the object of Gearmanjob that contains
-     * companies It is the id of the company;
-     * queue_userReference It is the userReference
-     * queue_id It is the id of the queue
+     * The $job->workload() function read the input data as sent by the Gearman client
+     * This is json_encoded data with the following structure:
+     *      $data["companies"]                  array It contains all the linkedaccount information
+     *      $data["queue_userReference"]        string It is the user reference
+     *      $data["queue_id"]                   integer It is the queue id
+     * @return string The variable must be in string because of Gearman but it is really a boolean 1 or 0
      */
     public function getDataMulticurlFiles($job) {
         $data = json_decode($job->workload(),true);

@@ -324,8 +324,8 @@ class mintos extends p2pCompany {
     /**
      *
      * 	Logout of user from the company portal.
-     * 	 @param type $url
-     * 	@returnboolean	true: user has logged out 
+     * 	@param type $url
+     * 	@return boolean	true: user has logged out 
      * 	
      */
     function companyUserLogout($url) {
