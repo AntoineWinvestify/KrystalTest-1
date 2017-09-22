@@ -130,9 +130,11 @@ class CollectDataClientShell extends AppShell {
             $this->Queue->id = $key;
             if ($statusProcess) {
                 $this->Queue->save(array("queue_status" => GLOBAL_DATA_DOWNLOADED));
+                echo "Data succcessfully download";
             }
             else {
                 $this->Queue->save(array("queue_status" => START_COLLECTING_DATA));
+                echo "There was an error downloading data";
             }
         }
         

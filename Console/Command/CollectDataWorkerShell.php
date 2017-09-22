@@ -130,7 +130,7 @@ class CollectDataWorkerShell extends AppShell {
             }
             
             if ($response->hasError()) {
-               $this->errorCurl($response->getError(), $info, $response);
+               $this->tempArray['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
                $error = $response->getError();
             }
            if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
@@ -435,20 +435,23 @@ class CollectDataWorkerShell extends AppShell {
      * @param array $info They are the info of the company
      * @param object $response It is the curl response from the request on parallel
      */
-    function errorCurl($error, $info, $response) {
-        echo
-        'Error code: ' . $error->getCode() . "<br>" .
-        'Message: "' . $error->getMessage() . '" <br>';
-        echo 'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '<br>';
+    public function errorCurl($error, $info, $response) {
+        $errorVar = 
+        'Error code: ' . $error->getCode() . '\n' .
+        'Message: "' . $error->getMessage() . '" \n' .
+        'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '\n';
+        echo $errorVar;
         $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
         if (!empty($testConfig['active']) == true) {
             print_r($response->getInfo());
             echo "<br>";
         }
+        
         $config = $this->newComp[$info["companyIdForQueue"]]->getConfig();
         if ($config['tracingActive'] == true) {
             $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
         }
+        return $errorVar;
     }
 
 
