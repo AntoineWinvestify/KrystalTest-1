@@ -67,6 +67,7 @@ class CollectDataWorkerShell extends AppShell {
      */
     public function getDataMulticurlFiles($job) {
         $data = json_decode($job->workload(),true);
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
         print_r($data);
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
@@ -144,13 +145,13 @@ class CollectDataWorkerShell extends AppShell {
                $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
                $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info]->getUrlSequenceBackup());  // provide all URLs for this sequence
                $this->newComp[$info["companyIdForQueue"]]->setTries(1);
-               //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
-               //$this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
+               $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+               $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
                $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
            } 
            else if ($info["typeOfRequest"] == "LOGOUT") {
                echo "LOGOUT FINISHED <br>";
-               //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+               $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
            } 
            else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
                if (!empty($error)) {
