@@ -125,7 +125,7 @@ class CollectDataClientShell extends AppShell {
         foreach ($this->userResult as $key => $userResult) {
             $statusProcess = $this->consolidationResult($userResult);
             if (!$statusProcess) {
-                $statusDelete = $this->safeDelete($key, $todayDate);
+                $statusDelete = $this->safeDelete($key, 1); //1 = $todaydate
             }
             $this->Queue->id = $key;
             if ($statusProcess) {
