@@ -258,6 +258,7 @@ class bondora extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
+            
             case 1:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
@@ -279,11 +280,13 @@ class bondora extends p2pCompany {
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($credentials); //do login
                 break;
+                
             case 2:
                 echo 'Doing loging' . HTML_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
+            
             case 3:
                 $dom = new DOMDocument;  //Check if works
                 $dom->loadHTML($str);
@@ -316,6 +319,7 @@ class bondora extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
+                
             case 4:
                 $dom = new DOMDocument;  //Check if works
                 $dom->loadHTML($str);
@@ -342,40 +346,69 @@ class bondora extends p2pCompany {
                         break;
                     }
                 }
-                      
+
+
                 if (empty($this->downloadDeleteUrl)) {
                     $this->tempUrl['baseDownloadDelete'] = array_shift($this->urlSequence);
                 }
-                
-                print_r($this->tempUrl) ;   
-                
+
+                print_r($this->tempUrl);
+
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, null, false, null, 'BondoraInvestment');
                 break;
+                
             case 5:
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadCashFlow'];
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, null, false, null, 'BondoraCashFlow');
                 break;
+            
             case 6:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            
+            case 7:
+
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $scripts = $dom->getElementsByTagName('script');
+                foreach ($scripts as $script) {
+                    echo "search scripts: " . SHELL_ENDOFLINE;
+                    echo $script->nodeValue;
+                    if (strpos($script->nodeValue, "RequestVerificationToken") != false) {
+                        echo 'Finded: ';
+                        $deleteTokenArray = explode('"', $script->nodeValue);
+                        $this->print_r2($deleteTokenArray);
+                        $deleteToken = $deleteTokenArray[7];
+                    }
+                }
+
+                
+                
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvesment'];
                 echo "delete: " . $url;
                 $this->idForSwitch++;
+                $this->headers = array("__RequestVerificationToken: " . $deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Referer: https://www.bondora.com/en/reports', 'Connection: keep-alive');
                 $this->getCompanyWebpageMultiCurl($url);
+                unset($this->headers);
                 break;
-            case 7:
+                                                                       
+            case 8:
                 echo $str;
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteCashFlow'];
                 $this->idForSwitch++;
+                $this->headers = array("__RequestVerificationToken: " . $deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Referer: https://www.bondora.com/en/reports', 'Connection: keep-alive');
                 $this->getCompanyWebpageMultiCurl($url);
+                unset($this->headers);
                 break;
             
-            
-            
-            
-            
-            case 8:
+            case 9:
+                echo $str;
                 return $tempArray = 'DEscargando fichero';
                 break;
         }
