@@ -49,12 +49,8 @@
  * Structure Revision added
  * Status definition added
  * 
-
-  PENDING:
-  Install dependencies of casperjs and phantomjs
-
  */
-//require_once "../../vendors/autoload.php";
+
 use Browser\Casper;
 
 class colectual extends p2pCompany {
@@ -105,25 +101,19 @@ class colectual extends p2pCompany {
         $username = $this->config['company_username'];
         $password = $this->config['company_password'];
         $totalArray = array();
-        //echo __FUNCTION__ . __LINE__ . " MARKETPLACE<br>";
-        $casper = new Casper();
-        //First we must go to https://app.colectual.com/#/endSession to end session if previously is opened
-        $casper->setOptions([
-            'ignore-ssl-errors' => 'yes'
-        ]);
-        // navigate to login web page
-        $casper->start($url[0]);
-        // or wait for selector
-        $casper->waitForSelector('form[name="loginForm"]', 5000);
-        $casper->fillForm(
-                'form[name="loginForm"]', array(
+        
+        $this->casperInit($url[0]);
+        $this->casperWaitSelector('form[name="loginForm"]', 5000);
+        $fillFormArray = array(
             'UserName' => $username,
             'Password' => $password
-                ), false);
-        $casper->click('.md-btn');
+                );
+        $this->casperFillForm('form[name="loginForm"]', $fillFormArray);
+        $this->casperClick('.md-btn');
         
         
-
+        //function to add a script because casperjs dont give all the options to make it versatile
+        
         $casper->addToScript(<<<FRAGMENT
 casper.waitUntilVisible(".step-instructions", function() {
 			casper.thenOpen('$url[1]');
@@ -134,7 +124,13 @@ FRAGMENT
         // or wait for selector
         $casper->waitForSelector('.proyecto', 5000);
         // run the casper script
+        
+        //function to run the script
+        
         $casper->run();
+        
+        //function to get the current page content (str)
+        
         $str = $casper->getCurrentPageContent();
         //echo $str;
         //($casper->getOutput());
@@ -145,6 +141,8 @@ FRAGMENT
         ]);
         // navigate to make logout
         $casper_logout->start($url[2]);
+        
+        //function to wait without selector
         $casper_logout->wait(2000);
         $casper_logout->run();
         echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";

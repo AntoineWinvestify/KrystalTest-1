@@ -150,6 +150,9 @@ class p2pCompany {
     protected $companyName;
     protected $userReference;
     protected $linkAccountId;
+    //Variables for casperjs
+    protected $casperObject;
+    
 
     /**
      *
@@ -2634,8 +2637,34 @@ class p2pCompany {
         return ;
     }    
     
+    public function casperInit($url) {
+        $this->casperObjectr = new Casper();
+        $this->casperObjectr->setOptions([
+            'ignore-ssl-errors' => 'yes'
+        ]);
+        // navigate to login web page
+        $this->casperObjectr->start($url);
+    }
     
+    public function casperWaitSelector($element, $time) {
+        $this->casperObject->waitForSelector($element, $time);
+    }
     
+    public function casperFillForm ($element, $fillFormArray, $submit = false) {
+        $this->casper->fillForm(
+                $element, $fillFormArray, $submit);
+    }
+    
+    public function casperClick ($element) {
+        $this->casper->click($element);
+    }
+    
+    public function casperAddFragment($fragment) {
+        $this->casper->addToScript(<<<FRAGMENT
+$fragment
+FRAGMENT
+        );
+    }
     
     
     
