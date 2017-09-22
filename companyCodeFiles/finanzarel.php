@@ -238,7 +238,7 @@ class finanzarel extends p2pCompany {
                 echo "HOLaaaaaaaaaaaa " . $referer;
                 echo "\n";
                 
-                $credentials = array_shift($this->urlSequence);
+                //$credentials = array_shift($this->urlSequence);
                 $credentialsFile = array(
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
                         'p_flow_step_id' => 1, 
@@ -257,7 +257,7 @@ class finanzarel extends p2pCompany {
                 //https://chrismckee.co.uk/curl-http-417-expectation-failed/
                 //https://stackoverflow.com/questions/3755786/php-curl-post-request-and-error-417
                 $headers = array('Expect:');
-                array_shift($this->urlSequence);
+                //array_shift($this->urlSequence);
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
                 break; 
