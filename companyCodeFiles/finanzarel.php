@@ -29,6 +29,7 @@ class finanzarel extends p2pCompany {
 
     protected $pInstanceGlobal = '';
     protected $credentialsGlobal = array();
+    protected $requestFiles = array();
     
     function __construct() {
         parent::__construct();
@@ -211,32 +212,23 @@ class finanzarel extends p2pCompany {
                 }
                 echo 'Login ok';
                 
-                //Get credentials to download the file
-                $inputs = $dom->getElementsByTagName('input');
-                foreach ($inputs as $input) {
-                    $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
-                }
-                //print_r($credentials);
                 //Get the request to download the file
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $key => $a) {
                     //echo $key . " => " . $a->getAttribute('href') . "   " . $a->nodeValue .  HTML_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Descargar en csv') {
-                        $request[] = explode("'", $a->getAttribute('href'))[1];
+                        $this->request[] = explode("'", $a->getAttribute('href'))[1];
                         
                     }
                 }
                 
                 $url =  array_shift($this->urlSequence);
-                echo "The url is " . $url . "\n";
+                //echo "The url is " . $url . "\n";
                 $referer = array_shift($this->urlSequence);
                 $referer = strtr($referer, array(
                     '{$p_flow_step_id}' => 1,
                     '{$p_instance}' => $this->credentialsGlobal['p_instance']
                         ));
-                
-                echo "HOLaaaaaaaaaaaa " . $referer;
-                echo "\n";
                 
                 //$credentials = array_shift($this->urlSequence);
                 $credentialsFile = array(
@@ -244,11 +236,9 @@ class finanzarel extends p2pCompany {
                         'p_flow_step_id' => 1, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $request[0]);
-                echo "HOLaaaaaaaaaaaa2 ";
-                echo "\n";
+                        'p_request' => $this->request[0]);
                 print_r($credentialsFile);
-                $fileName = 'Investment';
+                $fileName = 'Investment_1';
                 //$fileType = 'csv';
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:{$credential_p_flow_step_id}:{$credential_p_instance}';
@@ -262,6 +252,127 @@ class finanzarel extends p2pCompany {
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
                 break; 
             case 4:
+                $url =  array_shift($this->urlSequence);
+                $referer = array_shift($this->urlSequence);
+                $referer = strtr($referer, array(
+                            '{$p_flow_step_id}' => 1,
+                            '{$p_instance}' => $this->credentialsGlobal['p_instance']
+                        ));
+                //$credentials = array_shift($this->urlSequence);
+                $credentialsFile = array(
+                        'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
+                        'p_flow_step_id' => 1, 
+                        'p_instance' => $this->credentialsGlobal['p_instance'],  
+                        'p_debug' => '',
+                        'p_request' => $this->request[1]);
+                $fileName = 'Investment_2';
+                $headers = array('Expect:');
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
+                break;
+            case 5:
+                $url = array_shift($this->urlSequence);
+                //echo $url . HTML_ENDOFLINE;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
+                break;
+            case 6:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $buttons = $this->getElementsByClass($dom, "a-IRR-button");
+                foreach ($buttons as $button) {
+                    $id = $button->getAttributeNode("id")->nodeValue;
+                    echo "El id es $id \n";
+                    $pos = stripos($id, "actions_button");
+                    if ($pos !== false) {
+                        echo "cashflow $id";
+                        $credentialCashflows = explode("_", $id);
+                        $credentialCashflow = $credentialCashflows[0];
+                        echo "Found cashflow $credentialCashflow";
+                        break;
+                    }
+                        
+                }
+                
+                $inputs = $this->getElements($dom, "input");
+                
+                foreach ($inputs as $input) {
+                    $id = $input->getAttributeNode("id")->nodeValue;
+                    echo "El id es $id \n";
+                    $pos = stripos($id, "worksheet_id");
+                    if ($pos !== false) {
+                        echo "worksheet $id \n";
+                        $x1s = explode("_", $id);
+                        $x1 = $x1s[0];
+                        echo "Found cashflow $x1";
+                    }
+                    $pos = stripos($id, "report_id");
+                    if ($pos !== false) {
+                        //GET THE NODE VALUE
+                        echo "worksheet $id \n";
+                        $x2s = explode("_", $id);
+                        $x2 = $x2s[0];
+                        echo "Found cashflow $x2";
+                        break;
+                    }
+                }
+                
+                echo "The worksheet id is $x1 and $x2 \n";
+                // get ONLY the <script> nodes that dont have the src attribute
+                $xpath = new DOMXPath($dom);
+                $script_tags = $xpath->query('//body//script[not(@src)]');
+                
+                foreach ($script_tags as $script_tag) {
+                    $value = $script_tag->nodeValue;
+                    $pos = stripos($value, "LEGACY");
+                    if ($pos !== false) {
+                        echo "Found LEGACY";
+                        $posInit = stripos($value, ":", $pos);
+                        $posFinal = stripos($value, "}", $pos);
+                        $request = substr($value, $posInit+2, $posFinal - $posInit -3);
+                        echo "The request is : " . $request . "\n";
+                    }
+                }
+                
+                $credentials = array(
+                        'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
+                        'p_flow_step_id' => 11, 
+                        'p_instance' => $this->credentialsGlobal['p_instance'],  
+                        'p_debug' => '',
+                        'p_request' => $this->request[1],
+                        'p_widget_name' => 'worksheet',
+                        'p_widget_mod' => 'PULL',
+                        'p_widget_action'=> '',
+                        'p_widget_num_return' => 100000,
+                        'x01' => $worksheetId,
+                        'x02' => $reportId,
+                        'f01' => $credentialCashflow . '_column_search_current_column',
+                        'f01' => $credentialCashflow . '_search_field',
+                        'f01' => $credentialCashflow . '_row_select',
+                        'f02' => '',
+                        'f02' => '21/09/17',
+                        'f02' => '100000'
+                        );
+                $url = array_shift($this->urlSequence);
+                echo "The url of last is : ".$url;
+                $url = strtr($url, array(
+                            '{$p_instance}' => $this->credentialsGlobal['p_instance'],
+                            '{$credentialCashflow}' => $credentialCashflow
+                        ));
+                echo "now the url is " . $url;
+                $referer = array_shift($this->urlSequence);
+                $referer = strtr($referer, array(
+                            '{$p_flow_step_id}' => 11,
+                            '{$p_instance}' => $this->credentialsGlobal['p_instance']
+                        ));
+                $headers = array('Expect:');
+                $fileName = "cashflow_1";
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
+                break;
+            case 7:
                 return $tempArray["global"] = "waiting_for_global";
                 /*
                 echo "case 4!!!!!!!";
@@ -360,6 +471,10 @@ class finanzarel extends p2pCompany {
 
         $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
         echo 'Downloaded';
+    }
+    
+    public function companyUserLogout($url) {
+        
     }
 
 }
