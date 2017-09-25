@@ -2642,7 +2642,10 @@ class p2pCompany {
      * Function to start the casper object
      * @param string $url It is the url where casper open initially
      */
-    public function casperInit($url) {
+    public function casperInit($url = null) {
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
+        }
         $this->casperObject = new Casper();
         $this->casperObject->setOptions([
             'ignore-ssl-errors' => 'yes'
