@@ -544,7 +544,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpage($url, $credentials = null) {
+    function getCompanyWebpage($url = null, $credentials = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -1030,7 +1030,7 @@ class p2pCompany {
      * 	$list is empty if no match was found
      *
      */
-    public function getElements($dom, $tag, $attribute, $value) {
+    public function getElements($dom, $tag, $attribute = null, $value = null) {
 
         $list = array();
 
