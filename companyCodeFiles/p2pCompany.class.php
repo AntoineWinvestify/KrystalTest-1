@@ -1865,7 +1865,7 @@ class p2pCompany {
             echo "Cannot create folder \n";
             //We should implement a method to fail
         }
-        $date = date("Ymd");
+        
         $output_filename = $fileName . '.' . $this->fileType;
         $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
         if (!$this->fp) {
