@@ -81,6 +81,7 @@ require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'Reader' . DS . 'IReadFilterWinvestify.php'));
+use Browser\Casper;
 
 //require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
 class p2pCompany {
@@ -2637,33 +2638,87 @@ class p2pCompany {
         return ;
     }    
     
+    /**
+     * Function to start the casper object
+     * @param string $url It is the url where casper open initially
+     */
     public function casperInit($url) {
-        $this->casperObjectr = new Casper();
-        $this->casperObjectr->setOptions([
+        $this->casperObject = new Casper();
+        $this->casperObject->setOptions([
             'ignore-ssl-errors' => 'yes'
         ]);
         // navigate to login web page
-        $this->casperObjectr->start($url);
+        $this->casperObject->start($url);
     }
     
+    /**
+     * Function to wait for an element to appear for a determined time when open a url 
+     * @param string $element It is the element to wait for
+     * @param integer $time It is the time we wait for the element to appear in microseconds   
+     */
     public function casperWaitSelector($element, $time) {
         $this->casperObject->waitForSelector($element, $time);
     }
     
+    /**
+     * Function to fill a form
+     * @param string $element It is the form element
+     * @param array $fillFormArray They are all the elements which needed to be filled
+     * @param boolean $submit If it's true, the form is filled and submitted
+     */
     public function casperFillForm ($element, $fillFormArray, $submit = false) {
-        $this->casper->fillForm(
+        $this->casperObject->fillForm(
                 $element, $fillFormArray, $submit);
     }
     
+    /**
+     * Function to click an element
+     * @param string $element It is the element to click
+     */
     public function casperClick ($element) {
-        $this->casper->click($element);
+        $this->casperObject->click($element);
     }
     
+    /**
+     * Function to insert a fragment with casperjs code when the wrapper do not give options to accomplish our way in
+     * @param FRAGMENT $fragment It is the casperjs code inside a FRAGMENT code
+     */
     public function casperAddFragment($fragment) {
-        $this->casper->addToScript(<<<FRAGMENT
+        $this->casperObject->addToScript(<<<FRAGMENT
 $fragment
 FRAGMENT
         );
+    }
+    
+    /**
+     * Function to wait for a determined amount of time
+     * @param integer $time It is the time we wait in microseconds 
+     */
+    public function casperWait($time) {
+        $this->casperObject->wait($time);
+    }
+    
+    /**
+     * Function to run the code we wrote
+     */
+    public function casperRun() {
+        $this->casperObject->run();
+    }
+    
+    /**
+     * Function to return the content of the webpage on that moment
+     * @return string It is the content of the url at the moment we call the function
+     */
+    public function casperGetContent() {
+        return $this->casperObject->getCurrentPageContent();
+    }
+    
+    public function casperDownloadFile() {
+        //Needed to read documentation
+        //https://stackoverflow.com/questions/32697172/download-csv-after-clicking-link-using-casperjs
+        //https://stackoverflow.com/questions/35037313/casperjs-download-and-save-file-to-specific-location
+        //https://stackoverflow.com/questions/16144252/downloading-a-file-that-comes-as-an-attachment-in-a-post-request-response-in-pha/31124037#31124037
+        //http://docs.casperjs.org/en/latest/modules/casper.html#download
     }
     
     
