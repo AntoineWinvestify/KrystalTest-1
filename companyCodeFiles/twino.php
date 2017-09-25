@@ -303,7 +303,6 @@ class twino extends p2pCompany {
                 $credentialsFile = strtr($credentialsFile, array('{$date1}' => $date1)); //date must be [year,month.day]
                 $credentialsFile = strtr($credentialsFile, array('{$date2}' => $date2));
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
             case 7:
