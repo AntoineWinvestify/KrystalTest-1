@@ -113,7 +113,7 @@ class bondora extends p2pCompany {
                 $inputs = $dom->getElementsByTagName('input');
 
                 foreach ($inputs as $key => $input) {
-                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . SHELL_ENDOFLINE;
                     if ($key == 0) {
                         continue;
                     }
@@ -128,7 +128,7 @@ class bondora extends p2pCompany {
                 $this->doCompanyLoginMultiCurl($credentials); //do login
                 break;
             case 2:
-                echo 'Doing loging' . HTML_ENDOFLINE;
+                echo 'Doing loging' . SHELL_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
@@ -142,9 +142,9 @@ class bondora extends p2pCompany {
 
                 $spans = $dom->getElementsByTagName('span');
                 foreach ($spans as $span) {
-                    echo $span->nodeValue . HTML_ENDOFLINE;
+                    echo $span->nodeValue . SHELL_ENDOFLINE;
                     if (trim($span->nodeValue) == 'Account value') {
-                        echo 'Login ok' . HTML_ENDOFLINE;
+                        echo 'Login ok' . SHELL_ENDOFLINE;
                         $confirm = true;
                         break;
                     }
@@ -240,7 +240,7 @@ class bondora extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl(null, $credentials);
                 break;
             case 5:
-                echo $str;
+                echo $str . SHELL_ENDOFLINE;
                 return $tempArray = 'Generando informe';
                 break;
         }
@@ -266,7 +266,7 @@ class bondora extends p2pCompany {
                 $inputs = $dom->getElementsByTagName('input');
 
                 foreach ($inputs as $key => $input) {
-                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . HTML_ENDOFLINE;
+                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . SHELL_ENDOFLINE;
                     if ($key == 0) {
                         continue;
                     }
@@ -282,7 +282,7 @@ class bondora extends p2pCompany {
                 break;
                 
             case 2:
-                echo 'Doing loging' . HTML_ENDOFLINE;
+                echo 'Doing loging' . SHELL_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
@@ -297,9 +297,9 @@ class bondora extends p2pCompany {
 
                 $spans = $dom->getElementsByTagName('span');
                 foreach ($spans as $span) {
-                    echo $span->nodeValue . HTML_ENDOFLINE;
+                    echo $span->nodeValue . SHELL_ENDOFLINE;
                     if (trim($span->nodeValue) == 'Account value') {
-                        echo 'Login ok' . HTML_ENDOFLINE;
+                        echo 'Login ok' . SHELL_ENDOFLINE;
                         $confirm = true;
                         break;
                     }
@@ -329,7 +329,7 @@ class bondora extends p2pCompany {
                 $date1 = "14/09/2017";
                 $date2 = "20/09/2017";
                 foreach ($trs as $tr) {
-                    echo $tr->nodeValue . HTML_ENDOFLINE;
+                    echo $tr->nodeValue . SHELL_ENDOFLINESHELL_ENDOFLINE;
                     if (strpos($tr->nodeValue, "Investments list") && strpos($tr->nodeValue, $date1) && strpos($tr->nodeValue, $date2)) {
                         $urls = $tr->getElementsByTagName('a');
                         $this->tempUrl['downloadInvesment'] = $urls[0]->getAttribute('href');
@@ -338,7 +338,7 @@ class bondora extends p2pCompany {
                     }
                 }
                 foreach ($trs as $tr) {
-                    echo $tr->nodeValue . HTML_ENDOFLINE;
+                    echo $tr->nodeValue . SHELL_ENDOFLINE;
                     if (strpos($tr->nodeValue, "Account statement") && strpos($tr->nodeValue, $date1) && strpos($tr->nodeValue, $date2)) {
                         $urls = $tr->getElementsByTagName('a');
                         $this->tempUrl['downloadCashFlow'] = $urls[0]->getAttribute('href');
@@ -379,9 +379,9 @@ class bondora extends p2pCompany {
                 $scripts = $dom->getElementsByTagName('script');
                 foreach ($scripts as $script) {
                     echo "search scripts: " . SHELL_ENDOFLINE;
-                    echo $script->nodeValue;
+                    echo $script->nodeValue . SHELL_ENDOFLINE;
                     if (strpos($script->nodeValue, "RequestVerificationToken") != false) {
-                        echo 'Finded: ';
+                        echo 'Finded: ' . SHELL_ENDOFLINE;
                         $deleteTokenArray = explode('"', $script->nodeValue);
                         $this->print_r2($deleteTokenArray);
                         $deleteToken = $deleteTokenArray[7];
@@ -391,15 +391,15 @@ class bondora extends p2pCompany {
                 
                 
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvesment'];
-                echo "delete: " . $url;
+                echo "delete: " . $url . SHELL_ENDOFLINE;
                 $this->idForSwitch++;
-                $this->headers = array("__RequestVerificationToken: " . $deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Referer: https://www.bondora.com/en/reports', 'Connection: keep-alive');
+                $this->headers = array("__RequestVerificationToken: " . $deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: *', 'X-Requested-With: XMLHttpRequest', 'Referer: https://www.bondora.com/en/reports', 'Connection: keep-alive');
                 $this->getCompanyWebpageMultiCurl($url);
                 unset($this->headers);
                 break;
                                                                        
             case 8:
-                echo $str;
+                echo $str . SHELL_ENDOFLINE;
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteCashFlow'];
                 $this->idForSwitch++;
                 $this->headers = array("__RequestVerificationToken: " . $deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Referer: https://www.bondora.com/en/reports', 'Connection: keep-alive');
@@ -408,7 +408,7 @@ class bondora extends p2pCompany {
                 break;
             
             case 9:
-                echo $str;
+                echo $str . SHELL_ENDOFLINE;
                 return $tempArray = 'DEscargando fichero';
                 break;
         }

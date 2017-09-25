@@ -114,21 +114,22 @@ class zank extends p2pCompany {
      * @param Array $structure
      * @return array
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) {
+    function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
         $reading = true; //Loop controller
+        echo "Username: " . $this->config['company_username'] . " Password: " . $this->config['company_password'];
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
         // echo __FUNCTION__ . __LINE__ . "<br>";
 //set_time_limit(25);		// Zank is very very slow
-        //echo $result;
-
+        //echo $result; 
+        $this->investmentDeletedList = $loanIdList;
         if (!$result) {   // Error while logging in
-            echo __FUNCTION__ . __LINE__ . "login fail" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $tracings = "Tracing: " . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $tracings .= __FILE__ . " " . __LINE__ . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $tracings .= HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $msg = "Error while entering user's portal. Wrong userid/password" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
-            $msg = $msg . $tracings . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+            echo __FUNCTION__ . __LINE__ . "login fail" . SHELL_ENDOFLINE;
+            $tracings = "Tracing: " . SHELL_ENDOFLINE;
+            $tracings .= __FILE__ . " " . __LINE__ . SHELL_ENDOFLINE;
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . SHELL_ENDOFLINE;
+            $tracings .= SHELL_ENDOFLINE;
+            $msg = "Error while entering user's portal. Wrong userid/password" . SHELL_ENDOFLINE;
+            $msg = $msg . $tracings . SHELL_ENDOFLINE;
             $this->logToFile("Warning", $msg);
             exit;
         }
@@ -146,7 +147,7 @@ class zank extends p2pCompany {
         while ($reading) {
             $reading = false;
             //echo __FUNCTION__ . __LINE__ . "start with first read<br>";
-            $str = $this->getCompanyWebpageJson($url, $form);
+            $str = $this->getCompanyWebpage($url, $form);
 
 
 //print_r($str);
@@ -312,7 +313,7 @@ class zank extends p2pCompany {
                 if ($inversionReadController == 1) {
                     //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $readControl++;
-                    echo 'Advance:' . $readControl . HTML_ENDOFLINE;
+                    echo 'Advance:' . $readControl . SHELL_ENDOFLINE;
                 } 
                 if ($readControl > 20) {
                     echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
@@ -320,8 +321,10 @@ class zank extends p2pCompany {
                     echo 'Break';
                     break;
                 } else {
-                    // echo 'Add:<br>';
+                    // echo 'Add:<br>';  
+                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);                       
                     array_push($totalArray, $tempArray);
+                    unset($tempArray);
                     /* echo 'Total<br>';
                       $this->print_r2($totalArray);
                       echo 'Added : <br>';
@@ -331,13 +334,87 @@ class zank extends p2pCompany {
             }
         }
 
-        $this->print_r2($totalArray);
+        echo 'Search this investments: ' . SHELL_ENDOFLINE;
+        $this->print_r2($this->investmentDeletedList); 
+        $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
+        echo 'Hidden: ' . SHELL_ENDOFLINE;
+        $this->print_r2($hiddenInvestments);
+
         $this->companyUserLogout();
+        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        //$this->print_r2($totalArray);  
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
+    
+     /**Read hidden investment.
+     * 
+     * @param array $investmentDeletedList loan id list
+     * @return array investments info list
+     */
+    function readHiddenInvestment ($investmentDeletedList){
+        
+        $url = array_shift($this->urlSequence);
+        
+        $tempArray = array();
+        $newTotalArray = array();
+        //Read investment info
+        foreach($investmentDeletedList as $loanId) {
+            echo 'loan id: ' .  substr($loanId,3) . SHELL_ENDOFLINE;
+            echo $url . substr($loanId,3) . SHELL_ENDOFLINE;
+            $str = $this->getCompanyWebpage($url . substr($loanId,3));
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = false;
+            $dom->loadHTML($str);
+   
+            $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');                   
+            foreach($container as $div){               
+                $subdivs = $div->getElementsByTagName('div');
+               /*foreach($subdivs as $subkey => $subdiv){
+                    echo 'Div: ' . HTML_ENDOFLINE;
+                    echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
+                }*/             
+                    $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
+                    $tempArray['marketplace_loanReference'] = $loanId;
+                    //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
+                    $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
+                    $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
+                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
+                    $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
+                    $status = $tempArray['marketplace_statusLiteral'];
+                    if($status == 'Completado'){   
+                        $tempArray['marketplace_status'] = PERCENT;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;
+                    }else if($status == 'Amortizado' || $status == 'Retrasado' ){
+                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000; 
+                    } else if(strpos($status, 'mortiza') != false){
+                        $tempArray['marketplace_status'] = CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;       
+                    }else if($status == 'Publicado'){   
+                        $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;     
+                    }                
+                    
+                    $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
+                    $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
+                    
+                    echo  $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
+                    $tds =  $subdivs[126]->getElementsByTagName('td');
+                    $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+            }
+            echo 'Hidden investment: ' . SHELL_ENDOFLINE;
+            echo print_r($tempArray) . SHELL_ENDOFLINE;
+            $newTotalArray[] = $tempArray;
+            unset($tempArray);
+        }
+        /*echo 'return new array: ' . HTML_ENDOFLINE;
+        print_r($newTotalArray);*/
+        return $newTotalArray;
+    }
+    
+    
 
     /**
      * collect all investment
@@ -377,7 +454,7 @@ class zank extends p2pCompany {
             "start" => $start, //First investment of the page
         ];
 
-        $str = $this->getCompanyWebpageJson($url, $form); //Data reading
+        $str = $this->getCompanyWebpage($url, $form); //Data reading
 
         $totalArray = array();
         $pos1 = stripos($str, '[');
@@ -687,7 +764,7 @@ class zank extends p2pCompany {
 
                 $this->idForSwitch++;
                 //Add here the Edu's adaption to the url, we add the form into the call
-                $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
+                $this->getCompanyWebpageMultiCurl($this->url, $form);
                 break;
             case 6:
                 $temp = json_decode($str, $assoc = true);
@@ -763,7 +840,7 @@ class zank extends p2pCompany {
 
                     $this->idForSwitch = 6;
                     //Add here the Edu's adaption to the url
-                    $this->getCompanyWebpageJsonMultiCurl($this->url, $form);
+                    $this->getCompanyWebpageMultiCurl($this->url, $form);
                 } else {
                     $this->data1 = array_values($this->data1);
                     $this->tempArray['global']['investments'] = count($this->data1);
@@ -886,7 +963,7 @@ class zank extends p2pCompany {
         //This value is 100 to enter in the while but when we are inside we change to the real number of investments
         $numberJsonInvestments = 100;
         while ($numberJsonInvestments % 100 == 0) {
-            $str = $this->getCompanyWebpageJson($url, $form);
+            $str = $this->getCompanyWebpage($url, $form);
             $temp = json_decode($str, $assoc = true);
             //We take the real number of investments
             $numberJsonInvestments = count($temp['data']);
@@ -1037,197 +1114,6 @@ class zank extends p2pCompany {
         //$str = $this->doCompanyLogout();
         $this->getCompanyWebpage();
         return true;
-    }
-
-    /**
-     * Function that is used to pick up inversions by 100 instead of 25 with a json
-     * The normal function of Zank is to give 25 but we change the petition with the posts item
-     * with curl
-     * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
-     * @return string $str It is the website resulted of the curl petition
-     */
-    function getCompanyWebpageJson($url, $form) {
-
-        if (empty($url)) {
-            $url = array_shift($this->urlSequence);
-        }
-
-        if (!empty($this->testConfig['active']) == true) {    // test system active, so read input from prepared files
-            if (!empty($this->testConfig['siteReadings'])) {
-                $currentScreen = array_shift($this->testConfig['siteReadings']);
-                echo "currentScreen = $currentScreen";
-                $str = file_get_contents($currentScreen);
-
-                if ($str === false) {
-                    echo "cannot find file<br>";
-                    exit;
-                }
-                echo "TestSystem: file = $currentScreen<br>";
-                return $str;
-            }
-        }
-
-        $curl = curl_init();
-
-        if (!$curl) {
-            $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
-            $msg = $msg . " \n";
-            $this->logToFile("Warning", $msg);
-            exit;
-        }
-
-        if ($this->config['postMessage'] == true) {
-            curl_setopt($curl, CURLOPT_POST, true);
-//    echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
-        }
-
-// check if extra headers have to be added to the http message  
-        if (!empty($this->headers)) {
-            echo "EXTRA HEADERS TO BE ADDED<br>";
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-            unset($this->headers);      // reset fields
-        }
-
-        foreach ($form as $key => $value) {
-            $postItems[] = $key . '=' . $value;
-        }
-        $postString = implode('&', $postItems);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
-
-
-        // Set the file URL to fetch through cURL
-        curl_setopt($curl, CURLOPT_URL, $url);
-
-        // Set a different user agent string (Googlebot)
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
-
-        // Follow redirects, if any
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-
-        // Fail the cURL request if response code = 400 (like 404 errors) 
-        curl_setopt($curl, CURLOPT_FAILONERROR, true);
-
-        // Return the actual result of the curl result instead of success code
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-        // Wait for 10 seconds to connect, set 0 to wait indefinitely
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
-
-        // Execute the cURL request for a maximum of 50 seconds
-        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
-
-        // Do not check the SSL certificates
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-        $result = curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name);   // important
-        $result = curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name);    // Important
-        // Fetch the URL and save the content
-        $str = curl_exec($curl);
-        if (!empty($this->testConfig['active']) == true) {
-            print_r(curl_getinfo($curl));
-            echo "<br>";
-            print_r(curl_error($curl));
-            echo "<br>";
-        }
-
-        if ($this->config['appDebug'] == true) {
-            echo "VISITED COMPANY URL = $url <br>";
-        }
-        if ($this->config['tracingActive'] == true) {
-            $this->doTracing($this->config['traceID'], "WEBPAGE", $str);
-        }
-        return $str;
-    }
-
-    /**
-     * Function that is used to pick up inversions by 100 instead of 25 with a json
-     * The normal function of Zank is to give 25 but we change the petition with the posts item
-     * with curl
-     * @param string $url It is the url of the company, if it's empty we take the url from $urlSquence
-     * @return string $str It is the website resulted of the curl petition
-     */
-    function getCompanyWebpageJsonMultiCurl($url, $form) {
-
-        if (empty($url)) {
-            $url = array_shift($this->urlSequence);
-        }
-        $this->errorInfo = $url;
-        if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
-            if (!empty($this->testConfig['siteReadings'])) {
-                $currentScreen = array_shift($this->testConfig['siteReadings']);
-                echo "currentScreen = $currentScreen";
-                $str = file_get_contents($currentScreen);
-
-                if ($str === false) {
-                    echo "cannot find file<br>";
-                    exit;
-                }
-                echo "TestSystem: file = $currentScreen<br>";
-                return $str;
-            }
-        }
-
-        $request = new \cURL\Request();
-
-        if ($this->config['postMessage'] == true) {
-            $request->getOptions()
-                    ->set(CURLOPT_POST, true);
-            //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
-        }
-
-        // check if extra headers have to be added to the http message  
-        if (!empty($this->headers)) {
-            echo "EXTRA HEADERS TO BE ADDED<br>";
-            $request->getOptions()
-                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
-                    ->set(CURLOPT_HTTPHEADER, $this->headers);
-
-            unset($this->headers);   // reset fields
-        }
-
-        foreach ($form as $key => $value) {
-            $postItems[] = $key . '=' . $value;
-        }
-        $postString = implode('&', $postItems);
-
-        //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
-        $info = [
-            "companyIdForQueue" => $this->idForQueue,
-            "idForSwitch" => $this->idForSwitch,
-            "typeOfRequest" => "JSON_ZANK"
-        ];
-        
-        $request->_page = json_encode($info);
-        $request->getOptions()
-                // Set the file URL to fetch through cURL
-                ->set(CURLOPT_URL, $url)
-                // Set a different user agent string (Googlebot)
-                ->set(CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
-                // Follow redirects, if any
-                ->set(CURLOPT_FOLLOWLOCATION, true)
-                ->set(CURLOPT_POSTFIELDS, $postString)
-                // Fail the cURL request if response code = 400 (like 404 errors) 
-                ->set(CURLOPT_FAILONERROR, true)
-                ->set(CURLOPT_AUTOREFERER, true)
-                //->set(CURLOPT_VERBOSE, 1)
-                // Return the actual result of the curl result instead of success code
-                ->set(CURLOPT_RETURNTRANSFER, true)
-                // Wait for 10 seconds to connect, set 0 to wait indefinitely
-                ->set(CURLOPT_CONNECTTIMEOUT, 30)
-                // Execute the cURL request for a maximum of 50 seconds
-                ->set(CURLOPT_TIMEOUT, 100)
-                // Do not check the SSL certificates
-                ->set(CURLOPT_SSL_VERIFYHOST, false)
-                ->set(CURLOPT_SSL_VERIFYPEER, false)
-                ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
-                ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-        //Add the request to the queue in the marketplaces controller
-        $this->classContainer->addRequestToQueueCurls($request);
-
-        if ($this->config['appDebug'] == true) {
-            echo "VISITED COMPANY URL = $url <br>";
-        }
     }
 
     /**

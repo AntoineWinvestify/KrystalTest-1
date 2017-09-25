@@ -55,19 +55,19 @@ class CollectDataWorkerShell extends AppShell {
         while( $this->GearmanWorker->work() );
     }
     
-    /*$data["companies"] = $linkedaccountsByType;
-    $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
-    $data["queue_id"] = $resultQueue[$key]['Queue']['id'];*/
-    
     /**
      * Function to initiate the process to save the files of a company
      * @param object $job It is the object of Gearmanjob that contains
-     * companies It is the id of the company;
-     * queue_userReference It is the userReference
-     * queue_id It is the id of the queue
+     * The $job->workload() function read the input data as sent by the Gearman client
+     * This is json_encoded data with the following structure:
+     *      $data["companies"]                  array It contains all the linkedaccount information
+     *      $data["queue_userReference"]        string It is the user reference
+     *      $data["queue_id"]                   integer It is the queue id
+     * @return string The variable must be in string because of Gearman but it is really a boolean 1 or 0
      */
     public function getDataMulticurlFiles($job) {
         $data = json_decode($job->workload(),true);
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
         print_r($data);
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
@@ -145,13 +145,13 @@ class CollectDataWorkerShell extends AppShell {
                $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
                $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info]->getUrlSequenceBackup());  // provide all URLs for this sequence
                $this->newComp[$info["companyIdForQueue"]]->setTries(1);
-               //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
-               //$this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
+               $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+               $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
                $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
            } 
            else if ($info["typeOfRequest"] == "LOGOUT") {
                echo "LOGOUT FINISHED <br>";
-               //$this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+               $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
            } 
            else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
                if (!empty($error)) {
@@ -170,8 +170,15 @@ class CollectDataWorkerShell extends AppShell {
            $this->queueCurls->socketSelect();
        }
        
-       return "ok";
-        exit();
+       $lengthTempArray = count($this->tempArray);
+       $statusCollect = "1";
+       for ($i = 0; $i < $lengthTempArray; $i++) {
+           if (!empty($this->tempArray[$i]['global']['error'])) {
+               $statusCollect = "0";
+           }
+       }
+       
+       return $statusCollect;
     }
     
     public function getDataCasperFiles($job) {
@@ -323,7 +330,7 @@ class CollectDataWorkerShell extends AppShell {
         echo "MICROTIME_START = " . microtime() . "<br>";
         //We start at the same time the queue on every company
         foreach ($data["companies"] as $linkedaccount) {
-            $this->newComp[$companyNumber]->UserInvestmentDataParallel();
+            $this->newComp[$companyNumber]->collectUserInvestmentDataParallel();
             $companyNumber++;
         }
 
