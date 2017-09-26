@@ -1840,16 +1840,16 @@ class p2pCompany {
             $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
-        if ($referer != false && empty($referer)) {
+        if ($referer !== false && empty($referer)) {
             $referer = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
-        if ($credentials != false && empty($credentials)) {
+        if ($credentials !== false && empty($credentials)) {
             $credentials = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
         
-        if ($headers != false && empty($headers)) {
+        if ($headers !== false && empty($headers)) {
             $headers = array_shift($this->urlSequence);
         }
 
