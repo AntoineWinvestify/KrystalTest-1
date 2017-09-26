@@ -276,7 +276,7 @@ class finanzarel extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
                 break;
-            case 6:
+            /*case 6:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
@@ -284,13 +284,13 @@ class finanzarel extends p2pCompany {
                 $buttons = $this->getElementsByClass($dom, "a-IRR-button");
                 foreach ($buttons as $button) {
                     $id = $button->getAttributeNode("id")->nodeValue;
-                    echo "El id es $id \n";
+                    //echo "El id es $id \n";
                     $pos = stripos($id, "actions_button");
                     if ($pos !== false) {
                         echo "cashflow $id";
                         $credentialCashflows = explode("_", $id);
-                        $credentialCashflow = $credentialCashflows[0];
-                        echo "Found cashflow $credentialCashflow";
+                        $this->credentialCashflow = $credentialCashflows[0];
+                        echo "Found cashflow $this->credentialCashflow";
                         break;
                     }
                         
@@ -300,21 +300,19 @@ class finanzarel extends p2pCompany {
                 
                 foreach ($inputs as $input) {
                     $id = $input->getAttributeNode("id")->nodeValue;
-                    echo "El id es $id \n";
+                    //echo "El id es $id \n";
                     $pos = stripos($id, "worksheet_id");
                     if ($pos !== false) {
                         echo "worksheet $id \n";
-                        $x1s = explode("_", $id);
-                        $x1 = $x1s[0];
-                        echo "Found cashflow $x1";
+                        $x1 = $input->getAttributeNode("value")->nodeValue;
+                        echo "Found x01 $x1";
                     }
                     $pos = stripos($id, "report_id");
                     if ($pos !== false) {
                         //GET THE NODE VALUE
-                        echo "worksheet $id \n";
-                        $x2s = explode("_", $id);
-                        $x2 = $x2s[0];
-                        echo "Found cashflow $x2";
+                        echo "report $id \n";
+                        $x2 = $input->getAttributeNode("value")->nodeValue;
+                        echo "Found x02 $x2";
                         break;
                     }
                 }
@@ -341,25 +339,62 @@ class finanzarel extends p2pCompany {
                         'p_flow_step_id' => 11, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $this->request[1],
+                        'p_request' => 'PLUGIN=' . $request,
                         'p_widget_name' => 'worksheet',
-                        'p_widget_mod' => 'PULL',
-                        'p_widget_action'=> '',
-                        'p_widget_num_return' => 100000,
-                        'x01' => $worksheetId,
-                        'x02' => $reportId,
-                        'f01' => $credentialCashflow . '_column_search_current_column',
-                        'f01' => $credentialCashflow . '_search_field',
-                        'f01' => $credentialCashflow . '_row_select',
-                        'f02' => '',
+                        'p_widget_mod' => 'ACTION',
+                        'p_widget_action'=> 'QUICK_FILTER',
+                        'p_widget_num_return' => 100,
+                        'x01' => $x1,
+                        'x02' => $x2,
+                        'f01' => $this->credentialCashflow . '_column_search_current_column',
+                        'f01' => $this->credentialCashflow . '_search_field',
+                        'f01' => $this->credentialCashflow . '_row_select',
+                        'f02' => 'FECHA',
                         'f02' => '21/09/17',
-                        'f02' => '100000'
-                        );
+                        'f02' => 100,
+                         'p_json' => '{"pageItems":null,"salt":"204941615398798274516216840009288834792"}'
+                    );
+                $url = array_shift($this->urlSequence);
+                echo "The url of last is : ".$url;
+                $referer = array_shift($this->urlSequence);
+                $referer = strtr($referer, array(
+                            '{$p_flow_step_id}' => 11,
+                            '{$p_instance}' => $this->credentialsGlobal['p_instance']
+                        ));
+                $this->headers = array(
+                    "X-Requested-With: XMLHttpRequest", 
+                    "Content-Type: application/x-www-form-urlencoded; charset=UTF-8", 
+                    "Host: $this->baseUrl");
+                //$fileName = "cashflow_1";
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($url, $credentials, null, $referer);
+                //$this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
+                break;*/
+            case 6:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $buttons = $this->getElementsByClass($dom, "a-IRR-button");
+                foreach ($buttons as $button) {
+                    $id = $button->getAttributeNode("id")->nodeValue;
+                    //echo "El id es $id \n";
+                    $pos = stripos($id, "actions_button");
+                    if ($pos !== false) {
+                        echo "cashflow $id";
+                        $credentialCashflows = explode("_", $id);
+                        $this->credentialCashflow = $credentialCashflows[0];
+                        echo "Found cashflow $this->credentialCashflow";
+                        break;
+                    }
+                        
+                }
+                
                 $url = array_shift($this->urlSequence);
                 echo "The url of last is : ".$url;
                 $url = strtr($url, array(
                             '{$p_instance}' => $this->credentialsGlobal['p_instance'],
-                            '{$credentialCashflow}' => $credentialCashflow
+                            '{$credentialCashflow}' => $this->credentialCashflow
                         ));
                 echo "now the url is " . $url;
                 $referer = array_shift($this->urlSequence);
