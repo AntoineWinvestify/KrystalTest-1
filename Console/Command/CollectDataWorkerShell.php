@@ -133,12 +133,12 @@ class CollectDataWorkerShell extends AppShell {
                $this->tempArray['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
                $error = $response->getError();
             }
-           if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
-                //We get the web page string
+            if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
+                 //We get the web page string
                 $str = $response->getContent();
                 $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
                 $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel($str);
-           }
+            }
 
            if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
                $this->logoutOnCompany($info["companyIdForQueue"], $str);
@@ -156,6 +156,9 @@ class CollectDataWorkerShell extends AppShell {
            else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
                if (!empty($error)) {
                    $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
+               }
+               else {
+                   $this->newComp[$info["companyIdForQueue"]]->saveControlVariables();
                }
                $this->logoutOnCompany($info["companyIdForQueue"], $str);
                if ($info["typeOfRequest"] == "LOGOUT") {

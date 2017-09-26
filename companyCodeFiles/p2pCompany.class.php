@@ -1426,6 +1426,15 @@ class p2pCompany {
         $pathCreated = $this->createFolder($path, $partialPath);
         return $pathCreated;
     }
+    
+    public function saveControlVariables() {
+        $pathCreated = $this->createFolderPFPFile();
+        $info = json_encode($this->tempArray);
+        $fileName = "controlVariables.json";
+        $fp = fopen($pathCreated . DS . $fileName, 'w');
+        fwrite($fp, $info);
+        fclose($fp);
+    }
 
 
     /**

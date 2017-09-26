@@ -312,15 +312,8 @@ class mintos extends p2pCompany {
                 break;           
             //////LOGOUT
             case 8: 
-                $tempArray["global"] = "waiting_for_global";
-                $pathCreated = $this->createFolderPFPFile();
-                $info = json_encode($tempArray);
-                $fileName = "controlvariable_1";
-                $output_filename = $fileName . '.' . 'json';
-                $fp = fopen($pathCreated . DS . $output_filename, 'w');
-                fwrite($fp, $info);
-                fclose($fp);
-                return $tempArray["global"] = "waiting_for_global";
+                $this->tempArray["global"] = "waiting_for_global";
+                return $this->tempArray["global"];
         }
     }
 
