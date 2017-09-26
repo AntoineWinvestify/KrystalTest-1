@@ -209,7 +209,7 @@ class twino extends p2pCompany {
         $confirm = false;
 
 
-        if ($str == true) {
+        if ($str == "true") {
             $confirm = true;
         }
 
@@ -240,6 +240,7 @@ class twino extends p2pCompany {
                 $this->doCompanyLoginMultiCurl(array(),$payload);
                 break;
             case 1:
+                echo $str;
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
@@ -248,8 +249,8 @@ class twino extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             case 3:
-                echo $str;
-                if (!$str) {   // Error while logging in
+                echo " Twino Login: " . $str;
+                if ($str == "false") {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Twino login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
