@@ -147,7 +147,15 @@ class p2pCompany {
     //Variables to open stream to write a file
     protected $fp;
     //Variables to download files
-    protected $fileType;
+    protected $typeFileTransaction;
+    protected $typeFileInvestment;
+    protected $typeFileAmortizationtable;
+    protected $nameFileTransaction = "transaction_";
+    protected $nameFileInvestment = "investment_";
+    protected $nameFileAmortizationtable = "amortizationtable_";
+    protected $numFileTransaction = 1;
+    protected $numFileInvestment = 1;
+    protected $numFileAmortizationtable = 1;
     protected $companyName;
     protected $userReference;
     protected $linkAccountId;
@@ -1861,8 +1869,8 @@ class p2pCompany {
             //We should implement a method to fail
         }
         
-        $output_filename = $fileName . '.' . $this->fileType;
-        $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
+        
+        $this->fp = fopen($pathCreated . DS . $fileName, 'w');
         if (!$this->fp) {
             echo "Couldn't created the file \n";
         }
@@ -2370,8 +2378,9 @@ class p2pCompany {
      * Function to set the extension for files downloaded for a PFP company
      * @param string $fileType It is the extension of a file
      */
-    function setFileType($fileType) {
-        $this->fileType = $fileType;
+    function setFileType($typeFileTransaction, $typeFileInvestment) {
+        $this->typeFileTransaction = $typeFileTransaction;
+        $this->typeFileInvestment = $typeFileInvestment;
     }
     
     /**
