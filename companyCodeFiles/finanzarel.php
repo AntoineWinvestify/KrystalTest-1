@@ -238,7 +238,8 @@ class finanzarel extends p2pCompany {
                         'p_debug' => '',
                         'p_request' => $this->request[0]);
                 print_r($credentialsFile);
-                $fileName = 'Investment_1';
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->numFileInvestment++;
                 //$fileType = 'csv';
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:{$credential_p_flow_step_id}:{$credential_p_instance}';
@@ -265,7 +266,7 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $this->request[1]);
-                $fileName = 'Investment_2';
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $headers = array('Expect:');
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
@@ -403,7 +404,7 @@ class finanzarel extends p2pCompany {
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
                         ));
                 $headers = array('Expect:');
-                $fileName = "cashflow_1";
+                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
                 break;
