@@ -81,6 +81,7 @@ require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'Reader' . DS . 'IReadFilterWinvestify.php'));
+use Browser\Casper;
 
 //require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
 class p2pCompany {
@@ -150,6 +151,9 @@ class p2pCompany {
     protected $companyName;
     protected $userReference;
     protected $linkAccountId;
+    //Variables for casperjs
+    protected $casperObject;
+    
 
     /**
      *
@@ -540,7 +544,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpage($url, $credentials = null) {
+    function getCompanyWebpage($url = null, $credentials = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -659,19 +663,6 @@ class p2pCompany {
                 return $str;
             }
         }
-
-        if(!empty($payload)){ //For pfp that use payloads instead forms(like twino)
-            $postString = $payload;
-            echo 'Payload: ' . $postString;
-        }else{
-            //traverse array and prepare data for posting (key1=value1)
-            foreach ($loginCredentials as $key => $value) {
-                $postItems[] = $key . '=' . $value;
-            }
-            //create the final string to be posted using implode()
-            $postString = implode('&', $postItems);
-            echo 'post-String: ' . $postString;
-        }  
         
         $request = new \cURL\Request();
         // check if extra headers have to be added to the http message  
@@ -680,15 +671,23 @@ class p2pCompany {
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
         }
-        if(!empty($payload)){//We need this header in request payload
+        if(!empty($loginCredentials)) {
+            if ($payload) {
+                $postString = $loginCredentials;
+                $request->getOptions()
+                            ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            }
+            else {
+                $postString = http_build_query($loginCredentials);
+            }    
             $request->getOptions()
-                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        }
+                ->set(CURLOPT_POSTFIELDS, $postString);
+        } 
+
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
                 ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 ->set(CURLOPT_FOLLOWLOCATION, true)
-                ->set(CURLOPT_POSTFIELDS, $postString)
                 ->set(CURLOPT_FAILONERROR, true)
                 ->set(CURLOPT_RETURNTRANSFER, true)
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
@@ -826,9 +825,9 @@ class p2pCompany {
         
         if(!empty($credentials)) {
             if ($payload) {
-            $postString = $credentials;
-            $request->getOptions()
-                ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+                $postString = $credentials;
+                $request->getOptions()
+                            ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
             }
             else {
                 $postString = http_build_query($credentials);
@@ -1026,7 +1025,7 @@ class p2pCompany {
      * 	$list is empty if no match was found
      *
      */
-    public function getElements($dom, $tag, $attribute, $value) {
+    public function getElements($dom, $tag, $attribute = null, $value = null) {
 
         $list = array();
 
@@ -1861,7 +1860,7 @@ class p2pCompany {
             echo "Cannot create folder \n";
             //We should implement a method to fail
         }
-        $date = date("Ymd");
+        
         $output_filename = $fileName . '.' . $this->fileType;
         $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
         if (!$this->fp) {
@@ -2114,12 +2113,6 @@ class p2pCompany {
      * @return dom $dom Return cleaned dom object
      */
     function cleanDom($dom, $elementsToSearch, $attributesToClean) { //CLEAR ATTRIBUTES
-        //https://stackoverflow.com/questions/35534654/php-domdocument-delete-elements
-        //https://duckduckgo.com/?q=delete+attributes+dom+element+php+dom&t=canonical&ia=qa	
-        //$dom = new DOMDocument;                 // init new DOMDocument
-        //$dom->loadHTML($html);                  // load HTML into it
-        //$xpath = new DOMXPath($dom);            // create a new XPath
-        //$nodes = $xpath->query('//*[@style]');  // Find elements with a style attribute
         foreach ($elementsToSearch as $element) {
 
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element["value"]);
@@ -2146,11 +2139,7 @@ class p2pCompany {
     function cleanDomTag($dom, $elementsToDelete) { //CLEAR A TAG
         foreach ($elementsToDelete as $element) {
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);
-            //echo 'Nodes: <br>';
-            //print_r($nodes);
             foreach ($nodes as $node) {
-                //echo 'Delete: <br>';
-                //print_r($node);
                 $node->parentNode->removeChild($node);
             }
         }
@@ -2168,27 +2157,18 @@ class p2pCompany {
      * @return array
      */
     public function getElementsToClean($dom, $typeSearch, $tag, $attribute = null, $value = null) {
-        /* echo 'Type: ' . $typeSearch . '<br>';
-          echo 'Tag: ' . $tag . '<br>';
-          echo 'Attribute: ' . $attribute . '<br>';
-          echo 'Value: ' . $value . '<br>'; */
-
-        /* $list = array();
-          $attributeTrimmed = trim($attribute); */
         $tagTrimmed = trim($tag);
         libxml_use_internal_errors(true);
 
         if ($typeSearch == "attribute") {
             $xpath = new DOMXPath($dom);            // create a new XPath
             $elements = $xpath->query("//*[contains(concat(' ', normalize-space(@$tagTrimmed), ' '), ' $value ')]");
-            //$elements = $xpath->query('//*[@style]');  // Find elements with a style attribute
         } else if ($typeSearch == "element") {
             $elements = $dom->getElementsByTagName($tagTrimmed);
         }
         if ($typeSearch == "tagElement") {
             //echo 'Elements: ';
             $elements = $this->getElements($dom, $tag, $attribute, $value);
-            //print_r($elements);
         }
         return $elements;
     }
@@ -2293,7 +2273,7 @@ class p2pCompany {
      * To success the two json keys must have the same name.
      * Values are not compared.
      * 
-     * @param array $structure Structure stroed in bd
+     * @param array $structure Structure stored in bd
      * @param array $jsonEntry json entry to compare
      * @return array [$structureRevision,$break,$type] $structureRevision - boolean $break - boolean $type - int
      */
@@ -2345,14 +2325,13 @@ class p2pCompany {
     }
     
     
-    /**Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
+    /**
+     * Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
      * The array will contain the deleted/hidden invesment that we cant update from the pfp marketplace.
      * @param array $loanReferenceList loan reference id list that we have in our marketplace
      * @param array $investment single investment that we compare
      */
     public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
-        //print_r($investment);
-        //print_r($loanReferenceList);
          foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
             if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
                 echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;
@@ -2634,8 +2613,91 @@ class p2pCompany {
         return ;
     }    
     
+    /**
+     * Function to start the casper object
+     * @param string $url It is the url where casper open initially
+     */
+    public function casperInit($url = null) {
+        if (empty($url)) {
+            $url = array_shift($this->urlSequence);
+        }
+        $this->casperObject = new Casper();
+        $this->casperObject->setOptions([
+            'ignore-ssl-errors' => 'yes'
+        ]);
+        // navigate to login web page
+        $this->casperObject->start($url);
+    }
     
+    /**
+     * Function to wait for an element to appear for a determined time when open a url 
+     * @param string $element It is the element to wait for
+     * @param integer $time It is the time we wait for the element to appear in microseconds   
+     */
+    public function casperWaitSelector($element, $time) {
+        $this->casperObject->waitForSelector($element, $time);
+    }
     
+    /**
+     * Function to fill a form
+     * @param string $element It is the form element
+     * @param array $fillFormArray They are all the elements which needed to be filled
+     * @param boolean $submit If it's true, the form is filled and submitted
+     */
+    public function casperFillForm ($element, $fillFormArray, $submit = false) {
+        $this->casperObject->fillForm(
+                $element, $fillFormArray, $submit);
+    }
+    
+    /**
+     * Function to click an element
+     * @param string $element It is the element to click
+     */
+    public function casperClick ($element) {
+        $this->casperObject->click($element);
+    }
+    
+    /**
+     * Function to insert a fragment with casperjs code when the wrapper do not give options to accomplish our way in
+     * @param FRAGMENT $fragment It is the casperjs code inside a FRAGMENT code
+     */
+    public function casperAddFragment($fragment) {
+        $this->casperObject->addToScript(<<<FRAGMENT
+$fragment
+FRAGMENT
+        );
+    }
+    
+    /**
+     * Function to wait for a determined amount of time
+     * @param integer $time It is the time we wait in microseconds 
+     */
+    public function casperWait($time) {
+        $this->casperObject->wait($time);
+    }
+    
+    /**
+     * Function to run the code we wrote
+     */
+    public function casperRun() {
+        $this->casperObject->run();
+    }
+    
+    /**
+     * Function to return the content of the webpage on that moment
+     * @return string It is the content of the url at the moment we call the function
+     */
+    public function casperGetContent() {
+        return $this->casperObject->getCurrentPageContent();
+    }
+    
+    public function casperDownloadFile() {
+        //Needed to read documentation
+        //https://stackoverflow.com/questions/32697172/download-csv-after-clicking-link-using-casperjs
+        //https://stackoverflow.com/questions/35037313/casperjs-download-and-save-file-to-specific-location
+        //https://stackoverflow.com/questions/16144252/downloading-a-file-that-comes-as-an-attachment-in-a-post-request-response-in-pha/31124037#31124037
+        //http://docs.casperjs.org/en/latest/modules/casper.html#download
+    }
     
     
     

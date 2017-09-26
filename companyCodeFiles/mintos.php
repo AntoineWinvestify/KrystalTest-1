@@ -274,7 +274,7 @@ class mintos extends p2pCompany {
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $credentials = array_shift($this->urlSequence);
-                $headers = array_shift($this->urlSequence);
+                $headersJson = array_shift($this->urlSequence);
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
                 $headers = json_decode($headers, true);
                 //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';

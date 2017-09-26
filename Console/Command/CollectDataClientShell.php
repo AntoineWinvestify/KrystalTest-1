@@ -129,11 +129,14 @@ class CollectDataClientShell extends AppShell {
             }
             $this->Queue->id = $key;
             if ($statusProcess) {
-                $this->Queue->save(array("queue_status" => GLOBAL_DATA_DOWNLOADED));
+                $newState = GLOBAL_DATA_DOWNLOADED;
+                echo "Data succcessfully download";
             }
             else {
-                $this->Queue->save(array("queue_status" => START_COLLECTING_DATA));
+                $newState = START_COLLECTING_DATA;
+                echo "There was an error downloading data";
             }
+            $this->Queue->save(array('queue_status' => $newState), $validate = true);
         }
         
         
@@ -143,7 +146,7 @@ class CollectDataClientShell extends AppShell {
     public function verifyFailTask(GearmanTask $task) {
         $m = $task->data();
         $data = explode(".-;", $task->unique());
-        $this->userResult[$data[0]][$data[1]] = $task->data();
+        $this->userResult[$data[0]][$data[1]] = "0";
         
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
@@ -153,7 +156,7 @@ class CollectDataClientShell extends AppShell {
     public function verifyExceptionTask (GearmanTask $task) {
         $m = $task->data();
         $data = explode(".-;", $task->unique());
-        $this->userResult[$data[0]][$data[1]] = $task->data();
+        $this->userResult[$data[0]][$data[1]] = "0";
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
