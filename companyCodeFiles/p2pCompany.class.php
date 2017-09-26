@@ -663,19 +663,6 @@ class p2pCompany {
                 return $str;
             }
         }
-
-        if(!empty($payload)){ //For pfp that use payloads instead forms(like twino)
-            $postString = $payload;
-            echo 'Payload: ' . $postString;
-        }else{
-            //traverse array and prepare data for posting (key1=value1)
-            foreach ($loginCredentials as $key => $value) {
-                $postItems[] = $key . '=' . $value;
-            }
-            //create the final string to be posted using implode()
-            $postString = implode('&', $postItems);
-            echo 'post-String: ' . $postString;
-        }  
         
         $request = new \cURL\Request();
         // check if extra headers have to be added to the http message  
@@ -684,15 +671,23 @@ class p2pCompany {
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
         }
-        if(!empty($payload)){//We need this header in request payload
+        if(!empty($loginCredentials)) {
+            if ($payload) {
+                $postString = $loginCredentials;
+                $request->getOptions()
+                            ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            }
+            else {
+                $postString = http_build_query($loginCredentials);
+            }    
             $request->getOptions()
-                    ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        }
+                ->set(CURLOPT_POSTFIELDS, $postString);
+        } 
+
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
                 ->set(CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0')
                 ->set(CURLOPT_FOLLOWLOCATION, true)
-                ->set(CURLOPT_POSTFIELDS, $postString)
                 ->set(CURLOPT_FAILONERROR, true)
                 ->set(CURLOPT_RETURNTRANSFER, true)
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
@@ -830,9 +825,9 @@ class p2pCompany {
         
         if(!empty($credentials)) {
             if ($payload) {
-            $postString = $credentials;
-            $request->getOptions()
-                ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+                $postString = $credentials;
+                $request->getOptions()
+                            ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
             }
             else {
                 $postString = http_build_query($credentials);
