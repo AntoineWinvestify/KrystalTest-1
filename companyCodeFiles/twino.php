@@ -178,7 +178,17 @@ class twino extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesTwinoTransaction;
+    }
+ 
+     public function getParserConfigInvestmentFile() {
+        return $this->$valuesTwinoInvestment;
+    }
     
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesTwinoAmortization;
+    }   
     
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*

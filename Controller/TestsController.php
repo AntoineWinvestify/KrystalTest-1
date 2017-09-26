@@ -501,6 +501,42 @@ echo "END OF LOOP <br>";
     }
     
   
+   
+    
+    
+    /** FUNCTIONALITY TO KEEP IN MIND
+     * Tries to "guess" what the unknown concept could be. The algorithm is based on a
+     * limited dictionary search, combined with an analysis of the current and previous cashflow line
+     * so we can conclude if it is a cost, or income, and act accordingly.
+     * 
+     * @param string $concept       The concept which is unknown to the system
+     *                         
+     * @return array    $conceptDefinition['name']
+     *                                    ['typeOfAction']
+     *                                    
+     * 
+     */
+    function unknownConceptHandler($concept) {
+/*
+    search in a dictionay  input word, output income/cost
+    localDictionay = array (
+    read some other data of the current atçrray (if it already exists) come in 
+ *   handy due to lack of time 
+ * check if it has been an adition to the 
+  
+  
+    );
+  
+ 
+   
+  
+  
+  
+ */
+        
+        
+        
+    }   
     
     
     

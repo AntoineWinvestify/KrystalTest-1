@@ -32,9 +32,8 @@
  * Description of mintos
  *
  */
-class mintos extends p2pCompany {
-
-    protected $values_mintos = [     // All types/names will be defined as associative index in array
+class mintos extends p2pCompany {   
+    protected $valuesMintosTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
                 "name" => "transaction_id"
              ],
@@ -106,13 +105,32 @@ class mintos extends p2pCompany {
                     "functionName" => "getCurrency",  
                 ]
             ]          
-        ];       
- 
+        ]; 
+    
+    
     
     function __construct() {
         parent::__construct();
+
+
         // Do whatever is needed for this subsclass
     }
+    
+                    
+  
+    public function getParserConfigTransactionFile() {
+        return $this->valuesMintosTransaction;
+    }
+ 
+     public function getParserConfigInvestmentFile() {
+        return $this->valuesMintosInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->valuesMintosAmortization;
+    }    
+    
+ 
 
     /**
      *

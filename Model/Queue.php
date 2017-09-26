@@ -208,18 +208,15 @@ public function beforeSave1($options = array()) {
             $usertype = DAILY_USER;
         }
 
+echo "queue_status = $status queue_type = $queuetype, userAccess = $userAccess, limit = $limit \n";
         $result = $this->find("all", array("conditions" => array(
                                                         "queue_type" => $queuetype,
                                                         "queue_status" => $status,
-                                                        "queue_accessType" => $userAccess),
+                                                  //      "queue_accessType" => $userAccess
+                ),
                                             "order" => $order,
                                             "limit" => $limit)
                             );
-
-        if (empty($result)) {
-            return;
-        }
         return $result;
     }
-
 }

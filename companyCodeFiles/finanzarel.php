@@ -29,11 +29,26 @@ class finanzarel extends p2pCompany {
 
     protected $pInstanceGlobal = '';
     protected $credentialsGlobal = array();
-    
+ 
+ 
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
+    }   
+    
+    
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesFinanzarelTransaction;
     }
+ 
+     public function getParserConfigInvestmentFile() {
+        return $this->$valuesFinanzarelInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesFinanzarelAmortization;
+    }    
 
 
     function companyUserLogin($user = "", $password = "", $options = array()) {

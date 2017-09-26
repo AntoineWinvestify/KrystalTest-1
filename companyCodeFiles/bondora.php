@@ -33,6 +33,23 @@ class bondora extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesBondoraTransaction;
+    }
+ 
+     public function getParserConfigInvestmentFile() {
+        return $this->$valuesBondoraInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesBondoraAmortization;
+    }    
+    
+    
+    
+    
+    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY Bondora DURING LOGIN PROCESS
