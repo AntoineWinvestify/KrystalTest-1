@@ -200,7 +200,7 @@ class mintos extends p2pCompany {
      * Function to download every file that is needed to read the investment of an investor
      * @param string $str It is the html of the last url we accessed
      */
-   /* function collectUserGlobalFilesParallel($str = null) {
+    function collectUserGlobalFilesParallel($str = null) {
 
         switch ($this->idForSwitch) {
             /////////////LOGIN
@@ -351,10 +351,10 @@ class mintos extends p2pCompany {
                 fclose($fp);
                 return $tempArray["global"];
         }
-    }*/
+    }
     
     
-    function collectUserGlobalFilesParallel($str){
+    function collectAmortizationTablesParallel($str){
         $this->i = 0;
         $this->loanIdArray = array("15058-01");
         $this->maxLoans = count($this->loanIdArray);
