@@ -200,7 +200,7 @@ class mintos extends p2pCompany {
      * Function to download every file that is needed to read the investment of an investor
      * @param string $str It is the html of the last url we accessed
      */
-    function collectUserGlobalFilesParallel($str = null) {
+   /* function collectUserGlobalFilesParallel($str = null) {
 
         switch ($this->idForSwitch) {
             /////////////LOGIN
@@ -274,9 +274,13 @@ class mintos extends p2pCompany {
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $credentials = array_shift($this->urlSequence);
-                $headers = array_shift($this->urlSequence);
+                $headersJson = array_shift($this->urlSequence);               
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
+                echo $headers;
                 $headers = json_decode($headers, true);
+                echo "JSON ERROR: " . json_last_error();
+                echo 'HEADERS';
+                var_dump($headers);
                 //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $fileName);
@@ -309,7 +313,35 @@ class mintos extends p2pCompany {
                 break;           
             //////LOGOUT
             case 8: 
-                $tempArray["global"] = "waiting_for_global";
+                echo "Read Globals";
+                //echo $str;
+                $dom = new DOMDocument;  //Check if works
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes'); 
+                foreach($boxes as $keyBox=>$box){
+                    //echo $box->nodeValue;
+                    //echo "BOX NUMBER: =>" . $keyBox;
+                    $tds = $box->getElementsByTagName('td');
+                    foreach($tds as $key=>$td){
+                        //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
+                        $tempArray["global"]["myWallet"] = $tds[1]->nodeValue;
+                        $tempArray["global"]["activeInInvestments"] = $tds[23]->nodeValue;
+                        $tempArray["global"]["totalEarnedInterest"] = $tds[21]->nodeValue;
+                        
+                    
+                    }
+                    $divs = $box->getElementsByTagName('div');
+                    foreach($divs as $key => $div){
+                        //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
+                        $tempArray["global"]["profitibility"] = $divs[6]->nodeValue;
+                    }
+
+                }
+                
+                print_r($tempArray["global"]);
                 $pathCreated = $this->createFolderPFPFile();
                 $info = json_encode($tempArray);
                 $fileName = "controlvariable_1";
@@ -317,8 +349,120 @@ class mintos extends p2pCompany {
                 $fp = fopen($pathCreated . DS . $output_filename, 'w');
                 fwrite($fp, $info);
                 fclose($fp);
-                return $tempArray["global"] = "waiting_for_global";
+                return $tempArray["global"];
         }
+    }*/
+    
+    
+    function collectUserGlobalFilesParallel($str){
+        $this->i = 0;
+        $this->loanIdArray = array("15058-01");
+        $this->maxLoans = count($this->loanIdArray);
+        switch ($this->idForSwitch){
+               case 0:
+                $this->idForSwitch++;
+                $next = $this->getCompanyWebpageMultiCurl();
+                echo 'Next: ' . $next . SHELL_ENDOFLINE;
+                break;
+            case 1:
+                //Login fixed
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+                $csrf = $input[0]->getAttribute('value'); //this is the csrf token
+
+                $this->credentials['_username'] = $this->user;
+                $this->credentials['_password'] = $this->password;
+                $this->credentials['_csrf_token'] = $csrf;
+                $this->credentials['_submit'] = '';
+
+                $this->print_r2($this->credentials);
+                
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($this->credentials);
+                unset($this->credentials);
+                break;
+            case 2:
+                $this->idForSwitch++;
+                //echo $str;
+                $next = $this->getCompanyWebpageMultiCurl();
+                break;
+            case 3:
+                $dom = new DOMDocument;  //Check if works
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                //echo $str;
+                $resultLogin = false;
+                echo 'CHeck login' . SHELL_ENDOFLINE;
+                $as = $dom->getElementsByTagName('a');
+                foreach ($as as $a) {
+                    echo $a->nodeValue . SHELL_ENDOFLINE;
+                    if (trim($a->nodeValue) == 'Overview') {
+                        echo 'FindLOGGGGGGIN\n';
+                        $resultLogin = true;
+                        break;
+                    }
+                }
+
+                if (!$resultLogin) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                $this->idForSwitch++;
+                $next = $this->getCompanyWebpageMultiCurl();
+                break;
+            case 4:
+                
+                if(empty($this->tempUrl['InvestmentUrl'])){
+                    $this->tempUrl['InvestmentUrl'] = array_shift($this->urlSequence);    
+                }
+                echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
+                $url =  $this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i];
+                echo "the table url is: " . $url; 
+                $this->i++;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
+                break;
+            case 5:
+             
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                echo "Read table: ";
+                $tables = $dom->getElementsByTagName('table');
+                
+                  foreach($tables as $table){     
+                    if($table->getAttribute('class') == 'loan-table'){
+                        $AmorTable = new DOMDocument();
+                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $AmorTable->appendChild($AmorTable->importNode($clone,TRUE));
+                        $AmorTableString =  $AmorTable->saveHTML();
+                        echo $AmorTableString;
+                    }
+                }
+                
+                
+                if($this->i++ < $this->maxLoans){
+                    $this->idForSwitch--;
+                    break;               
+                }else{
+                    return $this->tempArray;
+                    break;
+                }
+                   
+        }
+    
     }
 
     /**
