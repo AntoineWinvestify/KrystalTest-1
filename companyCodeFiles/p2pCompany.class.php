@@ -2113,12 +2113,6 @@ class p2pCompany {
      * @return dom $dom Return cleaned dom object
      */
     function cleanDom($dom, $elementsToSearch, $attributesToClean) { //CLEAR ATTRIBUTES
-        //https://stackoverflow.com/questions/35534654/php-domdocument-delete-elements
-        //https://duckduckgo.com/?q=delete+attributes+dom+element+php+dom&t=canonical&ia=qa	
-        //$dom = new DOMDocument;                 // init new DOMDocument
-        //$dom->loadHTML($html);                  // load HTML into it
-        //$xpath = new DOMXPath($dom);            // create a new XPath
-        //$nodes = $xpath->query('//*[@style]');  // Find elements with a style attribute
         foreach ($elementsToSearch as $element) {
 
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element["value"]);
@@ -2145,11 +2139,7 @@ class p2pCompany {
     function cleanDomTag($dom, $elementsToDelete) { //CLEAR A TAG
         foreach ($elementsToDelete as $element) {
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);
-            //echo 'Nodes: <br>';
-            //print_r($nodes);
             foreach ($nodes as $node) {
-                //echo 'Delete: <br>';
-                //print_r($node);
                 $node->parentNode->removeChild($node);
             }
         }
@@ -2167,27 +2157,18 @@ class p2pCompany {
      * @return array
      */
     public function getElementsToClean($dom, $typeSearch, $tag, $attribute = null, $value = null) {
-        /* echo 'Type: ' . $typeSearch . '<br>';
-          echo 'Tag: ' . $tag . '<br>';
-          echo 'Attribute: ' . $attribute . '<br>';
-          echo 'Value: ' . $value . '<br>'; */
-
-        /* $list = array();
-          $attributeTrimmed = trim($attribute); */
         $tagTrimmed = trim($tag);
         libxml_use_internal_errors(true);
 
         if ($typeSearch == "attribute") {
             $xpath = new DOMXPath($dom);            // create a new XPath
             $elements = $xpath->query("//*[contains(concat(' ', normalize-space(@$tagTrimmed), ' '), ' $value ')]");
-            //$elements = $xpath->query('//*[@style]');  // Find elements with a style attribute
         } else if ($typeSearch == "element") {
             $elements = $dom->getElementsByTagName($tagTrimmed);
         }
         if ($typeSearch == "tagElement") {
             //echo 'Elements: ';
             $elements = $this->getElements($dom, $tag, $attribute, $value);
-            //print_r($elements);
         }
         return $elements;
     }
@@ -2292,7 +2273,7 @@ class p2pCompany {
      * To success the two json keys must have the same name.
      * Values are not compared.
      * 
-     * @param array $structure Structure stroed in bd
+     * @param array $structure Structure stored in bd
      * @param array $jsonEntry json entry to compare
      * @return array [$structureRevision,$break,$type] $structureRevision - boolean $break - boolean $type - int
      */
@@ -2344,14 +2325,13 @@ class p2pCompany {
     }
     
     
-    /**Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
+    /**
+     * Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
      * The array will contain the deleted/hidden invesment that we cant update from the pfp marketplace.
      * @param array $loanReferenceList loan reference id list that we have in our marketplace
      * @param array $investment single investment that we compare
      */
     public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
-        //print_r($investment);
-        //print_r($loanReferenceList);
          foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
             if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
                 echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;
