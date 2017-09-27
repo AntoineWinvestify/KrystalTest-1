@@ -1422,7 +1422,7 @@ class p2pCompany {
         $date = date("Ymd");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
+        $path = $this->userReference . DS . $date . DS . $this->linkAccountId . DS . $this->companyName ;
         $pathCreated = $this->createFolder($path, $partialPath);
         return $pathCreated;
     }
