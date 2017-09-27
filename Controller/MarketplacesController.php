@@ -141,7 +141,7 @@ class MarketPlacesController extends AppController {
      */
     function getGlobalMarketPlaceData() {
 
-        $this->layout = 'winvestify_publicLandingPageLayout';
+        $this->layout = 'winvestify_publicLandingPageLayout_1';
         $userIp = $this->request->clientIp($safe = false);      // To avoid that the user manipulates the HTTP_CLIENT_IP header.
         $geoData = $this->getGeoLocationData($userIp);          // Where is the user?
 

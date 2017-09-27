@@ -172,7 +172,12 @@
                             <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-left">
-                            <li><a href="#mark_features"><?php echo __('Features') ?></a></li>
+                            <li class="dropdown">
+                                <a href="#"><?php echo __('About Winvestify') ?></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="" ><?php echo __('Para inversores')?></a></li>
+                                </ul>
+                            </li>
                             <li><a href="#mark_ftb"><?php echo __('Investor Toolbox') ?></a></li>
                             <li><a href="#mark_platforms"><?php echo __('Platforms') ?></a></li>
                             <li><a href="#mark_statistics"><?php echo __('Statistics') ?></a></li>
