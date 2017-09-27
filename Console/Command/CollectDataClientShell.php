@@ -43,8 +43,8 @@ class CollectDataClientShell extends AppShell {
 
     /**
      * Function to init the process to recollect all the user investment data
-    *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
-    *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
+     *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
+     *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
      */
     public function initClient() {
         //$queueStatus = $this->args[0];
