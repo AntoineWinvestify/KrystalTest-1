@@ -409,7 +409,7 @@ class bondora extends p2pCompany {
                         $this->getCompanyWebpageMultiCurl($this->tempUrl['GenerateReport'], $credentials);
                         break;
                     }*/
-                }
+               }
                 foreach ($trs as $tr) {
                     echo $tr->nodeValue . SHELL_ENDOFLINE;
                     if (strpos($tr->nodeValue, "Account statement") && strpos($tr->nodeValue, $date1) && strpos($tr->nodeValue, $date2)) {
@@ -493,4 +493,119 @@ class bondora extends p2pCompany {
         }
     }
 
+      function collectAmortizationTablesParallel($str){
+        $this->i = 0;
+        $this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
+        $this->maxLoans = count($this->loanIdArray);
+        switch ($this->idForSwitch){
+             case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+
+            case 1:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                $inputs = $dom->getElementsByTagName('input');
+
+                foreach ($inputs as $key => $input) {
+                    echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . SHELL_ENDOFLINE;
+                    if ($key == 0) {
+                        continue;
+                    }
+                    $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                }
+
+                $credentials['Email'] = $this->user;
+                $credentials['Password'] = $this->password;
+
+                print_r($credentials);
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($credentials); //do login
+                break;
+
+            case 2:
+                echo 'Doing loging' . SHELL_ENDOFLINE;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+
+            case 3:
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+
+                $confirm = false;
+
+                $spans = $dom->getElementsByTagName('span');
+                foreach ($spans as $span) {
+                    echo $span->nodeValue . SHELL_ENDOFLINE;
+                    if (trim($span->nodeValue) == 'Account value') {
+                        echo 'Login ok' . SHELL_ENDOFLINE;
+                        $confirm = true;
+                        break;
+                    }
+                }
+
+                if (!$confirm) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Bondora login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            case 4:
+                
+                if(empty($this->tempUrl['InvestmentUrl'])){
+                    $this->tempUrl['InvestmentUrl'] = array_shift($this->urlSequence);    
+                }
+                echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
+                $url =  $this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i];
+                echo "the table url is: " . $url; 
+                $this->i++;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
+                break;
+            case 5:
+             
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                echo "Read table: ";
+                $tables = $dom->getElementsByTagName('table');
+                
+                  foreach($tables as $table){     
+                    if($table->getAttribute('class') == 'table'){
+                        $AmorTable = new DOMDocument();
+                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $AmorTable->appendChild($AmorTable->importNode($clone,TRUE));
+                        $AmorTableString =  $AmorTable->saveHTML();
+                        echo $AmorTableString;
+                    }
+                }
+                
+                
+                if($this->i++ < $this->maxLoans){
+                    $this->idForSwitch--;
+                    break;               
+                }else{
+                    return $this->tempArray;
+                    break;
+                }
+                 
+        }
+      
+      }
+    
+    
+    
 }
