@@ -880,33 +880,25 @@ textarea[name="error"] {
 }
 
 .btn1CR {
-    background-color: #47badf  !important;
-    border: 1px solid gray;
-    color: white;
+    background-color: white  !important;
+    border: 2px solid #47badf !important;
+    color: #47badf !important;
 }
-.btn1CR:hover{
-	border: 1px solid gray;
-	color: black;
-}
-.btn1CR:active{
-	background-color: #1f8aad  !important;
-	border: 1px solid gray;
-	color: black;
+.btn1CR:hover, .btn1CR:active {
+	border: 2px solid #47badf !important;
+        background-color: #47badf !important;
+	color: white !important;
 }
 
 .btnPFPAdmin {
-    background-color: #ff9933  !important;
-    border: 1px solid gray;
-    color: white;
+    background-color: white  !important;
+    border: 2px solid #ff9933 !important;
+    color: #ff9933 !important;
 }
-.btnPFPAdmin:hover{
-	border: 1px solid gray;
-	color: black;
-}
-.btnPFPAdmin:active{
-	background-color: #cc6600  !important;
-	border: 1px solid gray;
-	color: black;
+.btnPFPAdmin:hover, .btnPFPAdmin:active {
+	border: 2px solid #ff9933 !important;
+        background-color: #ff9933 !important;
+	color: white !important;
 }
 .btnDeleteFile {
     background-color:#990000 !important; 
@@ -2171,20 +2163,36 @@ hr.specialHr:after {
 	color: #bfbfbf;
 	font-size: 16px;
 }
-section {
-    color: gray;
+.dropdown-menu {
+    background-color: #f8f8f8;
 }
-.inverse-dropdown{
-  background-color: #222;
-  border-color: #080808;
-  &>li>a{
-    color: #999;
-    &:hover{
-      color: #fff;
-      background-color: #000;
-    }
-  }
-  &>.divider {
-    background-color: #000;
-  }
+.navbar-nav>li>a, .dropdown-menu>li>a {
+    border-bottom: 5px solid #f8f8f8;
+}
+.navbar-nav>li>a:hover, .nav .open>a:hover {
+    border-bottom: 5px solid #87e14b !important;
+}
+.dropdown-menu>li>a:hover {
+    background-color: #e7e7e7;
+}
+.nav > li.dropdown .dropdown-menu {
+    width: 100%;
+}
+
+/*PAPER BOOTSTRAP MODAL CUSTOMIZATION*/
+.wizard-container-small {
+    padding-top: 50px;
+}
+
+.wizard-card-small {
+    min-height: 200px;
+}
+
+.wizard-card-small .tab-content {
+    min-height: 200px;
+    padding: 30px;
+}
+
+.wizard-card-small .wizard-footer {
+    padding: 0 15px 5px !important;
 }

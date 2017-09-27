@@ -40,7 +40,7 @@
 		<img src="/img/flags/<?php echo $usedLanguage?>.png"/>&nbsp;<?php echo $tempArray[$usedLanguage]?>
 			<span class="caret"></span>
 	</a>
-    <ul style="min-width: 50px !important;" class="dropdown-menu">
+    <ul style="width: 100%" class="dropdown-menu">
                                         
 <?php
 	foreach ($listSupportedLanguages as $key=>$language) {

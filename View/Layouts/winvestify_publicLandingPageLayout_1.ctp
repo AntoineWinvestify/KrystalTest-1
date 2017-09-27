@@ -152,7 +152,7 @@
                                     <?php echo __('Register')?>
                                 </a>
                             </li>
-                            <li class="dropdown" style="margin-top:-3px; display:inline-block">
+                            <li class="dropdown" style="margin-top:0px; display:inline-block">
                                 <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
@@ -172,15 +172,19 @@
                             <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-left">
+                            <li><a href="/pages/investors"><?php echo __('Inversores') ?></a></li>
+                            <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
                             <li class="dropdown">
-                                <a href="#"><?php echo __('About Winvestify') ?></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="" ><?php echo __('Para inversores')?></a></li>
+                                <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <?php echo __('About Us')?>
+                                    <span class="caret"></span>
+                                </a>
+                                <ul style="margin-top:0px;" class="dropdown-menu">
+                                    <li><a href="/pages/aboutUs "><?php echo __('Nuestra historia') ?></a></li>
+                                    <li><a href="/pages/team"><?php echo __('Nuestro equipo') ?></a></li>
                                 </ul>
                             </li>
-                            <li><a href="#mark_ftb"><?php echo __('Investor Toolbox') ?></a></li>
-                            <li><a href="#mark_platforms"><?php echo __('Platforms') ?></a></li>
-                            <li><a href="#mark_statistics"><?php echo __('Statistics') ?></a></li>
+                            <li><a href="/pages/faq"><?php echo __('FAQ') ?></a></li>
                             <li><a href="/Contactforms/form"><?php echo __('Contact') ?></a></li>
                         </ul>
                     </div><!-- /.navbar-collapse -->
@@ -393,6 +397,13 @@
                 //navbar collapse on clicking outside navbar
                 $(document).on("click", function(){
                     $('.navbar-collapse').collapse('hide');
+                });
+                
+                //Dropdown menu hover
+                $('ul.nav li.dropdown').hover(function() {
+                  $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
+                }, function() {
+                  $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
                 });
                 
                 //Screenshots Slider + Text Slider
