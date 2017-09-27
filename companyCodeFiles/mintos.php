@@ -270,7 +270,7 @@ class mintos extends p2pCompany {
             ////////DOWNLOAD FILE
             case 4:
                 //$credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
-                $fileName = 'Investment';
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $credentials = array_shift($this->urlSequence);
@@ -291,18 +291,21 @@ class mintos extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();
                 break;
             case 6:
+                //This two variables should disappear
                 $yesterday = date('d.m.Y',strtotime("-1 days"));
-                $today = date("d.m.y");  
+                $today = date("d.m.Y");  
                 //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array('{$today}' => $yesterday));
+                $referer = strtr($referer, array('{$date1}' => $yesterday));
+                $referer = strtr($referer, array('{$date2}' => $today));
                 $credentials = array_shift($this->urlSequence);
-                $credentials = strtr($credentials, array('{$today}' => $yesterday));
+                $credentials = strtr($credentials, array('{$date1}' => $yesterday));
+                $credentials = strtr($credentials, array('{$date2}' => $today));
                 $headersJson = array_shift($this->urlSequence);
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
                 $headers = json_decode($headers, true);
-                $fileName = 'CashFlow';
+                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $fileName);
@@ -327,28 +330,21 @@ class mintos extends p2pCompany {
                     $tds = $box->getElementsByTagName('td');
                     foreach($tds as $key=>$td){
                         //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
-                        $tempArray["global"]["myWallet"] = $tds[1]->nodeValue;
-                        $tempArray["global"]["activeInInvestments"] = $tds[23]->nodeValue;
-                        $tempArray["global"]["totalEarnedInterest"] = $tds[21]->nodeValue;
+                        $tempArray["global"]["myWallet"] = $this->getMonetaryValue($tds[1]->nodeValue);
+                        $tempArray["global"]["activeInInvestments"] = $this->getMonetaryValue($tds[23]->nodeValue);
+                        $tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
                         
                     
                     }
                     $divs = $box->getElementsByTagName('div');
                     foreach($divs as $key => $div){
                         //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
-                        $tempArray["global"]["profitibility"] = $divs[6]->nodeValue;
+                        $tempArray["global"]["profitibility"] = $this->getPercentage($divs[6]->nodeValue);
                     }
 
                 }
                 
                 print_r($tempArray["global"]);
-                $pathCreated = $this->createFolderPFPFile();
-                $info = json_encode($tempArray);
-                $fileName = "controlvariable_1";
-                $output_filename = $fileName . '.' . 'json';
-                $fp = fopen($pathCreated . DS . $output_filename, 'w');
-                fwrite($fp, $info);
-                fclose($fp);
                 return $tempArray["global"];
         }
     }

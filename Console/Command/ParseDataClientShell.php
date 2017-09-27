@@ -74,7 +74,7 @@ class ParseDataClientShell extends AppShell {
             if (!empty($pendingJobs)) {
                 // read job contents
                 // determine the FQDN of the file
-               get the userReference and read all the required info of user, like its platforms
+               //get the userReference and read all the required info of user, like its platforms
                 $parseResult = $this->parseFile($FQDNfile);
                 if ($parseResult)  {
  // add jobs on Gearman level
@@ -153,11 +153,11 @@ class ParseDataClientShell extends AppShell {
      * 
      */
     public function readDirFiles($userReference,$typeOfFiles)  {
-        read configure parm from config file
+        /*read configure parm from config file
 
         read userref 
 
-        read contents
+        read contents*/
 
         $fileNameList = array();
         

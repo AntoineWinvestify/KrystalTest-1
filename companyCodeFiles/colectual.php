@@ -49,13 +49,7 @@
  * Structure Revision added
  * Status definition added
  * 
-
-  PENDING:
-  Install dependencies of casperjs and phantomjs
-
  */
-//require_once "../../vendors/autoload.php";
-use Browser\Casper;
 
 class colectual extends p2pCompany {
 
@@ -105,48 +99,70 @@ class colectual extends p2pCompany {
         $username = $this->config['company_username'];
         $password = $this->config['company_password'];
         $totalArray = array();
-        //echo __FUNCTION__ . __LINE__ . " MARKETPLACE<br>";
-        $casper = new Casper();
-        //First we must go to https://app.colectual.com/#/endSession to end session if previously is opened
-        $casper->setOptions([
-            'ignore-ssl-errors' => 'yes'
-        ]);
-        // navigate to login web page
-        $casper->start($url[0]);
-        // or wait for selector
-        $casper->waitForSelector('form[name="loginForm"]', 5000);
-        $casper->fillForm(
-                'form[name="loginForm"]', array(
+        
+        $this->casperInit($url[0]);
+        $this->casperWaitSelector('form[name="loginForm"]', 5000);
+        $fillFormArray = array(
             'UserName' => $username,
             'Password' => $password
-                ), false);
-        $casper->click('.md-btn');
-        
-        
+                );
+        $this->casperFillForm('form[name="loginForm"]', $fillFormArray);
+        $this->casperClick('.md-btn');
 
-        $casper->addToScript(<<<FRAGMENT
+        $fragment = <<<FRAGMENT
+casper.waitUntilVisible(".step-instructions", function() {
+                     this.echo("I am in");
+		});
+FRAGMENT;
+        $this->casperAddFragment($fragment);
+        $this->casperRun();
+        $str = $this->casperGetContent();
+        $dom = new DOMDocument;
+        $classname = 'step-instructions';
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $dom_xpath = new DOMXPath($dom);
+        $resultColectual = false;
+        $login = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $classname ')]");
+        if ($login->length > 0) {
+            $resultColectual = true;
+            //echo "LOGIN CORRECT";
+        }
+        
+         if (!$resultColectual) {   // Error while logging in
+            echo __FUNCTION__ . __LINE__ . "login fail" . SHELL_ENDOFLINE;
+            $tracings = "Tracing: " . SHELL_ENDOFLINE;
+            $tracings .= __FILE__ . " " . __LINE__ . SHELL_ENDOFLINE;
+            $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . SHELL_ENDOFLINE;
+            $tracings .= SHELL_ENDOFLINE;
+            $msg = "Error while entering user's portal. Wrong userid/password" . SHELL_ENDOFLINE;
+            $msg = $msg . $tracings . SHELL_ENDOFLINE;
+            $this->logToFile("Warning", $msg);
+            exit;
+        }
+
+        $fragment = <<<FRAGMENT
 casper.waitUntilVisible(".step-instructions", function() {
 			casper.thenOpen('$url[1]');
 		});
-FRAGMENT
-        );
+FRAGMENT;
+        //function to add a script because casperjs dont give all the options to make it versatile
+        $this->casperAddFragment($fragment);
         //$casper->click('a[href*="proyectosLista"]');
         // or wait for selector
-        $casper->waitForSelector('.proyecto', 5000);
+        $this->casperWaitSelector('.proyecto', 5000);
         // run the casper script
-        $casper->run();
-        $str = $casper->getCurrentPageContent();
+        //function to run the script
+        $this->casperRun();
+        
+        //function to get the current page content (str)
+        
+        $str = $this->casperGetContent();
         //echo $str;
-        //($casper->getOutput());
+        //var_dump($casper->getOutput());
         echo __FUNCTION__ . __LINE__ . " END MARKETPLACE<br>";
-        $casper_logout = new Casper();
-        $casper_logout->setOptions([
-            'ignore-ssl-errors' => 'yes'
-        ]);
-        // navigate to make logout
-        $casper_logout->start($url[2]);
-        $casper_logout->wait(2000);
-        $casper_logout->run();
+        echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
+        $this->companyUserLogout($url[2]);
         echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
         //var_dump($casper_logout->getOutput());
         echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>";
@@ -297,30 +313,23 @@ FRAGMENT
         $password = $this->config['company_password'];
         $totalArray = array();
         //echo __FUNCTION__ . __LINE__ . " MARKETPLACE<br>";
-        $casper = new Casper();
-        //First we must go to https://app.colectual.com/#/endSession to end session if previously is opened
-        $casper->setOptions([
-            'ignore-ssl-errors' => 'yes'
-        ]);
-        // navigate to login web page
-        $casper->start($url[0]);
-        // or wait for selector
-        $casper->waitForSelector('form[name="loginForm"]', 5000);
-        $casper->fillForm(
-                'form[name="loginForm"]', array(
+        $this->casperInit($url[0]);
+        $this->casperWaitSelector('form[name="loginForm"]', 5000);
+        $fillFormArray = array(
             'UserName' => $username,
             'Password' => $password
-                ), false);
-        $casper->click('.md-btn');
-        
-        $casper->addToScript(<<<FRAGMENT
+                );
+        $this->casperFillForm('form[name="loginForm"]', $fillFormArray);
+        $this->casperClick('.md-btn');
+
+        $fragment = <<<FRAGMENT
 casper.waitUntilVisible(".step-instructions", function() {
                      this.echo("I am in");
 		});
-FRAGMENT
-        );
-        
-        $str = $casper->getCurrentPageContent();
+FRAGMENT;
+        $this->casperAddFragment($fragment);
+        $this->casperRun();
+        $str = $this->casperGetContent();
         $dom = new DOMDocument;
         $classname = 'step-instructions';
         $dom->loadHTML($str);
@@ -345,31 +354,28 @@ FRAGMENT
             exit;
         }
 
-        $casper->addToScript(<<<FRAGMENT
+        $fragment = <<<FRAGMENT
 casper.waitUntilVisible(".step-instructions", function() {
 			casper.thenOpen('$url[1]');
 		});
-FRAGMENT
-        );
+FRAGMENT;
+        //function to add a script because casperjs dont give all the options to make it versatile
+        $this->casperAddFragment($fragment);
         //$casper->click('a[href*="proyectosLista"]');
         // or wait for selector
-        $casper->waitForSelector('.proyecto', 5000);
+        $this->casperWaitSelector('.proyecto', 5000);
         // run the casper script
-        $casper->run();
-        $str = $casper->getCurrentPageContent();
+        //function to run the script
+        $this->casperRun();
+        
+        //function to get the current page content (str)
+        
+        $str = $this->casperGetContent();
         //echo $str;
-        var_dump($casper->getOutput());
+        //var_dump($casper->getOutput());
         echo __FUNCTION__ . __LINE__ . " END MARKETPLACE<br>";
-        $casper_logout = new Casper();
-        $casper_logout->setOptions([
-            'ignore-ssl-errors' => 'yes'
-        ]);
-        // navigate to make logout
-        $casper_logout->start($url[2]);
-        $casper_logout->wait(2000);
-        $casper_logout->run();
         echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
-        var_dump($casper_logout->getOutput());
+        $this->companyUserLogout($url[2]);
         echo __FUNCTION__ . __LINE__ . " END LOGOUT<br>";
         $dom = new DOMDocument;
         $classname = 'proyecto';
@@ -561,32 +567,23 @@ FRAGMENT
         $url = $this->urlSequence;
         $username = $user;
         $password = $password;
-        $casper = new Casper();
-        //First we must go to https://app.colectual.com/#/endSession to end session if previously is opened
-        $casper->setOptions([
-            'ignore-ssl-errors' => 'yes'
-        ]);
-        // navigate to login web page
-        $casper->start("$url[0]");
-        // or wait for selector
-        $casper->waitForSelector('form[name="loginForm"]', 5000);
-        $casper->fillForm(
-                'form[name="loginForm"]', array(
+        $this->casperInit($url[0]);
+        $this->casperWaitSelector('form[name="loginForm"]', 5000);
+        $fillFormArray = array(
             'UserName' => $username,
             'Password' => $password
-                ), false);
-        $casper->click('.md-btn');
+                );
+        $this->casperFillForm('form[name="loginForm"]', $fillFormArray);
+        $this->casperClick('.md-btn');
 
-        $casper->addToScript(<<<FRAGMENT
+        $fragment = <<<FRAGMENT
 casper.waitUntilVisible(".step-instructions", function() {
                      this.echo("I am in");
 		});
-FRAGMENT
-        );
-
-        // run the casper script
-        $casper->run();
-        $str = $casper->getCurrentPageContent();
+FRAGMENT;
+        $this->casperAddFragment($fragment);
+        $this->casperRun();
+        $str = $this->casperGetContent();
         $dom = new DOMDocument;
         $classname = 'step-instructions';
         $dom->loadHTML($str);
@@ -615,14 +612,9 @@ FRAGMENT
     function companyUserLogout($url = null) {
 
 
-        $casper_logout = new Casper();
-        $casper_logout->setOptions([
-            'ignore-ssl-errors' => 'yes'
-        ]);
-        // navigate to make logout
-        $casper_logout->start("$url");
-        $casper_logout->wait(2000);
-        $casper_logout->run();
+        $this->casperInit($url);
+        $this->casperWait(2000);
+        $this->casperRun();
         /* These lines are for debug purpose
           echo __FUNCTION__ . __LINE__ . " LOGOUT<br>";
           var_dump($casper_logout->getOutput());
