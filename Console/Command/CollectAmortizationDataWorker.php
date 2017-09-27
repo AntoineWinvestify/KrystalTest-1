@@ -45,17 +45,8 @@ class CollectAmortizationDataWorker extends AppShell {
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
+        $this->GearmanWorker->addFunction('multicurlScraping', array($this, 'getDataMulticurlScraping'));
         $this->GearmanWorker->addFunction('casperFiles', array($this, 'getDataCasperFiles'));
-        $this->GearmanWorker->addFunction('testFail', function(GearmanJob $job) {
-
-            try {
-                throw new Exception('Boom');
-            } catch (Exception $e) {
-                $job->sendException($e->getMessage());
-                $job->sendFail();
-
-            }
-        });
         while( $this->GearmanWorker->work() );
     }
     
