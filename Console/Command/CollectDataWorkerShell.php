@@ -42,16 +42,6 @@ class CollectDataWorkerShell extends AppShell {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
         $this->GearmanWorker->addFunction('casperFiles', array($this, 'getDataCasperFiles'));
-        $this->GearmanWorker->addFunction('testFail', function(GearmanJob $job) {
-
-            try {
-                throw new Exception('Boom');
-            } catch (Exception $e) {
-                $job->sendException($e->getMessage());
-                $job->sendFail();
-
-            }
-        });
         while( $this->GearmanWorker->work() );
     }
     
