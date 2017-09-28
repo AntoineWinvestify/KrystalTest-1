@@ -27,6 +27,9 @@
  */
 class CollectAmortizationDataClientShell extends AppShell {
     protected $GearmanClient;
+    protected $userResult = [];
+    protected $newComp = [];
+    public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
     
     public function startup() {
         $this->GearmanClient = new GearmanClient();
@@ -55,28 +58,133 @@ class CollectAmortizationDataClientShell extends AppShell {
         //$this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $linkedaccountsResults = [];
+        $queueInfos = [];
         foreach ($resultQueue as $result) {
-            /*$resultInvestor = $this->Investor->find("first", array('conditions' =>
-                array('Investor.investor_identity' => $result['Queue']['queue_userReference']),
-                'fields' => 'id',
-                'recursive' => -1,
-            ));
-            $investorId = $resultInvestor['Investor']['id'];*/
-            $queueInfo = $result['Queue']['queue_info'];
-            $queueInfo = json_decode($queueInfo, true);
+            $queueInfoJson = $result['Queue']['queue_info'];
+            $queueInfo = json_decode($queueInfoJson, true);
+            $linkAccountId = [];
             foreach ($queueInfo['loanIds'] as $key => $loanId) {
-                $linkAccountId[] = $key; 
+                if (!in_array($key, $linkAccountId)) {
+                    $linkAccountId[] = $key; 
+                }
             }
             
             $filterConditions = array('id' => $linkAccountId);
             $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
-            //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+            $queueInfos[] = $queueInfo['loanIds'];
         }
         
         $companyTypes = $this->Company->find('list', array(
-            'fields' => array('Company.company_typeAccess')
+            'fields' => array('Company.company_typeAccessAmortization')
         ));
         
+        $userLinkedaccounts = [];
+        //$i = 0;
+        
+        foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
+            //In this case $key is the number of the linkaccount inside the array 0,1,2,3
+            $i = 0;
+            foreach ($linkedaccountResult as $linkedaccount) {
+                
+                $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
+                $linkedaccountId = $linkedaccount['Linkedaccount']['id'];
+                $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
+                $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key][$linkedaccountId];
+                $i++;
+            }
+            //linkedaccount][id]
+            
+        }
+        
+        //$key is the number of the internal id of the array (0,1,2)
+        //$key2 is type of access to company (multicurl, casper, etc)
+        foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
+            foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
+                $data["companies"] = $linkedaccountsByType;
+                $data["loandIds"] = [$key][$key2];
+                $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
+                $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
+                $queue_info = $resultQueue[$key]['Queue']['queue_info'];
+                $data["queue_info"] = json_decode($queue_info, true);
+                print_r($data["companies"]);
+                echo "\n";
+                echo "userReference ". $data["queue_userReference"];
+                echo "\n";
+                echo "queueId " . $data["queue_id"];
+                echo "\n";
+                print_r($data["queue_info"]);
+                echo json_encode($data);
+                echo "\n";
+                echo $key2;
+                echo "\n aquiiiiiiiiiiiiiii";
+                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2);
+            }
+        }
+        
+        $this->GearmanClient->runTasks();
+        
+        foreach ($this->userResult as $key => $userResult) {
+            $statusProcess = $this->consolidationResult($userResult);
+            if (!$statusProcess) {
+                $statusDelete = $this->safeDelete($key, 1); //1 = $todaydate
+            }
+            $this->Queue->id = $key;
+            if ($statusProcess) {
+                $newState = GLOBAL_DATA_DOWNLOADED;
+                echo "Data succcessfully download";
+            }
+            else {
+                $newState = START_COLLECTING_DATA;
+                echo "There was an error downloading data";
+            }
+            $this->Queue->save(array('queue_status' => $newState), $validate = true);
+        }
+        
+        
+    }
+    
+    public function verifyFailTask(GearmanTask $task) {
+        $m = $task->data();
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = "0";
+        
+        print_r($this->userResult);
+        echo "ID Unique: " . $task->unique() . "\n";
+        echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
+    }
+    
+    public function verifyExceptionTask (GearmanTask $task) {
+        $m = $task->data();
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = "0";
+        print_r($this->userResult);
+        echo "ID Unique: " . $task->unique() . "\n";
+        echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
+        //return GEARMAN_WORK_EXCEPTION;
+    }
+    
+    public function verifyCompleteTask (GearmanTask $task) {
+        $data = explode(".-;", $task->unique());
+        $this->userResult[$data[0]][$data[1]] = $task->data();
+        print_r($this->userResult);
+        echo "ID Unique: " . $task->unique() . "\n";
+        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
+        echo GEARMAN_SUCCESS;
+    }
+    
+    public function consolidationResult($userResult) {
+        $statusProcess = true;
+        foreach ($userResult as $key => $result) {
+            if (!$result) {
+                $statusProcess = false;
+                break;
+            }
+        }
+        return $statusProcess;
+    }
+    
+    public function safeDelete($data, $date) {
+        echo "Delete all";
     }
     
     
