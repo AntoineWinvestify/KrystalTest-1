@@ -1969,7 +1969,7 @@ class p2pCompany {
      * array (                  //<table>
      *  [0] => array (          //<tr>
      *      [key1] => value1    // <td>value1</td> 
-     *      [key2] => value2    //<td>value1</td> 
+     *      [key2] => value2    //<td>value2</td> 
      *        ...               // ...
      *      )                   //</tr>
      *  [1] => ...              // ...
