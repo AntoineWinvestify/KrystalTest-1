@@ -58,6 +58,7 @@ class CollectAmortizationDataWorker extends AppShell {
      *      $data["companies"]                  array It contains all the linkedaccount information
      *      $data["queue_userReference"]        string It is the user reference
      *      $data["queue_id"]                   integer It is the queue id
+     *      $data["loandIds"]                   array It contains all the loandId needed to save on the file
      * @return string The variable must be in string because of Gearman but it is really a boolean 1 or 0
      */
     public function getDataMulticurlFiles($job) {
@@ -84,7 +85,7 @@ class CollectAmortizationDataWorker extends AppShell {
             $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
-            $this->newComp[$i]->setLoanIds();
+            $this->newComp[$i]->setLoanIds($data["loanIds"]);
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], DOWNLOAD_PFP_FILE_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
