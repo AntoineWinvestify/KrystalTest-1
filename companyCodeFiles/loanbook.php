@@ -870,7 +870,7 @@ class loanbook extends p2pCompany {
      * @param string $user
      * @param string $password
      */
-    function k($str) {
+    function collectUserGlobalFilesParallel($str) {
 
         switch ($this->idForSwitch) {
             case 0:
@@ -1024,7 +1024,7 @@ class loanbook extends p2pCompany {
      * @param type $str
      * @return type
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectAmortizationTablesParallel($str) {
         switch ($this->idForSwitch) {
             case 0:
                 /*
