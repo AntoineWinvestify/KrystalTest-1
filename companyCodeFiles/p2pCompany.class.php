@@ -162,6 +162,8 @@ class p2pCompany {
     protected $linkAccountId;
     //Variables for casperjs
     protected $casperObject;
+    //Variables for amortization tables
+    protected $loanIds = [];
     
 
     /**
@@ -1422,7 +1424,7 @@ class p2pCompany {
         $date = date("Ymd");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
+        $path = $this->userReference . DS . $date . DS . $this->linkAccountId . DS . $this->companyName ;
         $pathCreated = $this->createFolder($path, $partialPath);
         return $pathCreated;
     }
@@ -2457,7 +2459,16 @@ class p2pCompany {
     function setLinkAccountId($linkAccountId) {
         $this->linkAccountId = $linkAccountId;
     }
+    
+    function getLoanIds() {
+        return $this->loanIds;
+    }
 
+    function setLoandIds($loanIds) {
+        $this->loandIds = $loanIds;
+    }
+
+    
     
     
 

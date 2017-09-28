@@ -122,8 +122,8 @@ class finanzarel extends p2pCompany {
      * @param string $password
      */
     function collectUserGlobalFilesParallel($str = null) {
-        switch ($this->idForSwitch) {
-            /////////////LOGIN
+        
+        switch ($this->idForSwitch) { 
             case 0:
                 echo $this->idForSwitch . HTML_ENDOFLINE;
                 $this->idForSwitch++;
@@ -410,41 +410,6 @@ class finanzarel extends p2pCompany {
                 break;
             case 7:
                 return $tempArray["global"] = "waiting_for_global";
-                /*
-                echo "case 4!!!!!!!";
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-                //$this->print_r2($dom);
-
-                //Get credentials to download the file
-                $inputs = $dom->getElementsByTagName('input');
-                foreach ($inputs as $input) {
-                    $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
-                }
-
-                //Get the request to download the file
-                $as = $dom->getElementsByTagName('a');
-                foreach ($as as $key => $a) {
-                    //echo $key . " => " . $a->getAttribute('href') . HTML_ENDOFLINE;
-                    if (trim($a->nodeValue) == 'Descargar en csv') {
-                        $request = explode("'", $a->getAttribute('href'))[1];
-                        echo $request . HTML_ENDOFLINE;
-                        break;
-                    }
-                }
-
-                $url = array_shift($this->urlSequence);
-                $fileUrl = $url . "p_flow_id=" . $credentials['p_flow_id'] . "&p_flow_step_id=" . $credentials['p_flow_step_id'] . "&p_instance=" . $credentials['p_instance'] . "&p_debug&p_request=" . $request;
-                echo $fileUrl . HTML_ENDOFLINE;
-                $fileName = 'Finanzarel';
-                $fileType = 'csv';
-
-                $pfpBaseUrl = 'http://www.finanzarel.com';
-                $path = 'prueba';
-                
-                //$this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
-                echo 'Downloaded';
-                break;*/
         }
     }
 
@@ -509,8 +474,15 @@ class finanzarel extends p2pCompany {
         echo 'Downloaded';
     }
     
-    public function companyUserLogout($url) {
-        
+    public function companyUserLogout($url = null) {
+        $this->doCompanyLogout(); //logout
+        return true;
+    }
+    
+    public function companyUserLogoutMultiCurl($str = null) {
+        //Get logout url
+        $this->doCompanyLogoutMultiCurl(); //Logout
+
     }
 
 }
