@@ -656,7 +656,7 @@ class p2pCompany {
      * 	@return	string		$str	html string
      *
      */
-    function doCompanyLoginMultiCurl(array $loginCredentials, $payload = null) {
+    function doCompanyLoginMultiCurl($loginCredentials, $payload = null) {
         $url = array_shift($this->urlSequence);
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -1863,7 +1863,8 @@ class p2pCompany {
         }
         
         if ($headers !== false && empty($headers)) {
-            $headers = array_shift($this->urlSequence);
+            $headersJson = array_shift($this->urlSequence);
+            $headers = json_decode($headersJson,true);
         }
 
         $this->errorInfo = $url;

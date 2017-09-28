@@ -237,7 +237,7 @@ class twino extends p2pCompany {
                 //$credentials['googleAnalyticClientId'] = '1778227581.1503479723';
                 $payload = json_encode($credentials);
                 $this->idForSwitch++;
-                $this->doCompanyLoginMultiCurl(array(),$payload);
+                $this->doCompanyLoginMultiCurl($payload,true);
                 break;
             case 1:
                 echo $str;
@@ -245,6 +245,20 @@ class twino extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             case 2:
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $containers = $dom->getElementsByTagName('section');
+                var_dump($containers);
+                foreach($containers as $container){
+                    $divs = $container->getElementsByTagName('div');
+                    foreach($divs as $key => $div){
+                        echo "Key " . $key . " is " . $div->nodeValue;
+                    }               
+                }
+                
+                
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
@@ -337,9 +351,20 @@ class twino extends p2pCompany {
                     echo 'Repeat Case: ' . $this->idForSwitch .  SHELL_ENDOFLINE;
                 }
                 break;
-            case 9:
-                return $tempArray["global"] = "waiting_for_global";
+            case 9:          
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                //return $tempArray["global"] = "waiting_for_global";
                 break;
+            case 10:
+                echo $str;
+                $variables = json_decode($str,true);
+                print_r($variables);
+                
+                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
+                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($variables['investmentBalance']); //My wallet
+                $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($variables['interest']); //Interest
+                
         }
     }
 
