@@ -328,8 +328,8 @@ class bondora extends p2pCompany {
                 }
 
                 $this->idForSwitch++;
-                $this->tempUrl['ReportUrl'] = array_shift($this->urlSequence);
-                $this->getCompanyWebpageMultiCurl($this->tempUrl['ReportUrl']);
+                $this->tempUrl['reportUrl'] = array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
                 break;
 
             case 4:
@@ -413,11 +413,11 @@ class bondora extends p2pCompany {
                       echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                       $this->print_r2($credentials);
                       echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
-                      if(empty($this->tempUrl['GenerateReport'])){
-                      $this->tempUrl['GenerateReport'] = array_shift($this->urlSequence);
+                      if(empty($this->tempUrl['generateReport'])){
+                      $this->tempUrl['generateReport'] = array_shift($this->urlSequence);
                       }
                       $this->idForSwitch = 10;
-                      $this->getCompanyWebpageMultiCurl($this->tempUrl['GenerateReport'], $credentials);
+                      $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                       break;
                       } */
                 }
@@ -523,7 +523,7 @@ class bondora extends p2pCompany {
             /* case 10:
               sleep(5);
               $this->idForSwitch = 4;
-              $this->getCompanyWebpageMultiCurl($this->tempUrl['ReportUrl']);
+              $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
               break;
              */
         }
@@ -603,11 +603,11 @@ class bondora extends p2pCompany {
                 break;
             case 4:
 
-                if (empty($this->tempUrl['InvestmentUrl'])) {
-                    $this->tempUrl['InvestmentUrl'] = array_shift($this->urlSequence);
+                if (empty($this->tempUrl['investmentUrl'])) {
+                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url = $this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i];
                 echo "the table url is: " . $url;
                 $this->i++;
                 $this->idForSwitch++;
@@ -634,7 +634,7 @@ class bondora extends p2pCompany {
 
                 if ($this->i++ < $this->maxLoans) {
                     $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
                     break;
                 } else {
                     return $this->tempArray;

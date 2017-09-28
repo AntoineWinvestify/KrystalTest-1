@@ -1202,7 +1202,11 @@ class zank extends p2pCompany {
         
     }
     
-    
+    /**
+     *  Read amortization tables
+     * @param type $str
+     * @return type
+     */
     function collectAmortizationTablesParallel($str){
          switch ($this->idForSwitch){
             case 0:
@@ -1345,7 +1349,7 @@ class zank extends p2pCompany {
                 }
                 if($this->i++ < $this->maxLoans){
                     $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
                     break;               
                 }else{
                     return $this->tempArray;

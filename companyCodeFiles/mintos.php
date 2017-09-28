@@ -112,7 +112,7 @@ class mintos extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
-        $this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");     
+        //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");     
         $this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
     }
@@ -420,11 +420,11 @@ class mintos extends p2pCompany {
                 break;
             case 4:
                 
-                if(empty($this->tempUrl['InvestmentUrl'])){
-                    $this->tempUrl['InvestmentUrl'] = array_shift($this->urlSequence);    
+                if(empty($this->tempUrl['investmentUrl'])){
+                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);    
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url =  $this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i];
+                $url =  $this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i];
                 echo "the table url is: " . $url; 
                 $this->i = $this->i + 1;
                 $this->idForSwitch++;
@@ -452,7 +452,7 @@ class mintos extends p2pCompany {
                 if($this->i < $this->maxLoans){
                     echo "Read again";
                     $this->idForSwitch = 4;
-                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i]);
+                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
                     break;               
                 }
                 else{
