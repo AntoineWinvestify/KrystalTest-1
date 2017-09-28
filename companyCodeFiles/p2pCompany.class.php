@@ -1965,7 +1965,15 @@ class p2pCompany {
   
     /**
      * Transform an array amortization table to a html structure with <table> tag
-     * 
+     * array stricture
+     * array (                  //<table>
+     *  [0] => array (          //<tr>
+     *      [key1] => value1    // <td>value1</td> 
+     *      [key2] => value2    //<td>value1</td> 
+     *        ...               // ...
+     *      )                   //</tr>
+     *  [1] => ...              // ...
+     * )                        //</table>
      * @param array $rows array with amortization table info.
      * @return string string with table structure.
      */
