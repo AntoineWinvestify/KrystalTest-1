@@ -162,6 +162,8 @@ class p2pCompany {
     protected $linkAccountId;
     //Variables for casperjs
     protected $casperObject;
+    //Variables for amortization tables
+    protected $loanIds = [];
     
 
     /**
@@ -2456,7 +2458,16 @@ class p2pCompany {
     function setLinkAccountId($linkAccountId) {
         $this->linkAccountId = $linkAccountId;
     }
+    
+    function getLoanIds() {
+        return $this->loanIds;
+    }
 
+    function setLoandIds($loanIds) {
+        $this->loandIds = $loanIds;
+    }
+
+    
     
     
 
