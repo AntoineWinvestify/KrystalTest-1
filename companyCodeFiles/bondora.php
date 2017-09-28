@@ -439,14 +439,16 @@ class bondora extends p2pCompany {
                 print_r($this->tempUrl);
 
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, null, 'BondoraInvestment');
+                $this->getPFPFileMulticurl($url, null, false, null, $fileName);
                 break;
 
             case 5:
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadCashFlow'];
+                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, null, 'BondoraCashFlow');
+                $this->getPFPFileMulticurl($url, null, false, null, $fileName);
                 break;
 
             case 6:

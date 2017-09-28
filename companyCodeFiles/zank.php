@@ -1182,7 +1182,8 @@ class zank extends p2pCompany {
                 // goto page "MI CARTERA"
                 $url = array_shift($this->urlSequence) . $this->userId;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, 'Invesment');  // load Webpage into a string variable so it can be parsed	
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
                 echo 'URL SEQUECE FLOW: ' . SHELL_ENDOFLINE;
@@ -1191,8 +1192,9 @@ class zank extends p2pCompany {
                 
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
+                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, 'CashFlow');  // load Webpage into a string variable so it can be parsed	
+                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
                 return $this->tempArray;

@@ -216,7 +216,7 @@ class twino extends p2pCompany {
      * @param string $user
      * @param string $password
      */
-    function k($str) {
+    function collectUserGlobalFilesParallel($str) {
 
 
         switch ($this->idForSwitch) {
@@ -292,8 +292,9 @@ class twino extends p2pCompany {
                 print_r($response);
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
+                    $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                     $this->idForSwitch++;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoInvestment');
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
@@ -323,8 +324,9 @@ class twino extends p2pCompany {
                     break;
                 } else {
                     echo 'Status true, downloading';
+                    $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                     $this->idForSwitch = 9;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoCashFlow');
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
                     break;
                 }
             case 8:
@@ -333,8 +335,9 @@ class twino extends p2pCompany {
                 print_r($response);
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
+                    $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                     $this->idForSwitch++;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoCashFlow');
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
@@ -358,7 +361,7 @@ class twino extends p2pCompany {
         }
     }
 
-    function collectUserGlobalFilesParallel($str) {
+    function collectAmortizationTablesParallel($str) {
         switch ($this->idForSwitch) {
 
             /////////////LOGIN
@@ -433,7 +436,7 @@ class twino extends p2pCompany {
                     $arrayAmortizationTable['scheduleItems'][$i]['dueDate'] = implode("-", $arrayAmortizationTable['scheduleItems'][$i]['dueDate']);
                 }
                 //print_r($arrayAmortizationTable['scheduleItems']);
-                $table = $this->tableConversion($arrayAmortizationTable['scheduleItems']);
+                $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']);
 
                 echo "_-_-_-_-_-_-_-_table is : " . $table . "_-_-_-_-_-_-_-_";
                         
@@ -448,29 +451,7 @@ class twino extends p2pCompany {
         }
     }
 
-    /**
-     * Transform amortization table without <table> tag to a html structure with <table> tag
-     * 
-     * @param string $str string without table structure
-     * @return string string with table structure
-     */
-    function tableConversion($rows) {
-        ob_start();
-        
-        echo "<table>";
-        foreach ($rows as $row) {
-            echo "<tr>";
-            foreach ($row as $column) {
-                echo "<td>$column</td>";
-            }
-            echo "</tr>";
-        }
-        echo "</table>";
 
-        $table = ob_get_clean();
-        
-        return $table;
-    }
 
     /**
      *
