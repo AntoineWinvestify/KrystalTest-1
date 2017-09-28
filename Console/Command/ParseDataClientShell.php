@@ -73,26 +73,39 @@ class ParseDataClientShell extends AppShell {
                 foreach ($pendingJobs as $keyjobs => $job) {
                     $userReference = $job['Queue']['queue_userReference'];
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . date("Ymd",time()) . DS ;
-
                     $newDir = array();
+                   
                     foreach (new DirectoryIterator($directory) as $fullFilename => $fileInfo) {
                         if(!$fileInfo->isDot()){ 
                             if($fileInfo->isDir()){
-                                $dirs = $directory . $fileInfo->getFilename();
+                                $dirs = $fileInfo->getPath(). DS . $fileInfo->getFilename(); // get next directory level
                                 $newDir[] = $dirs;
                             }
                         }
                     }
 
-                    foreach ($newDir as $dirKey => $directory11) {
-                        $tempPfpName = explode("/", $directory11);
+                    foreach ($newDir as $level1NewDir) {
+                         foreach (new DirectoryIterator($level1NewDir) as $fullFilename => $fileInfo) {
+                            if(!$fileInfo->isDot()){ 
+                                if($fileInfo->isDir()){
+                                    $tempDir = $fileInfo->getPath(). DS . $fileInfo->getFilename(); // get next directory level
+                                    $newDirLevel[] = $tempDir;
+                                }
+                            }
+                        }    
+                    }    
+
+                    foreach ($newDirLevel as $dirKey => $subDirectory) {
+                        $tempPfpName = explode("/", $subDirectory);
+                        $linkedAccountId = $tempPfpName[count($tempPfpName) - 2];
                         $pfp = $tempPfpName[count($tempPfpName) - 1];
                         // we have the platform, and the directory where all the files are stored.
-                        $files = $this->readDirFiles($directory11, TRANSACTION_FILE + INVESTMENT_FILE );
+                        $files = $this->readDirFiles($subDirectory, TRANSACTION_FILE + INVESTMENT_FILE );
 
-                        $params[$pfp] = array('queue_id' => $job['Queue']['id'],
-                                   'userReference' => $job['Queue']['queue_userReference'], 
-                                    'files' => $files);   
+                        $params[$linkedAccountId] = array('queue_id' => $job['Queue']['id'],
+                                                                'pfp' => $pfp,
+                                                    'userReference' => $job['Queue']['queue_userReference'], 
+                                                            'files' => $files);   
                     }    
                     $response[] = $this->GearmanClient->addTask("parseFileFlow", json_encode($params));
                     unset($tempPfpName);
@@ -128,7 +141,46 @@ class ParseDataClientShell extends AppShell {
         }        
     }
     
-        
+   
+    
+    
+    
+    
+    
+    
+    
+ public function recursiveDirectoryIterator ($directory = null, $files = array()) {
+    $iterator = new \DirectoryIterator ( $directory );
+
+    foreach ( $iterator as $info ) {
+        if ($info->isFile ()) {
+            $files [$info->__toString ()] = $info;
+        } elseif (!$info->isDot ()) {
+            $list = array($info->__toString () => $this->recursiveDirectoryIterator(
+                        $directory.DIRECTORY_SEPARATOR.$info->__toString ()
+            ));
+            if(!empty($files))
+                $files = array_merge_recursive($files, $filest);
+            else {
+                $files = $list;
+            }
+        }
+    }
+    return $files;
+}   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * checks to see if jobs are waiting in the queue for processing
      * 

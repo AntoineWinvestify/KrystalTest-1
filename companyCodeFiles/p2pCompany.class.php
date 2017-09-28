@@ -540,7 +540,7 @@ class p2pCompany {
      * 	@param string 		$url	The url the connect to
      *
      */
-    function getCompanyWebpage($url = null) {
+    function getCompanyWebpage($url, $credentials = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -580,6 +580,15 @@ class p2pCompany {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
+        }
+        
+        if (!empty($credentials)) {
+                foreach ($credentials as $key => $value) {
+                $postItems[] = $key . '=' . $value;
+            }
+            $postString = implode('&', $postItems);
+            //set data to be posted
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $postString);
         }
 
         // Set the file URL to fetch through cURL
@@ -795,6 +804,7 @@ class p2pCompany {
             $url = array_shift($this->urlSequence);
             echo $url;
         }
+        echo 'The url is: ' . $url;
         $this->errorInfo = $url;
 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -816,14 +826,15 @@ class p2pCompany {
         
         if(!empty($credentials)) {
             if ($payload) {
+            $postString = $credentials;
             $request->getOptions()
                 ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
             }
             else {
-                $credentials = http_build_query($credentials);
+                $postString = http_build_query($credentials);
             }    
             $request->getOptions()
-                ->set(CURLOPT_POSTFIELDS, $credentials);
+                ->set(CURLOPT_POSTFIELDS, $postString);
         }
         
 
@@ -841,6 +852,7 @@ class p2pCompany {
 
             unset($this->headers);   // reset fields
         }
+        
         //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
         $info = [
             "companyIdForQueue" => $this->idForQueue,
@@ -1397,6 +1409,15 @@ class p2pCompany {
             return null;
         }
     }
+    
+    public function createFolderPFPFile() {
+        $date = date("Ymd");
+        $configPath = Configure::read('files');
+        $partialPath = $configPath['investorPath'];
+        $path = $this->userReference . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
+        $pathCreated = $this->createFolder($path, $partialPath);
+        return $pathCreated;
+    }
 
 
     /**
@@ -1488,8 +1509,17 @@ class p2pCompany {
                 . $error_request
                 . "$newLine The time is : " . date("Y-m-d H:i:s")
                 . "$newLine ERROR FINISHED<br>";
+        $errorDetailed = "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
+                . ". The queueId is " . $this->queueId['Queue']['id']
+                . ". The error was caused in the urlsequence: " . $this->errorInfo
+                . " " . $type_sequence
+                . " " . $error_request;
+        $position = stripos($file, 'companyCodeFiles');
+        $substring = substr($file, $position+17);
+        $company = explode(".", $substring)[0];
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
+        $this->classContainer->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $company . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
         return $this->tempArray;
     }
 
@@ -1806,35 +1836,33 @@ class p2pCompany {
             $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
-        if ($referer != false && empty($referer)) {
+        if ($referer !== false && empty($referer)) {
             $referer = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
-        if ($credentials != false && empty($credentials)) {
+        if ($credentials !== false && empty($credentials)) {
             $credentials = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
         }
         
-        if ($headers != false && empty($headers)) {
+        if ($headers !== false && empty($headers)) {
             $headers = array_shift($this->urlSequence);
         }
 
         $this->errorInfo = $url;
         echo "File name is " . $fileName;
         
-        $date = date("d-m-Y");
-        $configPath = Configure::read('files');
-        $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . 'Investments' . DS . $date . DS . $this->companyName . DS . $this->linkAccountId;
-        $pathCreated = $this->createFolder($path, $partialPath);
+        $pathCreated = $this->createFolderPFPFile();
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
             //$path = $partialPath . DS . $path;
             //echo "The path is " . $partialPath . $path;
             echo "url download File: " . $this->errorInfo . " \n";
             echo "Cannot create folder \n";
+            //We should implement a method to fail
         }
-        $output_filename = $fileName . '_' . $date . '.' . $this->fileType;
+        $date = date("Ymd");
+        $output_filename = $fileName . '.' . $this->fileType;
         $this->fp = fopen($pathCreated . DS . $output_filename, 'w');
         if (!$this->fp) {
             echo "Couldn't created the file \n";
@@ -1866,7 +1894,7 @@ class p2pCompany {
         if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
-                    ->set(CURLOPT_HTTPHEADER, $this->headers);
+                    ->set(CURLOPT_HTTPHEADER, $headers);
 
             unset($headers);   // reset fields
         }
@@ -1930,6 +1958,9 @@ class p2pCompany {
 
         //echo 'We have' . $node1->nodeName . ' and ' . $node2->nodeName . HTML_ENDOFLINE;
         //We verify if nodes has attributes
+        if(!$node1 && !$node2){
+            return  $this->sameStructure;
+        }
         if ($node1->hasAttributes() && $node2->hasAttributes() && $this->sameStructure) {
             $node1Attr = $node1->attributes;
             $node2Attr = $node2->attributes;
@@ -1987,21 +2018,53 @@ class p2pCompany {
                 $limitChildren = $childrenNode1->length;
 
                 for ($i = 0; $i < $limitChildren; $i++) {
-
-                    if ($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text") { //Skip text nodes
+                    
+                    /*echo 'Children node 1: ' . $i . HTML_ENDOFLINE;
+                    var_dump($childrenNode1[$i]);
+                    echo 'Children node 2: ' . $i . HTML_ENDOFLINE;
+                    var_dump($childrenNode2[$i]);*/
+                                                
+                    if($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text"){ //Delete text nodes
+                        if($childrenNode1[$i]->nodeName == "#text"){
+                            //echo 'Deleting text from node 1' . HTML_ENDOFLINE;
+                            $childrenNode1[$i]->parentNode->removeChild($childrenNode1[$i]);
+                            array_values($childrenNode1);     
+                        }
+                        if($childrenNode2[$i]->nodeName == "#text"){
+                            //echo 'Deleting text from node 2' . HTML_ENDOFLINE;           
+                            $childrenNode2[$i]->parentNode->removeChild($childrenNode2[$i]);      
+                            array_values($childrenNode2);
+                        }
+                        $i--;
                         continue;
                     }
 
+                    if($childrenNode1[$i]->nodeName == "#comment" || $childrenNode2[$i]->nodeName == "#comment"){ //Delete comment nodes  
+                        //echo 'comment finded in i=' . $i . HTML_ENDOFLINE;
+                        if($childrenNode1[$i]->nodeName == "#comment"){
+                            //echo 'Deleting comment from node 1' . HTML_ENDOFLINE;
+                            $childrenNode1[$i]->parentNode->removeChild($childrenNode1[$i]);
+                            array_values($childrenNode1);     
+                        }
+                        if($childrenNode2[$i]->nodeName == "#comment"){
+                            //echo 'Deleting comment from node 2' . HTML_ENDOFLINE;           
+                            $childrenNode2[$i]->parentNode->removeChild($childrenNode2[$i]);      
+                            array_values($childrenNode2);
+                        }
+                        $i--;
+                        continue;
+                    }
+                                        
                     if (!$childrenNode1[$i] && $childrenNode2[$i]) { //First we verify if node exist
-                        /* echo 'Node1 doesnt exist: <br>';
-                          echo 'parent => ' . $childrenNode1[$i]->parentNode->nodeName . ' of ' . $childrenNode1[$i]->nodeName . ' value ' . $childrenNode1[$i]->nodeValue . '<br>';
-                          echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>'; */
+                        echo 'Node1 doesnt exist, child' . $i . ': <br>';
+                        echo 'parent => ' . $childrenNode1[$i]->parentNode->nodeName . ' of ' . $childrenNode1[$i]->nodeName . ' value ' . $childrenNode1[$i]->nodeValue . '<br>';
+                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';
 
                         $this->sameStructure = false;
-                    } else if ($childrenNode1[$i] && !$childrenNode2[$i]) {
-                        /* echo 'Node2 doesnt exist: <br>';
-                          echo $childrenNode1[$i]->parentNode->nodeName . ' ' . $childrenNode1[$i]->nodeName . ' is 1' . $childrenNode1[$i]->nodeValue . '<br>';
-                          echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>'; */
+                    } else if($childrenNode1[$i] && !$childrenNode2[$i]){
+                        echo 'Node2 doesnt exist, child' . $i . ': <br>';
+                        echo $childrenNode1[$i]->parentNode->nodeName . ' ' . $childrenNode1[$i]->nodeName . ' is 1' . $childrenNode1[$i]->nodeValue . '<br>';
+                        echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';
 
                         $this->sameStructure = false;
                     }
@@ -2129,7 +2192,7 @@ class p2pCompany {
         }
         return $elements;
     }
-
+     
     /**
      * 
      * 
@@ -2288,8 +2351,8 @@ class p2pCompany {
      * @param array $investment single investment that we compare
      */
     public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
-        print_r($investment);
-        print_r($loanReferenceList);
+        //print_r($investment);
+        //print_r($loanReferenceList);
          foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
             if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
                 echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;

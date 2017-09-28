@@ -24,6 +24,13 @@ modal updated with new css & classes
 ajax spinner
  
  
+2017-07-24      version 0.4
+ga_registrationStep4 now sends the number of platforms in which the user has investments,
+insted of the types of platforms.
+
+
+
+
 */
 ?>
 <?php  

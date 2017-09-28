@@ -38,7 +38,6 @@ class AppShell extends Shell {
      *
      */
     function companyClass($companyCodeFile) {
-echo __FUNCTION__ . " " . __LINE__ . "\n";
         $dir = Configure::read('companySpecificPhpCodeBaseDir');
         $includeFile = $dir . $companyCodeFile . ".php";
         require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
@@ -55,7 +54,7 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
     
        
     /**
-     * Read the names in directory $dir of the files (FDQN) that fullfil the $typeOfFiles bitmap
+     * Read the names in directory $dir of the files (FDQN) that fulfill the $typeOfFiles bitmap
      * 
      * @param string $dir           Directory in which to search
      * @param int $typeOfFiles      bitmap of constants of Type Of File:
@@ -83,7 +82,7 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
       
     
     /**
-     * Read the names in a list of files (FDQN) that fullfil the $typeOfFiles bitmap
+     * Read the names in a list of files (FDQN) that fulfill the $typeOfFiles bitmap
      * 
      * @param array $fileNameList   list of filesnames to be analyzed
      * @param int $typeOfFiles      bitmap of constants of Type Of File:
@@ -91,16 +90,16 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
      * @return array  $approveFileNameList    list of FQDN filenames
      */
     function readFilteredFiles($fileNameList,  $typeOfFiles) {
-       $approvedFileNameList = array();       
+        $approvedFileNameList = array();       
 // start temp
         $knownFileTypesNames = array (
             TRANSACTION_FILE => "transaction",
             INVESTMENT_FILE => "investment",
-//            TRANSACTIONTABLE_FILE => 
-            AMORTIZATION_TABLE_FILE => "amortizationtable",
+//            TRANSACTIONTABLE_FILE =>  
+            AMORTIZATION_TABLE_FILE => "amortizationTable",
 //            AMORTIZATION_TABLE_ARRAY => 
-//            AMORTIZATION_TABLE_FILE =>
-            CONTROL_FILE => "control"
+            AMORTIZATION_TABLE_FILE => "amortizationTableList",
+            CONTROL_FILE => "controlVariables"
             );
         
         $requiredFileType = array();

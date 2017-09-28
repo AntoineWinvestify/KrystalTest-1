@@ -187,6 +187,10 @@ public function beforeSave1($options = array()) {
     return true;
 }
 
+
+
+
+
     public function getUsersByStatus($queuetype, $status, $userAccess = null, $limit = null) {
         
         switch ($queuetype) {
@@ -212,7 +216,7 @@ echo "queue_status = $status queue_type = $queuetype, userAccess = $userAccess, 
         $result = $this->find("all", array("conditions" => array(
                                                         "queue_type" => $queuetype,
                                                         "queue_status" => $status,
-                                                  //      "queue_accessType" => $userAccess
+                                                  //      "queue_info => $userAccess
                 ),
                                             "order" => $order,
                                             "limit" => $limit)

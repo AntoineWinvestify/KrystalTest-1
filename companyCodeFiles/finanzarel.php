@@ -242,55 +242,39 @@ class finanzarel extends p2pCompany {
                     }
                 }
                 
-                $fileUrl =  array_shift($this->urlSequence);
+                $url =  array_shift($this->urlSequence);
+                echo "The url is " . $url . "\n";
+                $referer = array_shift($this->urlSequence);
+                $referer = strtr($referer, array(
+                    '{$p_flow_step_id}' => 1,
+                    '{$p_instance}' => $this->credentialsGlobal['p_instance']
+                        ));
+                
+                echo "HOLaaaaaaaaaaaa " . $referer;
+                echo "\n";
+                
+                //$credentials = array_shift($this->urlSequence);
                 $credentialsFile = array(
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
-                        'p_flow_step_id' => $credentials['p_flow_step_id'], 
-                        'p_instance' => $credentials['p_instance'],  
+                        'p_flow_step_id' => 1, 
+                        'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $request[0]);
+                echo "HOLaaaaaaaaaaaa2 ";
+                echo "\n";
                 print_r($credentialsFile);
-                //echo $fileUrl . HTML_ENDOFLINE;
                 $fileName = 'Investment';
                 //$fileType = 'csv';
-                $referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
+                //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:{$credential_p_flow_step_id}:{$credential_p_instance}';
                 $this->baseUrl = 'marketplace.finanzarel.com';
-                //$path = 'prueba';
-                
-                //$this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
-                //echo 'Downloaded';
-                
-                
-                echo 'URL: ' . $fileUrl;
-                $cookiesFileOpened = fopen($this->cookiesDir . DS . $this->cookies_name, "r");
-                $stringCookies = file_get_contents($this->cookiesDir . DS . $this->cookies_name);
-                $stringCookieOne = "FNZRL_WORLD";
-                $cookiePosFirst = stripos($stringCookies, $stringCookieOne);
-                $cookieSubstr = substr($stringCookies, $cookiePosFirst + strlen($stringCookieOne) + 1);
-                $separator = "#HttpOnly";
-                $cookiePosSecond = stripos($cookieSubstr, $separator);
-                $firstCookie = str_split($cookieSubstr, $cookiePosSecond);
-                $stringCookieTwo = "LOGIN_USERNAME_COOKIE";
-                $cookiePosThird = stripos($stringCookies, $stringCookieTwo);
-                $secondCookie = substr($stringCookies, $cookiePosThird + strlen($stringCookieTwo) + 1);
-                /*$header[] = 'Accept-language: es-ES,es;q=0.8';
-                $header[] = 'Upgrade-insecure-requests: 1';
-                $header[] = 'Host: ' . $this->baseUrl;
-                //$header[] = 'Content-type: application/x-www-form-urlencoded';                                    
-                $header[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*//*Delete a SLASH frombefore;q=0.8';
-                $header[] = 'Cookie: LOGIN_USERNAME_COOKIE=' . trim($secondCookie) . '; FNZRL_WORLD=' . trim($firstCookie) . '; ' 
-                        . '_ga=GA1.2.127419396.1505923123; _gid=GA1.2.984339975.1505923123; mp_5cc54fb25fbf8152c17f1bd71396f8fa_mixpanel=%7B%22distinct_id%22%3A%20%22kkukovetz%40mli-ltd.com%22%2C%22%24search_engine%22%3A%20%22duckduckgo%22%2C%22%24initial_referrer%22%3A%20%22https%3A%2F%2Fduckduckgo.com%2F%22%2C%22%24initial_referring_domain%22%3A%20%22duckduckgo.com%22%7D; mp_mixpanel__c=1';
-                //$header[] = 'authority: ' . $pfpBaseUrl;
-                //$header[] = 'cache-control: max-age=0';
-                $header[] = 'Connection: keep-alive';
-                $header[] = 'Upgrade-Insecure-Requests: 1';*/
-                $header = array('Expect:');
                 //How we get fix Finanzarel
                 //https://chrismckee.co.uk/curl-http-417-expectation-failed/
                 //https://stackoverflow.com/questions/3755786/php-curl-post-request-and-error-417
+                $headers = array('Expect:');
+                //array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($fileUrl,$referer, $credentialsFile, $header, $fileName);
+                $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
                 break; 
             case 4:
                 return $tempArray["global"] = "waiting_for_global";

@@ -74,11 +74,10 @@ class AdminpfpAppController extends AppController {
 */
 public function beforeFilter() {
    parent::beforeFilter();
-    $this->Cookie->name = 'Winvestify_pfpadmin';
+    $this->Cookie->name = 'Winvestify_adminpfp';
 
 
 }
-
 
 
 

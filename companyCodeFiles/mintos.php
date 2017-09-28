@@ -15,7 +15,7 @@
  * +-----------------------------------------------------------------------------+
  *
  *
- * Contains the code required for accessing the website of "Mintos"
+ * Contains the code required for accessing the website of "Mintos".
  *
  * 
  * @author 
@@ -26,37 +26,39 @@
  * 2017-08-23
  * link account
  * 
+ * 2017-09-28
+ * Added configuration files so we can analyze "investment_X.xls", transactions_X.xls"
+ * 
  */
 
 /**
- * Description of mintos
+ * Description of Mintos
  *
  */
 class mintos extends p2pCompany {   
     protected $valuesMintosTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
-                "name" => "transaction_id"
+                "name" => "transactionId"                                               // Winvestify standardized name 
              ],
             "B" => [
                 [
-                    "type" => "date",                           // Winvestify standardized name 
+                    "type" => "date",                                                   // Winvestify standardized name 
                     "inputData" => [
-				"input2" => "Y-m-d",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                  // etc etc  ...
+				"input2" => "Y-M-D",
                                 ],
                     "functionName" => "normalizeDate",         
                 ]
             ],
-            "C" => [
+            "C" => [// NOT FINISHED YET
                 [
-                    "type" => "loanId",                         // Complex format, calling external method
+                    "type" => "loanId",                         // trick to get the complete cell data as purpose
                     "inputData" => [
-                                "input2" => "Loan ID: ",        // May contain trailing spaces
+                                "input2" => "",                 // May contain trailing spaces
                                 "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
+                            ],                   
+                    "functionName" => "extractDataFromString", 
                 ],
+                
                 [
                     "type" => "transactionType",                // Complex format, calling external method
                     "inputData" => [                            // List of all concepts that the platform can generate
@@ -93,27 +95,224 @@ class mintos extends p2pCompany {
                     "functionName" => "getTransactionDetail",  
                 ]
             ],
-            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
-                    "name" => "turnover",                      
-                ],
+            "D" => [                                          
+                [
+                    "type" => "investment.totalLoanAmount",                             // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",                                         
+                                "input3" => ",",                                        
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]  
+            ],
             "E" => [
-                    "name" => "balance",
-                ],
+                [
+                    "type" => "investment.totalLoanAmount",                             // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",                                         
+                                "input3" => ",",                                        
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]              
+            ],
             "F" => [
                 [
-                    "type" => "currency",                       // Complex format, calling external method
+                    "type" => "currency",                                               // Winvestify standardized name 
                     "functionName" => "getCurrency",  
                 ]
-            ]          
+            ],  
         ]; 
     
+    protected $valuesMintosInvestment = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                "name" => "investment.loanOrigin"                                       // Winvestify standardized name 
+             ],       
+            "B" =>  [
+                "name" => "investment.loanId"                                           // Winvestify standardized name 
+             ],
+            "C" =>  [
+                [
+                    "type" => "investment.issueDate",                                   // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D.M.Y",                                    
+                                                                                        
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+             ],       
+            "D" =>  [
+                "name" => "investment.loanType"                                         // Winvestify standardized name
+             ],        
+            "E" =>  [
+                "name" => "investment.amortizationMethod"                               // Winvestify standardized name
+             ],       
+            "F" =>  [
+                "name" => "investment.loanOriginator"                                   // Winvestify standardized name
+             ],
+            "G" =>  [
+                [
+                    "type" => "investment.totalLoanAmount",                             // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",                                         
+                                "input3" => ",",                                        
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],       
+            "H" =>  [
+                [
+                    "type" => "investment.remainingPrincipalTotalLoan",                 // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",                                         
+                                "input3" => ",",      
+                                "input4" => 5,
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],
+            "I" =>  [
+                [
+                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D.M.Y",       
+                                                            
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+             ],
+            "J" =>  [
+                [
+                    "type" => "investment.nextPaymentAmount",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",       
+                                "input3" => ",",  
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],        
+            "K" =>  [
+                "name" => "investment.LTV"                                              // Winvestify standardized name 
+             ],
+            "L" =>  [
+                [
+                    "type" => "investment.interestRate",                                // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D.M.Y",           
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+             ],        
+            "M" =>  [
+                "name" => "investment.totalInstalments"                                 // Winvestify standardized name 
+             ],       
+            "N" =>  [
+                "name" => "investment.paidInstalments"                                  // Winvestify standardized name 
+             ],       
+            "P" =>  [
+                "name" => "investment.loanStatus"                                       // Winvestify standardized name 
+             ],
+            "P" =>  [
+                "name" => "investment.buyBackGuarantee"                                 // Winvestify standardized name 
+             ],
+            "Q" =>  [
+                [
+                    "type" => "investment.myInvestment",                                // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",    
+                                "input3" => ",",    
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],
+            "R" =>  [
+                                [
+                    "type" => "investment.purchaseDate",                                // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D.M.Y",  
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+             ],              
+            "S" =>  [
+                [
+                    "type" => "investment.receivedPayments",                            // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",       
+                                "input3" => ",",
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],
+            "T" =>  [
+                [
+                    "type" => "investment.outstandingPrincipal",                        // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",   
+                                "input3" => ",",    
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],       
+            "U" =>  [
+                [
+                    "type" => "investment.amountSecondaryMarket",                       // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",   
+                                "input3" => ",",   
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],
+            "V" =>  [
+                [
+                    "type" => "investment.price",                                       // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",  
+                                "input3" => ",",    
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],      
+            "W" =>  [
+                [
+                    "type" => "investment.discount_premium",                            // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",    
+                                "input3" => ",",    
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],       
+            "X" =>  [
+                [
+                    "type" => "currency",                                               // Winvestify standardized name 
+                    "functionName" => "getCurrency",  
+                ]
+             ],        
+        ];
     
+     protected $valuesMintosAmortization = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                "name" => "transaction_id"
+             ],   
+        ];     
+     
+     
     
     function __construct() {
         parent::__construct();
 
-
-        // Do whatever is needed for this subsclass
+        // Do whatever extra is needed for this subsclass
     }
     
                     
@@ -213,135 +412,7 @@ class mintos extends p2pCompany {
         }
         return false;
     }
-
-    /**
-     * Download the file with the user investment
-     * @param string $user
-     * @param string $password
-     */
-    /*function collectUserInvestmentDataParallel($str = null) {
-
-
-        switch ($this->idForSwitch) {
-            /////////////LOGIN
-            case 0:
-                echo $this->idForSwitch . HTML_ENDOFLINE;
-                $this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl();
-                echo 'Next: ' . $next . HTML_ENDOFLINE;
-                break;
-            case 1:
-                echo $this->idForSwitch . HTML_ENDOFLINE;
-                //Login fixed
-                $dom = new DOMDocument;
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-
-                $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
-                $csrf = $input[0]->getAttribute('value'); //this is the csrf token
-
-                $this->credentials['_username'] = $this->user;
-                $this->credentials['_password'] = $this->password;
-                $this->credentials['_csrf_token'] = $csrf;
-                $this->credentials['_submit'] = '';
-
-                echo 'Credentials: ' .HTML_ENDOFLINE;
-                $this->print_r2($this->credentials);
-                
-                $this->idForSwitch++;
-                $this->doCompanyLoginMultiCurl($this->credentials);
-                unset($this->credentials);
-                break;
-            case 2:
-                echo $this->idForSwitch . HTML_ENDOFLINE;
-                $this->idForSwitch++;
-                //echo $str;
-                $next = $this->getCompanyWebpageMultiCurl();
-                echo 'Next: ' . $next . HTML_ENDOFLINE;
-                break;
-            case 3:
-                echo $this->idForSwitch . HTML_ENDOFLINE;
-                $dom = new DOMDocument;  //Check if works
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-                //echo $str;
-                $resultLogin = false;
-                echo 'CHeck login' . HTML_ENDOFLINE;
-                $as = $dom->getElementsByTagName('a');
-                foreach ($as as $a) {
-                    echo $a->nodeValue . HTML_ENDOFLINE;
-                    if (trim($a->nodeValue) == 'Overview') {
-                        echo 'Find' . HTML_ENDOFLINE;
-                        $resultLogin = true;
-                        break;
-                    }
-                }
-
-                 /*if (!$resultLogin) {   // Error while logging in
-                    $tracings = "Tracing:\n";
-                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
-                    $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
-                    $tracings .= " \n";
-                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
-                    $msg = $msg . $tracings . " \n";
-                    $this->logToFile("Warning", $msg);
-                    exit;
-                } */
-                
-                /*$this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl();
-                echo 'Next: ' . $next . HTML_ENDOFLINE;
-                break;
-            ////////DOWNLOAD FILE
-            case 4:
-                echo $this->idForSwitch . HTML_ENDOFLINE;         
-                echo 'Login ok';
-                $fileUrl = array_shift($this->urlSequence);
-                echo $fileUrl . HTML_ENDOFLINE;
-                $credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
-                $fileName = 'Investment';
-                $fileType = 'xlsx';
-                $pfpBaseUrl = 'https://www.mintos.com';
-                $referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile,$referer);
-                //echo 'Downloaded';
-                $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
-                break;
-            case 5:
-                $fileUrl = array_shift($this->urlSequence);
-                $credentialsFile = "account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
-                $fileName = 'CashFlow';
-                $fileType = 'xlsx';
-                $pfpBaseUrl = 'https://www.mintos.com';
-                $referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]=12.09.2017&account_statement_filter[toDate]=12.09.2017&account_statement_filter[maxResults]=20";
-                $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Mintos', 'prueba', $credentialsFile,$referer);
-                $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
-                break;           
-            //////LOGOUT
-            case 6:
-                echo $this->idForSwitch . HTML_ENDOFLINE;
-                //Get logout url
-                $dom = new DOMDocument;
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-                $as = $dom->getElementsByTagName('a');
-                foreach ($as as $a) {
-                    echo $a->getAttribute('class') . HTML_ENDOFLINE;
-                    if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
-                        $logoutUrl = $a->getAttribute('href');
-                        break;
-                    }
-                }
-                echo 'Logout:' . $logoutUrl . HTML_ENDOFLINE;
-                $this->getCompanyWebpageMultiCurl($logoutUrl); //Logout
-                break;
-        }
-    }*/
-    
+   
      /**
      * Function to download every file that is needed to read the investment of an investor
      * @param string $str It is the html of the last url we accessed
@@ -455,6 +526,14 @@ class mintos extends p2pCompany {
                 break;           
             //////LOGOUT
             case 8: 
+                $tempArray["global"] = "waiting_for_global";
+                $pathCreated = $this->createFolderPFPFile();
+                $info = json_encode($tempArray);
+                $fileName = "controlvariable_1";
+                $output_filename = $fileName . '.' . 'json';
+                $fp = fopen($pathCreated . DS . $output_filename, 'w');
+                fwrite($fp, $info);
+                fclose($fp);
                 return $tempArray["global"] = "waiting_for_global";
         }
     }
@@ -462,8 +541,8 @@ class mintos extends p2pCompany {
     /**
      *
      * 	Logout of user from the company portal.
-     * 	 @param type $url
-     * 	@returnboolean	true: user has logged out 
+     * 	@param type $url
+     * 	@return boolean	true: user has logged out 
      * 	
      */
     function companyUserLogout($url) {

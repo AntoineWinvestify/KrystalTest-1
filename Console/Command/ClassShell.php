@@ -1,5 +1,4 @@
 <?php
-/* SVN FILE: $Id: schools_controller.php  2013-10-22      02:16:01Z gwoo $ */
 /**
  * Object-relational mapper.
  *

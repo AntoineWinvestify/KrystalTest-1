@@ -219,7 +219,7 @@ class twino extends p2pCompany {
         $confirm = false;
 
 
-        if ($str == true) {
+        if ($str == "true") {
             $confirm = true;
         }
 
@@ -250,6 +250,7 @@ class twino extends p2pCompany {
                 $this->doCompanyLoginMultiCurl(array(),$payload);
                 break;
             case 1:
+                echo $str;
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
@@ -258,8 +259,8 @@ class twino extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             case 3:
-                echo $str;
-                if (!$str) {   // Error while logging in
+                echo " Twino Login: " . $str;
+                if ($str == "false") {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Twino login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -269,12 +270,12 @@ class twino extends p2pCompany {
                     $this->logToFile("Warning", $msg);
                     return $this->getError(__LINE__, __FILE__);
                 }else{
-                    echo 'twino login ok';
+                    echo 'twino login ok' . SHELL_ENDOFLINE;
                 }
                 
                 $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["CURRENT","EXTENDED","DELAYED","DEFAULTED"]}}';
                 $this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile,true);
+                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
             case 4:
                 //Download investment
@@ -282,7 +283,7 @@ class twino extends p2pCompany {
                 $response = json_decode($str, true);
                 print_r($response);
                 if(empty($this->statusDownloadUrl)){
-                    echo 'Reading download status: ' . HTML_ENDOFLINE;
+                    echo 'Reading download status: ' . SHELL_ENDOFLINE;
                     $this->statusDownloadUrl = array_shift($this->urlSequence);
                     $this->idForSwitch++;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
@@ -291,18 +292,18 @@ class twino extends p2pCompany {
                 $this->idForSwitch++;
                 break;
             case 5:
-                echo $str;
+                echo $str . SHELL_ENDOFLINE;
                 $response = json_decode($str, true);   
                 print_r($response);
                 if($response['reportReady'] == true){
-                    echo 'Status true, downloading';
+                    echo 'Status true, downloading' . SHELL_ENDOFLINE;
                     $this->idForSwitch++;
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoInvestment');
                 }else{
-                    echo 'Not ready yet';
+                    echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
                     $this->idForSwitch--;
-                    echo 'Repeat Case: ' . $this->idForSwitch;
+                    echo 'Repeat Case: ' . $this->idForSwitch . SHELL_ENDOFLINE;
                 }
                 break;
             case 6:     
@@ -313,7 +314,6 @@ class twino extends p2pCompany {
                 $credentialsFile = strtr($credentialsFile, array('{$date1}' => $date1)); //date must be [year,month.day]
                 $credentialsFile = strtr($credentialsFile, array('{$date2}' => $date2));
                 $this->idForSwitch++;
-                array_shift($this->urlSequence);
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
             case 7:
@@ -337,14 +337,14 @@ class twino extends p2pCompany {
                 $response = json_decode($str, true);   
                 print_r($response);
                 if($response['reportReady'] == true){
-                    echo 'Status true, downloading';
+                    echo 'Status true, downloading' . SHELL_ENDOFLINE;
                     $this->idForSwitch++;
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, 'TwinoCashFlow');
                 } else{
-                    echo 'Not ready yet';
+                    echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId']. '/status');
                     $this->idForSwitch--;
-                    echo 'Repeat Case: ' . $this->idForSwitch;
+                    echo 'Repeat Case: ' . $this->idForSwitch .  SHELL_ENDOFLINE;
                 }
                 break;
             case 9:

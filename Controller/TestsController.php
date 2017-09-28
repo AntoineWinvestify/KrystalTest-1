@@ -143,7 +143,7 @@ function showUserData($userIdentity, $number) {
         $this->layout = 'azarus_private_layout';
     }
     
-    
+
     
     function convertExcelToArray() {
 /*
@@ -209,157 +209,6 @@ for ($row = 1; $row <= $highestRow; $row++){
         }*/
      
  
-  
-        
- 
-       
-// TWINO
-// Processing Date	Booking Date	Type	Description	Loan Number	amount
-// 8/3/2017 20:39	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-185114001	1.0544
-// 8/3/2017 18:52	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-337436001	5.2947
-
-       $values_twino_cashflow = [     // All types/names will be defined as associative index in array
-            "A" => [
-                [
-                    "type" => "date",                           // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "d/m/Y",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "normalizeDate",         
-                ],
-                
- 
-             ],
-
-            "B" => [
-                [
-                    "type" => "purpose",                        // trick to get the complete cell data as purpose
-                    "inputData" => [
-                                "input2" => "",                 // May contain trailing spaces
-                                "input3" => ",",
-                            ],                   
-                    "functionName" => "extractDataFromString", 
-                ],
-                [
-                    "type" => "loanId",                         // Winvestify standardized name 
-                    "functionName" => "getHash",                // An internal loanId is generated based on md5 hash of project name
-                ]
-            ],          
-
-            "C" => [
-                    "name" => "payment",
-                ],
-                
-  /*              [
-                    "type" => "transactionType",                // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
-                                                ["Intereses brutos(€)", "Regular_interest_income"],
-                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionType",  
-                ],
-                [
-                    "type" => "transactionDetail",              // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Amortización de capital(€)", "Principal_repayment"],
-                                                ["Intereses brutos(€)", "Regular_interest_income"],
-                                                ["Retención IRPF(€)", "Tax_income_withholding_tax"],  
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionDetail",  
-                ]
-            ],
-*/
-            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "amortization",                         
-                    "inputData" => [
-				"input2" => ".",                // Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]                    
-            ],
-            "E" => [                                            // Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "interest",                         
-                    "inputData" => [
-				"input2" => ".",                // Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]                    
-            ],
-            "F" => [                                            // Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "retencionTax",                         
-                    "inputData" => [
-				"input2" => ".",                // Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]                    
-            ], 
-            "G" => [                                            // Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "total",                         
-                    "inputData" => [
-				"input2" => ".",                // Thousands seperator, typically "."
-                                "input3" => ",",		// Decimal seperator, typically ","
-                                "input4" => 5,                  // Number of required decimals, typically 5
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "getAmount"
-                ]
-            ]
-        ];       
-      
-       
-// Not finished
-        $values_twino_investment = [                            // All types/names will be defined as associative index in array
-            
-            "A" => [
-                    "name" => "origin.loan",
-                ],
-            "B" => [
-                    "name" => "loanId",
-                ],           
-            "C" => [
-                [
-                    "type" => "origin.date",                           // Winvestify standardized name 
-                    "inputData" => [
-				"input2" => "m/d/Y",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                ],
-                    "functionName" => "normalizeDate",         
-                ],
-             ],
-            "D" => [
-                    "name" => "riskclass",             
-                ],
-            "E" => [
-                    "name" => "status",             
-                ]
-        ];
-       
- 
-            
-        $offset = 762;
-        echo "Printing Original Data <br>";       
-   //     $this->print_r2($sheetData);
-   
-        
         $datas = $this->saveExcelArrayToTemp($sheetData, $values_twino_investment, $offset);
 
         $this->print_r2($datas);
@@ -540,78 +389,6 @@ echo "END OF LOOP <br>";
     
     
     
-    
-    /**
-     * Converts any type of date format to internal format yyyy-mm-dd
-     * 
-     * @param string $date  
-     * @param string $currentFormat:  Y = 4 digit year, y = 2 digit year
-     *                                M = 2 digit month, m = 1 OR 2 digit month (no leading 0)
-     *                                D = 2 digit day, d = 1 OR 2 digit day (no leading 0)
-     *                         
-     * @return string   date in format yyyy-mm-dd
-     * 
-     */
-    function normalizeDate($date, $currentFormat) {
-       $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
-       (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
-       $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
-       
-       if (count($tempDate) == 1) {
-           return;
-       }
-       
-       $finalDate = array();
-    
-       $length = strlen($dateFormat);
-       for ($i = 0; $i < $length; $i++) {
-            switch ($dateFormat[$i]) {
-                case "d":
-                    $finalDate[2] = $this->norm_date_element($tempDate[$i]);
-                break;
-                case "D":
-                    $finalDate[2] = $tempDate[$i];
-                break;              
-                case "m":
-                    $finalDate[1] = $this->norm_date_element($tempDate[$i]);
-                break;
-                case "M":
-                    $finalDate[1] = $tempDate[$i]; 
-                break;  
-                case "y":
-                    $finalDate[0] = "20" . $tempDate[$i]; 
-                break;
-                case "Y":
-                    $finalDate[0] = $tempDate[$i]; 
-                break;              
-            }
-        }  
-        
-        $returnDate = $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2];   
-        list($y, $m, $d) = array_pad(explode('-', $returnDate, 3), 3, 0);
-        
-        if (ctype_digit("$y$m$d") && checkdate($m, $d, $y)) {                           // check if date is a real date according to internal format
-            return $returnDate;
-        }
-        return;
-    }  
-
-   
-   
-
-    /**
-     * normalize a day or month element of a date to two (2) characters, adding a 0 if needed
-     * 
-     * @param string $val  Value to be normalized to 2 digits 
-     * @return string 
-     * 
-     */   
-    function norm_date_element($val) {
-	if ($val < 10) {
-		return (str_pad($val, 2, "0", STR_PAD_LEFT));
-	}
-	return $val;
-    }
  
     /**-
      * Gets an amount. The "length" of the number is determined by the required number
@@ -659,34 +436,6 @@ echo "END OF LOOP <br>";
     }        
  
 
-  
-    /**
-     * Translates the currency to internal representation. 
-     * The currency can be the ISO code or the currency symbol.
-     * Not full-proof as many currencies share the $ sign
-     * 
-     * @param string $loanCurrency  
-     * @return integer  constant representing currency 
-     * 
-     */
-    function getCurrency($loanCurrency) {
-        $details = new Parser();
-        $currencyDetails = $details->getCurrencyDetails();
-        unset($details);
-        
-        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-        $currencySymbol = str_replace($filter, "", $loanCurrency);
-        
-        foreach ($currencyDetails as $currencyIndex => $currency) {
-            if ($loanCurrency == $currency[0]) {                // check the ISO code
-              return $currencyIndex;
-            }   
-            if ($currencySymbol == $currency[1]) {              // check the symbol
-              return $currencyIndex;
-            }  
-        } 
-    }
-   
   
     
     /**

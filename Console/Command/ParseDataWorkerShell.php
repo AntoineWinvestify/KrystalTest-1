@@ -67,10 +67,12 @@ class ParseDataWorkerShell extends AppShell {
      * The $job->workload() function reads the input data as sent by the Gearman client
      * This is json_encoded data with the following structure:
      * 
-     *      $data['PFPname']['userReference']
-     *      $data['PFPname']['queue_id']
-     *      $data['PFPname']['files'][filename']       array of filenames, FQDN's
-     *      
+     *      $data['linkedAccountId']['userReference']
+     *      $data['linkedAccountId']['queue_id']
+     *      $data['linkedAccountId']['pfp']
+     *      $data['linkedAccountId']['files'][filename1']       array of filenames, FQDN's
+     *      $data['linkedAccountId']['files'][filename2']  
+     *                                        ... ... ... 
      * 
      * 
      * @return array queue_id, userreference, también en el exception error
@@ -82,57 +84,45 @@ class ParseDataWorkerShell extends AppShell {
      * 
      */   
     public function parseFileFlow($job) {
- echo __FILE__ . " " . __LINE__ . "\n";     
+
         $platformData = json_decode($job->workload(), true);
 
         $collectLoanIds = array();
         
-        foreach ($platformData as $platformKey => $data) {
-            if ($platformKey <> "mintos") { continue;}
-            $companyHandle = $this->companyClass($platformKey);
+        foreach ($platformData as $linkedAccountKey => $data) {
+            if ($data['pfp'] <> "mintos") { 
+                continue;
+            }
             
-            echo "CURRENT PLATFORM = $platformKey \n";
+            $companyHandle = $this->companyClass($data['pfp']);
+            
+            echo "CURRENT PLATFORM = " . $data['pfp'] . "\n";
             // Deal first with the transaction file(s)
             print_r($data);
-            $files = $this->data['files']; 
-            $myParser = new Fileparser();
+            $files = $data['files']; 
+            // First analyze the transaction file(s)
+            $approvedFiles = $this->readFilteredFiles($files,  TRANSACTION_FILE);
+            
+            $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
 
             $parserConfig = $companyHandle->getParserConfigTransactionFile();
-            echo __FILE__ . " " . __LINE__ . " parserConfig = $parserConfig\n";
-
-            echo $parserConfig;
-        
-            $params[] = "parserConfig this is a string for antoine de Poorter\n";
-            //    return json_encode($params);                                        // normal end of execution of worker  
-
-            unset($companyHandle);
-        }
-
-    //    return json_encode($params);
-        
-        
-        
-            foreach ($data['files'] as $key => $filename) {             // check all the platforms of the investor
-                if ($data['files'['filetype']] == "CSV") {
-                        $config = array('seperatorChar' => ";",         // Only makes sense in case input file is a CSV.
-                                'sortByLoanId'  => true,                // Make the loanId the main index and all XLS/CSV entries of
-                                                                        // same loan are stored under the same index.
-                                'offset'    => 3,                       // Number of "lines" to be discarded at beginning of file
-
-                                );
-                        //parse cvs 
-                }
-                else {
-                    //parse XLS
-                }
-
-                $myParser = new FileParser($config);           
-
-                $myCompany = companyClass($data['PFPname']);        // create instance of companyCodeClass
-
-                if (!empty($parsedFile = $myParser->analyse(data['filename'], $configFile)) ) {    // if successfull analysis, result is an array 
-                                                                                                            // with loanId's as indice 
-
+            print_r($parserConfig);
+            echo __FILE__ . " " . __LINE__ . "\n";
+            
+            $tempResult = array();
+            foreach ($approvedFiles as $approvedFile){          // probably done only once
+                $myParser->setConfig['sortParameter'] = "loanId";
+                $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);// if successfull analysis, result is an array with loanId's as indice 
+                if (!$tempResult) {                // error occurred while analyzing a file. Report it 
+                   $error[$linkedAccountKey][] = $myParser->getLastError();
+                   
+                   // GENERATE appplicationerror 
+                } 
+                else {       // An error has been generated, so all is OK and continue with next file
+                   // add $result, combine the arrays
+                    $result = $tempResult;
+                    echo __FILE__ . " " . __LINE__ . " \n";
+                    print_r($result);
                     if ($myCompany->fileanalyzed($fileName, $typeOfFile, $fileContent)) {                   // Generate the callback function
                         // continue 
                     }
@@ -140,14 +130,7 @@ class ParseDataWorkerShell extends AppShell {
                         // an error has occurred or been detected by companycode file. Exit gracefully
                         return false;
                     }
-
                     //run through the array and search for new loans.
-                    $loans = array_keys($parsedFileStructure);
-                    $this->Investment = ClassRegistry::init('Investment');
-
-                    // execute callback
-                    $result = $mycompany->beforeamortizationlist($parsedFile);
-
                     foreach ($loans as $key => $loan) {
                         if ($key == "global") {
                             continue;
@@ -160,20 +143,25 @@ class ParseDataWorkerShell extends AppShell {
                         $resultInvestment = $this->Investment->find("all", $params = array('recursive' =>  -1,
                                                                                           'conditions' => $conditions,
                                                                             ));
-                        if (empty($resultInvestment)) {                                                     // loanId does not yet exist for current user
-                            $collectLoanIds[$data['PFPname']] = $loan;                                      // A Gearman worker has to collect the amortization Tables
+                        if (empty($resultInvestment)) {                             // loanId does not yet exist for current user
+                            $collectLoanIds[$data['PFPname']] = $loan;              // A Gearman worker has to collect the amortization Tables
                         } 
+                    } 
+                }            
+            }      
+            return;                                                                 // normal end of execution of worker  
+           
+            
+            
+            
+            $params[] = "parserConfig this is a string for antoine de Poorter\n";
+            //    return json_encode($params);                                        
+
+            unset($companyHandle);
+        }
 
 
-                    }
-                    if ($mycompany->amortizationtablesdownloaded($XXXXXXXX) ) {
-
-                    }
-                    else {
-                        // store error
-                    }
-                }
-                else {                                                          // Error encountered
+                                                                      // Error encountered
                     $myParser->analysisErrors();
                     $this->Applicationerror = ClassRegistry::init('Applicationerror');
                     $par1 = "ERROR Parsing error of downloaded file";
@@ -184,9 +172,8 @@ class ParseDataWorkerShell extends AppShell {
                     $this->applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
                     // do cleaning up of all files which have been generated so far
     //echo error back to Gearman client
-                }
-            }
-            unset($myParser); 
+              
+      
    return json_encode($params);
         
 
@@ -214,43 +201,9 @@ class ParseDataWorkerShell extends AppShell {
             // return
 
 
-
-        
-        
+    
     }    
-    
-    
-    
-    
-    
-    
-   
-    /** COPIED FROM APP.CONTROLLER
-     *
-     * 	Creates a new instance of class with name company, like zank, or comunitae....
-     *
-     * 	@param 		int 	$companyCodeFile		Name of "company"
-     * 	@return 	object 	instance of class "company"
-     *
-     */
-    function companyClass($companyCodeFile) {
-
-        $dir = Configure::read('companySpecificPhpCodeBaseDir');
-        $includeFile = $dir . $companyCodeFile . ".php";
-        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
-        require_once($includeFile);
-        $newClass = $companyCodeFile;
-        $newComp = new $newClass;
-        return $newComp;
-    }    
-    
-    
-    
-    
-    
 }
-
-
 
 
 
@@ -263,104 +216,64 @@ class ParseDataWorkerShell extends AppShell {
      * 
      */
     class Fileparser {
+        protected $config = array ('OffsetStart' => 0,
+                                'offsetEnd' => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index. 
+                                 );                     // if array does not have $sortParameter then "global2 index is used
+                                                        // Typically used for sorting by loanId index
 
-    protected $offsetStart = 0;
-    protected $offsetEnd = 0;
-    protected $seperatorChar = ";";
-    protected $sortParameter = "";              // used to "sort" the array and use $sortParameter as prime index. 
-                                                // if array does not have $sortParameter then "global2 index is used
-                                                // Typically used for sorting by loanId index
-    
-    protected $errorData;                       // Contains the information of the last occurred error
-                                                // THIS IS MOST LIKELY AN ARRAY/JSON 
+        protected $errorData = array();                 // Contains the information of the last occurred error
+
     
     /**
-     * Starts the process of analyzing the file
-     *
+     * Starts the process of analyzing the file and returns the results as an array
+     *  @param  $file           Name(s) of the file to analyze
+     *  @param  $referenceFile  Name of the file that contains configuration data of a specific "document"/PFP
      *  @return array   $analyzedData
      *          false in case an error occurred
      */
     public function analyzeFile($file, $referenceFile) {
+        echo "INPUT FILE = $file, and referenceFile = \n";
+ //       print_r($referenceFile);
        // determine first if it csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
-        if (strpos($fileNameChunks[count($fileNameChunks)-1], "CSV")) {
+        if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
     //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
-  //        $inputFileType = 'CSV';
-            $inputFileName = '/var/www/html/compare_local/twino-investments.xlsx';
-  //      $objReader = PHPExcel_IOFactory::createReader($inputFileType);  
-//        $objReader->setDelimiter(";");
-//        $objPHPExcel = $objReader->load($inputFileName);            
+            $inputFileType = 'CSV';
+            $objReader = PHPExcel_IOFactory::createReader($inputFileType);    
+            $objReader->setDelimiter($this->Config['separatorChar']);
+            $objPHPExcel = $objReader->load($file);            
             //execute command php has a function for this which works on a string
         }
         else {      // xls/xlsx file
-
-
             $objPHPExcel = PHPExcel_IOFactory::load($file);            
-   //     $objPHPExcel = PHPExcel_IOFactory::load($file);
         }  
         
         ini_set('memory_limit','1024M');
         $sheet = $objPHPExcel->getActiveSheet(); 
         $highestRow = $sheet->getHighestRow(); 
         $highestColumn = $sheet->getHighestColumn();
-        echo " high = $highestRow and $highestColumn <br>";
-
-
-/*
-for ($row = 1; $row <= $highestRow; $row++){ 
-    //  Read a row of data into an array
-    $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,
-                                    NULL,
-                                    TRUE,
-                                    FALSE);
-    $this->print_r2($rowData);
-};*/
-
-
-/**
-     * Create array from worksheet
-     *
-     * @param mixed $nullValue Value returned in the array entry if a cell doesn't exist
-     * @param boolean $calculateFormulas Should formulas be calculated?
-     * @param boolean $formatData  Should formatting be applied to cell values?
-     * @param boolean $returnCellRef False - Return a simple array of rows and columns indexed by number counting from zero
-     *                               True - Return rows and columns indexed by their actual row and column IDs
-     * @return array
-     */
- //   public function toArray($nullValue = null, $calculateFormulas = true, $formatData = true, $returnCellRef = false)
-
-
+        echo " high = $highestRow and $highestColumn \n";
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-  
-        /*$loadedSheetNames = $objPHPExcel->getSheetNames();
-        foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
-            echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
-            $objPHPExcel->setActiveSheetIndexByName($loadedSheetName);
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, false, false, true);
-            //var_dump($sheetData);
-            echo '<br />';
-        }*/
-     
- 
- // All data has been loaded, let's analye it 
+        $datas = $this->saveExcelToArray($sheetData, $referenceFile, $offset);
+        return $datas;
         
+        }
+   
         
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values_twino_investment, $offset);
-
-   
-
-   
   /**
-     * 
-     * Function to get the final position to get the variable from a string
+     * Analyze the received data using the configuration data and store the result
+     * in an array
+     *
      * @param string $rowDatas  the excel data in an array
      * @param string $values     the array with configuration data for parsing
      * @param int $offset       the number of indices at beginning of array which are NOT to be parsed
      * @return array $temparray the data after the parsing process
      * 
      */
-    function saveExcelArrayToTemp($rowDatas, $values, $offset) {
+    private function saveExcelToArray($rowDatas, $values, $offset) {
         $tempArray = [];
   
         $i = 0;
@@ -375,22 +288,24 @@ for ($row = 1; $row <= $highestRow; $row++){
         
         $i = 0;
         $outOfRange = false;
-        $this->print_r2($rowDatas);
+ //       print_r($rowDatas);
         
         foreach ($rowDatas as $keyRow => $rowData) {
-            echo "Reading a NEW ROW<br>";
+            echo "Reading a NEW ROW\n";
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 // check for subindices and construct them
                 if (array_key_exists("name", $value)) {
+                    echo "ANTOINE\n";
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']"; 
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
                     eval($tempString);
                 }
                 else { 
+                    echo "CHARO\n";
                     foreach ($value as $userFunction ) {
-                        echo "---------------------------------------------------------------------<br>";
+                        echo "---------------------------------------------------------------------\n";
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
                         }
@@ -407,7 +322,7 @@ for ($row = 1; $row <= $highestRow; $row++){
                                     $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
                                 }
                                 if (stripos ($input, "#current.") !== false) {
-                                    $this->print_r2($tempArray);
+                                    print_r($tempArray);
                                     $temp = explode(".", $input);
                                     $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
                                 }                                         
@@ -416,7 +331,7 @@ for ($row = 1; $row <= $highestRow; $row++){
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
 
                         if ($outOfRange == false) {
-                            $tempResult = call_user_func_array(array(__NAMESPACE__ .'\TestsController',  
+                            $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',  
                                 $userFunction['functionName']), $userFunction['inputData']);
                             if (!empty($tempResult)) {
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']"; 
@@ -430,39 +345,41 @@ for ($row = 1; $row <= $highestRow; $row++){
                     }
                 }
             }
+            if (!empty($config['sortParameter'])) {
+                if (array_key_exists($config['sortParameter'], $tempArray[$i]) ){
+                     $tempArray[ $tempArray[$i][$config['sortParameter']] ][]  = $tempArray[$i];
+                }
+                else {      // move to the global index
+                    $tempArray['global'][] = $tempArray[$i];
+                }
+            }  
 
-            if (array_key_exists("loanId", $tempArray[$i]) ){
-                 $tempArray[ $tempArray[$i]['loanId'] ][]  = $tempArray[$i];
-            }
-            else {      // move to the global index
-                $tempArray['global'][] = $tempArray[$i];
-            }
-                    
-     //       unset($tempArray[$i]);
+     //        unset($tempArray[$i]);
             $i++; 
         }
-echo "END OF LOOP <br>";   
+echo "END OF LOOP \n"; 
+exit;
 // Delete the numeric indices. This should not be necesary but the code above does
 // NOT work, the bad line is "unset($tempArray[$i]);".
 // So below is a stupid work-around
         for ($i; $i >= 0; $i--) {
             unset($tempArray[$i]);
-            echo "delete index $i <br>";
+            echo "delete index $i  \n";
         }
         
-        $this->print_r2($tempArray);
-        echo __FUNCTION__ . " " . __LINE__ . " <br>";       
+        print_r($tempArray);
+        echo __FUNCTION__ . " " . __LINE__ . " \n";       
         return $tempArray;
     }
     
    
    
    
-    }
+    
 
     
     /**
-     * Returns informationn of the last occurred error
+     * Returns information of the last occurred error
      *
      *  @return array   $analyzedData
      *          false in case an error occurred
@@ -478,12 +395,13 @@ echo "END OF LOOP <br>";
      * offsetStart
      * offsetEnd
      * sortParameter
-     * seperatorChar
+     * separatorChar
      * 
      */
-    public function setConfig()  {
-        
-        
+    public function setConfig($configurations)  { 
+        foreach ($configurations as $configurationKey => $configuration) {
+            $this->$configurationKey = $configuration;          // avoid deleting already specified config parameters
+        }
     }
         
     
@@ -680,7 +598,7 @@ echo "END OF LOOP <br>";
      * 	@return array $transactionDetails
      *
      */
-    function getTransactionDetails() {
+    private function getTransactionDetails() {
         return $this->transactionDetails;
     }
 
@@ -692,7 +610,7 @@ echo "END OF LOOP <br>";
      * 	@return array $currencies
      *
      */
-    function getCurrencyDetails() {
+    private function getCurrencyDetails() {
         return $this->currencies;
     }
 
@@ -704,11 +622,263 @@ echo "END OF LOOP <br>";
      * 	@return int $numberOfDecimals
      *
      */
-    function getNumberofDecimals() {
+    private function getNumberofDecimals() {
         return $this->numberofDecimals;
     }   
     
        
+   
     
+    /**
+     * Converts any type of date format to internal format yyyy-mm-dd
+     * 
+     * @param string $date  
+     * @param string $currentFormat:  Y = 4 digit year, y = 2 digit year
+     *                                M = 2 digit month, m = 1 OR 2 digit month (no leading 0)
+     *                                D = 2 digit day, d = 1 OR 2 digit day (no leading 0)
+     *                         
+     * @return string   date in format yyyy-mm-dd
+     * 
+     */
+    function normalizeDate($date, $currentFormat) {
+       $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
+       (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
+       $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
+  print_r($tempDate);     
+       if (count($tempDate) == 1) {
+           return;
+       }
+       
+       $finalDate = array();
+    
+       $length = strlen($dateFormat);
+       for ($i = 0; $i < $length; $i++) {
+            switch ($dateFormat[$i]) {
+                case "d":
+                    $finalDate[2] = $this->norm_date_element($tempDate[$i]);
+                break;
+                case "D":
+                    $finalDate[2] = $tempDate[$i];
+                break;              
+                case "m":
+                    $finalDate[1] = $this->norm_date_element($tempDate[$i]);
+                break;
+                case "M":
+                    $finalDate[1] = $tempDate[$i]; 
+                break;  
+                case "y":
+                    $finalDate[0] = "20" . $tempDate[$i]; 
+                break;
+                case "Y":
+                    $finalDate[0] = $tempDate[$i]; 
+                break;              
+            }
+        }  
+        
+        $returnDate = $finalDate[0] . "-" . $finalDate[1] . "-" . $finalDate[2];   
+        list($y, $m, $d) = array_pad(explode('-', $returnDate, 3), 3, 0);
+        
+        if (ctype_digit("$y$m$d") && checkdate($m, $d, $y)) {                           // check if date is a real date according to internal format
+            return $returnDate;
+        }
+        return;
+    }  
+
+   
+   
+
+    /**
+     * normalize a day or month element of a date to two (2) characters, adding a 0 if needed
+     * 
+     * @param string $val  Value to be normalized to 2 digits 
+     * @return string 
+     * 
+     */   
+    function norm_date_element($val) {
+	if ($val < 10) {
+		return (str_pad($val, 2, "0", STR_PAD_LEFT));
+	}
+	return $val;
+    }
+ 
+    /**  STILL TO DO (scientific) exponential notation
+     * Gets an amount. The "length" of the number is determined by the required number
+     * of decimals. If there are more decimals then required, the number is truncated and rounded
+     * else 0's are added.
+     * Examples:
+     * getAmount("1.234,56789€", ".", ",", 3) => 1234568
+     * getAmount("1234.56789€", "", ".", 7) => 12345678900
+     * getAmount("1,234.56 €", ",", ".", 2) => 123456
+     * 
+     * @param string  $thousandsSep character that separates units of 1000 in a number
+     * @param string  $decimalSep   character that separates the decimals 
+     * @param int     $decimals     number of required decimals in the amount to be returned
+     * @return int    represents the amount including its decimals
+     * 
+     */
+    function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
+        if ($decimalSep == ".") {
+            $seperator = "\.";
+        }
+        else {                                                              // seperator =>  ","
+            $seperator = ",";
+        }
+        $allowedChars =  "/[^0-9" . $seperator . "]/";
+        $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
+        $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput); 
+
+        // determine how many decimals are actually used
+        $position = strpos($input, $decimalSep);
+        $decimalPart = preg_replace('/[^0-9]+/' ,"", substr($input, $position + 1, 100));
+        $numberOfDecimals = strlen($decimalPart);
+
+        $digitsToAdd = $decimals - $numberOfDecimals;
+
+        if ($digitsToAdd <= 0) {
+            $amount = round($normalizedInputFinal, $decimals);
+        }
+        if ($digitsToAdd == 0) {
+            $amount = preg_replace("/[^0-9]/", "", $input);  
+        }
+        if ($digitsToAdd > 0) {
+            $amount = preg_replace('/[^0-9]+/', "", $input) . str_pad("", ($decimals - $numberOfDecimals), "0");
+        }       
+        return preg_replace('/[^0-9]+/' ,"", $amount);
+    }        
+ 
+
+  
+    /**
+     * Translates the currency to internal representation. 
+     * The currency can be the ISO code or the currency symbol.
+     * Not full-proof as many currencies share the $ sign
+     * 
+     * @param string $loanCurrency  
+     * @return integer  constant representing currency 
+     * 
+     */
+    function getCurrency($loanCurrency) {
+        $details = new Parser();
+        $currencyDetails = $details->getCurrencyDetails();
+        unset($details);
+        
+        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $currencySymbol = str_replace($filter, "", $loanCurrency);
+        
+        foreach ($currencyDetails as $currencyIndex => $currency) {
+            if ($loanCurrency == $currency[0]) {                // check the ISO code
+              return $currencyIndex;
+            }   
+            if ($currencySymbol == $currency[1]) {              // check the symbol
+              return $currencyIndex;
+            }  
+        } 
+    }
+   
+  
+    
+    /**
+     * get hash of a string
+     * 
+     * @param string    $input
+     * @return string   $extractedString
+     *       
+     */
+    function getHash($input) {
+        return  hash ("md5", $input, false);
+    }  
+   
+   
+    /** 
+     * Reads the transaction type of the cashflow operation
+     * 
+     * @param string   $input
+     * @return array   $parameter2  List of all concepts of the platform
+     *       
+     */
+    function getTransactionDetail($input, $config) {
+        foreach ($config as $key => $configItem) {
+            $position = stripos($input, $configItem[0]);
+            if ($position !== false) {
+                return $configItem[1];
+            }
+        }
+    }     
+    
+    /**
+     * Search for a something within a string, starting after $search
+     * and ending when $seperator is found
+     * 
+     * @param string    $input
+     * @param string    $search
+     * @param string    $separator   The separator character
+     * @return string   $extractedString
+     *       
+     */
+    function extractDataFromString($input, $search, $separator ) {
+        $position = stripos($input, $search) + strlen($search);
+        $substrings = explode($separator, substr($input, $position));
+        return $substrings[0];
+    }  
+
+   
+    /**
+     * 
+     * Reads the transaction detail of the cashflow operation
+     * 
+     * @param string   $input
+     * @return array   $parameter2  List of all concepts of the platform
+     *       
+     */
+    function getTransactionType($input, $config) {  
+        $details = new Parser();
+        $transactionDetails = $details->getTransactionDetails();
+        unset($details);
+        
+        foreach ($config as $key => $configItem) {
+            $position = stripos($input, $configItem[0]);
+            if ($position !== false) {  // value is in $configItem[1];
+                foreach ($transactionDetails as $key => $detail) {
+                    if ($detail['detail'] == $configItem[1]) {
+                        return $detail['transactionType'];
+                    }
+                }
+            }
+        }         
+    }  
+
+    /**
+     * 
+     * Reads a field from a row. Note that the field must be
+     * a "calculated" field, i.e it must be defined in the config file 
+     * 
+     * @param string    $input   cell data
+     * @param array     $field   field to read
+     * @param boolean   overwrite     overwrite current value of the $input
+     *       
+     */
+    function getRowData($input, $field, $overwrite) {  
+
+        if (empty($input)) {
+            return $field;
+        }    
+        else {
+            if ($overwrite) {
+                return $field;
+            }
+        }      
+         return "";
+    }    
+    
+    
+    
+    
+    function multiexplode ($delimiters,$string) {
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+        $launch = explode($delimiters[0], $ready);
+        return  $launch;
+    } 
+    
+     
     
 }

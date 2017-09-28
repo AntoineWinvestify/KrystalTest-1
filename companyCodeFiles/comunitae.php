@@ -239,7 +239,7 @@ class comunitae extends p2pCompany {
      */
     function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
 
-        echo 'Comunitae array loan id: ' .HTML_ENDOFLINE;
+        //echo 'Comunitae array loan id: ' .HTML_ENDOFLINE;
         $this->print_r2($loanIdList);
         
         $this->investmentDeletedList = $loanIdList;
@@ -249,13 +249,13 @@ class comunitae extends p2pCompany {
         $pageNumber = 1;
         $url = null;
         $urlNextPage = null;
-        $urlSequenceNumber = 0;
+        //$urlSequenceNumber = 0;
         $type = 1; // 1 = pagare, comunitae have 'pagares' and 'Factoring'
         for ($i = 0; $i < 2; $i++) {
             $numberOfInvestmentInPage = 0;
-            if(empty($url)){
+            /*if(empty($url)){
                 $urlSequenceNumber++;
-            }
+            }*/
             $str = $this->getCompanyWebpage($url);
             
             $dom = new DOMDocument;
@@ -275,7 +275,7 @@ class comunitae extends p2pCompany {
 
                 //$rows = $listing->getElementsByTagName('article');
             } else if ($i == 1) {
-                echo 'factoring url' . $url; 
+                //echo 'factoring url' . $url; 
                 //Factoring
                 $dom->loadHTML($str); // load Webpage into a string variable so it can be parsed
                 $type = 4; //4 = factoring
@@ -352,7 +352,7 @@ class comunitae extends p2pCompany {
                         if (strcasecmp(trim($checkedAttribute), 'center-percentage') == 0) {
 
                             if (stristr(trim($span->nodeValue), "%") == true) {
-                                echo "Comunitae: % found, so store in marketplace" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
+                                //echo "Comunitae: % found, so store in marketplace" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($span->nodeValue);
                                 $tempArray['marketplace_statusLiteral'] = 'En proceso';
                             } else {
@@ -372,6 +372,10 @@ class comunitae extends p2pCompany {
 
                     if ($tempArray) {
                         $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);       
+                        if(substr("TAE",$tempArray['marketplace_name'])){
+                            unset($tempArray);
+                            continue;
+                        }
                         $totalArray[] = $tempArray;
                         unset($tempArray);
                         $numberOfInvestmentInPage++;
@@ -379,19 +383,23 @@ class comunitae extends p2pCompany {
                     unset($tempArray);
 
                     
-                    echo 'Investment' . $numberOfInvestmentInPage;
+                    //echo 'Investment' . $numberOfInvestmentInPage;
                     //If subscription of the investment is not complete and the number of investment is the 15th in the page
                     //We need to go to the next page to verify if there are investments or not
                     if (!$subscriptionComplete && $numberOfInvestmentInPage == 15) {
                         if (empty($urlNextPage)) {
                             $urlNextPage = array_shift($this->urlSequence);
-                            $urlSequenceNumber++;
+                            //$urlSequenceNumber++;
                         }
                         $numberOfInvestmentInPage = 0;
                         $pageNumber++;
                         $url = $urlNextPage . $pageNumber;
                         $i--;
                     } else if ($subscriptionComplete) {
+                        if ($pageNumber == 1 && $i == 0) {
+                            array_shift($this->urlSequence);
+                            //$urlSequenceNumber++;
+                        }
                         $subscriptionComplete = false;
                         $url = null;
                         $urlNextPage = null;
@@ -403,12 +411,15 @@ class comunitae extends p2pCompany {
             }
         }
         
-        for($urlSequenceNumber ;$urlSequenceNumber < 4;$urlSequenceNumber++){ //Fix url sequence error. Factoring only have one page yet.
+        /*for($urlSequenceNumber ;$urlSequenceNumber < 4;$urlSequenceNumber++){ //Fix url sequence error. Factoring only have one page yet.
+            array_shift($this->urlSequence);
+        }*/
+        while(count($this->urlSequence) > 3){
             array_shift($this->urlSequence);
         }
         
-        echo 'Final loan id array: ' . HTML_ENDOFLINE;     
-        $this->print_r2($this->investmentDeletedList);
+        /*echo 'Final loan id array: ' . HTML_ENDOFLINE;     
+        $this->print_r2($this->investmentDeletedList);*/
         
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         //$this->print_r2($hiddenInvestments);
@@ -438,7 +449,7 @@ class comunitae extends p2pCompany {
             //echo 'Login fail';
             return $this->getError(__LINE__, __FILE__);
         }
-        
+        echo 'Login ok' . HTML_ENDOFLINE;
         
         $url = array_shift($this->urlSequence);
         
@@ -1420,6 +1431,7 @@ class comunitae extends p2pCompany {
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
+
 
 }
 

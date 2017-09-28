@@ -116,7 +116,7 @@ class CollectDataClientShell extends AppShell {
                 echo "\n";
                 echo $key2;
                 echo "\n aquiiiiiiiiiiiiiii";
-                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_userReference"] . ".-;" . $key2);
+                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2);
             }
         }
         
@@ -125,9 +125,18 @@ class CollectDataClientShell extends AppShell {
         foreach ($this->userResult as $key => $userResult) {
             $statusProcess = $this->consolidationResult($userResult);
             if (!$statusProcess) {
-                $statusDelete = $this->safeDelete($key, $todayDate);
+                $statusDelete = $this->safeDelete($key, 1); //1 = $todaydate
+            }
+            $this->Queue->id = $key;
+            if ($statusProcess) {
+                $this->Queue->save(array("queue_status" => GLOBAL_DATA_DOWNLOADED));
+            }
+            else {
+                $this->Queue->save(array("queue_status" => START_COLLECTING_DATA));
             }
         }
+        
+        
         
     }
     
@@ -135,6 +144,7 @@ class CollectDataClientShell extends AppShell {
         $m = $task->data();
         $data = explode(".-;", $task->unique());
         $this->userResult[$data[0]][$data[1]] = $task->data();
+        
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
