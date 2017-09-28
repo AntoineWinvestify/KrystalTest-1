@@ -30,6 +30,9 @@ class bondora extends p2pCompany {
 
     function __construct() {
         parent::__construct();
+        $this->i = 0;
+        //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
+        $this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
     }
 
@@ -532,9 +535,6 @@ class bondora extends p2pCompany {
      * @return type
      */
     function collectAmortizationTablesParallel($str) {
-        $this->i = 0;
-        $this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
-        $this->maxLoans = count($this->loanIdArray);
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -633,7 +633,8 @@ class bondora extends p2pCompany {
 
 
                 if ($this->i++ < $this->maxLoans) {
-                    $this->idForSwitch--;
+                    $this->idForSwitch = 4;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i]);
                     break;
                 } else {
                     return $this->tempArray;
