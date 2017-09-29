@@ -20,7 +20,6 @@
  * @date
  * @package
  */
-require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 
 class CollectDataWorkerShell extends AppShell {
     

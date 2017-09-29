@@ -1005,8 +1005,8 @@ class loanbook extends p2pCompany {
             case 4:
                 $this->idForSwitch++;
                 $url = array_shift($this->urlSequence);
-                $url = strtr($url, array('{$date1}' => 1476223200000));
-                $url = strtr($url, array('{$date2}' => 1504216800000));
+                $url = strtr($url, array('{$date1}' => 1476223200000)); //Date in seconds
+                $url = strtr($url, array('{$date2}' => 1504216800000)); 
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
@@ -1141,7 +1141,7 @@ class loanbook extends p2pCompany {
                 foreach($tables as $table){     
                     if($table->getAttribute('id') == 'history_payments_table'){
                         $AmorTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $clone = $table->cloneNode(TRUE); //Clone the table
                         $AmorTable->appendChild($AmorTable->importNode($clone,TRUE));
                         $AmorTableString =  $AmorTable->saveHTML();
                         echo $AmorTableString;
@@ -1151,7 +1151,8 @@ class loanbook extends p2pCompany {
                     $this->idForSwitch = 4;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
                     break;               
-                }else{
+                }
+                else{
                     return $this->tempArray;
                     break;
                 }

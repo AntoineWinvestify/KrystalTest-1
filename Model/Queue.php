@@ -210,9 +210,12 @@ public function beforeSave1($options = array()) {
             $conditions["queue_info"] = $info;
         }
         $conditions["queue_type"] = $queuetype;
-        $conditions["order"] = $order; 
-        $conditions["limit"] = $limit;
-        $result = $this->find("all", array("conditions" => $conditions));
+        $conditions["queue_status"] = $status;
+        $result = $this->find("all", array(
+                    "conditions" => $conditions,
+                    "order" => $order,
+                    "limit" => $limit
+                ));
 
         if (empty($result)) {
             return;
