@@ -85,6 +85,21 @@ class zank extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+  
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesZankTransaction;
+    }
+ 
+     public function getParserConfigInvestmentFile() {
+        return $this->$valuesZankInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesZankAmortization;
+    }   
+    
+    
+    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount
