@@ -111,7 +111,6 @@ class CollectAmortizationDataClientShell extends AppShell {
                 echo "\n";
                 echo "queueId " . $data["queue_id"];
                 echo "\n";
-                print_r($data["queue_info"]);
                 echo json_encode($data);
                 echo "\n";
                 echo $key2;
