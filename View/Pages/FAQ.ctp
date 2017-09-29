@@ -43,7 +43,7 @@
 </script>
 <div class="winvestifyFAQ">
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1" style="min-height: 600px;">
+        <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1">
             <div class="row">
                 <div class="g-text-center--xs">
                     <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Frequently Asked Questions') ?></p>
@@ -135,6 +135,9 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+            <div class="row">
+                <a href="/Contactforms/form/"><button class="btn btn-primary btn1CR center-block btnRounded"><?php echo __('Formulario de contacto')?></button></a>
             </div>
         </div>
     </div>

@@ -22,8 +22,9 @@
         <link href="/megaKit/css/style.css" rel="stylesheet" type="text/css"/>
         <link href="/megaKit/css/global.css" rel="stylesheet" type="text/css"/>
         <link href="/megaKit/css/custom.css" rel="stylesheet" type="text/css"/>
-        <link href="/css/compare_styles.css" rel="stylesheet" type="text/css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+        <link href="/css/compare_styles.css" rel="stylesheet" type="text/css"/>
+        
         <?php /*
           <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
           <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
