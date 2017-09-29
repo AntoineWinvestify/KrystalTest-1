@@ -42,16 +42,6 @@ class CollectDataWorkerShell extends AppShell {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
         $this->GearmanWorker->addFunction('casperFiles', array($this, 'getDataCasperFiles'));
-        $this->GearmanWorker->addFunction('testFail', function(GearmanJob $job) {
-
-            try {
-                throw new Exception('Boom');
-            } catch (Exception $e) {
-                $job->sendException($e->getMessage());
-                $job->sendFail();
-
-            }
-        });
         while( $this->GearmanWorker->work() );
     }
     
@@ -85,7 +75,7 @@ class CollectDataWorkerShell extends AppShell {
             $this->newComp[$i]->setClassForQueue($this);
             $this->newComp[$i]->setQueueId($data["queue_id"]);
             $this->newComp[$i]->setBaseUrl($result[$i][$this->companyId[$i]]['company_url']);
-            $this->newComp[$i]->setFileType($result[$i][$this->companyId[$i]]['company_typeOfFile']);
+            $this->newComp[$i]->setFileType($result[$i][$this->companyId[$i]]['company_typeFileTransaction'], $result[$i][$this->companyId[$i]]['company_typeFileInvestment']);
             $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
@@ -130,15 +120,15 @@ class CollectDataWorkerShell extends AppShell {
             }
             
             if ($response->hasError()) {
-               $this->errorCurl($response->getError(), $info, $response);
+               $this->tempArray['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
                $error = $response->getError();
             }
-           if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
-                //We get the web page string
+            if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
+                 //We get the web page string
                 $str = $response->getContent();
                 $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
                 $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel($str);
-           }
+            }
 
            if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
                $this->logoutOnCompany($info["companyIdForQueue"], $str);
@@ -156,6 +146,9 @@ class CollectDataWorkerShell extends AppShell {
            else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
                if (!empty($error)) {
                    $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
+               }
+               else {
+                   $this->newComp[$info["companyIdForQueue"]]->saveControlVariables();
                }
                $this->logoutOnCompany($info["companyIdForQueue"], $str);
                if ($info["typeOfRequest"] == "LOGOUT") {
@@ -435,20 +428,23 @@ class CollectDataWorkerShell extends AppShell {
      * @param array $info They are the info of the company
      * @param object $response It is the curl response from the request on parallel
      */
-    function errorCurl($error, $info, $response) {
-        echo
-        'Error code: ' . $error->getCode() . "<br>" .
-        'Message: "' . $error->getMessage() . '" <br>';
-        echo 'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '<br>';
+    public function errorCurl($error, $info, $response) {
+        $errorVar = 
+        'Error code: ' . $error->getCode() . '\n' .
+        'Message: "' . $error->getMessage() . '" \n' .
+        'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '\n';
+        echo $errorVar;
         $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
         if (!empty($testConfig['active']) == true) {
             print_r($response->getInfo());
             echo "<br>";
         }
+        
         $config = $this->newComp[$info["companyIdForQueue"]]->getConfig();
         if ($config['tracingActive'] == true) {
             $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
         }
+        return $errorVar;
     }
 
 

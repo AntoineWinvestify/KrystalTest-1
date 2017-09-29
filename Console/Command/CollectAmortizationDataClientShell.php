@@ -21,44 +21,33 @@
  * @package
  */
 
-
-
-class CollectDataClientShell extends AppShell {
+/**
+ * Description of CollectAmortizationDataClientShell
+ *
+ */
+class CollectAmortizationDataClientShell extends AppShell {
     protected $GearmanClient;
     protected $userResult = [];
     protected $newComp = [];
     public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
-
+    
     public function startup() {
         $this->GearmanClient = new GearmanClient();
     }
-
-    public function help() {
-        $this->out('Gearman Client as a CakePHP Shell');
-    }
     
-    public function main() {
-        echo "Nothing to do here";
-    }
-
-    /**
-     * Function to init the process to recollect all the user investment data
-     *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
-     *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
-     */
     public function initClient() {
         //$queueStatus = $this->args[0];
         //$queueAcessType = $this->args[1];
         
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-
+        
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         
         $this->Queue = ClassRegistry::init('Queue');
-        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
-        $resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
+        
+        $resultQueue[] = $this->Queue->getUsersByStatus(FIFO, DATA_EXTRACTED, null, 1);
         
         if (empty($resultQueue)) {  // Nothing in the queue
             echo "empty queue<br>";
@@ -66,23 +55,27 @@ class CollectDataClientShell extends AppShell {
             exit;
         }
 
-        $this->Investor = ClassRegistry::init('Investor');
+        //$this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $linkedaccountsResults = [];
+        $queueInfos = [];
         foreach ($resultQueue as $result) {
-            $resultInvestor = $this->Investor->find("first", array('conditions' =>
-                array('Investor.investor_identity' => $result['Queue']['queue_userReference']),
-                'fields' => 'id',
-                'recursive' => -1,
-            ));
-            $investorId = $resultInvestor['Investor']['id'];
-            $filterConditions = array('investor_id' => $investorId);
+            $queueInfoJson = $result['Queue']['queue_info'];
+            $queueInfo = json_decode($queueInfoJson, true);
+            $linkAccountId = [];
+            foreach ($queueInfo['loanIds'] as $key => $loanId) {
+                if (!in_array($key, $linkAccountId)) {
+                    $linkAccountId[] = $key; 
+                }
+            }
+            
+            $filterConditions = array('id' => $linkAccountId);
             $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
-            //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+            $queueInfos[] = $queueInfo['loanIds'];
         }
         
         $companyTypes = $this->Company->find('list', array(
-            'fields' => array('Company.company_typeAccess')
+            'fields' => array('Company.company_typeAccessAmortization')
         ));
         
         $userLinkedaccounts = [];
@@ -92,10 +85,14 @@ class CollectDataClientShell extends AppShell {
             //In this case $key is the number of the linkaccount inside the array 0,1,2,3
             $i = 0;
             foreach ($linkedaccountResult as $linkedaccount) {
+                
                 $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
+                $linkedaccountId = $linkedaccount['Linkedaccount']['id'];
                 $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
+                $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key][$linkedaccountId];
                 $i++;
             }
+            //linkedaccount][id]
             
         }
         
@@ -104,14 +101,18 @@ class CollectDataClientShell extends AppShell {
         foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
             foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
                 $data["companies"] = $linkedaccountsByType;
+                $data["loandIds"] = [$key][$key2];
                 $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
                 $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
+                $queue_info = $resultQueue[$key]['Queue']['queue_info'];
+                $data["queue_info"] = json_decode($queue_info, true);
                 print_r($data["companies"]);
                 echo "\n";
                 echo "userReference ". $data["queue_userReference"];
                 echo "\n";
                 echo "queueId " . $data["queue_id"];
                 echo "\n";
+                print_r($data["queue_info"]);
                 echo json_encode($data);
                 echo "\n";
                 echo $key2;
@@ -138,7 +139,6 @@ class CollectDataClientShell extends AppShell {
             }
             $this->Queue->save(array('queue_status' => $newState), $validate = true);
         }
-        
         
         
     }
@@ -186,4 +186,6 @@ class CollectDataClientShell extends AppShell {
     public function safeDelete($data, $date) {
         echo "Delete all";
     }
+    
+    
 }

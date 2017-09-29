@@ -21,11 +21,22 @@
  * @package
  */
 
-class CollectAmortizatioDataWorkerShell extends AppShell {
+/**
+ * Description of CollectAmortizationDataWorker
+ *
+ */
+class CollectAmortizationDataWorker extends AppShell {
+   
     
     protected $GearmanWorker;
     
-    var $uses = array('Amortizationtable', 'Queue');
+    public $uses = array('Marketplace', 'Company', 'Urlsequence');
+    
+    public $queueCurls;
+    public $newComp = array();
+    public $tempArray = array();
+    public $companyId = array();
+
     
     public function startup() {
             $this->GearmanWorker = new GearmanWorker();
@@ -34,161 +45,194 @@ class CollectAmortizatioDataWorkerShell extends AppShell {
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
+        $this->GearmanWorker->addFunction('multicurlScraping', array($this, 'getDataMulticurlScraping'));
         $this->GearmanWorker->addFunction('casperFiles', array($this, 'getDataCasperFiles'));
-        $this->GearmanWorker->addFunction('testFail', function(GearmanJob $job) {
-            try {
-                throw new Exception('Boom');
-            } catch (Exception $e) {
-                $job->sendException($e->getMessage());
-                $job->sendFail();
-
-            }
-        });
-        
-        $this->GearmanWorker->addFunction('collectamortizationtablesFileFlow', array($this, 'collectamortizationtablesFileFlow'));   
-              
-        while($this->GearmanWorker->work());
+        while( $this->GearmanWorker->work() );
     }
-            
-  
-    
-    
     
     /**
-     * Parse the content of a file (xls, xlsx, csv) into an array 
+     * Function to initiate the process to save the files of a company
+     * @param object $job It is the object of Gearmanjob that contains
      * The $job->workload() function read the input data as sent by the Gearman client
      * This is json_encoded data with the following structure:
-     *      $data['PFPname']['files']                  array
-     *      $data['PFPname']['files'][filename']       array of filenames, FQDN's
-     *      $data['PFPname']['files'][typeOfFile']     type of file, CASHFLOW, INVESTMENT,...
-     *      $data['PFPname']['files']['filetype']      CSV or XLS
-     *      $data['userReference']
-     * 
-     * 
-     * @return array  
-     * 
-     *           array     analyse    convert internal array to external format using definitions of configuration file
-     *                      true  analysis done with success
-     *                  readErrorData 
-     *                      array with all errorData related to occurred error
-     * load config (perhaps via constructor: index = loanId
-     */   
-    public function collectamortizationtablesFileFlow($job) {
-
-        $data = json_decode($job->workload(), true);
-        $collectLoanIds = array();
- 
-        $myCompany = companyClass($data['PFPname']);        // create instance of companyCodeClass        
-        
- // use of multicurl for collecting the amortization tables, all platforms in parallel
-        foreach ($data['PFPname'] as $platformkey => $platform) {
-            if ($data['PFPname']['files']['typeOfFile'] == AMORTIZATION_TABLE_ARRAY) {
-             //   if (not JSON then jmp over next part
-            }
-            else {  // CSV of XLS file
-                if ($a) {
-                    foreach ($data['files'] as $key => $filename) {     // read the amortization table files /perp PFP of the investor
-
-                        if ($data['files'['filetype']] == "CSV") {
-                                $config = array('seperatorChar' => ";",         // Only makes sense in case input file is a CSV.
-                                        'sortByLoanId'  => true,                // Make the loanId the main index and all XLS/CSV entries of
-                                                                                // same loan are stored under the same index.
-                                        'offset'    => 3,                       // Number of "lines" to be discarded at beginning of file
-                                        );
-                                //parse cvs
-                        }
-                        else {
-                            //parse XLS
-                        }       
-                    // this is n
-
-                }
-            unset($myParser); 
-            }
-        }
-        
-        // *ALL* new amortization tables have been downloaded
-        $result = $mycompany->amortizationtablesdownloaded($parsedFiles);
-
-       // go throuh all tables to normalize the data for at least the fields: duration, status and rating
-        foreach ($parsesTables as $platformKey => $platform) {
-            foreach($platform as $loanKey => $loanid) {
-                if (!empty($normalizedStatus = $mycompany->normalizeLoanStatus($data['PFPname']))) {
-                    $parsedTables[$platformKey]['status'] = $normalizedStatus;
-                }
-
-                if (!empty($normalizedRating = $mycompany->normalizeLoanRating($data['PFPname']))) {
-                    $parsedTables[$platformKey]['rating'] = $normalizedRating;
-                }
-
-                if (!empty($normalizedDuration = $mycompany->normalizeLoanDuration($data['PFPname']))) {
-                    $parsedTables[$platformKey]['duration_value'] = $normalizedStatus[0];
-                    $parsedTables[$platformKey]['duration_unit'] = $normalizedStatus[1];
-                }
-            }
-        }
-        
-        // prepare to save the tables to db. link to corresponding loan, without overwriting already stored data
-        
-//        tempArray['zank']['schedule'][]
-//        tempArray['growly']['schedule'][]        
-/*        etc.
-                
-        loop [
-            load existing data 
-            store the *complete* table for the loan and Investor:
- *          store totals at bottom of amortization table
-        ]    
-           
-  */        
-        
-
-        if (empty($collectLoanIds)) {
-            $jobState = AMORTIZATION_TABLES_DOWNLOADED;                        // Do not collect amortization tables
-        }
-        // write new jobstatus
-        
-        }
-        /*
-    
-                 $myParser->analysisErrors();
-                $this->Applicationerror = ClassRegistry::init('Applicationerror');
-                $par1 = "ERROR Parsing error of downloaded file";
-                $par2 = $data;
-                $par3 = __LINE__;
-                $par4 = __FILE__;
-                $par5 = "";
-                $this->applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
-   
-    */
-    
-    
-    
-   
-    /** COPIED FROM APP.CONTROLLER
-     *
-     * 	Creates a new instance of class with name company, like zank, or comunitae....
-     *
-     * 	@param 		int 	$companyCodeFile		Name of "company"
-     * 	@return 	object 	instance of class "company"
-     *
+     *      $data["companies"]                  array It contains all the linkedaccount information
+     *      $data["queue_userReference"]        string It is the user reference
+     *      $data["queue_id"]                   integer It is the queue id
+     * @return string The variable must be in string because of Gearman but it is really a boolean 1 or 0
      */
-    function companyClass($companyCodeFile) {
+    public function getDataMulticurlFiles($job) {
+        $data = json_decode($job->workload(),true);
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        print_r($data);
+        $this->queueCurls = new \cURL\RequestsQueue;
+        //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
+        $index = 0;
+        $i = 0;
+        foreach ($data["companies"] as $linkedaccount) {
+            echo "<br>******** Executing the loop **********<br>";
+            $index++;
+            $this->companyId[$i] = $linkedaccount['Linkedaccount']['company_id'];
+            echo "companyId = " . $this->companyId[$i] . " <br>";
+            $companyConditions = array('Company.id' => $this->companyId[$i]);
+            $result[$i] = $this->Company->getCompanyDataList($companyConditions);
+            $this->newComp[$i] = $this->companyClass($result[$i][$this->companyId[$i]]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
+            $this->newComp[$i]->defineConfigParms($result[$i][$this->companyId[$i]]);  // Is this really needed??
+            $this->newComp[$i]->setClassForQueue($this);
+            $this->newComp[$i]->setQueueId($data["queue_id"]);
+            $this->newComp[$i]->setBaseUrl($result[$i][$this->companyId[$i]]['company_url']);
+            $this->newComp[$i]->setFileType($result[$i][$this->companyId[$i]]['company_typeFileTransaction'], $result[$i][$this->companyId[$i]]['company_typeFileInvestment']);
+            $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
+            $this->newComp[$i]->setUserReference($data["queue_userReference"]);
+            $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
+            $this->newComp[$i]->setLoanIds();
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], DOWNLOAD_PFP_FILE_SEQUENCE);
+            $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+            $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
+            $this->newComp[$i]->generateCookiesFile();
+            $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
+            $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
+            $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class
+            $this->newComp[$i]->setPassword($linkedaccount['Linkedaccount']['linkedaccount_password']); //Set the pass on the class
+            $configurationParameters = array('tracingActive' => true,
+                'traceID' => $data["queue_userReference"],
+            );
+            $this->newComp[$i]->defineConfigParms($configurationParameters);
+            $i++;
+        }
+        $companyNumber = 0;
+        echo "MICROTIME_START = " . microtime() . "<br>";
+        //We start at the same time the queue on every company
+        foreach ($data["companies"] as $linkedaccount) {
+            $this->newComp[$companyNumber]->collectUserGlobalFilesParallel();
+            $companyNumber++;
+        }
 
-        $dir = Configure::read('companySpecificPhpCodeBaseDir');
-        $includeFile = $dir . $companyCodeFile . ".php";
-        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
-        require_once($includeFile);
-        $newClass = $companyCodeFile;
-        $newComp = new $newClass;
-        return $newComp;
-    }    
-    
-    
-    
-    
-    
-}
+        /*
+        * This is the callback's queue for the companies cURLs, when one request is processed
+        * Another enters the queue until finishes
+        */
+        $this->queueCurls->addListener('complete', function (\cURL\Event $event) {
+            
+            //We get the response of the request
+            $response = $event->response;
+            $error = null;
+            // $info["companyIdForQueue"] is the company id
+            // $info["idForSwitch"] is the switch id
+            // $info["typeOfRequest"]  is the type of request (WEBPAGE, DOWNLOADFILE, LOGIN, LOGOUT)
+            $info = json_decode($event->request->_page, true);
+            
+            if ($info["typeOfRequest"] == "DOWNLOADFILE") {
+                fclose($this->newComp[$info["companyIdForQueue"]]->getFopen());
+            }
+            
+            if ($response->hasError()) {
+               $this->tempArray['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
+               $error = $response->getError();
+            }
+            if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
+                 //We get the web page string
+                $str = $response->getContent();
+                $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
+                $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel($str);
+            }
 
+           if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
+               $this->logoutOnCompany($info["companyIdForQueue"], $str);
+               $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
+               $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info]->getUrlSequenceBackup());  // provide all URLs for this sequence
+               $this->newComp[$info["companyIdForQueue"]]->setTries(1);
+               $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+               $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
+               $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
+           } 
+           else if ($info["typeOfRequest"] == "LOGOUT") {
+               echo "LOGOUT FINISHED <br>";
+               $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+           } 
+           else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
+               if (!empty($error)) {
+                   $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
+               }
+               else {
+                   $this->newComp[$info["companyIdForQueue"]]->saveControlVariables();
+               }
+               $this->logoutOnCompany($info["companyIdForQueue"], $str);
+               if ($info["typeOfRequest"] == "LOGOUT") {
+                   unset($this->tempArray['global']['error']);
+               }
+           }
+       });
 
+       //This is the queue. It is working until there are requests
+       while ($this->queueCurls->socketPerform()) {
+           echo '*';
+           $this->queueCurls->socketSelect();
+       }
+       
+       $lengthTempArray = count($this->tempArray);
+       $statusCollect = "1";
+       for ($i = 0; $i < $lengthTempArray; $i++) {
+           if (!empty($this->tempArray[$i]['global']['error'])) {
+               $statusCollect = "0";
+           }
+       }
+       
+       return $statusCollect;
+    }
+    
+    /**
+     * Function to do logout of company
+     * @param int $companyIdForQueue It is the companyId inside the array of newComp
+     * @param string $str It is the webpage on string format
+     */
+    public function logoutOnCompany($companyIdForQueue, $str) {
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$companyIdForQueue], LOGOUT_SEQUENCE);
+        //echo "Company = $this->companyId[$info["companyIdForQueue"]]";
+        $this->newComp[$companyIdForQueue]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+        $this->newComp[$companyIdForQueue]->companyUserLogoutMultiCurl($str);
+    }
+    
+    /*
+     * 
+     * Get the variable queueCurls
+     */
+    public function getQueueCurls() {
+        return $this->queueCurls;
+    }
+    
+    /**
+     * 
+     * Add a request to the queue to initiate the multi_curl
+     * @param request $request It's the request to process
+     */
+    public function addRequestToQueueCurls($request) {
+        $this->queueCurls->attach($request);
+    }
+    
+    /**
+     * Function to process if there is an error with the request on parallel
+     * @param object $error It is the curl error
+     * @param array $info They are the info of the company
+     * @param object $response It is the curl response from the request on parallel
+     */
+    public function errorCurl($error, $info, $response) {
+        $errorVar = 
+        'Error code: ' . $error->getCode() . '\n' .
+        'Message: "' . $error->getMessage() . '" \n' .
+        'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '\n';
+        echo $errorVar;
+        $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
+        if (!empty($testConfig['active']) == true) {
+            print_r($response->getInfo());
+            echo "<br>";
+        }
+        
+        $config = $this->newComp[$info["companyIdForQueue"]]->getConfig();
+        if ($config['tracingActive'] == true) {
+            $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
+        }
+        return $errorVar;
+    }
+    
+    
 }

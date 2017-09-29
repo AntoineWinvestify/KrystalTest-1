@@ -79,6 +79,9 @@ class zank extends p2pCompany {
 
     function __construct() {
         parent::__construct();
+        $this->i = 0;
+        //$this->loanIdArray = array(8363);
+        $this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
     }
 
@@ -1185,7 +1188,7 @@ class zank extends p2pCompany {
                                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
                             case 4:
-                                $this->tempArray['global']['profitibility'] = $this->getPercentage($p->nodeValue);
+                                $this->tempArray['global']['yield'] = $this->getPercentage($p->nodeValue);
                                 break;
                         }
                         $index++;
@@ -1194,7 +1197,8 @@ class zank extends p2pCompany {
                 // goto page "MI CARTERA"
                 $url = array_shift($this->urlSequence) . $this->userId;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, 'Invesment');  // load Webpage into a string variable so it can be parsed	
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
                 echo 'URL SEQUECE FLOW: ' . SHELL_ENDOFLINE;
@@ -1203,8 +1207,9 @@ class zank extends p2pCompany {
                 
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
+                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, 'CashFlow');  // load Webpage into a string variable so it can be parsed	
+                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
                 return $this->tempArray;
@@ -1214,11 +1219,12 @@ class zank extends p2pCompany {
         
     }
     
-    
+    /**
+     *  Read amortization tables
+     * @param type $str
+     * @return type
+     */
     function collectAmortizationTablesParallel($str){
-        $this->i = 0;
-        //$this->loanIdArray = array(8363);
-        $this->maxLoans = count($this->loanIdArray);
          switch ($this->idForSwitch){
             case 0:
                 $this->idForSwitch++;
@@ -1359,7 +1365,8 @@ class zank extends p2pCompany {
                     }
                 }
                 if($this->i++ < $this->maxLoans){
-                    $this->idForSwitch--;
+                    $this->idForSwitch = 4;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
                     break;               
                 }else{
                     return $this->tempArray;

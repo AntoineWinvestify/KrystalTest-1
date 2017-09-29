@@ -187,11 +187,7 @@ public function beforeSave1($options = array()) {
     return true;
 }
 
-
-
-
-
-    public function getUsersByStatus($queuetype, $status, $userAccess = null, $limit = null) {
+    public function getUsersByStatus($queuetype, $status, $info = null, $limit = null) {
         
         switch ($queuetype) {
             case FIFO:
@@ -205,22 +201,22 @@ public function beforeSave1($options = array()) {
         if (empty($status)) {
             $status =  START_COLLECTING;
         }
+        
+        $conditions = [];
         if (empty($limit)) {
             $limit = 100;
         }
-        if (empty($userAccess)) {
-            $usertype = DAILY_USER;
+        if (!empty($info)) {
+            $conditions["queue_info"] = $info;
         }
+        $conditions["queue_type"] = $queuetype;
+        $conditions["order"] = $order; 
+        $conditions["limit"] = $limit;
+        $result = $this->find("all", array("conditions" => $conditions));
 
-echo "queue_status = $status queue_type = $queuetype, userAccess = $userAccess, limit = $limit \n";
-        $result = $this->find("all", array("conditions" => array(
-                                                        "queue_type" => $queuetype,
-                                                        "queue_status" => $status,
-                                                  //      "queue_info => $userAccess
-                ),
-                                            "order" => $order,
-                                            "limit" => $limit)
-                            );
+        if (empty($result)) {
+            return;
+        }
         return $result;
     }
 }

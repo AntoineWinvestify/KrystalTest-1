@@ -68,6 +68,8 @@ class ParseDataWorkerShell extends AppShell {
      * This is json_encoded data with the following structure:
      * 
      *      $data['linkedAccountId']['userReference']
+     *      $data['linkedAccountId']['activeInvestments'][]     => list of all active investments 
+     *                                                             and reserved investments?
      *      $data['linkedAccountId']['queue_id']
      *      $data['linkedAccountId']['pfp']
      *      $data['linkedAccountId']['files'][filename1']       array of filenames, FQDN's
@@ -112,17 +114,16 @@ class ParseDataWorkerShell extends AppShell {
             $tempResult = array();
             foreach ($approvedFiles as $approvedFile){          // probably done only once
                 $myParser->setConfig['sortParameter'] = "loanId";
-                $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);// if successfull analysis, result is an array with loanId's as indice 
-                if (!$tempResult) {                // error occurred while analyzing a file. Report it 
+                $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);// if successfull analysis, result is an array with loanId's as index 
+                if (empty($tempResult)) {                // error occurred while analyzing a file. Report it 
                    $error[$linkedAccountKey][] = $myParser->getLastError();
-                   
                    // GENERATE appplicationerror 
                 } 
-                else {       // An error has been generated, so all is OK and continue with next file
-                   // add $result, combine the arrays
-                    $result = $tempResult;
+                else {       // all is OK 
+                  
+                    $totalParsingresult = $tempResult;    // add $result, combine the arrays
                     echo __FILE__ . " " . __LINE__ . " \n";
-                    print_r($result);
+                    print_r($totalParsingresult);
                     if ($myCompany->fileanalyzed($fileName, $typeOfFile, $fileContent)) {                   // Generate the callback function
                         // continue 
                     }
@@ -131,23 +132,20 @@ class ParseDataWorkerShell extends AppShell {
                         return false;
                     }
                     //run through the array and search for new loans.
-                    foreach ($loans as $key => $loan) {
-                        if ($key == "global") {
+                    foreach ($totalParsingresult as $loanKey => $loan) {
+                        if ($loanKey == "global") {
                             continue;
                         }
-
-                        $this->Investment->create();
-                        // check if loanId already exists for the current user
-                        $conditions = array('investment_loanReference' => $loan); // for the user
-
-                        $resultInvestment = $this->Investment->find("all", $params = array('recursive' =>  -1,
-                                                                                          'conditions' => $conditions,
-                                                                            ));
-                        if (empty($resultInvestment)) {                             // loanId does not yet exist for current user
-                            $collectLoanIds[$data['PFPname']] = $loan;              // A Gearman worker has to collect the amortization Tables
-                        } 
-                    } 
-                }            
+                        if (!$loanExists($loanKey)) {       // Check if new investments have appeared
+                            if (array_search($loanKey, $data['activeInvestments'] !== false)); 
+                            $newLoans[] = $loanKey;
+                        }
+                    }
+                    // store everything so we can return the final result to client
+                    $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
+                    $returnData[$linkedAccountKey][$parsingResult] = $totalParsingresult;
+                    unset($newLoans);
+                }      
             }      
             return;                                                                 // normal end of execution of worker  
            
