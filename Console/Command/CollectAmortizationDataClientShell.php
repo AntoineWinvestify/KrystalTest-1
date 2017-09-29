@@ -47,8 +47,7 @@ class CollectAmortizationDataClientShell extends AppShell {
         
         $this->Queue = ClassRegistry::init('Queue');
         
-        $resultQueue[] = $this->Queue->getUsersByStatus(FIFO, DATA_EXTRACTED, null, 1);
-        
+        $resultQueue = $this->Queue->getUsersByStatus(FIFO, DATA_EXTRACTED, null, 1);
         if (empty($resultQueue)) {  // Nothing in the queue
             echo "empty queue<br>";
             echo __FILE__ . " " . __FUNCTION__ . " " . __LINE__ . "<br>";
@@ -105,8 +104,6 @@ class CollectAmortizationDataClientShell extends AppShell {
                 $data["loandIds"] = $loandIdLinkedaccounts[$key][$key2];
                 $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
                 $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
-                $queue_info = $resultQueue[$key]['Queue']['queue_info'];
-                $data["queue_info"] = json_decode($queue_info, true);
                 print_r($data["companies"]);
                 print_r($data["loandIds"]);
                 echo "\n";
@@ -132,7 +129,7 @@ class CollectAmortizationDataClientShell extends AppShell {
             }
             $this->Queue->id = $key;
             if ($statusProcess) {
-                $newState = GLOBAL_DATA_DOWNLOADED;
+                $newState = AMORTIZATION_TABLES_DOWNLOADED;
                 echo "Data succcessfully download";
             }
             else {
