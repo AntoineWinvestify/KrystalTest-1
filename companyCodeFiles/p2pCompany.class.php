@@ -817,6 +817,7 @@ class p2pCompany {
         echo 'The url is: ' . $url;
         $this->errorInfo = $url;
 
+        print_r($this->headers); 
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
                 $currentScreen = array_shift($this->testConfig['siteReadings']);
@@ -893,7 +894,7 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-
+                
                 
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
