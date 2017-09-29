@@ -222,5 +222,4 @@ public function beforeSave1($options = array()) {
         }
         return $result;
     }
-
 }

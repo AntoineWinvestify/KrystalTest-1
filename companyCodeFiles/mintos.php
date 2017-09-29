@@ -15,7 +15,7 @@
  * +-----------------------------------------------------------------------------+
  *
  *
- * Contains the code required for accessing the website of "Mintos"
+ * Contains the code required for accessing the website of "Mintos".
  *
  * 
  * @author 
@@ -26,38 +26,39 @@
  * 2017-08-23
  * link account
  * 
+ * 2017-09-28
+ * Added configuration files so we can analyze "investment_X.xls", transactions_X.xls"
+ * 
  */
 
 /**
- * Description of mintos
+ * Description of Mintos
  *
  */
-class mintos extends p2pCompany {
-
-    protected $values_mintos = [     // All types/names will be defined as associative index in array
+class mintos extends p2pCompany {   
+    protected $valuesMintosTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
-                "name" => "transaction_id"
+                "name" => "transactionId"                                               // Winvestify standardized name 
              ],
             "B" => [
                 [
-                    "type" => "date",                           // Winvestify standardized name 
+                    "type" => "date",                                                   // Winvestify standardized name 
                     "inputData" => [
-				"input2" => "Y-m-d",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
-                                  // etc etc  ...
+				"input2" => "Y-M-D",
                                 ],
                     "functionName" => "normalizeDate",         
                 ]
             ],
-            "C" => [
+            "C" => [// NOT FINISHED YET
                 [
-                    "type" => "loanId",                         // Complex format, calling external method
+                    "type" => "loanId",                         // trick to get the complete cell data as purpose
                     "inputData" => [
-                                "input2" => "Loan ID: ",        // May contain trailing spaces
+                                "input2" => "",                 // May contain trailing spaces
                                 "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
+                            ],                   
+                    "functionName" => "extractDataFromString", 
                 ],
+                
                 [
                     "type" => "transactionType",                // Complex format, calling external method
                     "inputData" => [                            // List of all concepts that the platform can generate
@@ -94,20 +95,219 @@ class mintos extends p2pCompany {
                     "functionName" => "getTransactionDetail",  
                 ]
             ],
-            "D" => [                                            // Simply changing name of column to the Winvestify standardized name
-                    "name" => "turnover",                      
-                ],
+            "D" => [                                          
+                [
+                    "type" => "investment.totalLoanAmount",                             // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",                                         
+                                "input3" => ",",                                        
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]  
+            ],
             "E" => [
-                    "name" => "balance",
-                ],
+                [
+                    "type" => "investment.totalLoanAmount",                             // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",                                         
+                                "input3" => ",",                                        
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]              
+            ],
             "F" => [
                 [
-                    "type" => "currency",                       // Complex format, calling external method
+                    "type" => "currency",                                               // Winvestify standardized name 
                     "functionName" => "getCurrency",  
                 ]
-            ]          
-        ];       
- 
+            ],  
+        ]; 
+    
+    protected $valuesMintosInvestment = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                "name" => "investment.loanOrigin"                                       // Winvestify standardized name 
+             ],       
+            "B" =>  [
+                "name" => "investment.loanId"                                           // Winvestify standardized name 
+             ],
+            "C" =>  [
+                [
+                    "type" => "investment.issueDate",                                   // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D.M.Y",                                    
+                                                                                        
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+             ],       
+            "D" =>  [
+                "name" => "investment.loanType"                                         // Winvestify standardized name
+             ],        
+            "E" =>  [
+                "name" => "investment.amortizationMethod"                               // Winvestify standardized name
+             ],       
+            "F" =>  [
+                "name" => "investment.loanOriginator"                                   // Winvestify standardized name
+             ],
+            "G" =>  [
+                [
+                    "type" => "investment.totalLoanAmount",                             // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",                                         
+                                "input3" => ",",                                        
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],       
+            "H" =>  [
+                [
+                    "type" => "investment.remainingPrincipalTotalLoan",                 // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",                                         
+                                "input3" => ",",      
+                                "input4" => 5,
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],
+            "I" =>  [
+                [
+                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D.M.Y",       
+                                                            
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+             ],
+            "J" =>  [
+                [
+                    "type" => "investment.nextPaymentAmount",                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",       
+                                "input3" => ",",  
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],        
+            "K" =>  [
+                "name" => "investment.LTV"                                              // Winvestify standardized name 
+             ],
+            "L" =>  [
+                [
+                    "type" => "investment.interestRate",                                // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D.M.Y",           
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+             ],        
+            "M" =>  [
+                "name" => "investment.totalInstalments"                                 // Winvestify standardized name 
+             ],       
+            "N" =>  [
+                "name" => "investment.paidInstalments"                                  // Winvestify standardized name 
+             ],       
+            "P" =>  [
+                "name" => "investment.loanStatus"                                       // Winvestify standardized name 
+             ],
+            "P" =>  [
+                "name" => "investment.buyBackGuarantee"                                 // Winvestify standardized name 
+             ],
+            "Q" =>  [
+                [
+                    "type" => "investment.myInvestment",                                // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",    
+                                "input3" => ",",    
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],
+            "R" =>  [
+                                [
+                    "type" => "investment.purchaseDate",                                // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "D.M.Y",  
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+             ],              
+            "S" =>  [
+                [
+                    "type" => "investment.receivedPayments",                            // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",       
+                                "input3" => ",",
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],
+            "T" =>  [
+                [
+                    "type" => "investment.outstandingPrincipal",                        // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",   
+                                "input3" => ",",    
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],       
+            "U" =>  [
+                [
+                    "type" => "investment.amountSecondaryMarket",                       // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",   
+                                "input3" => ",",   
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],
+            "V" =>  [
+                [
+                    "type" => "investment.price",                                       // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",  
+                                "input3" => ",",    
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],      
+            "W" =>  [
+                [
+                    "type" => "investment.discount_premium",                            // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "",    
+                                "input3" => ",",    
+                                "input4" => 5 
+                                ],
+                    "functionName" => "getAmount",         
+                ]
+             ],       
+            "X" =>  [
+                [
+                    "type" => "currency",                                               // Winvestify standardized name 
+                    "functionName" => "getCurrency",  
+                ]
+             ],        
+        ];
+    
+     protected $valuesMintosAmortization = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                "name" => "transaction_id"
+             ],   
+        ];     
+     
+     
     
     function __construct() {
         parent::__construct();
@@ -116,6 +316,22 @@ class mintos extends p2pCompany {
         $this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
     }
+    
+                    
+  
+    public function getParserConfigTransactionFile() {
+        return $this->valuesMintosTransaction;
+    }
+ 
+     public function getParserConfigInvestmentFile() {
+        return $this->valuesMintosInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->valuesMintosAmortization;
+    }    
+    
+ 
 
     /**
      *

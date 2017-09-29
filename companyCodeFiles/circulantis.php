@@ -128,10 +128,9 @@ class circulantis extends p2pCompany {
                     "inputData" => [
                                 "input2" => "#previous.date",   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
                                                                 // Note that "date" must be a field defined in this config file
-                                                                // keywords are "#previous", "#current" and "#next".
+                                                                // keywords are "#previous" and "#current" 
                                                                 // Be aware that #previous does NOT contain any data in case of parsing the
                                                                 // first line of the file.
-                                                                // #next does not have a value while we are parsing the last line of the file
                                 "input3" => false               // This parameter indicates if the defined field will be overwritten 
                                                                 // if it already contains a value.
                                                                 // 
