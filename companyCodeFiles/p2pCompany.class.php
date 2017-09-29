@@ -658,7 +658,7 @@ class p2pCompany {
      * 	@return	string		$str	html string
      *
      */
-    function doCompanyLoginMultiCurl(array $loginCredentials, $payload = null) {
+    function doCompanyLoginMultiCurl($loginCredentials, $payload = null) {
         $url = array_shift($this->urlSequence);
         $this->errorInfo = $url;
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
@@ -1865,7 +1865,8 @@ class p2pCompany {
         }
         
         if ($headers !== false && empty($headers)) {
-            $headers = array_shift($this->urlSequence);
+            $headersJson = array_shift($this->urlSequence);
+            $headers = json_decode($headersJson,true);
         }
 
         $this->errorInfo = $url;
@@ -1961,6 +1962,39 @@ class p2pCompany {
         $this->classContainer->addRequestToQueueCurls($request);
     }
 
+  
+    /**
+     * Transform an array amortization table to a html structure with <table> tag
+     * array stricture
+     * array (                  //<table>
+     *  [0] => array (          //<tr>
+     *      [key1] => value1    // <td>value1</td> 
+     *      [key2] => value2    //<td>value2</td> 
+     *        ...               // ...
+     *      )                   //</tr>
+     *  [1] => ...              // ...
+     * )                        //</table>
+     * @param array $rows array with amortization table info.
+     * @return string string with table structure.
+     */
+    function arrayToTableConversion($rows) {
+        ob_start();
+        
+        echo "<table>";
+        foreach ($rows as $row) {
+            echo "<tr>";
+            foreach ($row as $column) {
+                echo "<td>$column</td>";
+            }
+            echo "</tr>";
+        }
+        echo "</table>";
+
+        $table = ob_get_clean();
+        
+        return $table;
+    }
+    
     /**
      * Compares two dom structures., attributes name and length 
      * 

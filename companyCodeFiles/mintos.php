@@ -111,6 +111,9 @@ class mintos extends p2pCompany {
     
     function __construct() {
         parent::__construct();
+        $this->i = 0;
+        //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");     
+        $this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
     }
 
@@ -351,9 +354,6 @@ class mintos extends p2pCompany {
     
     
     function collectAmortizationTablesParallel($str){
-        $this->i = 0;
-        $this->loanIdArray = array("15058-01");
-        $this->maxLoans = count($this->loanIdArray);
         switch ($this->idForSwitch){
                case 0:
                 $this->idForSwitch++;
@@ -420,13 +420,13 @@ class mintos extends p2pCompany {
                 break;
             case 4:
                 
-                if(empty($this->tempUrl['InvestmentUrl'])){
-                    $this->tempUrl['InvestmentUrl'] = array_shift($this->urlSequence);    
+                if(empty($this->tempUrl['investmentUrl'])){
+                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);    
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url =  $this->tempUrl['InvestmentUrl'] . $this->loanIdArray[$this->i];
+                $url =  $this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i];
                 echo "the table url is: " . $url; 
-                $this->i++;
+                $this->i = $this->i + 1;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
                 break;
@@ -444,15 +444,18 @@ class mintos extends p2pCompany {
                         $clone = $table->cloneNode(TRUE); //Clene the table
                         $AmorTable->appendChild($AmorTable->importNode($clone,TRUE));
                         $AmorTableString =  $AmorTable->saveHTML();
-                        echo $AmorTableString;
+                        //echo $AmorTableString;
                     }
                 }
                 
-                
-                if($this->i++ < $this->maxLoans){
-                    $this->idForSwitch--;
+                echo "Is " . $this->i . " and limit is " . $this->maxLoans;
+                if($this->i < $this->maxLoans){
+                    echo "Read again";
+                    $this->idForSwitch = 4;
+                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
                     break;               
-                }else{
+                }
+                else{
                     return $this->tempArray;
                     break;
                 }
