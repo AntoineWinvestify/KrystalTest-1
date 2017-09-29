@@ -2498,7 +2498,8 @@ class p2pCompany {
     }
 
     function setLoanIds($loanIds) {
-        $this->loandIds = $loanIds;
+        $this->loanIds = $loanIds;
+        $this->maxLoans = count($this->loanIds);
     }
 
     

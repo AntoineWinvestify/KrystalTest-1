@@ -313,7 +313,7 @@ class mintos extends p2pCompany {
         parent::__construct();
         $this->i = 0;
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");     
-        $this->maxLoans = count($this->loanIdArray);
+        //$this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
     }
     
@@ -635,19 +635,17 @@ class mintos extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             case 4:
-                
                 if(empty($this->tempUrl['investmentUrl'])){
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);    
                 }
-                echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url =  $this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i];
+                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url =  $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url; 
                 $this->i = $this->i + 1;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
                 break;
             case 5:
-             
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
@@ -655,11 +653,11 @@ class mintos extends p2pCompany {
                 $tables = $dom->getElementsByTagName('table');
                 foreach($tables as $table){     
                     if($table->getAttribute('class') == 'loan-table'){
-                        $AmorTable = new DOMDocument();
+                        $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
-                        $AmorTable->appendChild($AmorTable->importNode($clone,TRUE));
-                        $AmorTableString =  $AmorTable->saveHTML();
-                        //echo $AmorTableString;
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
+                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        echo $AmortizationTableString;
                     }
                 }
                 
@@ -667,7 +665,7 @@ class mintos extends p2pCompany {
                 if($this->i < $this->maxLoans){
                     echo "Read again";
                     $this->idForSwitch = 4;
-                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
+                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanId[$this->i]);
                     break;               
                 }
                 else{
