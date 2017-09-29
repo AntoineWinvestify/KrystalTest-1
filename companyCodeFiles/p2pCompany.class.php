@@ -2497,7 +2497,7 @@ class p2pCompany {
         return $this->loanIds;
     }
 
-    function setLoandIds($loanIds) {
+    function setLoanIds($loanIds) {
         $this->loandIds = $loanIds;
     }
 

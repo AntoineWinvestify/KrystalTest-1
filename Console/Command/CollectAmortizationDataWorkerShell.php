@@ -25,7 +25,7 @@
  * Description of CollectAmortizationDataWorker
  *
  */
-class CollectAmortizationDataWorker extends AppShell {
+class CollectAmortizationDataWorkerShell extends AppShell {
    
     
     protected $GearmanWorker;
@@ -44,9 +44,7 @@ class CollectAmortizationDataWorker extends AppShell {
     
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
-        $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
-        $this->GearmanWorker->addFunction('multicurlScraping', array($this, 'getDataMulticurlScraping'));
-        $this->GearmanWorker->addFunction('casperFiles', array($this, 'getDataCasperFiles'));
+        $this->GearmanWorker->addFunction('multicurlAmortization', array($this, 'getDataMulticurlFiles'));
         while( $this->GearmanWorker->work() );
     }
     
@@ -58,6 +56,7 @@ class CollectAmortizationDataWorker extends AppShell {
      *      $data["companies"]                  array It contains all the linkedaccount information
      *      $data["queue_userReference"]        string It is the user reference
      *      $data["queue_id"]                   integer It is the queue id
+     *      $data["loandIds"]                   array It contains all the loandId needed to save on the file
      * @return string The variable must be in string because of Gearman but it is really a boolean 1 or 0
      */
     public function getDataMulticurlFiles($job) {
@@ -84,7 +83,7 @@ class CollectAmortizationDataWorker extends AppShell {
             $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
-            $this->newComp[$i]->setLoanIds();
+            $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], DOWNLOAD_PFP_FILE_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
