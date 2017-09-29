@@ -1,39 +1,55 @@
 <?php
 
 /**
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  	|
  * | the Free Software Foundation; either version 2 of the License, or 		|
  * | (at your option) any later version.                                      	|
  * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
  * | GNU General Public License for more details.        			|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  *
- *
- * Contains the code required for accessing the website of "Mintos".
  *
  * 
  * @author 
- * @version 0.1
+ * @version 0.7
  * @date 2017-08-16
  * @package  
  * 
- * 2017-08-23
+ * 2017-08-23 version_0.2
  * link account
  * 
- * 2017-09-28
+ * 2017-09-04 version_0.3
+ * Added logout
+ * 
+ * 2017-09-14 version_0.4
+ * Added function collectUserGlobalFilesParallel
+ * 
+ * 2017-09-26 version_0.5
+ * Finished to download files from Mintos and integration with Gearman
+ * 
+ * 2017-09-28 version_0.6
  * Added configuration files so we can analyze "investment_X.xls", transactions_X.xls"
+ * Added function to download Amortization Tables
+ * 
+ * 2017-09-29 version_0.7
+ * Integration of downloading amortization tables with Gearman
  * 
  */
 
 /**
- * Description of Mintos
- *
+ * Contains the code required for accessing the website of "Mintos".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, testing]
+ * parallelization                                                      [OK, tested]
  */
 class mintos extends p2pCompany {   
     protected $valuesMintosTransaction = [     // All types/names will be defined as associative index in array

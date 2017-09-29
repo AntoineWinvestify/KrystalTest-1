@@ -70,6 +70,11 @@
  * 2017-09-17
  * added callback functions for Dashboard2
  * 
+ * 2017-09-20
+ * Added function to download a file from a company
+ * 
+ * 2017-09-22
+ * Added functions to initiate and use casperjs
  * 
  * PENDING
  * fix method  getMonetaryValue()

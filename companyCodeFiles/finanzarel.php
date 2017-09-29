@@ -16,14 +16,37 @@
  *
  *
  * @author
- * @version 0.1
- * @date 2016-10-25
+ * @version 0.5
+ * @date 2017-08-23
  * @package
  *
  * 
- * 
- * 2017-08-23
+ * 2017-08-23 version_0.1
  * Created
+ * 
+ * 2017-08-24 version_0.2
+ * Added login
+ * 
+ * 2017-09-21 version_0.3
+ * Added download file and integration with Gearman
+ * 
+ * 2017-09-26 version_0.4
+ * Download all files correctly with Gearman
+ * Added logout
+ * 
+ * 2017-09-28 version_0.5
+ * Added new file to download
+ * 
+ */
+
+/**
+ * Contains the code required for accessing the website of "Finanzarel".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Not OK]
+ * parallelization                                                      [OK, tested]
  */
 class finanzarel extends p2pCompany {
 
