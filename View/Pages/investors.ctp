@@ -73,8 +73,22 @@
                 <div>
                     <?php echo __('With ')?><strong><?php echo __('One Click Registration')?></strong><?php echo __(' you can register with the same credentials in your preferred platforms from our list')?>
                 </div>
+                <div class="divmiddle">
+                    <img src="/img/screenshots/ocr1.png" class="imgResponsive investorsImg center-block"/>
+                    <p align="center"><?php echo __('Select your preferred platforms')?></p>
+                </div>
+                <div class="divmiddle">
+                    <img src="/img/screenshots/ocr2.png" class="imgResponsive investorsImg center-block"/>
+                    <p align="center"><?php echo __('A single registration process')?></p>
+                </div>
                 <hr class="specialHr">
             </div>
         </div>
+    </div>
+</div>
+<div id="contact">
+    <div class="row">
+        <h1 align="center" style="font-weight: 800"><?php echo __('GET STARTED')?></h1>
+        <a href="/Contactforms/form/"><button class="btn btn-lg btn1CR-inverted center-block" style="border-radius: 20px;"><?php echo __('Contact Us')?></button></a>
     </div>
 </div>

@@ -136,9 +136,12 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <a href="/Contactforms/form/"><button class="btn btn-primary btn1CR center-block btnRounded"><?php echo __('Formulario de contacto')?></button></a>
-            </div>
         </div>
+    </div>
+</div>
+<div id="contact">
+    <div class="row">
+        <h1 align="center" style="font-weight: 800"><?php echo __('GET STARTED')?></h1>
+        <a href="/Contactforms/form/"><button class="btn btn-lg btn1CR-inverted center-block" style="border-radius: 20px;"><?php echo __('Contact Us')?></button></a>
     </div>
 </div>
