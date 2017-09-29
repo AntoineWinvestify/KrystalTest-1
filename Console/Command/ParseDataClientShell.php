@@ -116,6 +116,30 @@ class ParseDataClientShell extends AppShell {
             
 
             $this->GearmanClient->runTasks();
+            
+            foreach ($this->userResult as $key => $userResult) {
+ //check if no error occured. If no error then store the data in the database.
+ // if error occurred then use applicationerror to store it.
+                $this->Queue->id = $key;
+                if ($statusProcess) {
+                    $newState = AMORTIZATION_TABLES_DOWNLOADED;
+                    echo "Files succcessfully parsed, no new loans found";
+                }
+                else {
+                    $newState = DATA_EXTRACTED;
+                    echo "Files succcessfully parsed and new loans detected, loanIds need to be collected\n";
+                }
+                $this->Queue->save(array('queue_status' => $newState), $validate = true);
+        }
+        
+        
+            
+            
+            
+            
+            
+            
+            
 /*            
             else {  // error occured, so deal with it
                     // store error data using applicationError
@@ -223,8 +247,6 @@ class ParseDataClientShell extends AppShell {
     
     public function verifyCompleteTask (GearmanTask $task) {
         echo __METHOD__ . " " . __LINE__ . "\n";
-
-        
         $data = explode(".-;", $task->unique());
         $this->userResult[$data[0]][$data[1]] = $task->data();
         print_r($this->userResult);

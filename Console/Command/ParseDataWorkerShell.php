@@ -145,21 +145,17 @@ class ParseDataWorkerShell extends AppShell {
                     $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
                     $returnData[$linkedAccountKey][$parsingResult] = $totalParsingresult;
                     unset($newLoans);
-                }      
-            }      
-            return;                                                                 // normal end of execution of worker  
-           
-            
-            
-            
-            $params[] = "parserConfig this is a string for antoine de Poorter\n";
-            //    return json_encode($params);                                        
-
-            unset($companyHandle);
+                } 
+                $returnData[$linkedAccountKey]['investor_investorReference'] = $data['userReference'];
+                $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id'];   
+            }
         }
-
-
-                                                                      // Error encountered
+        return json_encode($returnData); 
+    }
+}        
+        
+        
+ /*
                     $myParser->analysisErrors();
                     $this->Applicationerror = ClassRegistry::init('Applicationerror');
                     $par1 = "ERROR Parsing error of downloaded file";
@@ -171,9 +167,6 @@ class ParseDataWorkerShell extends AppShell {
                     // do cleaning up of all files which have been generated so far
     //echo error back to Gearman client
               
-      
-   return json_encode($params);
-        
 
             if (empty($collectLoanIds)) {
                 $newState = AMORTIZATION_TABLES_DOWNLOADED;                        // Do not collect amortization tables
@@ -197,14 +190,11 @@ class ParseDataWorkerShell extends AppShell {
 
             // generate exception
             // return
+*/
 
-
-    
-    }    
-}
-
-
-
+            
+            
+            
 
 
     /**
@@ -215,15 +205,197 @@ class ParseDataWorkerShell extends AppShell {
      */
     class Fileparser {
         protected $config = array ('OffsetStart' => 0,
-                                'offsetEnd' => 0,
+                                'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index. 
-                                 );                     // if array does not have $sortParameter then "global2 index is used
+                                 );                     // if array does not have $sortParameter then "global" index is used
                                                         // Typically used for sorting by loanId index
 
         protected $errorData = array();                 // Contains the information of the last occurred error
 
+
+        protected $currencies = array(EUR => ["EUR", "€"], 
+                                        GBP => ["GBP", "£"], 
+                                        USD => ["USD", "$"],
+                                        ARS => ["ARS", "$"],
+                                        AUD => ["AUD", "$"],
+                                        NZD => ["NZD", "$"],                                           
+                                        BYN => ["BYN", "BR"],       
+                                        BGN => ["BGN", "лв"], 
+                                        CZK => ["CZK", "Kč"],                                        
+                                        DKK => ["DKK", "Kr"],                                       
+                                        CHF => ["CHF", "Fr"],                                        
+                                        MXN => ["MXN", "$"], 
+                                        RUB => ["RUB", "₽"],              
+                                        );        
     
+        public $numberOfDecimals = 5;
+
+        public  $transactionDetails = [
+                0 => [
+                    "detail" => "Cash_deposit",
+                    "cash" => 1,                                    // 1 = in, 2 = out
+                    "account" => "CF",                           
+                    "transactionType" => "Deposit"
+                    ],
+                1 => [
+                    "detail" => "Cash_withdrawal",
+                    "cash" => 2,   
+                    "account" => "CF", 
+                    "transactionType" => "Withdraw"               
+                    ], 
+                2 => [
+                    "detail" => "Primary_market_investment",
+                    "cash" => 2,  
+                    "account" => "Capital",                 
+                    "transactionType" => "Investment"
+                    ],
+                3 => [
+                    "detail" => "Secundary_market_investment",
+                    "cash" => 2,
+                    "account" => "Capital",                 
+                    "transactionType" => "Investment"              
+                    ], 
+                4 => [
+                    "detail" => "Principal_repayment",
+                    "cash" => 1,  
+                    "account" => "Capital",                 
+                    "transactionType" => "Repayment"
+                    ],
+                5 => [
+                    "detail" => "Partial_principal_repayment",
+                    "cash" => 1, 
+                    "account" => "Capital",                
+                    "transactionType" => "Repayment"               
+                    ], 
+                6 => [
+                    "detail" => "Principal_buyback",
+                    "cash" => 1, 
+                    "account" => "Capital",                 
+                    "transactionType" => "Repayment"
+                    ],
+
+                7 => [
+                    "detail" => "Principal_and_interest_payment",
+                    "cash" => 1, 
+                    "account" => "Mix",                 
+                    "transactionType" => "Mix"
+                    ],       
+
+                8 => [
+                    "detail" => "Regular_interest_income",
+                    "cash" => 1, 
+                    "account" => "PL",                
+                    "transactionType" => "Income"               
+                    ], 
+                9 => [
+                    "detail" => "Delayed_interest_income",
+                    "cash" => 1,  
+                    "account" => "PL",                 
+                    "transactionType" => "Income"
+                    ],
+                10 => [
+                    "detail" => "Late_payment_fee_income",
+                    "cash" => 1,  
+                    "account" => "PL",                 
+                    "transactionType" => "Income"               
+                    ], 
+                11 => [
+                    "detail" => "Cash_deposit",
+                    "cash" => 1,  
+                    "account" => "PL",                 
+                    "transactionType" => "Income"
+                    ],
+                12 => [
+                    "detail" => "Interest_income_buyback",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"               
+                    ], 
+                13 => [
+                    "detail" => "Delayed_interest_income_buyback",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"
+                    ],
+                14 => [
+                    "detail" => "Cash_withdrawal",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"              
+                    ], 
+                15 => [
+                    "detail" => "Cash_deposit",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"
+                    ],
+                16 => [
+                    "detail" => "Cash_withdrawal",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"               
+                    ],  
+                17 => [
+                    "detail" => "Recoveries",
+                    "cash" => 1, 
+                    "account" => "PL", 
+                    "transactionType" => "Income"               
+                    ],  
+                18 => [
+                    "detail" => "Commission",
+                    "cash" => 2,
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ], 
+                19 => [
+                    "detail" => "Bank_charges",
+                    "cash" => 2,
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ], 
+                20 => [
+                    "detail" => "Premium_paid_secondary_market",
+                    "cash" => 2,    
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ], 
+                21 => [
+                    "detail" => "Interest_payment_secondary_market_purchase",
+                    "cash" => 2,  
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ],            
+                22 => [
+                    "detail" => "Tax_VAT",
+                    "cash" => 2,  
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ], 
+                23 => [
+                    "detail" => "Tax_income_withholding_tax",
+                    "cash" => 2,  
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ],            
+                24 => [
+                    "detail" => "Write-off", 
+                    "cash" => 2,  
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ]    
+            ];
+
+   
+    function __construct() {
+        echo "starting parser\n";
+ //       parent::__construct();    
+
+//  Do whatever is needed for this subsclass
+    }        
+        
+
+        
     /**
      * Starts the process of analyzing the file and returns the results as an array
      *  @param  $file           Name(s) of the file to analyze
@@ -295,13 +467,13 @@ class ParseDataWorkerShell extends AppShell {
                 $currentKey = $i;
                 // check for subindices and construct them
                 if (array_key_exists("name", $value)) {
-                    echo "ANTOINE\n";
+//                    echo "ANTOINE\n";
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']"; 
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
                     eval($tempString);
                 }
                 else { 
-                    echo "CHARO\n";
+//                    echo "CHARO\n";
                     foreach ($value as $userFunction ) {
                         echo "---------------------------------------------------------------------\n";
                         if (!array_key_exists('inputData',$userFunction)) {
@@ -356,7 +528,7 @@ class ParseDataWorkerShell extends AppShell {
             $i++; 
         }
 echo "END OF LOOP \n"; 
-exit;
+
 // Delete the numeric indices. This should not be necesary but the code above does
 // NOT work, the bad line is "unset($tempArray[$i]);".
 // So below is a stupid work-around
@@ -371,11 +543,6 @@ exit;
     }
     
    
-   
-   
-    
-
-    
     /**
      * Returns information of the last occurred error
      *
@@ -401,192 +568,7 @@ exit;
             $this->$configurationKey = $configuration;          // avoid deleting already specified config parameters
         }
     }
-        
-    
-    
-    
-    
-    public $numberOfDecimals = 5;
 
-    public  $transactionDetails = [
-            0 => [
-                "detail" => "Cash_deposit",
-                "cash" => 1,                                    // 1 = in, 2 = out
-                "account" => "CF",                           
-                "transactionType" => "Deposit"
-                ],
-            1 => [
-                "detail" => "Cash_withdrawal",
-                "cash" => 2,   
-                "account" => "CF", 
-                "transactionType" => "Withdraw"               
-                ], 
-            2 => [
-                "detail" => "Primary_market_investment",
-                "cash" => 2,  
-                "account" => "Capital",                 
-                "transactionType" => "Investment"
-                ],
-            3 => [
-                "detail" => "Secundary_market_investment",
-                "cash" => 2,
-                "account" => "Capital",                 
-                "transactionType" => "Investment"              
-                ], 
-            4 => [
-                "detail" => "Principal_repayment",
-                "cash" => 1,  
-                "account" => "Capital",                 
-                "transactionType" => "Repayment"
-                ],
-            5 => [
-                "detail" => "Partial_principal_repayment",
-                "cash" => 1, 
-                "account" => "Capital",                
-                "transactionType" => "Repayment"               
-                ], 
-            6 => [
-                "detail" => "Principal_buyback",
-                "cash" => 1, 
-                "account" => "Capital",                 
-                "transactionType" => "Repayment"
-                ],
-        
-            7 => [
-                "detail" => "Principal_and_interest_payment",
-                "cash" => 1, 
-                "account" => "Mix",                 
-                "transactionType" => "Mix"
-                ],       
-
-            8 => [
-                "detail" => "Regular_interest_income",
-                "cash" => 1, 
-                "account" => "PL",                
-                "transactionType" => "Income"               
-                ], 
-            9 => [
-                "detail" => "Delayed_interest_income",
-                "cash" => 1,  
-                "account" => "PL",                 
-                "transactionType" => "Income"
-                ],
-            10 => [
-                "detail" => "Late_payment_fee_income",
-                "cash" => 1,  
-                "account" => "PL",                 
-                "transactionType" => "Income"               
-                ], 
-            11 => [
-                "detail" => "Cash_deposit",
-                "cash" => 1,  
-                "account" => "PL",                 
-                "transactionType" => "Income"
-                ],
-            12 => [
-                "detail" => "Interest_income_buyback",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"               
-                ], 
-            13 => [
-                "detail" => "Delayed_interest_income_buyback",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"
-                ],
-            14 => [
-                "detail" => "Cash_withdrawal",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"              
-                ], 
-            15 => [
-                "detail" => "Cash_deposit",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"
-                ],
-            16 => [
-                "detail" => "Cash_withdrawal",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"               
-                ],  
-            17 => [
-                "detail" => "Recoveries",
-                "cash" => 1, 
-                "account" => "PL", 
-                "transactionType" => "Income"               
-                ],  
-            18 => [
-                "detail" => "Commission",
-                "cash" => 2,
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ], 
-            19 => [
-                "detail" => "Bank_charges",
-                "cash" => 2,
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ], 
-            20 => [
-                "detail" => "Premium_paid_secondary_market",
-                "cash" => 2,    
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ], 
-            21 => [
-                "detail" => "Interest_payment_secondary_market_purchase",
-                "cash" => 2,  
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ],            
-            22 => [
-                "detail" => "Tax_VAT",
-                "cash" => 2,  
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ], 
-            23 => [
-                "detail" => "Tax_income_withholding_tax",
-                "cash" => 2,  
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ],            
-            24 => [
-                "detail" => "Write-off", 
-                "cash" => 2,  
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ]    
-         ];
-
-    public $currencies = array(EUR => ["EUR", "€"], 
-                               GBP => ["GBP", "£"], 
-                               USD => ["USD", "$"],
-                               ARS => ["ARS", "$"],
-                               AUD => ["AUD", "$"],
-                               NZD => ["NZD", "$"],                                           
-                               BYN => ["BYN", "BR"],       
-                               BGN => ["BGN", "лв"], 
-                               CZK => ["CZK", "Kč"],                                        
-                               DKK => ["DKK", "Kr"],                                       
-                               CHF => ["CHF", "Fr"],                                        
-                               MXN => ["MXN", "$"], 
-                               RUB => ["RUB", "₽"],              
-                              );   
-    
-    
-    
-    
-    function __construct() {
-        echo "starting parser\n";
- //       parent::__construct();    
-
-//  Do whatever is needed for this subsclass
-    }
 
     
     /**
@@ -620,7 +602,7 @@ exit;
      * 	@return int $numberOfDecimals
      *
      */
-    private function getNumberofDecimals() {
+    public function getNumberofDecimals() {
         return $this->numberofDecimals;
     }   
     
@@ -638,19 +620,19 @@ exit;
      * @return string   date in format yyyy-mm-dd
      * 
      */
-    function normalizeDate($date, $currentFormat) {
-       $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
-       (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
-       $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
-  print_r($tempDate);     
-       if (count($tempDate) == 1) {
+    private function normalizeDate($date, $currentFormat) {
+        $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
+        (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
+        $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
+        print_r($tempDate);     
+        if (count($tempDate) == 1) {
            return;
-       }
+        }
        
-       $finalDate = array();
+        $finalDate = array();
     
-       $length = strlen($dateFormat);
-       for ($i = 0; $i < $length; $i++) {
+        $length = strlen($dateFormat);
+        for ($i = 0; $i < $length; $i++) {
             switch ($dateFormat[$i]) {
                 case "d":
                     $finalDate[2] = $this->norm_date_element($tempDate[$i]);
@@ -682,8 +664,6 @@ exit;
         return;
     }  
 
-   
-   
 
     /**
      * normalize a day or month element of a date to two (2) characters, adding a 0 if needed
@@ -692,7 +672,7 @@ exit;
      * @return string 
      * 
      */   
-    function norm_date_element($val) {
+    private function norm_date_element($val) {
 	if ($val < 10) {
 		return (str_pad($val, 2, "0", STR_PAD_LEFT));
 	}
@@ -714,7 +694,7 @@ exit;
      * @return int    represents the amount including its decimals
      * 
      */
-    function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
+    private function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
         if ($decimalSep == ".") {
             $seperator = "\.";
         }
@@ -755,7 +735,7 @@ exit;
      * @return integer  constant representing currency 
      * 
      */
-    function getCurrency($loanCurrency) {
+    private function getCurrency($loanCurrency) {
         $details = new Parser();
         $currencyDetails = $details->getCurrencyDetails();
         unset($details);
@@ -773,7 +753,6 @@ exit;
         } 
     }
    
-  
     
     /**
      * get hash of a string
@@ -782,7 +761,7 @@ exit;
      * @return string   $extractedString
      *       
      */
-    function getHash($input) {
+    private function getHash($input) {
         return  hash ("md5", $input, false);
     }  
    
@@ -794,7 +773,7 @@ exit;
      * @return array   $parameter2  List of all concepts of the platform
      *       
      */
-    function getTransactionDetail($input, $config) {
+    private function getTransactionDetail($input, $config) {
         foreach ($config as $key => $configItem) {
             $position = stripos($input, $configItem[0]);
             if ($position !== false) {
@@ -813,7 +792,7 @@ exit;
      * @return string   $extractedString
      *       
      */
-    function extractDataFromString($input, $search, $separator ) {
+    private function extractDataFromString($input, $search, $separator ) {
         $position = stripos($input, $search) + strlen($search);
         $substrings = explode($separator, substr($input, $position));
         return $substrings[0];
@@ -828,7 +807,7 @@ exit;
      * @return array   $parameter2  List of all concepts of the platform
      *       
      */
-    function getTransactionType($input, $config) {  
+    private function getTransactionType($input, $config) {  
         $details = new Parser();
         $transactionDetails = $details->getTransactionDetails();
         unset($details);
@@ -855,7 +834,7 @@ exit;
      * @param boolean   overwrite     overwrite current value of the $input
      *       
      */
-    function getRowData($input, $field, $overwrite) {  
+    private function getRowData($input, $field, $overwrite) {  
 
         if (empty($input)) {
             return $field;
@@ -866,17 +845,13 @@ exit;
             }
         }      
          return "";
-    }    
+    }     
     
     
-    
-    
-    function multiexplode ($delimiters,$string) {
+    private function multiexplode ($delimiters,$string) {
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $launch = explode($delimiters[0], $ready);
         return  $launch;
     } 
-    
-     
-    
+  
 }
