@@ -353,9 +353,9 @@ class mintos extends p2pCompany {
     }
     
     
-    function collectAmortizationTablesParallel($str){
+    function collectAmortizationTablesParallel($str = null){
         switch ($this->idForSwitch){
-               case 0:
+            case 0:
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 echo 'Next: ' . $next . SHELL_ENDOFLINE;
@@ -437,8 +437,7 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
-                
-                  foreach($tables as $table){     
+                foreach($tables as $table){     
                     if($table->getAttribute('class') == 'loan-table'){
                         $AmorTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
@@ -457,7 +456,6 @@ class mintos extends p2pCompany {
                 }
                 else{
                     return $this->tempArray;
-                    break;
                 }
                    
         }
