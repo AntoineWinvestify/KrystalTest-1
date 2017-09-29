@@ -152,9 +152,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
                if (!empty($error)) {
                    $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
                }
-               else {
-                   $this->newComp[$info["companyIdForQueue"]]->saveControlVariables();
-               }
+               
                $this->logoutOnCompany($info["companyIdForQueue"], $str);
                if ($info["typeOfRequest"] == "LOGOUT") {
                    unset($this->tempArray['global']['error']);
