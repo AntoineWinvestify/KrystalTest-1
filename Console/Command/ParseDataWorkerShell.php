@@ -22,10 +22,17 @@
  * Errors are taken care of in the worker and will spark the exception Callback with
  * some extra user data
  * Normal return also include some basic return data, like queue_id and user_reference
+ * 
  * @author 
  * @version
  * @date
  * @package
+ * 
+ * 
+ * TO BE DONE:
+ * CHECK THE STRUCTURE OF A XLS/XLSX/CSV FILE BY CHECKING THE NAMES OF THE HEADERS. 
+ * 
+ * 
  */
 
 class ParseDataWorkerShell extends AppShell {
@@ -93,10 +100,10 @@ class ParseDataWorkerShell extends AppShell {
         
         foreach ($platformData as $linkedAccountKey => $data) {
             if ($data['pfp'] <> "mintos") { 
-                continue;
+    //            continue;
             }
             
-            $companyHandle = $this->companyClass($data['pfp']);
+    //        $companyHandle = $this->companyClass($data['pfp']);
             
             echo "CURRENT PLATFORM = " . $data['pfp'] . "\n";
             // Deal first with the transaction file(s)
@@ -104,19 +111,19 @@ class ParseDataWorkerShell extends AppShell {
             $files = $data['files']; 
             // First analyze the transaction file(s)
             $approvedFiles = $this->readFilteredFiles($files,  TRANSACTION_FILE);
-            
-            $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
+                
+    //        $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
 
-            $parserConfig = $companyHandle->getParserConfigTransactionFile();
+    //        $parserConfig = $companyHandle->getParserConfigTransactionFile();
             print_r($parserConfig);
             echo __FILE__ . " " . __LINE__ . "\n";
             
             $tempResult = array();
             foreach ($approvedFiles as $approvedFile){          // probably done only once
-                $myParser->setConfig['sortParameter'] = "loanId";
-                $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);// if successfull analysis, result is an array with loanId's as index 
+    //            $myParser->setConfig['sortParameter'] = "loanId";
+    //            $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);// if successfull analysis, result is an array with loanId's as index 
                 if (empty($tempResult)) {                // error occurred while analyzing a file. Report it 
-                   $error[$linkedAccountKey][] = $myParser->getLastError();
+    //               $error[$linkedAccountKey][] = $myParser->getLastError();
                    // GENERATE appplicationerror 
                 } 
                 else {       // all is OK 

@@ -117,7 +117,11 @@ class ParseDataClientShell extends AppShell {
 
             $this->GearmanClient->runTasks();
             
-            foreach ($this->userResult as $key => $userResult) {
+echo __METHOD__ . " " . __LINE__ . "\n";           
+
+            $result = json_decode($this->workerResult);
+            print_r($result);
+            foreach ($result as $key => $userResult) {
  //check if no error occured. If no error then store the data in the database.
  // if error occurred then use applicationerror to store it.
                 $this->Queue->id = $key;
@@ -248,8 +252,7 @@ class ParseDataClientShell extends AppShell {
     public function verifyCompleteTask (GearmanTask $task) {
         echo __METHOD__ . " " . __LINE__ . "\n";
         $data = explode(".-;", $task->unique());
-        $this->userResult[$data[0]][$data[1]] = $task->data();
-        print_r($this->userResult);
+        $this->workerResult = $task->data();
         echo "ID Unique: " . $task->unique() . "\n";
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;       
