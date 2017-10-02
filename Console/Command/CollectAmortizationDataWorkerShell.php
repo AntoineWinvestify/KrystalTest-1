@@ -84,7 +84,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
             $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
-            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], DOWNLOAD_AMORTIZATION_TABLES);
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
             $this->newComp[$i]->generateCookiesFile();
