@@ -1415,6 +1415,15 @@ class p2pCompany {
     }
     
     /**
+     * Function to create all the amortization table by loan Id
+     */
+    public function saveAmortizationTable() {
+        foreach ($this->tempArray as $key => $tempArray) {
+            $this->saveFilePFP("amortizationtable_" . $key, $tempArray);
+        }
+    }
+    
+    /**
      * Function to save a file of a PFP
      * @param string $fileName It is the file name with the extension
      * @param data $data Data to save on the file, it could be json or html
