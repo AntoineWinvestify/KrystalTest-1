@@ -1414,12 +1414,18 @@ class p2pCompany {
         return $pathCreated;
     }
     
-    public function saveControlVariables() {
+    /**
+     * Function to save a file of a PFP
+     * @param string $fileName It is the file name with the extension
+     * @param data $data Data to save on the file, it could be json or html
+     */
+    public function saveFilePFP($fileName, $data = null) {
+        if (empty($data)) {
+            $data = $this->tempArray;
+        }
         $pathCreated = $this->createFolderPFPFile();
-        $info = json_encode($this->tempArray);
-        $fileName = "controlVariables.json";
         $fp = fopen($pathCreated . DS . $fileName, 'w');
-        fwrite($fp, $info);
+        fwrite($fp, $data);
         fclose($fp);
     }
 
