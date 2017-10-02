@@ -674,7 +674,7 @@ class mintos extends p2pCompany {
                         $clone = $table->cloneNode(TRUE); //Clene the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
                         $AmortizationTableString =  $AmortizationTable->saveHTML();
-                        $this->tempArray[$this->loanIds[$this->i]] = $AmortizationTableString;
+                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
                     }
                 }
