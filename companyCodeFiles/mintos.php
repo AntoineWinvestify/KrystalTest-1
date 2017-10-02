@@ -38,7 +38,7 @@
 class mintos extends p2pCompany {   
     protected $valuesMintosTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
-                "name" => "transactionId"                                               // Winvestify standardized name 
+                    "name" => "transactionId"                                               // Winvestify standardized name 
              ],
             "B" => [
                 [
@@ -53,7 +53,7 @@ class mintos extends p2pCompany {
                 [
                     "type" => "loanId",                         // trick to get the complete cell data as purpose
                     "inputData" => [
-                                "input2" => "Loan ID: ",                 // May contain trailing spaces
+                                "input2" => "Loan ID: ",        // May contain trailing spaces
                                 "input3" => ",",
                             ],                   
                     "functionName" => "extractDataFromString", 

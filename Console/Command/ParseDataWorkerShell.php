@@ -488,62 +488,56 @@ class ParseDataWorkerShell extends AppShell {
             $i++;
         }
 
-        
         $i = 0;
         $outOfRange = false;
- //       print_r($rowDatas);
-        $aa=0;
+
         foreach ($rowDatas as $keyRow => $rowData) {
-            $aa = $aa +1;
             echo "Reading a NEW ROW\n";
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 // check for subindices and construct them
-                if (array_key_exists("name", $value)) {
+                if (array_key_exists("name", $value)) {      // "name" => .......
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']"; 
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
                     eval($tempString);
                 }
-                else { 
+                else {          // "type" => .......
+ //                   echo "---------------------------------------------------------------------\n";
                     foreach ($value as $userFunction ) {
-//                        echo "---------------------------------------------------------------------\n";
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
                         }
                         else {  // input parameters are defined in config file
                         // check if any of the input parameters require data from
                         // another cell in current row, or from the previous row
-                            echo "CHARO\n";
-                            print_r($userFunction["inputData"]);
+
                             foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file 
-                                echo "keyInputData = $keyInputData\n";
-                                print_r($input);
-                                echo __FUNCTION__ . " " . __LINE__ . " \n";  
-            /*                     if (stripos ($input, "#previous.") !== false) {
-                                    if ($previousKey == -1) {
-                                        $outOfRange = true;
-                                        break;
+                      //          echo "keyInputData = $keyInputData\n";
+                                if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
+                                    if (stripos ($input, "#previous.") !== false) {
+                                        if ($previousKey == -1) {
+                                            $outOfRange = true;
+                                            break;
+                                        }
+                                        $temp = explode(".", $input);
+                                        $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
                                     }
-                                    $temp = explode(".", $input);
-                                    $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
-                                }*/
-                                if (stripos ($input, "#current.") !== false) {
-                                    $temp = explode(".", $input);
-                                    $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
-                                }                                        
-                            }   
-                 echo "Daniel\n";
-                            print_r($userFunction["inputData"]);           
+                                    if (stripos ($input, "#current.") !== false) {
+                                        $temp = explode(".", $input);
+                                        $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
+                                    }               
+                                }                         
+                            }             
                         }
-                        echo "BEFORE SHIFT\n";
-                        print_r($userFunction['inputData']);
+     //                       echo "BEFORE SHIFT\n";
+     //                       print_r($userFunction['inputData']);
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
 
                         if ($outOfRange == false) {
                             echo "ANTOINE\n";
                             print_r($userFunction['inputData']);
-                            echo "PEDRO\n";
+    //                           echo "PEDRO\n";
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',  
                                                                        $userFunction['functionName']), 
                                                                        $userFunction['inputData']);
@@ -556,9 +550,10 @@ class ParseDataWorkerShell extends AppShell {
                         else {
                             $outOfRange = false;        // reset
                         }
-                    }
+                    }    
                 }
             }
+            
             if (!empty($this->config['sortParameter'])) {
                 if (array_key_exists($this->config['sortParameter'], $tempArray[$i]) ) {
                      $tempArray[ $tempArray[$i][$this->config['sortParameter'] ] ][]  = $tempArray[$i];
@@ -567,14 +562,10 @@ class ParseDataWorkerShell extends AppShell {
                     $tempArray['global'][] = $tempArray[$i];
                 }
             }  
-
      //        unset($tempArray[$i]);
             $i++; 
         }
-      
-if ($aa == 3)  {
-    exit;
-}
+
         echo "END OF LOOP \n";   
 
 // Delete the numeric indices. This should not be necesary but the code above does
@@ -584,7 +575,7 @@ if ($aa == 3)  {
             unset($tempArray[$i]);
         }
         
- //       print_r($tempArray);
+        print_r($tempArray);
         echo __FUNCTION__ . " " . __LINE__ . " \n";       
         return $tempArray;
     }
@@ -810,7 +801,7 @@ if ($aa == 3)  {
 echo __FILE__ . " " . __LINE__ . "\n";
 print_r($config);
 echo __FILE__ . " " . __LINE__ . "\n";
-echo "AAAAA-> " . $input ."\n";
+echo "AAAAA-------------> " . $input ."\n";
 echo __FILE__ . " " . __LINE__ . "\n";
         foreach ($config as $configItem) {
             $position = stripos($input, $configItem[0]);
