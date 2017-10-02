@@ -488,6 +488,7 @@ class bondora extends p2pCompany {
                         $deleteTokenArray = explode('"', $script->nodeValue);
                         $this->print_r2($deleteTokenArray);
                         $this->deleteToken = $deleteTokenArray[7];
+                        echo "---___--- " . $this->deleteToken . " ---___---"; 
                     }
                 }
 
@@ -496,7 +497,7 @@ class bondora extends p2pCompany {
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvesment'];
                 echo "delete: " . $url . SHELL_ENDOFLINE;
                 $this->idForSwitch++;
-                $this->headers = array("__RequestVerificationToken: " . $this->deleteToken, /*'Origin: www.bondora.com', 'Accept: *//*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', */'X-Requested-With: XMLHttpRequest'/*, 'Connection: keep-alive', "content-length: 0"*/);
+                $this->headers = array("__RequestVerificationToken: " . $this->deleteToken, ":Type: POST", 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive', "content-length: 0", "Retry-After: 120");
                 $this->getCompanyWebpageMultiCurl($url);
                 unset($this->headers);
                 break;
