@@ -586,7 +586,8 @@ class mintos extends p2pCompany {
     
     
     function collectAmortizationTablesParallel($str = null){
-        switch ($this->idForSwitch){
+        
+        switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
@@ -667,24 +668,25 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
-                foreach($tables as $table){     
-                    if($table->getAttribute('class') == 'loan-table'){
+                foreach($tables as $table) {     
+                    if ($table->getAttribute('class') == 'loan-table') {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
                         $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        
                         echo $AmortizationTableString;
                     }
                 }
                 
                 echo "Is " . $this->i . " and limit is " . $this->maxLoans;
-                if($this->i < $this->maxLoans){
+                if ($this->i < $this->maxLoans) {
                     echo "Read again";
                     $this->idForSwitch = 4;
                     $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanId[$this->i]);
                     break;               
                 }
-                else{
+                else {
                     return $this->tempArray;
                 }
                    
