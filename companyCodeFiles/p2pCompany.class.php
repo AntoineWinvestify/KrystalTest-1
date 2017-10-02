@@ -2558,7 +2558,7 @@ class p2pCompany {
      * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
      * @return  array   list of loanId's to be downloaded
      */ 
-    public function beforeamortizationlist(array $fileContent){
+    public function beforeAmortizationlist(array $fileContent){
          return ;   
     }
 
@@ -2573,7 +2573,7 @@ class p2pCompany {
      * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
      * @return ??
      */ 
-    public function afteramortizationlist(array $amortizationtables){
+    public function afterAmortizationlist(array $amortizationtables){
          return ;   
     }    
     

@@ -53,7 +53,7 @@ class mintos extends p2pCompany {
                 [
                     "type" => "loanId",                         // trick to get the complete cell data as purpose
                     "inputData" => [
-                                "input2" => "",                 // May contain trailing spaces
+                                "input2" => "Loan ID: ",                 // May contain trailing spaces
                                 "input3" => ",",
                             ],                   
                     "functionName" => "extractDataFromString", 
@@ -63,16 +63,16 @@ class mintos extends p2pCompany {
                     "type" => "transactionType",                // Complex format, calling external method
                     "inputData" => [                            // List of all concepts that the platform can generate
                                                                 // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Incoming client payment", "Cash_deposit"],
-                                                ["Investment principal increase", "Primary_market_investment"],
-                                                ["Investment principal repayment", "Principal_repayment"],
-                                                ["Investment principal rebuy","Principal_buyback"],
-                                                ["Interest income", "Regular_interest_income"],
-                                                ["Delayed interest income", "Delayed_interest_income"],
-                                                ["Late payment fee income","Late_payment_fee_income"],
-                                                ["Interest income on rebuy", "Interest_income_buyback"],
-                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
-                                    ]   
+                                   "input5" => ["Incoming client payment" => "Cash_deposit",
+                                                "Investment principal increase" => "Primary_market_investment",
+                                                "Investment principal repayment" => "Principal_repayment",
+                                                "Investment principal rebuy" => "Principal_buyback",
+                                                "Interest income" => "Regular_interest_income",
+                                                "Delayed interest income" => "Delayed_interest_income",
+                                                "Late payment fee income" => "Late_payment_fee_income",
+                                                "Interest income on rebuy" => "Interest_income_buyback",
+                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback"]
+                                    
                             ],
                     "functionName" => "getTransactionType",  
                 ],
@@ -80,24 +80,24 @@ class mintos extends p2pCompany {
                     "type" => "transactionDetail",              // Complex format, calling external method
                     "inputData" => [                            // List of all concepts that the platform can generate
                                                                 // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Incoming client payment", "Cash_deposit"],
-                                                ["Investment principal increase", "Primary_market_investment"],
-                                                ["Investment principal repayment", "Principal_repayment"],
-                                                ["Investment principal rebuy","Principal_buyback"],
-                                                ["Interest income", "Regular_interest_income"],
-                                                ["Delayed interest income", "Delayed_interest_income"],
-                                                ["Late payment fee income","Late_payment_fee_income"],
-                                                ["Interest income on rebuy", "Interest_income_buyback"],
-                                                ["Delayed interest income on rebuy", "Delayed_interest_income_buyback"],
+                                   "input8" => ["Incoming client payment" => "Cash_deposit",
+                                                "Investment principal increase" => "Primary_market_investment",
+                                                "Investment principal repayment" => "Principal_repayment",
+                                                "Investment principal rebuy" => "Principal_buyback",
+                                                "Interest income" => "Regular_interest_income",
+                                                "Delayed interest income" => "Delayed_interest_income",
+                                                "Late payment fee income" =>"Late_payment_fee_income",
+                                                "Interest income on rebuy" => "Interest_income_buyback",
+                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback"]
                                         
-                                    ]   
+                                       
                             ],
                     "functionName" => "getTransactionDetail",  
                 ]
             ],
             "D" => [                                          
                 [
-                    "type" => "investment.totalLoanAmount",                             // Winvestify standardized name 
+                    "type" => "investment.loanAmount",                             // Winvestify standardized name 
                     "inputData" => [
 				"input2" => "",                                         
                                 "input3" => ",",                                        

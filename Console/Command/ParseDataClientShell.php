@@ -113,13 +113,13 @@ class ParseDataClientShell extends AppShell {
                     print_r($params);                   
                     unset($params);
                 } 
-            
+             
 
             $this->GearmanClient->runTasks();
             
 echo __METHOD__ . " " . __LINE__ . "\n";           
 
-            $result = json_decode($this->workerResult);
+            $result = json_decode($this->workerResult, true);
             print_r($result);
             foreach ($result as $key => $userResult) {
  //check if no error occured. If no error then store the data in the database.
