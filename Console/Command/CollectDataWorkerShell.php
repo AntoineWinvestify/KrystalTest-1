@@ -136,7 +136,7 @@ class CollectDataWorkerShell extends AppShell {
                $this->newComp[$info["companyIdForQueue"]]->setTries(1);
                $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
                $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
-               $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
+               $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel();
            } 
            else if ($info["typeOfRequest"] == "LOGOUT") {
                echo "LOGOUT FINISHED <br>";

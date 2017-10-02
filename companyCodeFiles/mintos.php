@@ -1,39 +1,55 @@
 <?php
 
 /**
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  	|
  * | the Free Software Foundation; either version 2 of the License, or 		|
  * | (at your option) any later version.                                      	|
  * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
  * | GNU General Public License for more details.        			|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  *
- *
- * Contains the code required for accessing the website of "Mintos".
  *
  * 
  * @author 
- * @version 0.1
+ * @version 0.7
  * @date 2017-08-16
  * @package  
  * 
- * 2017-08-23
+ * 2017-08-23 version_0.2
  * link account
  * 
- * 2017-09-28
+ * 2017-09-04 version_0.3
+ * Added logout
+ * 
+ * 2017-09-14 version_0.4
+ * Added function collectUserGlobalFilesParallel
+ * 
+ * 2017-09-26 version_0.5
+ * Finished to download files from Mintos and integration with Gearman
+ * 
+ * 2017-09-28 version_0.6
  * Added configuration files so we can analyze "investment_X.xls", transactions_X.xls"
+ * Added function to download Amortization Tables
+ * 
+ * 2017-09-29 version_0.7
+ * Integration of downloading amortization tables with Gearman
  * 
  */
 
 /**
- * Description of Mintos
- *
+ * Contains the code required for accessing the website of "Mintos".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, testing]
+ * parallelization                                                      [OK, tested]
  */
 class mintos extends p2pCompany {   
     protected $valuesMintosTransaction = [     // All types/names will be defined as associative index in array
@@ -313,7 +329,7 @@ class mintos extends p2pCompany {
         parent::__construct();
         $this->i = 0;
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");     
-        $this->maxLoans = count($this->loanIdArray);
+        //$this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
     }
     
@@ -635,19 +651,17 @@ class mintos extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             case 4:
-                
                 if(empty($this->tempUrl['investmentUrl'])){
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);    
                 }
-                echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url =  $this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i];
+                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url =  $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url; 
                 $this->i = $this->i + 1;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
                 break;
             case 5:
-             
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
@@ -655,11 +669,11 @@ class mintos extends p2pCompany {
                 $tables = $dom->getElementsByTagName('table');
                 foreach($tables as $table){     
                     if($table->getAttribute('class') == 'loan-table'){
-                        $AmorTable = new DOMDocument();
+                        $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
-                        $AmorTable->appendChild($AmorTable->importNode($clone,TRUE));
-                        $AmorTableString =  $AmorTable->saveHTML();
-                        //echo $AmorTableString;
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
+                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        echo $AmortizationTableString;
                     }
                 }
                 
@@ -667,7 +681,7 @@ class mintos extends p2pCompany {
                 if($this->i < $this->maxLoans){
                     echo "Read again";
                     $this->idForSwitch = 4;
-                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
+                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanId[$this->i]);
                     break;               
                 }
                 else{
