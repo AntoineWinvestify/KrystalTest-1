@@ -491,7 +491,7 @@ class ecrowdinvest extends p2pCompany {
                 if (!$confirm) {   // Error while logging in
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
-                    $tracings .= "Bondora login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= "EcrowdInvest login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
                     $tracings .= " \n";
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
