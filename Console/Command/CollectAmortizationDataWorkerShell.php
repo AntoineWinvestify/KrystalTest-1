@@ -79,7 +79,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
             $this->newComp[$i]->setClassForQueue($this);
             $this->newComp[$i]->setQueueId($data["queue_id"]);
             $this->newComp[$i]->setBaseUrl($result[$i][$this->companyId[$i]]['company_url']);
-            $this->newComp[$i]->setFileType($result[$i][$this->companyId[$i]]['company_typeFileTransaction'], $result[$i][$this->companyId[$i]]['company_typeFileInvestment']);
+            $this->newComp[$i]->setTypeFileAmortizationtable($result[$i][$this->companyId[$i]]['company_typeFileAmortizationtable']);
             $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
@@ -125,7 +125,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
             }
             
             if ($response->hasError()) {
-               $this->tempArray['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
+               $this->tempArray[$info["companyIdForQueue"]]['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
                $error = $response->getError();
             }
             if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
@@ -173,6 +173,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
        for ($i = 0; $i < $lengthTempArray; $i++) {
            if (!empty($this->tempArray[$i]['global']['error'])) {
                $statusCollect = "0";
+               break;
            }
        }
        
@@ -215,11 +216,11 @@ class CollectAmortizationDataWorkerShell extends AppShell {
      * @param object $response It is the curl response from the request on parallel
      */
     public function errorCurl($error, $info, $response) {
-        $errorVar = 
+        $errorCurl = 
         'Error code: ' . $error->getCode() . '\n' .
         'Message: "' . $error->getMessage() . '" \n' .
         'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '\n';
-        echo $errorVar;
+        echo $errorCurl;
         $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
         if (!empty($testConfig['active']) == true) {
             print_r($response->getInfo());
@@ -230,7 +231,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
         if ($config['tracingActive'] == true) {
             $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
         }
-        return $errorVar;
+        return $errorCurl;
     }
     
     

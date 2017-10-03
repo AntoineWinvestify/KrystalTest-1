@@ -1420,7 +1420,7 @@ class p2pCompany {
      */
     public function saveAmortizationTable() {
         foreach ($this->tempArray as $key => $tempArray) {
-            $this->saveFilePFP("amortizationtable_" . $key, $tempArray);
+            $this->saveFilePFP("amortizationtable_" . $key . "." . $this->typeFileAmortizationtable, $tempArray);
         }
     }
     
@@ -1437,6 +1437,22 @@ class p2pCompany {
         $fp = fopen($pathCreated . DS . $fileName, 'w');
         fwrite($fp, $data);
         fclose($fp);
+    }
+    
+    public function verifyFileIsCorrect($path) {
+        $fileHasSize = false;
+        if (filesize($path) > 0) {
+            $fileHasSize = true;
+        }
+        return $fileHasSize;
+        /**
+         * Cakephp 
+        $file = new File($path);
+        // Now call size() on that file object
+        $size = $file->size();
+        // Alternatively, use info() if your version of CakePHP is at least 2.1
+        $info = $file->info();
+         */
     }
 
 
@@ -1503,7 +1519,7 @@ class p2pCompany {
     }
 
     /**
-     * Function to show and save error if there is any when taking data of userInvestmentData
+     * Function to save error if there is any when taking data of userInvestmentData
      * @param int $line It is the line where the error occurred
      * @param string $file It is the reference of the file where the error occurred
      * @param int $id It is the type of request (WEBPAGE, LOGIN, LOGOUT)
@@ -1521,25 +1537,16 @@ class p2pCompany {
             $error_request = "$newLine The error code of the request: " . $error->getCode()
                     . "$newLine The error message of the request: " . $error->getMessage();
         }
-        $this->tempArray['global']['error'] = "ERROR START $newLine"
-                . "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
-                . "$newLine The queueId is " . $this->queueId
-                . "$newLine The error was caused in the urlsequence: " . $this->errorInfo
-                . $type_sequence
-                . $error_request
-                . "$newLine The time is : " . date("Y-m-d H:i:s")
-                . "$newLine ERROR FINISHED<br>";
+        
         $errorDetailed = "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
                 . ". The queueId is " . $this->queueId['Queue']['id']
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
                 . " " . $type_sequence
                 . " " . $error_request;
-        $position = stripos($file, 'companyCodeFiles');
-        $substring = substr($file, $position+17);
-        $company = explode(".", $substring)[0];
+        $this->tempArray['global']['error'] = $errorDetailed;
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
-        $this->classContainer->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $company . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
+        $this->classContainer->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $this->companyName . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
         return $this->tempArray;
     }
 
@@ -1744,95 +1751,6 @@ class p2pCompany {
             $posFinal = $value["finalPos"];
         }
         return $posFinal;
-    }
-
-    /**
-     * 
-     * @param string $fileUrl url that download the file
-     * @param string $fileName name of the file to save
-     * @param string $fileType extension of the file
-     * @param string $pfpBaseUrl download url referer (like http://www.zank.com.es for zank)
-     * @param string $path path where you want save the file
-     */
-    public function downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, $pfpName, $identity, $credentials, $referer, $cookie1, $cookie2) {
-
-        print_r(http_build_query($credentials));
-        echo 'Download: ' . $fileUrl . HTML_ENDOFLINE;
-
-        $date = date("d-m-Y");
-        $configPath = Configure::read('files');
-        $partialPath = $configPath['investorPath'];
-        $identity = 'testUser';
-        $path = $partialPath . $identity . DS . 'Investments' . DS . $date . DS . $pfpName . DS;
-
-        echo 'Saving in: ' . $path . HTML_ENDOFLINE;
-
-
-
-        $output_filename = $fileName . '_' . $date . "." . $fileType;
-        echo 'File name: ' . $output_filename . HTML_ENDOFLINE;
-        $output_filename = 'prueba.' . $fileType;
-        echo $fileUrl . HTML_ENDOFLINE;
-        echo $path . $output_filename . HTML_ENDOFLINE;
-
-        $ch = curl_init(); //'cookie: __cfduid=d21a834ccb1e60740448f41c2268cf12e1501673244; PHPSESSID=h3jp268d06961sjlsiiuf8du11; _gat_UA-53926147-5=1; alive=1; _ga=GA1.2.199063307.1501673247; _gid=GA1.2.1698279269.1504852937; __zlcmid=hogdmMCQMh0blo'  
-        //--data 'currency=978&+=978&purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments='  --compressed");
-        $fp = fopen($path . DS . $output_filename, 'w+');
-        if (!file_exists($fp)) {
-            echo 'Creating dir' . HTML_ENDOFLINE;
-            mkdir($path, 0770, true);
-            $fp = fopen($path . DS . $output_filename, 'w+');
-        }
-
-        $header[] = 'Accept-language: es-ES,es;q=0.8';
-        $header[] = 'Upgrade-insecure-requests: 1';
-        $header[] = 'Host: ' . $pfpBaseUrl;
-        //$header[] = 'Content-type: application/x-www-form-urlencoded';
-        $header[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8';
-        //$header[] = 'Cookie: LOGIN_USERNAME_COOKIE=' . trim($cookie2) . '; FNZRL_WORLD=' . trim($cookie1) . ';';
-        //$header[] = 'authority: ' . $pfpBaseUrl;
-        //$header[] = 'cache-control: max-age=0';
-        $header[] = 'Connection: keep-alive';
-        $header[] = 'Upgrade-Insecure-Requests: 1';
-        //$header[] = 'Cookie:LOGIN_USERNAME_COOKIE=kkukovetz%40mli-ltd.com; FNZRL_WORLD=ORA_WWV-ZAgVByw0EpmLmzqlT-HVNunp; _ga=GA1.2.66072991.1505302706; _gid=GA1.2.993900017.1505302706; mp_5cc54fb25fbf8152c17f1bd71396f8fa_mixpanel=%7B%22distinct_id%22%3A%20%22kkukovetz%40mli-ltd.com%22%2C%22%24initial_referrer%22%3A%20%22%24direct%22%2C%22%24initial_referring_domain%22%3A%20%22%24direct%22%7D; mp_mixpanel__c=2';
-        curl_setopt($ch, CURLOPT_URL, $fileUrl);
-        //¡curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_ENCODING, "gzip, deflate, br");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($credentials));
-        curl_setopt($ch, CURLOPT_REFERER, $referer); 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); 
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 40);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 100);
-        
-        curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name); // important
-        curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-
-       /*if($credentials){
-          $postString = http_build_query($credentials);
-          //set data to be posted
-          curl_setopt($ch, CURLOPT_POST, true);
-          curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
-        }*/
-        $result = curl_exec($ch);
-        echo "ohgfjkfkhgfAAAAAAAAAAAAAAAAAAAAAAAA";
-        print_r($header);
-
-        $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        print_r($result); // prints the contents of the collected file before writing..
-        $fichero = fwrite($fp,$result);//False if the file is not created
-        //echo "file writed: " . $fichero . HTML_ENDOFLINE;
-        fclose($fp);
-        
-        if ($statusCode == 200 && $fichero) {
-            echo 'Downloaded!' . HTML_ENDOFLINE;
-        } else {
-            echo "Status Code: " . $statusCode . HTML_ENDOFLINE;
-        }
     }
     
     /**
@@ -2427,6 +2345,19 @@ class p2pCompany {
         $this->typeFileInvestment = $typeFileInvestment;
     }
     
+    function setTypeFileTransaction($typeFileTransaction) {
+        $this->typeFileTransaction = $typeFileTransaction;
+    }
+
+    function setTypeFileInvestment($typeFileInvestment) {
+        $this->typeFileInvestment = $typeFileInvestment;
+    }
+
+    function setTypeFileAmortizationtable($typeFileAmortizationtable) {
+        $this->typeFileAmortizationtable = $typeFileAmortizationtable;
+    }
+
+        
     /**
      * Function to get the base url of a PFP company
      * @return string It is the base url
