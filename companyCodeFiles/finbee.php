@@ -102,8 +102,8 @@ class finbee extends p2pCompany {
                 // echo $str;
 
                 $confirm = false;
-                $as = $dom->getElementsByTagName('a');  
-                
+                $as = $dom->getElementsByTagName('a');
+
                 foreach ($as as $key => $a) {
                     echo $key . " " . $a->nodeValue;
                     if (trim($a->nodeValue) == 'My Lending Account') {
@@ -127,11 +127,29 @@ class finbee extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
-            case 4: 
+            case 4:
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                break;
+            case 5:
+                $fileName = "ControlVariables.xlsx"; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                break;
+            case 6:
+                $this->numFileInvestment++;
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                break;
+            case 7:
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
-                break;; 
+                break;
+            case 8:
+                return $this->tempArray;
         }
     }
 
