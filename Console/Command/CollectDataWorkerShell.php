@@ -165,9 +165,9 @@ class CollectDataWorkerShell extends AppShell {
        $lengthTempArray = count($this->tempArray);
        $statusCollect = "1";
        for ($i = 0; $i < $lengthTempArray; $i++) {
-           print_r($this->tempArray);
            if (!empty($this->tempArray[$i]['global']['error'])) {
                $statusCollect = "0";
+               break;
            }
        }
        

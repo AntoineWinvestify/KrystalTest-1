@@ -173,6 +173,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
        for ($i = 0; $i < $lengthTempArray; $i++) {
            if (!empty($this->tempArray[$i]['global']['error'])) {
                $statusCollect = "0";
+               break;
            }
        }
        
