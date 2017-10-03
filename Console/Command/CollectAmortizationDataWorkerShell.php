@@ -125,7 +125,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
             }
             
             if ($response->hasError()) {
-               $this->tempArray['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
+               $this->tempArray[$info["companyIdForQueue"]]['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
                $error = $response->getError();
             }
             if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
@@ -215,11 +215,11 @@ class CollectAmortizationDataWorkerShell extends AppShell {
      * @param object $response It is the curl response from the request on parallel
      */
     public function errorCurl($error, $info, $response) {
-        $errorVar = 
+        $errorCurl = 
         'Error code: ' . $error->getCode() . '\n' .
         'Message: "' . $error->getMessage() . '" \n' .
         'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '\n';
-        echo $errorVar;
+        echo $errorCurl;
         $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
         if (!empty($testConfig['active']) == true) {
             print_r($response->getInfo());
@@ -230,7 +230,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
         if ($config['tracingActive'] == true) {
             $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
         }
-        return $errorVar;
+        return $errorCurl;
     }
     
     
