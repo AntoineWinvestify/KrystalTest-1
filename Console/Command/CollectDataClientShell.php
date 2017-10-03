@@ -143,6 +143,10 @@ class CollectDataClientShell extends AppShell {
         
     }
     
+    /**
+     * Function to catch a fail on a Gearman Worker
+     * @param GearmanTask $task
+     */
     public function verifyFailTask(GearmanTask $task) {
         $m = $task->data();
         $data = explode(".-;", $task->unique());
@@ -153,6 +157,10 @@ class CollectDataClientShell extends AppShell {
         echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
     }
     
+    /**
+     * 
+     * @param GearmanTask $task
+     */
     public function verifyExceptionTask (GearmanTask $task) {
         $m = $task->data();
         $data = explode(".-;", $task->unique());
@@ -163,6 +171,10 @@ class CollectDataClientShell extends AppShell {
         //return GEARMAN_WORK_EXCEPTION;
     }
     
+    /**
+     * 
+     * @param GearmanTask $task
+     */
     public function verifyCompleteTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
         $this->userResult[$data[0]][$data[1]] = $task->data();
