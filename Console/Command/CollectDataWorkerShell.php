@@ -147,7 +147,7 @@ class CollectDataWorkerShell extends AppShell {
                    $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
                }
                else {
-                   $this->newComp[$info["companyIdForQueue"]]->saveControlVariables();
+                   $this->newComp[$info["companyIdForQueue"]]->saveFilePFP("controlVariables.json", json_encode($this->tempArray[$info["companyIdForQueue"]]));
                }
                $this->logoutOnCompany($info["companyIdForQueue"], $str);
                if ($info["typeOfRequest"] == "LOGOUT") {
@@ -173,111 +173,48 @@ class CollectDataWorkerShell extends AppShell {
        return $statusCollect;
     }
     
+    /**
+     * 
+     * @param type $job
+     */
     public function getDataCasperFiles($job) {
         $data = json_decode($job->workload(),true);
-        
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        print_r($data);
         $index = 0;
         $i = 0;
         foreach ($data["companies"] as $linkedaccount) {
             unset($newComp);
-            $index = $index + 1;
+            $index++;
             echo "<br>******** Executing the loop **********<br>";
             $companyId = $linkedaccount['Linkedaccount']['company_id'];
             echo "companyId = $companyId <br>";
             $companyConditions = array('Company.id' => $companyId);
-
             $result = $this->Company->getCompanyDataList($companyConditions);
-
             $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
             $newComp->defineConfigParms($result[$companyId]);  // Is this really needed??
-
+            $newComp->setQueueId($data["queue_id"]);
+            $newComp->setBaseUrl($result[$companyId]['company_url']);
+            $newComp->setFileType($result[$companyId]['company_typeFileTransaction'], $result[$companyId]['company_typeFileInvestment']);
+            $newComp->setCompanyName($result[$companyId]['company_codeFile']);
+            $newComp->setUserReference($data["queue_userReference"]);
+            $newComp->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
+            
             $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MY_INVESTMENTS_SEQUENCE);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-
             $configurationParameters = array('tracingActive' => false,
                 'traceID' => $data["queue_userReference"],
             );
-
             $newComp->defineConfigParms($configurationParameters);
-
-
             echo "MICROTIME_START = " . microtime() . "<br>";
             $tempArray = $newComp->collectUserGlobalFilesCasper($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
-
             $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $newComp->companyUserLogout();
 
             echo "MICROTIME_STOP = " . microtime() . "<br>";
             $tempArray['companyData'] = $result[$companyId];
-
-            $userInvestments = $tempArray;
-//prepare all globals on total dashboard level	
-//			$dashboardGlobals['amountInvested']	= $dashboardGlobals['amountInvested'] + $userInvestments['global']['activeInInvestments'];
-            $dashboardGlobals['amountInvested'] = $dashboardGlobals['amountInvested'] + $userInvestments['global']['totalInvestment'];
-            $dashboardGlobals['wallet'] = $dashboardGlobals['wallet'] + $userInvestments['global']['myWallet'];
-            $dashboardGlobals['totalEarnedInterest'] = $dashboardGlobals['totalEarnedInterest'] + $userInvestments['global']['totalEarnedInterest'];
-            $dashboardGlobals['profitibilityAccumulative'] = $dashboardGlobals['profitibilityAccumulative'] + $userInvestments['global']['profitibility'];
-
-// Amount that was invested totally in all the currently active investments
-            $dashboardGlobals['totalInvestments'] = $dashboardGlobals['totalInvestments'] + $userInvestments['global']['totalInvestments'];
-
-// The number of active investments in all companies:
-            $dashboardGlobals['activeInvestments'] = $dashboardGlobals['activeInvestments'] + count($userInvestments['investments']);
-
-            $dashboardGlobals['investments'][$result[$companyId]['company_name']] = $userInvestments;
-            unset($newComp);
-
-// *********************************************************************************************************		
-// Save "intermediate photos", so investor will always see something. The result is that for a user who has
-// investments in 4 platforms, the system will generate 4 photos, with each photo including the previous one
-// *********************************************************************************************************
-            $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
-            if ($this->Data->save(array('data_investorReference' => $data["queue_userReference"],
-                        'data_JSONdata' => JSON_encode($dashboardGlobals),
-                        $validate = true))) {
-                // DO NOTHING
-                echo "WRITE AN INTERMEDIATE PHOTO OF INVESTMENTS OF USER <br>";
-            } else {
-                // log error
-            }
-
-            foreach ($dashboardGlobals['investments'] as $company => $value) {
-                $inversiones = count($dashboardGlobals['investments'][$company]['investments']);
-
-                print_r($inversiones);
-
-                for ($key = 0; $key < $inversiones; $key++) {
-                    echo "Verified key" . $key . "</br>";
-                    if ($dashboardGlobals['investments'][$company]['investments'][$key]['status'] == -1) {
-                        echo '<h1>' . $key . "eliminada</h1></br>";
-                        unset($dashboardGlobals['investments'][$company]['investments'][$key]);
-                        $dashboardGlobals['investments'][$company]['global']['investments'] --;
-                        $dashboardGlobals['activeInvestments'] --;
-                        continue;
-                    }
-                }
-                $dashboardGlobals['investments'][$company]['investments'] = array_values($dashboardGlobals['investments'][$company]['investments']);
-            }
-            $this->print_r2($dashboardGlobals);
-
-            echo "<br>******* End of Loop ****** <br>";
         }
-
-        $dashboardGlobals['meanProfitibility'] = (int) ($dashboardGlobals['profitibilityAccumulative'] / $index);
-        echo __FILE__ . " " . __FUNCTION__ . " " . __LINE__ . "<br>";
-        $this->print_r2($dashboardGlobals);
-
-// Store the dashboard data for 
-        $this->Data = ClassRegistry::init('Data');
-        if ($this->Data->save(array('data_investorReference' => $data["queue_userReference"],
-                    'data_JSONdata' => JSON_encode($dashboardGlobals),
-                    $validate = true))) {
-            
-        } 
-        else {
-            // log error
-        } 
 
     }
     
