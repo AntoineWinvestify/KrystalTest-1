@@ -1420,7 +1420,7 @@ class p2pCompany {
      */
     public function saveAmortizationTable() {
         foreach ($this->tempArray as $key => $tempArray) {
-            $this->saveFilePFP("amortizationtable_" . $key, $tempArray);
+            $this->saveFilePFP("amortizationtable_" . $key . $this->typeFileAmortizationtable, $tempArray);
         }
     }
     
@@ -2345,6 +2345,19 @@ class p2pCompany {
         $this->typeFileInvestment = $typeFileInvestment;
     }
     
+    function setTypeFileTransaction($typeFileTransaction) {
+        $this->typeFileTransaction = $typeFileTransaction;
+    }
+
+    function setTypeFileInvestment($typeFileInvestment) {
+        $this->typeFileInvestment = $typeFileInvestment;
+    }
+
+    function setTypeFileAmortizationtable($typeFileAmortizationtable) {
+        $this->typeFileAmortizationtable = $typeFileAmortizationtable;
+    }
+
+        
     /**
      * Function to get the base url of a PFP company
      * @return string It is the base url
