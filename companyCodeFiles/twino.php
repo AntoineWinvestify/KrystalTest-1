@@ -449,7 +449,7 @@ class twino extends p2pCompany {
                 }
                 //print_r($arrayAmortizationTable['scheduleItems']);
                 $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']);
-
+                $this->tempArray[$this->loanIds[$this->i - 1]] = $table;
                 echo "_-_-_-_-_-_-_-_table is : " . $table . "_-_-_-_-_-_-_-_";
                         
                 if ($this->i++ < $this->maxLoans) {

@@ -643,11 +643,12 @@ class bondora extends p2pCompany {
 
                 foreach ($tables as $table) {
                     if ($table->getAttribute('class') == 'table') {
-                        $AmorTable = new DOMDocument();
+                        $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
-                        $AmorTable->appendChild($AmorTable->importNode($clone, TRUE));
-                        $AmorTableString = $AmorTable->saveHTML();
-                        echo $AmorTableString;
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
+                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
+                        echo $AmortizationTableString;
                     }
                 }
 

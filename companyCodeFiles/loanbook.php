@@ -1140,11 +1140,12 @@ class loanbook extends p2pCompany {
                 $tables = $dom->getElementsByTagName('table');
                 foreach($tables as $table){     
                     if($table->getAttribute('id') == 'history_payments_table'){
-                        $AmorTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clone the table
-                        $AmorTable->appendChild($AmorTable->importNode($clone,TRUE));
-                        $AmorTableString =  $AmorTable->saveHTML();
-                        echo $AmorTableString;
+                        $AmortizationTable = new DOMDocument();
+                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
+                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
+                        echo $AmortizationTableString;
                     }
                 }
                 if($this->i++ < $this->maxLoans){
