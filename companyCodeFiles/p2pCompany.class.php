@@ -1420,7 +1420,7 @@ class p2pCompany {
      */
     public function saveAmortizationTable() {
         foreach ($this->tempArray as $key => $tempArray) {
-            $this->saveFilePFP("amortizationtable_" . $key . $this->typeFileAmortizationtable, $tempArray);
+            $this->saveFilePFP("amortizationtable_" . $key . "." . $this->typeFileAmortizationtable, $tempArray);
         }
     }
     
