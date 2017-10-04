@@ -23,7 +23,7 @@
  * The worker will parse the data for each and every platform for which data has been
  * supplied by the worker.
  * 
- * Errors are initially taken care of in the worker and will spark eventually the exception 
+ * Errors are initialy taken care of in the worker and will spark eventually the exception 
  * Callback with some extra user data.
  * If an error is encountered then the respective error data is stored in an internal array 
  * (per PFP). 
@@ -49,7 +49,7 @@ class ParseDataWorkerShell extends AppShell {
     
     protected $GearmanWorker;
     
-    var $uses = array('Investment', 'Userinvestmentdata', 'Queue');
+ //   var $uses = array();      // No models used
     
     public function startup() {
             $this->GearmanWorker = new GearmanWorker();
@@ -94,8 +94,8 @@ class ParseDataWorkerShell extends AppShell {
      *                                        ... ... ... 
      * 
      * 
-     * @return array queue_id, userReference, también en el exception error
-     * el worker genera tb los applicationerrors
+     * @return array queue_id, userReference, exception error
+     *  the worker provides all error information to the Client
      * 
      *           array     analyse    convert internal array to external format using definitions of configuration file
      *                      true  analysis done with success
@@ -109,9 +109,10 @@ class ParseDataWorkerShell extends AppShell {
         $collectLoanIds = array();
         
         foreach ($platformData as $linkedAccountKey => $data) {
-            if ($data['pfp'] <> "mintos") { 
+            if ($data['pfp'] <> "mintos") { // TO BE REMOVED           TO BE REMOVED
                 continue;
             }
+            $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
             
             echo "CURRENT PLATFORM = " . $data['pfp'] . "\n";
@@ -121,7 +122,7 @@ class ParseDataWorkerShell extends AppShell {
             // First analyze the transaction file(s)
             $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             
-// do this first for transaction file and then for investmentfile(s)
+// do this first for the transaction file and then for investmentfile(s)
             $fileTypesToCheck = array (0 => TRANSACTION_FILE, 
                                        1 => INVESTMENT_FILE);
             
@@ -145,7 +146,7 @@ class ParseDataWorkerShell extends AppShell {
                     $myParser->setConfig(array('sortParameter' => "loanId"));
                     echo __FILE__ . " " . __LINE__ . "\n";
                     $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);     // if successfull analysis, result is an array with loanId's as index 
-
+print_r($tempResult);
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
                         $errorInfo = array( "typeOfError"   => "parsingError",
                                             "errorDetails"  => $myParser->getLastError(),
@@ -169,67 +170,35 @@ class ParseDataWorkerShell extends AppShell {
                                                 );
                             $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                         }
-
+echo __FILE__ . " " . __LINE__ . "\n";
                         //run through the array and search for new loans.
                         foreach ($totalParsingresult as $loanKey => $loan) {
                             if ($loanKey == "global") {
                                 continue;
                             }
-                            if (!$loanExists($loanKey)) {       // Check if new investments have appeared
-                                if (array_search($loanKey, $data['activeInvestments'] !== false)); 
-                                $newLoans[] = $loanKey;
-                            }
+                            echo __FILE__ . " " . __LINE__ . "\n";
+
                         }
-                        // store everything so we can return the final result to client
+                        // store everything in array so we can return the final result to client
                         $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
-                        $returnData[$linkedAccountKey][$parsingResult] = $totalParsingresult;
+                        $returnData[$linkedAccountKey]['parsingResult'] = $totalParsingresult;
                         unset($newLoans);
+echo __FILE__ . " " . __LINE__ . "\n";
                     } 
-                    $returnData[$linkedAccountKey]['investor_investorReference'] = $data['userReference'];
-                    $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id'];   
+echo __FILE__ . " " . __LINE__ . "\n";
+                    $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
+                    $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
+                    $returnData[$linkedAccountKey]['pfp'] = $platform; 
                 }
-            } 
+            }
+echo __FILE__ . " " . __LINE__ . "\n";
         }
+print_r($returnData);
         return json_encode($returnData); 
     }
 }        
-        
-        
- /*
-                    $myParser->analysisErrors();
-                    $this->Applicationerror = ClassRegistry::init('Applicationerror');
-                    $par1 = "ERROR Parsing error of downloaded file";
-                    $par2 = $data;
-                    $par3 = __LINE__;
-                    $par4 = __FILE__;
-                    $par5 = "";
-                    $this->applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
-                    // do cleaning up of all files which have been generated so far
-    //echo error back to Gearman client
-              
-
-            // write new status
-            $resultQueue = $this->Queue->find('all', array('conditions' => array('queue_userReference' => $data['queue_id']),
-                    'recursive' => -1,
-                ));
-            $this->Queue->id = $resultQueue[0]['id'];
-
-            if ($this->Queue->save(array('queue_status' => $newState), $validate = true)) {
-                $params = array('investor_investorReference' => $data['userReference'],
-                                'queue_id'  => $data['queue_id']
-                                );
-                return json_encode($params);                                        // normal end of execution of worker         
-            }
-
-            // generate exception
-            // return
-*/
-
+                  
             
-            
-            
-
-
     /**
      * 
      * Class that can analyze a xls/csv/pdf file and put the information in an array
@@ -316,7 +285,7 @@ class ParseDataWorkerShell extends AppShell {
                     ],       
 
                 8 => [
-                    "detail" => "Regular_interest_income",
+                    "detail" => "Regular_gross_interest_income",
                     "cash" => 1, 
                     "account" => "PL",                
                     "transactionType" => "Income"               
@@ -438,7 +407,6 @@ class ParseDataWorkerShell extends AppShell {
      */
     public function analyzeFile($file, $referenceFile) {
         echo "INPUT FILE = $file, and referenceFile = \n";
-//        print_r($referenceFile);   
        // determine first if it csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -511,9 +479,7 @@ class ParseDataWorkerShell extends AppShell {
                         else {  // input parameters are defined in config file
                         // check if any of the input parameters require data from
                         // another cell in current row, or from the previous row
-
-                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file 
-                      //          echo "keyInputData = $keyInputData\n";
+                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file      
                                 if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
                                     if (stripos ($input, "#previous.") !== false) {
                                         if ($previousKey == -1) {
@@ -530,17 +496,14 @@ class ParseDataWorkerShell extends AppShell {
                                 }                         
                             }             
                         }
-     //                       echo "BEFORE SHIFT\n";
-     //                       print_r($userFunction['inputData']);
+
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
 
                         if ($outOfRange == false) {
-                            echo "ANTOINE\n";
-                            print_r($userFunction['inputData']);
-    //                           echo "PEDRO\n";
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',  
                                                                        $userFunction['functionName']), 
                                                                        $userFunction['inputData']);
+
                             if (!empty($tempResult)) {
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']"; 
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
@@ -566,17 +529,12 @@ class ParseDataWorkerShell extends AppShell {
             $i++; 
         }
 
-        echo "END OF LOOP \n";   
-
 // Delete the numeric indices. This should not be necesary but the code above does
 // NOT work, the bad line is "unset($tempArray[$i]);".
 // So below is a stupid work-around
         for ($i; $i >= 0; $i--) {
             unset($tempArray[$i]);
-        }
-        
-        print_r($tempArray);
-        echo __FUNCTION__ . " " . __LINE__ . " \n";       
+        }      
         return $tempArray;
     }
     
@@ -790,27 +748,46 @@ class ParseDataWorkerShell extends AppShell {
     }  
    
    
-    /** 
-     * Reads the transaction type of the transaction operation
+   /**
+     * 
+     * Reads the transaction detail of the transaction operation
      * 
      * @param string   $input
      * @return array   $parameter2  List of all known concepts of the platform
      *       
      */
     private function getTransactionDetail($input, $config) {
-echo __FILE__ . " " . __LINE__ . "\n";
-print_r($config);
-echo __FILE__ . " " . __LINE__ . "\n";
-echo "AAAAA-------------> " . $input ."\n";
-echo __FILE__ . " " . __LINE__ . "\n";
-        foreach ($config as $configItem) {
-            $position = stripos($input, $configItem[0]);
+
+        foreach ($config as $configKey => $configItem) {
+            $position = stripos($input, $configKey);
             if ($position !== false) {
-                return $configItem[1];
+                return $configItem;
             }
         }
+        return "";                          // Unknown concept encountered. Deal with it in a different, global, way
     }     
-    
+  
+     /** 
+     * Reads the transaction type of the transaction operation
+     * 
+     * @param string   $input
+     * @return array   $parameter2  List of all known concepts of the platform
+     *       
+     */   
+
+    private function getTransactionType($input, $config) {  
+        foreach ($config as $configKey => $configItem) {
+            $position = stripos($input, $configKey);
+            if ($position !== false) {  // value is in $configItem[1];
+                foreach ($this->transactionDetails as $key => $detail) {
+                    if ($detail['detail'] == $configItem) {
+                        return $detail['transactionType'];
+                    }
+                }
+            }
+        }         
+    }    
+
     /**
      * Search for a something within a string, starting after $search
      * and ending when $seperator is found
@@ -825,29 +802,6 @@ echo __FILE__ . " " . __LINE__ . "\n";
         $position = stripos($input, $search) + strlen($search);
         $substrings = explode($separator, substr($input, $position));
         return $substrings[0];
-    }  
-
-   
-    /**
-     * 
-     * Reads the transaction detail of the transaction operation
-     * 
-     * @param string   $input
-     * @return array   $parameter2  List of all known concepts of the platform
-     *       
-     */
-    private function getTransactionType($input, $config) {  
-
-        foreach ($config as $key => $configItem) {
-            $position = stripos($input, $configItem[0]);
-            if ($position !== false) {  // value is in $configItem[1];
-                foreach ($this->transactionDetails as $key => $detail) {
-                    if ($detail['detail'] == $configItem[1]) {
-                        return $detail['transactionType'];
-                    }
-                }
-            }
-        }         
     }  
 
     /**
@@ -871,8 +825,8 @@ echo __FILE__ . " " . __LINE__ . "\n";
             }
         }      
          return "";
-    }     
-    
+    }  
+   
     
     private function multiexplode ($delimiters,$string) {
         $ready = str_replace($delimiters, $delimiters[0], $string);
