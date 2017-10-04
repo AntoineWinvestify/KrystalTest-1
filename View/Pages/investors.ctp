@@ -30,48 +30,55 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1" style="min-height: 600px;">
             <div class="row">
-                <div class="g-text-center--xs">
-                    <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Winvestify for Investors') ?></p>
-                </div>
-            </div>
-            <div class="row">
-                <div>
-                    
-                </div>
-                <hr class="specialHr">
-            </div>
-            <div class="row">
                 <h2 class="g-color--primary"><?php echo __('How Winvestify works')?></h2>
                 <div>
-                    <?php echo __('Register into Winvestify to link your CrowdLending accounts and manage them through the website.')?><br/>
-                    <?php echo __('Winvestify gives you the posibility of linking your CrowdLending accounts to manage them through the website.')?><br/>
-                    <?php echo __('Winvestify gives you the posibility of linking your CrowdLending accounts to manage them through the website.')?><br/>
+                    <h2><?php echo __('Creemos que tienes derecho a sacar el máximo partido a tus inversiones ')?></h2>
+                    <h5><?php echo __('Entérate de qué pasa con  todas tus inversiones, de un modo organizado y estandarizado. Conecta con tus plataformas desde Winvestify y obtén el control total de todas tus cuentas.')?></h5>
+                    <div><?php echo __('Somos la herramienta líder española en Crowdlending que te ayuda a controlar todas tus inversiones de un modo preciso y eficaz')?></div>
+                    <div><?php echo __('Más poder, más información, más control con Winvestify')?></div>
                     <img src="/img/screenshots/linkaccounts.png" class="imgResponsive investorsImg center-block"/>
                 </div>
-                <hr class="specialHr">
             </div>
             <div class="row">
+                <hr class="specialHr">
                 <h2 class="g-color--primary"><?php echo __('Dashboard')?></h2>
-                <div>
-                    <strong>Winvestify es una comunidad de inversión especializada en crowdlending</strong> que se posiciona como una alternativa real a los modelos 
-                    actuales de inversión. A través de nuestra lataforma online conectamos las necesidades de nuestros inversores con los intereses 
-                    de nuestras compañias. Favorecemos que todas las operaciones se gestionen en un entorno seguro y honesto.
+                <div class="divmiddle"><img src="/img/screenshots/linkaccounts.png" class="imgResponsive investorsImg center-block"/></div>
+                <div class="divmiddle">
+                    <h4><?php echo __('Más Información, Más Control')?></h4>
+                    <p>Para que sepa a qué ritmo inviertes y donde pierdes dinero</p>
+                    <ul>
+                        <li>Un análisis a medida para conocer el estado de tus cuentas</li>
+                        <li>Un panel de mando con toda la información estandarizada</li>
+                        <li>Inversiones agrupadas automáticamente por plataformas</li>
+                        <li>Conoce tu nivel de morosidad, comisiones aplicadas y pérdidas</li>
+                    </ul>
                 </div>
-                <hr class="specialHr">
             </div>
             <div class="row">
-                <h2 class="g-color--primary"><?php echo __('Capital Opportunities')?></h2>
-                <div>
-                    <?php echo __('On our ')?><strong>Marketplace</strong><?php echo __(' you can que se posiciona como una alternativa real a los modelos 
-                    actuales de inversión. A través de nuestra lataforma online conectamos las necesidades de nues ')?><br/>
-                    <img src="/img/screenshots/marketplace.png" class="imgResponsive investorsImg center-block"/>
-                </div>
                 <hr class="specialHr">
+                <h2 class="g-color--primary"><?php echo __('Global Marketplace')?></h2>
+                <div class="divmiddle">
+                    <h4><?php echo ('Más oferta, más diversificación')?></h4>
+                    <div><?php echo __('En Winvestify mostramos los mejores préstamos activos para invertir y conectamos con las plataformas de Crowdlending más rentables')?></div>
+                    <ul>
+                        <li>Miramos por tu interés, sea cual sea la plataforma</li>
+                        <li>Concentramos toda la oferta del mercado en un único portal</li>
+                        <li>Filtra atendiendo a tus criterios de inversión</li>
+                    </ul>
+                </div>
+                <div class="divmiddle"><img src="/img/screenshots/marketplace.png" class="imgResponsive investorsImg center-block"/></div>
             </div>
             <div class="row">
+                <hr class="specialHr">
                 <h2 class="g-color--primary"><?php echo __('One Click Registration')?></h2>
                 <div>
-                    <?php echo __('With ')?><strong><?php echo __('One Click Registration')?></strong><?php echo __(' you can register with the same credentials in your preferred platforms from our list')?>
+                    <h4><?php echo __('Más accesible, más ágil')?></h4>
+                    <div><?php echo __('En Winvestify apostamos fuerte por este modelo de inversión alternativa. Colaboramos activamente con las plataformas más importantes para facilitar tu acceso a ellas:')?></div>
+                    <ul>
+                        <li>Registrate en cualquier plataformas ¡Sin salir de Winvestify!</li>
+                        <li>Un único formulario de registro para acceder a las principales plataformas</li>
+                        <li>Proceso sencillo y seguro</li>
+                    </ul>
                 </div>
                 <div class="divmiddle">
                     <img src="/img/screenshots/ocr1.png" class="imgResponsive investorsImg center-block"/>
@@ -81,8 +88,20 @@
                     <img src="/img/screenshots/ocr2.png" class="imgResponsive investorsImg center-block"/>
                     <p align="center"><?php echo __('A single registration process')?></p>
                 </div>
-                <hr class="specialHr">
             </div>
+        </div>
+    </div>
+</div>
+<div id="security">
+    <div class="row">
+        <h6 style="font-weight: 800; color: #23b18f;"><span style="border-bottom: 5px solid #808080;"><?php echo __('SEGURIDAD')?></span></h6>
+        <div class="divmiddle">
+            <h3 class="g-color--primary"><?php echo __('Nos tomamos la seguridad muy en serio')?></h3>
+            <h6><?php echo __('Para Winvestify su comunidad de inversores son lo más valioso y por tanto los datos propiedad de estos son si cabe aún más importantes.')?></h6>
+            <br/>
+            <div class="divpadding"><strong><i class="fa fa-shield"></i> Alta Seguridad:</strong><?php echo __(' La información está protegida con nivel de seguridad bancaria de 256 bits, que es el mismo nivel de protección que tienen los bancos más avanzados.')?></div>
+            <br/>
+            <div class="divpadding"><strong><i class="fa fa-user-circle-o"></i> Tus datos:</strong><?php echo __(' Tus datos personales están amparados por la Ley Orgánica de Protección de Datos (LOPD). La información es almacenada en distintos soportes de información con sistemas de cifrado, de forma disociada que la convierte en inútil en caso de no disponer de todos los componentes de la misma, y anonimizada por lo que nunca puede ser relacionada a una persona.')?></div>
         </div>
     </div>
 </div>
