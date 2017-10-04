@@ -987,7 +987,8 @@ class loanbook extends p2pCompany {
 
         $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment,
-            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'rating') //Rating div causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'rating'), //Rating div causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'a', 'attr' => 'id', 'value' => 'progressPopover'),
         ));
 
         $node2 = $this->cleanDom($node2, array(
@@ -1003,7 +1004,8 @@ class loanbook extends p2pCompany {
 
         $node2 = $this->cleanDomTag($node2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment, 
-            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'rating') //Rating div causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'rating'), //Rating div causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'a', 'attr' => 'id', 'value' => 'progressPopover'),
         ));
 
 
