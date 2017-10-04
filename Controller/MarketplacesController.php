@@ -531,10 +531,12 @@ class MarketPlacesController extends AppController {
                 $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
                 if ($marketplaceArray[4] == APP_ERROR) {
                     $this->Applicationerror->saveAppError('ERROR: Html/Json ','Html/Json structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
-                }else if($marketplaceArray[4] == WARNING) {
-                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
-                } else if($marketplaceArray[4] == INFORMATION) {
-                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+                }
+                else if ($marketplaceArray[4] == WARNING) {
+                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
+                } 
+                else if ($marketplaceArray[4] == INFORMATION) {
+                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
                 }
             }
 
