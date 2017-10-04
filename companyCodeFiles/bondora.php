@@ -32,7 +32,7 @@ class bondora extends p2pCompany {
         parent::__construct();
         $this->i = 0;
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
-        $this->maxLoans = count($this->loanIdArray);
+         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
     }
 
@@ -626,8 +626,8 @@ class bondora extends p2pCompany {
                 if (empty($this->tempUrl['investmentUrl'])) {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
-                echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url = $this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i];
+                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url;
                 $this->i++;
                 $this->idForSwitch++;
@@ -653,9 +653,9 @@ class bondora extends p2pCompany {
                 }
 
 
-                if ($this->i++ < $this->maxLoans) {
+                if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
                 } else {
                     return $this->tempArray;

@@ -65,8 +65,8 @@ class loanbook extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
-        $this->loanIdArray = array(472);
-        $this->maxLoans = count($this->loanIdArray);
+        //$this->loanIdArray = array(472);
+        //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
     }
 
@@ -1124,8 +1124,8 @@ class loanbook extends p2pCompany {
                 if(empty($this->tempUrl['invesmentUrl'])){
                     $this->tempUrl['invesmentUrl'] = array_shift($this->urlSequence);
                 }
-                echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url = $this->tempUrl['invesmentUrl'] . $this->loanIdArray[$this->i];
+                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url = $this->tempUrl['invesmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url; 
                 $this->i++;
                 $this->idForSwitch++;
@@ -1148,9 +1148,9 @@ class loanbook extends p2pCompany {
                         echo $AmortizationTableString;
                     }
                 }
-                if($this->i++ < $this->maxLoans){
+                if($this->i < $this->maxLoans){
                     $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;               
                 }
                 else{
