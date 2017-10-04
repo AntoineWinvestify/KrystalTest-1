@@ -28,6 +28,7 @@
 class finbee extends p2pCompany {
 
     function __construct() {
+        $this->i = 0;
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
@@ -254,8 +255,9 @@ class finbee extends p2pCompany {
                 }
                 echo 'login ok';
                 //LOGIN END
+                $this->tempUrl['dummyUrl'] = array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['dummyUrl']);  // Go to home page of the company
                 break;
             //END LOGIN
             case 4:
@@ -290,7 +292,7 @@ class finbee extends p2pCompany {
                 if ($this->i < $this->maxLoans) {
                     echo "Read again";
                     $this->idForSwitch = 4;
-                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanId[$this->i]);
+                    $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['dummyUrl']);
                     break;
                 } else {
                     return $this->tempArray;
