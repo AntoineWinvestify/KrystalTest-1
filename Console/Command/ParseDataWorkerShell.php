@@ -19,20 +19,37 @@
  * number of child processes, each childprocess takes a full sequence of a user
  * and writes the new job status for the user
  * Start instance of parser with configfile
- * Errors are taken care of in the worker and will spark the exception Callback with
- * some extra user data
  * Normal return also include some basic return data, like queue_id and user_reference
+ * The worker will parse the data for each and every platform for which data has been
+ * supplied by the worker.
+ * 
+ * Errors are initialy taken care of in the worker and will spark eventually the exception 
+ * Callback with some extra user data.
+ * If an error is encountered then the respective error data is stored in an internal array 
+ * (per PFP). 
+ * If possible, the worker will deal with *all* the PFP's as instructed by the client
+ * even if an error is found in one of the PFP's.
+ * 
+ *  
  * @author 
  * @version
  * @date
  * @package
+ * 
+ * 
+ *
+ * 
+ * TO BE DONE:
+ * CHECK THE STRUCTURE OF A XLS/XLSX/CSV FILE BY CHECKING THE NAMES OF THE HEADERS.  
+ * 
+ * 
  */
 
 class ParseDataWorkerShell extends AppShell {
     
     protected $GearmanWorker;
     
-    var $uses = array('Investment', 'Userinvestmentdata', 'Queue');
+ //   var $uses = array();      // No models used
     
     public function startup() {
             $this->GearmanWorker = new GearmanWorker();
@@ -77,8 +94,8 @@ class ParseDataWorkerShell extends AppShell {
      *                                        ... ... ... 
      * 
      * 
-     * @return array queue_id, userreference, también en el exception error
-     * el worker genera tb los applicationerrors
+     * @return array queue_id, userReference, exception error
+     *  the worker provides all error information to the Client
      * 
      *           array     analyse    convert internal array to external format using definitions of configuration file
      *                      true  analysis done with success
@@ -92,10 +109,10 @@ class ParseDataWorkerShell extends AppShell {
         $collectLoanIds = array();
         
         foreach ($platformData as $linkedAccountKey => $data) {
-            if ($data['pfp'] <> "mintos") { 
+            if ($data['pfp'] <> "mintos") { // TO BE REMOVED           TO BE REMOVED
                 continue;
             }
-            
+            $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
             
             echo "CURRENT PLATFORM = " . $data['pfp'] . "\n";
@@ -103,110 +120,85 @@ class ParseDataWorkerShell extends AppShell {
             print_r($data);
             $files = $data['files']; 
             // First analyze the transaction file(s)
-            $approvedFiles = $this->readFilteredFiles($files,  TRANSACTION_FILE);
-            
             $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
+            
+// do this first for the transaction file and then for investmentfile(s)
+            $fileTypesToCheck = array (0 => TRANSACTION_FILE, 
+                                       1 => INVESTMENT_FILE);
+            
+            foreach ($fileTypesToCheck as $actualFileType) {               
+                $approvedFiles = $this->readFilteredFiles($files,  $actualFileType);
+                print_r($approvedFiles);
+                if ($actualFileType == INVESTMENT_FILE) {
+                    break;
+                    $parserConfig = $companyHandle->getParserConfigInvestmentFile();
+                }
+                else {
+                    $parserConfig = $companyHandle->getParserConfigTransactionFile();
+                }
+                print_r($parserConfig);
+                echo __FILE__ . " " . __LINE__ . "\n";
 
-            $parserConfig = $companyHandle->getParserConfigTransactionFile();
-            print_r($parserConfig);
-            echo __FILE__ . " " . __LINE__ . "\n";
-            
-            $tempResult = array();
-            foreach ($approvedFiles as $approvedFile){          // probably done only once
-                $myParser->setConfig['sortParameter'] = "loanId";
-                $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);// if successfull analysis, result is an array with loanId's as index 
-                if (empty($tempResult)) {                // error occurred while analyzing a file. Report it 
-                   $error[$linkedAccountKey][] = $myParser->getLastError();
-                   // GENERATE appplicationerror 
-                } 
-                else {       // all is OK 
-                  
-                    $totalParsingresult = $tempResult;    // add $result, combine the arrays
-                    echo __FILE__ . " " . __LINE__ . " \n";
-                    print_r($totalParsingresult);
-                    if ($myCompany->fileanalyzed($fileName, $typeOfFile, $fileContent)) {                   // Generate the callback function
-                        // continue 
-                    }
-                    else {
-                        // an error has occurred or been detected by companycode file. Exit gracefully
-                        return false;
-                    }
-                    //run through the array and search for new loans.
-                    foreach ($totalParsingresult as $loanKey => $loan) {
-                        if ($loanKey == "global") {
-                            continue;
+                $tempResult = array();
+                foreach ($approvedFiles as $approvedFile) { 
+                    unset($errorInfo);
+                    
+                    $myParser->setConfig(array('sortParameter' => "loanId"));
+                    echo __FILE__ . " " . __LINE__ . "\n";
+                    $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);     // if successfull analysis, result is an array with loanId's as index 
+print_r($tempResult);
+                    if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
+                        $errorInfo = array( "typeOfError"   => "parsingError",
+                                            "errorDetails"  => $myParser->getLastError(),
+                                            ); 
+                        $returnData[$linkedAccountKey]['error'][] = $errorInfo;  
+                    } 
+                    else {       // all is OK 
+                        $totalParsingresult = $tempResult;    // add $result, combine the arrays
+                        echo __FILE__ . " " . __LINE__ . " \n";
+            //            print_r($totalParsingresult);
+                        try {
+                 //           $callBackResult = $companyHandle->fileanalyzed($fileName, $typeOfFile, $fileContent);       // Generate callback
                         }
-                        if (!$loanExists($loanKey)) {       // Check if new investments have appeared
-                            if (array_search($loanKey, $data['activeInvestments'] !== false)); 
-                            $newLoans[] = $loanKey;
+                        catch (Exception $e){
+                            $errorInfo = array( "typeOfError"   => "callBackExceptionError",
+                                                "callBackResultCode" => $callBackResult,
+                                                "exceptionResult"   => $e,
+                                                "fileName"      => $fileName,
+                                                "typeOfFile"    => $typeOfFile,
+                                                "fileContents"  => json_encode($file,$fileContent)
+                                                );
+                            $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                         }
-                    }
-                    // store everything so we can return the final result to client
-                    $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
-                    $returnData[$linkedAccountKey][$parsingResult] = $totalParsingresult;
-                    unset($newLoans);
-                }      
-            }      
-            return;                                                                 // normal end of execution of worker  
-           
-            
-            
-            
-            $params[] = "parserConfig this is a string for antoine de Poorter\n";
-            //    return json_encode($params);                                        
+echo __FILE__ . " " . __LINE__ . "\n";
+                        //run through the array and search for new loans.
+                        foreach ($totalParsingresult as $loanKey => $loan) {
+                            if ($loanKey == "global") {
+                                continue;
+                            }
+                            echo __FILE__ . " " . __LINE__ . "\n";
 
-            unset($companyHandle);
+                        }
+                        // store everything in array so we can return the final result to client
+                        $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
+                        $returnData[$linkedAccountKey]['parsingResult'] = $totalParsingresult;
+                        unset($newLoans);
+echo __FILE__ . " " . __LINE__ . "\n";
+                    } 
+echo __FILE__ . " " . __LINE__ . "\n";
+                    $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
+                    $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
+                    $returnData[$linkedAccountKey]['pfp'] = $platform; 
+                }
+            }
+echo __FILE__ . " " . __LINE__ . "\n";
         }
-
-
-                                                                      // Error encountered
-                    $myParser->analysisErrors();
-                    $this->Applicationerror = ClassRegistry::init('Applicationerror');
-                    $par1 = "ERROR Parsing error of downloaded file";
-                    $par2 = $data;
-                    $par3 = __LINE__;
-                    $par4 = __FILE__;
-                    $par5 = "";
-                    $this->applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
-                    // do cleaning up of all files which have been generated so far
-    //echo error back to Gearman client
-              
-      
-   return json_encode($params);
-        
-
-            if (empty($collectLoanIds)) {
-                $newState = AMORTIZATION_TABLES_DOWNLOADED;                        // Do not collect amortization tables
-            }
-            else {
-                $newState = DATA_EXTRACTED;
-            }
-
-            // write new status
-            $resultQueue = $this->Queue->find('all', array('conditions' => array('queue_userReference' => $data['queue_id']),
-                    'recursive' => -1,
-                ));
-            $this->Queue->id = $resultQueue[0]['id'];
-
-            if ($this->Queue->save(array('queue_status' => $newState), $validate = true)) {
-                $params = array('investor_investorReference' => $data['userReference'],
-                                'queue_id'  => $data['queue_id']
-                                );
-                return json_encode($params);                                        // normal end of execution of worker         
-            }
-
-            // generate exception
-            // return
-
-
-    
-    }    
-}
-
-
-
-
-
+print_r($returnData);
+        return json_encode($returnData); 
+    }
+}        
+                  
+            
     /**
      * 
      * Class that can analyze a xls/csv/pdf file and put the information in an array
@@ -215,15 +207,197 @@ class ParseDataWorkerShell extends AppShell {
      */
     class Fileparser {
         protected $config = array ('OffsetStart' => 0,
-                                'offsetEnd' => 0,
+                                'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index. 
-                                 );                     // if array does not have $sortParameter then "global2 index is used
+                                 );                     // if array does not have $sortParameter then "global" index is used
                                                         // Typically used for sorting by loanId index
 
         protected $errorData = array();                 // Contains the information of the last occurred error
 
+
+        protected $currencies = array(EUR => ["EUR", "€"], 
+                                        GBP => ["GBP", "£"], 
+                                        USD => ["USD", "$"],
+                                        ARS => ["ARS", "$"],
+                                        AUD => ["AUD", "$"],
+                                        NZD => ["NZD", "$"],                                           
+                                        BYN => ["BYN", "BR"],       
+                                        BGN => ["BGN", "лв"], 
+                                        CZK => ["CZK", "Kč"],                                        
+                                        DKK => ["DKK", "Kr"],                                       
+                                        CHF => ["CHF", "Fr"],                                        
+                                        MXN => ["MXN", "$"], 
+                                        RUB => ["RUB", "₽"],              
+                                        );        
     
+        public $numberOfDecimals = 5;
+
+        protected $transactionDetails = [
+                0 => [
+                    "detail" => "Cash_deposit",
+                    "cash" => 1,                                    // 1 = in, 2 = out
+                    "account" => "CF",                           
+                    "transactionType" => "Deposit"
+                    ],
+                1 => [
+                    "detail" => "Cash_withdrawal",
+                    "cash" => 2,   
+                    "account" => "CF", 
+                    "transactionType" => "Withdraw"               
+                    ], 
+                2 => [
+                    "detail" => "Primary_market_investment",
+                    "cash" => 2,  
+                    "account" => "Capital",                 
+                    "transactionType" => "Investment"
+                    ],
+                3 => [
+                    "detail" => "Secundary_market_investment",
+                    "cash" => 2,
+                    "account" => "Capital",                 
+                    "transactionType" => "Investment"              
+                    ], 
+                4 => [
+                    "detail" => "Principal_repayment",
+                    "cash" => 1,  
+                    "account" => "Capital",                 
+                    "transactionType" => "Repayment"
+                    ],
+                5 => [
+                    "detail" => "Partial_principal_repayment",
+                    "cash" => 1, 
+                    "account" => "Capital",                
+                    "transactionType" => "Repayment"               
+                    ], 
+                6 => [
+                    "detail" => "Principal_buyback",
+                    "cash" => 1, 
+                    "account" => "Capital",                 
+                    "transactionType" => "Repayment"
+                    ],
+
+                7 => [
+                    "detail" => "Principal_and_interest_payment",
+                    "cash" => 1, 
+                    "account" => "Mix",                 
+                    "transactionType" => "Mix"
+                    ],       
+
+                8 => [
+                    "detail" => "Regular_gross_interest_income",
+                    "cash" => 1, 
+                    "account" => "PL",                
+                    "transactionType" => "Income"               
+                    ], 
+                9 => [
+                    "detail" => "Delayed_interest_income",
+                    "cash" => 1,  
+                    "account" => "PL",                 
+                    "transactionType" => "Income"
+                    ],
+                10 => [
+                    "detail" => "Late_payment_fee_income",
+                    "cash" => 1,  
+                    "account" => "PL",                 
+                    "transactionType" => "Income"               
+                    ], 
+                11 => [
+                    "detail" => "Cash_deposit",
+                    "cash" => 1,  
+                    "account" => "PL",                 
+                    "transactionType" => "Income"
+                    ],
+                12 => [
+                    "detail" => "Interest_income_buyback",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"               
+                    ], 
+                13 => [
+                    "detail" => "Delayed_interest_income_buyback",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"
+                    ],
+                14 => [
+                    "detail" => "Cash_withdrawal",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"              
+                    ], 
+                15 => [
+                    "detail" => "Cash_deposit",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"
+                    ],
+                16 => [
+                    "detail" => "Cash_withdrawal",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"               
+                    ],  
+                17 => [
+                    "detail" => "Recoveries",
+                    "cash" => 1, 
+                    "account" => "PL", 
+                    "transactionType" => "Income"               
+                    ],  
+                18 => [
+                    "detail" => "Commission",
+                    "cash" => 2,
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ], 
+                19 => [
+                    "detail" => "Bank_charges",
+                    "cash" => 2,
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ], 
+                20 => [
+                    "detail" => "Premium_paid_secondary_market",
+                    "cash" => 2,    
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ], 
+                21 => [
+                    "detail" => "Interest_payment_secondary_market_purchase",
+                    "cash" => 2,  
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ],            
+                22 => [
+                    "detail" => "Tax_VAT",
+                    "cash" => 2,  
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ], 
+                23 => [
+                    "detail" => "Tax_income_withholding_tax",
+                    "cash" => 2,  
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ],            
+                24 => [
+                    "detail" => "Write-off", 
+                    "cash" => 2,  
+                    "account" => "PL", 
+                    "transactionType" => "Costs"               
+                    ]    
+            ];
+
+   
+    function __construct() {
+        echo "starting parser\n";
+ //       parent::__construct();    
+
+//  Do whatever is needed for this subsclass
+    }        
+        
+
+        
     /**
      * Starts the process of analyzing the file and returns the results as an array
      *  @param  $file           Name(s) of the file to analyze
@@ -233,7 +407,6 @@ class ParseDataWorkerShell extends AppShell {
      */
     public function analyzeFile($file, $referenceFile) {
         echo "INPUT FILE = $file, and referenceFile = \n";
- //       print_r($referenceFile);
        // determine first if it csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -252,7 +425,7 @@ class ParseDataWorkerShell extends AppShell {
         $sheet = $objPHPExcel->getActiveSheet(); 
         $highestRow = $sheet->getHighestRow(); 
         $highestColumn = $sheet->getHighestColumn();
-        echo " high = $highestRow and $highestColumn \n";
+        echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $referenceFile, $offset);
@@ -283,54 +456,54 @@ class ParseDataWorkerShell extends AppShell {
             $i++;
         }
 
-        
         $i = 0;
         $outOfRange = false;
- //       print_r($rowDatas);
-        
+
         foreach ($rowDatas as $keyRow => $rowData) {
             echo "Reading a NEW ROW\n";
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 // check for subindices and construct them
-                if (array_key_exists("name", $value)) {
-                    echo "ANTOINE\n";
+                if (array_key_exists("name", $value)) {      // "name" => .......
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']"; 
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
                     eval($tempString);
                 }
-                else { 
-                    echo "CHARO\n";
+                else {          // "type" => .......
+ //                   echo "---------------------------------------------------------------------\n";
                     foreach ($value as $userFunction ) {
-                        echo "---------------------------------------------------------------------\n";
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
                         }
                         else {  // input parameters are defined in config file
                         // check if any of the input parameters require data from
                         // another cell in current row, or from the previous row
-                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file                      
-                                if (stripos ($input, "#previous.") !== false) {
-                                    if ($previousKey == -1) {
-                                        $outOfRange = true;
-                                        break;
+                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file      
+                                if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
+                                    if (stripos ($input, "#previous.") !== false) {
+                                        if ($previousKey == -1) {
+                                            $outOfRange = true;
+                                            break;
+                                        }
+                                        $temp = explode(".", $input);
+                                        $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
                                     }
-                                    $temp = explode(".", $input);
-                                    $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
-                                }
-                                if (stripos ($input, "#current.") !== false) {
-                                    print_r($tempArray);
-                                    $temp = explode(".", $input);
-                                    $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
-                                }                                         
-                            }  
+                                    if (stripos ($input, "#current.") !== false) {
+                                        $temp = explode(".", $input);
+                                        $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
+                                    }               
+                                }                         
+                            }             
                         }
+
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
 
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',  
-                                $userFunction['functionName']), $userFunction['inputData']);
+                                                                       $userFunction['functionName']), 
+                                                                       $userFunction['inputData']);
+
                             if (!empty($tempResult)) {
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']"; 
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
@@ -340,42 +513,32 @@ class ParseDataWorkerShell extends AppShell {
                         else {
                             $outOfRange = false;        // reset
                         }
-                    }
+                    }    
                 }
             }
-            if (!empty($config['sortParameter'])) {
-                if (array_key_exists($config['sortParameter'], $tempArray[$i]) ){
-                     $tempArray[ $tempArray[$i][$config['sortParameter']] ][]  = $tempArray[$i];
+            
+            if (!empty($this->config['sortParameter'])) {
+                if (array_key_exists($this->config['sortParameter'], $tempArray[$i]) ) {
+                     $tempArray[ $tempArray[$i][$this->config['sortParameter'] ] ][]  = $tempArray[$i];
                 }
                 else {      // move to the global index
                     $tempArray['global'][] = $tempArray[$i];
                 }
             }  
-
      //        unset($tempArray[$i]);
             $i++; 
         }
-echo "END OF LOOP \n"; 
-exit;
+
 // Delete the numeric indices. This should not be necesary but the code above does
 // NOT work, the bad line is "unset($tempArray[$i]);".
 // So below is a stupid work-around
         for ($i; $i >= 0; $i--) {
             unset($tempArray[$i]);
-            echo "delete index $i  \n";
-        }
-        
-        print_r($tempArray);
-        echo __FUNCTION__ . " " . __LINE__ . " \n";       
+        }      
         return $tempArray;
     }
     
    
-   
-   
-    
-
-    
     /**
      * Returns information of the last occurred error
      *
@@ -396,210 +559,11 @@ exit;
      * separatorChar
      * 
      */
-    public function setConfig($configurations)  { 
+    public function setConfig($configurations)  {
         foreach ($configurations as $configurationKey => $configuration) {
-            $this->$configurationKey = $configuration;          // avoid deleting already specified config parameters
+            $this->config[$configurationKey] = $configuration;          // avoid deleting already specified config parameters
         }
     }
-        
-    
-    
-    
-    
-    public $numberOfDecimals = 5;
-
-    public  $transactionDetails = [
-            0 => [
-                "detail" => "Cash_deposit",
-                "cash" => 1,                                    // 1 = in, 2 = out
-                "account" => "CF",                           
-                "transactionType" => "Deposit"
-                ],
-            1 => [
-                "detail" => "Cash_withdrawal",
-                "cash" => 2,   
-                "account" => "CF", 
-                "transactionType" => "Withdraw"               
-                ], 
-            2 => [
-                "detail" => "Primary_market_investment",
-                "cash" => 2,  
-                "account" => "Capital",                 
-                "transactionType" => "Investment"
-                ],
-            3 => [
-                "detail" => "Secundary_market_investment",
-                "cash" => 2,
-                "account" => "Capital",                 
-                "transactionType" => "Investment"              
-                ], 
-            4 => [
-                "detail" => "Principal_repayment",
-                "cash" => 1,  
-                "account" => "Capital",                 
-                "transactionType" => "Repayment"
-                ],
-            5 => [
-                "detail" => "Partial_principal_repayment",
-                "cash" => 1, 
-                "account" => "Capital",                
-                "transactionType" => "Repayment"               
-                ], 
-            6 => [
-                "detail" => "Principal_buyback",
-                "cash" => 1, 
-                "account" => "Capital",                 
-                "transactionType" => "Repayment"
-                ],
-        
-            7 => [
-                "detail" => "Principal_and_interest_payment",
-                "cash" => 1, 
-                "account" => "Mix",                 
-                "transactionType" => "Mix"
-                ],       
-
-            8 => [
-                "detail" => "Regular_interest_income",
-                "cash" => 1, 
-                "account" => "PL",                
-                "transactionType" => "Income"               
-                ], 
-            9 => [
-                "detail" => "Delayed_interest_income",
-                "cash" => 1,  
-                "account" => "PL",                 
-                "transactionType" => "Income"
-                ],
-            10 => [
-                "detail" => "Late_payment_fee_income",
-                "cash" => 1,  
-                "account" => "PL",                 
-                "transactionType" => "Income"               
-                ], 
-            11 => [
-                "detail" => "Cash_deposit",
-                "cash" => 1,  
-                "account" => "PL",                 
-                "transactionType" => "Income"
-                ],
-            12 => [
-                "detail" => "Interest_income_buyback",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"               
-                ], 
-            13 => [
-                "detail" => "Delayed_interest_income_buyback",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"
-                ],
-            14 => [
-                "detail" => "Cash_withdrawal",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"              
-                ], 
-            15 => [
-                "detail" => "Cash_deposit",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"
-                ],
-            16 => [
-                "detail" => "Cash_withdrawal",
-                "cash" => 1,
-                "account" => "PL", 
-                "transactionType" => "Income"               
-                ],  
-            17 => [
-                "detail" => "Recoveries",
-                "cash" => 1, 
-                "account" => "PL", 
-                "transactionType" => "Income"               
-                ],  
-            18 => [
-                "detail" => "Commission",
-                "cash" => 2,
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ], 
-            19 => [
-                "detail" => "Bank_charges",
-                "cash" => 2,
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ], 
-            20 => [
-                "detail" => "Premium_paid_secondary_market",
-                "cash" => 2,    
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ], 
-            21 => [
-                "detail" => "Interest_payment_secondary_market_purchase",
-                "cash" => 2,  
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ],            
-            22 => [
-                "detail" => "Tax_VAT",
-                "cash" => 2,  
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ], 
-            23 => [
-                "detail" => "Tax_income_withholding_tax",
-                "cash" => 2,  
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ],            
-            24 => [
-                "detail" => "Write-off", 
-                "cash" => 2,  
-                "account" => "PL", 
-                "transactionType" => "Costs"               
-                ]    
-         ];
-
-    public $currencies = array(EUR => ["EUR", "€"], 
-                               GBP => ["GBP", "£"], 
-                               USD => ["USD", "$"],
-                               ARS => ["ARS", "$"],
-                               AUD => ["AUD", "$"],
-                               NZD => ["NZD", "$"],                                           
-                               BYN => ["BYN", "BR"],       
-                               BGN => ["BGN", "лв"], 
-                               CZK => ["CZK", "Kč"],                                        
-                               DKK => ["DKK", "Kr"],                                       
-                               CHF => ["CHF", "Fr"],                                        
-                               MXN => ["MXN", "$"], 
-                               RUB => ["RUB", "₽"],              
-                              );   
-    
-    
-    
-    
-    function __construct() {
-        echo "starting parser\n";
- //       parent::__construct();    
-
-//  Do whatever is needed for this subsclass
-    }
-
-    
-    /**
-     *
-     * 	Read the normalized transaction details
-     * 
-     * 	@return array $transactionDetails
-     *
-     */
-    private function getTransactionDetails() {
-        return $this->transactionDetails;
-    }
-
     
     /**
      *
@@ -620,7 +584,7 @@ exit;
      * 	@return int $numberOfDecimals
      *
      */
-    private function getNumberofDecimals() {
+    public function getNumberofDecimals() {
         return $this->numberofDecimals;
     }   
     
@@ -638,19 +602,19 @@ exit;
      * @return string   date in format yyyy-mm-dd
      * 
      */
-    function normalizeDate($date, $currentFormat) {
-       $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
-       (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
-       $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
-  print_r($tempDate);     
-       if (count($tempDate) == 1) {
+    private function normalizeDate($date, $currentFormat) {
+        $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
+        (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
+        $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
+//        print_r($tempDate);     
+        if (count($tempDate) == 1) {
            return;
-       }
+        }
        
-       $finalDate = array();
+        $finalDate = array();
     
-       $length = strlen($dateFormat);
-       for ($i = 0; $i < $length; $i++) {
+        $length = strlen($dateFormat);
+        for ($i = 0; $i < $length; $i++) {
             switch ($dateFormat[$i]) {
                 case "d":
                     $finalDate[2] = $this->norm_date_element($tempDate[$i]);
@@ -682,8 +646,6 @@ exit;
         return;
     }  
 
-   
-   
 
     /**
      * normalize a day or month element of a date to two (2) characters, adding a 0 if needed
@@ -692,7 +654,7 @@ exit;
      * @return string 
      * 
      */   
-    function norm_date_element($val) {
+    private function norm_date_element($val) {
 	if ($val < 10) {
 		return (str_pad($val, 2, "0", STR_PAD_LEFT));
 	}
@@ -714,7 +676,7 @@ exit;
      * @return int    represents the amount including its decimals
      * 
      */
-    function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
+    private function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
         if ($decimalSep == ".") {
             $seperator = "\.";
         }
@@ -755,7 +717,7 @@ exit;
      * @return integer  constant representing currency 
      * 
      */
-    function getCurrency($loanCurrency) {
+    private function getCurrency($loanCurrency) {
         $details = new Parser();
         $currencyDetails = $details->getCurrencyDetails();
         unset($details);
@@ -773,7 +735,6 @@ exit;
         } 
     }
    
-  
     
     /**
      * get hash of a string
@@ -782,27 +743,51 @@ exit;
      * @return string   $extractedString
      *       
      */
-    function getHash($input) {
+    private function getHash($input) {
         return  hash ("md5", $input, false);
     }  
    
    
-    /** 
-     * Reads the transaction type of the cashflow operation
+   /**
+     * 
+     * Reads the transaction detail of the transaction operation
      * 
      * @param string   $input
-     * @return array   $parameter2  List of all concepts of the platform
+     * @return array   $parameter2  List of all known concepts of the platform
      *       
      */
-    function getTransactionDetail($input, $config) {
-        foreach ($config as $key => $configItem) {
-            $position = stripos($input, $configItem[0]);
+    private function getTransactionDetail($input, $config) {
+
+        foreach ($config as $configKey => $configItem) {
+            $position = stripos($input, $configKey);
             if ($position !== false) {
-                return $configItem[1];
+                return $configItem;
             }
         }
+        return "";                          // Unknown concept encountered. Deal with it in a different, global, way
     }     
-    
+  
+     /** 
+     * Reads the transaction type of the transaction operation
+     * 
+     * @param string   $input
+     * @return array   $parameter2  List of all known concepts of the platform
+     *       
+     */   
+
+    private function getTransactionType($input, $config) {  
+        foreach ($config as $configKey => $configItem) {
+            $position = stripos($input, $configKey);
+            if ($position !== false) {  // value is in $configItem[1];
+                foreach ($this->transactionDetails as $key => $detail) {
+                    if ($detail['detail'] == $configItem) {
+                        return $detail['transactionType'];
+                    }
+                }
+            }
+        }         
+    }    
+
     /**
      * Search for a something within a string, starting after $search
      * and ending when $seperator is found
@@ -813,36 +798,10 @@ exit;
      * @return string   $extractedString
      *       
      */
-    function extractDataFromString($input, $search, $separator ) {
+    private function extractDataFromString($input, $search, $separator ) {
         $position = stripos($input, $search) + strlen($search);
         $substrings = explode($separator, substr($input, $position));
         return $substrings[0];
-    }  
-
-   
-    /**
-     * 
-     * Reads the transaction detail of the cashflow operation
-     * 
-     * @param string   $input
-     * @return array   $parameter2  List of all concepts of the platform
-     *       
-     */
-    function getTransactionType($input, $config) {  
-        $details = new Parser();
-        $transactionDetails = $details->getTransactionDetails();
-        unset($details);
-        
-        foreach ($config as $key => $configItem) {
-            $position = stripos($input, $configItem[0]);
-            if ($position !== false) {  // value is in $configItem[1];
-                foreach ($transactionDetails as $key => $detail) {
-                    if ($detail['detail'] == $configItem[1]) {
-                        return $detail['transactionType'];
-                    }
-                }
-            }
-        }         
     }  
 
     /**
@@ -855,7 +814,7 @@ exit;
      * @param boolean   overwrite     overwrite current value of the $input
      *       
      */
-    function getRowData($input, $field, $overwrite) {  
+    private function getRowData($input, $field, $overwrite) {  
 
         if (empty($input)) {
             return $field;
@@ -866,17 +825,13 @@ exit;
             }
         }      
          return "";
-    }    
+    }  
+   
     
-    
-    
-    
-    function multiexplode ($delimiters,$string) {
+    private function multiexplode ($delimiters,$string) {
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $launch = explode($delimiters[0], $ready);
         return  $launch;
     } 
-    
-     
-    
+  
 }
