@@ -592,7 +592,11 @@ class mintos extends p2pCompany {
         }
     }
     
-    
+    /**
+     * 
+     * @param type $str
+     * @return type
+     */
     function collectAmortizationTablesParallel($str = null){
         
         switch ($this->idForSwitch) {
