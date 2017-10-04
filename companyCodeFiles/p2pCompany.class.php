@@ -1573,12 +1573,14 @@ class p2pCompany {
         $errorDetailed = "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
                 . ". The queueId is " . $this->queueId['Queue']['id']
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
+                . " ERROR Userinvestmentdata: detected in PFP id: " .  $this->companyName
+                . "$newLine Error type " . ERROR_USER_INVESTMENT_DATA
                 . " " . $type_sequence
                 . " " . $error_request;
         $this->tempArray['global']['error'] = $errorDetailed;
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
-        $this->classContainer->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $this->companyName . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
+        $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, ERROR_USER_INVESTMENT_DATA);
         return $this->tempArray;
     }
 
