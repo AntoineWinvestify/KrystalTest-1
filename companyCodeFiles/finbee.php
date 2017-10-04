@@ -294,7 +294,8 @@ class finbee extends p2pCompany {
                     $this->idForSwitch = 4;
                     $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['dummyUrl']);
                     break;
-                } else {
+                } 
+                else {
                     return $this->tempArray;
                 }
         }
