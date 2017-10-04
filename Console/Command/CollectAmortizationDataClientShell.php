@@ -101,17 +101,16 @@ class CollectAmortizationDataClientShell extends AppShell {
         foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
             foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
                 $data["companies"] = $linkedaccountsByType;
-                $data["loandIds"] = $loandIdLinkedaccounts[$key][$key2];
+                $data["loanIds"] = $loandIdLinkedaccounts[$key][$key2];
                 $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
                 $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
                 print_r($data["companies"]);
-                print_r($data["loandIds"]);
+                print_r($data["loanIds"]);
                 echo "\n";
                 echo "userReference ". $data["queue_userReference"];
                 echo "\n";
                 echo "queueId " . $data["queue_id"];
                 echo "\n";
-                print_r($data["queue_info"]);
                 echo json_encode($data);
                 echo "\n";
                 echo $key2;

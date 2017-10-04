@@ -79,12 +79,12 @@ class CollectAmortizationDataWorkerShell extends AppShell {
             $this->newComp[$i]->setClassForQueue($this);
             $this->newComp[$i]->setQueueId($data["queue_id"]);
             $this->newComp[$i]->setBaseUrl($result[$i][$this->companyId[$i]]['company_url']);
-            $this->newComp[$i]->setFileType($result[$i][$this->companyId[$i]]['company_typeFileTransaction'], $result[$i][$this->companyId[$i]]['company_typeFileInvestment']);
+            $this->newComp[$i]->setTypeFileAmortizationtable($result[$i][$this->companyId[$i]]['company_typeFileAmortizationtable']);
             $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
             $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
-            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], DOWNLOAD_PFP_FILE_SEQUENCE);
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
             $this->newComp[$i]->generateCookiesFile();
@@ -102,7 +102,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
         echo "MICROTIME_START = " . microtime() . "<br>";
         //We start at the same time the queue on every company
         foreach ($data["companies"] as $linkedaccount) {
-            $this->newComp[$companyNumber]->collectUserGlobalFilesParallel();
+            $this->newComp[$companyNumber]->collectAmortizationTablesParallel();
             $companyNumber++;
         }
 
@@ -125,14 +125,14 @@ class CollectAmortizationDataWorkerShell extends AppShell {
             }
             
             if ($response->hasError()) {
-               $this->tempArray['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
+               $this->tempArray[$info["companyIdForQueue"]]['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
                $error = $response->getError();
             }
             if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
                  //We get the web page string
                 $str = $response->getContent();
                 $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
-                $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel($str);
+                $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectAmortizationTablesParallel($str);
             }
 
            if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
@@ -142,7 +142,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
                $this->newComp[$info["companyIdForQueue"]]->setTries(1);
                $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
                $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
-               $this->newComp[$info["companyIdForQueue"]]->collectUserInvestmentDataParallel();
+               $this->newComp[$info["companyIdForQueue"]]->collectAmortizationTablesParallel();
            } 
            else if ($info["typeOfRequest"] == "LOGOUT") {
                echo "LOGOUT FINISHED <br>";
@@ -153,7 +153,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
                    $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
                }
                else {
-                   $this->newComp[$info["companyIdForQueue"]]->saveControlVariables();
+                   $this->newComp[$info["companyIdForQueue"]]->saveAmortizationTable();
                }
                $this->logoutOnCompany($info["companyIdForQueue"], $str);
                if ($info["typeOfRequest"] == "LOGOUT") {
@@ -173,6 +173,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
        for ($i = 0; $i < $lengthTempArray; $i++) {
            if (!empty($this->tempArray[$i]['global']['error'])) {
                $statusCollect = "0";
+               break;
            }
        }
        
@@ -215,11 +216,11 @@ class CollectAmortizationDataWorkerShell extends AppShell {
      * @param object $response It is the curl response from the request on parallel
      */
     public function errorCurl($error, $info, $response) {
-        $errorVar = 
+        $errorCurl = 
         'Error code: ' . $error->getCode() . '\n' .
         'Message: "' . $error->getMessage() . '" \n' .
         'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '\n';
-        echo $errorVar;
+        echo $errorCurl;
         $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
         if (!empty($testConfig['active']) == true) {
             print_r($response->getInfo());
@@ -230,7 +231,7 @@ class CollectAmortizationDataWorkerShell extends AppShell {
         if ($config['tracingActive'] == true) {
             $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
         }
-        return $errorVar;
+        return $errorCurl;
     }
     
     

@@ -82,7 +82,7 @@ class CollectDataClientShell extends AppShell {
         }
         
         $companyTypes = $this->Company->find('list', array(
-            'fields' => array('Company.company_typeAccess')
+            'fields' => array('Company.company_typeAccessTransaction')
         ));
         
         $userLinkedaccounts = [];

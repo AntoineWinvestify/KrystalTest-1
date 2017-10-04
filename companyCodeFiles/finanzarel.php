@@ -16,14 +16,37 @@
  *
  *
  * @author
- * @version 0.1
- * @date 2016-10-25
+ * @version 0.5
+ * @date 2017-08-23
  * @package
  *
  * 
- * 
- * 2017-08-23
+ * 2017-08-23 version_0.1
  * Created
+ * 
+ * 2017-08-24 version_0.2
+ * Added login
+ * 
+ * 2017-09-21 version_0.3
+ * Added download file and integration with Gearman
+ * 
+ * 2017-09-26 version_0.4
+ * Download all files correctly with Gearman
+ * Added logout
+ * 
+ * 2017-09-28 version_0.5
+ * Added new file to download
+ * 
+ */
+
+/**
+ * Contains the code required for accessing the website of "Finanzarel".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Not OK]
+ * parallelization                                                      [OK, tested]
  */
 class finanzarel extends p2pCompany {
 
@@ -235,7 +258,6 @@ class finanzarel extends p2pCompany {
                         
                     }
                 }
-                
                 $url =  array_shift($this->urlSequence);
                 //echo "The url is " . $url . "\n";
                 $referer = array_shift($this->urlSequence);
@@ -267,9 +289,9 @@ class finanzarel extends p2pCompany {
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
                 break; 
             case 4:
-                $url =  array_shift($this->urlSequence);
+                $this->url =  array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array(
+                $this->referer = strtr($referer, array(
                             '{$p_flow_step_id}' => 1,
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
                         ));
@@ -281,16 +303,75 @@ class finanzarel extends p2pCompany {
                         'p_debug' => '',
                         'p_request' => $this->request[1]);
                 $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->numFileInvestment++;
                 $headers = array('Expect:');
-                $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
+                if (count($this->request) > 2) {
+                    $this->idForSwitch++;
+                }
+                else {
+                    $this->idForSwitch = 6;
+                }
+                $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $fileName);
                 break;
             case 5:
+                //$credentials = array_shift($this->urlSequence);
+                $credentialsFile = array(
+                        'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
+                        'p_flow_step_id' => 1, 
+                        'p_instance' => $this->credentialsGlobal['p_instance'],  
+                        'p_debug' => '',
+                        'p_request' => $this->request[2]);
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->numFileInvestment++;
+                $headers = array('Expect:');
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $fileName);
+                break;
+            case 6:
                 $url = array_shift($this->urlSequence);
                 //echo $url . HTML_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
                 break;
+            case 7:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $buttons = $this->getElementsByClass($dom, "a-IRR-button");
+                foreach ($buttons as $button) {
+                    $id = $button->getAttributeNode("id")->nodeValue;
+                    //echo "El id es $id \n";
+                    $pos = stripos($id, "actions_button");
+                    if ($pos !== false) {
+                        echo "cashflow $id";
+                        $credentialCashflows = explode("_", $id);
+                        $this->credentialCashflow = $credentialCashflows[0];
+                        echo "Found cashflow $this->credentialCashflow";
+                        break;
+                    }
+                        
+                }
+                $url = array_shift($this->urlSequence);
+                echo "The url of last is : ".$url;
+                $url = strtr($url, array(
+                            '{$p_instance}' => $this->credentialsGlobal['p_instance'],
+                            '{$credentialCashflow}' => $this->credentialCashflow
+                        ));
+                echo "now the url is " . $url;
+                $referer = array_shift($this->urlSequence);
+                $referer = strtr($referer, array(
+                            '{$p_flow_step_id}' => 11,
+                            '{$p_instance}' => $this->credentialsGlobal['p_instance']
+                        ));
+                $headers = array('Expect:');
+                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
+                break;
+            case 7:
+                return $tempArray["global"] = "waiting_for_global";
+                
             /*case 6:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
@@ -385,45 +466,6 @@ class finanzarel extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($url, $credentials, null, $referer);
                 //$this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
                 break;*/
-            case 6:
-                $dom = new DOMDocument;
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-                
-                $buttons = $this->getElementsByClass($dom, "a-IRR-button");
-                foreach ($buttons as $button) {
-                    $id = $button->getAttributeNode("id")->nodeValue;
-                    //echo "El id es $id \n";
-                    $pos = stripos($id, "actions_button");
-                    if ($pos !== false) {
-                        echo "cashflow $id";
-                        $credentialCashflows = explode("_", $id);
-                        $this->credentialCashflow = $credentialCashflows[0];
-                        echo "Found cashflow $this->credentialCashflow";
-                        break;
-                    }
-                        
-                }
-                
-                $url = array_shift($this->urlSequence);
-                echo "The url of last is : ".$url;
-                $url = strtr($url, array(
-                            '{$p_instance}' => $this->credentialsGlobal['p_instance'],
-                            '{$credentialCashflow}' => $this->credentialCashflow
-                        ));
-                echo "now the url is " . $url;
-                $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array(
-                            '{$p_flow_step_id}' => 11,
-                            '{$p_instance}' => $this->credentialsGlobal['p_instance']
-                        ));
-                $headers = array('Expect:');
-                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
-                break;
-            case 7:
-                return $tempArray["global"] = "waiting_for_global";
         }
     }
 

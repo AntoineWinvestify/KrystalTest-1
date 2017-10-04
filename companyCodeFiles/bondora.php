@@ -32,7 +32,7 @@ class bondora extends p2pCompany {
         parent::__construct();
         $this->i = 0;
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
-        $this->maxLoans = count($this->loanIdArray);
+         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
     }
 
@@ -290,15 +290,15 @@ class bondora extends p2pCompany {
                     if ($key == 0) {
                         continue;
                     }
-                    $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                    $this->credentials[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
-                $credentials['Email'] = $this->user;
-                $credentials['Password'] = $this->password;
+                $this->credentials['Email'] = $this->user;
+                $this->credentials['Password'] = $this->password;
 
-                print_r($credentials);
+                print_r($this->credentials);
                 $this->idForSwitch++;
-                $this->doCompanyLoginMultiCurl($credentials); //do login
+                $this->doCompanyLoginMultiCurl($this->credentials); //do login
                 break;
 
             case 2:
@@ -481,13 +481,14 @@ class bondora extends p2pCompany {
 
                 $scripts = $dom->getElementsByTagName('script');
                 foreach ($scripts as $script) {
-                    echo "search scripts: " . SHELL_ENDOFLINE;
-                    echo $script->nodeValue . SHELL_ENDOFLINE;
+                    //echo "search scripts: " . SHELL_ENDOFLINE;
+                    //echo $script->nodeValue . SHELL_ENDOFLINE;
                     if (strpos($script->nodeValue, "RequestVerificationToken") != false) {
                         echo 'Finded: ' . SHELL_ENDOFLINE;
                         $deleteTokenArray = explode('"', $script->nodeValue);
                         $this->print_r2($deleteTokenArray);
-                        $deleteToken = $deleteTokenArray[7];
+                        $this->deleteToken = $deleteTokenArray[7];
+                        echo "---___--- " . $this->deleteToken . " ---___---"; 
                     }
                 }
 
@@ -496,7 +497,7 @@ class bondora extends p2pCompany {
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvesment'];
                 echo "delete: " . $url . SHELL_ENDOFLINE;
                 $this->idForSwitch++;
-                $this->headers = array("__RequestVerificationToken: " . $deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: *', 'X-Requested-With: XMLHttpRequest', 'Referer: https://www.bondora.com/en/reports', 'Connection: keep-alive');
+                $this->headers = array("__RequestVerificationToken: " . $this->deleteToken, ":Type: POST", 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive', "content-length: 0", "Retry-After: 120");
                 $this->getCompanyWebpageMultiCurl($url);
                 unset($this->headers);
                 break;
@@ -505,7 +506,7 @@ class bondora extends p2pCompany {
                 echo $str . SHELL_ENDOFLINE;
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteCashFlow'];
                 $this->idForSwitch++;
-                $this->headers = array("__RequestVerificationToken: " . $deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Referer: https://www.bondora.com/en/reports', 'Connection: keep-alive');
+                $this->headers = array("__RequestVerificationToken: " . $this->deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive');
                 $this->getCompanyWebpageMultiCurl($url);
                 unset($this->headers);
                 break;
@@ -625,8 +626,8 @@ class bondora extends p2pCompany {
                 if (empty($this->tempUrl['investmentUrl'])) {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
-                echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url = $this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i];
+                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url;
                 $this->i++;
                 $this->idForSwitch++;
@@ -642,18 +643,19 @@ class bondora extends p2pCompany {
 
                 foreach ($tables as $table) {
                     if ($table->getAttribute('class') == 'table') {
-                        $AmorTable = new DOMDocument();
+                        $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
-                        $AmorTable->appendChild($AmorTable->importNode($clone, TRUE));
-                        $AmorTableString = $AmorTable->saveHTML();
-                        echo $AmorTableString;
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
+                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
+                        echo $AmortizationTableString;
                     }
                 }
 
 
-                if ($this->i++ < $this->maxLoans) {
+                if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
                 } else {
                     return $this->tempArray;
