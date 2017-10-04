@@ -255,8 +255,10 @@ class ParseDataClientShell extends AppShell {
     
     
     
+ /*   
     
-    
+        foreach ($result as $platformKey => $platformResult) {
+            foreach ($platformResult['parsingResult'] as  $loanIdKey => $tempPlatformResult) { 
   
     
     
@@ -273,8 +275,7 @@ class ParseDataClientShell extends AppShell {
     
     
     
-    
-    
+*/    
     
     
     
