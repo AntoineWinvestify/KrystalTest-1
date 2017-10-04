@@ -165,8 +165,8 @@ class twino extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
-        //$this->loanIdArray = array(629337, 629331, 629252);
-        $this->maxLoans = count($this->loanIdArray);
+        //$this->loanIdArray = array(629337, 629331, 629252);  
+        //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
     }
 
@@ -430,8 +430,8 @@ class twino extends p2pCompany {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "---------------BASE URL TABLE: " . $this->tempUrl['investmentUrl'] . " -------------------";
-                echo "////////////////////////////////////////Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url = $this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i];
+                echo "////////////////////////////////////////Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url . " //////////////////////////////////////////////";
                 $this->i++;
                 $this->idForSwitch++;
@@ -449,12 +449,12 @@ class twino extends p2pCompany {
                 }
                 //print_r($arrayAmortizationTable['scheduleItems']);
                 $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']);
-
+                $this->tempArray[$this->loanIds[$this->i - 1]] = $table;
                 echo "_-_-_-_-_-_-_-_table is : " . $table . "_-_-_-_-_-_-_-_";
                         
-                if ($this->i++ < $this->maxLoans) {
+                if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
                 } else {
                     return $this->tempArray;

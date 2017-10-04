@@ -81,7 +81,9 @@ class zank extends p2pCompany {
         parent::__construct();
         $this->i = 0;
         //$this->loanIdArray = array(8363);
-        $this->maxLoans = count($this->loanIdArray);
+        //$this->maxLoans = count($this->loanIdArray);
+        //{"loanIds": "683":["8800", "8800"]}}
+        //{"loanIds":{"686":["6b3649c5-9a6b-4cee-ac05-a55500ef480a","7e89377c-15fc-4de3-8b65-a55500ef6a1b"], "682":["629337", "629331", "629252"], "683":["8800", "8800"], "684":["472"]}}
 // Do whatever is needed for this subsclass
     }
 
@@ -1338,11 +1340,11 @@ class zank extends p2pCompany {
                 break;
                 
             case 4:
-                if(empty($this->tempUrl['invesmentUrl'])){
-                    $this->tempUrl['invesmentUrl'] = array_shift($this->urlSequence);
+                if(empty($this->tempUrl['investmentUrl'])){
+                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
-                echo "Loan number " . $this->i . " is " . $this->loanIdArray[$this->i];
-                $url = $this->tempUrl['invesmentUrl'] . $this->loanIdArray[$this->i];
+                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url; 
                 $this->i++;
                 $this->idForSwitch++;
@@ -1357,16 +1359,17 @@ class zank extends p2pCompany {
                 $tables = $dom->getElementsByTagName('table');
                 foreach($tables as $table){     
                     if($table->getAttribute('id') == 'parte'){
-                        $AmorTable = new DOMDocument();
+                        $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
-                        $AmorTable->appendChild($AmorTable->importNode($clone,TRUE));
-                        $AmorTableString =  $AmorTable->saveHTML();
-                        echo $AmorTableString;
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
+                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
+                        echo $AmortizationTableString;
                     }
                 }
-                if($this->i++ < $this->maxLoans){
+                if($this->i < $this->maxLoans){
                     $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIdArray[$this->i]);
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;               
                 }else{
                     return $this->tempArray;
