@@ -27,8 +27,11 @@
 ?>
 <style>
     .platformLogo {
-        max-width: 150px !important;
+        max-width: 200px !important;
         margin-top: 15px !important;
+    }
+    hr.specialHr {
+        padding: 0px !important;
     }
 </style>
 <div id="winvestifyActivePlatforms">
@@ -41,7 +44,7 @@
                 <p><?php echo __('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus')?></p>
             </div>
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -50,18 +53,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2P Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -70,18 +92,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('Invoice Trading') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        </div>
+                    </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -90,18 +131,40 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -110,21 +173,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -133,18 +212,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('20€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -153,52 +251,31 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                    <div class="box box-widget widget-user-2">
-                        <div class="widget-user-header">
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <img src="/img/logo/Ecrowd.png" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="box-footer no-padding">
-                            <div class="row">
-                                <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                    <div class="box box-widget widget-user-2">
-                        <div class="widget-user-header">
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <img src="/img/logo/Circulantis.png" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="box-footer no-padding">
-                            <div class="row">
-                                <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +284,85 @@
             </div>
             <br/>
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="box box-widget widget-user-2">
+                        <div class="widget-user-header">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <img src="/img/logo/Ecrowd.png" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="specialHr" width="95%">
+                        <div class="box-footer no-padding">
+                            <div class="row">
+                                <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Social Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    <div class="box box-widget widget-user-2">
+                        <div class="widget-user-header">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <img src="/img/logo/Circulantis.png" alt="platform-logotype" class="logo img-responsive center-block platformLogo"/>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="specialHr" width="95%">
+                        <div class="box-footer no-padding">
+                            <div class="row">
+                                <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('Invoice Trading') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -216,18 +371,40 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            </div> 
+            <br/>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -236,19 +413,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('20€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <br/>
         </div>
     </div>
 </div>
@@ -262,7 +457,7 @@
                 <p><?php echo __('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus')?></p>
             </div>
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -271,18 +466,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('Invoice Trading') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('250€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -291,18 +505,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/lv.png" style="vertical-align: middle;" alt="Latvia Flag"/> Latvia</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('All modalities') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('BuyBack') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('10€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -311,18 +544,40 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ee.png" style="vertical-align: middle;" alt="Estonia Flag"/> Estonia</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('5€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -331,21 +586,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/lv.png" style="vertical-align: middle;" alt="Latvia Flag"/> Latvia</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2P Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('BuyBack') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('10€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -354,18 +625,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/lt.png" style="vertical-align: middle;" alt="Lithuania Flag"/> Lithuania</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('5€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -374,18 +664,40 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ee.png" style="vertical-align: middle;" alt="Estonia Flag"/> Estonia</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('Invoice Trading') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('Personal') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('10€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -394,18 +706,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ee.png" style="vertical-align: middle;" alt="Estonia Flag"/> Estonia</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('Mortgage Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Colateral') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('50€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -414,21 +745,37 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/lt.png" style="vertical-align: middle;" alt="Spain Flag"/> Latvia</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2P Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('BuyBack') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('10€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                     <div class="box box-widget widget-user-2">
                         <div class="widget-user-header">
                             <div class="row">
@@ -437,12 +784,31 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="specialHr" width="95%">
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms'><img src="/img/flags/ES.png" alt="Spain Flag"/> Spain</div>
-                                    <div class = 'input_platforms'><?php echo __('Peer-to-Peer') ?></div>
-                                    <div class="input_platforms"><?php echo __('He leído la ') ?></div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/fi.png" style="vertical-align: middle;" alt="Finland Flag"/> Finland</div>
+                                    <div class="divmiddle">
+                                        <div class = 'input_platforms'>
+                                            <strong><?php echo __('Modality')?></strong><br/>
+                                            <?php echo __('P2B Loan') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Investment Guarantee')?></strong><br/>
+                                            <?php echo __('No') ?>
+                                        </div>
+                                    </div>
+                                    <div class="divmiddle">
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Cross-border')?></strong><br/>
+                                            <?php echo __('Yes') ?>
+                                        </div>
+                                        <div class="input_platforms">
+                                            <strong><?php echo __('Minimum Investment')?></strong><br/>
+                                            <?php echo __('20€') ?>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
