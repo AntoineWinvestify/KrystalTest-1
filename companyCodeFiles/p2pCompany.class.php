@@ -2718,6 +2718,10 @@ FRAGMENT
         $this->casperObject->run();
     }
     
+    public function casperSendKey($input, $str) {
+        $this->casperObject->sendKeys($input, $str);
+    }
+    
     /**
      * Function to return the content of the webpage on that moment
      * @return string It is the content of the url at the moment we call the function
