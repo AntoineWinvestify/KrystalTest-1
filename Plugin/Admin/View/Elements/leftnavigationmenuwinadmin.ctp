@@ -126,7 +126,7 @@ $(document).ready(function() {
             </a>
         </li>
         <li class="treeview">
-            <a href="/admin/ocrs/generateExcel">
+            <a href="/admin/files/generateExcel">
               <i class="fa fa-dashboard"></i> <span><?php echo __('Generate Excel')?></span>
             </a>
         </li>
