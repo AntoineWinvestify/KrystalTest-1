@@ -245,7 +245,7 @@ class zank extends p2pCompany {
                 foreach ($divs as $div) {
                     switch ($index) {
                         case 0:
-                            $tempArray['marketplace_numberOfInvestors'] = strtoupper($div->nodeValue);
+                            $tempArray['marketplace_numberOfInvestors'] = preg_replace("/[^0-9]/","",strtoupper($div->nodeValue));
                             break;
                         case 1:
                             if (stristr(trim($div->nodeValue), "%") == true) {
@@ -387,15 +387,22 @@ class zank extends p2pCompany {
                     if($status == 'Completado'){   
                         $tempArray['marketplace_status'] = PERCENT;
                         $tempArray['marketplace_subscriptionProgress'] = 10000;
-                    }else if($status == 'Amortizado' || $status == 'Retrasado' ){
+                    }
+                    else if($status == 'Amortizado' || $status == 'Retrasado' ){
                         $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
                         $tempArray['marketplace_subscriptionProgress'] = 10000; 
-                    } else if(strpos($status, 'mortiza') != false){
+                    } 
+                    else if(strpos($status, 'mortiza') != false){
                         $tempArray['marketplace_status'] = CONFIRMED;
                         $tempArray['marketplace_subscriptionProgress'] = 10000;       
-                    }else if($status == 'Publicado'){   
+                    }
+                    else if($status == 'Publicado'){   
                         $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;     
-                    }                
+                    }
+                    else if($status == 'Cancelado'){
+                        $tempArray['marketplace_subscriptionProgress'] = 0;
+                        $tempArray['marketplace_status'] = REJECTED;
+                    }
                     
                     $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
                     $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  

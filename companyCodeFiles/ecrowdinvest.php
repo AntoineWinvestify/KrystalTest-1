@@ -180,7 +180,7 @@ class ecrowdinvest extends p2pCompany {
                 unset($tempArray);
             }
 
-            if ($readController > 6) {  //If we find more than two completed investment existing in the backpup, stop reading
+            if ($readController > 25) {  //If we find more than 25 completed investment existing in the backpup, stop reading
                 echo 'Stop reading';
                 break;
             }

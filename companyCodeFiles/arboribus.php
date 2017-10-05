@@ -101,13 +101,14 @@ class arboribus extends p2pCompany {
      * @param Array $structure
      * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) {
+    function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
 
 
         $readController = 0;
         $investmentController = false;
         $totalArray = array();
-
+        $this->investmentDeletedList = $loanIdList;
+        
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
 
         $dom = new DOMDocument;
@@ -237,6 +238,7 @@ class arboribus extends p2pCompany {
                             unset($tempArray);
                             $investmentController = false;
                         } else {
+                            $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);
                             $totalArray[] = $tempArray;
                             unset($tempArray);
                         }
@@ -245,10 +247,99 @@ class arboribus extends p2pCompany {
             }
             $tableNumber++;
         }
+        
+        echo 'Search this investments: ' . SHELL_ENDOFLINE;
+        $this->print_r2($this->investmentDeletedList); 
+        $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
+        echo 'Hidden: ' . SHELL_ENDOFLINE;
+        $this->print_r2($hiddenInvestments);
+        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        
         return [$totalArray, $structureRevision[0],$structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
+    }
+    
+    
+    /**Read hidden investment.
+     * 
+     * @param array $investmentDeletedList loan id list
+     * @return array investments info list
+     */
+    function readHiddenInvestment ($investmentDeletedList){
+        
+        
+        $url = array_shift($this->urlSequence);
+        $tempArray = array();
+        $newTotalArray = array();
+        //Read investment info
+        foreach($investmentDeletedList as $loanId) {
+            
+            $str = $this->getCompanyWebpage($url . $loanId . ".html");
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = false;
+            $dom->loadHTML($str);
+            
+            $tempArray['marketplace_loanReference'] = $loanId;
+            
+            $tables = $dom->getElementsByTagName('table');
+            foreach($tables as $key => $table){
+                echo $key . '=>' . $table->nodeValue . HTML_ENDOFLINE;          
+                if($key == 0){
+                    if(strpos($table->nodeValue, "100%")){
+                        $tempArray['marketplace_subscriptionProgress'] == 10000;
+                        $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                        $tempArray['marketplace_status'] = CONFIRMED;
+                    }
+                    else {
+                        $tempArray['marketplace_statusLiteral'] = 'Cancelado';
+                        $tempArray['marketplace_status'] = REJECTED;
+                    }
+                }
+            }      
+            
+            $price = $this->getElements($dom, "div", "class", "price");
+            $tempArray['marketplace_amount'] = $this->getMonetaryValue($price[0]->nodeValue);
+            
+            $lis = $dom->getElementsByTagName("li");
+            foreach($lis as $keyLi => $li){
+                echo 'li ' . $keyLi . " is " . $li->nodeValue . HTML_ENDOFLINE;
+                switch ($keyLi){
+                    case 7:
+                        $str = explode(":",$li->nodeValue);
+                        print_r($str);
+                        $tempArray['marketplace_interestRate'] = $this->getPercentage($str[1]);
+                        break;
+                    case 9:
+                        $str = explode(":",$li->nodeValue);
+                        $tempArray['marketplace_rating'] = trim($str[1]);
+                        break;
+                    case 10:
+                        $str = explode(":",$li->nodeValue);
+                        list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit']) = $this->getDurationValue($str[1]);
+                        break;
+                    case 11:
+                        $str = explode(":",$li->nodeValue);
+                        $tempArray['marketplace_sector'] = trim($str[1]);
+                        break;
+                    case 15:
+                        $str = explode("-",$li->nodeValue);
+                        $tempArray['marketplace_purpose'] = trim($str[1]);
+                        break;
+                    case 16:
+                        $str = explode(":",$li->nodeValue);
+                        $tempArray['marketplace_requestorLocation'] = trim($str[1]);
+                        break;
+                    
+                }
+            }
+            echo 'Hidden investment: ' . SHELL_ENDOFLINE;
+            echo print_r($tempArray) . SHELL_ENDOFLINE;
+            $newTotalArray[] = $tempArray;
+            unset($tempArray);
+        }       
+        return $newTotalArray;
     }
 
     /**
