@@ -48,8 +48,10 @@ if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result 
 <script type="text/javascript">
 
 function ga_savePersonalData() {
-	console.log("ga 'send' 'event' 'PersonalData'  'savePersonalDataClick'");
-	ga('send', 'event', 'PersonalData', 'savePersonalDataClick');	
+    console.log("ga 'send' 'event' 'PersonalData'  'savePersonalDataClick'");
+    if (typeof ga === 'function') {
+        ga('send', 'event', 'PersonalData', 'savePersonalDataClick');	
+    }
 }
 
 function successAdd(data){

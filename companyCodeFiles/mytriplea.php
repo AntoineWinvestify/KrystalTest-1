@@ -715,6 +715,7 @@ class mytriplea extends p2pCompany {
                 $baseUrl = array_shift($this->urlSequence);
                 echo "baseUrl = $baseUrl<br>";
                 $tables = $this->getElements($dom, "table", "id", "tablaPaginadaInversiones");
+                $this->verifyNodeHasElements($tables);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }

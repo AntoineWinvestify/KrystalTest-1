@@ -309,7 +309,7 @@
                         </div>
 
                         <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
-                            <button id ="generateBtn" href ="/admin/ocrs/importBackupExcel/" type="button" class="btn btn-default btnWinAdmin btnRounded">
+                            <button id ="generateBtn" href ="/admin/files/importBackupExcel/" type="button" class="btn btn-default btnWinAdmin btnRounded">
                                 <?php echo __('Generate Excel') ?> 
                             </button>
                         </div>
