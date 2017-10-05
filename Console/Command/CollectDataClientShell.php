@@ -22,10 +22,21 @@
  */
 
 
-class CollectDataClientShell extends GearmanClientShell {
+
+class CollectDataClientShell extends AppShell {
+    protected $GearmanClient;
     protected $userResult = [];
     protected $newComp = [];
     public $uses = array('Company', 'Urlsequence');
+
+    public function startup() {
+        $this->GearmanClient = new GearmanClient();
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+    }
+
+    public function help() {
+        $this->out('Gearman Client as a CakePHP Shell');
+    }
     
     public function main() {
         echo "Nothing to do here";
@@ -127,6 +138,9 @@ class CollectDataClientShell extends GearmanClientShell {
             }
             $this->Queue->save(array('queue_status' => $newState), $validate = true);
         }
+        
+        
+        
     }
     
     /**
@@ -185,5 +199,17 @@ class CollectDataClientShell extends GearmanClientShell {
             }
         }
         return $statusProcess;
+    }
+    
+    public function deleteFolderByDate($key, $date) {
+        $configPath = Configure::read('files');
+        $partialPath = $configPath['investorPath'];
+        $path = $this->userReference[$key] . DS . $date;
+        $path = $partialPath . DS . $path;
+        $folder = new Folder($path);
+        if (!is_null($folder->path)) {
+            $delete = $folder->delete();
+        }
+        return $delete;
     }
 }
