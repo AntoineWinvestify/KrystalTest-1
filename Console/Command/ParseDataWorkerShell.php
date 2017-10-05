@@ -128,9 +128,10 @@ class ParseDataWorkerShell extends AppShell {
             
             foreach ($fileTypesToCheck as $actualFileType) {               
                 $approvedFiles = $this->readFilteredFiles($files,  $actualFileType);
+                echo __FILE__ . " " . __LINE__ . "\n";
                 print_r($approvedFiles);
                 if ($actualFileType == INVESTMENT_FILE) {
-                    break;
+                 
                     $parserConfig = $companyHandle->getParserConfigInvestmentFile();
                 }
                 else {
@@ -146,7 +147,8 @@ class ParseDataWorkerShell extends AppShell {
                     $myParser->setConfig(array('sortParameter' => "loanId"));
                     echo __FILE__ . " " . __LINE__ . "\n";
                     $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);     // if successfull analysis, result is an array with loanId's as index 
-print_r($tempResult);
+//print_r($tempResult);
+                    echo "Writing File $approvedFile\n";
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
                         $errorInfo = array( "typeOfError"   => "parsingError",
                                             "errorDetails"  => $myParser->getLastError(),
@@ -183,12 +185,11 @@ echo __FILE__ . " " . __LINE__ . "\n";
                         $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
                         $returnData[$linkedAccountKey]['parsingResult'] = $totalParsingresult;
                         unset($newLoans);
-echo __FILE__ . " " . __LINE__ . "\n";
                     } 
 echo __FILE__ . " " . __LINE__ . "\n";
-                    $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
-                    $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
-                    $returnData[$linkedAccountKey]['pfp'] = $platform; 
+                $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
+                $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
+                $returnData[$linkedAccountKey]['pfp'] = $platform; 
                 }
             }
 echo __FILE__ . " " . __LINE__ . "\n";
@@ -238,153 +239,176 @@ echo __FILE__ . " " . __LINE__ . "\n";
                     "detail" => "Cash_deposit",
                     "cash" => 1,                                    // 1 = in, 2 = out
                     "account" => "CF",                           
-                    "transactionType" => "Deposit"
+                    "transactionType" => "Deposit",
+                    "type" => "userdatainvestment.userdatainvestment_deposits"
                     ],
                 1 => [
                     "detail" => "Cash_withdrawal",
                     "cash" => 2,   
                     "account" => "CF", 
-                    "transactionType" => "Withdraw"               
+                    "transactionType" => "Withdraw",
+                    "type" => "userdatainvestment.userdatainvestment_deposits"           
                     ], 
                 2 => [
                     "detail" => "Primary_market_investment",
                     "cash" => 2,  
                     "account" => "Capital",                 
-                    "transactionType" => "Investment"
+                    "transactionType" => "Investment",
+                    "type" => "investment.1",
                     ],
                 3 => [
                     "detail" => "Secundary_market_investment",
                     "cash" => 2,
                     "account" => "Capital",                 
-                    "transactionType" => "Investment"              
+                    "transactionType" => "Investment",
+                    "type" => "investment.2"                       
                     ], 
                 4 => [
                     "detail" => "Principal_repayment",
                     "cash" => 1,  
                     "account" => "Capital",                 
-                    "transactionType" => "Repayment"
+                    "transactionType" => "Repayment",
+                    "type" => "investment.4"                        
                     ],
                 5 => [
                     "detail" => "Partial_principal_repayment",
                     "cash" => 1, 
                     "account" => "Capital",                
-                    "transactionType" => "Repayment"               
+                    "transactionType" => "Repayment",
+                    "type" => "investment.5"                        
                     ], 
                 6 => [
                     "detail" => "Principal_buyback",
                     "cash" => 1, 
                     "account" => "Capital",                 
-                    "transactionType" => "Repayment"
+                    "transactionType" => "Repayment",
+                    "type" => "investment.6"                        
                     ],
-
                 7 => [
                     "detail" => "Principal_and_interest_payment",
                     "cash" => 1, 
                     "account" => "Mix",                 
-                    "transactionType" => "Mix"
+                    "transactionType" => "Mix",
+                    "type" => "investment.7"                        
                     ],       
-
                 8 => [
                     "detail" => "Regular_gross_interest_income",
                     "cash" => 1, 
                     "account" => "PL",                
-                    "transactionType" => "Income"               
+                    "transactionType" => "Income",
+                    "type" => "investment.8"                        
                     ], 
                 9 => [
                     "detail" => "Delayed_interest_income",
                     "cash" => 1,  
                     "account" => "PL",                 
-                    "transactionType" => "Income"
+                    "transactionType" => "Income",
+                    "type" => "investment.9"                       
                     ],
                 10 => [
                     "detail" => "Late_payment_fee_income",
                     "cash" => 1,  
                     "account" => "PL",                 
-                    "transactionType" => "Income"               
+                    "transactionType" => "Income",
+                    "type" => "investment.10"                        
                     ], 
                 11 => [
                     "detail" => "Cash_deposit",
                     "cash" => 1,  
                     "account" => "PL",                 
-                    "transactionType" => "Income"
+                    "transactionType" => "Income",
+                    "type" => "investment.11"                        
                     ],
                 12 => [
                     "detail" => "Interest_income_buyback",
                     "cash" => 1,
                     "account" => "PL", 
-                    "transactionType" => "Income"               
+                    "transactionType" => "Income",
+                    "type" => "investment.12"                        
                     ], 
                 13 => [
                     "detail" => "Delayed_interest_income_buyback",
                     "cash" => 1,
                     "account" => "PL", 
-                    "transactionType" => "Income"
+                    "transactionType" => "Income",
+                    "type" => "investment.13" 
                     ],
                 14 => [
                     "detail" => "Cash_withdrawal",
                     "cash" => 1,
                     "account" => "PL", 
-                    "transactionType" => "Income"              
+                    "transactionType" => "Income",
+                    "type" => "investment.14"                        
                     ], 
                 15 => [
                     "detail" => "Cash_deposit",
                     "cash" => 1,
                     "account" => "PL", 
-                    "transactionType" => "Income"
+                    "transactionType" => "Income",
+                    "type" => "investment.15"                        
                     ],
                 16 => [
                     "detail" => "Cash_withdrawal",
                     "cash" => 1,
                     "account" => "PL", 
-                    "transactionType" => "Income"               
+                    "transactionType" => "Income",
+                    "type" => "investment.16"                        
                     ],  
                 17 => [
                     "detail" => "Recoveries",
                     "cash" => 1, 
                     "account" => "PL", 
-                    "transactionType" => "Income"               
+                    "transactionType" => "Income",
+                    "type" => "investment.17"                       
                     ],  
                 18 => [
                     "detail" => "Commission",
                     "cash" => 2,
                     "account" => "PL", 
-                    "transactionType" => "Costs"               
+                    "transactionType" => "Costs",
+                    "type" => "investment.18"                        
                     ], 
                 19 => [
                     "detail" => "Bank_charges",
                     "cash" => 2,
                     "account" => "PL", 
-                    "transactionType" => "Costs"               
+                    "transactionType" => "Costs",
+                    "type" => "investment.19"                        
                     ], 
                 20 => [
                     "detail" => "Premium_paid_secondary_market",
                     "cash" => 2,    
                     "account" => "PL", 
-                    "transactionType" => "Costs"               
+                    "transactionType" => "Costs",
+                    "type" => "investment.20"                        
                     ], 
                 21 => [
                     "detail" => "Interest_payment_secondary_market_purchase",
                     "cash" => 2,  
                     "account" => "PL", 
-                    "transactionType" => "Costs"               
+                    "transactionType" => "Costs",
+                    "type" => "investment.21"                        
                     ],            
                 22 => [
                     "detail" => "Tax_VAT",
                     "cash" => 2,  
                     "account" => "PL", 
-                    "transactionType" => "Costs"               
+                    "transactionType" => "Costs",
+                    "type" => "investment."                        
                     ], 
                 23 => [
                     "detail" => "Tax_income_withholding_tax",
                     "cash" => 2,  
                     "account" => "PL", 
-                    "transactionType" => "Costs"               
+                    "transactionType" => "Costs",
+                    "type" => "investment.22"                        
                     ],            
                 24 => [
                     "detail" => "Write-off", 
                     "cash" => 2,  
                     "account" => "PL", 
-                    "transactionType" => "Costs"               
+                    "transactionType" => "Costs",
+                    "type" => "investment.23"    
                     ]    
             ];
 
@@ -460,7 +484,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
         $outOfRange = false;
 
         foreach ($rowDatas as $keyRow => $rowData) {
-            echo "Reading a NEW ROW\n";
+ //           echo "Reading a NEW ROW\n";
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
@@ -503,11 +527,24 @@ echo __FILE__ . " " . __LINE__ . "\n";
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',  
                                                                        $userFunction['functionName']), 
                                                                        $userFunction['inputData']);
+//echo __FUNCTION__ . " " . __LINE__ . "\n";
+//print_r($tempResult);
+if (is_array($tempResult)) {
+    $userFunction = $tempResult;
+//    print_r($userFunction);
+//    echo "YES\n";
+    $tempResult = $tempResult[0];
+}
 
+
+                            // Write the result to the array with parsing result. The first index is written 
+                            // various variables if $tempResult is an array
                             if (!empty($tempResult)) {
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']"; 
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
+     //                           echo "$tempString\n";
                                 eval($tempString);
+     //                           echo "EVALUATED\n";
                             }
                         }
                         else {
@@ -804,21 +841,32 @@ echo __FILE__ . " " . __LINE__ . "\n";
     }  
    
    
-   /**
+    /**
      * 
-     * Reads the transaction detail of the transaction operation
+     * Reads the transaction detail of the transaction operation and the variable where to store
+     * the result of this function
      * 
      * @param string   $input
-     * @return array   $parameter2  List of all known concepts of the platform
-     *       
+     * @return array    [0] => Winvestify standardized concept
+     *                  [1] => array of parameter, i.e. list of variables in which the result
+     *                         of this function is to be stored. In practice it is normally 
+     *                         only 1 variable, but the same value could be replicated in many
+     *                         variables.
+     *                  The variable name is read from $this=>transactionDetails.
      */
     private function getTransactionDetail($input, $config) {
         foreach ($config as $configKey => $configItem) {
             $position = stripos($input, $configKey);
             if ($position !== false) {
-                return $configItem;
+                foreach ($this->transactionDetails as $key => $detail) {
+                    if ($detail['detail'] == $configItem) {
+                        $result = array($configItem,"type" => $detail['type']); 
+                        return $result;
+                    }
+                } 
             }
-        }    
+        } 
+        echo "getTransactionDetail => unknown concept encountered\n";
         // an unknown concept was found, do some intelligent guessing about its meaning
         $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
         return result;         
@@ -829,14 +877,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
      * 
      * @param string   $input
      * @return array   $parameter2  List of all known concepts of the platform
-     *    
-      * 
-                14 => [
-                    "detail" => "Cash_withdrawal",
-                    "cash" => 1,
-                    "account" => "PL", 
-                    "transactionType" => "Income"              
-                    ],    
+     *      
      */   
     private function getTransactionType($input, $config) { 
         echo "Function getTransactionType, $input\n";
