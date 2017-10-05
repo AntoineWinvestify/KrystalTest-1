@@ -67,7 +67,7 @@ class mintos extends p2pCompany {
             ],
             "C" => [// NOT FINISHED YET
                 [
-                    "type" => "investment.loanId",                                                // Winvestify standardized name   OK
+                    "type" => "investment.loanId",                                     // Winvestify standardized name   OK
                     "inputData" => [                                                   // trick to get the complete cell data as purpose
                                 "input2" => "Loan ID: ",                               // May contain trailing spaces
                                 "input3" => ",",
@@ -81,13 +81,15 @@ class mintos extends p2pCompany {
                                                                 // format ["concept string platform", "concept string Winvestify"]
                                    "input5" => ["Incoming client payment" => "Deposit",
                                                 "Investment principal increase" => "Investment",
-                                                "Investment principal repayment" => "Principal_repayment",
+                                                "Investment share buyer pays to a seller" => "Primary_market_increase",
+                                                "Investment principal repayment" => "Repayment",
                                                 "Investment principal rebuy" => "Repayment",
                                                 "Interest income" => "Income",
                                                 "Delayed interest income" => "Income",
                                                 "Late payment fee income" => "Income",
                                                 "Interest income on rebuy" => "Income",
-                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback"]
+                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",
+                                                "Disc/premum paid secondary market" => "Disc_premium_paid_secundary_market"]
                                     
                             ],
                     "functionName" => "getTransactionType",  
@@ -98,13 +100,15 @@ class mintos extends p2pCompany {
                                                                 // format ["concept string platform", "concept string Winvestify"]
                                    "input8" => ["Incoming client payment" => "Cash_deposit",
                                                 "Investment principal increase" => "Primary_market_investment",
+                                                "Investment share buyer pays to a seller" => "Investment",
                                                 "Investment principal repayment" => "Principal_repayment",
                                                 "Investment principal rebuy" => "Principal_buyback",
                                                 "Interest income" => "Regular_gross_interest_income",
                                                 "Delayed interest income" => "Delayed_interest_income",
                                                 "Late payment fee income" =>"Late_payment_fee_income",
                                                 "Interest income on rebuy" => "Interest_income_buyback",
-                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback"]         
+                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",
+                                                "Disc/premum paid secondary market" => "Income"]     
                             ],
                     "functionName" => "getTransactionDetail",  
                 ]
@@ -144,14 +148,14 @@ class mintos extends p2pCompany {
     
     protected $valuesMintosInvestment = [     
             "A" =>  [
-                "name" => "investment.country"                                          // Winvestify standardized name  OK
+                "name" => "investment.investment_country"                               // Winvestify standardized name  OK
              ],       
             "B" =>  [
-                "name" => "investment.loanId"                                           // Winvestify standardized name  OK
+                "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
              ],
             "C" =>  [
                 [
-                    "type" => "investment.issueDate",                                   // Winvestify standardized name  OK
+                    "type" => "investment.investment_issueDate",                                   // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D.M.Y",                                    
                                                                                         

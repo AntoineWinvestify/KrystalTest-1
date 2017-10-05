@@ -41,7 +41,7 @@
  * 
  * TO BE DONE:
  * CHECK THE STRUCTURE OF A XLS/XLSX/CSV FILE BY CHECKING THE NAMES OF THE HEADERS.  
- * 
+ * detecting "unknown concept" 
  * 
  */
 
@@ -100,7 +100,7 @@ class ParseDataWorkerShell extends AppShell {
      *           array     analyse    convert internal array to external format using definitions of configuration file
      *                      true  analysis done with success
      *                      array with all errorData related to occurred error
-     * 
+     *
      */   
     public function parseFileFlow($job) {
 
@@ -193,7 +193,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
             }
 echo __FILE__ . " " . __LINE__ . "\n";
         }
-print_r($returnData);
+//print_r($returnData);
         return json_encode($returnData); 
     }
 }        
@@ -214,7 +214,7 @@ print_r($returnData);
                                                         // Typically used for sorting by loanId index
 
         protected $errorData = array();                 // Contains the information of the last occurred error
-
+            
 
         protected $currencies = array(EUR => ["EUR", "€"], 
                                         GBP => ["GBP", "£"], 
@@ -540,8 +540,8 @@ print_r($returnData);
     
    
     /**
-     * Returns information of the last occurred error
-     *
+     * Returns information of the last occurred error. Can also detect if
+     * an unknown "payment" concept was found.
      *  @return array   $analyzedData
      *          false in case an error occurred
      */
@@ -591,6 +591,62 @@ print_r($returnData);
        
    
     
+    /**
+     * Analyze and determine the (preliminary) scope of an undefined payment concept.
+     * The algorithm uses a combination of a dictionary search and checking of transaction data 
+     * to determine (at least) if it is an income or a cost.
+     * 
+     * @param string   
+     * @param string  
+     *                         
+     * @return string  
+     * also check for the presence of loanId, and + or - sign of field
+     */
+    private function analyzeUnknownConcept($input, $config) {
+
+    //    read the unknown concept
+        $result = 0;
+        $dictionaryWords = array('tax'          => COST,
+                                'instalment'    => INCOME,
+                                'installment'   => INCOME,
+                                'payment'       => COST,
+                                'back fee'      => COST,
+                                'back tax'      => COST,
+                                'cost'          => COST,
+                                'purchase'      => COST,
+                                'bid'           => COST,
+                                'auction'       => COST,
+                                'sale'          => INCOME,
+                                'swap'          => INCOME,
+                                'loan'          => COST,
+                                'buy'           => INCOME,
+                                'sell'          => INCOME,
+                                'sale'          => INCOME,
+                                'earning'       => INCOME
+
+                            );
+        foreach ($dictionaryWords as $wordKey => $word) {
+            $position = stripos($input, $wordKey);           
+            if ($position !== false) {      // A match was found 
+                $result = $word;
+                break;
+            }
+        }
+        
+        switch($result) {
+            case COST:                                  // A result was found.
+                return "Unknown_cost";
+                break;
+            
+            case INCOME:                                // A result was found
+                return "Unknown_income";
+            
+            default:                                    // Nothing found, so do some maths to 
+                return "Unknown_concept";               // see if it is an income or a cost.
+        }
+    }  
+
+
     /**
      * Converts any type of date format to internal format yyyy-mm-dd
      * 
@@ -645,8 +701,8 @@ print_r($returnData);
         }
         return;
     }  
-
-
+    
+    
     /**
      * normalize a day or month element of a date to two (2) characters, adding a 0 if needed
      * 
@@ -757,14 +813,15 @@ print_r($returnData);
      *       
      */
     private function getTransactionDetail($input, $config) {
-
         foreach ($config as $configKey => $configItem) {
             $position = stripos($input, $configKey);
             if ($position !== false) {
                 return $configItem;
             }
-        }
-        return "";                          // Unknown concept encountered. Deal with it in a different, global, way
+        }    
+        // an unknown concept was found, do some intelligent guessing about its meaning
+        $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
+        return result;         
     }     
   
      /** 
@@ -772,15 +829,29 @@ print_r($returnData);
      * 
      * @param string   $input
      * @return array   $parameter2  List of all known concepts of the platform
-     *       
+     *    
+      * 
+                14 => [
+                    "detail" => "Cash_withdrawal",
+                    "cash" => 1,
+                    "account" => "PL", 
+                    "transactionType" => "Income"              
+                    ],    
      */   
-
-    private function getTransactionType($input, $config) {  
+    private function getTransactionType($input, $config) { 
+        echo "Function getTransactionType, $input\n";
         foreach ($config as $configKey => $configItem) {
             $position = stripos($input, $configKey);
-            if ($position !== false) {  // value is in $configItem[1];
+            echo "position = $position\n";
+            if ($position !== false) { 
+                
+                echo "Found, configKey = $configKey, configItem =\n";
+                print_r($configItem);
+                return $configItem;
                 foreach ($this->transactionDetails as $key => $detail) {
+                    echo "\n842   $key = $key\n";
                     if ($detail['detail'] == $configItem) {
+                        echo "RETURNING " . $detail['transactionType'] ."\n";
                         return $detail['transactionType'];
                     }
                 }

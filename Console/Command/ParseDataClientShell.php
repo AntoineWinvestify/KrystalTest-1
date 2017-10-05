@@ -118,7 +118,7 @@ class ParseDataClientShell extends AppShell {
                     $listOfLoans = $this->getListActiveLoans($platformKey);
                     foreach ($platformResult['parsingResult'] as  $loanIdKey => $tempPlatformResult) {                  
                         if (array_search($loanIdKey, $listOfLoans) !== false) {         // Check if new investments have appeared
-                            $newLoans[] = $loanIdKey;
+                            $newLoans[$platformKey][] = $loanIdKey;
                             $newLoansFound = YES;
                         } 
                         if (!empty($newLoans)) {
@@ -136,6 +136,10 @@ class ParseDataClientShell extends AppShell {
 
  //check if no error occured. If no error then store the data in the database.
  // if error occurred then use applicationerror to store it.
+/*
+if an error is found then all the files related to the actions are to be 
+deleted including the directory structure. 
+*/
                 } 
                 
                 if ($newLoansFound == NO) {
@@ -149,8 +153,10 @@ class ParseDataClientShell extends AppShell {
                    
                 $this->Queue = ClassRegistry::init('Queue');    
                 $this->Queue->id = $queueId;
-                $this->Queue->save(array('queue_status' => $newState), $validate = true);           
-      
+                $this->Queue->save(array('queue_status' => $newState,
+                                         'queue_info' => json_encode($newLoans),
+                                        ), $validate = true
+                                    );   
                 }
             else {
                 $inActivityCounter++;
@@ -201,8 +207,8 @@ class ParseDataClientShell extends AppShell {
 
         $this->Investment = ClassRegistry::init('Investment');    
  
-// CHECK THESE FILTERCONDITIONS        
-        $filterConditions = array( //'linkedaccount_id' => $linkedaccount_id,
+// CHECK THE FILTERCONDITION for status      
+        $filterConditions = array( 'linkedaccount_id' => $linkedaccount_id,
                                     "investment_status" => -1,
                                 );
 	
@@ -211,7 +217,7 @@ class ParseDataClientShell extends AppShell {
                                                         "fields" => array("id", "investment_loanReference"),
 									));   
         $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanReference');
-        $list[] = "20729-01";
+        $list[] = "20729-01";       // ONLY FOR TESTING PURPOSES, TO BE DELETED.
         return $list;
     }
     
@@ -253,29 +259,50 @@ class ParseDataClientShell extends AppShell {
     }
     
     
+  // platform - (1-n)loanId - (1-n) concepts
     
     
- /*   
-    
+    public function mapData($data) {
+        $dbInvestmentTable = array('loanId' => "",
+                                    'country' => "",
+                                    'loanType'  => "",
+                                    'amortizationMethod' => "",
+                                    
+            
+                            );
+                
+        $dbUserInvestmentData = array (
+            
+                            ); 
+        
+        $dbAmortizationTable = array(
+            
+                             );
+                
+                
+        
+        
         foreach ($result as $platformKey => $platformResult) {
-            foreach ($platformResult['parsingResult'] as  $loanIdKey => $tempPlatformResult) { 
-  
+            foreach ($platformResult['parsingResult'] as $loanIdKey => $tempPlatformResult) { // tempPlatformResult holds the real array
+                                                                                              // and loanIdkey a number between 0 ...4..
+             //   if regular_interest_income then map to item  
+                    
+    
+    
+    
+            }
     
     
     
     
     
+        }
     
     
+            
+    } 
     
     
-    
-    
-    
-    
-    
-    
-*/    
     
     
     
