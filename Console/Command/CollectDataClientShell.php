@@ -20,7 +20,8 @@
  * @date
  * @package
  */
-
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
 
 
 class CollectDataClientShell extends AppShell {
@@ -155,7 +156,7 @@ class CollectDataClientShell extends AppShell {
         $this->userResult[$data[0]][$data[1]] = "0";
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
+        echo "Fail: " . $task->data() . GEARMAN_WORK_FAIL . "\n";
     }
     
     /**
@@ -170,7 +171,7 @@ class CollectDataClientShell extends AppShell {
         $this->userResult[$data[0]][$data[1]] = "0";
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
+        echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
     }
     
@@ -207,6 +208,7 @@ class CollectDataClientShell extends AppShell {
         $path = $this->userReference[$key] . DS . $date;
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
+        $delete = false;
         if (!is_null($folder->path)) {
             $delete = $folder->delete();
         }
