@@ -21,23 +21,13 @@
  * @package
  */
 
-class CollectDataWorkerShell extends AppShell {
-    
-    protected $GearmanWorker;
-    
+class CollectDataWorkerShell extends GearmanWorkerShell {
     var $uses = array('Marketplace', 'Company', 'Urlsequence');
     
     public $queueCurls;
     public $newComp = array();
     public $tempArray = array();
     public $companyId = array();
-
-    
-    public function startup() {
-        $this->GearmanWorker = new GearmanWorker();
-        @set_exception_handler(array($this, 'exception_handler'));
-        @set_error_handler(array($this, 'exception_handler'));
-    }
     
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
@@ -339,10 +329,6 @@ class CollectDataWorkerShell extends AppShell {
        return "ok";
     }
     
-    public function getDataCasperScraping() {
-        
-    }
-    
     /**
      * Function to do logout of company
      * @param int $companyIdForQueue It is the companyId inside the array of newComp
@@ -397,12 +383,7 @@ class CollectDataWorkerShell extends AppShell {
         return $errorCurl;
     }
     
-    public function exception_handler($exception) {
-        $this->job->sendException('Boom');
-        $this->job->sendFail();
-        //print "Exception Caught: ". $exception->getMessage() ."\n";
-        //return "0";
-   }
+    
 
 
     
