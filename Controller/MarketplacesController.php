@@ -362,8 +362,8 @@ class MarketPlacesController extends AppController {
         $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
         
         $loanIdList = array(); //This array contains the loan_reference of each investment, we need it to search in the pfp marketplace if the investment have been deleted. (COMUNITAE delete some finished investmenet)
-        foreach($companyMarketplace as $ivestment){
-            $loanId = $ivestment['Marketplace']['marketplace_loanReference'];
+        foreach($companyMarketplace as $investment){
+            $loanId = $investment['Marketplace']['marketplace_loanReference'];
             array_push($loanIdList, $loanId);
         }
         
