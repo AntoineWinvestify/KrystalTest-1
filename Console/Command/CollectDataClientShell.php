@@ -148,10 +148,11 @@ class CollectDataClientShell extends AppShell {
      * @param GearmanTask $task
      */
     public function verifyFailTask(GearmanTask $task) {
-        $m = $task->data();
         $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
         $this->userResult[$data[0]][$data[1]] = "0";
-        
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
@@ -162,8 +163,10 @@ class CollectDataClientShell extends AppShell {
      * @param GearmanTask $task
      */
     public function verifyExceptionTask (GearmanTask $task) {
-        $m = $task->data();
         $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
         $this->userResult[$data[0]][$data[1]] = "0";
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
