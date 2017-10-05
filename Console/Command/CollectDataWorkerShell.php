@@ -34,7 +34,9 @@ class CollectDataWorkerShell extends AppShell {
 
     
     public function startup() {
-            $this->GearmanWorker = new GearmanWorker();
+        $this->GearmanWorker = new GearmanWorker();
+        @set_exception_handler(array($this, 'exception_handler'));
+        @set_error_handler(array($this, 'exception_handler'));
     }
     
     public function main() {
@@ -55,8 +57,17 @@ class CollectDataWorkerShell extends AppShell {
      * @return string The variable must be in string because of Gearman but it is really a boolean 1 or 0
      */
     public function getDataMulticurlFiles($job) {
-        $data = json_decode($job->workload(),true);
+        $data = json_decode($job->workload(), true);
+        $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        /*$dir = Configure::read('companySpecificPhpCodeBaseDir');
+        $includeFile = $dir . $companyCodeFile . ".php";
+        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
+        require_once($includeFile);
+        $newClass = $companyCodeFile;
+        $newComp = new $newClass;
+        $value = $newComp;
+        exit;*/    
         print_r($data);
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
@@ -182,6 +193,7 @@ class CollectDataWorkerShell extends AppShell {
     public function getDataCasperFiles($job) {
         $data = json_decode($job->workload(),true);
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        $this->job = $job;
         print_r($data);
         $index = 0;
         $i = 0;
@@ -384,6 +396,13 @@ class CollectDataWorkerShell extends AppShell {
         }
         return $errorCurl;
     }
+    
+    public function exception_handler($exception) {
+        $this->job->sendException('Boom');
+        $this->job->sendFail();
+        //print "Exception Caught: ". $exception->getMessage() ."\n";
+        //return "0";
+   }
 
 
     
