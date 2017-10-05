@@ -157,17 +157,26 @@ class lendix extends p2pCompany {
                     $tempArray['marketplace_durationUnit'] = 2;
                     /*                     * **************************************************** */
 
-                    if (count($projectDivs) >= 26) {
-
-                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                    if (count($projectDivs) >= 25) {
+                        if(strpos($projectDivs[12]->getAttribute('title') == '100%')){
+                            $tempArray['marketplace_subscriptionProgress'] = 10000;
+                        }
+                        else{
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                        }
                         $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
                         $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
                         $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
-                        $tempArray['marketplace_requestorLocation'] = trim($projectDivs[19]->nodeValue);
-                        $tempArray['marketplace_sector'] = trim($projectDivs[22]->nodeValue);
+                        $tempArray['marketplace_requestorLocation'] = trim($projectDivs[18]->nodeValue);
+                        $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
                     }
-                    if (count($projectDivs) <= 25) { //if we dont have country ( $projectDivs[9]), the array positions displace, we need to fix them.(Index -2)
-                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[10]->getAttribute('title'));
+                    if (count($projectDivs) <= 24) { //if we dont have country ( $projectDivs[9]), the array positions displace, we need to fix them.(Index -2)
+                        if(strpos($projectDivs[10]->getAttribute('title') == '100%')){
+                            $tempArray['marketplace_subscriptionProgress'] = 10000;
+                        }
+                        else{
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[10]->getAttribute('title'));
+                        }
                         $tempArray['marketplace_purpose'] = trim($projectDivs[19]->nodeValue);
                         $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[14]->nodeValue);
                         $tempArray['marketplace_country'] = 'N/A'; //We dont have country
@@ -283,7 +292,9 @@ class lendix extends p2pCompany {
 
                 if (count($projectDivs) >= 27) {
 
+                    if($projectDivs[12]->getAttribute('title'))
                     $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                    
                     $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
                     $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
                     $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
