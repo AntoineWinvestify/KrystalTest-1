@@ -27,6 +27,7 @@ App::uses('File', 'Utility');
 class CollectDataClientShell extends AppShell {
     protected $GearmanClient;
     protected $userResult = [];
+    protected $userReference = [];
     protected $newComp = [];
     public $uses = array('Company', 'Urlsequence');
 
@@ -186,6 +187,7 @@ class CollectDataClientShell extends AppShell {
         }
         $this->userResult[$data[0]][$data[1]] = $task->data();
         print_r($this->userResult);
+        print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
@@ -206,6 +208,7 @@ class CollectDataClientShell extends AppShell {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $path = $this->userReference[$key] . DS . $date;
+        print_r($this->userReference);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
         $delete = false;
