@@ -21,28 +21,15 @@
  * @package
  */
 
+App::import('Shell','GearmanWorker');
+
 /**
- * Description of CollectAmortizationDataWorker
+ * Class CollectAmortizationDataWorker to collect all the amortization tables
  *
  */
-class CollectAmortizationDataWorkerShell extends AppShell {
-   
-    
-    protected $GearmanWorker;
+class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
     
     public $uses = array('Marketplace', 'Company', 'Urlsequence');
-    
-    public $queueCurls;
-    public $newComp = array();
-    public $tempArray = array();
-    public $companyId = array();
-
-    
-    public function startup() {
-        $this->GearmanWorker = new GearmanWorker();
-        @set_exception_handler(array($this, 'exception_handler'));
-        @set_error_handler(array($this, 'exception_handler'));
-    }
     
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
@@ -181,65 +168,5 @@ class CollectAmortizationDataWorkerShell extends AppShell {
        
        return $statusCollect;
     }
-    
-    /**
-     * Function to do logout of company
-     * @param int $companyIdForQueue It is the companyId inside the array of newComp
-     * @param string $str It is the webpage on string format
-     */
-    public function logoutOnCompany($companyIdForQueue, $str) {
-        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$companyIdForQueue], LOGOUT_SEQUENCE);
-        //echo "Company = $this->companyId[$info["companyIdForQueue"]]";
-        $this->newComp[$companyIdForQueue]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-        $this->newComp[$companyIdForQueue]->companyUserLogoutMultiCurl($str);
-    }
-    
-    /*
-     * 
-     * Get the variable queueCurls
-     */
-    public function getQueueCurls() {
-        return $this->queueCurls;
-    }
-    
-    /**
-     * 
-     * Add a request to the queue to initiate the multi_curl
-     * @param request $request It's the request to process
-     */
-    public function addRequestToQueueCurls($request) {
-        $this->queueCurls->attach($request);
-    }
-    
-    /**
-     * Function to process if there is an error with the request on parallel
-     * @param object $error It is the curl error
-     * @param array $info They are the info of the company
-     * @param object $response It is the curl response from the request on parallel
-     */
-    public function errorCurl($error, $info, $response) {
-        $errorCurl = 
-        'Error code: ' . $error->getCode() . '\n' .
-        'Message: "' . $error->getMessage() . '" \n' .
-        'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '\n';
-        echo $errorCurl;
-        $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
-        if (!empty($testConfig['active']) == true) {
-            print_r($response->getInfo());
-            echo "<br>";
-        }
-        
-        $config = $this->newComp[$info["companyIdForQueue"]]->getConfig();
-        if ($config['tracingActive'] == true) {
-            $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
-        }
-        return $errorCurl;
-    }
-    
-    public function exception_handler($exception) {
-        $this->job->sendException('Boom');
-        $this->job->sendFail();
-   }
-    
     
 }
