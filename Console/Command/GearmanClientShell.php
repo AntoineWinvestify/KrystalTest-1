@@ -28,6 +28,8 @@
 class GearmanClientShell extends AppShell {
     
     protected $GearmanClient;
+    protected $userResult = [];
+    protected $userReference = [];
     
     public function startup() {
         $this->GearmanClient = new GearmanClient();
@@ -43,15 +45,27 @@ class GearmanClientShell extends AppShell {
      * @param GearmanTask $task
      */
     public function verifyFailTask(GearmanTask $task) {
+        $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
+        $this->userResult[$data[0]][$data[1]] = "0";
+        print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: " . $task->data() . GEARMAN_WORK_FAIL . "\n";
     }
     
     /**
-     * Function to catch an exception on a Gearman Worker
+     * 
      * @param GearmanTask $task
      */
     public function verifyExceptionTask (GearmanTask $task) {
+        $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
+        $this->userResult[$data[0]][$data[1]] = "0";
+        print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
@@ -62,6 +76,13 @@ class GearmanClientShell extends AppShell {
      * @param GearmanTask $task
      */
     public function verifyCompleteTask (GearmanTask $task) {
+        $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
+        $this->userResult[$data[0]][$data[1]] = $task->data();
+        print_r($this->userResult);
+        print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
@@ -71,11 +92,25 @@ class GearmanClientShell extends AppShell {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $path = $this->userReference[$key] . DS . $date;
+        print_r($this->userReference);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
+        $delete = false;
         if (!is_null($folder->path)) {
             $delete = $folder->delete();
         }
         return $delete;
+    }
+    
+    
+    public function consolidationResult($userResult) {
+        $statusProcess = true;
+        foreach ($userResult as $key => $result) {
+            if (!$result) {
+                $statusProcess = false;
+                break;
+            }
+        }
+        return $statusProcess;
     }
 }
