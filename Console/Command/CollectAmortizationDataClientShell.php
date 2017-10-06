@@ -16,7 +16,7 @@
  *
  *
  * @author 
- * @version
+ * @version 0.2
  * @date
  * @package
  */
@@ -24,13 +24,17 @@
 App::import('Shell','GearmanClient');
 
 /**
- * Description of CollectAmortizationDataClientShell
- *
+ * Class CollectAmortizationDataClientShell to init the process to collect all
+ * the amortization tables of various investors
  */
 class CollectAmortizationDataClientShell extends GearmanClientShell {
+    
     protected $newComp = [];
     public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
     
+    /**
+     * Process to initiate the process to collect all the amortization tables
+     */
     public function initClient() {
         //$queueStatus = $this->args[0];
         //$queueAcessType = $this->args[1];
@@ -50,7 +54,6 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
             exit;
         }
 
-        //$this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $linkedaccountsResults = [];
         $queueInfos = [];
@@ -75,7 +78,6 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
         
         $userLinkedaccounts = [];
         $loandIdLinkedaccounts = [];
-        //$i = 0;
         
         foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
             //In this case $key is the number of the linkaccount inside the array 0,1,2,3
@@ -88,8 +90,6 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                 $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key][$linkedaccountId];
                 $i++;
             }
-            //linkedaccount][id]
-            
         }
         
         //$key is the number of the internal id of the array (0,1,2)
@@ -132,8 +132,6 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
             }
             $this->Queue->save(array('queue_status' => $newState), $validate = true);
         }
-        
-        
     }
     
     

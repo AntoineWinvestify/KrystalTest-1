@@ -20,9 +20,13 @@
  * @date
  * @package
  */
+
 App::import('Shell','GearmanClient');
 
-
+/**
+ * Class CollectDataClientShell to init the process to collect all
+ * the files of various investors using Gearman
+ */
 class CollectDataClientShell extends GearmanClientShell {
     protected $GearmanClient;
     protected $newComp = [];
@@ -129,8 +133,5 @@ class CollectDataClientShell extends GearmanClientShell {
             }
             $this->Queue->save(array('queue_status' => $newState), $validate = true);
         }
-        
-        
-        
     }
 }

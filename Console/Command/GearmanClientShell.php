@@ -15,7 +15,7 @@
  * +----------------------------------------------------------------------------+
  *
  *
- * @author 
+ * @author 0.1
  * @version
  * @date
  * @package
@@ -26,7 +26,7 @@ App::uses('File', 'Utility');
 
 
 /**
- * Description of GearmanClientShell
+ * Generic class with method to start using a Gearman Client
  *
  */
 class GearmanClientShell extends AppShell {
@@ -35,6 +35,9 @@ class GearmanClientShell extends AppShell {
     protected $userResult = [];
     protected $userReference = [];
     
+    /**
+     * Constructor of the class
+     */
     public function startup() {
         $this->GearmanClient = new GearmanClient();
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -60,7 +63,7 @@ class GearmanClientShell extends AppShell {
     }
     
     /**
-     * 
+     * Function to catch a exception on a Gearman Worker
      * @param GearmanTask $task
      */
     public function verifyExceptionTask (GearmanTask $task) {
@@ -76,7 +79,7 @@ class GearmanClientShell extends AppShell {
     }
     
     /**
-     * 
+     * Function that runs after a task was complete on the Gearman Worker
      * @param GearmanTask $task
      */
     public function verifyCompleteTask (GearmanTask $task) {
@@ -92,6 +95,13 @@ class GearmanClientShell extends AppShell {
         echo GEARMAN_SUCCESS;
     }
     
+    /**
+     * Function to delete a folder of a day and a investor if there was some 
+     * fail on the process to collect his data
+     * @param string $key It is the queue_id
+     * @param string $date It is the date that the folder must be deleted
+     * @return boolean It's true if the deleted was successful
+     */
     public function deleteFolderByDate($key, $date) {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
@@ -106,7 +116,12 @@ class GearmanClientShell extends AppShell {
         return $delete;
     }
     
-    
+    /**
+     * Function to verify that the collection of data was successful on all the 
+     * workers per user
+     * @param string $userResult It is the result of the collection of data
+     * @return boolean It is true if the process was successful
+     */
     public function consolidationResult($userResult) {
         $statusProcess = true;
         foreach ($userResult as $key => $result) {
