@@ -35,8 +35,9 @@ class CollectDataWorkerShell extends AppShell {
     
     public function startup() {
         $this->GearmanWorker = new GearmanWorker();
-        @set_exception_handler(array($this, 'exception_handler'));
-        @set_error_handler(array($this, 'exception_handler'));
+        set_exception_handler(array($this, 'exception_handler'));
+        set_error_handler(array($this, 'error_handler'));
+        register_shutdown_function(array($this, 'fatalErrorShutdownHandler'));
     }
     
     public function main() {
@@ -60,14 +61,6 @@ class CollectDataWorkerShell extends AppShell {
         $data = json_decode($job->workload(), true);
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
-        /*$dir = Configure::read('companySpecificPhpCodeBaseDir');
-        $includeFile = $dir . $companyCodeFile . ".php";
-        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
-        require_once($includeFile);
-        $newClass = $companyCodeFile;
-        $newComp = new $newClass;
-        $value = $newComp;
-        exit;*/    
         print_r($data);
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
@@ -232,7 +225,7 @@ class CollectDataWorkerShell extends AppShell {
 
     }
     
-    public function getDataMulticurlScraping() {
+    /*public function getDataMulticurlScraping() {
         $data = json_decode($job->workload(),true);
         print_r($data);
         $this->queueCurls = new \cURL\RequestsQueue;
@@ -281,6 +274,7 @@ class CollectDataWorkerShell extends AppShell {
         * This is the callback's queue for the companies cURLs, when one request is processed
         * Another enters the queue until finishes
         */
+    /*
         $this->queueCurls->addListener('complete', function (\cURL\Event $event) {
             
             //We get the response of the request
@@ -337,7 +331,7 @@ class CollectDataWorkerShell extends AppShell {
        }
        
        return "ok";
-    }
+    }*/
     
     public function getDataCasperScraping() {
         
@@ -397,12 +391,25 @@ class CollectDataWorkerShell extends AppShell {
         return $errorCurl;
     }
     
-    public function exception_handler($exception) {
+    public function exception_handler($code) {
+        echo "\n exception code : " . $code . "\n";
         $this->job->sendException('Boom');
-        $this->job->sendFail();
-        //print "Exception Caught: ". $exception->getMessage() ."\n";
-        //return "0";
-   }
+    }
+   
+    public function error_handler($code) {
+        if ($code != E_WARNING && $code != E_NOTICE) {
+            echo "\n error code : " . $code . "\n";
+            $this->job->sendFail();
+        }
+    }
+   
+    public function fatalErrorShutdownHandler() {
+        $last_error = error_get_last();
+        if ($last_error['type'] === E_ERROR) {
+            //echo "\n fatal error code : " . E_ERROR . "\n";
+            $this->error_handler(E_ERROR);
+        }
+    }
 
 
     
