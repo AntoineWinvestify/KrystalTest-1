@@ -21,19 +21,15 @@
  * @package
  */
 
+App::import('Shell','GearmanClient');
+
 /**
  * Description of CollectAmortizationDataClientShell
  *
  */
-class CollectAmortizationDataClientShell extends AppShell {
-    protected $GearmanClient;
-    protected $userResult = [];
+class CollectAmortizationDataClientShell extends GearmanClientShell {
     protected $newComp = [];
     public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
-    
-    public function startup() {
-        $this->GearmanClient = new GearmanClient();
-    }
     
     public function initClient() {
         //$queueStatus = $this->args[0];
@@ -115,7 +111,7 @@ class CollectAmortizationDataClientShell extends AppShell {
                 echo "\n";
                 echo $key2;
                 echo "\n aquiiiiiiiiiiiiiii";
-                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2);
+                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2 . ".-;" . $resultQueue[$key]['Queue']['queue_userReference']);
             }
         }
         
@@ -123,15 +119,14 @@ class CollectAmortizationDataClientShell extends AppShell {
         
         foreach ($this->userResult as $key => $userResult) {
             $statusProcess = $this->consolidationResult($userResult);
-            if (!$statusProcess) {
-                $statusDelete = $this->safeDelete($key, 1); //1 = $todaydate
-            }
             $this->Queue->id = $key;
             if ($statusProcess) {
                 $newState = AMORTIZATION_TABLES_DOWNLOADED;
                 echo "Data succcessfully download";
             }
             else {
+                $date = date("Ymd");
+                $statusDelete = $this->deleteFolderByDate($key, $date); //1 = $todaydate
                 $newState = START_COLLECTING_DATA;
                 echo "There was an error downloading data";
             }
@@ -139,50 +134,6 @@ class CollectAmortizationDataClientShell extends AppShell {
         }
         
         
-    }
-    
-    public function verifyFailTask(GearmanTask $task) {
-        $m = $task->data();
-        $data = explode(".-;", $task->unique());
-        $this->userResult[$data[0]][$data[1]] = "0";
-        
-        print_r($this->userResult);
-        echo "ID Unique: " . $task->unique() . "\n";
-        echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
-    }
-    
-    public function verifyExceptionTask (GearmanTask $task) {
-        $m = $task->data();
-        $data = explode(".-;", $task->unique());
-        $this->userResult[$data[0]][$data[1]] = "0";
-        print_r($this->userResult);
-        echo "ID Unique: " . $task->unique() . "\n";
-        echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
-        //return GEARMAN_WORK_EXCEPTION;
-    }
-    
-    public function verifyCompleteTask (GearmanTask $task) {
-        $data = explode(".-;", $task->unique());
-        $this->userResult[$data[0]][$data[1]] = $task->data();
-        print_r($this->userResult);
-        echo "ID Unique: " . $task->unique() . "\n";
-        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
-        echo GEARMAN_SUCCESS;
-    }
-    
-    public function consolidationResult($userResult) {
-        $statusProcess = true;
-        foreach ($userResult as $key => $result) {
-            if (!$result) {
-                $statusProcess = false;
-                break;
-            }
-        }
-        return $statusProcess;
-    }
-    
-    public function safeDelete($data, $date) {
-        echo "Delete all";
     }
     
     
