@@ -31,6 +31,9 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
     
     public $uses = array('Marketplace', 'Company', 'Urlsequence');
     
+    /**
+     * Function main that init when start the shell class
+     */
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlAmortization', array($this, 'getDataMulticurlFiles'));

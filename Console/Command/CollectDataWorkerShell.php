@@ -30,6 +30,9 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
     
     var $uses = array('Marketplace', 'Company', 'Urlsequence');
     
+    /**
+     * Function main that init when start the shell class
+     */
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
@@ -170,8 +173,14 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
     }
     
     /**
-     * 
-     * @param type $job
+     * Function to initiate the process to save the files of a company
+     * @param object $job It is the object of Gearmanjob that contains
+     * The $job->workload() function read the input data as sent by the Gearman client
+     * This is json_encoded data with the following structure:
+     *      $data["companies"]                  array It contains all the linkedaccount information
+     *      $data["queue_userReference"]        string It is the user reference
+     *      $data["queue_id"]                   integer It is the queue id
+     * @return string The variable must be in string because of Gearman but it is really a boolean 1 or 0
      */
     public function getDataCasperFiles($job) {
         $data = json_decode($job->workload(),true);

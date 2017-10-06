@@ -16,15 +16,13 @@
  *
  *
  * @author 
- * @version
- * @date
+ * @version 0.1
+ * @date 2017-10-06
  * @package
  */
 
 /**
  * Description of GearmanWorkerShell
- *
- * @author antoiba
  */
 class GearmanWorkerShell extends AppShell {
     
@@ -34,6 +32,9 @@ class GearmanWorkerShell extends AppShell {
     protected $tempArray = array();
     protected $companyId = array();
     
+    /**
+     * Constructor of the class
+     */
     public function startup() {
         $this->GearmanWorker = new GearmanWorker();
         set_exception_handler(array($this, 'exception_handler'));
@@ -53,8 +54,7 @@ class GearmanWorkerShell extends AppShell {
         $this->newComp[$companyIdForQueue]->companyUserLogoutMultiCurl($str);
     }
     
-    /*
-     * 
+    /**
      * Get the variable queueCurls
      */
     public function getQueueCurls() {
@@ -95,12 +95,19 @@ class GearmanWorkerShell extends AppShell {
         return $errorCurl;
     }
     
-    
+    /**
+     * Function to handle an exception
+     * @param integer $code It is the code of the exception
+     */
     public function exception_handler($code) {
         echo "\n exception code : " . $code . "\n";
         $this->job->sendException('Boom');
     }
    
+    /**
+     * Function to handle an error
+     * @param integer $code It is the code of the error
+     */
     public function error_handler($code) {
         if ($code != E_WARNING && $code != E_NOTICE) {
             echo "\n error code : " . $code . "\n";
@@ -108,6 +115,9 @@ class GearmanWorkerShell extends AppShell {
         }
     }
    
+    /**
+     * Function to handle a fatal error
+     */
     public function fatalErrorShutdownHandler() {
         $last_error = error_get_last();
         if ($last_error['type'] === E_ERROR) {
