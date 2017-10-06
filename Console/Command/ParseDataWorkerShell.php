@@ -23,7 +23,7 @@
  * The worker will parse the data for each and every platform for which data has been
  * supplied by the worker.
  * 
- * Errors are initialy taken care of in the worker and will spark eventually the exception 
+ * Errors are initially taken care of in the worker and will spark eventually the exception 
  * Callback with some extra user data.
  * If an error is encountered then the respective error data is stored in an internal array 
  * (per PFP). 
@@ -46,7 +46,7 @@
  */
 
 class ParseDataWorkerShell extends AppShell {
-    
+ 
     protected $GearmanWorker;
     
  //   var $uses = array();      // No models used
@@ -131,11 +131,12 @@ class ParseDataWorkerShell extends AppShell {
                 echo __FILE__ . " " . __LINE__ . "\n";
                 print_r($approvedFiles);
                 if ($actualFileType == INVESTMENT_FILE) {
-                 
                     $parserConfig = $companyHandle->getParserConfigInvestmentFile();
+                    echo __FILE__ . " " . __LINE__ . "\n";
                 }
                 else {
                     $parserConfig = $companyHandle->getParserConfigTransactionFile();
+                    echo __FILE__ . " " . __LINE__ . "\n";
                 }
                 print_r($parserConfig);
                 echo __FILE__ . " " . __LINE__ . "\n";
@@ -430,7 +431,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
      *          false in case an error occurred
      */
     public function analyzeFile($file, $referenceFile) {
-        echo "INPUT FILE = $file, and referenceFile = \n";
+        echo "INPUT FILE = $file \n";
        // determine first if it csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -445,14 +446,16 @@ echo __FILE__ . " " . __LINE__ . "\n";
             $objPHPExcel = PHPExcel_IOFactory::load($file);            
         }  
         
-        ini_set('memory_limit','1024M');
+        ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet(); 
         $highestRow = $sheet->getHighestRow(); 
         $highestColumn = $sheet->getHighestColumn();
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $offset = 5;
         $datas = $this->saveExcelToArray($sheetData, $referenceFile, $offset);
+
         return $datas;
         
         }
@@ -484,7 +487,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
         $outOfRange = false;
 
         foreach ($rowDatas as $keyRow => $rowData) {
- //           echo "Reading a NEW ROW\n";
+            echo "Reading a NEW ROW\n";
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
@@ -495,10 +498,11 @@ echo __FILE__ . " " . __LINE__ . "\n";
                     eval($tempString);
                 }
                 else {          // "type" => .......
- //                   echo "---------------------------------------------------------------------\n";
+                    echo "---------------------------------------------------------------------\n";
                     foreach ($value as $userFunction ) {
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
+                            echo __FUNCTION__ . " " . __LINE__ . "\n";
                         }
                         else {  // input parameters are defined in config file
                         // check if any of the input parameters require data from
@@ -510,46 +514,50 @@ echo __FILE__ . " " . __LINE__ . "\n";
                                             $outOfRange = true;
                                             break;
                                         }
+                                        echo __FUNCTION__ . " " . __LINE__ . "\n";
                                         $temp = explode(".", $input);
                                         $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
                                     }
                                     if (stripos ($input, "#current.") !== false) {
+                                        echo "ANANANA";
                                         $temp = explode(".", $input);
                                         $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
                                     }               
                                 }                         
                             }             
                         }
-
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+echo "rowdata = " . $rowData[$key] . "\n";
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
-
+echo __FUNCTION__ . " " . __LINE__ . "\n";
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',  
                                                                        $userFunction['functionName']), 
                                                                        $userFunction['inputData']);
-//echo __FUNCTION__ . " " . __LINE__ . "\n";
-//print_r($tempResult);
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($tempResult);
 if (is_array($tempResult)) {
     $userFunction = $tempResult;
-//    print_r($userFunction);
-//    echo "YES\n";
+    print_r($userFunction);
+    echo "YES\n";
     $tempResult = $tempResult[0];
 }
-
+echo __FUNCTION__ . " " . __LINE__ . "\n";
 
                             // Write the result to the array with parsing result. The first index is written 
                             // various variables if $tempResult is an array
                             if (!empty($tempResult)) {
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']"; 
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
-     //                           echo "$tempString\n";
+                                echo "$tempString\n";
                                 eval($tempString);
-     //                           echo "EVALUATED\n";
+                               echo "EVALUATED\n";
                             }
                         }
                         else {
                             $outOfRange = false;        // reset
                         }
+ echo __FUNCTION__ . " " . __LINE__ . "\n";                       
                     }    
                 }
             }
@@ -575,7 +583,24 @@ if (is_array($tempResult)) {
         return $tempArray;
     }
     
-   
+  
+    /**
+     * Returns the quotient * 100 of a division. This represents the %
+     * an unknown "payment" concept was found.
+     * @param   int     $divident
+     * @param   int     $divisor
+     * @param   int     $precision Number of decimals                   
+     * @return  
+     * 
+     * example:  DivisionInPercentage(12,27,0)   => 44
+     *           DivisionInPercentage(12,27,1)   => 44.4
+     */
+    public function divisionInPercentage($cellContents, $divident, $divisor, $precision)  { 
+        echo "DivisionInPercentage, $divident and $divisor \n";
+        return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
+    } 
+    
+    
     /**
      * Returns information of the last occurred error. Can also detect if
      * an unknown "payment" concept was found.
@@ -877,8 +902,8 @@ if (is_array($tempResult)) {
      * 
      * @param string   $input
      * @return array   $parameter2  List of all known concepts of the platform
-     *      
-     */   
+     *    NO LONGER USED  
+     */ /*  
     private function getTransactionType($input, $config) { 
         echo "Function getTransactionType, $input\n";
         foreach ($config as $configKey => $configItem) {
@@ -898,7 +923,7 @@ if (is_array($tempResult)) {
                 }
             }
         }         
-    }    
+    }    */
 
     /**
      * Search for a something within a string, starting after $search

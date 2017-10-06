@@ -106,6 +106,7 @@ class mintos extends p2pCompany {
                                                 "Interest income" => "Regular_gross_interest_income",
                                                 "Delayed interest income" => "Delayed_interest_income",
                                                 "Late payment fee income" =>"Late_payment_fee_income",
+                                       
                                                 "Interest income on rebuy" => "Interest_income_buyback",
                                                 "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",
                                                 "Disc/premum paid secondary market" => "Income"]
@@ -230,17 +231,19 @@ class mintos extends p2pCompany {
                 ]
              ],
             "M" =>  [
-                "name" => "investment.totalInstalments"                                 // Winvestify standardized name
+                "name" => "investment_totalInstalments"                                 // Winvestify standardized name
              ],
             "N" =>  [
-                "name" => "investment.paidInstalments"                                  // Winvestify standardized name
+                "name" => "investment_paidInstalments"                                  // Winvestify standardized name
+                ],
+            "O" =>  [
+                "name" => "investment_loanStatus"                                       // Winvestify standardized name
              ],
-            "P" =>  [
-                "name" => "investment.loanStatus"                                       // Winvestify standardized name
-             ],
+        
             "P" =>  [
                 "name" => "investment.buyBackGuarantee"                                 // Winvestify standardized name  OK
              ],
+
             "Q" =>  [
                 [
                     "type" => "investment.investment",                                  // Winvestify standardized name   OK
@@ -250,7 +253,18 @@ class mintos extends p2pCompany {
                                 "input4" => 16
                                 ],
                     "functionName" => "getAmount",
-                ]
+                ],
+
+                [
+                    "type" => "investment_paidInstalmentsProgressTwo",                      // Winvestify standardized name   
+                    "inputData" => [
+                                "input2" => "#current.investment_paidInstalments",
+                                "input3" => "#current.investment_totalInstalments",
+                                "input4" => 0                                           // Number of decimals
+                                ],
+                    "functionName" => "DivisionInPercentage",
+                ],                   
+
              ],
             "R" =>  [
                                 [
