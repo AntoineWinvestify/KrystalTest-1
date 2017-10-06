@@ -39,7 +39,9 @@ class CollectAmortizationDataWorkerShell extends AppShell {
 
     
     public function startup() {
-            $this->GearmanWorker = new GearmanWorker();
+        $this->GearmanWorker = new GearmanWorker();
+        @set_exception_handler(array($this, 'exception_handler'));
+        @set_error_handler(array($this, 'exception_handler'));
     }
     
     public function main() {
@@ -233,6 +235,11 @@ class CollectAmortizationDataWorkerShell extends AppShell {
         }
         return $errorCurl;
     }
+    
+    public function exception_handler($exception) {
+        $this->job->sendException('Boom');
+        $this->job->sendFail();
+   }
     
     
 }

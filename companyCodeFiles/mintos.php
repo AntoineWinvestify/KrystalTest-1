@@ -523,8 +523,7 @@ class mintos extends p2pCompany {
                 //echo 'Downloaded';
                 break;
             case 5:
-                $path = $this->createFolderPFPFile();
-                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
+                if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__);
                 }
                 $this->idForSwitch++;
@@ -551,8 +550,7 @@ class mintos extends p2pCompany {
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
-                $path = $this->createFolderPFPFile();
-                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
+                if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__);
                 }
                 $this->idForSwitch++;

@@ -27,10 +27,11 @@ class CollectDataClientShell extends AppShell {
     protected $GearmanClient;
     protected $userResult = [];
     protected $newComp = [];
-    public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
+    public $uses = array('Company', 'Urlsequence');
 
     public function startup() {
         $this->GearmanClient = new GearmanClient();
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
     }
 
     public function help() {
@@ -116,7 +117,7 @@ class CollectDataClientShell extends AppShell {
                 echo "\n";
                 echo $key2;
                 echo "\n aquiiiiiiiiiiiiiii";
-                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2);
+                $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2 . ".-;" . $resultQueue[$key]['Queue']['queue_userReference']);
             }
         }
         
@@ -124,15 +125,14 @@ class CollectDataClientShell extends AppShell {
         
         foreach ($this->userResult as $key => $userResult) {
             $statusProcess = $this->consolidationResult($userResult);
-            if (!$statusProcess) {
-                $statusDelete = $this->safeDelete($key, 1); //1 = $todaydate
-            }
             $this->Queue->id = $key;
             if ($statusProcess) {
                 $newState = GLOBAL_DATA_DOWNLOADED;
                 echo "Data succcessfully download";
             }
             else {
+                $date = date("Ymd");
+                $statusDelete = $this->deleteFolderByDate($key, $date); //1 = $todaydate
                 $newState = START_COLLECTING_DATA;
                 echo "There was an error downloading data";
             }
@@ -143,19 +143,30 @@ class CollectDataClientShell extends AppShell {
         
     }
     
+    /**
+     * Function to catch a fail on a Gearman Worker
+     * @param GearmanTask $task
+     */
     public function verifyFailTask(GearmanTask $task) {
-        $m = $task->data();
         $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
         $this->userResult[$data[0]][$data[1]] = "0";
-        
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
     }
     
+    /**
+     * 
+     * @param GearmanTask $task
+     */
     public function verifyExceptionTask (GearmanTask $task) {
-        $m = $task->data();
         $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
         $this->userResult[$data[0]][$data[1]] = "0";
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
@@ -163,8 +174,15 @@ class CollectDataClientShell extends AppShell {
         //return GEARMAN_WORK_EXCEPTION;
     }
     
+    /**
+     * 
+     * @param GearmanTask $task
+     */
     public function verifyCompleteTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
         $this->userResult[$data[0]][$data[1]] = $task->data();
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
@@ -183,7 +201,15 @@ class CollectDataClientShell extends AppShell {
         return $statusProcess;
     }
     
-    public function safeDelete($data, $date) {
-        echo "Delete all";
+    public function deleteFolderByDate($key, $date) {
+        $configPath = Configure::read('files');
+        $partialPath = $configPath['investorPath'];
+        $path = $this->userReference[$key] . DS . $date;
+        $path = $partialPath . DS . $path;
+        $folder = new Folder($path);
+        if (!is_null($folder->path)) {
+            $delete = $folder->delete();
+        }
+        return $delete;
     }
 }
