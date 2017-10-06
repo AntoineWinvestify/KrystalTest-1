@@ -29,16 +29,90 @@
 class GearmanWorkerShell extends AppShell {
     
     protected $GearmanWorker;
+    protected $queueCurls;
+    protected $newComp = array();
+    protected $tempArray = array();
+    protected $companyId = array();
     
     public function startup() {
         $this->GearmanWorker = new GearmanWorker();
-        @set_exception_handler(array($this, 'exception_handler'));
-        @set_error_handler(array($this, 'exception_handler'));
+        set_exception_handler(array($this, 'exception_handler'));
+        set_error_handler(array($this, 'error_handler'));
+        register_shutdown_function(array($this, 'fatalErrorShutdownHandler'));
+    }
+    
+    /**
+     * Function to do logout of company
+     * @param int $companyIdForQueue It is the companyId inside the array of newComp
+     * @param string $str It is the webpage on string format
+     */
+    public function logoutOnCompany($companyIdForQueue, $str) {
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$companyIdForQueue], LOGOUT_SEQUENCE);
+        //echo "Company = $this->companyId[$info["companyIdForQueue"]]";
+        $this->newComp[$companyIdForQueue]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+        $this->newComp[$companyIdForQueue]->companyUserLogoutMultiCurl($str);
+    }
+    
+    /*
+     * 
+     * Get the variable queueCurls
+     */
+    public function getQueueCurls() {
+        return $this->queueCurls;
+    }
+    
+    /**
+     * 
+     * Add a request to the queue to initiate the multi_curl
+     * @param request $request It's the request to process
+     */
+    public function addRequestToQueueCurls($request) {
+        $this->queueCurls->attach($request);
+    }
+    
+    /**
+     * Function to process if there is an error with the request on parallel
+     * @param object $error It is the curl error
+     * @param array $info They are the info of the company
+     * @param object $response It is the curl response from the request on parallel
+     */
+    public function errorCurl($error, $info, $response) {
+        $errorCurl = 
+        'Error code: ' . $error->getCode() . '\n' .
+        'Message: "' . $error->getMessage() . '" \n' .
+        'CompanyId:' . $this->companyId[$info["companyIdForQueue"]] . '\n';
+        echo $errorCurl;
+        $testConfig = $this->newComp[$info["companyIdForQueue"]]->getTestConfig();
+        if (!empty($testConfig['active']) == true) {
+            print_r($response->getInfo());
+            echo "<br>";
+        }
+        
+        $config = $this->newComp[$info["companyIdForQueue"]]->getConfig();
+        if ($config['tracingActive'] == true) {
+            $this->newComp[$info["companyIdForQueue"]]->doTracing($config['traceID'], $info["typeOfRequest"], $str);
+        }
+        return $errorCurl;
     }
     
     
-    public function exception_handler($exception) {
+    public function exception_handler($code) {
+        echo "\n exception code : " . $code . "\n";
         $this->job->sendException('Boom');
-        $this->job->sendFail();
-   }
+    }
+   
+    public function error_handler($code) {
+        if ($code != E_WARNING && $code != E_NOTICE) {
+            echo "\n error code : " . $code . "\n";
+            $this->job->sendFail();
+        }
+    }
+   
+    public function fatalErrorShutdownHandler() {
+        $last_error = error_get_last();
+        if ($last_error['type'] === E_ERROR) {
+            //echo "\n fatal error code : " . E_ERROR . "\n";
+            $this->error_handler(E_ERROR);
+        }
+    }
 }
