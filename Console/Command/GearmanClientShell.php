@@ -21,6 +21,10 @@
  * @package
  */
 
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
+
+
 /**
  * Description of GearmanClientShell
  *
