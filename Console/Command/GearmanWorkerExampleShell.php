@@ -28,7 +28,10 @@ class GearmanWorkerExampleShell extends AppShell {
     var $uses = array('Marketplace', 'Company', 'Urlsequence');
     
     public function startup() {
-            $this->GearmanWorker = new GearmanWorker();
+        $this->GearmanWorker = new GearmanWorker();
+        set_exception_handler(array($this, 'exception_handler'));
+        set_error_handler(array($this, 'error_handler'));
+        register_shutdown_function(array($this, 'fatalErrorShutdownHandler'));
     }
     
     public function help() {
@@ -39,6 +42,9 @@ class GearmanWorkerExampleShell extends AppShell {
             $this->GearmanWorker->addServers('127.0.0.1');
             $this->GearmanWorker->addFunction('json_test', array($this, 'my_json_test'));
             $this->GearmanWorker->addFunction('reverse', array($this, 'my_reverse_function'));
+            $this->GearmanWorker->addFunction('typeError', array($this, 'tryTypeError'));
+            $this->GearmanWorker->addFunction('Error', array($this, 'tryErrorGearman'));
+            $this->GearmanWorker->addFunction('fatalError', array($this, 'fatalErrorUnrecoverable'));
             $this->GearmanWorker->addFunction('testException', function(GearmanJob $job) {
                 throw new Exception('Boom');
             });
@@ -111,13 +117,54 @@ class GearmanWorkerExampleShell extends AppShell {
         return $sectors;
     }
     
-    function multicurl() {
-        
+    public function tryTypeError($job) {
+        $this->typeErrorFunction(true);
     }
     
-    function casperjs() {
-        
+    public function typeErrorFunction(array $typeError) {
+        //code fake
     }
     
+    public function tryErrorGearman($job) {
+        $this->tryErrorOnGearman();
+    }
+    
+    public function tryfatalErrorUnrecoverable() {
+        $dir = Configure::read('companySpecificPhpCodeBaseDir');
+        $includeFile = $dir . $companyCodeFile . ".php";
+        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
+        require_once($includeFile);
+        $newClass = $companyCodeFile;
+        $newComp = new $newClass;
+    }
+    
+    public function tryfatalError() {
+        $dir = Configure::read('companySpecificPhpCodeBaseDir');
+        $includeFile = $dir . $companyCodeFile . ".php";
+        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
+        require_once($includeFile);
+        $newClass = $companyCodeFile;
+        $newComp = new $newClass;
+    }
+    
+    public function exception_handler($code) {
+        echo "\n exception code : " . $code . "\n";
+        $this->job->sendException('Boom');
+    }
+   
+    public function error_handler($code) {
+        if ($code != E_WARNING && $code != E_NOTICE) {
+            echo "\n error code : " . $code . "\n";
+            $this->job->sendFail();
+        }
+    }
+   
+    public function fatalErrorShutdownHandler() {
+        $last_error = error_get_last();
+        if ($last_error['type'] === E_ERROR) {
+            //echo "\n fatal error code : " . E_ERROR . "\n";
+            $this->error_handler(E_ERROR);
+        }
+    }
     
 }
