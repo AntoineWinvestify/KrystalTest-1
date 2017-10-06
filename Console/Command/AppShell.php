@@ -122,6 +122,10 @@ class AppShell extends Shell {
         }            
         return($approvedFileNameList);    
     }
+    
+    private function tryErrorOnGearman() {
+        //fake code
+    }
         
         
 }
