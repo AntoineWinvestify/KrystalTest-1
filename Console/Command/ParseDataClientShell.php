@@ -208,7 +208,8 @@ deleted including the directory structure.
         $this->Investment = ClassRegistry::init('Investment');    
  
 // CHECK THE FILTERCONDITION for status      
-        $filterConditions = array( 'linkedaccount_id' => $linkedaccount_id,
+        $filterConditions = array(
+            //'linkedaccount_id' => $linkedaccount_id,
                                     "investment_status" => -1,
                                 );
 	

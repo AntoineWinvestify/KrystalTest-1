@@ -67,7 +67,7 @@ class mintos extends p2pCompany {
             ],
             "C" => [// NOT FINISHED YET
                 [
-                    "type" => "investment.loanId",                                     // Winvestify standardized name   OK
+                    "type" => "investment.investment_loanId",                          // Winvestify standardized name   OK
                     "inputData" => [                                                   // trick to get the complete cell data as purpose
                                 "input2" => "Loan ID: ",                               // May contain trailing spaces
                                 "input3" => ",",

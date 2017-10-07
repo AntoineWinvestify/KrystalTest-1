@@ -65,7 +65,6 @@ class ParseDataWorkerShell extends AppShell {
             } catch (Exception $e) {
                 $job->sendException($e->getMessage());
                 $job->sendFail();
-
             }
         });
         
@@ -85,13 +84,16 @@ class ParseDataWorkerShell extends AppShell {
      * This is json_encoded data with the following structure:
      * 
      *      $data['linkedAccountId']['userReference']
-     *      $data['linkedAccountId']['activeInvestments'][]     => list of all active investments 
-     *                                                             and reserved investments?
+     *      $data['linkedAccountId']['activeInvestments'][]         => list of all active investments 
+     *                                                                  and reserved investments?
      *      $data['linkedAccountId']['queue_id']
      *      $data['linkedAccountId']['pfp']
-     *      $data['linkedAccountId']['files'][filename1']       array of filenames, FQDN's
+     *      $data['linkedAccountId']['files'][filename1']           => array of filenames, FQDN's
      *      $data['linkedAccountId']['files'][filename2']  
      *                                        ... ... ... 
+     *      $data['linkedAccountId']['listOfCurrentActiveLoans']    => list of all active loans BEFORE this analysis
+     * 
+     * 
      * 
      * 
      * @return array queue_id, userReference, exception error
@@ -101,6 +103,12 @@ class ParseDataWorkerShell extends AppShell {
      *                      true  analysis done with success
      *                      array with all errorData related to occurred error
      *
+     * 
+     * 
+     * The investment_* parsing will parse the whole contents, but afterwards a consolidation 
+     * takes that will filter out only the investments with some kind of change during the current
+     * reading period.
+     * 
      */   
     public function parseFileFlow($job) {
 
@@ -128,27 +136,22 @@ class ParseDataWorkerShell extends AppShell {
             
             foreach ($fileTypesToCheck as $actualFileType) {               
                 $approvedFiles = $this->readFilteredFiles($files,  $actualFileType);
-                echo __FILE__ . " " . __LINE__ . "\n";
-                print_r($approvedFiles);
                 if ($actualFileType == INVESTMENT_FILE) {
                     $parserConfig = $companyHandle->getParserConfigInvestmentFile();
-                    echo __FILE__ . " " . __LINE__ . "\n";
                 }
                 else {
                     $parserConfig = $companyHandle->getParserConfigTransactionFile();
-                    echo __FILE__ . " " . __LINE__ . "\n";
                 }
-                print_r($parserConfig);
-                echo __FILE__ . " " . __LINE__ . "\n";
 
                 $tempResult = array();
                 foreach ($approvedFiles as $approvedFile) { 
                     unset($errorInfo);
                     
-                    $myParser->setConfig(array('sortParameter' => "loanId"));
+                    $myParser->setConfig(array('sortParameter' => "investment.investment_loanId"));
                     echo __FILE__ . " " . __LINE__ . "\n";
                     $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);     // if successfull analysis, result is an array with loanId's as index 
-//print_r($tempResult);
+echo __FILE__ . " " . __LINE__ . "\n";
+
                     echo "Writing File $approvedFile\n";
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
                         $errorInfo = array( "typeOfError"   => "parsingError",
@@ -157,9 +160,13 @@ class ParseDataWorkerShell extends AppShell {
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;  
                     } 
                     else {       // all is OK 
-                        $totalParsingresult = $tempResult;    // add $result, combine the arrays
-                        echo __FILE__ . " " . __LINE__ . " \n";
-            //            print_r($totalParsingresult);
+                        if ($actualFileType == INVESTMENT_FILE) {
+                            $totalParsingresultInvestments = $tempResult;    // add $result, combine the arrays                         
+                        }
+                        if ( $actualFileType == TRANSACTION_FILE) {
+                            $totalParsingresultTransactions = $tempResult;                       
+                        } 
+                        
                         try {
                  //           $callBackResult = $companyHandle->fileanalyzed($fileName, $typeOfFile, $fileContent);       // Generate callback
                         }
@@ -179,29 +186,55 @@ echo __FILE__ . " " . __LINE__ . "\n";
                             if ($loanKey == "global") {
                                 continue;
                             }
-                            echo __FILE__ . " " . __LINE__ . "\n";
-
                         }
                         // store everything in array so we can return the final result to client
                         $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
                         $returnData[$linkedAccountKey]['parsingResult'] = $totalParsingresult;
                         unset($newLoans);
                     } 
-echo __FILE__ . " " . __LINE__ . "\n";
+
                 $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
                 $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
                 $returnData[$linkedAccountKey]['pfp'] = $platform; 
                 }
             }
-echo __FILE__ . " " . __LINE__ . "\n";
+           
+echo __FILE__ . " " . __LINE__ . ": Both transaction array and investment arrays defined\n";
+
+            foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
+                $totalParsingresultInvestmentsTemp[$loanIdKey] = $totalParsingresultInvestments[$loanIdKey][0];
+      
+                if ( !array_key_exists ($loanIdKey , $totalParsingresultInvestments ))  { 
+                    echo "NO found match for loanId = $loanIdKey  \n"; // THIS IS NEVER POSSIBLE
+                }
+            }
         }
-//print_r($returnData);
+ echo __FILE__ . " " . __LINE__ . "   \n"; 
+ 
+        $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
+        $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
+        $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestmentsTemp;       
+        $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
+        $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
+        $returnData[$linkedAccountKey]['pfp'] = $platform;
+ 
+        print_r($returnData);
         return json_encode($returnData); 
-    }
-}        
-                  
+    }    
+        
+}   
+    
             
-    /**
+
+
+
+
+
+
+
+
+
+   /**
      * 
      * Class that can analyze a xls/csv/pdf file and put the information in an array
      * 
@@ -487,7 +520,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
         $outOfRange = false;
 
         foreach ($rowDatas as $keyRow => $rowData) {
-            echo "Reading a NEW ROW\n";
+//            echo "Reading a NEW ROW\n";
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
@@ -498,11 +531,10 @@ echo __FILE__ . " " . __LINE__ . "\n";
                     eval($tempString);
                 }
                 else {          // "type" => .......
-                    echo "---------------------------------------------------------------------\n";
+//                    echo "---------------------------------------------------------------------\n";
                     foreach ($value as $userFunction ) {
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
-                            echo __FUNCTION__ . " " . __LINE__ . "\n";
                         }
                         else {  // input parameters are defined in config file
                         // check if any of the input parameters require data from
@@ -514,79 +546,80 @@ echo __FILE__ . " " . __LINE__ . "\n";
                                             $outOfRange = true;
                                             break;
                                         }
-                                        echo __FUNCTION__ . " " . __LINE__ . "\n";
+          //                              echo __FUNCTION__ . " " . __LINE__ . "\n";
                                         $temp = explode(".", $input);
                                         $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
                                     }
                                     if (stripos ($input, "#current.") !== false) {
-                                        echo "ANANANA";
                                         $temp = explode(".", $input);
                                         $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];    
                                     }               
                                 }                         
                             }             
                         }
-echo __FUNCTION__ . " " . __LINE__ . "\n";
-echo "rowdata = " . $rowData[$key] . "\n";
+
+//echo "rowdata = " . $rowData[$key] . "\n";
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
-echo __FUNCTION__ . " " . __LINE__ . "\n";
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',  
                                                                        $userFunction['functionName']), 
                                                                        $userFunction['inputData']);
-echo __FUNCTION__ . " " . __LINE__ . "\n";
-print_r($tempResult);
+
 if (is_array($tempResult)) {
     $userFunction = $tempResult;
-    print_r($userFunction);
-    echo "YES\n";
+//    print_r($userFunction);
+//    echo "YES\n";
     $tempResult = $tempResult[0];
 }
-echo __FUNCTION__ . " " . __LINE__ . "\n";
+
 
                             // Write the result to the array with parsing result. The first index is written 
                             // various variables if $tempResult is an array
                             if (!empty($tempResult)) {
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']"; 
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
-                                echo "$tempString\n";
+  //                              echo "tempString = $tempString\n";
                                 eval($tempString);
-                               echo "EVALUATED\n";
+
                             }
                         }
                         else {
                             $outOfRange = false;        // reset
-                        }
- echo __FUNCTION__ . " " . __LINE__ . "\n";                       
+                        }                   
                     }    
                 }
             }
-            
+
             if (!empty($this->config['sortParameter'])) {
-                if (array_key_exists($this->config['sortParameter'], $tempArray[$i]) ) {
-                     $tempArray[ $tempArray[$i][$this->config['sortParameter'] ] ][]  = $tempArray[$i];
+                if (!empty($this->config['sortParameter'])) {
+                    $temp = "\$tempArray[\$tempArray[\$i]['" . str_replace(".", "']['", $this->config['sortParameter']) . "']][] = \$tempArray[\$i];"; 
+                    eval($temp);
+       //             $tempArray[ $tempArray[$i]  ]
                 }
                 else {      // move to the global index
                     $tempArray['global'][] = $tempArray[$i];
                 }
             }  
      //        unset($tempArray[$i]);
-            $i++; 
-        }
+        $i++; 
+    }
 
 // Delete the numeric indices. This should not be necesary but the code above does
-// NOT work, the bad line is "unset($tempArray[$i]);".
-// So below is a stupid work-around
+// NOT work, the bad line is "unset($tempArray[$i]);".// So below is a stupid work-around
         for ($i; $i >= 0; $i--) {
             unset($tempArray[$i]);
-        }      
+        }
         return $tempArray;
     }
+    
+    
+    
     
   
     /**
      * Returns the quotient * 100 of a division. This represents the %
      * an unknown "payment" concept was found.
+     * @param   string  $input   Content of row
      * @param   int     $divident
      * @param   int     $divisor
      * @param   int     $precision Number of decimals                   
@@ -595,8 +628,7 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
      * example:  DivisionInPercentage(12,27,0)   => 44
      *           DivisionInPercentage(12,27,1)   => 44.4
      */
-    public function divisionInPercentage($cellContents, $divident, $divisor, $precision)  { 
-        echo "DivisionInPercentage, $divident and $divisor \n";
+    public function divisionInPercentage($input, $divident, $divisor, $precision)  { 
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
     } 
     
@@ -625,6 +657,7 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
         foreach ($configurations as $configurationKey => $configuration) {
             $this->config[$configurationKey] = $configuration;          // avoid deleting already specified config parameters
         }
+        print_r($this->config);
     }
     
     /**
@@ -877,7 +910,7 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
      *                         of this function is to be stored. In practice it is normally 
      *                         only 1 variable, but the same value could be replicated in many
      *                         variables.
-     *                  The variable name is read from $this=>transactionDetails.
+     *                  The variable name is read from "internal variable" $this->transactionDetails.
      */
     private function getTransactionDetail($input, $config) {
         foreach ($config as $configKey => $configItem) {
