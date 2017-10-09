@@ -32,6 +32,23 @@ class investly extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesInvestlyTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesInvestlyInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesInvestlyAmortization;
+    }     
+    
+    
+    
+    
+    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         //Need casper js
         

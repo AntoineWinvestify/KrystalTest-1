@@ -33,6 +33,19 @@ class viainvest extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesViainvestTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesViainvestInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesViainvestAmortization;
+    }    
+    
+    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY viainvest DURING LOGIN PROCESS

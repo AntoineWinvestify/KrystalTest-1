@@ -92,7 +92,7 @@ class zank extends p2pCompany {
         return $this->$valuesZankTransaction;
     }
  
-     public function getParserConfigInvestmentFile() {
+    public function getParserConfigInvestmentFile() {
         return $this->$valuesZankInvestment;
     }
     

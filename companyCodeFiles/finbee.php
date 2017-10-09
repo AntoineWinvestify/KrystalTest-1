@@ -33,6 +33,18 @@ class finbee extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesFinbeeTransaction;
+    }
+
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesFinbeeInvestment;
+    }
+
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesFinbeeAmortization;
+    }
+
     /**
      * Function to download every file that is needed to read the investment of an investor
      * @param string $str It is the html of the last url we accessed
@@ -265,7 +277,7 @@ class finbee extends p2pCompany {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
-                $url = strtr($this->tempUrl['investmentUrl'], array('{$loanId}' => $this->loanIds[$this->i]));  
+                $url = strtr($this->tempUrl['investmentUrl'], array('{$loanId}' => $this->loanIds[$this->i]));
                 echo "the table url is: " . $url;
                 $this->i = $this->i + 1;
                 $this->idForSwitch++;
@@ -294,8 +306,7 @@ class finbee extends p2pCompany {
                     $this->idForSwitch = 4;
                     $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['dummyUrl']);
                     break;
-                } 
-                else {
+                } else {
                     return $this->tempArray;
                 }
         }

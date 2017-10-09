@@ -33,6 +33,26 @@ class estateguru extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesEstateGuruTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesEstateGuruInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesEstateGuruAmortization;
+    }     
+    
+    
+    
+    
+    
+    
+    
+    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY estateguru DURING LOGIN PROCESS
