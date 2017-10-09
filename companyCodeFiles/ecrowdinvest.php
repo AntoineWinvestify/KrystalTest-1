@@ -145,7 +145,7 @@ class ecrowdinvest extends p2pCompany {
             $tempArray['marketplace_interestRate'] = $this->getPercentage($ps[5]->nodeValue);
             list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($ps[7]->nodeValue);
             $tempArray['marketplace_numberOfInvestors'] = $value2;
-            //$tempArray['marketplace_status'] = trim($hs[0]->nodeValue);
+            $timeLeft = trim($hs[0]->nodeValue);
             list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(intval($progress[0]->getAttribute('aria-valuenow')));
             $tempArray['marketplace_loanReference'] = preg_replace('/\D/', '', $as[0]->getAttribute('id'));
