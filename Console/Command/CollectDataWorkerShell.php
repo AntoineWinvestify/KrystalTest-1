@@ -161,15 +161,17 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
        }
        
        $lengthTempArray = count($this->tempArray);
-       $statusCollect = "1";
+       $statusCollect = [];
        for ($i = 0; $i < $lengthTempArray; $i++) {
-           if (!empty($this->tempArray[$i]['global']['error'])) {
-               $statusCollect = "0";
-               break;
+           if (empty($this->tempArray[$i]['global']['error'])) {
+               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "1";
+           }
+           else {
+               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "0";
            }
        }
        
-       return $statusCollect;
+       return json_econde($statusCollect);
     }
     
     /**

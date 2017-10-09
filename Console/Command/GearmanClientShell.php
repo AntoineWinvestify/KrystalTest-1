@@ -34,6 +34,7 @@ class GearmanClientShell extends AppShell {
     protected $GearmanClient;
     protected $userResult = [];
     protected $userReference = [];
+    protected $userLinkaccounts = [];
     
     /**
      * Constructor of the class
@@ -56,7 +57,7 @@ class GearmanClientShell extends AppShell {
         if (empty($this->userReference[$data[0]])) {
             $this->userReference[$data[0]] = $data[2];
         }
-        $this->userResult[$data[0]][$data[1]] = "0";
+        $this->userResult[$data[0]]['global'] = "0";
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: " . $task->data() . GEARMAN_WORK_FAIL . "\n";
@@ -71,7 +72,7 @@ class GearmanClientShell extends AppShell {
         if (empty($this->userReference[$data[0]])) {
             $this->userReference[$data[0]] = $data[2];
         }
-        $this->userResult[$data[0]][$data[1]] = "0";
+        $this->userResult[$data[0]]['global'] = "0";
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
@@ -87,7 +88,10 @@ class GearmanClientShell extends AppShell {
         if (empty($this->userReference[$data[0]])) {
             $this->userReference[$data[0]] = $data[2];
         }
-        $this->userResult[$data[0]][$data[1]] = $task->data();
+        $statusCollect = json_decode($task->data(), true);
+        foreach ($statusCollect as $key => $status) {
+            $this->userResult[$data[0]][$key] = $status;
+        }
         print_r($this->userResult);
         print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
@@ -98,14 +102,14 @@ class GearmanClientShell extends AppShell {
     /**
      * Function to delete a folder of a day and a investor if there was some 
      * fail on the process to collect his data
-     * @param string $key It is the queue_id
+     * @param string $queueId It is the queueId
      * @param string $date It is the date that the folder must be deleted
      * @return boolean It's true if the deleted was successful
      */
-    public function deleteFolderByDate($key, $date) {
+    public function deleteFolderByDateAndLinkaccountId($queueId, $linkAccountId) {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $this->userReference[$key] . DS . $date;
+        $path = $this->userReference[$queueId] . DS . $this->date . DS . $linkAccountId;
         print_r($this->userReference);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
@@ -122,14 +126,46 @@ class GearmanClientShell extends AppShell {
      * @param string $userResult It is the result of the collection of data
      * @return boolean It is true if the process was successful
      */
-    public function consolidationResult($userResult) {
+    public function consolidationResult($userResult, $queueId) {
         $statusProcess = true;
         foreach ($userResult as $key => $result) {
             if (!$result) {
                 $statusProcess = false;
-                break;
+                $this->deleteFolderByDateAndLinkaccountId($queueId, $key); //1 = $todaydate
             }
         }
         return $statusProcess;
     }
+    
+    public function verifyCompanyFolderExist($userReference, $linkaccountId) {
+        $configPath = Configure::read('files');
+        $partialPath = $configPath['investorPath'];
+        $path = $userReference . DS . $this->date . DS . $linkaccountId;
+        print_r($path);
+        $path = $partialPath . DS . $path;
+        $folder = new Folder($path);
+        $folderExist = false;
+        if (!is_null($folder->path)) {
+            $folderExist = true;
+        }
+        return $folderExist;
+    }
+    
+    /**
+     * checks to see if jobs are waiting in the queue for processing
+     * 
+     * @param int $presentStatus    status of job to be located
+     * @param int $newStatus        status to change to when pulling job out of queue 
+     * @param int $limit            Maximum number of jobs to be pulled out of the queue
+     * @return array 
+     * 
+     */   
+    public function checkJobs ($presentStatus, $limit) {
+        if (empty($this->Queue)) {
+            $this->Queue = ClassRegistry::init('Queue');
+        }
+        $userAccess = 0;
+        $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
+        return $jobList;
+    }    
 }
