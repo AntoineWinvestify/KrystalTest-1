@@ -85,6 +85,8 @@ class ecrowdinvest extends p2pCompany {
      * @return Array
      */
     function collectCompanyMarketplaceData($companyBackup, $structure) { //ecrown doesnt have pagination
+        
+        
         $readController = 0;
         $investmentController = false;
 
@@ -96,7 +98,7 @@ class ecrowdinvest extends p2pCompany {
         $dom->preserveWhiteSpace = false;
         $tag = 'div';
         $attribute = 'class';
-        $value = 'col-xs-12 col-md-4 col-sm-4 projectwidget';
+        $value = 'panel panel-default';
         $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
         
 
@@ -143,7 +145,7 @@ class ecrowdinvest extends p2pCompany {
             $tempArray['marketplace_interestRate'] = $this->getPercentage($ps[5]->nodeValue);
             list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($ps[7]->nodeValue);
             $tempArray['marketplace_numberOfInvestors'] = $value2;
-            $tempArray['marketplace_status'] = trim($hs[0]->nodeValue);
+            //$tempArray['marketplace_status'] = trim($hs[0]->nodeValue);
             list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(intval($progress[0]->getAttribute('aria-valuenow')));
             $tempArray['marketplace_loanReference'] = preg_replace('/\D/', '', $as[0]->getAttribute('id'));
@@ -160,6 +162,8 @@ class ecrowdinvest extends p2pCompany {
                 }
                 foreach ($companyBackup as $inversionBackup) { //if completed and same status that in backup
                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                        echo HTML_ENDOFLINE . $tempArray['marketplace_loanReference'] . HTML_ENDOFLINE;
+                        print_r($inversionBackup);
                         $readController++;
                         $investmentController = true;
                     }
@@ -179,9 +183,10 @@ class ecrowdinvest extends p2pCompany {
                 $this->print_r2($totalArray);
                 unset($tempArray);
             }
-
-            if ($readController > 25) {  //If we find more than 25 completed investment existing in the backpup, stop reading
+            echo $readController;
+            if ($readController > 50) {  //If we find more than 25 completed investment existing in the backpup, stop reading
                 echo 'Stop reading';
+                echo $readController;
                 break;
             }
     }
