@@ -187,6 +187,9 @@ public function beforeSave1($options = array()) {
     return true;
 }
 
+
+
+// add new status
     public function getUsersByStatus($queuetype, $status, $info = null, $limit = null) {
         
         switch ($queuetype) {

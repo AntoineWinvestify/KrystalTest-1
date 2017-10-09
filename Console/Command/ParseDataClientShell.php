@@ -257,16 +257,24 @@ print_r($platformResult['newLoans']);
 
 
                             );
-
+        
+// copy ALL static investmentTable fields, EVEN if they don't exist. 
+// copy ALL "dynamic" investmentTable fields, EVEN if they don't exist.        
+        
+// check which once to calculate at this moment (can we use a bitmap approach?)       
+        
         $dbUserInvestmentData = array (
 
                             );
-
+// individual methods for each and every field. 
+ // copy ALL UservestmentTable fields, EVEN if they don't exist.       
+        
+        
         $dbAmortizationTable = array(
 
                              );
 
-
+// create a default AmortizationTable for loan if it is a new loan
 
 
         foreach ($result as $platformKey => $platformResult) {
@@ -280,19 +288,55 @@ print_r($platformResult['newLoans']);
             }
 
 
-
-
-
         }
-
-
 
     }
 
 
 
 
+public function getLoanId(&$dbTableReference, $value) {
+    
+}
 
 
+public function getLoanAmount(&$dbTableReference, $value) {
+    
+}
+
+
+public function getCountry(&$dbTableReference, $value) {
+    
+}
+
+
+public function getLoanType(&$dbTableReference, $value) {
+    
+}
+
+
+public function getLoanOriginator(&$dbTableReference, $value) {
+    
+}
+
+
+public function getCurrency(&$dbTableReference, $value) {
+    
+}
+
+
+public function getInvestmentDate(&$dbTableReference, $value) {
+    
+}
+
+
+public function getTotalPayment(&$dbTableReference, $value) {
+    
+}
+
+
+public function getNextPaymentDate(&$dbTableReference, $value) {
+    
+}
 
 }
