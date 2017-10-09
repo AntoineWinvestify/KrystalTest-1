@@ -202,7 +202,6 @@ class mintos extends p2pCompany {
                     "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
                     "inputData" => [
 				"input2" => "D.M.Y",
-
                                 ],
                     "functionName" => "normalizeDate",
                 ]

@@ -70,6 +70,19 @@ class arboribus extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesArboribusTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesArboribusInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesArboribusAmortization;
+    }    
+    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount

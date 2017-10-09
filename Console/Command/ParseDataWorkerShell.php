@@ -84,8 +84,6 @@ class ParseDataWorkerShell extends AppShell {
      * This is json_encoded data with the following structure:
      * 
      *      $data['linkedAccountId']['userReference']
-     *      $data['linkedAccountId']['activeInvestments'][]         => list of all active investments 
-     *                                                                  and reserved investments?
      *      $data['linkedAccountId']['queue_id']
      *      $data['linkedAccountId']['pfp']
      *      $data['linkedAccountId']['files'][filename1']           => array of filenames, FQDN's
@@ -97,7 +95,7 @@ class ParseDataWorkerShell extends AppShell {
      * 
      * 
      * @return array queue_id, userReference, exception error
-     *  the worker provides all error information to the Client
+     *  The worker provides all error information to the Client
      * 
      *           array     analyse    convert internal array to external format using definitions of configuration file
      *                      true  analysis done with success
@@ -114,8 +112,6 @@ class ParseDataWorkerShell extends AppShell {
 
         $platformData = json_decode($job->workload(), true);
 
-        $collectLoanIds = array();
-        
         foreach ($platformData as $linkedAccountKey => $data) {
             if ($data['pfp'] <> "mintos") { // TO BE REMOVED           TO BE REMOVED
                 continue;
@@ -168,7 +164,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
                         } 
                         
                         try {
-                 //           $callBackResult = $companyHandle->fileanalyzed($fileName, $typeOfFile, $fileContent);       // Generate callback
+                            $callBackResult = $companyHandle->fileAnalyzed($approvedFile, $actualFileType, $tempResult);       // Generate callback
                         }
                         catch (Exception $e){
                             $errorInfo = array( "typeOfError"   => "callBackExceptionError",
@@ -182,24 +178,20 @@ echo __FILE__ . " " . __LINE__ . "\n";
                         }
 echo __FILE__ . " " . __LINE__ . "\n";
                         //run through the array and search for new loans.
+/*
                         foreach ($totalParsingresult as $loanKey => $loan) {
                             if ($loanKey == "global") {
                                 continue;
                             }
                         }
-                        // store everything in array so we can return the final result to client
+                        // store everything in an array so we can return it to the Client
                         $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
                         $returnData[$linkedAccountKey]['parsingResult'] = $totalParsingresult;
                         unset($newLoans);
+ */
                     } 
-
-                $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
-                $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
-                $returnData[$linkedAccountKey]['pfp'] = $platform; 
                 }
             }
-           
-echo __FILE__ . " " . __LINE__ . ": Both transaction array and investment arrays defined\n";
 
             foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
                 $totalParsingresultInvestmentsTemp[$loanIdKey] = $totalParsingresultInvestments[$loanIdKey][0];
@@ -208,20 +200,27 @@ echo __FILE__ . " " . __LINE__ . ": Both transaction array and investment arrays
                     echo "NO found match for loanId = $loanIdKey  \n"; // THIS IS NEVER POSSIBLE
                 }
             }
-        }
+        
  echo __FILE__ . " " . __LINE__ . "   \n"; 
- 
-        $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
-        $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
-        $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestmentsTemp;       
-        $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
-        $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
-        $returnData[$linkedAccountKey]['pfp'] = $platform;
- 
+
+            $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
+            $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestmentsTemp;       
+            $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
+            $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id']; 
+            $returnData[$linkedAccountKey]['pfp'] = $platform;
+
+            foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {    
+                echo ".";
+                if (array_search($loanIdKey, $listOfCurrentActiveLoans) !== false) {         // Check if new investments have appeared
+                    $newLoans[] = $loanIdKey;
+                }       
+            }
+            $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
+            unset( $newLoans);
+        }
         print_r($returnData);
         return json_encode($returnData); 
-    }    
-        
+    }     
 }   
     
             
@@ -268,7 +267,7 @@ echo __FILE__ . " " . __LINE__ . ": Both transaction array and investment arrays
     
         public $numberOfDecimals = 5;
 
-        protected $transactionDetails = [
+        protected $transactionDetails = [  // CHECK THIS Table againsT TYPE OF STATEMENTS  OF FLOWDATA
                 0 => [
                     "detail" => "Cash_deposit",
                     "cash" => 1,                                    // 1 = in, 2 = out
@@ -459,8 +458,10 @@ echo __FILE__ . " " . __LINE__ . ": Both transaction array and investment arrays
     /**
      * Starts the process of analyzing the file and returns the results as an array
      *  @param  $file           Name(s) of the file to analyze
-     *  @param  $referenceFile  Name of the file that contains configuration data of a specific "document"/PFP
-     *  @return array   $analyzedData
+     *  @param  $referenceFile  Name of the file that contains configuration data of a specific "document"
+     *  @param  $offset_top     The number of lines (=rows) from the TOP OF THE FILE which are not to be included in parser
+     *  @param  $offset_bottom  The number of lines (=rows) from, counted from the BOTTOM OF THE FILE which are not to be included in parser                         
+     *  @return array   $parsedData
      *          false in case an error occurred
      */
     public function analyzeFile($file, $referenceFile) {
@@ -644,21 +645,36 @@ if (is_array($tempResult)) {
     }
     
     /**
+     * Sets one or more configuration parameters. 
+     * The following parameters can be configured:
      * 
-     * 
-     * the following parameters can be configured:
-     * offsetStart
-     * offsetEnd
-     * sortParameter
-     * separatorChar
+     *  sortParameter   The name of variable by which the array is to be sorted. The contents of the variable is used as index key
+     *                  No default value defined
+     *  separatorChar   default value = ";". This parameter is only useful for "csv" files
+     *  offset_top      The number of lines (=rows) from the TOP OF THE FILE which are not to be included in parser
+     *                  Default value = 1
+     *  offset_bottom   The number of lines (=rows) from, counted from the BOTTOM OF THE FILE which are not to be included in parser  
+     *                  Default value = 0
+     * @param   array   $configurations     list of configuration parameter             
+     * @return  boolean OK
      * 
      */
     public function setConfig($configurations)  {
         foreach ($configurations as $configurationKey => $configuration) {
             $this->config[$configurationKey] = $configuration;          // avoid deleting already specified config parameters
         }
-        print_r($this->config);
+        return; 
     }
+    
+    
+     /**
+     * Reads the current configuration parameter(s).
+     * 
+     */
+    public function getConfig()  {
+        return($this->config);
+    }   
+    
     
     /**
      *

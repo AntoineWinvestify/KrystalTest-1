@@ -32,6 +32,21 @@ class finbee extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesFinbeeTransaction;
+    }
+ 
+     public function getParserConfigInvestmentFile() {
+        return $this->$valuesFinbeeInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesFinbeeAmortization;
+    }  
+    
+    
+    
     function collectUserGlobalFilesParallel($str) {
         switch ($this->idForSwitch) {
             //LOGIN

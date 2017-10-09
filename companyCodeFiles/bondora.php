@@ -41,7 +41,7 @@ class bondora extends p2pCompany {
         return $this->$valuesBondoraTransaction;
     }
  
-     public function getParserConfigInvestmentFile() {
+    public function getParserConfigInvestmentFile() {
         return $this->$valuesBondoraInvestment;
     }
     

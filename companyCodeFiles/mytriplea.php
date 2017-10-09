@@ -59,6 +59,19 @@ class mytriplea extends p2pCompany {
 // Dictionary to map data to the database table 'marketplaces'
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesMytriplaaTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesMytriplaaInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesMytriplaaAmortization;
+    }      
+    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount

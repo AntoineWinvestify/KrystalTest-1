@@ -2463,33 +2463,33 @@ class p2pCompany {
     
     
     
-     /** 
-     * Callback functions required for Dashboard 2. 
+    /** 
+     * Callback function for Dashboard 2.  
      * The companycodeFile class can override these methods.
-     * these callback also exist in case the platform does not support xls/csv file download and the information
+     * These callback also exist in case the platform does not support xls/csv file download and the information
      * had to be collected using webscraping
      * The companycodefiles can "delete or modify" any index of the array $fileContent and as such influence "the 
-     * process of writing the data to the database. Could be used to delete one or more indices at beginning or 1 or 
-     * more at end of array.
+     * process of writing the data to the database. 
+     * Could for instance be used to delete one or more indices at beginning or 1 or more at end of array.
      * 
      * @param string $fileName      The filename (as FQDN) which has been analyzed
-     * @param string $typeOfFile    the type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
-     * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
+     * @param string $typeOfFile    The type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
+     * @param array $fileContentArray    The array which contains the result of the parsing of the downloaded file
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */   
-    public function fileanalyzed($fileName, $typeOfFile, array $fileContent) {
+    public function fileAnalyzed($fileName, $typeOfFile, array &$fileContentArray) {
         return true;
     }
 
 
     /** 
-     * Callback functions required for Dashboard 2. 
-     * The system is ready to construct the list of amortization tables to be downloaded. The default
+     * Callback function for Dashboard 2.  
+     * The system is ready to construct the list of new amortization tables to be downloaded. The default
      * algorithm is to go through the list of indices of $fileContents( = loanId) and check one by one if an entry 
      * exists for the investor. If no entry exists the loanId is added to the list of amortization tables
      * to be collected.
-     * If a array is returned then the internal algorithm is bypassed.
+     * If a non empty array is returned then the internal algorithm is bypassed.
      * 
      * @param string $fileName      The filename (as FQDN) which has been analyzed
      * @param string $typeOfFile    the type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
@@ -2502,7 +2502,7 @@ class p2pCompany {
 
     
     /** 
-     * Callback functions required for Dashboard 2. 
+     * Callback function for Dashboard 2.  
      * The system has constructed the list of amortization tables to be downloaded. 
      * This callback is only called if one or more amortizationtable(s) need(s) to be downloaded. 
      * Also note that this callback is ALSO called in case the companycodefile has facilitated the list using the
@@ -2511,13 +2511,13 @@ class p2pCompany {
      * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
      * @return ??
      */ 
-    public function afterAmortizationlist(array $amortizationtables){
+    public function afterAmortizationlist(array $amortizationTables){
          return ;   
     }    
     
 
     /** 
-     * Callback functions required for Dashboard 2.  
+     * Callback function for Dashboard 2.  
      * All the amortization tables have been downloaded and analyzed and are available in array $amortizationTables. 
      * No processing of the table(s) has yet been done.
      * 
@@ -2526,17 +2526,17 @@ class p2pCompany {
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */ 
-    public function amortizationtablesdownloaded(array $amortizationTables) {
+    public function amortizationTablesDownloaded(array $amortizationTables) {
         return true;
     }
 
 
-    /** 
-     * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during this data reading period
+    /** PROBABLY NOT NEEDED
+     * Callback function for Dashboard 2. 
+     * The main flow loops through all the active loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan status 
      * 
-     * @param string $loanStatus    Ccontains the data of the amortization tables. Main index is the loanId
+     * @param string $loanStatus    Contains the data of the amortization tables. Main index is the loanId
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */ 
@@ -2545,20 +2545,21 @@ class p2pCompany {
     }
 
     /** 
-     * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during this data reading period
+     * Callback function for Dashboard 2. 
+     * The main flow loops through all new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan rate 
      * 
      * @param string    Contains the data of the amortization tables. Main index is the loanId
-     * @return  integer     Loan duration as defined by Winvestify
+     * @return  integer     Loan rate as defined by Winvestify
+     *                 
      */ 
     public function normalizeLoanRate($loanRate) {
         return $loanRate;
     }
 
     /** 
-     * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during this data reading period
+     * Callback function for Dashboard 2.  
+     * The main flow loops through all the active loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan duration 
      * 
      * @param string $durationString    Contains the data of the amortization tables. Main index is
@@ -2567,9 +2568,7 @@ class p2pCompany {
      *                           $duration['unit']   
      */ 
     public function normalizeLoanDuration($durationString) {
-        
-        //$amortiza 
-        
+ 
         return ;
     }
 
@@ -2584,7 +2583,7 @@ class p2pCompany {
     /** 
      * Callback functions required for Dashboard 2. 
      * The table was downloaded in pdf format and its content is available as pure text. This must be converted to
-     * html >table> format
+     * html <table> format
      * 
      * @param string $contentsString    Contains the data of the amortization tables. Main index is
      *                                  the loanId

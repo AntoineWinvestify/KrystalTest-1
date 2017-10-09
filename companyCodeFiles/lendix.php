@@ -81,6 +81,21 @@ class lendix extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesLendixTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesLendixInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesLendixAmortization;
+    }        
+    
+    
+    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount

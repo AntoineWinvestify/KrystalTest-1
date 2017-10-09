@@ -189,6 +189,20 @@ class ecrowdinvest extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+     public function getParserConfigTransactionFile() {
+        return $this->$valuesEcrowdInvestTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesEcrowdInvestInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesEcrowdInvestAmortization;
+    }    
+    
+    
     /**
      *
      * 	Calculates how must it will cost in total to obtain a loan for a certain amount

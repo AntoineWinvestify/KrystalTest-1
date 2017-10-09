@@ -28,6 +28,19 @@ class fellowfinance extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesFellowfinanceTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesFellowfinanceInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesFellowfinanceAmortization;
+    }     
+    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY fellowfinance DURING LOGIN PROCESS

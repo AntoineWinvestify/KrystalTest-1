@@ -191,6 +191,22 @@ class circulantis extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesCirculantisTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesCirculantisInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesCirculantisAmortization;
+    }   
+    
+    
+    
+    
     /**
      * Collects the marketplace data.
      * @param Array $companyBackup

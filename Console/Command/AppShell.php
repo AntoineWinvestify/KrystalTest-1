@@ -49,7 +49,27 @@ class AppShell extends Shell {
 
   
     
+     /**
+     * checks to see if jobs are waiting in the queue for processing
+     * 
+     * @param int $presentStatus    status of job to be located
+     * @param int $limit            Maximum number of jobs to be pulled out of the queue
+     * @return array                List of pending jobs
+     * 
+     */   
+    public function checkJobs ($presentStatus, $limit) {
+
+        if (empty($this->Queue) ) {
+            $this->Queue = ClassRegistry::init('Queue');
+            echo __FUNCTION__ . " " . "Queue instance created\n";
+        }
     
+        $userAccess = 0;
+        $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
+        return $jobList;
+    }    
+        
+     
     
     
        
