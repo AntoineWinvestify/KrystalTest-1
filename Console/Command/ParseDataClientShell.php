@@ -64,7 +64,7 @@ class ParseDataClientShell extends AppShell {
         $inActivityCounter++;                                           // Gearman client
 
         Configure::load('p2pGestor.php', 'default');
-        $jobsInParallel = Configure::read('dashboard2JobsInParallelToParse');
+        $jobsInParallel = Configure::read('dashboard2JobsInParallel');
 
         $response = [];
 
