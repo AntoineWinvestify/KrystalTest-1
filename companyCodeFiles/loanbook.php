@@ -1023,18 +1023,9 @@ class loanbook extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__);
                 }
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl(null, false, false, false, 'informe.pdf');
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 6:
-                $path = $this->createFolderPFPFile();
-                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
-                    return $this->getError(__LINE__, __FILE__);
-                }
-                $this->idForSwitch++;
-
-                $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
-                break;
-            case 7:
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
@@ -1080,7 +1071,7 @@ class loanbook extends p2pCompany {
                 $this->tempUrl['dummy'] = array_shift($this->urlSequence);
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
                 break;
-            case 8:
+            case 7:
                 if (empty($this->tempUrl['InvesmentUrl'])) {
                     $this->tempUrl['InvesmentUrl'] = array_shift($this->urlSequence);
                 }
@@ -1089,7 +1080,7 @@ class loanbook extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);
                 break;
-            case 9:
+            case 8:
                 //echo $str;
                 $this->loanArray[$this->j - 1]['A'] = $this->UserLoansId[$this->j - 1]; //A is loan id
 
@@ -1171,7 +1162,7 @@ class loanbook extends p2pCompany {
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
                     break;
                 }
-            case 10:
+            case 9:
                 echo 'Stop';
                 $path = $this->createFolderPFPFile();
                 if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
