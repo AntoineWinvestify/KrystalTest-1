@@ -34,6 +34,8 @@ require_once(ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');
 /** PHPExcel_IOFactory */
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel'.DS.'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS.'IOFactory.php'));
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
 //App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
 use Petslane\Bondora;
@@ -56,7 +58,7 @@ function beforeFilter() {
 
 	$this->Security->requireAuth();
         
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying"));
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile"));
 }
 
    
@@ -609,4 +611,234 @@ echo "END OF LOOP <br>";
         // get token from 'code' provided after user successful login. Store access_token and refresh_token
         //$token_object = $api->getToken($code);
     }
+    
+    
+        public function analyzeFile() {
+           
+        echo "ruta = " . APP . 'files/investors/39048098ab409be490A/20170926/mintos/673/Investment.xlsx' . HTML_ENDOFLINE;
+        $file = new File(APP . 'files/investors/39048098ab409be490A/20170926/mintos/673/Investment.xlsx');
+        $referenceFile = [
+            "A" =>  [
+                "name" => "investment.investment_country"                               // Winvestify standardized name  OK
+             ],
+            "B" =>  [
+                "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
+             ],
+            "C" =>  [
+                [
+                    "type" => "investment.investment_issueDate",                                   // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "D.M.Y",
+
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+             ],
+            "D" =>  [
+                "name" => "investment.loanType"                                         // Winvestify standardized name   OK
+             ],
+            "E" =>  [
+                "name" => "investment.amortizationMethod"                               // Winvestify standardized name  OK
+             ],
+            "F" =>  [
+                "name" => "investment.loanOriginator"                                   // Winvestify standardized name  OK
+             ],
+            "G" =>  [
+                [
+                    "type" => "investment.fullLoanAmount",                              // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+            "H" =>  [
+                [
+                    "type" => "investment.remainingPrincipalTotalLoan",                 // THIS FIELD IS NOT NEEDED?
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+            "I" =>  [
+                [
+                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "D.M.Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+             ],
+            "J" =>  [
+                [
+                    "type" => "investment.nextPaymentAmount",                           // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+            "K" =>  [
+                "name" => "investment.LTV"                                              // Winvestify standardized name   OK
+             ],
+            "L" =>  [
+                [
+                    "type" => "investment.nominalInterestRate",                         // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "D.M.Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+             ],
+            "M" =>  [
+                "name" => "investment_totalInstalments"                                 // Winvestify standardized name
+             ],
+            "N" =>  [
+                "name" => "investment_paidInstalments"                                  // Winvestify standardized name
+                ],
+            "O" =>  [
+                "name" => "investment_loanStatus"                                       // Winvestify standardized name
+             ],
+
+            "P" =>  [
+                "name" => "investment.buyBackGuarantee"                                 // Winvestify standardized name  OK
+             ],
+
+            "Q" =>  [
+                [
+                    "type" => "investment.investment",                                  // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ],
+
+                [
+                    "type" => "investment_paidInstalmentsProgressTwo",                      // Winvestify standardized name
+                    "inputData" => [
+                                "input2" => "#current.investment_paidInstalments",
+                                "input3" => "#current.investment_totalInstalments",
+                                "input4" => 0                                           // Number of decimals
+                                ],
+                    "functionName" => "DivisionInPercentage",
+                ],
+
+             ],
+            "R" =>  [
+                                [
+                    "type" => "investment.investmentDate",                              // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "D.M.Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+             ],
+            "S" =>  [
+                [
+                    "type" => "investment.paymentsDone",                                // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+            "T" =>  [
+                [
+                    "type" => "investment.outstandingPrincipal",                        // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+            "U" =>  [
+                [
+                    "type" => "investment.amountSecondaryMarket",                       // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+            "V" =>  [
+                [
+                    "type" => "investment.priceInSecondaryMarket",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+            "W" =>  [
+                [
+                    "type" => "investment.discount_premium",                            // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+            "X" =>  [
+                [
+                    "type" => "investment.currency",                                    // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ]
+             ],
+        ];
+        echo "INPUT FILE =" . $this->print_r2($file) . "\n";
+       // determine first if it csv, if yes then run command
+        $fileNameChunks = explode(DS, $file);
+        if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
+    //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
+            $inputFileType = 'CSV';
+            $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+            $objReader->setDelimiter($this->Config['separatorChar']);
+            $objPHPExcel = $objReader->load($file);
+            //execute command php has a function for this which works on a string
+        }
+        else {      // xls/xlsx file
+            $objPHPExcel = PHPExcel_IOFactory::load($file);
+        }
+
+        ini_set('memory_limit','2048M');
+        $sheet = $objPHPExcel->getActiveSheet();
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+        echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $offset = 5;
+        $datas = $this->saveExcelToArray($sheetData, $referenceFile, $offset);
+
+        return $datas;
+
+        }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
