@@ -58,14 +58,16 @@ class CollectDataClientShell extends GearmanClientShell {
         //$resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
         
         $inActivityCounter++;                                           // Gearman client 
-
-        Configure::load('p2pGestor.php', 'default');
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         $this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+        $companyTypes = $this->Company->find('list', array(
+            'fields' => array('Company.company_typeAccessTransaction')
+        ));
         $this->date = date("Ymd");
-        while (true){
-            $resultQueue[]  = $this->checkJobs(DOWNLOADING_GLOBAL_DATA, $jobsInParallel);
+        $numberOfIteration = 0;
+        while ($numberOfIteration == 0){
+            $resultQueue  = $this->checkJobs(START_COLLECTING_DATA, $jobsInParallel);
             print_r($resultQueue);
             if (!empty($resultQueue)) {
                 $linkedaccountsResults = [];
@@ -79,16 +81,11 @@ class CollectDataClientShell extends GearmanClientShell {
                     $investorId = $resultInvestor['Investor']['id'];
                     $filterConditions = array('investor_id' => $investorId);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+                    echo "linkAccount \n";
+                    print_r($linkedaccountsResults);
                     //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
-
-                $companyTypes = $this->Company->find('list', array(
-                    'fields' => array('Company.company_typeAccessTransaction')
-                ));
-
                 $userLinkedaccounts = [];
-                //$i = 0;
-
                 foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
                     //In this case $key is the number of the linkaccount inside the array 0,1,2,3
                     $i = 0;
@@ -97,7 +94,8 @@ class CollectDataClientShell extends GearmanClientShell {
                         $folderExist = $this->verifyCompanyFolderExist($resultQueue[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id']);
                         if (!$folderExist) {
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
-                            $this->userLinkedaccounts[$resultQueue[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
+                            //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
+                            $this->userLinkaccountIds[$resultQueue[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
                             $i++;
                         }
                     }
@@ -127,9 +125,9 @@ class CollectDataClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
 
-                foreach ($this->userResult as $key => $userResult) {
-                    $statusProcess = $this->consolidationResult($userResult, $key);
-                    $this->Queue->id = $key;
+                foreach ($this->userResult as $queueId => $userResult) {
+                    $statusProcess = $this->consolidationResult($userResult, $queueId);
+                    $this->Queue->id = $queueId;
                     if ($statusProcess) {
                         $newState = GLOBAL_DATA_DOWNLOADED;
                         echo "Data succcessfully download";
@@ -140,6 +138,12 @@ class CollectDataClientShell extends GearmanClientShell {
                     }
                     $this->Queue->save(array('queue_status' => $newState), $validate = true);
                 }
+                unset($resultQueue);
+                unset($resultInvestor);
+                unset($linkedaccountsResults); 
+                unset($linkedaccountsResults);        
+                unset($userLinkedaccounts);
+                $numberOfIteration++;
             }
             else {
                 $inActivityCounter++;
