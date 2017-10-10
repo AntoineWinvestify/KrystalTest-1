@@ -34,7 +34,7 @@ class GearmanClientShell extends AppShell {
     protected $GearmanClient;
     protected $userResult = [];
     protected $userReference = [];
-    protected $userLinkaccounts = [];
+    protected $userLinkaccountIds = [];
     
     /**
      * Constructor of the class
@@ -128,12 +128,25 @@ class GearmanClientShell extends AppShell {
      */
     public function consolidationResult($userResult, $queueId) {
         $statusProcess = true;
+        $globalDestruction = false;
         foreach ($userResult as $key => $result) {
+            if ($key == 'global') {
+                $globalDestruction = true;
+                break;
+            }
             if (!$result) {
                 $statusProcess = false;
                 $this->deleteFolderByDateAndLinkaccountId($queueId, $key); //1 = $todaydate
             }
         }
+        
+        if ($globalDestruction) {
+            foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
+                $this->deleteFolderByDateAndLinkaccountId($queueId, $userLinkaccountId);
+            }
+            $statusProcess = false;
+        }
+        
         return $statusProcess;
     }
     
