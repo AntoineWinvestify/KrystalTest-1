@@ -72,6 +72,8 @@ class CollectDataClientShell extends GearmanClientShell {
             if (!empty($resultQueue)) {
                 $linkedaccountsResults = [];
                 foreach ($resultQueue as $result) {
+                    $queueInfo = json_decode($result['Queue']['queue_info'], true);
+                    $this->queueInfo[$result['Queue']['id']] = $queueInfo;
                     $resultInvestor = $this->Investor->find("first", array('conditions' =>
                         array('Investor.investor_identity' => $result['Queue']['queue_userReference']),
                         'fields' => 'id',
