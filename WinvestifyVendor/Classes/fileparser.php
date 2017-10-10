@@ -12,25 +12,9 @@
  * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
  * | GNU General Public License for more details.        			|
  * +----------------------------------------------------------------------------+
- *
- *
- *
- * Each user has queueId, investorID
- * number of child processes, each childprocess takes a full sequence of a user
- * and writes the new job status for the user
- * Start instance of parser with configfile
- * Normal return also include some basic return data, like queue_id and user_reference
- * The worker will parse the data for each and every platform for which data has been
- * supplied by the worker.
- *
- * Errors are initially taken care of in the worker and will spark eventually the exception
- * Callback with some extra user data.
- * If an error is encountered then the respective error data is stored in an internal array
- * (per PFP).
- * If possible, the worker will deal with *all* the PFP's as instructed by the client
- * even if an error is found in one of the PFP's.
- *
- *
+ * 
+ * 
+ * 
  * @author
  * @version
  * @date
@@ -40,7 +24,9 @@
  * 2017-10-09		version 0.1
  * Basic version
  *
- *
+ * This class parses the configuration file which are provided by each companyCodeFile.
+ * The result is returned in an array
+ * 
  */
 
 
@@ -78,8 +64,6 @@
                                         MXN => ["MXN", "$"],
                                         RUB => ["RUB", "₽"],
                                         );
-
-        public $numberOfDecimals = 5;
 
         protected $transactionDetails = [  // CHECK THIS Table againsT TYPE OF STATEMENTS  OF FLOWDATA
                 0 => [
@@ -262,25 +246,20 @@
 
     function __construct() {
         echo "starting parser\n";
- //       parent::__construct();
-
-//  Do whatever is needed for this subsclass
     }
 
 
 
     /**
      * Starts the process of analyzing the file and returns the results as an array
-     *  @param  $file           Name(s) of the file to analyze
-     *  @param  $referenceFile  Name of the file that contains configuration data of a specific "document"
-     *  @param  $offset_top     The number of lines (=rows) from the TOP OF THE FILE which are not to be included in parser
-     *  @param  $offset_bottom  The number of lines (=rows) from, counted from the BOTTOM OF THE FILE which are not to be included in parser
-     *  @return array   $parsedData
+     *  @param  FILE            FQDN of the file to analyze
+     *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
+     *  @return array           $parsedData
      *          false in case an error occurred
      */
-    public function analyzeFile($file, $referenceFile) {
+    public function analyzeFile($file, $configuration) {
         echo "INPUT FILE = $file \n";
-       // determine first if it csv, if yes then run command
+       // determine first if it a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
     //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
@@ -301,11 +280,9 @@
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-        $offset = 5;
-        $datas = $this->saveExcelToArray($sheetData, $referenceFile, $offset);
-
+        
+        $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['OffsetStart']);
         return $datas;
-
         }
 
 
@@ -335,7 +312,6 @@
         $outOfRange = false;
 
         foreach ($rowDatas as $keyRow => $rowData) {
-//            echo "Reading a NEW ROW\n";
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
@@ -346,7 +322,6 @@
                     eval($tempString);
                 }
                 else {          // "type" => .......
-//                    echo "---------------------------------------------------------------------\n";
                     foreach ($value as $userFunction ) {
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
@@ -373,29 +348,25 @@
                             }
                         }
 
-//echo "rowdata = " . $rowData[$key] . "\n";
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
                                                                        $userFunction['functionName']),
                                                                        $userFunction['inputData']);
 
-if (is_array($tempResult)) {
-    $userFunction = $tempResult;
-//    print_r($userFunction);
-//    echo "YES\n";
-    $tempResult = $tempResult[0];
-}
-
+                            if (is_array($tempResult)) {
+                                $userFunction = $tempResult;
+                            //    print_r($userFunction);
+                            //    echo "YES\n";
+                                $tempResult = $tempResult[0];
+                            }
 
                             // Write the result to the array with parsing result. The first index is written
                             // various variables if $tempResult is an array
                             if (!empty($tempResult)) {
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']";
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
-  //                              echo "tempString = $tempString\n";
                                 eval($tempString);
-
                             }
                         }
                         else {
@@ -489,33 +460,6 @@ if (is_array($tempResult)) {
         return($this->config);
     }
 
-
-    /**
-     *
-     * 	Read the supported currencies and their properties
-     *
-     * 	@return array $currencies
-     *
-     */
-    private function getCurrencyDetails() {
-        return $this->currencies;
-    }
-
-
-    /**
-     *
-     * 	Read number of decimals to be used for amounts
-     *
-     * 	@return int $numberOfDecimals
-     *
-     */
-    public function getNumberofDecimals() {
-        return $this->numberofDecimals;
-    }
-
-
-
-
     /**
      * Analyze and determine the (preliminary) scope of an undefined payment concept.
      * The algorithm uses a combination of a dictionary search and checking of transaction data
@@ -587,7 +531,7 @@ if (is_array($tempResult)) {
         $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
         (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
         $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
-//        print_r($tempDate);
+
         if (count($tempDate) == 1) {
            return;
         }
@@ -699,13 +643,11 @@ if (is_array($tempResult)) {
      *
      */
     private function getCurrency($loanCurrency) {
-        $currencyDetails = $this->getCurrencyDetails();
-        unset($details);
 
-        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $filter = array(".", ",", " ", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
-        foreach ($currencyDetails as $currencyIndex => $currency) {
+        foreach ($this->currencyDetails as $currencyIndex => $currency) {
             if ($loanCurrency == $currency[0]) {                // check the ISO code
               return $currencyIndex;
             }
@@ -758,34 +700,6 @@ if (is_array($tempResult)) {
         $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
         return result;
     }
-
-     /**
-     * Reads the transaction type of the transaction operation
-     *
-     * @param string   $input
-     * @return array   $parameter2  List of all known concepts of the platform
-     *    NO LONGER USED
-     */ /*
-    private function getTransactionType($input, $config) {
-        echo "Function getTransactionType, $input\n";
-        foreach ($config as $configKey => $configItem) {
-            $position = stripos($input, $configKey);
-            echo "position = $position\n";
-            if ($position !== false) {
-
-                echo "Found, configKey = $configKey, configItem =\n";
-                print_r($configItem);
-                return $configItem;
-                foreach ($this->transactionDetails as $key => $detail) {
-                    echo "\n842   $key = $key\n";
-                    if ($detail['detail'] == $configItem) {
-                        echo "RETURNING " . $detail['transactionType'] ."\n";
-                        return $detail['transactionType'];
-                    }
-                }
-            }
-        }
-    }    */
 
     /**
      * Search for a something within a string, starting after $search

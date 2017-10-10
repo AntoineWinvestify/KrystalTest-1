@@ -55,6 +55,11 @@ class ParseDataClientShell extends AppShell {
     public function initDataAnalysisClient() {
         $inActivityCounter = 0;
         $this->GearmanClient->addServers();
+        echo __FUNCTION__ . " " . __LINE__ .": " . "\n";       
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 2 Client\n";
+        }
+
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
@@ -70,7 +75,9 @@ class ParseDataClientShell extends AppShell {
 
         while (true){
             $pendingJobs = $this->checkJobs(GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
-
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
+            }
             if (!empty($pendingJobs)) {
                 foreach ($pendingJobs as $keyjobs => $job) {
                     $userReference = $job['Queue']['queue_userReference'];
@@ -96,19 +103,27 @@ class ParseDataClientShell extends AppShell {
                                                         'userReference' => $job['Queue']['queue_userReference'],
                                                         'files' => $files);
                     }
-                    print_r($params);
+                    debug($params);
+                    
                     $response[] = $this->GearmanClient->addTask("parseFileFlow", json_encode($params));
                 }
-                echo __METHOD__ . " " . __LINE__ . " \n";
+                
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the previous information to Worker\n";
+                }
                 $this->GearmanClient->runTasks();
 
 
+                
 
-
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
+                }
                 $result = json_decode($this->workerResult, true);
                 foreach ($result as $platformKey => $platformResult) {
-                    echo "\nplatformkey = $platformKey\n";
-
+                    if (Configure::read('debug')) {
+                        echo __FUNCTION__ . " " . __LINE__ . ": " . "platformkey = $platformKey\n";
+                    }
                     // First check for application level errors
                     // if an error is found then all the files related to the actions are to be
 // deleted including the directory structure.
@@ -140,23 +155,25 @@ print_r($platformResult['newLoans']);
                     else {
                         $newState = AMORTIZATION_TABLES_DOWNLOADED;
                     }
-
                     $this->Queue->id = $queueId;
                     $this->Queue->save(array('queue_status' => $newState,
                                              'queue_info' => json_encode($platformResult['newLoans']),
                                             ), $validate = true
                                         );
-
                 }
             }
             else {
                 $inActivityCounter++;
-                echo __METHOD__ . " " . __LINE__ . " Nothing in queue, so sleeping \n";
+                if (Configure::read('debug')) {       
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n";
+                }
                 sleep (4);                                          // Just wait a short time and check again
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
-                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";
-                exit;
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";
+                    exit;
+                }
             }
  break;   // ?????
         }
@@ -226,7 +243,7 @@ print_r($platformResult['newLoans']);
         $data = explode(".-;", $task->unique());
         $this->workerResult = $task->data();
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "COMPLETE: ";
+        echo "JOB COMPLETE: ";
   //              $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
 
@@ -237,19 +254,17 @@ print_r($platformResult['newLoans']);
 
     /**
      * Starts the process of analyzing the file and returns the results as an array
-     *  @param  $array          Array with all data received from Worker
-     *  @param  $referenceFile  Name of the file that contains configuration data of a specific "document"
-     *  @param  $offset_top     The number of lines (=rows) from the TOP OF THE FILE which are not to be included in parser
-     *  @param  $offset_bottom  The number of lines (=rows) from, counted from the BOTTOM OF THE FILE which are not to be included in parser
+     *  @param  $array          Array with transaction data received from Worker     
+     *  @param  $array          Array with investment data received from Worker
+     * v
      *  @return boolean true
      *                  false
      *
-     *  @return array   array with all the data to be written to the database
-     * the data is available in two or three subarrays which are to be written (before checking if it is a duplicate) to the corresponding
+     * the data is available in two or three sub-arrays which are to be written (before checking if it is a duplicate) to the corresponding
      * database table.g
      *     platform - (1-n)loanId - (1-n) concepts
      */
-    public function mapData(&$data) {
+    public function mapData(&$tranactionData, &$investmentData) {
         $dbInvestmentTable = array('loanId' => "",
                                     'country' => "",
                                     'loanType'  => "",
@@ -258,7 +273,8 @@ print_r($platformResult['newLoans']);
 
                             );
         
-// copy ALL static investmentTable fields, EVEN if they don't exist. 
+// copy ALL static investmentTable fields, EVEN if they don't exist. Only for the first time, if we don't have a amortization table
+// (i.e. is in list of NEW loans
 // copy ALL "dynamic" investmentTable fields, EVEN if they don't exist.        
         
 // check which once to calculate at this moment (can we use a bitmap approach?)       

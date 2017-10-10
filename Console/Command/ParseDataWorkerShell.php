@@ -70,7 +70,8 @@ class ParseDataWorkerShell extends AppShell {
         });
 
         $this->GearmanWorker->addFunction('parseFileFlow', array($this, 'parseFileFlow'));
-        echo "Entering loop\n";
+        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
+        
         while($this->GearmanWorker->work());
 
     }
@@ -112,6 +113,9 @@ class ParseDataWorkerShell extends AppShell {
      
     public function parseFileFlow($job) {
     
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Data received from Client\n";
+        }        
         Configure::load('p2pGestor.php', 'default');
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
         require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');    
@@ -125,7 +129,9 @@ class ParseDataWorkerShell extends AppShell {
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
 
-            echo "CURRENT PLATFORM = " . $data['pfp'] . "\n";
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
+            }
             // Deal first with the transaction file(s)
             print_r($data);
             $files = $data['files'];
@@ -194,7 +200,6 @@ echo __FILE__ . " " . __LINE__ . "\n";
                     echo "NO found match for loanId = $loanIdKey  \n"; // THIS IS NEVER POSSIBLE
                 }
             }
-
  echo __FILE__ . " " . __LINE__ . "   \n";
 
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
@@ -204,7 +209,6 @@ echo __FILE__ . " " . __LINE__ . "\n";
             $returnData[$linkedAccountKey]['pfp'] = $platform;
 
             foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
-                echo ".";
                 if (array_search($loanIdKey, $listOfCurrentActiveLoans) !== false) {         // Check if new investments have appeared
                     $newLoans[] = $loanIdKey;
                 }
@@ -213,6 +217,9 @@ echo __FILE__ . " " . __LINE__ . "\n";
             unset( $newLoans);
         }
         print_r($returnData);
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
+        }        
         return json_encode($returnData);
     }
 }
