@@ -79,9 +79,8 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     //In this case $key is the number of the linkaccount inside the array 0,1,2,3
                     $i = 0;
                     foreach ($linkedaccountResult as $linkedaccount) {
-
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
-                        $folderExist = $this->verifyCompanyFolderExist($resultQueue[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id'], "amortizationTable*");
+                        $folderExist = $this->verifyCompanyFolderExist($resultQueue[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id'], "amortizationTable");
                         if (!$folderExist) {
                             $linkedaccountId = $linkedaccount['Linkedaccount']['id'];
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;

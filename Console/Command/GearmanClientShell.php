@@ -172,9 +172,9 @@ class GearmanClientShell extends AppShell {
             }
         }
         else {
-             $files = $folder->findRecursive($fileName);
+             $files = $folder->findRecursive($fileName . ".*");
              if ($files) {
-                 $folderExist = true;
+                $folderExist = true;
              }
              
         }
