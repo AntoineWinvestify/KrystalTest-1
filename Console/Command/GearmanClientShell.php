@@ -35,6 +35,7 @@ class GearmanClientShell extends AppShell {
     protected $userResult = [];
     protected $userReference = [];
     protected $userLinkaccountIds = [];
+    protected $queueInfo = [];
     
     /**
      * Constructor of the class
