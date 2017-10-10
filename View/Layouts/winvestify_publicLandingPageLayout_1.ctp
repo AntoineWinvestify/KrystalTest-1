@@ -49,7 +49,7 @@
                 <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header navbar-right">
-                        <ul class="nav pull-left navbar-nav collapse-tablet">
+                        <ul class="nav pull-left navbar-nav navGreen collapse-tablet">
                             <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
                                 <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
                                     <div class="row">
@@ -179,7 +179,7 @@
                                     <?php echo __('About Us')?>
                                     <span class="caret"></span>
                                 </a>
-                                <ul style="margin-top:0px;" class="dropdown-menu">
+                                <ul style="margin-top:0px;" class="dropdown-menu navGreen">
                                     <li><a href="/pages/aboutUs "><?php echo __('Nuestra historia') ?></a></li>
                                     <li><a href="/pages/team"><?php echo __('Nuestro equipo') ?></a></li>
                                 </ul>
@@ -194,11 +194,245 @@
         </header>
 
         <!--========== END HEADER ==========-->
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <!--========== PROMO BLOCK ==========-->
+        <a name="mark_login"></a>
+        <div class="s-promo-block-v1 g-bg-color--primary-to-blueviolet-ltr g-fullheight--md" style="background-image:url(/img/admin/login.png); background-size:cover ;">
+            <div class="container g-ver-center--md g-padding-y-100--xs">
+                <div class="row g-hor-centered-row--md g-margin-t-30--xs g-margin-t-20--sm">
+                    <div class="col-lg-8 col-sm-8 g-hor-centered-row__col g-text-center--xs g-text-left--md g-margin-b-60--xs g-margin-b-0--md">
+                        <h1 class="g-font-size-32--xs g-font-size-45--sm g-font-size-50--lg g-color--white">
+                            <img src="/img/logo_winvestify/Logo_texto.png" alt="winvestify logo" class="responsiveImg center-block" style="float:center; max-width:400px;"/>
+                        </h1>
+                        <p style="text-align:center" class="g-font-size-32--xs g-font-size-42--md g-color--white g-margin-b-0--xs">
+                            <strong><?php echo __('Connect to the major crowdlending platforms from our portal') ?>
+                            </strong></p>
+                        <p style="text-align:center">
+                            <a href="/users/registerPanel" style="margin-top:10px;" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs btnRegister">
+                                <?php echo __('Register') ?>
+                            </a>
+                        </p>
+                    </div>
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-3 col-sm-4 g-hor-centered-row__col" style="display:none;">
+                        <div class="wow fadeInUp" data-wow-duration=".3" data-wow-delay=".1s" style="border: 2px solid white; padding: 20px;">
+                            <?php echo $this->Form->create('User', array('url' => "/users/loginAction",
+                                'class' => "center-block g-width-340--xs g-bg-color--white-opacity-lightest g-padding-x-40--xs g-padding-y-30--xs g-radius--4",));
+                            ?>
 
+                            <div class="g-text-center--xs">
+                                <h2 class="g-font-size-30--xs g-color--white"><?php echo __('Login') ?></h2>
+                            </div>
+                            <?php
+                            $authMsg = $this->Session->consume('Message.auth.message');
+                            ?>
+                            <div class="errorInputMessage ErrorInactiveAccount col-xs-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo "ABC" . $authMsg; ?>
+                                </span>
+                            </div>
+                            <?php
+                            if (!empty($authMsg)) {            // Authentication Error
+                                $errorClassesForTexts = "errorInputMessage ErrorUsernameLogin col-xs-offset-1";
+                                if (array_key_exists('username', $validationResult)) {
+                                    $errorClassesForTexts .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesForTexts ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
+                                </div>
+                                <?php
+                            }
+                            ?>									
+                            <?php
+                            $errorClass = "";
+                            if (!empty($authMsg)) {
+                                $errorClass = "redBorder";
+                            }
+                            $class = "form-control1 s-form-v3__input userNameLogin" . ' ' . $errorClass;
+                            ?>
+                            <div class="col-xs-offset-1">
+                                <input type="email" id="btnLoginUsername" name="data[User][username]" class="<?php echo $class ?>" placeholder="<?php echo __('Email') ?>">
+                            </div>
+                            <?php
+                            $errorClassesText = "errorInputMessage ErrorInactiveaccount col-xs-offset-1";
+                            if (!empty($authMsg)) {
+                                $errorClassesText .= " " . "actived";
+                            }
+                            ?>
+                            <div class="<?php echo $errorClassesText ?>">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $authMsg ?>
+                                </span>
+                            </div>									
+                            <?php
+                            $errorClass = "";
+                            if (!empty($authMsg)) {
+                                $errorClass = "redBorder";
+                            }
+                            $class = "form-control1 s-form-v3__input passwordLogin" . ' ' . $errorClass;
+                            ?>								
+                            <div style="margin-top:30px" class="col-xs-offset-1">
+                                <input type="password" id="btnLoginPassword" name="data[User][password]" class="<?php echo $class ?>" placeholder="<?php echo __('Password') ?>">
+                            </div>
+
+                            <div class="errorInputMessage ErrorPassword">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $error ?>
+                                </span>
+                            </div>									
+
+                            <?php
+                            if (!empty($authMsg)) {            // Authentication Error as detected by server
+                                $errorClassesForTexts = "errorInputMessage ErrorPasswordLogin col-xs-offset-1";
+                                if (!empty($authMsg)) {
+                                    $errorClassesForTexts .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesForTexts ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
+                                </div>
+                                <?php
+                            }
+                            ?>									
+
+                            <div class="g-text-center--xs"> 
+                                <button type="submit" id="loginBtn" style="margin-top:30px" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs"><?php echo __('Send') ?>
+                                </button><br/>
+                                <a class="g-color--white g-font-size-13--xs" href="#"><?php //echo __('Forgot your password?')  ?></a>
+                            </div>
+                            <!--	</form> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-4 g-hor-centered-row__col">
+                        <div class="wow fadeInUp" data-wow-duration=".3" data-wow-delay=".1s" style="border: 2px solid #87e14b; padding: 20px; background-color: rgba(255,255,255,0.2);">
+                            <?php echo $this->Form->create('User', array('url' => "/users/loginAction",
+                                'class' => "center-block g-width-340--xs g-bg-color--white-opacity-lightest g-padding-x-40--xs g-padding-y-30--xs g-radius--4",));
+                            ?>
+
+                            <div class="g-text-center--xs">
+                                <h2 class="g-font-size-30--xs"><?php echo __('Login') ?></h2>
+                            </div>
+                            <?php
+                            $authMsg = $this->Session->consume('Message.auth.message');
+                            ?>
+                            <div class="errorInputMessage ErrorInactiveAccount col-xs-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo "ABC" . $authMsg; ?>
+                                </span>
+                            </div>
+                            <?php
+                            if (!empty($authMsg)) {            // Authentication Error
+                                $errorClassesForTexts = "errorInputMessage ErrorUsernameLogin col-xs-offset-1";
+                                if (array_key_exists('username', $validationResult)) {
+                                    $errorClassesForTexts .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesForTexts ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
+                                </div>
+                                <?php
+                            }
+                            ?>									
+                            <?php
+                            $errorClass = "";
+                            if (!empty($authMsg)) {
+                                $errorClass = "redBorder";
+                            }
+                            $class = "form-control1 s-form-v3__input userNameLogin" . ' ' . $errorClass;
+                            ?>
+                            <div class="col-xs-offset-1">
+                                <input type="email" id="btnLoginUsername" name="data[User][username]" class="<?php echo $class ?>" placeholder="<?php echo __('Email') ?>">
+                            </div>
+                            <?php
+                            $errorClassesText = "errorInputMessage ErrorInactiveaccount col-xs-offset-1";
+                            if (!empty($authMsg)) {
+                                $errorClassesText .= " " . "actived";
+                            }
+                            ?>
+                            <div class="<?php echo $errorClassesText ?>">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $authMsg ?>
+                                </span>
+                            </div>									
+                            <?php
+                            $errorClass = "";
+                            if (!empty($authMsg)) {
+                                $errorClass = "redBorder";
+                            }
+                            $class = "form-control1 s-form-v3__input passwordLogin" . ' ' . $errorClass;
+                            ?>								
+                            <div style="margin-top:30px" class="col-xs-offset-1">
+                                <input type="password" id="btnLoginPassword" name="data[User][password]" class="<?php echo $class ?>" placeholder="<?php echo __('Password') ?>">
+                            </div>
+
+                            <div class="errorInputMessage ErrorPassword">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $error ?>
+                                </span>
+                            </div>									
+
+                            <?php
+                            if (!empty($authMsg)) {            // Authentication Error as detected by server
+                                $errorClassesForTexts = "errorInputMessage ErrorPasswordLogin col-xs-offset-1";
+                                if (!empty($authMsg)) {
+                                    $errorClassesForTexts .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesForTexts ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
+                                </div>
+                                <?php
+                            }
+                            ?>									
+
+                            <div class="g-text-center--xs"> 
+                                <button type="submit" id="loginBtn" style="margin-top:30px" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs"><?php echo __('Send') ?>
+                                </button><br/>
+                                <a class="g-color--white g-font-size-13--xs" href="#"><?php //echo __('Forgot your password?')  ?></a>
+                            </div>
+                            <!--	</form> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--========== END PROMO BLOCK ==========-->
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         <!--========== PAGE CONTENT ==========-->
         <!-- Toolbox -->
         <a name="mark_ftb"></a>
-        <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed;">
+        <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed; display:none;">
             <div class="container g-text-center--xs g-padding-y-80--xs g-padding-y-125--sm">
                 <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
                     <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Investor ToolBox Manager') ?></h2>      
@@ -208,7 +442,7 @@
         </div>
         <!-- End ftp -->
         <!-- Mockup -->
-        <div class="container_features row">
+        <div class="container_features row" style="display:none;">
             <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-offset-2 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
                 <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?></p>
                 <div class="row" id="featuresButton">

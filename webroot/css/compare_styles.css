@@ -2177,10 +2177,10 @@ hr.specialHr:after {
 .dropdown-menu {
     background-color: #f8f8f8;
 }
-.navbar-nav>li>a, .dropdown-menu>li>a {
+.navGreen>li>a, .navGreen>li>a {
     border-bottom: 5px solid #f8f8f8;
 }
-.navbar-nav>li>a:hover, .nav .open>a:hover {
+.navGreen>li>a:hover, .nav .open>a:hover {
     border-bottom: 5px solid #87e14b !important;
 }
 .dropdown-menu>li>a:hover {
