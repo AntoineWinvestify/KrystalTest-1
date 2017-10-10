@@ -61,13 +61,13 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                 foreach ($resultQueue as $result) {
                     $queueInfoJson = $result['Queue']['queue_info'];
                     $queueInfo = json_decode($queueInfoJson, true);
+                    $this->queueInfo[$result['Queue']['id']] = $queueInfo;
                     $linkAccountId = [];
                     foreach ($queueInfo['loanIds'] as $key => $loanId) {
                         if (!in_array($key, $linkAccountId)) {
                             $linkAccountId[] = $key; 
                         }
                     }
-
                     $filterConditions = array('id' => $linkAccountId);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     $queueInfos[] = $queueInfo['loanIds'];
@@ -125,6 +125,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                         echo "Data succcessfully download";
                     }
                     else {
+                        
                         $newState = START_COLLECTING_DATA;
                         echo "There was an error downloading data";
                     }
