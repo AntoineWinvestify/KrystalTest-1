@@ -171,7 +171,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
            }
        }
        
-       return json_econde($statusCollect);
+       return json_encode($statusCollect);
     }
     
     /**
