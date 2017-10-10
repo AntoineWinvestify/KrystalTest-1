@@ -122,7 +122,8 @@ class GearmanClientShell extends AppShell {
     
     /**
      * Function to verify that the collection of data was successful on all the 
-     * workers per user
+     * workers per company and per user, if a company failed, the function will delete it.
+     * If a masive fail occurs, the function will delete all the folders
      * @param string $userResult It is the result of the collection of data
      * @return boolean It is true if the process was successful
      */
@@ -150,7 +151,14 @@ class GearmanClientShell extends AppShell {
         return $statusProcess;
     }
     
-    public function verifyCompanyFolderExist($userReference, $linkaccountId) {
+    /**
+     * 
+     * @param type $userReference
+     * @param type $linkaccountId
+     * @param type $fileName
+     * @return boolean
+     */
+    public function verifyCompanyFolderExist($userReference, $linkaccountId, $fileName = null) {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $path = $userReference . DS . $this->date . DS . $linkaccountId;
@@ -158,11 +166,21 @@ class GearmanClientShell extends AppShell {
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
         $folderExist = false;
-        if (!is_null($folder->path)) {
-            $folderExist = true;
+        if (empty($fileName)) {
+            if (!is_null($folder->path)) {
+                $folderExist = true;
+            }
+        }
+        else {
+             $files = $folder->findRecursive($fileName);
+             if ($files) {
+                 $folderExist = true;
+             }
+             
         }
         return $folderExist;
     }
+    
     
     /**
      * checks to see if jobs are waiting in the queue for processing
