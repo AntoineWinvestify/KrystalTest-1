@@ -103,7 +103,7 @@ class GearmanClientShell extends AppShell {
      * Function to delete a folder of a day and a investor if there was some 
      * fail on the process to collect his data
      * @param string $queueId It is the queueId
-     * @param string $date It is the date that the folder must be deleted
+     * @param integer $linkAccountId It is the link account id
      * @return boolean It's true if the deleted was successful
      */
     public function deleteFolderByDateAndLinkaccountId($queueId, $linkAccountId) {
@@ -123,7 +123,7 @@ class GearmanClientShell extends AppShell {
     /**
      * Function to verify that the collection of data was successful on all the 
      * workers per company and per user, if a company failed, the function will delete it.
-     * If a masive fail occurs, the function will delete all the folders
+     * If a massive fail occurs, the function will delete all the folders
      * @param string $userResult It is the result of the collection of data
      * @return boolean It is true if the process was successful
      */
@@ -152,11 +152,11 @@ class GearmanClientShell extends AppShell {
     }
     
     /**
-     * 
-     * @param type $userReference
-     * @param type $linkaccountId
-     * @param type $fileName
-     * @return boolean
+     * Function to verify if a folder exist searching by path or it containing files
+     * @param string $userReference It is the user reference used by our database
+     * @param integer $linkaccountId It is the link account id
+     * @param string $fileName It is the name of the file to look for inside the folder
+     * @return boolean It's true if the folder exists
      */
     public function verifyCompanyFolderExist($userReference, $linkaccountId, $fileName = null) {
         $configPath = Configure::read('files');
