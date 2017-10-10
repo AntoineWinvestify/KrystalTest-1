@@ -126,7 +126,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
                 $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel($str);
             }
 
-           if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
+           /*if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
                $this->logoutOnCompany($info["companyIdForQueue"], $str);
                $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
                $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info]->getUrlSequenceBackup());  // provide all URLs for this sequence
@@ -135,8 +135,8 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
                $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
                $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
                $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel();
-           } 
-           else if ($info["typeOfRequest"] == "LOGOUT") {
+           } */
+           if ($info["typeOfRequest"] == "LOGOUT") {
                echo "LOGOUT FINISHED <br>";
                $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
            } 
