@@ -180,7 +180,7 @@ class ecrowdinvest extends p2pCompany {
                 unset($tempArray);
             }
 
-            if ($readController > 6) {  //If we find more than two completed investment existing in the backpup, stop reading
+            if ($readController > 25) {  //If we find more than 25 completed investment existing in the backpup, stop reading
                 echo 'Stop reading';
                 break;
             }
@@ -438,7 +438,7 @@ class ecrowdinvest extends p2pCompany {
         $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
-                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset'));
+                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width'));
 
                 
         $node1 = $this->cleanDom($node1, array( //Clear progress div
@@ -453,7 +453,7 @@ class ecrowdinvest extends p2pCompany {
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
              array('typeSearch' => 'element', 'tag' => 'img'),
-                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset'));
+                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width'));
         
         $node2 = $this->cleanDom($node2, array( //Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),

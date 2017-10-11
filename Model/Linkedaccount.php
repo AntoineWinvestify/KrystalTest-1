@@ -152,6 +152,7 @@ class Linkedaccount extends AppModel {
 
         foreach ($results as $key => $val) {
             if (isset($val['Linkedaccount']['linkedaccount_password'])) {
+                
                 $results[$key]['Linkedaccount']['linkedaccount_password'] = $this->decryptDataAfterFind(
                         $val['Linkedaccount']['linkedaccount_password']);
             }

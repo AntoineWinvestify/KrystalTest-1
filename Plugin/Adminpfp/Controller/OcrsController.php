@@ -16,8 +16,8 @@
  *
  *
  * @author
- * @version 0.1
- * @date 2016-10-25
+ * @version 0.15
+ * @date 2017-07-10
  * @package
  *
  *
@@ -73,8 +73,10 @@
  * Update Checks
  * 
  * 
- * 2017-07-10
+ * 2017-07-10   Version 0.15
  * Copied only the relevant part of the adminpfp original Controlller to plugin "adminpfp" directory
+ * Added the truth table in readtallymandata
+ * 
  * 
  * 
  * Pending:
@@ -134,11 +136,6 @@ class ocrsController extends AppController {
         $this->layout = 'Adminpfp.azarus_private_layout';
     }
 
-    //PFPAdmin View #3
-    function ocrPfpTallyman() {
-        $this->layout = 'Adminpfp.azarus_private_layout';
-    }
-
     /**
      * 
      * Shows the Tallyman data of a user in a graphical manner
@@ -160,7 +157,8 @@ class ocrsController extends AppController {
         $userEmail = $_REQUEST['userEmail'];
         $userTelephone = $_REQUEST['userTelephone'];
         $chargingConfirmed = $_REQUEST['chargingConfirmed'];
-
+        
+        
 // Get the unique investor identification
         $inputParmCount = 0;
         if (!empty($inputId)) {
@@ -184,7 +182,8 @@ class ocrsController extends AppController {
         } else {
             $filterConditions = array_combine($key, $value);
             $searchData = json_encode($filterConditions);
-
+            
+            // Save all the searches done by the adminpfp's in order to harvest email addresses
             $this->Search = ClassRegistry::init('Adminpfp.Search');
             $result = $this->Search->writeSearchData($searchData, $platformId, null, null, TALLYMAN_APP);
 
@@ -202,11 +201,21 @@ class ocrsController extends AppController {
                 // CHECK IF structure can be improved
                 if (empty($resultTallymanData)) {
                     $error = NO_DATA_AVAILABLE;
-                } else {
+                } 
+                else {      // All parameters were provided and correct
                     $this->set('resultTallyman', $resultTallymanData);
                     $this->Billingparm = ClassRegistry::init('Adminpfp.Billingparm');
-
-                    if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
+                    $chargeThisEvent = $this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman");                
+/*
+ * Truth-Table:
+ * $chargingConfirmed $chargeThisEvent  Result
+ *          0               0           Continue without Charging
+ *          0               1           Send Confirmation Modal
+ *          1               0           Continue without Charging
+ *          1               1           Store the Charging Data
+ * 
+ */       
+                    if ($chargeThisEvent) {
                         if ($chargingConfirmed == false) {
                             $parameters = array($inputId, $userEmail, $userTelephone);
                             $this->set('parameters', $parameters);
@@ -215,8 +224,8 @@ class ocrsController extends AppController {
                         }
                     }
 
-                    // provide data for possible billing
-                    if ($this->isChargeableEvent($userIdentification, null, $platformId, null, "tallyman")) {
+                    // provide data for billing purposes
+                    if ($chargeThisEvent && $chargingConfirmed) {
                         $data = array();
                         $data['reference'] = $userIdentification;                           // investor unique identification
                         $data['parm1'] = $this->Session->read('Auth.User.Adminpfp.adminpfp_identity');       // adminpfp unique identification
@@ -240,7 +249,7 @@ class ocrsController extends AppController {
      *
      *  Checks if Tallyman event is to be charged, i.e. if charging data must be stored in database
      * 
-     *  @param 		$reference      parameter to be checked
+     *  @param 	    $reference      parameter to be checked
      *  @param      string      transparent parameter 2 to be checked
      *  @param      string      transparent parameter 3 to be checked
      *  @param      string      transparent parameter 4 to be checked
@@ -309,13 +318,6 @@ class ocrsController extends AppController {
     public function startTallyman($investorEmail, $investorTelephone) {
 
         $this->layout = 'Adminpfp.azarus_private_layout';
-
-        $investorDNI = "";
-        $investorTelephone = "";
-        $investorEmail = "";
-
-        $investorEmail = "antoine.de.poorter@gmail.com";
-        $investorTelephone = "+34675546946";
 
         $this->set("investorEmail", $investorEmail);
         $this->set("investorDNI", $investorDNI);

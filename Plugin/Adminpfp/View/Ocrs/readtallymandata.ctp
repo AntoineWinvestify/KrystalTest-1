@@ -15,8 +15,8 @@
 *
 *
 * @author
-* @version 0.2
-* @date 2017-06-13
+* @version 0.4
+* @date 2017-07-18
 * @package
  * 
  * One Click Registration - PFD Admin Tallyman
@@ -33,8 +33,13 @@
  2017-07-05     version 0.3
  * class="fa fa-long-arrow-down" for the % of invested money
  
-
+ 2017-07-18     version 0.4
+ * Adapted to CakePhp array structure, 
  
+ 
+ 
+  
+
  PENDING:
  * vertical axis of line chart (multiply by 100 and name the axis)
  * vertical axis of bar chart (name of the axis)
@@ -222,9 +227,9 @@ var myChart = new Chart(ctx, {
                                                 </div>
                                                 <div class="card-content" style="text-align: center;">
                                                     <p>
-                                                        <?php echo __('% Total cartera')?>
+                                                        <?php echo __('% Total Investment Portfolio')?>
                                                         <strong>
-                                                            <?php echo __('invertida')?>
+                                                            <?php echo __('')?>
                                                         </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
                                                     </p>
@@ -302,7 +307,7 @@ var myChart = new Chart(ctx, {
                                                         <div class="card-content" style="text-align:center">
                                                             <p><?php echo __('Active Investor Platforms')?> <i class="fa fa-exclamation-circle tooltipIcon" id="activePFP"></i></p>
                                                             <!-- Number of linked accounts -->
-                                                            <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_activePFPs']?></h2>
+                                                            <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['Investorglobaldata']['investorglobaldata_activePFPs']?></h2>
                                                         </div>
                                                         <div class="card-footer" style="display:none" id="tooltip_activePFP">
                                                             <div class="stats" style="text-align: left;">
@@ -317,9 +322,9 @@ var myChart = new Chart(ctx, {
                                                                 <i class="fa fa-sitemap"></i>
                                                         </div>
                                                         <div class="card-content" style="text-align:center">
-                                                            <p><?php echo __('Account Linking')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
+                                                            <p><?php echo __('Linked Accounts')?> <i class="fa fa-exclamation-circle tooltipIcon" id="totalPFP"></i></p>
                                                             <!-- total number of platforms -->
-                                                            <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['investorglobaldata_totalPFPs']?></h2>
+                                                            <h2 style="text-align: center; margin: 10px 0px 0px;"><?php echo $resultTallyman[0]['Investorglobaldata']['investorglobaldata_totalPFPs']?></h2>
                                                         </div>
                                                         <div class="card-footer" style="display:none" id="tooltip_totalPFP">
                                                             <div class="stats" style="text-align: left;">

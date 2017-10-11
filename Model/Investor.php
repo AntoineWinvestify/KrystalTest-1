@@ -188,7 +188,7 @@ class Investor extends AppModel {
 
     /**
      *
-     * 	Updates the status of the account of an investor
+     * 	Reads the status of the account of an investor
      * 	@param 		int	$investorReference  The database handler of the investor
      * 	@param 		bitmap	$statusBit          The "status characteristic" to be checked of the current account
      *                                                   The definition of the bitmap is defined in database table
@@ -509,7 +509,7 @@ class Investor extends AppModel {
 
     /**
      * Create a check line in the checks table for the user
-     * @param type $id
+     * @param type $id  id of related User table
      * @return boolean
      */
     public function createCheckdata($id) {
@@ -520,8 +520,8 @@ class Investor extends AppModel {
             'check_surname' => 0,
             'check_dni' => 0,
             'check_dateOfBirth' => 0,
-            'check_email' => 1,
-            'check_telephone' => 1,
+            'check_email' => 1,                 // Cannot be changed directly by user
+            'check_telephone' => 1,             // Cannot be changed directly by user
             'check_postCode' => 0,
             'check_address' => 0,
             'check_city' => 0,
@@ -541,7 +541,7 @@ class Investor extends AppModel {
     /**
      * Update the check data
      * @param type $checks
-     * @param type $invesorId
+     * @param type $investorId
      * @return int
      */
     public function updateCheckData($checks) {

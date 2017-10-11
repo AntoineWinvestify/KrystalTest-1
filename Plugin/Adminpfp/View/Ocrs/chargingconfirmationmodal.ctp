@@ -48,13 +48,10 @@ $userid = $parameters[0];
     $(function () {
 
         $(document).on('click', '.close', function () {
-            console.log("Antoine");
             $('#chargingConfirmationModal').removeClass("show");
         });   
 
         $(document).on("click", '.closeBtn', function () {
-            console.log("Antoin de Poorter");
-   //         $("#chargingConfirmationModal").removeClass("show");
             $("#chargingConfirmationModal").remove();
         });
 
