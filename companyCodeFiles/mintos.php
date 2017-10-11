@@ -497,7 +497,7 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, ERROR_FLOW_LOGIN);
                 }
                 
                 $this->idForSwitch++;
@@ -637,7 +637,7 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 //echo $str;
                 $resultLogin = false;
-                echo 'CHeck login' . SHELL_ENDOFLINE;
+                echo 'Check login' . SHELL_ENDOFLINE;
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $a) {
                     echo $a->nodeValue . SHELL_ENDOFLINE;
@@ -656,7 +656,7 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, ERROR_FLOW_LOGIN);
                 }
                 
                 $this->idForSwitch++;

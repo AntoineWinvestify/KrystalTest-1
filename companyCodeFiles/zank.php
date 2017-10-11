@@ -1067,7 +1067,7 @@ class zank extends p2pCompany {
      * 	@return array	Data of each investment of the user as an element of an array
      * 	
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
         switch ($this->idForSwitch){
             case 0:
                 $this->idForSwitch++;
@@ -1136,7 +1136,7 @@ class zank extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     //fix this problem
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, ERROR_FLOW_LOGIN);
                 }
                 echo "LOGIN CONFIRMED";
                 // We are at page: "MI ZANK". Look for the "internal user identification"
@@ -1295,7 +1295,7 @@ class zank extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     //fix this problem
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, ERROR_FLOW_LOGIN);
                 }
                 
                 echo "LOGIN CONFIRMED";

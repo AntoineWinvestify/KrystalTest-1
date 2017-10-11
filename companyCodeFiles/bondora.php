@@ -333,7 +333,7 @@ class bondora extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, ERROR_FLOW_LOGIN);
                 }
 
                 //Get global data
@@ -615,7 +615,7 @@ class bondora extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, ERROR_FLOW_LOGIN);
                 }
 
                 $this->idForSwitch++;
