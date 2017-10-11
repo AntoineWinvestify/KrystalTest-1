@@ -1428,7 +1428,40 @@ class HelloShell extends AppShell {
         print_r($tempResult);
     }
     
-    
+        public function testAmount7() { // format 2500,45214€
+        $filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'my-investments(1).xlsx';
+        echo $filePath;
+
+        $parserConfig = [
+        "G" => [
+                [
+                    "type" => "investment.fullLoanAmount", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => "E",
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+        ];
+
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+        Configure::load('p2pGestor.php', 'default');
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
+
+        $myParser = new Fileparser();
+        $myParser->setConfig(array(
+            'sortParameter' => "investment.investment_loanId",
+            'OffsetStart' => 1,
+            'offsetEnd' => 2,
+        ));
+        $myParser->getConfig();
+        $tempResult = $myParser->analyzeFile($filePath, $parserConfig);
+        print_r($tempResult);
+    }
     
     
     
