@@ -29,11 +29,6 @@ App::import('Shell','GearmanClient');
  */
 class CollectDataClientShell extends GearmanClientShell {
 
-    public function startup() {
-        $this->GearmanClient = new GearmanClient();
-        $this->Applicationerror = ClassRegistry::init('Applicationerror');
-    }
-
     /**
      * Function to init the process to recollect all the user investment data
      *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
@@ -43,6 +38,7 @@ class CollectDataClientShell extends GearmanClientShell {
         //$queueStatus = $this->args[0];
         //$queueAcessType = $this->args[1];
         $inActivityCounter = 0;
+        $this->flowName = "GEARMAN_FLOW1";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
 
