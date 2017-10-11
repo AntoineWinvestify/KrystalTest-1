@@ -29,9 +29,6 @@ App::import('Shell','GearmanClient');
  */
 class CollectAmortizationDataClientShell extends GearmanClientShell {
     
-    protected $newComp = [];
-    public $uses = array('Marketplace', 'Company', 'Urlsequence', 'Marketplacebackup');
-    
     /**
      * Process to initiate the process to collect all the amortization tables
      */
