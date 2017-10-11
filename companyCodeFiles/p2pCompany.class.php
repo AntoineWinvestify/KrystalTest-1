@@ -1558,15 +1558,43 @@ class p2pCompany {
      * @param object $error It is the error that pass the plugin of multicurl
      * @return array It is the principal array with only the error variable
      */
-    public function getError($line, $file, $id = null, $error = null) {
-        $newLine = "\n";
-        $type_sequence = null;
-        if (!empty($id)) {
-            $type_sequence = "$newLine The sequence is " . $id;
+    public function getError($line, $file, $typeErrorId = null, $typeSequence = null, $error = null) {
+        if (!empty($typeErrorId)) {
+            $this->tempArray['global']['error']['subtypeErrorId'] = $typeErrorId;
+            if (!empty($error)) {
+                $this->tempArray['global']['error']['subtypeErrorId'] = $this->getErrorCurlType($error->getCode());
+            }  
+            $this->tempArray['global']['error']['typeOfError'] = "";
+            $this->tempArray['global']['error']['detailedErrorInformation'] = "";
+            $this->tempArray['global']['error']['line'] = $line;
+            $this->tempArray['global']['error']['file'] = $file;
+            $this->tempArray['global']['error']['urlsequenceUrl'] = $this->errorInfo;
         }
-        $error_request = null;
+        else {
+            $this->tempArray = $this->setErrorOldUserinvestmentdata($line, $file, $typeSequence, $error);
+        }
+    }
+    
+    public function getErrorCurlType($code) {
+        $subtypeError = ERROR_FLOW_CURL;
+        switch($code) {
+            case 3:
+                $subtypeError = ERROR_FLOW_URLSEQUENCE;
+                break;
+            case 28:
+                $subtypeError = ERROR_FLOW_CURL_TIMEOUT;
+        }
+        return $subtypeError;
+    }
+    
+    public function setErrorOldUserinvestmentdata($line, $file, $typeSequence = null, $error = null) {
+        $newLine = "\n";
+        if (!empty($typeSequence)) {
+            $typeSequence = "$newLine The sequence is " . $typeSequence;
+        }
+        $errorRequest = null;
         if (!empty($error)) {
-            $error_request = "$newLine The error code of the request: " . $error->getCode()
+            $errorRequest = "$newLine The error code of the request: " . $error->getCode()
                     . "$newLine The error message of the request: " . $error->getMessage();
         }
         
@@ -1575,15 +1603,15 @@ class p2pCompany {
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
                 . " ERROR Userinvestmentdata: detected in PFP id: " .  $this->companyName
                 . "$newLine Error type " . ERROR_USER_INVESTMENT_DATA
-                . " " . $type_sequence
-                . " " . $error_request;
+                . " " . $typeSequence
+                . " " . $errorRequest;
         $this->tempArray['global']['error'] = $errorDetailed;
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, ERROR_USER_INVESTMENT_DATA);
         return $this->tempArray;
     }
-
+    
     /**
      * 	borrowed from "http://guid.us/"
      * 	Generates a GUID
