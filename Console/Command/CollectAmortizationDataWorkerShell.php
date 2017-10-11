@@ -37,6 +37,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlAmortization', array($this, 'getDataMulticurlFiles'));
+        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n"; 
         while( $this->GearmanWorker->work() );
     }
     
@@ -162,16 +163,20 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
        
        $lengthTempArray = count($this->tempArray);
        $statusCollect = [];
+       $errors = null;
        for ($i = 0; $i < $lengthTempArray; $i++) {
            if (empty($this->tempArray[$i]['global']['error'])) {
                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "1";
            }
            else {
                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "0";
+               $errors[$this->newComp[$i]->getLinkAccountId()] = $this->tempArray[$i]['global']['error'];
            }
        }
        
-       return json_encode($statusCollect);
+       $data['statusCollect'] = $statusCollect;
+       $data['errors'] = $errors;
+       return json_encode($data);
     }
     
 }
