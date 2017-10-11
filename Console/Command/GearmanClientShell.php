@@ -78,6 +78,13 @@ class GearmanClientShell extends AppShell {
             $this->userReference[$data[0]] = $data[2];
         }
         $this->userResult[$data[0]]['global'] = "0";
+        $this->gearmanErrors[$data[0]]['global'];
+        $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = ERROR_FLOW_GEARMAN_EXCEPTION;
+        $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "An error ";
+        $this->tempArray['global']['error'] = "";
+        $this->tempArray['global']['error']['line'] = $line;
+        $this->tempArray['global']['error']['file'] = $file;
+        $this->tempArray['global']['error']['urlsequenceUrl'] = $this->errorInfo;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
