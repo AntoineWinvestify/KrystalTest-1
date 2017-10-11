@@ -1573,6 +1573,7 @@ class p2pCompany {
         else {
             $this->tempArray = $this->setErrorOldUserinvestmentdata($line, $file, $typeSequence, $error);
         }
+        return $this->tempArray;
     }
     
     public function getErrorCurlType($code) {
