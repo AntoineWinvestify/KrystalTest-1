@@ -35,7 +35,354 @@ App::uses('File', 'Utility');
 class ParseDataClientShell extends AppShell {
     protected $GearmanClient;
     private $newComp = [];
+    private $variablesConfig = [
+        [0] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACUMULATIVE           // accumulative value (read BEFORE write action is required)
+            ],
+        [1] => [
+                ["databaseName"] => "investment.investment_debtor", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           // not an accumulative value (simple write action)     
+            ],       
+        [2] => [
+                ["databaseName"] => "investment.investment_country", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [3] => [
+                ["databaseName"] => "investment.investment_loanType", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],  
+        [4] => [
+                ["databaseName"] => "investment.investment_amortizationMethod", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE         
+            ],
+        [5] => [
+                ["databaseName"] => "investment.investment_market", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [6] => [
+                ["databaseName"] => "investment.investment_loanOriginator", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE
+            ],
+        [7] => [
+                ["databaseName"] => "investment.investment_buyBackGuarantee", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],
+        [8] => [
+                ["databaseName"] => "investment.investment_currency", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE  
+            ],
+        [9] => [
+                ["databaseName"] => "investment.investment_typeOfInvestment", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [10] => [
+                ["databaseName"] => "investment.investment_investmentDate", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE      
+            ],       
+        [11] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE      
+            ],
+        [12] => [
+
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [13] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],  
+        [14] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE         
+            ],
+        [15] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [16] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [17] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],
+        [18] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE  
+            ],
+        [19] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ], 
+        [20] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE      
+            ],            
+        [21] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE    
+            ],       
+        [22] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [23] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],  
+        [24] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE         
+            ],
+        [25] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [26] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [27] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],
+        [28] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE  
+            ],
+        [29] => [
+                ["databaseName"] => "investment.investment_loanId", 
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ], 
+        [30] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [31] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE     
+            ],       
+        [32] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [33] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],  
+        [34] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE         
+            ],
+        [35] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [36] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [37] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],
+        [38] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE  
+            ],
+        [39] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ], 
+        [40] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],
+        [41] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE      
+            ],       
+        [42] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [43] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],  
+        [44] => [
+                ["databaseName"] => "investment.investment_loanId",             
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE         
+            ],
+        [45] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [46] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [47] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],
+        [48] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE  
+            ],
+        [49] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ], 
+        [50] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [51] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [52] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [53] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],  
+        [54] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE         
+            ],
+        [55] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [56] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [57] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],
+        [58] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE  
+            ],
+        [59] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ], 
+        [60] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE   
+            ],
+        [61] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE  
+            ],       
+        [62] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [63] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],  
+        [64] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE         
+            ],
+        [65] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE 
+            ],       
+        [66] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE        
+            ],
+        [67] => [
+                ["databaseName"] => "investment.investment_loanId",  
+                ["state"] => VARIABLE_NOT_DONE,
+                ["char1"] => VARIABLE_NOT_ACCUMULATIVE           
+            ],
+        ];
+         
+
+    
     public $uses = array('Queue');
+    
     public function startup() {
         $this->GearmanClient = new GearmanClient();
     }
@@ -356,3 +703,32 @@ public function getNextPaymentDate(&$dbTableReference, $value) {
 }
 
 }
+
+
+
+function var_name(&$var) {
+   foreach ($GLOBALS as $k => $v) {
+       $global_vars[$k] = $v;
+   }
+ 
+   // save the variable's original value
+   $saved_var = $var;
+ 
+   // modify the variable whose name we want to find
+   $var = !$var;
+ 
+   // compare the defined variables before and after the modification
+   $diff = array_keys(array_diff_assoc($global_vars, $GLOBALS));
+ 
+   // restore the variable's original value
+   $var = $saved_var;
+ 
+   // return the name of the modified variable
+   return $diff[0];
+}
+/*
+ * Thanks for posting your solution. It works for variables with "global" scope. To use var_name() 
+ * with variables defined within a function you would have to scan the array returned by get_defined_vars() 
+ * instead of $GLOBALS. Would be great to have a class with objects that know their own name. E.g. $a1 = new varNameClass(); with 
+ * a method: $a1->getName() returning the string 'a1'.
+ */
