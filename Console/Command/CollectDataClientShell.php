@@ -28,10 +28,6 @@ App::import('Shell','GearmanClient');
  * the files of various investors using Gearman
  */
 class CollectDataClientShell extends GearmanClientShell {
-    protected $GearmanClient;
-    protected $newComp = [];
-    protected $date;
-    public $uses = array('Company', 'Urlsequence');
 
     public function startup() {
         $this->GearmanClient = new GearmanClient();
@@ -52,8 +48,6 @@ class CollectDataClientShell extends GearmanClientShell {
 
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
-        
-        $this->Queue = ClassRegistry::init('Queue');
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
         //$resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
         
