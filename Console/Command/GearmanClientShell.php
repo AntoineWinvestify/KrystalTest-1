@@ -65,8 +65,8 @@ class GearmanClientShell extends AppShell {
         $this->userResult[$data[0]]['global'] = "0";
         $this->gearmanErrors[$data[0]]['global']['typeOfError'] = "GLOBAL ERROR on flow " . $this->flowName ;
         $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "GLOBAL ERROR on " . $this->flowName
-                . " with type of error: " . ERROR_ . $this->flowName . " AND subtype " . ERROR_FLOW_GEARMAN_FAIL ;
-        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = ERROR_ . $this->flowName;
+                . " with type of error: " . constant("ERROR_" . $this->flowName) . " AND subtype " . ERROR_FLOW_GEARMAN_FAIL ;
+        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = constant("ERROR_" . $this->flowName);
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = ERROR_FLOW_GEARMAN_FAIL;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
@@ -85,8 +85,8 @@ class GearmanClientShell extends AppShell {
         $this->userResult[$data[0]]['global'] = "0";
         $this->gearmanErrors[$data[0]]['global']['typeOfError'] = "GLOBAL ERROR on flow " . $this->flowName ;
         $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "GLOBAL ERROR on " . $this->flowName
-                . " with type of error: " . ERROR_ . $this->flowName . " AND subtype " . ERROR_FLOW_GEARMAN_EXCEPTION ;
-        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = ERROR_ . $this->flowName;
+                . " with type of error: " . constant("ERROR_" . $this->flowName) . " AND subtype " . ERROR_FLOW_GEARMAN_EXCEPTION ;
+        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = constant("ERROR_" . $this->flowName);
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = ERROR_FLOW_GEARMAN_EXCEPTION;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
@@ -154,10 +154,11 @@ class GearmanClientShell extends AppShell {
             if (!$result) {
                 $statusProcess = false;
                 $this->deleteFolderByDateAndLinkaccountId($queueId, $key); //1 = $todaydate
-                $this->gearmanErrors[$queueId][$key]['typeErrorId'] = ERROR_ . $this->flowName;
+                $this->gearmanErrors[$queueId][$key]['typeErrorId'] = constant("ERROR_" . $this->flowName);
                 $this->gearmanErrors[$queueId][$key]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $key ;
                 $this->gearmanErrors[$queueId][$key]['detailedErrorInformation'] = "ERROR on " . $this->flowName
                         . " with type of error: " . $this->gearmanErrors[$queueId][$key]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$key]['subtypeErrorId'] ;
+                print_r($this->gearmanErrors);
                 $this->saveGearmanError($this->gearmanErrors[$queueId][$key]);
             }
         }
@@ -221,7 +222,18 @@ class GearmanClientShell extends AppShell {
         if (empty($this->Applicationerror)) {
             $this->Applicationerror = ClassRegistry::init('Applicationerror');
         }
+        if (empty($error['line'])) {
+            $error['line'] = null;
+        }
+        if (empty($error['file'])) {
+            $error['file'] = null;
+        }
+        if (empty($error['urlsequenceUrl'])) {
+            $error['urlsequenceUrl'] = null;
+        }
+        if (empty($error['subtypeErrorId'])) {
+            $error['subtypeErrorId'] = null;
+        }
         $this->Applicationerror->saveAppError($error['typeOfError'],$error['detailedErrorInformation'], $error['line'], $error['file'], $error['urlsequenceUrl'], $error['typeErrorId'], $error['subtypeErrorId']);
-        
     }
 }
