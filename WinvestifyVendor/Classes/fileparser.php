@@ -661,6 +661,13 @@ if (is_array($tempResult)) {
         if ($decimalSep == ".") {
             $seperator = "\.";
         }
+        else if($decimalSep = 'E'){
+            $seperator = ".";
+            $normalizedInput = preg_replace("/[^0-9E-]/", "", $input); // only keep digits and E
+            $temp = explode("E", $normalizedInput);  
+            $input = $temp[0]*pow(10,$temp[1]); 
+            $input = number_format($input,$decimals);
+        }
         else {                                                              // seperator =>  ","
             $seperator = ",";
         }
