@@ -47,11 +47,162 @@
  */
 class ecrowdinvest extends p2pCompany {
 
+// ECROWD
+// Fecha        Nombre del proyecto                                                     Cuota	Amortización de capital(€)	Intereses brutos(€) Retención IRPF(€)  Total(€)
+// 25-07-2017	Ampliación de la red de fibra óptica de l'Ametlla de Mar - Fase 5 -	2	0,00                              1,09               0,21                0,88
+    protected $values_ecrowd = [// All types/names will be defined as associative index in array
+        "A" => [
+            [
+                "type" => "date", // Winvestify standardized name 
+                "inputData" => [
+                    "input2" => "D-M-Y", // Input parameters. The first parameter
+                // is ALWAYS the contents of the cell
+                ],
+                "functionName" => "normalizeDate",
+            ],
+            [
+                "type" => "date", // Complex format, calling external method
+                "inputData" => [
+                    "input2" => "#previous.date", // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                    // Note that "date" must be a field defined in this config file
+                    // keywords are "#previous" and "#current.
+                    // Be aware that #previous does NOT contain any data in case of parsing the
+                    // first line of the file.
+                    // #current.indexName is ONLY defined if this field is defined BEFORE this field in the
+                    // configuration file
+                    "input3" => false               // This parameter indicates if the defined field will be overwritten 
+                // if it already contains a value.     
+                // 
+                ],
+                "functionName" => "getRowData",
+            ],
+            [
+                "type" => "date1", // Complex format, example of duplicating an existing value
+                "inputData" => [
+                    "input2" => "#current.date", // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                    // Note that "date" must be a field defined in this config file
+                    // keywords are "#previous" and "#current".
+                    // Be aware that #previous does NOT contain any data in case of parsing the
+                    // first line of the file.
+                    // #current.indexName is ONLY defined if this field is defined BEFORE this field in the
+                    // configuration file
+                    "input3" => true                // This parameter indicates if the defined field will be overwritten 
+                // if it already contains a value.      
+                // 
+                ],
+                "functionName" => "getRowData",
+            ],
+        ],
+        "B" => [
+            [
+                "type" => "purpose", // trick to get the complete cell data as purpose
+                "inputData" => [
+                    "input2" => "", // May contain trailing spaces
+                    "input3" => ",",
+                ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "loanId", // Winvestify standardized name 
+                "functionName" => "getHash", // An internal loanId is generated based on md5 hash of project name
+            ]
+        ],
+        "C" => [
+            "name" => "payment",
+        ],
+        /*              [
+          "type" => "transactionType",                // Complex format, calling external method
+          "inputData" => [                            // List of all concepts that the platform can generate
+          // format ["concept string platform", "concept string Winvestify"]
+          "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+          ["Intereses brutos(€)", "Regular_interest_income"],
+          ["Retención IRPF(€)", "Tax_income_withholding_tax"],
+          ]
+          ],
+          "functionName" => "getTransactionType",
+          ],
+          [
+          "type" => "transactionDetail",              // Complex format, calling external method
+          "inputData" => [                            // List of all concepts that the platform can generate
+          // format ["concept string platform", "concept string Winvestify"]
+          "input2" => [["Amortización de capital(€)", "Principal_repayment"],
+          ["Intereses brutos(€)", "Regular_interest_income"],
+          ["Retención IRPF(€)", "Tax_income_withholding_tax"],
+          ]
+          ],
+          "functionName" => "getTransactionDetail",
+          ]
+          ],
+         */
+        "D" => [// Simply changing name of column to the Winvestify standardized name
+            [
+                "type" => "amortization",
+                "inputData" => [
+                    "input2" => ".", // Thousands seperator, typically "."
+                    "input3" => ",", // Decimal seperator, typically ","
+                    "input4" => 5, // Number of required decimals, typically 5
+                // is ALWAYS the contents of the cell
+                ],
+                "functionName" => "getAmount"
+            ]
+        ],
+        "E" => [// Simply changing name of column to the Winvestify standardized name
+            [
+                "type" => "interest",
+                "inputData" => [
+                    "input2" => ".", // Thousands seperator, typically "."
+                    "input3" => ",", // Decimal seperator, typically ","
+                    "input4" => 5, // Number of required decimals, typically 5
+                // is ALWAYS the contents of the cell
+                ],
+                "functionName" => "getAmount"
+            ]
+        ],
+        "F" => [// Simply changing name of column to the Winvestify standardized name
+            [
+                "type" => "retencionTax",
+                "inputData" => [
+                    "input2" => ".", // Thousands seperator, typically "."
+                    "input3" => ",", // Decimal seperator, typically ","
+                    "input4" => 5, // Number of required decimals, typically 5
+                // is ALWAYS the contents of the cell
+                ],
+                "functionName" => "getAmount"
+            ]
+        ],
+        "G" => [// Simply changing name of column to the Winvestify standardized name
+            [
+                "type" => "total",
+                "inputData" => [
+                    "input2" => ".", // Thousands seperator, typically "."
+                    "input3" => ",", // Decimal seperator, typically ","
+                    "input4" => 5, // Number of required decimals, typically 5
+                // is ALWAYS the contents of the cell
+                ],
+                "functionName" => "getAmount"
+            ]
+        ]
+    ];
+
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
 
+    
+     public function getParserConfigTransactionFile() {
+        return $this->$valuesEcrowdInvestTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesEcrowdInvestInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesEcrowdInvestAmortization;
+    }    
+    
+    
     /**
      *
      * 	Calculates how must it will cost in total to obtain a loan for a certain amount
@@ -77,7 +228,6 @@ class ecrowdinvest extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
-
     /**
      * Collects the marketplace data
      * @param Array $companyBackup
@@ -98,17 +248,16 @@ class ecrowdinvest extends p2pCompany {
         $attribute = 'class';
         $value = 'col-xs-12 col-md-4 col-sm-4 projectwidget';
         $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
-        
 
-          foreach ($projectwidgets as $key => $projectwidget) {
-            
+
+        foreach ($projectwidgets as $key => $projectwidget) {
+
             if ($key == 0) { //Compare structures, only compare the first element
-                
-                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-xs-12',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'filter-projects'));
-                if($structureRevision[1]){
+                $structureRevision = $this->htmlRevision($structure, 'div', null, 'class', 'col-xs-12', array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'filter-projects'));
+                if ($structureRevision[1]) {
                     $totalArray = false; //Stop reading in error                         
                     break;
-                }    
+                }
             }
 
 
@@ -184,7 +333,7 @@ class ecrowdinvest extends p2pCompany {
                 echo 'Stop reading';
                 break;
             }
-    }
+        }
         $this->print_r2($totalArray);
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
@@ -209,16 +358,16 @@ class ecrowdinvest extends p2pCompany {
         $value = 'col-xs-12 col-md-4 col-sm-4 projectwidget';
         $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
         foreach ($projectwidgets as $key => $projectwidget) {
-            
-             if ($key == 0 && $structure) { //Compare structures, only compare the first element      
-                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-xs-12',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'filter-projects'));
-                if($structureRevision[1]){
+
+            if ($key == 0 && $structure) { //Compare structures, only compare the first element      
+                $structureRevision = $this->htmlRevision($structure, 'div', null, 'class', 'col-xs-12', array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'filter-projects'));
+                if ($structureRevision[1]) {
                     $totalArray = false; //Stop reading in error                         
                     break;
-                }    
+                }
             }
-            
-            
+
+
             $tag2 = 'p';
             $ps = $this->getElements($projectwidget, $tag2);
             $purposeLocation = explode('- ', trim($ps[0]->nodeValue)); //gets purpose & location separated by "- "
@@ -282,7 +431,8 @@ class ecrowdinvest extends p2pCompany {
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
-
+    
+    
     /**
      *
      * 	Collects the investment data of the user
@@ -291,6 +441,157 @@ class ecrowdinvest extends p2pCompany {
      */
     function collectUserInvestmentData() {
         
+    }
+
+    /**
+     *
+     * 	Collects the investment data of the user
+     * 	@return array	Data of each investment of the user as an element of an array
+     * 	
+     */
+    function collectUserGlobalFilesParallel($str) {
+        switch ($this->idForSwitch) {
+            //LOGIN
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+
+            case 1:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $csrf = $input[0]->getAttribute('value'); //this is the csrf token
+
+                $this->credentials['_username'] = $this->$user;
+                $this->credentials['_password'] = $this->$password;
+                $this->credentials['_csrf_token'] = $csrf;
+
+                print_r($this->credentials);
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($this->credentials); //do login
+                break;
+
+            case 2:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+
+            case 3:
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                // echo $str;
+
+                $confirm = false;
+
+                $lis = $dom->getElementsByTagName('li');
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($lis as $li) {
+                    //echo 'Entrando $li ' . 'href value; ' . $li->getAttribute('herf') . ' node value' . $li->nodeValue . HTML_ENDOFLINE;
+                    if (trim($li->nodeValue) == 'resumen') {
+                        //echo 'Li encontrado' . HTML_ENDOFLINE;
+                        $confirm = true;
+                    }
+                }
+
+                if (!$confirm) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "EcrowdInvest login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                //LOGIN END
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+        }
+    }
+    
+    /**
+     * 
+     * @param type $str
+     * @return type
+     */
+    function collectAmortizationTablesParallel($str) { 
+        switch ($this->idForSwitch) {
+            //LOGIN
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+
+            case 1:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $csrf = $input[0]->getAttribute('value'); //this is the csrf token
+
+                $this->credentials['_username'] = $this->$user;
+                $this->credentials['_password'] = $this->$password;
+                $this->credentials['_csrf_token'] = $csrf;
+
+                print_r($this->credentials);
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($this->credentials); //do login
+                break;
+
+            case 2:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+
+            case 3:
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                // echo $str;
+
+                $confirm = false;
+
+                $lis = $dom->getElementsByTagName('li');
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($lis as $li) {
+                    //echo 'Entrando $li ' . 'href value; ' . $li->getAttribute('herf') . ' node value' . $li->nodeValue . HTML_ENDOFLINE;
+                    if (trim($li->nodeValue) == 'resumen') {
+                        //echo 'Li encontrado' . HTML_ENDOFLINE;
+                        $confirm = true;
+                    }
+                }
+
+                if (!$confirm) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Bondora login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                //LOGIN END
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company                
+                break;
+        }        
     }
 
     /**
@@ -306,12 +607,23 @@ class ecrowdinvest extends p2pCompany {
      */
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
-          $credentials['signin']	 = 'Login';
-          $credentials['csrf'] = "XXXXX";
+          FIELDS USED BY ECROWDINVEST DURING LOGIN PROCESS
+          $credentials['_csrf_token'] = "XXXXX";
          */
-        $credentials['username'] = $user;
-        $credentials['password'] = $password;
+
+        //First we need get the $csrf token
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+        $csrf = $input[0]->getAttribute('value'); //this is the csrf token
+
+        $credentials['_username'] = $user;
+        $credentials['_password'] = $password;
+        $credentials['_csrf_token'] = $csrf;
+
 
         if (!empty($options)) {
             foreach ($options as $key => $option) {
@@ -319,92 +631,31 @@ class ecrowdinvest extends p2pCompany {
             }
         }
 
-        /*
+        //print_r($credentials);
 
-          The csrf token is sent in the /https://www.loanbook.es/webuser/login message
-          <div id="login-body" class="jumbotron" style="border: none !important;padding: 5px 5px 5px 5px;margin-bottom
-          :5px;">
-          <p style="font-size:13px;">Introduzca su login y password:</p>
-          <div class="alert alert-error">
-          <ul>
-          </ul>
-          </div>
-
-          <form action="/webuser/login-ajax" method="post" name="LoginForm" class="form-horizontal"
-          id="loginAjax">    <input type="hidden" name="csrf" value="55141da7b21d23187a5ba86f40766cc8" />
-          <div class="control-group row">
-          <div class="col-md-5 col-xs-12" style="padding-left:15px;padding-right
-          : 5px">
-          <input name="username" type="text" class="all-wide required active" id="username"
-          placeholder="Usuario" value="">                </div>
-          <div class="col-md-4 col-xs-12" style="padding-left:5px;padding-right: 5px;">
-          <input name="password" type="password" class="all-wide required" id="password" placeholder
-          ="Contraseña" onkeypress="capLock(event)" value="">                    <p class="size1" id="divMayus"
-          style="display:none;text-align: left;">Bloq Mayús está activado</p>
-          </div>
-          <div class="col-md-2 col-xs-2" style="/*width:18%; padding-left:5px;padding-right:15px
-          ;">
-          <input name="signin" class="btn btn-warning" type="submit" id="formSubHeader" value
-          ="Login">                </div>
-          </div>
-          </form>    <p class="size1"><a data-modal="modal" href="/user/forgotpassword">¿Olvid
-          ó su contraseña? No hay problema. Por favor, haga clic aquí para recuperarla.</a></p>
-          <div style="clear:both;"></div>
-          <p class="size1"><a data-modal="modal" onclick="" data-containerwidth="800" data-backdrop="static"
-          href="/contact/invest">
-          ¿Aún no tiene un nombre de usuario y una contraseña?&nbsp;Regístrese ahora.
-          </a></p>
-
-          </div>
-          </div>
-          <div class="modal-footer">
-          <div class="modal-footer-message">
-          <label id="modal-error" class="error"></label>
-          </div>
+        $str = $this->doCompanyLogin($credentials); //do login
 
 
-          </div>
-
-
-
-
-         */
-
-
-        $str = $this->doCompanyLogin($credentials);
-
-// Check if user actually has entered the portal of the company.
-// by means of checking of 2 unique identifiers of the portal
-// This should be done by checking a field in the Webpage (button, link etc)
-// and the email of the user (if aplicable)
-        $dom = new DOMDocument;
+        $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
+        // echo $str;
 
-        $confirm = 0;
-        $uls = $dom->getElementsByTagName('ul');
-        foreach ($uls as $ul) {
-            $as = $ul->getElementsByTagName('a');
-            foreach ($as as $a) {
-                if (strcasecmp(trim($a->nodeValue), trim($user)) == 0) {
-                    $confirm++;
-                    break 2;
-                }
+        $confirm = false;
+
+        $lis = $dom->getElementsByTagName('li');
+        foreach ($lis as $li) {
+            //echo 'Entrando $li ' . 'href value; ' . $li->getAttribute('herf') . ' node value' . $li->nodeValue . HTML_ENDOFLINE;
+            if (trim($li->nodeValue) == 'resumen') {
+                //echo 'Li encontrado' . HTML_ENDOFLINE;
+                $confirm = true;
             }
         }
 
-        $as = $dom->getElementsByTagName('a');
-        foreach ($as as $a) {
-            if (strncasecmp(trim($a->getAttribute('href')), "/mi-posicion", 12) == 0) {
-                $confirm++;
-                break;
-            }
+        if ($confirm) {
+            return true;
         }
-
-        if ($confirm == 2) {
-            return 1;
-        }
-        return 0;
+        return false;
     }
 
     /**
@@ -419,8 +670,8 @@ class ecrowdinvest extends p2pCompany {
         $str = $this->doCompanyLogout();
         return true;
     }
-    
-     /**
+
+    /**
      * Dom clean for structure revision
      * @param Dom $node1
      * @param Dom $node2
@@ -428,46 +679,45 @@ class ecrowdinvest extends p2pCompany {
      */
     function structureRevision($node1, $node2) {
 
-                //We need remove this attribute directly from the div tag(the father)
+        //We need remove this attribute directly from the div tag(the father)
         $node1->removeAttribute('class');
         $node1->removeAttribute('Style');
         $node2->removeAttribute('class');
         $node2->removeAttribute('Style');
 
-        
+
         $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
                 ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width'));
 
-                
-        $node1 = $this->cleanDom($node1, array( //Clear progress div
+
+        $node1 = $this->cleanDom($node1, array(//Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
 
-        $node1 = $this->cleanDomTag($node1, array(  
+        $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
             array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
         ));
-        
+
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
-             array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'img'),
                 ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width'));
-        
-        $node2 = $this->cleanDom($node2, array( //Clear progress div
+
+        $node2 = $this->cleanDom($node2, array(//Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
-        
-        $node2 = $this->cleanDomTag($node2, array(   
+
+        $node2 = $this->cleanDomTag($node2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
             array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
         ));
-        
-        
+
+
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
-    
 
 }

@@ -59,6 +59,21 @@ class growly extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesGrowlyTransaction;
+    }
+ 
+     public function getParserConfigInvestmentFile() {
+        return $this->$valuesGrowlyInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesGrowlyAmortization;
+    }    
+    
+    
+    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount

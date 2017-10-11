@@ -534,7 +534,6 @@ class AppController extends Controller {
         if (empty($globalInvestorReference)) {
             return;
         }
-
         if ($this->Queue->checkQueue($globalInvestorReference)) {  // a request already exists in the queue
             return;
         }
@@ -792,12 +791,7 @@ Configure::write('debug', 2);
      * @return boolean It is the access, it can be true or false
      */
     function isAuthorized($controller, $access = '*') {
-        //$userId = $this->Auth->user('id');
         $aro = $this->Auth->user('Role.id');
-        // Get internal database reference of the investor
-        //$this->Role = ClassRegistry::init('Role');
-        //$aro = $this->Role->getRoleNameById($roleId);
-
         return $this->Acl->check($aro, $controller, $access);
     }
 

@@ -64,9 +64,32 @@ class loanbook extends p2pCompany {
 
     function __construct() {
         parent::__construct();
+        $this->i = 0;
+        $this->j = 0;
+        $this->loanArray;
+        $this->UserLoansId = array();
+        //$this->loanIdArray = array(472);
+        //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
     }
 
+    
+    
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesLoanbookTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesLoanbookInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesLoanbookAmortization;
+    }     
+    
+    
+    
+    
     /**
      *
      * 	Calculates how must it will cost in total to obtain a loan for a certain amount
@@ -859,6 +882,451 @@ class loanbook extends p2pCompany {
         $tempArray['investments'] = $data1;
         $this->print_r2($tempArray);
         return $tempArray;
+    }
+
+    /**
+     * Download the file with the user investment
+     * @param string $user
+     * @param string $password
+     */
+    function collectUserGlobalFilesParallel($str) {
+
+        switch ($this->idForSwitch) {
+            case 0:
+                /*
+                  FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
+
+                  csrf		539d6241ffbb10437f4fe6e27552bfe9
+                  password	cede_4040
+                  signin		Login
+                  username	antoine.de.poorter@gmail.com
+                 */
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+            case 1:
+
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Click "login" needed so I can read the csrf code
+                break;
+            case 2:
+                $credentials['username'] = $this->user;
+                $credentials['password'] = $this->password;
+                $credentials['signin'] = "Login";
+                $dom = new DOMDocument;
+                //echo $str;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $forms = $dom->getElementsByTagName('form');
+                /* $this->verifyNodeHasElements($forms);
+                  if (!$this->hasElements) {
+                  return $this->getError(__LINE__, __FILE__);
+                  } */
+                $index = 0;
+                foreach ($forms as $form) {
+                    $index = $index + 1;
+                    $inputs = $form->getElementsByTagName('input');
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    foreach ($inputs as $input) {
+                        if (!empty($input->getAttribute('name'))) {  // check all hidden input fields, like csrf
+                            if ($input->getAttribute('name') == "csrf") {
+                                echo "AAAA" . $credentials[$input->getAttribute('name')] . "<br>";
+                                $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                                break 2;
+                            }
+                        }
+                    }
+                }
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($credentials);
+                break;
+            case 3:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $resultMiLoanbook = false; // Could not login, credential error
+                $uls = $dom->getElementsByTagName('ul');
+                /* if (!$this->hasElements) {
+                  return $this->getError(__LINE__, __FILE__);
+                  } */
+                foreach ($uls as $ul) {
+
+                    $as = $ul->getElementsByTagName('a');
+                    $this->verifyNodeHasElements($as);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    $index = 0;
+                    foreach ($as as $a) {
+                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                            $this->mainPortalPage = $str;
+                            $resultMiLoanbook = true;
+                            break 2;
+                        }
+                        $index++;
+                    }
+                }
+                if (!$resultMiLoanbook) {   // Error while logging in
+                    echo __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN<br>";
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN\n";
+                    $tracings .= "Loanbook login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($this->mainPortalPage); // obtained in the function	"companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+
+                // Read the global investment data of this user
+                $globals = $this->getElements($dom, "span", "class", "lb_main_menu_bold");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($globals[0]->nodeValue);
+
+                $globals = $this->getElements($dom, "div", "id", "lb_cartera_data_3");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $spans = $globals[0]->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->tempArray['global']['yield'] = $this->getPercentage(trim($spans[0]->nodeValue));
+
+                $globals = $this->getElements($dom, "div", "id", "lb_cartera_data_1");
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $spans = $globals[0]->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                
+                $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
+                $this->tempArray['global']['activeInInvestments'] = $outstanding;//$this->getMonetaryValue($spans[0]->nodeValue);
+                
+                
+                $this->tempArray['global']['activeInvestments'] = $this->getMonetaryValue($spans[1]->nodeValue);
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
+                break;
+            case 4:
+                $this->idForSwitch++;
+                $url = array_shift($this->urlSequence);
+                $url = strtr($url, array('{$date1}' => 1476223200000)); //Date in seconds
+                $url = strtr($url, array('{$date2}' => 1504216800000));
+                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                break;
+            case 5:
+                $path = $this->createFolderPFPFile();
+                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            case 6:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $trs = $dom->getElementsByTagName('tr');
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                foreach ($trs as $tr) {
+
+                    $as = $dom->getElementsByTagName('a');
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    foreach ($as as $a) {
+                        if (!empty($a->getAttribute('data-id'))) {
+                            $this->UserLoansId[] = $a->getAttribute('data-id');
+                            if (!$this->hasElements) {
+                                return $this->getError(__LINE__, __FILE__);
+                            }
+                            break;
+                        }
+                    }
+                    /* echo $tr->getAttribute('data-contractid') . SHELL_ENDOFLINE;
+                      if (!empty($tr->getAttribute('data-contractid'))) {
+                      $this->UserLoansId[] = $tr->getAttribute('data-contractid');
+                      if (!$this->hasElements) {
+                      return $this->getError(__LINE__, __FILE__);
+                      }
+                      } */
+                }
+
+                $this->UserLoansId = array_unique($this->UserLoansId); //We have duplicate loans because a tag, we use this for delete duplicated loans
+                $this->UserLoansId = array_values($this->UserLoansId);
+
+
+                echo 'Loans id: ';
+                print_r($this->UserLoansId);
+                $this->maxUserLoans = count($this->UserLoansId);
+                $this->idForSwitch++;
+                $this->tempUrl['dummy'] = array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
+                break;
+            case 7:
+                if (empty($this->tempUrl['InvesmentUrl'])) {
+                    $this->tempUrl['InvesmentUrl'] = array_shift($this->urlSequence);
+                }
+                $url = $this->tempUrl['InvesmentUrl'] . $this->UserLoansId[$this->j];
+                $this->j++;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($url);
+                break;
+            case 8:
+                //echo $str;
+                $this->loanArray[$this->j - 1]['A'] = $this->UserLoansId[$this->j - 1]; //A is loan id
+
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $top = $this->getElements($dom, 'div', 'class', 'loantop')[0];
+                $divs = $top->getElementsByTagName('div');
+                foreach ($divs as $key => $div) {
+                    //echo $key . " is " . trim($div->nodeValue) . SHELL_ENDOFLINE;
+
+                    switch ($key) {
+                        case 7:
+                            $str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));
+                            $this->loanArray[$this->j - 1]['B'] = $str[0]; //Loan Purpose
+                            $this->loanArray[$this->j - 1]['C'] = $str[1]; //Loan Price target
+                            $this->loanArray[$this->j - 1]['D'] = explode("(", $str[2])[0]; //Loan Location
+                            break;
+                        case 8:
+                            $str = explode(" ", trim($div->nodeValue));
+                            $this->loanArray[$this->j - 1]['E'] = $str[0]; //Loan Rating
+                            break;
+                        case 13:
+                            $this->loanArray[$this->j - 1]['F'] = trim($div->nodeValue); //Initial TAE
+                            break;
+                        case 19:
+                            $this->loanArray[$this->j - 1]['G'] = trim($div->nodeValue); //Time left
+                    }
+                }
+
+                $tables = $dom->getElementsByTagName('table');
+                foreach ($tables as $table) {
+                    if ($table->getAttribute("id") == "table-1") {
+                        $tds = $table->getElementsByTagName('td');
+                        foreach ($tds as $subkey => $td) {
+                            echo $subkey . " is " . trim($td->nodeValue) . SHELL_ENDOFLINE;
+                            switch ($subkey) {
+                                case 3:
+                                  $this->loanArray[$this->j - 1]['H'] = trim($td->nodeValue); //Type
+                                  break;
+                               /* case 7:
+                                    $this->loanArray[$this->j - 1]['H'] = trim($td->nodeValue); //Loan Type
+                                    break;*/
+                                case 9:
+                                    $this->loanArray[$this->j - 1]['I'] = trim($td->nodeValue); //Frecuencia pago
+                                    break;
+                                case 11:
+                                    $this->loanArray[$this->j - 1]['J'] = trim($td->nodeValue); //Interes Nominal
+                                    break;
+                                case 15:
+                                    $this->loanArray[$this->j - 1]['K'] = trim($td->nodeValue); //Loan start date
+                                    break;
+                                case 17:
+                                    $str = array_values(array_unique(explode(" ", trim($td->nodeValue))));
+                                    print_r($str);
+                                    $this->loanArray[$this->j - 1]['K'] = $str[2]; //Duration
+                                    break;
+                                //case 21 SECTOR
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                print_r($this->loanArray);
+                //$this->loanArray[$this->j - 1]['B'];
+
+
+                if ($this->j < $this->maxUserLoans) {
+                    $this->idForSwitch = 8;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
+                    break;
+                } else {
+                    $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                    $this->saveFilePFP($this->fileName, json_encode($this->loanArray));
+                    $this->idForSwitch++;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
+                    break;
+                }
+            case 9:
+                echo 'Stop';
+                $path = $this->createFolderPFPFile();
+                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                return $this->tempArray;
+        }
+    }
+
+    /**
+     * 
+     * @param type $str
+     * @return type
+     */
+    function collectAmortizationTablesParallel($str) {
+        switch ($this->idForSwitch) {
+            case 0:
+                /*
+                  FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
+
+                  csrf		539d6241ffbb10437f4fe6e27552bfe9
+                  password	cede_4040
+                  signin		Login
+                  username	antoine.de.poorter@gmail.com
+                 */
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
+                break;
+            case 1:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // Click "login" needed so I can read the csrf code
+                break;
+            case 2:
+                $credentials['username'] = $this->user;
+                $credentials['password'] = $this->password;
+                $credentials['signin'] = "Login";
+                $dom = new DOMDocument;
+                //echo $str;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $forms = $dom->getElementsByTagName('form');
+                /* $this->verifyNodeHasElements($forms);
+                  if (!$this->hasElements) {
+                  return $this->getError(__LINE__, __FILE__);
+                  } */
+                $index = 0;
+                foreach ($forms as $form) {
+                    $index = $index + 1;
+                    $inputs = $form->getElementsByTagName('input');
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    foreach ($inputs as $input) {
+                        if (!empty($input->getAttribute('name'))) {  // check all hidden input fields, like csrf
+                            if ($input->getAttribute('name') == "csrf") {
+                                echo "AAAA" . $credentials[$input->getAttribute('name')] . "<br>";
+                                $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
+                                break 2;
+                            }
+                        }
+                    }
+                }
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($credentials);
+                break;
+            case 3:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $resultMiLoanbook = false; // Could not login, credential error
+                $uls = $dom->getElementsByTagName('ul');
+                /* if (!$this->hasElements) {
+                  return $this->getError(__LINE__, __FILE__);
+                  } */
+                foreach ($uls as $ul) {
+
+                    $as = $ul->getElementsByTagName('a');
+                    $this->verifyNodeHasElements($as);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+                    $index = 0;
+                    foreach ($as as $a) {
+                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                            $this->mainPortalPage = $str;
+                            $resultMiLoanbook = true;
+                            break 2;
+                        }
+                        $index++;
+                    }
+                }
+                if (!$resultMiLoanbook) {   // Error while logging in
+                    echo __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN<br>";
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN\n";
+                    $tracings .= "Loanbook login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
+                break;
+            case 4:
+                if (empty($this->tempUrl['invesmentUrl'])) {
+                    $this->tempUrl['invesmentUrl'] = array_shift($this->urlSequence);
+                }
+                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url = $this->tempUrl['invesmentUrl'] . $this->loanIds[$this->i];
+                echo "the table url is: " . $url;
+                $this->i++;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
+                break;
+
+            case 5:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                echo "Read table: ";
+                $tables = $dom->getElementsByTagName('table');
+                foreach ($tables as $table) {
+                    if ($table->getAttribute('id') == 'paymentsTable') {
+                        $AmortizationTable = new DOMDocument();
+                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
+                        $AmortizationTableString = $AmortizationTable->saveHTML();
+                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
+                        echo $AmortizationTableString;
+                    }
+                }
+                if ($this->i < $this->maxLoans) {
+                    $this->idForSwitch = 4;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
+                    break;
+                } else {
+                    return $this->tempArray;
+                    break;
+                }
+        }
     }
 
     /**

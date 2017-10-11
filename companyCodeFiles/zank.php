@@ -79,9 +79,29 @@ class zank extends p2pCompany {
 
     function __construct() {
         parent::__construct();
+        $this->i = 0;
+        //$this->loanIdArray = array(8363);
+        //$this->maxLoans = count($this->loanIdArray);
+        //{"loanIds": "683":["8800", "8800"]}}
+        //{"loanIds":{"686":["6b3649c5-9a6b-4cee-ac05-a55500ef480a","7e89377c-15fc-4de3-8b65-a55500ef6a1b"], "682":["629337", "629331", "629252"], "683":["8800", "8800"], "684":["472"]}}
 // Do whatever is needed for this subsclass
     }
 
+  
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesZankTransaction;
+    }
+ 
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesZankInvestment;
+    }
+    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesZankAmortization;
+    }   
+    
+    
+    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount
@@ -1048,6 +1068,325 @@ class zank extends p2pCompany {
         return $tempArray;
     }
 
+    /**
+     *
+     * 	Collects the investment data of the user
+     * 	@return array	Data of each investment of the user as an element of an array
+     * 	
+     */
+    function collectUserGlobalFilesParallel($str) {
+        switch ($this->idForSwitch){
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
+                break;
+            case 1:
+                //Change account
+                $this->credentials['_username'] = $this->user;
+                $this->credentials['_password'] = $this->password;
+                //$this->credentials['_username'] = "Klauskuk@gmail.com";
+                //$this->credentials['_password'] = "P2Pes2017";
+                // get login page
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $forms = $dom->getElementsByTagName('form');
+                $this->verifyNodeHasElements($forms);
+                $index = 0;
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                foreach ($forms as $form) {
+                    $index = $index + 1;
+                    if ($index == 1) {
+                        continue;
+                    }
+                    $inputs = $form->getElementsByTagName('input');
+                    $this->verifyNodeHasElements($inputs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+
+                    foreach ($inputs as $input) {
+                        if (!empty($input->getAttribute('value'))) {  // look for the csrf code
+                            $this->credentials[$name] = $input->getAttribute('value');
+                        }
+                    }
+                }
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($this->credentials);
+                break;
+            case 2:
+                //This is an error because we don't verify if we have entered
+                if ($str == 200 or $str == 103) {
+                    //echo "CODE 103 or 200 received, so do it again , OK <br>";
+                    $this->idForSwitch++;
+                    $this->doCompanyLoginMultiCurl($this->credentials);
+                    //$this->mainPortalPage = $str;
+                    $this->resultMiZank = true;
+                }
+                break;
+            case 3:
+
+                $this->mainPortalPage = $str;
+
+                //echo "user = $user and pw = $password<br>";
+                if (!$this->resultMiZank) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Zank login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    //fix this problem
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                echo "LOGIN CONFIRMED";
+                // We are at page: "MI ZANK". Look for the "internal user identification"
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($this->mainPortalPage); // obtained in the function	"companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+
+                $scripts = $dom->getElementsByTagName('script');
+                $this->verifyNodeHasElements($scripts);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                foreach ($scripts as $script) {
+                    $position = stripos($script->nodeValue, "$.ajax");
+                    if ($position !== false) {  // We found an entry
+                        echo "ENTRY FOUND";
+                        break;
+                    }
+                }
+                $testArray = explode(":", $script->nodeValue);
+                $this->print_r2($testArray);
+                $this->userId = trim(preg_replace('/\D/', ' ', $testArray[4]));
+
+                if (!is_numeric($this->userId)) {
+                    echo "<br>An error has occured, could not find internal userId<br>";
+                }
+
+                $needle = "kpi_panel";
+
+                $index = 0;
+                $ps = $dom->getElementsByTagName('p');
+
+                $this->verifyNodeHasElements($ps);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach ($ps as $p) {
+                    $class = trim($p->getAttribute('class'));
+                    $position = stripos($class, $needle);
+                    if ($position !== false) {  // found a kpi
+                        switch ($index) {
+                            case 0:
+                                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 1:
+                                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 2:
+                                $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
+                                break;
+                            case 4:
+                                $this->tempArray['global']['yield'] = $this->getPercentage($p->nodeValue);
+                                break;
+                        }
+                        $index++;
+                    }
+                }
+                // goto page "MI CARTERA"
+                $url = array_shift($this->urlSequence) . $this->userId;
+                $this->idForSwitch++;
+                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
+                break;
+            case 4:
+                echo 'URL SEQUECE FLOW: ' . SHELL_ENDOFLINE;
+                print_r($this->urlSequence);
+                $url = array_shift($this->urlSequence) . $this->userId;
+                
+                echo "Cash Flow Url: " . SHELL_ENDOFLINE;
+                echo $url;
+                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
+                break;
+            case 5:
+                return $this->tempArray;
+                break;
+            
+        }
+        
+    }
+    
+    /**
+     *  Read amortization tables
+     * @param type $str
+     * @return type
+     */
+    function collectAmortizationTablesParallel($str){
+         switch ($this->idForSwitch){
+            case 0:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
+                break;
+            case 1:
+                //Change account
+                $this->credentials['_username'] = $this->user;
+                $this->credentials['_password'] = $this->password;
+                //$this->credentials['_username'] = "Klauskuk@gmail.com";
+                //$this->credentials['_password'] = "P2Pes2017";
+                // get login page
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $forms = $dom->getElementsByTagName('form');
+                $this->verifyNodeHasElements($forms);
+                $index = 0;
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                foreach ($forms as $form) {
+                    $index = $index + 1;
+                    if ($index == 1) {
+                        continue;
+                    }
+                    $inputs = $form->getElementsByTagName('input');
+                    $this->verifyNodeHasElements($inputs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
+
+                    foreach ($inputs as $input) {
+                        if (!empty($input->getAttribute('value'))) {  // look for the csrf code
+                            $this->credentials[$name] = $input->getAttribute('value');
+                        }
+                    }
+                }
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($this->credentials);
+                break;
+            case 2:
+                //This is an error because we don't verify if we have entered
+                if ($str == 200 or $str == 103) {
+                    //echo "CODE 103 or 200 received, so do it again , OK <br>";
+                    $this->idForSwitch++;
+                    $this->doCompanyLoginMultiCurl($this->credentials);
+                    //$this->mainPortalPage = $str;
+                    $this->resultMiZank = true;
+                }
+                break;
+            case 3:
+
+                $this->mainPortalPage = $str;
+
+                //echo "user = $user and pw = $password<br>";
+                if (!$this->resultMiZank) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "Zank login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    //fix this problem
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                
+                echo "LOGIN CONFIRMED";
+                // We are at page: "MI ZANK". Look for the "internal user identification"
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($this->mainPortalPage); // obtained in the function	"companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+
+                $scripts = $dom->getElementsByTagName('script');
+                $this->verifyNodeHasElements($scripts);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                foreach ($scripts as $script) {
+                    $position = stripos($script->nodeValue, "$.ajax");
+                    if ($position !== false) {  // We found an entry
+                        echo "ENTRY FOUND";
+                        break;
+                    }
+                }
+                $testArray = explode(":", $script->nodeValue);
+                $this->print_r2($testArray);
+                $this->userId = trim(preg_replace('/\D/', ' ', $testArray[4]));
+
+                if (!is_numeric($this->userId)) {
+                    echo "<br>An error has occured, could not find internal userId<br>";
+                }
+
+                $needle = "kpi_panel";
+
+                $index = 0;
+                $ps = $dom->getElementsByTagName('p');
+
+                $this->verifyNodeHasElements($ps);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();  // load Webpage into a string variable so it can be parsed	
+                break;
+                
+            case 4:
+                if(empty($this->tempUrl['investmentUrl'])){
+                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
+                }
+                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
+                echo "the table url is: " . $url; 
+                $this->i++;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
+                break;
+                
+            case 5:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                echo "Read table: ";
+                $tables = $dom->getElementsByTagName('table');
+                foreach($tables as $table){     
+                    if($table->getAttribute('id') == 'parte'){
+                        $AmortizationTable = new DOMDocument();
+                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
+                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
+                        echo $AmortizationTableString;
+                    }
+                }
+                if($this->i < $this->maxLoans){
+                    $this->idForSwitch = 4;
+                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
+                    break;               
+                }else{
+                    return $this->tempArray;
+                    break;
+                }
+         }
+    }
+
+
+    
     /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account
