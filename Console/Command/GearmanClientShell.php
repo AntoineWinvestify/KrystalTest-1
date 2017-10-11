@@ -38,6 +38,7 @@ class GearmanClientShell extends AppShell {
     protected $queueInfo = [];
     protected $gearmanErrors = [];
     protected $date;
+    protected $flowName;
     
     public $uses = array('Company', 'Queue');
     
@@ -46,7 +47,6 @@ class GearmanClientShell extends AppShell {
      */
     public function startup() {
         $this->GearmanClient = new GearmanClient();
-        $this->Applicationerror = ClassRegistry::init('Applicationerror');
     }
     
     public function help() {
@@ -63,6 +63,11 @@ class GearmanClientShell extends AppShell {
             $this->userReference[$data[0]] = $data[2];
         }
         $this->userResult[$data[0]]['global'] = "0";
+        $this->gearmanErrors[$data[0]]['global']['typeOfError'] = "GLOBAL ERROR on flow " . $this->flowName ;
+        $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "GLOBAL ERROR on " . $this->flowName
+                . " with type of error: " . ERROR_ . $this->flowName . " AND subtype " . ERROR_FLOW_GEARMAN_FAIL ;
+        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = ERROR_ . $this->flowName;
+        $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = ERROR_FLOW_GEARMAN_FAIL;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Fail: " . $task->data() . GEARMAN_WORK_FAIL . "\n";
@@ -78,13 +83,11 @@ class GearmanClientShell extends AppShell {
             $this->userReference[$data[0]] = $data[2];
         }
         $this->userResult[$data[0]]['global'] = "0";
-        $this->gearmanErrors[$data[0]]['global'];
+        $this->gearmanErrors[$data[0]]['global']['typeOfError'] = "GLOBAL ERROR on flow " . $this->flowName ;
+        $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "GLOBAL ERROR on " . $this->flowName
+                . " with type of error: " . ERROR_ . $this->flowName . " AND subtype " . ERROR_FLOW_GEARMAN_EXCEPTION ;
+        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = ERROR_ . $this->flowName;
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = ERROR_FLOW_GEARMAN_EXCEPTION;
-        $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "An error ";
-        $this->tempArray['global']['error'] = "";
-        $this->tempArray['global']['error']['line'] = $line;
-        $this->tempArray['global']['error']['file'] = $file;
-        $this->tempArray['global']['error']['urlsequenceUrl'] = $this->errorInfo;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
@@ -103,7 +106,7 @@ class GearmanClientShell extends AppShell {
         $dataWorker = json_decode($task->data(), true);
         foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
             $this->userResult[$data[0]][$linkaccountId] = $status;
-            $this->gearmanErrors[$data[0]][$linkaccountId] = $data['errors'][$linkaccountId];
+            $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
         }
         print_r($this->userResult);
         print_r($this->userReference);
@@ -151,6 +154,11 @@ class GearmanClientShell extends AppShell {
             if (!$result) {
                 $statusProcess = false;
                 $this->deleteFolderByDateAndLinkaccountId($queueId, $key); //1 = $todaydate
+                $this->gearmanErrors[$queueId][$key]['typeErrorId'] = ERROR_ . $this->flowName;
+                $this->gearmanErrors[$queueId][$key]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $key ;
+                $this->gearmanErrors[$queueId][$key]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                        . " with type of error: " . $this->gearmanErrors[$queueId][$key]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$key]['subtypeErrorId'] ;
+                $this->saveGearmanError($this->gearmanErrors[$queueId][$key]);
             }
         }
         
@@ -160,7 +168,6 @@ class GearmanClientShell extends AppShell {
             }
             $statusProcess = false;
         }
-        
         return $statusProcess;
     }
     
@@ -209,4 +216,12 @@ class GearmanClientShell extends AppShell {
         $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
         return $jobList;
     }    
+    
+    public function saveGearmanError($error) {
+        if (empty($this->Applicationerror)) {
+            $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        }
+        $this->Applicationerror->saveAppError($error['typeOfError'],$error['detailedErrorInformation'], $error['line'], $error['file'], $error['urlsequenceUrl'], $error['typeErrorId'], $error['subtypeErrorId']);
+        
+    }
 }
