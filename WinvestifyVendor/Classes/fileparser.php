@@ -24,8 +24,8 @@
  * 2017-10-09		version 0.1
  * Basic version
  *
- * This class parses the configuration file which are provided by each companyCodeFile.
- * The result is returned in an array
+ * This class parses the transaction/investments files etc by using a configuration file which is 
+ * provided by each companyCodeFile. The result is returned in an array
  * 
  */
 
@@ -286,7 +286,7 @@
         }
 
 
-  /**
+    /**
      * Analyze the received data using the configuration data and store the result
      * in an array
      *
@@ -414,7 +414,7 @@
      * example:  DivisionInPercentage(12,27,0)   => 44
      *           DivisionInPercentage(12,27,1)   => 44.4
      */
-    public function divisionInPercentage($input, $divident, $divisor, $precision)  {
+    private function divisionInPercentage($input, $divident, $divisor, $precision)  {
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
     }
 
@@ -509,7 +509,7 @@
 
             case INCOME:                                // A result was found
                 return "Unknown_income";
-
+                break;
             default:                                    // Nothing found, so do some maths to
                 return "Unknown_concept";               // see if it is an income or a cost.
         }
@@ -573,7 +573,7 @@
 
 
     /**
-     * normalize a day or month element of a date to two (2) characters, adding a 0 if needed
+     * Normalize a day or month element of a date to two (2) characters, adding a 0 if needed
      *
      * @param string $val  Value to be normalized to 2 digits
      * @return string
@@ -630,8 +630,7 @@
         }
         return preg_replace('/[^0-9]+/' ,"", $amount);
     }
-
-
+    
 
     /**
      * Translates the currency to internal representation.

@@ -77,9 +77,6 @@ class ParseDataWorkerShell extends AppShell {
     }
 
 
-
-
-
     /**
      * Parse the content of a file (xls, xlsx, csv) into an array
      * The $job->workload() function reads the input data as sent by the Gearman client
