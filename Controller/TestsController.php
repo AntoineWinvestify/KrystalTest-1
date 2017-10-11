@@ -204,45 +204,4 @@ class TestsController extends AppController {
         //$token_object = $api->getToken($code);
     }
 
-    public function getAmount() {
-        $input = 1.21E6;
-        $thousandsSep = "";
-        $decimalSep = "E";
-        $decimals = 8;
-        if ($decimalSep == ".") {
-            $seperator = "\.";
-        } else if ($decimalSep == 'E') {
-
-            $normalizedInput = preg_replace("/[^0-9E-]/", "", $input); // only keep digits, E and -
-            $temp = explode("E", $normalizedInput);
-            $input = $temp[0] * pow(10, $temp[1]);
-            $input = number_format($input, $decimals);
-            echo $input;
-            $seperator = preg_replace("/[^,.]/", "", $input);
-        } else {                                                              // seperator =>  ","
-            $seperator = ",";
-        }
-        $allowedChars = "/[^0-9" . $seperator . "]/";
-        $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
-        $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
-
-        // determine how many decimals are actually used
-        $position = strpos($input, $decimalSep);
-        $decimalPart = preg_replace('/[^0-9]+/', "", substr($input, $position + 1, 100));
-        $numberOfDecimals = strlen($decimalPart);
-
-        $digitsToAdd = $decimals - $numberOfDecimals;
-
-        if ($digitsToAdd <= 0) {
-            $amount = round($normalizedInputFinal, $decimals);
-        }
-        if ($digitsToAdd == 0) {
-            $amount = preg_replace("/[^0-9]/", "", $input);
-        }
-        if ($digitsToAdd > 0) {
-            $amount = preg_replace('/[^0-9]+/', "", $input) . str_pad("", ($decimals - $numberOfDecimals), "0");
-        }
-        return preg_replace('/[^0-9]+/', "", $amount);
-    }
-
 }
