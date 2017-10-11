@@ -36,6 +36,10 @@ class GearmanClientShell extends AppShell {
     protected $userReference = [];
     protected $userLinkaccountIds = [];
     protected $queueInfo = [];
+    protected $gearmanErrors = [];
+    protected $date;
+    
+    public $uses = array('Company', 'Queue');
     
     /**
      * Constructor of the class
@@ -89,9 +93,10 @@ class GearmanClientShell extends AppShell {
         if (empty($this->userReference[$data[0]])) {
             $this->userReference[$data[0]] = $data[2];
         }
-        $statusCollect = json_decode($task->data(), true);
-        foreach ($statusCollect as $key => $status) {
-            $this->userResult[$data[0]][$key] = $status;
+        $dataWorker = json_decode($task->data(), true);
+        foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
+            $this->userResult[$data[0]][$linkaccountId] = $status;
+            $this->gearmanErrors[$data[0]][$linkaccountId] = $data['errors'][$linkaccountId];
         }
         print_r($this->userResult);
         print_r($this->userReference);
@@ -193,9 +198,6 @@ class GearmanClientShell extends AppShell {
      * 
      */   
     public function checkJobs ($presentStatus, $limit) {
-        if (empty($this->Queue)) {
-            $this->Queue = ClassRegistry::init('Queue');
-        }
         $userAccess = 0;
         $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
         return $jobList;
