@@ -36,6 +36,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
         //$queueStatus = $this->args[0];
         //$queueAcessType = $this->args[1];
         $inActivityCounter = 0;
+        $this->flowName = "GEARMAN_FLOW3A";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         
