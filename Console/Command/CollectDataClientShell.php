@@ -117,19 +117,7 @@ class CollectDataClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
 
-                foreach ($this->userResult as $queueId => $userResult) {
-                    $statusProcess = $this->consolidationResult($userResult, $queueId);
-                    $this->Queue->id = $queueId;
-                    if ($statusProcess) {
-                        $newState = GLOBAL_DATA_DOWNLOADED;
-                        echo "Data succcessfully download";
-                    }
-                    else {
-                        $newState = START_COLLECTING_DATA;
-                        echo "There was an error downloading data";
-                    }
-                    $this->Queue->save(array('queue_status' => $newState), $validate = true);
-                }
+                $this->verifiedStatus(GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded");
                 unset($resultQueue);
                 unset($resultInvestor);
                 unset($linkedaccountsResults); 

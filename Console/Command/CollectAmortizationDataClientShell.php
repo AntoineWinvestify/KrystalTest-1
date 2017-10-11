@@ -114,8 +114,10 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                 }
 
                 $this->GearmanClient->runTasks();
-
-                foreach ($this->userResult as $queueId => $userResult) {
+                
+                $this->verifiedStatus(AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded");
+                
+                /*foreach ($this->userResult as $queueId => $userResult) {
                     $statusProcess = $this->consolidationResult($userResult, $queueId);
                     $this->Queue->id = $queueId;
                     if ($statusProcess) {
@@ -128,7 +130,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                         echo "There was an error downloading data";
                     }
                     $this->Queue->save(array('queue_status' => $newState), $validate = true);
-                }
+                }*/
                 $numberOfIteration++;
             }
             else {
