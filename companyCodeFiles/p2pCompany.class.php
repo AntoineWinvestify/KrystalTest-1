@@ -1564,8 +1564,8 @@ class p2pCompany {
             if (!empty($error)) {
                 $this->tempArray['global']['error']['subtypeErrorId'] = $this->getErrorCurlType($error->getCode());
             }  
-            $this->tempArray['global']['error']['typeOfError'] = "";
-            $this->tempArray['global']['error']['detailedErrorInformation'] = "";
+            //$this->tempArray['global']['error']['typeOfError'] = "";
+            //$this->tempArray['global']['error']['detailedErrorInformation'] = "";
             $this->tempArray['global']['error']['line'] = $line;
             $this->tempArray['global']['error']['file'] = $file;
             $this->tempArray['global']['error']['urlsequenceUrl'] = $this->errorInfo;
