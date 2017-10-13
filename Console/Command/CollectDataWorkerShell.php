@@ -76,7 +76,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
-            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], DOWNLOAD_PFP_FILE_SEQUENCE);
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], WIN_DOWNLOAD_PFP_FILE_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
             $this->newComp[$i]->generateCookiesFile();
@@ -157,7 +157,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $newComp->setUserReference($data["queue_userReference"]);
             $newComp->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
             
-            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, MY_INVESTMENTS_SEQUENCE);
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_MY_INVESTMENTS_SEQUENCE);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $configurationParameters = array('tracingActive' => false,
                 'traceID' => $data["queue_userReference"],
@@ -165,7 +165,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $newComp->defineConfigParms($configurationParameters);
             echo "MICROTIME_START = " . microtime() . "<br>";
             $tempArray = $newComp->collectUserGlobalFilesCasper($linkedaccount['Linkedaccount']['linkedaccount_username'], $linkedaccount['Linkedaccount']['linkedaccount_password']);
-            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGOUT_SEQUENCE);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $newComp->companyUserLogout();
 
@@ -210,13 +210,13 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
         } else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
             if (!empty($error)) {
-                $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
+                $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_CURL,$info["typeOfRequest"], $error);
             } else {
                 $this->newComp[$info["companyIdForQueue"]]->saveFilePFP("controlVariables.json", json_encode($this->tempArray[$info["companyIdForQueue"]]));
             }
             $this->logoutOnCompany($info["companyIdForQueue"], $str);
             if ($info["typeOfRequest"] == "LOGOUT") {
-                unset($this->tempArray['global']['error']);
+                unset($this->tempArray[$info["companyIdForQueue"]]['global']['error']);
             }
         }
     }
