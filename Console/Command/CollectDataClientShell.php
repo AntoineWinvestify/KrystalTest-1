@@ -57,7 +57,7 @@ class CollectDataClientShell extends GearmanClientShell {
         $this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $resultQueue  = $this->checkJobs(START_COLLECTING_DATA, $jobsInParallel);
+            $resultQueue  = $this->checkJobs(WIN_QUEUE_STATUS_START_COLLECTING_DATA, $jobsInParallel);
             print_r($resultQueue);
             if (!empty($resultQueue)) {
                 $linkedaccountsResults = [];
@@ -117,7 +117,7 @@ class CollectDataClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
 
-                $this->verifiedStatus(GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded");
+                $this->verifiedStatus(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded");
                 unset($resultQueue);
                 unset($resultInvestor);
                 unset($linkedaccountsResults); 
