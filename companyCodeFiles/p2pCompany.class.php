@@ -1577,13 +1577,13 @@ class p2pCompany {
     }
     
     public function getErrorCurlType($code) {
-        $subtypeError = ERROR_FLOW_CURL;
+        $subtypeError = WIN_ERROR_FLOW_CURL;
         switch($code) {
             case 3:
-                $subtypeError = ERROR_FLOW_URLSEQUENCE;
+                $subtypeError = WIN_ERROR_FLOW_URLSEQUENCE;
                 break;
             case 28:
-                $subtypeError = ERROR_FLOW_CURL_TIMEOUT;
+                $subtypeError = WIN_ERROR_FLOW_CURL_TIMEOUT;
         }
         return $subtypeError;
     }
@@ -1603,13 +1603,13 @@ class p2pCompany {
                 . ". The queueId is " . $this->queueId['Queue']['id']
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
                 . " ERROR Userinvestmentdata: detected in PFP id: " .  $this->companyName
-                . "$newLine Error type " . ERROR_USER_INVESTMENT_DATA
+                . "$newLine Error type " . WIN_ERROR_USER_INVESTMENT_DATA
                 . " " . $typeSequence
                 . " " . $errorRequest;
         $this->tempArray['global']['error'] = $errorDetailed;
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
-        $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, ERROR_USER_INVESTMENT_DATA);
+        $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, WIN_ERROR_USER_INVESTMENT_DATA);
         return $this->tempArray;
     }
     
