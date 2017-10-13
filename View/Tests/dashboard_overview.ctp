@@ -231,7 +231,7 @@
                                                         <td class="right"><?php echo __('13.000,00 €')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Number of Investments')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Number of Active Investments')?></td>
                                                         <td class="right"><?php echo __('1254')?></td>
                                                     </tr>
                                                 </tbody>
