@@ -49,7 +49,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
      *      $data["companies"]                  array It contains all the linkedaccount information
      *      $data["queue_userReference"]        string It is the user reference
      *      $data["queue_id"]                   integer It is the queue id
-     * @return string The variable must be in string because of Gearman but it is really a boolean 1 or 0
+     * @return json Json containing all the status collect and errors by link account id
      */
     public function getDataMulticurlFiles($job) {
         $data = json_decode($job->workload(), true);
@@ -97,86 +97,30 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->newComp[$companyNumber]->collectUserGlobalFilesParallel();
             $companyNumber++;
         }
+        
+        $this->queueCurls->addListener('complete', array($this, 'multiCurlQueue'));
 
-        /*
-        * This is the callback's queue for the companies cURLs, when one request is processed
-        * Another enters the queue until finishes
-        */
-        $this->queueCurls->addListener('complete', function (\cURL\Event $event) {
-            
-            //We get the response of the request
-            $response = $event->response;
-            $error = null;
-            // $info["companyIdForQueue"] is the company id
-            // $info["idForSwitch"] is the switch id
-            // $info["typeOfRequest"]  is the type of request (WEBPAGE, DOWNLOADFILE, LOGIN, LOGOUT)
-            $info = json_decode($event->request->_page, true);
-            
-            if ($info["typeOfRequest"] == "DOWNLOADFILE") {
-                fclose($this->newComp[$info["companyIdForQueue"]]->getFopen());
-            }
-            
-            if ($response->hasError()) {
-               $this->tempArray[$info["companyIdForQueue"]]['global']['error']  = $this->errorCurl($response->getError(), $info, $response);
-               $error = $response->getError();
-            }
-            if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
-                 //We get the web page string
-                $str = $response->getContent();
-                $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
-                $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel($str);
-            }
+        //This is the queue. It is working until there are requests
+        while ($this->queueCurls->socketPerform()) {
+            echo '*';
+            $this->queueCurls->socketSelect();
+        }
 
-           /*if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
-               $this->logoutOnCompany($info["companyIdForQueue"], $str);
-               $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
-               $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info]->getUrlSequenceBackup());  // provide all URLs for this sequence
-               $this->newComp[$info["companyIdForQueue"]]->setTries(1);
-               $this->newComp[$info["companyIdForQueue"]]->deletePFPFiles();
-               $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
-               $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
-               $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel();
-           } */
-           if ($info["typeOfRequest"] == "LOGOUT") {
-               echo "LOGOUT FINISHED <br>";
-               $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
-           } 
-           else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
-               if (!empty($error)) {
-                   $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
-               }
-               else {
-                   $this->newComp[$info["companyIdForQueue"]]->saveFilePFP("controlVariables.json", json_encode($this->tempArray[$info["companyIdForQueue"]]));
-               }
-               $this->logoutOnCompany($info["companyIdForQueue"], $str);
-               if ($info["typeOfRequest"] == "LOGOUT") {
-                   unset($this->tempArray['global']['error']);
-               }
-           }
-       });
+        $lengthTempArray = count($this->tempArray);
+        $statusCollect = [];
+        $errors = null;
+        for ($i = 0; $i < $lengthTempArray; $i++) {
+            if (empty($this->tempArray[$i]['global']['error'])) {
+                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "1";
+            } else {
+                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "0";
+                $errors[$this->newComp[$i]->getLinkAccountId()] = $this->tempArray[$i]['global']['error'];
+            }
+        }
 
-       //This is the queue. It is working until there are requests
-       while ($this->queueCurls->socketPerform()) {
-           echo '*';
-           $this->queueCurls->socketSelect();
-       }
-       
-       $lengthTempArray = count($this->tempArray);
-       $statusCollect = [];
-       $errors = null;
-       for ($i = 0; $i < $lengthTempArray; $i++) {
-           if (empty($this->tempArray[$i]['global']['error'])) {
-               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "1";
-           }
-           else {
-               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "0";
-               $errors[$this->newComp[$i]->getLinkAccountId()] = $this->tempArray[$i]['global']['error'];
-           }
-       }
-       
-       $data['statusCollect'] = $statusCollect;
-       $data['errors'] = $errors;
-       return json_encode($data);
+        $data['statusCollect'] = $statusCollect;
+        $data['errors'] = $errors;
+        return json_encode($data);
     }
     
     /**
@@ -231,4 +175,60 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
 
     }
     
+    /**
+     * This is the callback's queue for the companies cURLs, when one request is processed
+     * Another enters the queue until finishes
+     * @param cURL\Event $event Object that passes the multicurl Plugin with data concerned to 
+     * the url
+     *          $info["companyIdForQueue"] is the company id
+     *          $info["idForSwitch"] is the switch id
+     *          $info["typeOfRequest"]  is the type of request (WEBPAGE, DOWNLOADFILE, LOGIN, LOGOUT)   
+     */
+    public function multiCurlQueue(\cURL\Event $event) {
+        //We get the response of the request
+        $response = $event->response;
+        $error = null;
+        $info = json_decode($event->request->_page, true);
+
+        if ($info["typeOfRequest"] == "DOWNLOADFILE") {
+            fclose($this->newComp[$info["companyIdForQueue"]]->getFopen());
+        }
+
+        if ($response->hasError()) {
+            $this->tempArray[$info["companyIdForQueue"]]['global']['error'] = $this->errorCurl($response->getError(), $info, $response);
+            $error = $response->getError();
+        }
+        if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
+            //We get the web page string
+            $str = $response->getContent();
+            $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
+            $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel($str);
+        }
+
+        /* if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
+          $this->logoutOnCompany($info["companyIdForQueue"], $str);
+          $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
+          $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info]->getUrlSequenceBackup());  // provide all URLs for this sequence
+          $this->newComp[$info["companyIdForQueue"]]->setTries(1);
+          $this->newComp[$info["companyIdForQueue"]]->deletePFPFiles();
+          $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+          $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
+          $this->newComp[$info["companyIdForQueue"]]->collectUserGlobalFilesParallel();
+          } */
+        if ($info["typeOfRequest"] == "LOGOUT") {
+            echo "LOGOUT FINISHED <br>";
+            $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+        } else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
+            if (!empty($error)) {
+                $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
+            } else {
+                $this->newComp[$info["companyIdForQueue"]]->saveFilePFP("controlVariables.json", json_encode($this->tempArray[$info["companyIdForQueue"]]));
+            }
+            $this->logoutOnCompany($info["companyIdForQueue"], $str);
+            if ($info["typeOfRequest"] == "LOGOUT") {
+                unset($this->tempArray['global']['error']);
+            }
+        }
+    }
+
 }
