@@ -443,7 +443,6 @@ class mintos extends p2pCompany {
             case 0:
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
-                echo 'Next: ' . $next . SHELL_ENDOFLINE;
                 break;
             case 1:
                 //Login fixed
@@ -478,18 +477,25 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 //echo $str;
                 $resultLogin = false;
-                echo 'CHeck login' . SHELL_ENDOFLINE;
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": Check login \n";
+                }
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $a) {
                     echo $a->nodeValue . SHELL_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
-                        echo 'FindLOGGGGGGIN\n';
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": Login found";
+                        }
                         $resultLogin = true;
                         break;
                     }
                 }
 
                 if (!$resultLogin) {   // Error while logging in
+                    if (Configure::read('debug')) {
+                        echo __FUNCTION__ . " " . __LINE__ . ": Error login \n";
+                    }
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -497,7 +503,7 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__, ERROR_FLOW_LOGIN);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
                 
                 $this->idForSwitch++;
@@ -512,11 +518,13 @@ class mintos extends p2pCompany {
                 $credentials = array_shift($this->urlSequence);
                 $headersJson = array_shift($this->urlSequence);               
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
-                echo $headers;
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers are : " . $headers . "\n";
+                }
                 $headers = json_decode($headers, true);
-                echo "JSON ERROR: " . json_last_error();
-                echo 'HEADERS';
-                var_dump($headers);
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers decode are : " . $headers . "\n";
+                }
                 //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
@@ -656,7 +664,7 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__, ERROR_FLOW_LOGIN);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
                 
                 $this->idForSwitch++;
