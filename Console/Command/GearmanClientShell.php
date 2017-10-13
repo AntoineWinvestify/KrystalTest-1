@@ -65,12 +65,12 @@ class GearmanClientShell extends AppShell {
         $this->userResult[$data[0]]['global'] = "0";
         $this->gearmanErrors[$data[0]]['global']['typeOfError'] = "GLOBAL ERROR on flow " . $this->flowName ;
         $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "GLOBAL ERROR on " . $this->flowName
-                . " with type of error: " . constant("ERROR_" . $this->flowName) . " AND subtype " . ERROR_FLOW_GEARMAN_FAIL ;
-        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = constant("ERROR_" . $this->flowName);
-        $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = ERROR_FLOW_GEARMAN_FAIL;
+                . " with type of error: " . constant("WIN_ERROR_" . $this->flowName) . " AND subtype " . WIN_ERROR_FLOW_GEARMAN_FAIL ;
+        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+        $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_FAIL;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Fail: " . $task->data() . GEARMAN_WORK_FAIL . "\n";
+        echo "Fail: " . $task->data() . WIN_GEARMAN_WORK_FAIL . "\n";
     }
     
     /**
@@ -85,12 +85,12 @@ class GearmanClientShell extends AppShell {
         $this->userResult[$data[0]]['global'] = "0";
         $this->gearmanErrors[$data[0]]['global']['typeOfError'] = "GLOBAL ERROR on flow " . $this->flowName ;
         $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "GLOBAL ERROR on " . $this->flowName
-                . " with type of error: " . constant("ERROR_" . $this->flowName) . " AND subtype " . ERROR_FLOW_GEARMAN_EXCEPTION ;
-        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = constant("ERROR_" . $this->flowName);
-        $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = ERROR_FLOW_GEARMAN_EXCEPTION;
+                . " with type of error: " . constant("WIN_ERROR_" . $this->flowName) . " AND subtype " . WIN_ERROR_FLOW_GEARMAN_EXCEPTION ;
+        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+        $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_EXCEPTION;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
+        echo "Exception: " . $task->data() . WIN_GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
     }
     
@@ -154,7 +154,7 @@ class GearmanClientShell extends AppShell {
             if (!$result) {
                 $statusProcess = false;
                 $this->deleteFolderByDateAndLinkaccountId($queueId, $key); //1 = $todaydate
-                $this->gearmanErrors[$queueId][$key]['typeErrorId'] = constant("ERROR_" . $this->flowName);
+                $this->gearmanErrors[$queueId][$key]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
                 $this->gearmanErrors[$queueId][$key]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $key ;
                 $this->gearmanErrors[$queueId][$key]['detailedErrorInformation'] = "ERROR on " . $this->flowName
                         . " with type of error: " . $this->gearmanErrors[$queueId][$key]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$key]['subtypeErrorId'] ;
