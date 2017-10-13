@@ -38,7 +38,7 @@ class ConsolidationClientShell extends GearmanClientShell {
     public function initClient() {
         
         $inActivityCounter = 0;
-        $this->flowName = "GEARMAN_FLOW0";
+        $this->flowName = "GEARMAN_FLOW4";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
 
