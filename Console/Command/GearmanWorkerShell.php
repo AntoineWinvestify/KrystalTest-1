@@ -48,7 +48,7 @@ class GearmanWorkerShell extends AppShell {
      * @param string $str It is the webpage on string format
      */
     public function logoutOnCompany($companyIdForQueue, $str) {
-        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$companyIdForQueue], LOGOUT_SEQUENCE);
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$companyIdForQueue], WIN_LOGOUT_SEQUENCE);
         //echo "Company = $this->companyId[$info["companyIdForQueue"]]";
         $this->newComp[$companyIdForQueue]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
         $this->newComp[$companyIdForQueue]->companyUserLogoutMultiCurl($str);
