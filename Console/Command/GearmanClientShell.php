@@ -241,6 +241,7 @@ class GearmanClientShell extends AppShell {
         foreach ($this->userResult as $queueId => $userResult) {
             $statusProcess = $this->consolidationResult($userResult, $queueId);
             $this->Queue->id = $queueId;
+            $queueInfo = null;
             if ($statusProcess) {
                 $newState = $status;
                 if (Configure::read('debug')) {
@@ -249,15 +250,20 @@ class GearmanClientShell extends AppShell {
             } else {
                 $newState = START_COLLECTING_DATA;
                 echo "There was an error downloading data";
-                if (empty($this->queueInfo['numberTries'])) {
-                    $this->queueInfo['numberTries'] = 1;
-                } else if ($this->queueInfo['numberTries'] == 1) {
-                    $this->queueInfo['numberTries'] = 2;
+                if (empty($this->queueInfo[$queueId]['numberTries'])) {
+                    $this->queueInfo[$queueId]['numberTries'] = 1;
+                } else if ($this->queueInfo[$queueId]['numberTries'] == 1) {
+                    $this->queueInfo[$queueId]['numberTries'] = 2;
                 } else {
                     $newState = UNRECOVERED_ERROR_ENCOUNTERED;
                 }
+                $queueInfo = $this->queueInfo[$queueId];
             }
-            $this->Queue->save(array('queue_status' => $newState), $validate = true);
+            $this->Queue->save(array(
+                    'queue_status' => $newState,
+                    'queue_info' => $queueInfo
+                ),
+                $validate = true);
         }
     }
 }
