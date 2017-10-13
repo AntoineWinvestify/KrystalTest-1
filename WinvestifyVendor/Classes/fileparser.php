@@ -301,7 +301,7 @@
 
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
-            if ($i == $this->offsetStart) {
+            if ($i == $this->config['OffsetStart']) {
                 break;
             }
             unset($rowDatas[$key]);
@@ -607,7 +607,7 @@
         }
         else if($decimalSep == 'E'){
             $input = strtr($input, array(',' => '.'));
-            $input = number_format($input,$decimals);
+            $input = number_format(floatval($input),$decimals);
             $seperator = ".";
         }
         else {                                                              // seperator =>  ","
@@ -651,7 +651,7 @@
         $filter = array(".", ",", " ", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
-        foreach ($this->currencyDetails as $currencyIndex => $currency) {
+        foreach ($this->currencies as $currencyIndex => $currency) {
             if ($loanCurrency == $currency[0]) {                // check the ISO code
               return $currencyIndex;
             }
