@@ -37,7 +37,7 @@ class PagesController extends AppController {
  * @var array
  */
 	public $uses = array();
-	var $layout = 'winvestify_publicjs_layout';
+	var $layout = 'winvestify_public_layout';
 
 
 function beforeFilter() {
