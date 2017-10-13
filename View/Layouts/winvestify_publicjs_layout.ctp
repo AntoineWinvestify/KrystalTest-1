@@ -77,7 +77,7 @@
                     </div> <!-- /navbar-header-->
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="principal_navbar">
-                        <ul class="nav navbar-nav navbar-left">
+                        <ul class="nav navbar-nav navbar-left navGreen">
                             <li><a href="https://www.winvestify.com"><i class="g-padding-r-5--xs ti-home"></i></a></li>
                             <li><a href="http://www.facebook.com/winvestify/"><i class="g-padding-r-5--xs ti-facebook"></i></a></li>
                             <li><a href="https://www.linkedin.com/company-beta/11000640/"><i class="g-padding-r-5--xs ti-linkedin"></i></a></li>

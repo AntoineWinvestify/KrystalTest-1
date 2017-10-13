@@ -2181,7 +2181,7 @@ hr.specialHr:after {
     border-bottom: 5px solid #f8f8f8;
 }
 .navGreen>li>a:hover, .nav .open>a:hover {
-    border-bottom: 5px solid #87e14b !important;
+    border-bottom: 5px solid #87e14b;
 }
 .dropdown-menu>li>a:hover {
     background-color: #e7e7e7;

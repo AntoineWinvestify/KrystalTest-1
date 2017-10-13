@@ -33,7 +33,6 @@
         }
         ?>
         <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
-        <script type="text/javascript" src="/js/accounting.min.js"></script>       
         <link rel="icon" href="/img/logo_winvestify/Logo_favicon.png">
     </head>
     <body>
@@ -50,7 +49,7 @@
                 <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header navbar-right">
-                        <ul class="nav pull-left navbar-nav collapse-tablet">
+                        <ul class="nav pull-left navbar-nav collapse-tablet navGreen">
                             <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
                                 <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
                                     <div class="row">
@@ -153,7 +152,7 @@
                                     <?php echo __('Register')?>
                                 </a>
                             </li>
-                            <li class="dropdown" style="margin-top:-3px; display:inline-block">
+                            <li class="dropdown" style="margin-top:0px; display:inline-block">
                                 <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
@@ -167,16 +166,25 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="visible-xs-block clearfix"></div>
                     <div class="collapse navbar-collapse" id="principal_navbar">
-                        <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right navGreen">
                             <li style="float:left"><a href="http://www.facebook.com/winvestify/"><small><i class="g-padding-r-5--xs ti-facebook"></i></small></a></li>
                             <li style="float:left"><a href="https://www.linkedin.com/company-beta/11000640/"><small><i class="g-padding-r-5--xs ti-linkedin"></i></small></a></li>
                             <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
-                        <ul class="nav navbar-nav navbar-left">
-                            <li><a href="#mark_features"><?php echo __('Features') ?></a></li>
-                            <li><a href="#mark_ftb"><?php echo __('Investor Toolbox') ?></a></li>
-                            <li><a href="#mark_platforms"><?php echo __('Platforms') ?></a></li>
-                            <li><a href="#mark_statistics"><?php echo __('Statistics') ?></a></li>
+                        <ul class="nav navbar-nav navbar-left navGreen">
+                            <li><a href="/pages/investors"><?php echo __('Inversores') ?></a></li>
+                            <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <?php echo __('About Us')?>
+                                    <span class="caret"></span>
+                                </a>
+                                <ul style="margin-top:0px;" class="dropdown-menu">
+                                    <li><a href="/pages/aboutUs "><?php echo __('Nuestra historia') ?></a></li>
+                                    <li><a href="/pages/team"><?php echo __('Nuestro equipo') ?></a></li>
+                                </ul>
+                            </li>
+                            <li><a href="/pages/faq"><?php echo __('FAQ') ?></a></li>
                             <li><a href="/Contactforms/form"><?php echo __('Contact') ?></a></li>
                         </ul>
                     </div><!-- /.navbar-collapse -->
@@ -186,11 +194,245 @@
         </header>
 
         <!--========== END HEADER ==========-->
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <!--========== PROMO BLOCK ==========-->
+        <a name="mark_login"></a>
+        <div class="s-promo-block-v1 g-bg-color--primary-to-blueviolet-ltr g-fullheight--md" style="background-image:url(/img/admin/login.png); background-size:cover ;">
+            <div class="container g-ver-center--md g-padding-y-100--xs">
+                <div class="row g-hor-centered-row--md g-margin-t-30--xs g-margin-t-20--sm">
+                    <div class="col-lg-8 col-sm-8 g-hor-centered-row__col g-text-center--xs g-text-left--md g-margin-b-60--xs g-margin-b-0--md">
+                        <h1 class="g-font-size-32--xs g-font-size-45--sm g-font-size-50--lg g-color--white">
+                            <img src="/img/logo_winvestify/Logo_texto.png" alt="winvestify logo" class="responsiveImg center-block" style="float:center; max-width:400px;"/>
+                        </h1>
+                        <p style="text-align:center" class="g-font-size-32--xs g-font-size-42--md g-color--white g-margin-b-0--xs">
+                            <strong><?php echo __('Connect to the major crowdlending platforms from our portal') ?>
+                            </strong></p>
+                        <p style="text-align:center">
+                            <a href="/users/registerPanel" style="margin-top:10px;" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs btnRegister">
+                                <?php echo __('Register') ?>
+                            </a>
+                        </p>
+                    </div>
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-3 col-sm-4 g-hor-centered-row__col" style="display:none;">
+                        <div class="wow fadeInUp" data-wow-duration=".3" data-wow-delay=".1s" style="border: 2px solid white; padding: 20px;">
+                            <?php echo $this->Form->create('User', array('url' => "/users/loginAction",
+                                'class' => "center-block g-width-340--xs g-bg-color--white-opacity-lightest g-padding-x-40--xs g-padding-y-30--xs g-radius--4",));
+                            ?>
 
+                            <div class="g-text-center--xs">
+                                <h2 class="g-font-size-30--xs g-color--white"><?php echo __('Login') ?></h2>
+                            </div>
+                            <?php
+                            $authMsg = $this->Session->consume('Message.auth.message');
+                            ?>
+                            <div class="errorInputMessage ErrorInactiveAccount col-xs-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo "ABC" . $authMsg; ?>
+                                </span>
+                            </div>
+                            <?php
+                            if (!empty($authMsg)) {            // Authentication Error
+                                $errorClassesForTexts = "errorInputMessage ErrorUsernameLogin col-xs-offset-1";
+                                if (array_key_exists('username', $validationResult)) {
+                                    $errorClassesForTexts .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesForTexts ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
+                                </div>
+                                <?php
+                            }
+                            ?>									
+                            <?php
+                            $errorClass = "";
+                            if (!empty($authMsg)) {
+                                $errorClass = "redBorder";
+                            }
+                            $class = "form-control1 s-form-v3__input userNameLogin" . ' ' . $errorClass;
+                            ?>
+                            <div class="col-xs-offset-1">
+                                <input type="email" id="btnLoginUsername" name="data[User][username]" class="<?php echo $class ?>" placeholder="<?php echo __('Email') ?>">
+                            </div>
+                            <?php
+                            $errorClassesText = "errorInputMessage ErrorInactiveaccount col-xs-offset-1";
+                            if (!empty($authMsg)) {
+                                $errorClassesText .= " " . "actived";
+                            }
+                            ?>
+                            <div class="<?php echo $errorClassesText ?>">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $authMsg ?>
+                                </span>
+                            </div>									
+                            <?php
+                            $errorClass = "";
+                            if (!empty($authMsg)) {
+                                $errorClass = "redBorder";
+                            }
+                            $class = "form-control1 s-form-v3__input passwordLogin" . ' ' . $errorClass;
+                            ?>								
+                            <div style="margin-top:30px" class="col-xs-offset-1">
+                                <input type="password" id="btnLoginPassword" name="data[User][password]" class="<?php echo $class ?>" placeholder="<?php echo __('Password') ?>">
+                            </div>
+
+                            <div class="errorInputMessage ErrorPassword">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $error ?>
+                                </span>
+                            </div>									
+
+                            <?php
+                            if (!empty($authMsg)) {            // Authentication Error as detected by server
+                                $errorClassesForTexts = "errorInputMessage ErrorPasswordLogin col-xs-offset-1";
+                                if (!empty($authMsg)) {
+                                    $errorClassesForTexts .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesForTexts ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
+                                </div>
+                                <?php
+                            }
+                            ?>									
+
+                            <div class="g-text-center--xs"> 
+                                <button type="submit" id="loginBtn" style="margin-top:30px" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs"><?php echo __('Send') ?>
+                                </button><br/>
+                                <a class="g-color--white g-font-size-13--xs" href="#"><?php //echo __('Forgot your password?')  ?></a>
+                            </div>
+                            <!--	</form> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-4 g-hor-centered-row__col">
+                        <div class="wow fadeInUp" data-wow-duration=".3" data-wow-delay=".1s" style="border: 2px solid #87e14b; padding: 20px; background-color: rgba(255,255,255,0.2);">
+                            <?php echo $this->Form->create('User', array('url' => "/users/loginAction",
+                                'class' => "center-block g-width-340--xs g-bg-color--white-opacity-lightest g-padding-x-40--xs g-padding-y-30--xs g-radius--4",));
+                            ?>
+
+                            <div class="g-text-center--xs">
+                                <h2 class="g-font-size-30--xs"><?php echo __('Login') ?></h2>
+                            </div>
+                            <?php
+                            $authMsg = $this->Session->consume('Message.auth.message');
+                            ?>
+                            <div class="errorInputMessage ErrorInactiveAccount col-xs-offset-1">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo "ABC" . $authMsg; ?>
+                                </span>
+                            </div>
+                            <?php
+                            if (!empty($authMsg)) {            // Authentication Error
+                                $errorClassesForTexts = "errorInputMessage ErrorUsernameLogin col-xs-offset-1";
+                                if (array_key_exists('username', $validationResult)) {
+                                    $errorClassesForTexts .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesForTexts ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
+                                </div>
+                                <?php
+                            }
+                            ?>									
+                            <?php
+                            $errorClass = "";
+                            if (!empty($authMsg)) {
+                                $errorClass = "redBorder";
+                            }
+                            $class = "form-control1 s-form-v3__input userNameLogin" . ' ' . $errorClass;
+                            ?>
+                            <div class="col-xs-offset-1">
+                                <input type="email" id="btnLoginUsername" name="data[User][username]" class="<?php echo $class ?>" placeholder="<?php echo __('Email') ?>">
+                            </div>
+                            <?php
+                            $errorClassesText = "errorInputMessage ErrorInactiveaccount col-xs-offset-1";
+                            if (!empty($authMsg)) {
+                                $errorClassesText .= " " . "actived";
+                            }
+                            ?>
+                            <div class="<?php echo $errorClassesText ?>">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $authMsg ?>
+                                </span>
+                            </div>									
+                            <?php
+                            $errorClass = "";
+                            if (!empty($authMsg)) {
+                                $errorClass = "redBorder";
+                            }
+                            $class = "form-control1 s-form-v3__input passwordLogin" . ' ' . $errorClass;
+                            ?>								
+                            <div style="margin-top:30px" class="col-xs-offset-1">
+                                <input type="password" id="btnLoginPassword" name="data[User][password]" class="<?php echo $class ?>" placeholder="<?php echo __('Password') ?>">
+                            </div>
+
+                            <div class="errorInputMessage ErrorPassword">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <span class="errorMessage">
+                                    <?php echo $error ?>
+                                </span>
+                            </div>									
+
+                            <?php
+                            if (!empty($authMsg)) {            // Authentication Error as detected by server
+                                $errorClassesForTexts = "errorInputMessage ErrorPasswordLogin col-xs-offset-1";
+                                if (!empty($authMsg)) {
+                                    $errorClassesForTexts .= " " . "actived";
+                                }
+                                ?>
+                                <div class="<?php echo $errorClassesForTexts ?>">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
+                                </div>
+                                <?php
+                            }
+                            ?>									
+
+                            <div class="g-text-center--xs"> 
+                                <button type="submit" id="loginBtn" style="margin-top:30px" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs"><?php echo __('Send') ?>
+                                </button><br/>
+                                <a class="g-color--white g-font-size-13--xs" href="#"><?php //echo __('Forgot your password?')  ?></a>
+                            </div>
+                            <!--	</form> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--========== END PROMO BLOCK ==========-->
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         <!--========== PAGE CONTENT ==========-->
         <!-- Toolbox -->
         <a name="mark_ftb"></a>
-        <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed;">
+        <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed; display:none;">
             <div class="container g-text-center--xs g-padding-y-80--xs g-padding-y-125--sm">
                 <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
                     <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Investor ToolBox Manager') ?></h2>      
@@ -200,7 +442,7 @@
         </div>
         <!-- End ftp -->
         <!-- Mockup -->
-        <div class="container_features row">
+        <div class="container_features row" style="display:none;">
             <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-offset-2 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
                 <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?></p>
                 <div class="row" id="featuresButton">
@@ -276,141 +518,7 @@
             <!-- // end row  -->
         </div>
         <!-- End Features -->
-             
-        <!-- Statistics -->
-        <?php
-        foreach ($globalResults as $result) {
-            $global['totalAmount'] = $global['totalAmount'] + $result['TotalInvestmentAmountAvailableInCompany'];
-            $global['totalOptions'] = $global['totalOptions'] + $result['TotalInvestmentOptionsAvailableInCompany'];
-            $global['totalPreInvested'] = $global['totalPreInvested'] + $result['TotalAmountPreInvestedInCompany'];
-        }
-        $tempvalue1 = (int) ($global['totalPreInvested'] / 100 );
-        $tempvalue2 = (int) ($global['totalAmount'] / 100 );
-        ?>
 
-        <script type="text/javascript">
-            var optionsAccounting = {
-                symbol: " &euro;",
-                decimal: ",",
-                thousand: ".",
-                precision: 0,
-                format: "%v%s"
-            };
-
-            temp1 = accounting.formatMoney(<?php echo $tempvalue1 ?>, optionsAccounting);
-            $(".value1").append(temp1);
-            temp2 = accounting.formatMoney(<?php echo $tempvalue2 ?>, optionsAccounting);
-            $(".value2").append(temp2);
-        </script>
-
-        <a name="mark_statistics"></a>
-        <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/06.jpg) 50% 0 no-repeat fixed;">
-            <div class="container g-padding-y-80--xs g-padding-y-125--sm">
-                <div class="row">
-
-                
-                
-                
-                <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
-                    <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white center-block"><?php echo __('Our Global Market Place ') ?></h2>      
-                </div>                
-
-                
-                
-                
-                
-                
-                    <div id="counter1" class="col-md-4 col-xs-6 g-full-width--xs g-margin-b-70--xs g-margin-b-0--sm">
-                        <div class="g-text-center--xs">
-                            <span class="g-display-block--xs g-font-size-60--xs g-color--white g-margin-b-10--xs js__counter value1">
-                                <script>document.writeln(temp1);</script>
-                            </span>
-                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
-                            <h4 class="g-font-size-18--xs g-color--white">
-                                <?php echo __('Amount Invested') ?>
-                            </h4>
-                        </div>
-                    </div>
-                    
-                    <div id="counter2" class="col-md-offset-1 col-md-3 col-xs-6 g-full-width--xs g-margin-b-70--xs g-margin-b-0--lg">
-                        <div class="g-text-center--xs">
-                            <span class="g-display-block--xs g-font-size-60--xs g-color--white g-margin-b-10--xs js__counter">
-                                <?php echo $global['totalOptions'] ?>
-                            </span>
-                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
-                            <h4 class="g-font-size-18--xs g-color--white">
-                                <?php echo __('Open investments') ?>
-                            </h4>
-                        </div>
-                    </div>
-                    
-                    <div id="counter3" class="col-md-4 col-xs-6 g-full-width--xs">
-                        <div class="g-text-center--xs">
-                            <div class="g-margin-b-10--xs">
-                                <span class="g-display-inline-block--xs g-font-size-60--xs g-color--white js__counter">
-                                    <script>document.writeln(temp2);</script>
-                                </span>
-                            </div>
-                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
-                            <h4 class="g-font-size-18--xs g-color--white">
-                                <?php echo __('Total Investment') ?>
-                            </h4>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-        <!-- End Statistics-->
-        
-        <!-- Platforms -->
-        <a name="mark_platforms"></a>
-        <div class="g-bg-color--sky-lighttt">
-            <div class="g-container--md g-padding-y-40--xs g-padding-y-125--sm">
-                <h3 class="g-color--primary" style="text-align:center"><?php echo __('A SMALL STEP FOR YOU, BUT A BIG STEP FOR YOUR INVESTMENTS') ?></h3>
-                <p style="text-align:center" style="margin: 20px 0px;"><?php echo __('Winvestify connects to the principal <strong>Invoice
-				Trading</strong> and <strong>Crowdlending</strong> platforms of Spain in a simple and secure way');?>
-                </p>
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="row">
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Zank.png" alt="Zank">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/Comunitae.png" alt="Comunitae">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Arboribus.png" alt="Arboribus">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/LoanBook.png" alt="Loanbook">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Colectual.png" alt="Colectual">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/MyTripleA.png" alt="MyTripleA">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Ecrowd.png" alt="EcrowdInvest">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Lendix.png" alt="Lendix">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Growly.png" alt="Growly">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Circulantis.png" alt="Circulantis">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Platforms -->
-        
         <!-- Popup -->
         <div id="popUp" class="g-box-shadow__bluegreen-v1 wow fadeInLeft" data-wow-duration="5" data-wow-delay=".1s" style="position:fixed;">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -523,6 +631,13 @@
                 //navbar collapse on clicking outside navbar
                 $(document).on("click", function(){
                     $('.navbar-collapse').collapse('hide');
+                });
+                
+                //Dropdown menu hover
+                $('ul.nav li.dropdown').hover(function() {
+                  $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
+                }, function() {
+                  $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
                 });
                 
                 //Screenshots Slider + Text Slider
