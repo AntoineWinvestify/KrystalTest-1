@@ -127,10 +127,6 @@ class PreprocessWorkerShell extends GearmanWorkerShell {
         $error = null;
         $info = json_decode($event->request->_page, true);
 
-        if ($info["typeOfRequest"] == "DOWNLOADFILE") {
-            fclose($this->newComp[$info["companyIdForQueue"]]->getFopen());
-        }
-
         if ($response->hasError()) {
             $this->tempArray[$info["companyIdForQueue"]]['global']['error'] = $this->errorCurl($response->getError(), $info, $response);
             $error = $response->getError();
