@@ -138,9 +138,6 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
         //We get the response of the request
         $response = $event->response;
         $error = null;
-        // $info["companyIdForQueue"] is the company id
-        // $info["idForSwitch"] is the switch id
-        // $info["typeOfRequest"]  is the type of request (WEBPAGE, DOWNLOADFILE, LOGIN, LOGOUT)
         $info = json_decode($event->request->_page, true);
 
         if ($info["typeOfRequest"] == "DOWNLOADFILE") {
@@ -158,15 +155,6 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
             $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectAmortizationTablesParallel($str);
         }
 
-        /* if (!empty($error) && $error->getCode() == CURL_ERROR_TIMEOUT && $this->newComp[$info["companyIdForQueue"]]->getTries() == 0) {
-          $this->logoutOnCompany($info["companyIdForQueue"], $str);
-          $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch(0); //Set the id for the switch of the function company
-          $this->newComp[$info["companyIdForQueue"]]->setUrlSequence($this->newComp[$info]->getUrlSequenceBackup());  // provide all URLs for this sequence
-          $this->newComp[$info["companyIdForQueue"]]->setTries(1);
-          $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
-          $this->newComp[$info["companyIdForQueue"]]->generateCookiesFile();
-          $this->newComp[$info["companyIdForQueue"]]->collectAmortizationTablesParallel();
-          } */
         if ($info["typeOfRequest"] == "LOGOUT") {
             echo "LOGOUT FINISHED <br>";
             $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
