@@ -51,7 +51,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $resultQueue = $this->checkJobs(DATA_EXTRACTED, $jobsInParallel);
+            $resultQueue = $this->checkJobs(WIN_QUEUE_STATUS_DATA_EXTRACTED, $jobsInParallel);
             $linkedaccountsResults = [];
             $queueInfos = [];
             print_r($resultQueue);
@@ -115,22 +115,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
                 
-                $this->verifiedStatus(AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded");
-                
-                /*foreach ($this->userResult as $queueId => $userResult) {
-                    $statusProcess = $this->consolidationResult($userResult, $queueId);
-                    $this->Queue->id = $queueId;
-                    if ($statusProcess) {
-                        $newState = AMORTIZATION_TABLES_DOWNLOADED;
-                        echo "Data succcessfully download";
-                    }
-                    else {
-                        
-                        $newState = START_COLLECTING_DATA;
-                        echo "There was an error downloading data";
-                    }
-                    $this->Queue->save(array('queue_status' => $newState), $validate = true);
-                }*/
+                $this->verifiedStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded");
                 $numberOfIteration++;
             }
             else {
