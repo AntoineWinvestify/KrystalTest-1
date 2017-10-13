@@ -248,7 +248,7 @@ class GearmanClientShell extends AppShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
                 }
             } else {
-                $newState = START_COLLECTING_DATA;
+                $newState = WIN_QUEUE_STATUS_START_COLLECTING_DATA;
                 echo "There was an error downloading data";
                 if (empty($this->queueInfo[$queueId]['numberTries'])) {
                     $this->queueInfo[$queueId]['numberTries'] = 1;
