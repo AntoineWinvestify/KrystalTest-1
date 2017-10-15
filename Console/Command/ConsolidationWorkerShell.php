@@ -29,6 +29,10 @@ App::import('Shell','GearmanWorker');
  * @author antoiba
  */
 class ConsolidationWorkerShell extends GearmanWorkerShell {
+    
+    protected $formula = [];
+    protected $config = [];
+    
    
     /**
      * Function main that init when start the shell class
@@ -37,7 +41,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('consolidation', array($this, 'consolidateUserData'));
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting GEARMAN_FLOW4 to listen to data from its Client\n";
-        while( $this->GearmanWorker->work() );
+        while( $this->GearmanWorker->work());
     }
     
     /**
@@ -51,7 +55,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json containing all the status collect and errors by link account id
      */
     public function consolidateUserData($job) {
-         $data = json_decode($job->workload(), true);
+        $data = json_decode($job->workload(), true);
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         print_r($data);
@@ -73,7 +77,71 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $newComp->setCompanyName($result[$companyId]['company_codeFile']);
             $newComp->setUserReference($data["queue_userReference"]);
             $newComp->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
+            $formulas = $newComp->getFormulas();
+            foreach ($formulas as $formula) {
+                foreach ($formula['param'] as $param) {
+                    //Info about Variable variable 
+                    //http://php.net/manual/en/language.variables.variable.php
+                    $$param = $this->getValue($param);
+                }
+            }
+            
         }
+    }
+    
+    public function getValue($var) {
+        $consult = explode('.', $this->config[$var]);
+        $model;
+        switch($consult[0]) {
+            case "investment": 
+                $model = $this->Invesment;
+                break;
+            case "userinvestmentdata":
+                $model = $this->Userinvestmentdata;
+                break;
+            case "transaction":
+                $model = $this->Transaction;
+                break;
+        }
+        $params['fields'] = array($var);
+        $options['joins'] = array(
+            array('table' => 'roles_sectors',
+                'alias' => 'RolesSector',
+                'type' => 'inner',
+                'conditions' => array(
+                    'Sector.id = RolesSector.sector_id'
+                )
+            ),
+            array('table' => 'roles',
+                'alias' => 'Role',
+                'type' => 'inner',
+                'conditions' => array(
+                    'RolesSector.role_id = Role.id'
+                )
+            )
+        );
+         $options['conditions'] = array(
+            'Role.id' => $roleId
+        );
+        //$options['field'] = array('Sector.*');
+        $options['recursive'] = -1;
+        $options['order'] = array(
+            'Sector.sectors_father',
+            'Sector.sectors_subSectorSequence'
+        );
+        $result = $model->find('first', $options);
+        return $result;
+    }
+    
+    public function initFormula() {
+        $this->formula[0]['eval'] = $investment - $total;
+        $this->formula[0]['externalName'] = 'cashDraw';
+        $this->formula[0]['internalName'] = 'userinvestmentdata.userinvestmentdata_cashDraw';
+        $this->formula[0]['param'][0] = 'investment';
+        $this->formula[0]['param'][1] = 'total';
+        
+        $this->config['investment'] = "investment.investment_deposits";
+        $this->config['total'] = 'userinvestmentdata.userinvestmentdata_myWallet';
     }
     
     
