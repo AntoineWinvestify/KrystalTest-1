@@ -441,6 +441,17 @@ class finanzarel extends p2pCompany {
                 }
                 echo 'Login ok';
                 
+                //Get cv
+                
+                $controlVariables = $this->getElements($dom, 'span', 'class', 't-MediaList-badge');
+                foreach ($controlVariables as $controlVariable){
+                    echo $controlVariable->nodeValue . SHELL_ENDOFLINE;
+                }
+                
+                
+                
+                
+                
                 //Get the request to download the file
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $key => $a) {
