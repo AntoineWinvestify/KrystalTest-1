@@ -23,7 +23,7 @@
 
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
-
+App::uses('AppShell', 'Console/Command');
 
 /**
  * Generic class with method to start using a Gearman Client
@@ -265,5 +265,10 @@ class GearmanClientShell extends AppShell {
                 ),
                 $validate = true);
         }
+    }
+    
+    public function gearmanConnection() {
+        $this->GearmanClient->addServers('127.0.0.1');
+        return $this->GearmanClient->doNormal("reverse", "Hello World!");
     }
 }
