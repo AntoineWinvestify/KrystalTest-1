@@ -82,14 +82,14 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 foreach ($formula['param'] as $param) {
                     //Info about Variable variable 
                     //http://php.net/manual/en/language.variables.variable.php
-                    $$param = $this->getValue($param);
+                    $$param = $this->getValue($param, $linkedaccount['Linkedaccount']['id']);
                 }
             }
             
         }
     }
     
-    public function getValue($var) {
+    public function getValue($var, $linkaccountId) {
         $consult = explode('.', $this->config[$var]);
         $model;
         switch($consult[0]) {
@@ -99,27 +99,27 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             case "userinvestmentdata":
                 $model = $this->Userinvestmentdata;
                 break;
-            case "transaction":
+            case "payments":
                 $model = $this->Transaction;
+                $options['joins'] = array(
+                    array('table' => 'roles_sectors',
+                        'alias' => 'RolesSector',
+                        'type' => 'inner',
+                        'conditions' => array(
+                            'Sector.id = RolesSector.sector_id'
+                        )
+                    ),
+                    array('table' => 'roles',
+                        'alias' => 'Role',
+                        'type' => 'inner',
+                        'conditions' => array(
+                            'RolesSector.role_id = Role.id'
+                        )
+                    )
+                );
                 break;
         }
         $params['fields'] = array($var);
-        $options['joins'] = array(
-            array('table' => 'roles_sectors',
-                'alias' => 'RolesSector',
-                'type' => 'inner',
-                'conditions' => array(
-                    'Sector.id = RolesSector.sector_id'
-                )
-            ),
-            array('table' => 'roles',
-                'alias' => 'Role',
-                'type' => 'inner',
-                'conditions' => array(
-                    'RolesSector.role_id = Role.id'
-                )
-            )
-        );
          $options['conditions'] = array(
             'Role.id' => $roleId
         );
