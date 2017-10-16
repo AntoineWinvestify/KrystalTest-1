@@ -240,6 +240,9 @@ class GearmanClientShell extends AppShell {
     public function verifiedStatus($status, $message) {
         foreach ($this->userResult as $queueId => $userResult) {
             $statusProcess = $this->consolidationResult($userResult, $queueId);
+            if (Configure::read('debug')) {
+                return $statusProcess;
+            }
             $this->Queue->id = $queueId;
             $queueInfo = null;
             if ($statusProcess) {
