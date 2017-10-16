@@ -162,7 +162,7 @@ class ecrowdinvest extends p2pCompany {
                     $tempArray['marketplace_status'] = PERCENT;
                 }
                 foreach ($companyBackup as $inversionBackup) { //if completed and same status that in backup
-                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] === $tempArray['marketplace_status']) {
                         echo HTML_ENDOFLINE . $tempArray['marketplace_loanReference'] . HTML_ENDOFLINE;
                         print_r($inversionBackup);
                         $readController++;
