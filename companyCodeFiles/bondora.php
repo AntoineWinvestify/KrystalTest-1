@@ -353,7 +353,7 @@ class bondora extends p2pCompany {
                 $searchTransactions = false;
                 
                 $trs = $dom->getElementsByTagName('tr');
-                $date1 = "14/09/2017";
+                $date1 = "14/09/2017"; // Delete this dates
                 $date2 = "20/09/2017";
                 if (empty($this->tempUrl['generateReport'])) {
                     $this->tempUrl['generateReport'] = array_shift($this->urlSequence);
