@@ -20,9 +20,12 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected, $actual['sortParameter']);
     }
 
-    public function testParserAnalyzeAndConfig() {
+    public function testParserAnalyzeAndConfig() { //Offsets test
+        $expectedOffsetStart = '888888-01';
+        $expectedOffsetEnd = '888888-06';
         $actual = $this->testAction("/cases/testParserAnalyzeAndConfig");
-        $this->assertTrue(is_array($actual));
+        $this->assertEquals($expectedOffsetStart, $actual[0][0]['investment']['investment_loanId']);
+        $this->assertEquals($expectedOffsetEnd, $actual[1][0]['investment']['investment_loanId']);
     }
 
     public function testParserConfigFormat1() {

@@ -53,8 +53,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
 
@@ -76,8 +76,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $tempResult = $myParser->getConfig();
         $this->print_r2($tempResult);
@@ -107,13 +107,26 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 4,
+            'offsetEnd' => 4,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
-        print_r($tempResult);
-        return $tempResult;
+        $count = count($tempResult);
+        $i = 0;
+        $final = array();
+        foreach ($tempResult as $key => $result) {
+            if ($i == 0) {
+                array_push($final, $result);
+            }
+            if ($i == $count -1) {
+                array_push($final, $result);
+            }
+            $i++;
+        }
+        $this->print_r2($tempResult);
+        print_r($final);
+        return $final;
     }
 
     public function testParserConfigFormat1() {  //NAME + TYPE
@@ -141,8 +154,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 3,
+            'offsetEnd' => 3,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -169,8 +182,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -211,8 +224,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.priceInSecondaryMarket",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -253,8 +266,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "LoanAmount",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -296,8 +309,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -328,8 +341,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -361,8 +374,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -394,8 +407,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -427,8 +440,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -460,8 +473,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -493,8 +506,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -526,8 +539,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -559,8 +572,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -592,8 +605,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -625,8 +638,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -656,8 +669,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -692,8 +705,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -728,8 +741,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -764,8 +777,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -800,8 +813,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -839,8 +852,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -875,8 +888,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -911,8 +924,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -946,8 +959,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -977,8 +990,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -1026,8 +1039,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -1040,9 +1053,9 @@ class CasesController extends AppController {
             "B" => [
                 "name" => "investment.investment_loanId",
                 [
-                    "type" => "Type", // Winvestify standardized name   OK
+                    "type" => "type", // Winvestify standardized name   OK
                     "inputData" => [
-                        "input2" => "#previous.Type", // The calculated field  "Type" from the *previous* excel row (i.e. previous aray index) is loaded
+                        "input2" => "#previous.type", // The calculated field  "Type" from the *previous* excel row (i.e. previous aray index) is loaded
                         // Note that "Type" must be a field defined in this config file
                         // keywords are "#previous" and "#current" 
                         // Be aware that #previous does NOT contain any data in case of parsing the
@@ -1055,7 +1068,7 @@ class CasesController extends AppController {
                 ]
             ],
             "D" => [
-                "name" => "Type",
+                "name" => "type",
             ],
         ];
 
@@ -1068,8 +1081,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
@@ -1114,8 +1127,8 @@ class CasesController extends AppController {
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
-            'OffsetStart' => 1,
-            'offsetEnd' => 2,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);

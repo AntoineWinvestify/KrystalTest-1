@@ -262,6 +262,7 @@
      * Starts the process of analyzing the file and returns the results as an array
      *  @param  FILE            FQDN of the file to analyze
      *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
+     *  @param  highestRow      Last written row, we need for offsetEnd
      *  @return array           $parsedData
      *          false in case an error occurred
      */
@@ -288,7 +289,7 @@ echo "INPUT FILE = $file \n";
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-        $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['OffsetStart']);
+        $datas = $this->saveExcelToArray($sheetData, $configuration, $highestRow);
         return $datas;
         }
 
@@ -302,12 +303,12 @@ echo "INPUT FILE = $file \n";
      * @return array $temparray the data after the parsing process
      *
      */
-    private function saveExcelToArray($rowDatas, $values) {
+    private function saveExcelToArray($rowDatas, $values, $totalRows) {
         $tempArray = [];
 
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
-            if ($i == $this->config['OffsetStart']) {
+            if ($i == $this->config['offsetStart']) {
                 break;
             }
             unset($rowDatas[$key]);
@@ -315,12 +316,13 @@ echo "INPUT FILE = $file \n";
         }
 
         $i = 0;
-        $totalRows = count($rowData);
+        //$totalRows = count($rowData);
         foreach ($rowDatas as $key => $rowData) {
-            if ($i == $this->offsetEnd) {
+            if ($i == $this->config['offsetEnd']) {
                 break;
             }
-            unset($rowDatas[$totalRows - 1]);
+            unset($rowDatas[$totalRows]);
+            $totalRows = $totalRows - 1;
             $i++;
         }        
         
