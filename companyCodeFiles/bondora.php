@@ -345,10 +345,13 @@ class bondora extends p2pCompany {
                 break;
 
             case 4:
-                $dom = new DOMDocument;  //Check if works
+                $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
+                $searchInvesmnet = false;
+                $searchTransactions = false;
+                
                 $trs = $dom->getElementsByTagName('tr');
                 $date1 = "14/09/2017";
                 $date2 = "20/09/2017";
@@ -361,8 +364,10 @@ class bondora extends p2pCompany {
                         $urls = $tr->getElementsByTagName('a');
                         $this->tempUrl['downloadInvesment'] = $urls[0]->getAttribute('href');
                         $this->tempUrl['deleteInvesment'] = $urls[1]->getAttribute('href');
+                        $searchInvesmnet = true;
                         break;
-                    } else {
+                }}
+                    if(!$searchInvesmnet) {
                         $inputs = $dom->getElementsByTagName('input');
                         foreach ($inputs as $key => $input) {
                             $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
@@ -431,15 +436,16 @@ class bondora extends p2pCompany {
                         $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                         break;
                     }
-                }
+                
                 foreach ($trs as $tr) {
                     echo $tr->nodeValue . SHELL_ENDOFLINE;
                     if (strpos($tr->nodeValue, "Account statement") && strpos($tr->nodeValue, $date1) && strpos($tr->nodeValue, $date2)) {
                         $urls = $tr->getElementsByTagName('a');
                         $this->tempUrl['downloadCashFlow'] = $urls[0]->getAttribute('href');
                         $this->tempUrl['deleteCashFlow'] = $urls[1]->getAttribute('href');
+                        $searchTransactions = true;
                         break;
-                    } else {
+                }} if(!$searchTransactions) {
                         $inputs = $dom->getElementsByTagName('input');
                         foreach ($inputs as $key => $input) {
                             $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
@@ -508,7 +514,6 @@ class bondora extends p2pCompany {
                         $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                         break;
                     }
-                }
 
                 if (empty($this->downloadDeleteUrl)) {
                     $this->tempUrl['baseDownloadDelete'] = array_shift($this->urlSequence);
@@ -531,7 +536,8 @@ class bondora extends p2pCompany {
 
             case 6:
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
+                $this->tempUrl['DeleteCredentialPage'] = array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['DeleteCredentialPage']);
                 break;
 
             case 7:
@@ -555,28 +561,28 @@ class bondora extends p2pCompany {
 
 
 
-                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvesment'];
-                echo "delete: " . $url . SHELL_ENDOFLINE;
+                //$url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvesment'];
+                //echo "delete: " . $url . SHELL_ENDOFLINE;
                 $this->idForSwitch++;
-                $this->headers = array("__RequestVerificationToken: " . $this->deleteToken, ":Type: POST", 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive', "content-length: 0", "Retry-After: 120");
-                $this->getCompanyWebpageMultiCurl($url);
-                unset($this->headers);
+               //$this->headers = array("__RequestVerificationToken: " . $this->deleteToken, ":Type: POST", 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive', "content-length: 0", "Retry-After: 120");
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['DeleteCredentialPage']); //Delete don't work, go to another url
+                //unset($this->headers);
                 break;
 
             case 8:
-                echo $str . SHELL_ENDOFLINE;
-                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteCashFlow'];
+               // echo $str . SHELL_ENDOFLINE;
+                //$url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteCashFlow'];
                 $this->idForSwitch++;
-                $this->headers = array("__RequestVerificationToken: " . $this->deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive');
-                $this->getCompanyWebpageMultiCurl($url);
-                unset($this->headers);
+                //$this->headers = array("__RequestVerificationToken: " . $this->deleteToken, 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive');
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['DeleteCredentialPage']); //Delete don't work, go to another url
+                //unset($this->headers);
                 break;
 
             case 9:
                 echo $str . SHELL_ENDOFLINE;
                 //return $tempArray = 'DEscargando fichero';
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl("https://www.bondora.com/en/dashboard/statnumbers/");
+                $this->getCompanyWebpageMultiCurl();
                 break;
             case 10:
                 $dom = new DOMDocument;  //Check if works
@@ -599,14 +605,14 @@ class bondora extends p2pCompany {
                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($spans[3]->getAttribute('title'));
 
                 print_r($this->tempArray);
-                return $this->tempArray();
+                return $this->tempArray;
                 break;
-            /* case 10:
-              sleep(5);
+            case 11:
+              sleep(10);
               $this->idForSwitch = 4;
               $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
               break;
-             */
+             
         }
     }
 
