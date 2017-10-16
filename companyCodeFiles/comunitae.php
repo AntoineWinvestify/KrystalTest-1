@@ -105,7 +105,7 @@ class comunitae extends p2pCompany {
 // 8/1/2017             0.50€	0.00€	49.61€	Cargo por comisión de administración
 // 7/25/2017            0.58€	0.00€	50.11€	Cargo por comisión de administración
 // 7/25/2017            0.00€	50.00€	50.69€	Abono rendimientos capital   ptmo. CPP_016231  y Nº de recibo 342097
-    protected $values_comunitae = [     // All types/names will be defined as associative index in array
+    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
             "A" => [
                 [
                     "type" => "date",                           // Winvestify standardized name 
@@ -198,7 +198,26 @@ class comunitae extends p2pCompany {
         ];       
         
 
-    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */    
     
     
     function __construct() {
@@ -206,18 +225,7 @@ class comunitae extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesComunitaeTransaction;
-    }
- 
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesComunitaeInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesComunitaeAmortization;
-    }    
+
     
     /**
      *

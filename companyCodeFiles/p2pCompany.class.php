@@ -170,6 +170,9 @@ class p2pCompany {
     //Variables for amortization tables
     protected $loanIds = [];
     
+    protected $valuesTransaction;
+    protected $valuesInvestment;  
+    protected $valuesamortizationTable;     
 
     /**
      *
@@ -2573,12 +2576,7 @@ class p2pCompany {
     }
 
 
-    
-    
-    
-    
-    
-    
+       
     
     /** 
      * Callback functions required for Dashboard 2. 
@@ -2609,10 +2607,77 @@ class p2pCompany {
      */ 
     public function amortizationTableAnalyzed(array $table) {
         
-        //$amortiza 
+  
         
         return ;
     }    
+  
+    
+    /** 
+     * Read transaction configuration file
+     *     
+     * @return  array with configuration parameters
+     *              getParserConfigTransactionFile
+     */    
+    public function getParserConfigTransactionFile() {
+        return $this->valuesTransaction;
+    }
+    
+     /** 
+     * Read investment configuration file
+     *     
+     * @return  array with configuration parameters
+     * 
+     */
+    public function getParserConfigInvestmentFile() {
+        return $this->valuesInvestment;
+    }
+    
+    /** 
+     * Read amortizationtable configuration file
+     *     
+     * @return  array with configuration parameters
+     * 
+     */    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->valuesAmortization;
+    }  
+    
+    
+    /** 
+     * Read configuration parameters for the transaction configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */    
+    public function getParserTransactionConfigParms() {
+        return $this->transactionConfigParms;
+    }
+
+    /** 
+     * Read configuration parameters for the investment configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */    
+    public function getParserInvestmentConfigParms() {
+        return $this->investmentConfigParms;
+    }
+    
+    /** 
+     * Read configuration parameters for the amortizationtable configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */
+    public function getParserAmortizationConfigParms() {
+        return $this->amortizationConfigParms;
+    }     
+    
+    
+    
+    
+    
     
     /**
      * Function to start the casper object

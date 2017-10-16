@@ -53,24 +53,37 @@
 
 class colectual extends p2pCompany {
 
+    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */    
+    
+    
+    
+    
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
 
-    
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesColectualTransaction;
-    }
- 
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesColectualInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesColectualAmortization;
-    }     
-    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount

@@ -28,22 +28,34 @@
  */
 class viainvest extends p2pCompany {
 
+    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */   
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
 
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesViainvestTransaction;
-    }
- 
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesViainvestInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesViainvestAmortization;
-    }    
+  
     
     
     function companyUserLogin($user = "", $password = "", $options = array()) {

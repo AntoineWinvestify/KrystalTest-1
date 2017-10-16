@@ -53,24 +53,34 @@
  */
 class mytriplea extends p2pCompany {
 
+    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */    
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
 // Dictionary to map data to the database table 'marketplaces'
     }
 
-    
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesMytriplaaTransaction;
-    }
- 
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesMytriplaaInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesMytriplaaAmortization;
-    }      
     
     /**
      *
