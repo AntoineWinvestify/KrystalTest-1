@@ -39,26 +39,34 @@ class GearmanClientTest extends CakeTestCase {
         $out = $this->getMock('ConsoleOutput', array(), array(), '', false);
         $in = $this->getMock('ConsoleInput', array(), array(), '', false);
         
-        $this->GearmanClientExample = $this->getMock('GearmanClientShell', 
+        $this->GearmanClient = $this->getMock('GearmanClientShell', 
             array('in', 'err', 'createFile', '_stop', 'clear'),
             array($out, $out, $in)
             );
-        $this->GearmanClientExample->startup();
+        $this->GearmanClient->startup();
     }
     
     public function testGearmanConnection() {
         $expected = strrev("Hello World!");
-        $actual = $this->GearmanClientExample->gearmanConnection();
+        $actual = $this->GearmanClient->gearmanConnection();
         $this->assertEquals($expected, $actual);
     }
     
     public function testTypeError() {
-        
+        $expected = "0";
+        $actual = $this->GearmanClient->checkTypeError();
+        $this->assertEquals($expected, $actual);
+    }
+    
+    public function testError() {
+        $expected = "0";
+        $actual = $this->GearmanClient->checkError();
+        $this->assertEquals($expected, $actual);
     }
     
     public function tearDown() {
         parent::tearDown();
-        unset($this->GearmanClientExample);
+        unset($this->GearmanClient);
     }
     
 }
