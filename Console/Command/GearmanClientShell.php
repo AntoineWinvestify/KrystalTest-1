@@ -70,7 +70,7 @@ class GearmanClientShell extends AppShell {
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_FAIL;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Fail: " . $task->data() . WIN_GEARMAN_WORK_FAIL . "\n";
+        echo "Fail: " . $task->data() . GEARMAN_WORK_FAIL . "\n";
     }
     
     /**
@@ -90,7 +90,7 @@ class GearmanClientShell extends AppShell {
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_EXCEPTION;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Exception: " . $task->data() . WIN_GEARMAN_WORK_EXCEPTION . "\n";
+        echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
     }
     
@@ -270,5 +270,25 @@ class GearmanClientShell extends AppShell {
     public function gearmanConnection() {
         $this->GearmanClient->addServers('127.0.0.1');
         return $this->GearmanClient->doNormal("reverse", "Hello World!");
+    }
+    
+    public function checkTypeError() {
+        $this->GearmanClient->addServers('127.0.0.1');
+        $this->flowName = "GEARMAN_FLOW1";
+        $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
+        $this->GearmanClient->addTask('typeError', 'fakeData', null, "123.-;123.-;123");
+        $this->GearmanClient->runTasks();
+        
+        return $this->userResult[123]['global'];
+    }
+    
+    public function checkError() {
+        $this->GearmanClient->addServers('127.0.0.1');
+        $this->flowName = "GEARMAN_FLOW1";
+        $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
+        $this->GearmanClient->addTask('error', 'fakeData', null, "123.-;123.-;123");
+        $this->GearmanClient->runTasks();
+        
+        return $this->userResult[123]['global'];
     }
 }
