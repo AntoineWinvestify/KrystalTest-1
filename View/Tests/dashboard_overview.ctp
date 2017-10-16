@@ -469,8 +469,8 @@
                                 <th><?php echo __('Lending Company')?></th>
                                 <th><?php echo __('Total Volume')?></th>
                                 <th><?php echo __('Cash')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Average Return')?></th>
                             </tr>
@@ -485,8 +485,8 @@
                                 </td>
                                 <td>1.000.000,00 €</td>
                                 <td>10.000 €</td>
-                                <td>12,11</td>
                                 <td>80%</td>
+                                <td>12,11</td>
                                 <td>63,22%</td>
                                 <td>22,22%</td>
                             </tr>
@@ -494,8 +494,8 @@
                                 <td><img src="/img/logo/Zank.png" class="img-responsive center-block platformLogo"/></td>
                                 <td>30.000,00 €</td>
                                 <td>10.000 €</td>
-                                <td>12,11</td>
                                 <td>80%</td>
+                                <td>12,11</td>
                                 <td>63,22%</td>
                                 <td>22,22%</td>
                             </tr>
@@ -503,8 +503,8 @@
                                 <td><img src="/img/logo/Arboribus.png" class="img-responsive center-block platformLogo"/></td>
                                 <td>30.000,00 €</td>
                                 <td>10.000 €</td>
-                                <td>12,11</td>
                                 <td>80%</td>
+                                <td>12,11</td>
                                 <td>63,22%</td>
                                 <td>22,22%</td>
                             </tr>

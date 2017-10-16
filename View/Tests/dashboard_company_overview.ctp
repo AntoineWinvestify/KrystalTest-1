@@ -124,41 +124,7 @@
         position: absolute;
         margin-left: 80px;
     }
-    #chartInfo {
-        position: fixed;
-        background-color: rgba(0, 0, 0, 0.7) !important;
-        width: 100%;
-        height: 100%;
-        z-index: 200;
-        top: 0;
-        left: 0;
-    }
-    #btnCloseChartInfo {
-        color: white;
-        position: absolute;
-        margin-top: 75px;
-        right: 10px;
-        padding: 5px !important;
-    }
-    #canvasContainer {
-        text-align: center;
-        /*width: 50%;
-        margin-top: 200px;*/
-        background-color: black;
-        border: 2px solid lightgreen;
-        border-radius: 5px;
-        margin-top: 200px;
-        padding: 20px;
-    }
 </style>
-<div id="chartInfo" style="display:none;">
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
-            <button id="btnCloseChartInfo" type="button" class="close" data-dismiss="modal" aria-hidden="true"><?php echo __('CLOSE')?> &times;</button>
-            <div id="canvasContainer"><canvas id="birdsChart" class="center-block" width="400" height="400" align="center"></canvas></div>
-        </div>
-    </div>
-</div>
 <div class="dashboardOverview">
     <div class="row" id="overview">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -168,7 +134,7 @@
                         <div class="nav-tabs-wrapper">
                             <ul class="nav nav-tabs" data-tabs="tabs">
                                 <li>
-                                    <a href="/tests/dashboardOverview">
+                                    <a id="backOverview" href="/tests/dashboardOverview">
                                         Global Overview
                                         <div class="ripple-container"></div>
                                     </a>
