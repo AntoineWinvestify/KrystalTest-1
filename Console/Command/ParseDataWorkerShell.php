@@ -137,27 +137,43 @@ class ParseDataWorkerShell extends AppShell {
 
 // do this first for the transaction file and then for investmentfile(s)
             $fileTypesToCheck = array (0 => TRANSACTION_FILE,
-                                       1 => INVESTMENT_FILE);
+                                       1 => INVESTMENT_FILE,
+                                   //    2 => EXTENDED_TRANSACTION_FILE
+                );                     // So we cover Finanzarel
 
             foreach ($fileTypesToCheck as $actualFileType) {
                 $approvedFiles = $this->readFilteredFiles($files,  $actualFileType);
-                if ($actualFileType == INVESTMENT_FILE) {
-                    $parserConfig = $companyHandle->getParserConfigInvestmentFile();
+                switch ($actualFileType) {
+                    case INVESTMENT_FILE:
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment File\n";
+                        }
+                        $parserConfig = $companyHandle->getParserConfigInvestmentFile(); 
+                        break;
+                    case TRANSACTION_FILE:
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction File\n";
+                        }
+                        $parserConfig = $companyHandle->getParserConfigTransactionFile();
+                        break;                     
+                    case EXTENDED_TRANSACTION_FILE:
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Extended Transaction File\n";
+                        } 
+                        $parserConfig = $companyHandle->getParserConfigExtendedTransactionFile();
+                        break; 
                 }
-                else {
-                    $parserConfig = $companyHandle->getParserConfigTransactionFile();
-                }
-
+                
                 $tempResult = array();
                 foreach ($approvedFiles as $approvedFile) {
                     unset($errorInfo);
 
-                    $myParser->setConfig(array('sortParameter' => "investment.investment_loanId"));
+                    $myParser->setConfig(array('sortParameter' => "investment_loanId"));
 echo __FILE__ . " " . __LINE__ . "\n";
                     $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);     // if successfull analysis, result is an array with loanId's as index
 echo __FILE__ . " " . __LINE__ . "\n";
-
-                    echo "Writing File $approvedFile\n";
+//print_r($tempResult);
+                    echo "Dealing with file $approvedFile\n";
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
                         $errorInfo = array( "typeOfError"   => "parsingError",
                                             "errorDetails"  => $myParser->getLastError(),
@@ -189,12 +205,15 @@ echo __FILE__ . " " . __LINE__ . "\n";
                     }
                 }
             }
-
+//print_r($totalParsingresultInvestments);
             foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
                 $totalParsingresultInvestmentsTemp[$loanIdKey] = $totalParsingresultInvestments[$loanIdKey][0];
-
+if ($loanIdKey == "1242052-01") {
+    echo "LOANID = 1242052-01 FOUND \n";
+    exit;
+}
                 if ( !array_key_exists ($loanIdKey , $totalParsingresultInvestments ))  {
-                    echo "NO found match for loanId = $loanIdKey  \n"; // THIS IS NEVER POSSIBLE
+                    echo "NO found match for loanId = $loanIdKey  \n";                      // THIS IS NEVER POSSIBLE
                 }
             }
  echo __FILE__ . " " . __LINE__ . "   \n";
@@ -213,7 +232,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
         }
-        print_r($returnData);
+ //       print_r($returnData);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         }        

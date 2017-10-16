@@ -28,6 +28,33 @@
  */
 class bondora extends p2pCompany {
 
+    
+ 
+    protected $valuesAmortizationTable = [  // NOT FINISHED
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+        ];    
+
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                        //        'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+/*   NOT YET READY
+    protected $amortizationConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+*/    
+    
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -36,22 +63,8 @@ class bondora extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesBondoraTransaction;
-    }
- 
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesBondoraInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesBondoraAmortization;
-    }    
-    
-    
-    
-    
+
+
     
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*

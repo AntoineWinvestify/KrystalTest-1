@@ -73,7 +73,7 @@ class circulantis extends p2pCompany {
 // OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
 // OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....	P154197	100	5/29/2017	2,936.42	300	12,264.55	15,500.97
 // OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....	C112205	159.63	5/30/2017	3,096.05	0	12,409.21	15,505.26
-    protected $values_circulantis = [
+    protected $valuesTransaction = [
             "A" => [
                 [
                     "type" => "transactionType",                // Complex format, calling external method
@@ -160,7 +160,28 @@ class circulantis extends p2pCompany {
             "H" => "total"
         ];
        
-  
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */   
+    
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
@@ -191,19 +212,6 @@ class circulantis extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
-    
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesCirculantisTransaction;
-    }
- 
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesCirculantisInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesCirculantisAmortization;
-    }   
-    
     
     
     

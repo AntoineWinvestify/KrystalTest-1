@@ -50,7 +50,7 @@ class ecrowdinvest extends p2pCompany {
 // ECROWD
 // Fecha        Nombre del proyecto                                                     Cuota	Amortización de capital(€)	Intereses brutos(€) Retención IRPF(€)  Total(€)
 // 25-07-2017	Ampliación de la red de fibra óptica de l'Ametlla de Mar - Fase 5 -	2	0,00                              1,09               0,21                0,88
-    protected $values_ecrowd = [// All types/names will be defined as associative index in array
+    protected $valuesTransaction = [// All types/names will be defined as associative index in array
         "A" => [
             [
                 "type" => "date", // Winvestify standardized name 
@@ -184,24 +184,35 @@ class ecrowdinvest extends p2pCompany {
         ]
     ];
 
+    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */    
+    
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
 
-    
-     public function getParserConfigTransactionFile() {
-        return $this->$valuesEcrowdInvestTransaction;
-    }
- 
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesEcrowdInvestInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesEcrowdInvestAmortization;
-    }    
-    
+
     
     /**
      *

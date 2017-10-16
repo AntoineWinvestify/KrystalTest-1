@@ -27,6 +27,15 @@
  * This class parses the transaction/investments files etc by using a configuration file which is 
  * provided by each companyCodeFile. The result is returned in an array
  * 
+ * 
+ * 
+ * 2017-10-15           version 0.2
+ * support of configuration parameters 'offsetStart' and 'offsetEnd'
+ * 
+ * 
+ * Pending:
+ * chunking, csv file check
+ * getLastError
  */
 
 
@@ -40,7 +49,7 @@
      *
      */
     class Fileparser {
-        protected $config = array ('OffsetStart' => 0,
+        protected $config = array ('offsetStart' => 0,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
@@ -48,7 +57,6 @@
                                                         // Typically used for sorting by loanId index
 
         protected $errorData = array();                 // Contains the information of the last occurred error
-
 
         protected $currencies = array(EUR => ["EUR", "€"],
                                         GBP => ["GBP", "£"],
@@ -71,175 +79,175 @@
                     "cash" => 1,                                    // 1 = in, 2 = out
                     "account" => "CF",
                     "transactionType" => "Deposit",
-                    "type" => "userdatainvestment.userdatainvestment_deposits"
+                    "type" => "userdatainvestment_deposits" // internal variable for this concept
                     ],
                 1 => [
                     "detail" => "Cash_withdrawal",
                     "cash" => 2,
                     "account" => "CF",
                     "transactionType" => "Withdraw",
-                    "type" => "userdatainvestment.userdatainvestment_deposits"
+                    "type" => "userdatainvestment_withdrawals"
                     ],
                 2 => [
                     "detail" => "Primary_market_investment",
                     "cash" => 2,
                     "account" => "Capital",
                     "transactionType" => "Investment",
-                    "type" => "investment.1",
+                    "type" => "concept1",
                     ],
                 3 => [
                     "detail" => "Secundary_market_investment",
                     "cash" => 2,
                     "account" => "Capital",
                     "transactionType" => "Investment",
-                    "type" => "investment.2"
+                    "type" => "concept2"
                     ],
                 4 => [
                     "detail" => "Principal_repayment",
                     "cash" => 1,
                     "account" => "Capital",
                     "transactionType" => "Repayment",
-                    "type" => "investment.4"
+                    "type" => "investment_principalAndInterestPayment"
                     ],
                 5 => [
                     "detail" => "Partial_principal_repayment",
                     "cash" => 1,
                     "account" => "Capital",
                     "transactionType" => "Repayment",
-                    "type" => "investment.5"
+                    "type" => "concept5"
                     ],
                 6 => [
                     "detail" => "Principal_buyback",
                     "cash" => 1,
                     "account" => "Capital",
                     "transactionType" => "Repayment",
-                    "type" => "investment.6"
+                    "type" => "concept6"
                     ],
                 7 => [
                     "detail" => "Principal_and_interest_payment",
                     "cash" => 1,
                     "account" => "Mix",
                     "transactionType" => "Mix",
-                    "type" => "investment.7"
+                    "type" => "concept7"
                     ],
                 8 => [
                     "detail" => "Regular_gross_interest_income",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.8"
+                    "type" => "concept8"
                     ],
                 9 => [
                     "detail" => "Delayed_interest_income",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.9"
+                    "type" => "concept9"
                     ],
-                10 => [
+                10 => [ //OK
                     "detail" => "Late_payment_fee_income",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.10"
+                    "type" => "payment_latePaymentFeeIncome"
                     ],
                 11 => [
                     "detail" => "Cash_deposit",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.11"
+                    "type" => "concept11"
                     ],
                 12 => [
                     "detail" => "Interest_income_buyback",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.12"
+                    "type" => "concept12"
                     ],
                 13 => [
                     "detail" => "Delayed_interest_income_buyback",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.13"
+                    "type" => "concept13"
                     ],
                 14 => [
                     "detail" => "Cash_withdrawal",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.14"
+                    "type" => "concept14"
                     ],
                 15 => [
                     "detail" => "Cash_deposit",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.15"
+                    "type" => "concept15"
                     ],
                 16 => [
                     "detail" => "Cash_withdrawal",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.16"
+                    "type" => "concept16"
                     ],
                 17 => [
                     "detail" => "Recoveries",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "investment.17"
+                    "type" => "concept17"
                     ],
                 18 => [
                     "detail" => "Commission",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
-                    "type" => "investment.18"
+                    "type" => "concept18"
                     ],
                 19 => [
                     "detail" => "Bank_charges",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
-                    "type" => "investment.19"
+                    "type" => "concept19"
                     ],
                 20 => [
                     "detail" => "Premium_paid_secondary_market",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
-                    "type" => "investment.20"
+                    "type" => "concept20"
                     ],
                 21 => [
                     "detail" => "Interest_payment_secondary_market_purchase",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
-                    "type" => "investment.21"
+                    "type" => "concept21"
                     ],
                 22 => [
                     "detail" => "Tax_VAT",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
-                    "type" => "investment."
+                    "type" => "concept22"
                     ],
                 23 => [
                     "detail" => "Tax_income_withholding_tax",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
-                    "type" => "investment.22"
+                    "type" => "concept23"
                     ],
                 24 => [
                     "detail" => "Write-off",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
-                    "type" => "investment.23"
+                    "type" => "concept24"
                     ]
             ];
 
@@ -258,7 +266,7 @@
      *          false in case an error occurred
      */
     public function analyzeFile($file, $configuration) {
-        echo "INPUT FILE = $file \n";
+echo "INPUT FILE = $file \n";
        // determine first if it a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -280,7 +288,6 @@
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-        
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['OffsetStart']);
         return $datas;
         }
@@ -292,11 +299,10 @@
      *
      * @param string $rowDatas  the excel data in an array
      * @param string $values     the array with configuration data for parsing
-     * @param int $offset       the number of indices at beginning of array which are NOT to be parsed
      * @return array $temparray the data after the parsing process
      *
      */
-    private function saveExcelToArray($rowDatas, $values, $offset) {
+    private function saveExcelToArray($rowDatas, $values) {
         $tempArray = [];
 
         $i = 0;
@@ -308,6 +314,17 @@
             $i++;
         }
 
+        $i = 0;
+        $totalRows = count($rowData);
+        foreach ($rowDatas as $key => $rowData) {
+            if ($i == $this->offsetEnd) {
+                break;
+            }
+            unset($rowDatas[$totalRows - 1]);
+            $i++;
+        }        
+        
+        
         $i = 0;
         $outOfRange = false;
 
@@ -336,7 +353,6 @@
                                             $outOfRange = true;
                                             break;
                                         }
-          //                              echo __FUNCTION__ . " " . __LINE__ . "\n";
                                         $temp = explode(".", $input);
                                         $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
                                     }
@@ -356,8 +372,6 @@
 
                             if (is_array($tempResult)) {
                                 $userFunction = $tempResult;
-                            //    print_r($userFunction);
-                            //    echo "YES\n";
                                 $tempResult = $tempResult[0];
                             }
 
@@ -380,13 +394,12 @@
                 if (!empty($this->config['sortParameter'])) {
                     $temp = "\$tempArray[\$tempArray[\$i]['" . str_replace(".", "']['", $this->config['sortParameter']) . "']][] = \$tempArray[\$i];";
                     eval($temp);
-       //             $tempArray[ $tempArray[$i]  ]
                 }
                 else {      // move to the global index
                     $tempArray['global'][] = $tempArray[$i];
                 }
             }
-     //        unset($tempArray[$i]);
+     //        unset($tempArray[$i]);  
         $i++;
     }
 
@@ -436,9 +449,9 @@
      *  sortParameter   The name of variable by which the array is to be sorted. The contents of the variable is used as index key
      *                  No default value defined
      *  separatorChar   default value = ";". This parameter is only useful for "csv" files
-     *  offset_top      The number of lines (=rows) from the TOP OF THE FILE which are not to be included in parser
+     *  offsetStart     The number of lines (=rows) from the TOP OF THE FILE which are not to be included in parser
      *                  Default value = 1
-     *  offset_bottom   The number of lines (=rows) from, counted from the BOTTOM OF THE FILE which are not to be included in parser
+     *  offsetEnd       The number of lines (=rows) from, counted from the BOTTOM OF THE FILE which are not to be included in parser
      *                  Default value = 0
      * @param   array   $configurations     list of configuration parameter
      * @return  boolean OK
@@ -517,7 +530,7 @@
 
 
     /**
-     * Converts any type of date format to internal format yyyy-mm-dd
+     * Converts any type of date format to internal format: yyyy-mm-dd
      *
      * @param string $date
      * @param string $currentFormat:  Y = 4 digit year, y = 2 digit year
@@ -643,10 +656,10 @@
      */
     private function getCurrency($loanCurrency) {
 
-        $filter = array(".", ",", " ", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
-        foreach ($this->currencyDetails as $currencyIndex => $currency) {
+        foreach ($this->currencies as $currencyIndex => $currency) {
             if ($loanCurrency == $currency[0]) {                // check the ISO code
               return $currencyIndex;
             }
@@ -686,9 +699,11 @@
         foreach ($config as $configKey => $configItem) {
             $position = stripos($input, $configKey);
             if ($position !== false) {
-                foreach ($this->transactionDetails as $key => $detail) {
+                foreach ($this->transactionDetails as $key => $detail) {  
                     if ($detail['detail'] == $configItem) {
-                        $result = array($configItem,"type" => $detail['type']);
+                  //      $result = array($configItem,"type" => $detail['type']);
+                        $result = array($detail['type'],"type" => "internalName");
+                        print_r($result);
                         return $result;
                     }
                 }
