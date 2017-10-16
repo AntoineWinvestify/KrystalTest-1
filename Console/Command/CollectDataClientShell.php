@@ -46,7 +46,10 @@ class CollectDataClientShell extends GearmanClientShell {
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
         //$resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
-        
+        if (Configure::read('debug')) {
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 2 Client\n");
+        }
+
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         $this->Investor = ClassRegistry::init('Investor');
@@ -57,9 +60,15 @@ class CollectDataClientShell extends GearmanClientShell {
         $this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
+            if (Configure::read('debug')) {
+                $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
+            }
             $resultQueue  = $this->checkJobs(WIN_QUEUE_STATUS_START_COLLECTING_DATA, $jobsInParallel);
-            print_r($resultQueue);
             if (!empty($resultQueue)) {
+                if (Configure::read('debug')) {
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
+                    print_r($resultQueue);
+                }
                 $linkedaccountsResults = [];
                 foreach ($resultQueue as $result) {
                     $queueInfo = json_decode($result['Queue']['queue_info'], true);
@@ -93,6 +102,11 @@ class CollectDataClientShell extends GearmanClientShell {
                     }
 
                 }
+                
+                if (Configure::read('debug')) {
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending the previous information to Worker\n");
+                }
+
 
                 //$key is the number of the internal id of the array (0,1,2)
                 //$key2 is type of access to company (multicurl, casper, etc)
@@ -117,6 +131,9 @@ class CollectDataClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
 
+                if (Configure::read('debug')) {
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
+                }
                 $this->verifiedStatus(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded");
                 unset($resultQueue);
                 unset($resultInvestor);
@@ -127,11 +144,15 @@ class CollectDataClientShell extends GearmanClientShell {
             }
             else {
                 $inActivityCounter++;
-                echo __METHOD__ . " " . __LINE__ . " Nothing in queue, so sleeping \n";                
+                if (Configure::read('debug')) {       
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
+                }     
                 sleep (4); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
-                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  
+                if (Configure::read('debug')) {       
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
+                }                     
                 exit;
             }
         }
