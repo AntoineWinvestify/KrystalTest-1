@@ -55,7 +55,10 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $data = json_decode($job->workload(), true);
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
-        print_r($data);
+        if (Configure::read('debug')) {
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
+            print_r($data);
+        }
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
         $index = 0;
@@ -91,7 +94,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $i++;
         }
         $companyNumber = 0;
-        echo "MICROTIME_START = " . microtime() . "<br>";
+        $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_START = " . microtime());
         //We start at the same time the queue on every company
         foreach ($data["companies"] as $linkedaccount) {
             $this->newComp[$companyNumber]->collectUserGlobalFilesParallel();
@@ -106,6 +109,8 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->queueCurls->socketSelect();
         }
 
+        $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_FINISHED = " . microtime());
+        
         $lengthTempArray = count($this->tempArray);
         $statusCollect = [];
         $errors = null;
@@ -120,6 +125,10 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
 
         $data['statusCollect'] = $statusCollect;
         $data['errors'] = $errors;
+        if (Configure::read('debug')) {
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
+            print_r($data);
+        }
         return json_encode($data);
     }
     
