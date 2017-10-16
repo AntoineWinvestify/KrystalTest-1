@@ -363,8 +363,8 @@ class MarketPlacesController extends AppController {
         $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
         
         $loanIdList = array(); //This array contains the loan_reference of each investment, we need it to search in the pfp marketplace if the investment have been deleted. (COMUNITAE delete some finished investmenet)
-        foreach($companyMarketplace as $ivestment){
-            $loanId = $ivestment['Marketplace']['marketplace_loanReference'];
+        foreach($companyMarketplace as $investment){
+            $loanId = $investment['Marketplace']['marketplace_loanReference'];
             array_push($loanIdList, $loanId);
         }
         
@@ -532,10 +532,12 @@ class MarketPlacesController extends AppController {
                 $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
                 if ($marketplaceArray[4] == APP_ERROR) {
                     $this->Applicationerror->saveAppError('ERROR: Html/Json ','Html/Json structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
-                }else if($marketplaceArray[4] == WARNING) {
-                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
-                } else if($marketplaceArray[4] == INFORMATION) {
-                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+                }
+                else if ($marketplaceArray[4] == WARNING) {
+                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
+                } 
+                else if ($marketplaceArray[4] == INFORMATION) {
+                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
                 }
             }
 
@@ -764,7 +766,7 @@ class MarketPlacesController extends AppController {
             } else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || ($response->hasError()) && $info["typeOfRequest"] != "LOGOUT")) {
                 if ($response->hasError()) {
                     //$this->tempArray[$info["companyIdForQueue"]]['global']['error'] = "An error has ocurred with the data" . __FILE__ . " " . __LINE__;
-                    $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
+                    $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, null, $info["typeOfRequest"], $error);
                 }
                 $this->logoutOnCompany($info, $str);
                 if ($info["typeOfRequest"] == "LOGOUT") {

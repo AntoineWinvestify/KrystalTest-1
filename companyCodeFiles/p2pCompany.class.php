@@ -1409,7 +1409,7 @@ class p2pCompany {
      * Function to create the folder that will contain all the transaction, investment, etc data
      * @return string It is the path that will contain the files
      */
-    public function createFolderPFPFile() {
+    public function getFolderPFPFile() {
         $date = date("Ymd");
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
@@ -1436,26 +1436,58 @@ class p2pCompany {
         if (empty($data)) {
             $data = $this->tempArray;
         }
-        $pathCreated = $this->createFolderPFPFile();
+        $pathCreated = $this->getFolderPFPFile();
         $fp = fopen($pathCreated . DS . $fileName, 'w');
         fwrite($fp, $data);
         fclose($fp);
     }
     
-    public function verifyFileIsCorrect($path) {
+    /**
+     * Function to delete the directory passed as argument including its files
+     * @param string $dir It is the path of the directory
+     */
+    public function deletePFPFiles($dir = null) {
+        if (empty($dir)) {
+            $dir = $this->getFolderPFPFile();
+        }
+        
+        $types[0] = $this->typeFileTransaction;
+        $types[1] = $this->typeFileInvestment;
+        $types[2] = $this->typeFileAmortizationtable;
+        foreach ($types as $key => $type) {
+            if (empty($type)) {
+                unset($types[$key]);
+            }
+        }
+        
+        foreach ($types as $type) {
+            foreach(glob($dir . '/*' . "." . $type) as $file) { 
+                if (is_dir($file)) {
+                    rrmdir($file);
+                } 
+                else {
+                    unlink($file);
+                }
+            } 
+        }
+        rmdir($dir); 
+    }
+    
+    /**
+     * Function to verify that a file has more than 0 bytes
+     * @param string $path It is the path that contains the file
+     * @return boolean If the file has more than 0 bytes is true
+     */
+    public function verifyFileIsCorrect($path = null) {
+        if (empty($path)) {
+            $path = $this->getFolderPFPFile();
+            $path = $path . DS . $this->fileName;
+        }
         $fileHasSize = false;
         if (filesize($path) > 0) {
             $fileHasSize = true;
         }
         return $fileHasSize;
-        /**
-         * Cakephp 
-        $file = new File($path);
-        // Now call size() on that file object
-        $size = $file->size();
-        // Alternatively, use info() if your version of CakePHP is at least 2.1
-        $info = $file->info();
-         */
     }
 
 
@@ -1464,11 +1496,11 @@ class p2pCompany {
      * @param string $nameFile It is the name generated
      */
     public function createCookiesFile($nameFile) {
-        if (!file_exists($this->cookiesDir . '/' . $nameFile)) {
+        if (!file_exists($this->cookiesDir . DS . $nameFile)) {
             //Be careful with this function because maybe cannot work on Windows
-            $fh = fopen($this->cookiesDir . '/' . $nameFile, 'w');
+            $fh = fopen($this->cookiesDir . DS . $nameFile, 'w');
             fclose($fh);
-            chmod($this->cookiesDir . '/' . $nameFile, 0770);
+            chmod($this->cookiesDir . DS . $nameFile, 0770);
             if ($fh) {
                 $this->cookies_name = $nameFile;
             }
@@ -1484,8 +1516,8 @@ class p2pCompany {
      * Delete the cookies file generated for the request
      */
     public function deleteCookiesFile() {
-        if ($this->cookies_name != "cookies.txt" && file_exists($this->cookiesDir . '/' . $this->cookies_name)) {
-            unlink($this->cookiesDir . '/' . $this->cookies_name);
+        if ($this->cookies_name != "cookies.txt" && file_exists($this->cookiesDir . DS . $this->cookies_name)) {
+            unlink($this->cookiesDir . DS . $this->cookies_name);
         }
     }
 
@@ -1529,30 +1561,61 @@ class p2pCompany {
      * @param object $error It is the error that pass the plugin of multicurl
      * @return array It is the principal array with only the error variable
      */
-    public function getError($line, $file, $id = null, $error = null) {
-        $newLine = "\n";
-        $type_sequence = null;
-        if (!empty($id)) {
-            $type_sequence = "$newLine The sequence is " . $id;
+    public function getError($line, $file, $typeErrorId = null, $typeSequence = null, $error = null) {
+        if (!empty($typeErrorId)) {
+            $this->tempArray['global']['error']['subtypeErrorId'] = $typeErrorId;
+            if (!empty($error)) {
+                $this->tempArray['global']['error']['subtypeErrorId'] = $this->getErrorCurlType($error->getCode());
+            }  
+            //$this->tempArray['global']['error']['typeOfError'] = "";
+            //$this->tempArray['global']['error']['detailedErrorInformation'] = "";
+            $this->tempArray['global']['error']['line'] = $line;
+            $this->tempArray['global']['error']['file'] = $file;
+            $this->tempArray['global']['error']['urlsequenceUrl'] = $this->errorInfo;
         }
-        $error_request = null;
+        else {
+            $this->tempArray = $this->setErrorOldUserinvestmentdata($line, $file, $typeSequence, $error);
+        }
+        return $this->tempArray;
+    }
+    
+    public function getErrorCurlType($code) {
+        $subtypeError = WIN_ERROR_FLOW_CURL;
+        switch($code) {
+            case 3:
+                $subtypeError = WIN_ERROR_FLOW_URLSEQUENCE;
+                break;
+            case 28:
+                $subtypeError = WIN_ERROR_FLOW_CURL_TIMEOUT;
+        }
+        return $subtypeError;
+    }
+    
+    public function setErrorOldUserinvestmentdata($line, $file, $typeSequence = null, $error = null) {
+        $newLine = "\n";
+        if (!empty($typeSequence)) {
+            $typeSequence = "$newLine The sequence is " . $typeSequence;
+        }
+        $errorRequest = null;
         if (!empty($error)) {
-            $error_request = "$newLine The error code of the request: " . $error->getCode()
+            $errorRequest = "$newLine The error code of the request: " . $error->getCode()
                     . "$newLine The error message of the request: " . $error->getMessage();
         }
         
         $errorDetailed = "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
                 . ". The queueId is " . $this->queueId['Queue']['id']
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
-                . " " . $type_sequence
-                . " " . $error_request;
+                . " ERROR Userinvestmentdata: detected in PFP id: " .  $this->companyName
+                . "$newLine Error type " . WIN_ERROR_USER_INVESTMENT_DATA
+                . " " . $typeSequence
+                . " " . $errorRequest;
         $this->tempArray['global']['error'] = $errorDetailed;
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
-        $this->classContainer->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $this->companyName . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
+        $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, WIN_ERROR_USER_INVESTMENT_DATA);
         return $this->tempArray;
     }
-
+    
     /**
      * 	borrowed from "http://guid.us/"
      * 	Generates a GUID
@@ -1791,7 +1854,7 @@ class p2pCompany {
         $this->errorInfo = $url;
         echo "File name is " . $fileName;
         
-        $pathCreated = $this->createFolderPFPFile();
+        $pathCreated = $this->getFolderPFPFile();
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
             //$path = $partialPath . DS . $path;
@@ -2359,8 +2422,7 @@ class p2pCompany {
     function setTypeFileAmortizationtable($typeFileAmortizationtable) {
         $this->typeFileAmortizationtable = $typeFileAmortizationtable;
     }
-
-        
+    
     /**
      * Function to get the base url of a PFP company
      * @return string It is the base url
@@ -2747,6 +2809,10 @@ FRAGMENT
      */
     public function casperRun() {
         $this->casperObject->run();
+    }
+    
+    public function casperSendKey($input, $str) {
+        $this->casperObject->sendKeys($input, $str);
     }
     
     /**

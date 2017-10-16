@@ -142,7 +142,7 @@ class bondora extends p2pCompany {
      *  Generate report to download.
      * @param type $str
      */
-    function generateReportParallel($str) {
+    function generateReportParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -200,7 +200,7 @@ class bondora extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
 
                 $this->idForSwitch++;
@@ -284,7 +284,6 @@ class bondora extends p2pCompany {
             case 5:
                 echo $str . SHELL_ENDOFLINE;
                 return $tempArray = 'Generando informe';
-                break;
         }
     }
 
@@ -355,7 +354,7 @@ class bondora extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
 
                 //Get global data
@@ -703,7 +702,7 @@ class bondora extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
 
                 $this->idForSwitch++;

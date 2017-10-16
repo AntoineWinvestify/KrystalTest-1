@@ -28,6 +28,10 @@ require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
  * @package       app.Console.Command
  */
 class AppShell extends Shell {
+    
+    public function startup() {
+        Configure::load('p2pGestor.php', 'default');
+    }
 
     /**
      *
@@ -142,6 +146,10 @@ class AppShell extends Shell {
         }
         return($approvedFileNameList);
     }
-
-
+    
+    private function tryErrorOnGearman() {
+        //fake code
+    }
+        
+        
 }
