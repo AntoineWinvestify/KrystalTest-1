@@ -254,7 +254,8 @@ class arboribus extends p2pCompany {
         echo 'Hidden: ' . SHELL_ENDOFLINE;
         $this->print_r2($hiddenInvestments);
         $totalArray = array_merge($totalArray,$hiddenInvestments);
-        
+        echo 'Marketplace:' . HTML_ENDOFLINE;
+        $this->print_r2($totalArray);
         return [$totalArray, $structureRevision[0],$structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
