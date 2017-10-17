@@ -34,7 +34,7 @@ class twino extends p2pCompany {
 // 8/3/2017 20:39	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-185114001	1.0544
 // 8/3/2017 18:52	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-337436001	5.2947
 
-    protected $values_twino_cashflow = [// All types/names will be defined as associative index in array
+    protected $valuesTransaction = [// All types/names will be defined as associative index in array
         "A" => [
             [
                 "type" => "date", // Winvestify standardized name 
@@ -136,7 +136,7 @@ class twino extends p2pCompany {
         ]
     ];
 // Not finished
-    protected $values_twino_investment = [// All types/names will be defined as associative index in array
+    protected $valuesInvestment = [// All types/names will be defined as associative index in array
 
         "A" => [
             "name" => "origin.loan",
@@ -162,6 +162,32 @@ class twino extends p2pCompany {
         ]
     ];
 
+    protected $valuesAmortizationTable = [  // NOT FINISHED
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+        ];    
+
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                        //        'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+/*   NOT YET READY
+    protected $amortizationConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+*/     
+    
+    
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -170,17 +196,6 @@ class twino extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesTwinoTransaction;
-    }
- 
-     public function getParserConfigInvestmentFile() {
-        return $this->$valuesTwinoInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesTwinoAmortization;
-    }   
     
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*

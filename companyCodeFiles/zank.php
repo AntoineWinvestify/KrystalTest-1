@@ -77,6 +77,29 @@ class zank extends p2pCompany {
     private $url;
     private $start = 0;
 
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */    
+    
+    
+    
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -87,19 +110,7 @@ class zank extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-  
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesZankTransaction;
-    }
- 
-     public function getParserConfigInvestmentFile() {
-        return $this->$valuesZankInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesZankAmortization;
-    }   
-    
+
     
     
     /**

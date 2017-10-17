@@ -51,15 +51,35 @@ class AppShell extends Shell {
         return $newComp;
     }
 
-  
-    
-    
-    
-    
-       
+
+
+     /**
+     * checks to see if jobs are waiting in the queue for processing
+     *
+     * @param int $presentStatus    status of job to be located
+     * @param int $limit            Maximum number of jobs to be pulled out of the queue
+     * @return array                List of pending jobs
+     *
+     */
+    public function checkJobs ($presentStatus, $limit) {
+
+        if (empty($this->Queue) ) {
+            $this->Queue = ClassRegistry::init('Queue');
+            echo __FUNCTION__ . " " . "Queue instance created\n";
+        }
+
+        $userAccess = 0;
+        $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
+        return $jobList;
+    }
+
+
+
+
+
     /**
      * Read the names in directory $dir of the files (FDQN) that fulfill the $typeOfFiles bitmap
-     * 
+     *
      * @param string $dir           Directory in which to search
      * @param int $typeOfFiles      bitmap of constants of Type Of File:
      *                              INVESTMENT_FILE, TRANSACTION_TABLE_FILE, CONTROL_FILE, ....
@@ -69,7 +89,7 @@ class AppShell extends Shell {
 
         $fileNameList = array();
         $handle = opendir($dir);
-        
+
         if ($handle) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
@@ -80,32 +100,32 @@ class AppShell extends Shell {
         }
 
         $approvedFileNameList = $this->readFilteredFiles($fileNameList, $typeOfFiles);
-        return $approvedFileNameList; 
-    } 
-     
-      
-    
+        return $approvedFileNameList;
+    }
+
+
+
     /**
      * Read the names in a list of files (FDQN) that fulfill the $typeOfFiles bitmap
-     * 
+     *
      * @param array $fileNameList   list of filesnames to be analyzed
      * @param int $typeOfFiles      bitmap of constants of Type Of File:
      *                              INVESTMENT_FILE, TRANSACTION_TABLE_FILE, CONTROL_FILE, ....
      * @return array  $approveFileNameList    list of FQDN filenames
      */
     function readFilteredFiles($fileNameList,  $typeOfFiles) {
-        $approvedFileNameList = array();       
+        $approvedFileNameList = array();
 // start temp
         $knownFileTypesNames = array (
             TRANSACTION_FILE => "transaction",
             INVESTMENT_FILE => "investment",
-//            TRANSACTIONTABLE_FILE =>  
+//            TRANSACTIONTABLE_FILE =>
             AMORTIZATION_TABLE_FILE => "amortizationTable",
-//            AMORTIZATION_TABLE_ARRAY => 
+//            AMORTIZATION_TABLE_ARRAY =>
             AMORTIZATION_TABLE_FILE => "amortizationTableList",
             CONTROL_FILE => "controlVariables"
             );
-        
+
         $requiredFileType = array();
         foreach ($knownFileTypesNames as $keyKnownFileTypeName => $knownFileTypeName) {
             $temp = $keyKnownFileTypeName & $typeOfFiles;
@@ -113,7 +133,7 @@ class AppShell extends Shell {
                 $requiredFileTypes[] = $knownFileTypeName;
             }
         }
- // end temp  
+ // end temp
 
         foreach ($fileNameList as $file) {
             foreach ($requiredFileTypes as $fileType) {
@@ -123,8 +143,8 @@ class AppShell extends Shell {
                     continue;
                 }
             }
-        }            
-        return($approvedFileNameList);    
+        }
+        return($approvedFileNameList);
     }
     
     private function tryErrorOnGearman() {

@@ -27,10 +27,45 @@
  */
 class finbee extends p2pCompany {
 
+    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */    
+    
+    
     function __construct() {
         $this->i = 0;
         parent::__construct();
 // Do whatever is needed for this subsclass
+    }
+
+    public function getParserConfigTransactionFile() {
+        return $this->$valuesFinbeeTransaction;
+    }
+
+    public function getParserConfigInvestmentFile() {
+        return $this->$valuesFinbeeInvestment;
+    }
+
+    public function getParserConfigAmortizationTableFile() {
+        return $this->$valuesFinbeeAmortization;
     }
 
     /**
@@ -265,7 +300,7 @@ class finbee extends p2pCompany {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
-                $url = strtr($this->tempUrl['investmentUrl'], array('{$loanId}' => $this->loanIds[$this->i]));  
+                $url = strtr($this->tempUrl['investmentUrl'], array('{$loanId}' => $this->loanIds[$this->i]));
                 echo "the table url is: " . $url;
                 $this->i = $this->i + 1;
                 $this->idForSwitch++;
@@ -294,8 +329,7 @@ class finbee extends p2pCompany {
                     $this->idForSwitch = 4;
                     $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['dummyUrl']);
                     break;
-                } 
-                else {
+                } else {
                     return $this->tempArray;
                 }
         }
