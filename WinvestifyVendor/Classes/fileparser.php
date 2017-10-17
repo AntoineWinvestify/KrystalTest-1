@@ -79,7 +79,7 @@
                     "cash" => 1,                                    // 1 = in, 2 = out
                     "account" => "CF",
                     "transactionType" => "Deposit",
-                    "type" => "userdatainvestment_deposits" // internal variable for this concept
+                    "type" => "globalcashflowdata_platformDeposits" // internal variable for this concept
                     ],
                 1 => [
                     "detail" => "Cash_withdrawal",
@@ -96,18 +96,18 @@
                     "type" => "concept1",
                     ],
                 3 => [
-                    "detail" => "Secundary_market_investment",
+                    "detail" => "Secondary_market_investment",
                     "cash" => 2,
                     "account" => "Capital",
                     "transactionType" => "Investment",
                     "type" => "concept2"
                     ],
                 4 => [
-                    "detail" => "Principal_repayment",
+                    "detail" => "Capital_repayment",
                     "cash" => 1,
                     "account" => "Capital",
                     "transactionType" => "Repayment",
-                    "type" => "investment_principalAndInterestPayment"
+                    "type" => "payment_capitalRepayment"   // OK 
                     ],
                 5 => [
                     "detail" => "Partial_principal_repayment",
@@ -121,7 +121,7 @@
                     "cash" => 1,
                     "account" => "Capital",
                     "transactionType" => "Repayment",
-                    "type" => "concept6"
+                    "type" => "payment_principalBuyback"   // OK
                     ],
                 7 => [
                     "detail" => "Principal_and_interest_payment",
@@ -135,21 +135,21 @@
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "concept8"
+                    "type" => "payment_regularGrossInterestIncome"
                     ],
                 9 => [
                     "detail" => "Delayed_interest_income",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "concept9"
+                    "type" => "payment_delayedInterestPayment" // OK
                     ],
-                10 => [ //OK
+                10 => [ 
                     "detail" => "Late_payment_fee_income",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "payment_latePaymentFeeIncome"
+                    "type" => "payment_latePaymentFeeIncome"  // OK
                     ],
                 11 => [
                     "detail" => "Cash_deposit",
@@ -163,31 +163,31 @@
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "concept12"
+                    "type" => "payment_interestIncomeBuyback"  // OK
                     ],
                 13 => [
                     "detail" => "Delayed_interest_income_buyback",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "concept13"
+                    "type" => "payment_delayedInterestIncomeBuyback"   // OK
                     ],
                 14 => [
                     "detail" => "Cash_withdrawal",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "concept14"
+                    "type" => "globalcashflowdata_platformWithdrawal"  //
                     ],
                 15 => [
                     "detail" => "Cash_deposit",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "concept15"
+                    "type" => "globalcashflowdata_platformDeposit"    //
                     ],
                 16 => [
-                    "detail" => "Cash_withdrawal",
+                    "detail" => "Cash_withdrawal1",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
@@ -413,8 +413,24 @@ echo "INPUT FILE = $file \n";
 
 
 
+    /**
+     * Returns the progress indicator in the form of a simple string, like 3/17
+     * Both input variables *should* be integer values.
+     * 
+     * @param   string  $input   Content of row   (=dummy variable)
+     * @param   int     $divident
+     * @param   int     $divisor
 
-
+     * @return  string
+     *
+     * example:  getProgressString(12,27,0)   => 12/27
+     * 
+     */
+    private function getProgressString($input, $divident, $divisor)  {
+        return $divident . "/" . $divisor;
+    }
+    
+    
     /**
      * Returns the quotient * 100 of a division. This represents the %
      * an unknown "payment" concept was found.
@@ -703,7 +719,6 @@ echo "INPUT FILE = $file \n";
                     if ($detail['detail'] == $configItem) {
                   //      $result = array($configItem,"type" => $detail['type']);
                         $result = array($detail['type'],"type" => "internalName");
-                        print_r($result);
                         return $result;
                     }
                 }
@@ -742,7 +757,7 @@ echo "INPUT FILE = $file \n";
      *
      */
     private function getRowData($input, $field, $overwrite) {
-
+echo "getRowData, input = $input, field = $field and overwrite = $overwrite\n";
         if (empty($input)) {
             return $field;
         }

@@ -78,16 +78,16 @@ class mintos extends p2pCompany {
                     "type" => "transactionDetail",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
-                                   "input8" => ["Incoming client payment" => "Cash_deposit",
+                                   "input8" => ["Incoming client payment" => "Cash_deposit",    // OK
                                                 "Investment principal increase" => "Primary_market_investment",
                                                 "Investment share buyer pays to a seller" => "Investment",
-                                                "Investment principal repayment" => "Principal_repayment",
-                                                "Investment principal rebuy" => "Principal_buyback",                                      
-                                                "Interest income on rebuy" => "Interest_income_buyback",
-                                                "Interest income" => "Regular_gross_interest_income",
-                                                "Delayed interest income" => "Delayed_interest_income",
-                                                "Late payment fee income" =>"Late_payment_fee_income",                                             
-                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",
+                                                "Investment principal repayment" => "Capital_repayment",  //OK
+                                                "Investment principal rebuy" => "Principal_buyback",      // OK                               
+                                                "Interest income on rebuy" => "Interest_income_buyback",  // OK
+                                                "Interest income" => "Regular_gross_interest_income",//
+                                                "Delayed interest income" => "Delayed_interest_income",   // OK
+                                                "Late payment fee income" =>"Late_payment_fee_income",    // OK                                       
+                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",  // OK
                                                 "Disc/premum paid secondary market" => "Income"]
                             ],
                     "functionName" => "getTransactionDetail",
@@ -235,9 +235,8 @@ class mintos extends p2pCompany {
                     "inputData" => [
                                 "input2" => "#current.investment_paidInstalments",
                                 "input3" => "#current.investment_totalInstalments",
-                                "input4" => 0                                           // Number of decimals
                                 ],
-                    "functionName" => "DivisionInPercentage",
+                    "functionName" => "getProgressString",
                 ],
 
              ],
