@@ -1043,9 +1043,8 @@ class loanbook extends p2pCompany {
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 5:
-                $path = $this->createFolderPFPFile();
-                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
-                    return $this->getError(__LINE__, __FILE__);
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -1188,10 +1187,9 @@ class loanbook extends p2pCompany {
                     break;
                 }
             case 9:
-                echo 'Stop';
-                $path = $this->createFolderPFPFile();
-                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
-                    return $this->getError(__LINE__, __FILE__);
+                echo 'Stop';         
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 return $this->tempArray;
         }

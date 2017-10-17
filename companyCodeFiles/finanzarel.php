@@ -462,10 +462,10 @@ class finanzarel extends p2pCompany {
                 }
                 print_r($controlVariablesArray);
                 
-                $this->tempArray['myWallet'] = $this->getMonetaryValue($controlVariablesArray[5]);
-                $this->tempArray['outstandingPrincipal'] = $this->getMonetaryValue($controlVariablesArray[2]);
-                $this->tempArray['amortization'] = $this->getMonetaryValue($controlVariablesArray[11]);
-                $this->tempArray[''] = $this->getMonetaryValue($controlVariablesArray[6]);
+                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($controlVariablesArray[5]);
+                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($controlVariablesArray[2]);
+                $this->tempArray['global']['amortization'] = $this->getMonetaryValue($controlVariablesArray[11]);
+                $this->tempArray['InversionNetaComprometida'] = $this->getMonetaryValue($controlVariablesArray[6]);
                 
                 print_r($this->tempArray);
                 //Get the request to download the file
@@ -589,7 +589,7 @@ class finanzarel extends p2pCompany {
                 $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
                 break;
             case 7:
-                return $tempArray["global"] = "waiting_for_global";
+                return $tempArray;
                 
             /*case 6:
                 $dom = new DOMDocument;

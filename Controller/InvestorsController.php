@@ -217,7 +217,7 @@ function linkAccount() {
         }
 
         $companyId = $_REQUEST['companyId'];
-        $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGIN_SEQUENCE);
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGIN_SEQUENCE);
 
         $newComp = $this->companyClass($companyResults[$companyId]['company_codeFile']);
         $newComp->setUrlSequence($urlSequenceList);
@@ -245,7 +245,7 @@ function linkAccount() {
 
         } else {
             if ($this->Linkedaccount->createNewLinkedAccount($_REQUEST['companyId'], $this->Auth->user('Investor.id'), $_REQUEST['userName'], $_REQUEST['password'])) {
-                $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
+                $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGOUT_SEQUENCE);
                 $newComp->setUrlSequence($urlSequenceList);
                 $newComp->companyUserLogout();
                 $newComp->deleteCookiesFile();
