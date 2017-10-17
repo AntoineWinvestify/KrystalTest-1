@@ -444,14 +444,19 @@ class finanzarel extends p2pCompany {
                 //Get cv
                 
                 $controlVariables = $this->getElements($dom, 'span', 'class', 't-MediaList-badge');
+                $controlVariables = array_merge($controlVariables, $this->getElements($dom, 'p', 'class', 't-MediaList-desc'));
+                $controlVariablesArray = array();
                 foreach ($controlVariables as $controlVariable){
-                    echo $controlVariable->nodeValue . SHELL_ENDOFLINE;
+                    $controlVariablesArray[] = $controlVariable->nodeValue;
                 }
+                print_r($controlVariablesArray);
                 
+                $this->tempArray['myWallet'] = $this->getMonetaryValue($controlVariablesArray[5]);
+                $this->tempArray['outstandingPrincipal'] = $this->getMonetaryValue($controlVariablesArray[2]);
+                $this->tempArray['amortization'] = $this->getMonetaryValue($controlVariablesArray[11]);
+                $this->tempArray[''] = $this->getMonetaryValue($controlVariablesArray[6]);
                 
-                
-                
-                
+                print_r($this->tempArray);
                 //Get the request to download the file
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $key => $a) {
