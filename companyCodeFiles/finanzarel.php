@@ -54,7 +54,7 @@ class finanzarel extends p2pCompany {
     protected $credentialsGlobal = array();
     protected $requestFiles = array();
     
-    protected $valuesFinanzarelTransaction = [     // All types/names will be defined as associative index in array
+    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
                     "name" => "transactionId"                                          // Winvestify standardized name
             ],
@@ -138,7 +138,7 @@ class finanzarel extends p2pCompany {
             ],
         ];
 
-   protected $valuesFinanzarelInvestment = [     // All types/names will be defined as associative index in array
+   protected $valuesInvestment = [     // All types/names will be defined as associative index in array
             "A" =>  [
                     "name" => "transactionId"                                          // Winvestify standardized name
             ],
@@ -244,26 +244,37 @@ class finanzarel extends p2pCompany {
             ],
         ];
 
-    
+    protected $valuesAmortizationTable = [  // NOT FINISHED
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+        ];
+
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */
     
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
     }   
-    
-    
-    
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesFinanzarelTransaction;
-    }
- 
-     public function getParserConfigInvestmentFile() {
-        return $this->$valuesFinanzarelInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesFinanzarelAmortization;
-    }    
 
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
