@@ -50,7 +50,7 @@ class CollectDataClientShell extends GearmanClientShell {
         }
 
         $inActivityCounter++;                                           // Gearman client 
-        $jobsInParallel = 1;
+        $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         $this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $companyTypes = $this->Company->find('list', array(
