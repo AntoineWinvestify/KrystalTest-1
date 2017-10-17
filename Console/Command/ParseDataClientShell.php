@@ -832,7 +832,7 @@ print_r($subDir);
                 }   
             } 
  
-  $database['payment']['investment_id'] = 99;
+  $database['payment']['investment_id'] = 98;
 print_r($database);      
  // write all relevant tables, WE DON'T HAVE TO UPDATE AMORTIZATION TABLES???
             $this->Investment = ClassRegistry::init('Investment');
