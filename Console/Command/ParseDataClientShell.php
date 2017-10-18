@@ -42,7 +42,7 @@ class ParseDataClientShell extends AppShell {
     protected $GearmanClient;
     
     protected $variablesConfig = [
-        // FLOWDATA_VARIABLE_DONE: The system has copied the variable to the internal queue
+        // FLOWDATA_VARIABLE_DONE: The system has copied/calculates the variable to the internal queue
         // FLOWDATA_VARIABLE_NOT_DONE: The system has not (yet) copied the variable to the internal queue
         // FLOWDATA_VARIABLE_ACCUMULATIVE: The value is accumulative, read original value, add new value and write
         //                                  for this loan and this readout period
@@ -51,6 +51,7 @@ class ParseDataClientShell extends AppShell {
         2 => [
                 "databaseName" => "investment.investment_loanId", 
                 "internalName" => "investment_loanId",
+                "internalIndex" => 2,
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,                 
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,
                 "function" => ""                      // Only needed in case "complex calculations are required
@@ -58,6 +59,7 @@ class ParseDataClientShell extends AppShell {
         3 => [
                 "databaseName" => "investment.investment_debtor", 
                 "internalName" => "investment_debtor",
+                "internalIndex" => 3,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,
                 "function" => ""                                        // Not applicable            
@@ -65,48 +67,55 @@ class ParseDataClientShell extends AppShell {
         4 => [
                 "databaseName" => "investment.investment_country", 
                 "internalName" => "investment_country",  
+                "internalIndex" => 4,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable
             ],
         5 => [
                 "databaseName" => "investment.investment_loanType", 
-                "internalName" => "investment_loanType",            
+                "internalName" => "investment_loanType",    
+                "internalIndex" => 5,           
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable            
             ],  
         6 => [
                 "databaseName" => "investment.investment_amortizationMethod", 
-                "internalName" => "investment_amortizationMethod",            
+                "internalName" => "investment_amortizationMethod", 
+                "internalIndex" => 6,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable          
             ],
         7 => [
                 "databaseName" => "investment.investment_market", 
-                "internalName" => "investment_market",           
+                "internalName" => "investment_market",        
+                "internalIndex" => 7,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable  
             ],       
         8 => [
                 "databaseName" => "investment.investment_loanOriginator", 
-                "internalName" => "investment_loanOriginator",           
+                "internalName" => "investment_loanOriginator",         
+                "internalIndex" => 8,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable 
             ],
         9 => [
                 "databaseName" => "investment.investment_buyBackGuarantee", 
-                "internalName" => "investment_buyBackGuarantee",             
+                "internalName" => "investment_buyBackGuarantee", 
+                "internalIndex" => 9,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable            
             ],
         10 => [
                 "databaseName" => "investment.investment_currency", 
-                "internalName" => "investment_currency",            
+                "internalName" => "investment_currency",         
+                "internalIndex" => 10,           
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable   
@@ -114,6 +123,7 @@ class ParseDataClientShell extends AppShell {
         11 => [
                 "databaseName" => "investment.investment_typeOfInvestment",        
                 "internalName" => "investment_typeOfInvestment", 
+                "internalIndex" => 11,           
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable  
@@ -121,6 +131,7 @@ class ParseDataClientShell extends AppShell {
         12 => [
                 "databaseName" => "investment.investment_myInvestment",        
                 "internalName" => "investment_myInvestment", 
+                "internalIndex" => 12,           
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
@@ -128,35 +139,40 @@ class ParseDataClientShell extends AppShell {
                 
         13 => [
                 "databaseName" => "investment.investment_investmentDate", 
-                "internalName" => "investment_investmentDate",             
+                "internalName" => "investment_investmentDate",  
+                "internalIndex" => 13,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable       
             ], 
         14 => [
                 "databaseName" => "investment.issueDate", 
-                "internalName" => "investment_issueDate",            
+                "internalName" => "investment_issueDate",   
+                "internalIndex" => 14,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable            
             ],       
         15 => [
                 "databaseName" => "investment.investment_dueDate", 
-                "internalName" => "investment_dueDate",             
+                "internalName" => "investment_dueDate",         
+                "internalIndex" => 15,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""         
             ],
         16 => [
                 "databaseName" => "investment.investment_originalDuration", 
-                "internalName" => "investment_originalDuration",             
+                "internalName" => "investment_originalDuration",    
+                "internalIndex" => 16,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
             ], 
         17 => [
                 "databaseName" => "investment.investment_remainingDuration", 
-                "internalName" => "investment_originalDuration",             
+                "internalName" => "investment_remainingDuration",   
+                "internalIndex" => 17,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
@@ -164,13 +180,15 @@ class ParseDataClientShell extends AppShell {
         18 => [
                 "databaseName" => "investment.investment_paymentFrequency", 
                 "internalName" => "investment_paymentFrequency",    
+                "internalIndex" => 18,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable            
             ],        
         19 => [
                 "databaseName" => "investment.investment_fullLoanAmount", 
-                "internalName" => "investment_fullLoanAmount",             
+                "internalName" => "investment_fullLoanAmount",        
+                "internalIndex" => 19,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""      
@@ -178,6 +196,7 @@ class ParseDataClientShell extends AppShell {
         20 => [
                 "databaseName" => "investment.investment_nominalInterestRate", 
                 "internalName" => "investment_nominalInterestRate",     
+                "internalIndex" => 20,           
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable  
@@ -185,13 +204,15 @@ class ParseDataClientShell extends AppShell {
         21 => [
                 "databaseName" => "investment.investment_riskRating", 
                 "internalName" => "investment_riskRating",    
+                "internalIndex" => 21,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable  
             ], 
         22 => [
                 "databaseName" => "investment.investment_expectedAnualYield", 
-                "internalName" => "investment_expectedAnualYield",       
+                "internalName" => "investment_expectedAnualYield",    
+                "internalIndex" => 22,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""      
@@ -199,6 +220,7 @@ class ParseDataClientShell extends AppShell {
         23 => [
                 "databaseName" => "investment.investment_LTV",
                 "internalName" => "investment_LTV",      
+                "internalIndex" => 23,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable
@@ -206,6 +228,7 @@ class ParseDataClientShell extends AppShell {
         24 => [
                 "databaseName" => "investment.investment_originalState", 
                 "internalName" => "investment_originalState",     
+                "internalIndex" => 24,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
@@ -213,20 +236,23 @@ class ParseDataClientShell extends AppShell {
         25 => [
                 "databaseName" => "investment.investment_dateOfPurchase", 
                 "internalName" => "investment_dateOfPurchase",     
+                "internalIndex" => 25,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""           
             ],  
         26 => [
                 "databaseName" => "investment.investment_secondaryMarketInvestment", 
-                "internalName" => "investment_secondaryMarketInvestment",    
+                "internalName" => "investment_secondaryMarketInvestment",  
+                "internalIndex" => 26,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""         
             ],
         27 => [
                 "databaseName" => "investment.investment_priceInSecondaryMarket", 
-                "internalName" => "investment_priceInSecondaryMarket",      
+                "internalName" => "investment_priceInSecondaryMarket",     
+                "internalIndex" => 27,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
@@ -234,7 +260,8 @@ class ParseDataClientShell extends AppShell {
         
                         28 => [ // CHECK
                                 "databaseName" => "investment.investment_forSale",
-                                "internalName" => "investment_forSale",       
+                                "internalName" => "investment_forSale",    
+                "internalIndex" => 28,                            
                                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                                 "function" => ""        
@@ -243,7 +270,8 @@ class ParseDataClientShell extends AppShell {
 
         30 => [
                 "databaseName" => "investment.investment_principalAndInterestPayment",  
-                "internalName" => "investment_principalAndInterestPayment",             
+                "internalName" => "investment_principalAndInterestPayment", 
+                "internalIndex" => 30,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => ""  
@@ -251,13 +279,15 @@ class ParseDataClientShell extends AppShell {
         31 => [
                 "databaseName" => "investment.investment_instalmentsProgress",
                 "internalName" => "investment_installmentsProgress", 
+                "internalIndex" => 31,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
             ], 
         32 => [
                 "databaseName" => "investment.investment_instalmentsPaid",  
-                "internalName" => "investment_instalmentsPaid",            
+                "internalName" => "investment_instalmentsPaid",    
+                "internalIndex" => 32,               
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
@@ -265,14 +295,16 @@ class ParseDataClientShell extends AppShell {
 
         33 => [
                 "databaseName" => "investment.investment_totalInstalments", 
-                "internalName" => "investment_totalInstalments",             
+                "internalName" => "investment_totalInstalments",     
+                "internalIndex" => 33,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
             ],               
         34 => [
                 "databaseName" => "payment.payment_capitalRepayment",  
-                "internalName" => "payment_capitalRepayment",             
+                "internalName" => "payment_capitalRepayment",         
+                "internalIndex" => 34,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "calculateCapitalRepayment"           
@@ -280,56 +312,64 @@ class ParseDataClientShell extends AppShell {
 
         35 => [
                 "databaseName" => "investment.investment_partialPrincipalPayment", 
-                "internalName" => "investment_partialPrincipalPayment",             
+                "internalName" => "investment_partialPrincipalPayment",  
+                "internalIndex" => 35,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculatePartialPrincipalBuyback" 
             ],       
         36 => [
                 "databaseName" => "payment.payment_principalBuyback",
-                "internalName" => "payment_principalBuyback",             
+                "internalName" => "payment_principalBuyback",    
+                "internalIndex" => 36,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "calculatePrincipalBuyback"        
             ],
         37 => [
                 "databaseName" => "investment.investment_outstandingPrincipal",
-                "internalName" => "investment_outstandingPrincipal",             
+                "internalName" => "investment_outstandingPrincipal", 
+                "internalIndex" => 37,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""           
             ],
         38 => [
                 "databaseName" => "investment.investment_receivedRepayment", 
-                "internalName" => "investment_receivedRepayment",             
+                "internalName" => "investment_receivedRepayment",
+                "internalIndex" => 38,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""  
             ],
         39 => [
                 "databaseName" => "investment.investment_nextPaymentDate", 
-                "internalName" => "investment_nextPaymentDate",             
+                "internalName" => "investment_nextPaymentDate",
+                "internalIndex" => 39,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
             ], 
         40 => [
                 "databaseName" => "investment.investment_nextPayment",
-                "internalName" => "investment_nextPayment",             
+                "internalName" => "investment_nextPayment",    
+                "internalIndex" => 40,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""           
             ],
         41 => [
                 "databaseName" => "investment.investment_interestGrossExpected",  
-                "internalName" => "investment_interestGrossExpected",             
+                "internalName" => "investment_interestGrossExpected",
+                "internalIndex" => 41,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""      
             ],       
         42 => [
                 "databaseName" => "investment.investment_totalGrossIncome", 
-                "internalName" => "investment_totalGrossIncome",             
+                "internalName" => "investment_totalGrossIncome", 
+                "internalIndex" => 42,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
@@ -337,34 +377,39 @@ class ParseDataClientShell extends AppShell {
         43 => [
                 "databaseName" => "investment.investment_interestGrossIncome", 
                 "internalName" => "investment_interestGrossIncome",             
+                "internalIndex" => 43,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""           
             ],  
         44 => [
                 "databaseName" => "payment.payment_interestIncomeBuyback",
-                "internalName" => "payment_interestIncomeBuyback",             
+                "internalName" => "payment_interestIncomeBuyback",      
+                "internalIndex" => 44,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "calculateInterestIncomeBuyback"         
             ],
         45 => [
                 "databaseName" => "payment.payment_delayedInterestIncome",
-                "internalName" => "payment_delayedInterestPayment",             
+                "internalName" => "payment_delayedInterestPayment",         
+                "internalIndex" => 45,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculateDelayedInterestIncome" 
             ],       
         46 => [
                 "databaseName" => "payment.payment_delayedInterestIncomeBuyback",
-                "internalName" => "payment_delayedInterestIncomeBuyback",             
+                "internalName" => "payment_delayedInterestIncomeBuyback",   
+                "internalIndex" => 46,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculateDelayedInterestIncomeBuyback"        
             ],
         47 => [
                 "databaseName" => "payment.payment_latePaymentFeeIncome",
-                "internalName" => "payment_latePaymentFeeIncome",          
+                "internalName" => "payment_latePaymentFeeIncome",        
+                "internalIndex" => 47,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculateLatePaymentFeeIncome"           
@@ -372,27 +417,31 @@ class ParseDataClientShell extends AppShell {
         48 => [
                 "databaseName" => "investment.investment_recoveries", 
                 "internalName" => "investment_recoveries",             
+                "internalIndex" => 48,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => ""  
             ],
         49 => [ // TO CHECK WITH LATEST INVESTMENT LIST
                 "databaseName" => "investment.investment_loanIdAA",  
-                "internalName" => "investment_originalDuration",             
+                "internalName" => "investment_originalDuration",     
+                "internalIndex" => 49,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
             ], 
         50 => [
                 "databaseName" => "investment.investment_compensation",  
-                "internalName" => "investment_compensation",             
+                "internalName" => "investment_compensation",        
+                "internalIndex" => 50,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "" 
             ],       
         51 => [
                 "databaseName" => "investment.investment_premiumSecondaryMarket",
-                "internalName" => "investment_premiumSecondaryMarket",             
+                "internalName" => "investment_premiumSecondaryMarket",  
+                "internalIndex" => 51,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
@@ -400,13 +449,15 @@ class ParseDataClientShell extends AppShell {
         53 => [
                 "databaseName" => "investment.investment_totalCost",  
                 "internalName" => "investment_totalCost",             
+                "internalIndex" => 53,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
             ],
         54 => [
                 "databaseName" => "investment.investment_commissionPaid",
-                "internalName" => "investment_commissionPaid",             
+                "internalName" => "investment_commissionPaid",        
+                "internalIndex" => 54,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => ""         
@@ -414,6 +465,7 @@ class ParseDataClientShell extends AppShell {
         55 => [
                 "databaseName" => "investment.investment_bankCharges", 
                 "internalName" => "investment_bankCharges",             
+                "internalIndex" => 55,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => ""
@@ -421,6 +473,7 @@ class ParseDataClientShell extends AppShell {
         56 => [
                 "databaseName" => "investmentdata.investmentdata_taxVAT",  
                 "internalName" => "investmentdata_taxVAT",             
+                "internalIndex" => 56,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
@@ -428,27 +481,31 @@ class ParseDataClientShell extends AppShell {
         57 => [
                 "databaseName" => "investment.investment_incomeWithholdingTax", 
                 "internalName" => "investment_incomeWithholdingTax",             
+                "internalIndex" => 57,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""           
             ],
         58 => [
                 "databaseName" => "investment.investment_interestPaymentSecondaryMarketPurchase", 
-                "internalName" => "investment_interestPaymentSecondaryMarketPurchase",             
+                "internalName" => "investment_interestPaymentSecondaryMarketPurchase",        
+                "internalIndex" => 58,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""  
             ],
         59 => [
                 "databaseName" => "investment.investment_currencyExchangRateFee", 
-                "internalName" => "investment_originalDuration",             
+                "internalName" => "investment_originalDuration",     
+                "internalIndex" => 59,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "" 
             ], 
         60 => [
                 "databaseName" => "investment.investment_costSecondaryMarket", 
-                "internalName" => "investment_costSecondaryMarket",             
+                "internalName" => "investment_costSecondaryMarket",  
+                "internalIndex" => 60,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""   
@@ -456,28 +513,32 @@ class ParseDataClientShell extends AppShell {
       
         62 => [
                 "databaseName" => "investment.investment_totalNetIncome",
-                "internalName" => "investment_totalNetIncome",             
+                "internalName" => "investment_totalNetIncome",    
+                "internalIndex" => 62,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
             ],
         63 => [
                 "databaseName" => "investment.investment_paymentStatus", 
-                "internalName" => "investment_paymentStatus",             
+                "internalName" => "investment_paymentStatus",      
+                "internalIndex" => 63,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""           
             ],  
         64 => [
                 "databaseName" => "investment.investment_statusOfLoan", 
-                "internalName" => "investment_statusOfLoan",             
+                "internalName" => "investment_statusOfLoan",       
+                "internalIndex" => 64,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""         
             ],
         65 => [
                 "databaseName" => "investment.investment_writtenOff",
-                "internalName" => "investment_writtenOff",             
+                "internalName" => "investment_writtenOff",        
+                "internalIndex" => 65,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
@@ -485,6 +546,7 @@ class ParseDataClientShell extends AppShell {
         66 => [
                 "databaseName" => "globalcashflowdata.globalcashflowdata_platformDeposit", 
                 "internalName" => "globalcashflowdata_platformDeposit",          
+                "internalIndex" => 66,           
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculatePlatformDeposit"        
@@ -492,6 +554,7 @@ class ParseDataClientShell extends AppShell {
         67 => [
                 "databaseName" => "globalcashflowdata.globalcashflowdata__platformWithdrawal",  
                 "internalName" => "globalcashflowdata_platformWithdrawal",        
+                "internalIndex" => 67,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE, 
                 "function" => "calculatePlatformWithdrawal" 
@@ -572,7 +635,7 @@ print_r($subDir);
                     
                     $response[] = $this->GearmanClient->addTask("parseFileFlow", json_encode($params));
                 }
-                
+
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the previous information to Worker\n";
                 }
@@ -658,40 +721,20 @@ print_r($subDir);
      *
      */
     public function getListActiveLoans($linkedaccount_id) {
-
         $this->Investment = ClassRegistry::init('Investment');
 
 // CHECK THE FILTERCONDITION for status
         $filterConditions = array(
-            //'linkedaccount_id' => $linkedaccount_id,
-                                    "investment_status" => -1,
+                                'linkedaccount_id' => $linkedaccount_id,
+                               //     "investment_status" => -1,
                                 );
-/*
+
 	$investmentListResult = $this->Investment->find("all", array( "recursive" => -1,
 							"conditions" => $filterConditions,
-                                                        "fields" => array("id", "investment_loanReference"),
+                                                        "fields" => array("id", "investment_loanId"),
 									));
- * */
  
- //       $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanReference');
-       $list =  array('C0008363',
-'C0007868',
-'C0007794',
-'C0007735',
-'C0007686',
-'C0007554',
-'C0007365',
-'C0006261',
-'C0004412',
-'C0004185',
-'C0004051',
-'C0003780',
-'C0003027',
-'C0002601',
-'C0002686',
-    'C0002701');
-
-        $list[] = "20729-01";       // ONLY FOR TESTING PURPOSES, TO BE DELETED.
+        $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
         return $list;
     }
 
@@ -738,40 +781,27 @@ print_r($subDir);
     /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values" 
      * and writes all values to the database.
-     *  @param  $array          Array with transaction data received from Worker     
-     *  @param  $array          Array with investment data received from Worker
+     *  @param  $array          Array which holds the data as received from the Worker
      * 
      *  @return boolean true
      *                  false
      *
-     * the data is available in two or three sub-arrays which are to be written (before checking if it is a duplicate) to the corresponding
-     * database table.g
+     * the principal data is available in two or three sub-arrays which are to be written 
+     * (before checking if it is a duplicate) to the corresponding database table.
      *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData (&$platformData) {
         $variables = array();
 
-//        print_r($platformData['newLoans']);
-// copy ALL static investmentTable fields, EVEN if they don't exist. Only for the first time, if we don't have a amortization table
-// (i.e. is in list of NEW loans
-// copy ALL "dynamic" investmentTable fields, EVEN if they don't exist.        
-        
-// check which once to calculate at this moment (can we use a bitmap approach?)       
- /*
-        if (in_array($loanID, $platformData['newLoans'])) {
-            echo "loanId already exists, so no extra storage is required\n";
-        }
-        $dbUserInvestmentData = array (
 
-                            );*/
-   
 
-// create a default AmortizationTable for loan if it is a new loan?
+// create a default AmortizationTable for the loan if it is a new loan?
 
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
         foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
             $newLoan = "20729-01";
             $loanIdKey = 20;
+            
             echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
             print_r($platformData['parsingResultInvestments'][$newLoan]);
             // check if we have information in the investment list about this loan.
@@ -781,36 +811,29 @@ print_r($subDir);
 
                 foreach ($platformData['parsingResultInvestments'][$newLoan] as $investmentDataKey => $investmentData) {
                     $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
-
                     if (!empty($tempResult))  {    
                         $dataInformation = explode (".",$tempResult['databaseName'] );
                         $dbTable = $dataInformation[0];
                         $database[$dbTable][$investmentDataKey] = $investmentData;
+                        $this->variablesConfig[$tempResult['internalIndex']]['state'] = FLOWDATA_VARIABLE_DONE;   // Mark done
                     }
                 }  
             }
 
  // also check if they belong to the same date, if not flush it          
             if (array_key_exists( $newLoan, $platformData['parsingResultTransactions'])) {  // this is a new loan and we have some info
-                 echo "loanIdKey= $loanIdKey, so start to copy the data\n";
-                 $platformData['parsingResultTransactions'][$newLoan][0]['internalName'] = "payment_capitalRepayment";
                  print_r($platformData['parsingResultTransactions'][$newLoan]);
                  
                 // check all the data in analyzed transaction table
-    
                 foreach ($platformData['parsingResultTransactions'][$newLoan] as $transactionData) { 
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // 0,1,2
-
-                        echo "key = $transactionDataKey and transaction = $transaction\n";
                         if ($transactionDataKey == "internalName") {        // dirty trick to keep it simple
-                           $transactionDataKey = $transaction; 
+                            $transactionDataKey = $transaction; 
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-
                         if (!empty($tempResult))  { 
                             unset($result);
                             $functionToCall = $tempResult['function'];
-                            echo "functionToCall = $functionToCall\n";
                             $dataInformation = explode (".", $tempResult['databaseName'] );
                             $dbTable = $dataInformation[0];
                             if (!empty($functionToCall)) {
@@ -827,66 +850,77 @@ print_r($subDir);
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
+                            $this->variablesConfig[$tempResult['internalIndex']]['state'] = FLOWDATA_VARIABLE_DONE;  // Mark done
                         } 
                     }
                 }   
             } 
  
-  $database['payment']['investment_id'] = 98;
+$database['payment']['investment_id'] = 98;
 print_r($database);      
  // write all relevant tables, WE DON'T HAVE TO UPDATE AMORTIZATION TABLES???
-            $this->Investment = ClassRegistry::init('Investment');
-            echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data..."; 
-            $this->Investment->create();
-            if ($this->Investment->save($database['investment'], $validate = true)) {
-                echo "Done\n";
-            }
-            else {
-                if (Configure::read('debug')) {
-                   echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
+
+            if (!empty($database['investment'])) {
+                $this->Investment = ClassRegistry::init('Investment');
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";                 
+                $this->Investment->create();
+                if ($this->Investment->save($database['investment'], $validate = true)) {
+                    echo "Done\n";
                 }
-            } 
+                else {
+                    if (Configure::read('debug')) {
+                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
+                    }
+                }
+            }
             
-            $this->Payment = ClassRegistry::init('Payment');
-            echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data...";            
-            $this->Payment->create();            
-            if ($this->Payment->save($database['payment'], $validate = true)) {
-                echo "Done\n";
-            }
-            else {
-                if (Configure::read('debug')) {
-                   echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId']  . "\n";
+            if (!empty($database['payment'])) {
+                $this->Payment = ClassRegistry::init('Payment');
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data... ";            
+                $this->Payment->create();            
+                if ($this->Payment->save($database['payment'], $validate = true)) {
+                    echo "Done\n";
+                }
+                else {
+                    if (Configure::read('debug')) {
+                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId']  . "\n";
+                    }
                 }
             }
-                      
-            $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-            echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data...";            
-            $this->Userinvestmentdata->create();            
-            if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
-                echo "Done\n";
-            }
-            else {
-                if (Configure::read('debug')) {
-                   echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+
+            if (!empty($database['userinvestmentdata'])) {            
+                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
+                $this->Userinvestmentdata->create();            
+                if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
+                    echo "Done\n";
                 }
-            }            
+                else {
+                    if (Configure::read('debug')) {
+                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+                    }
+                }  
+            }
             
-// We don't write the amortization tables during Flow 2. New tables are defined un Flow 3B            
-            $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-            echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data...";            
-            $this->Globalcashflowdata->create();            
-            if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
-                echo "Done\n";
-            }
-            else {
-                if (Configure::read('debug')) {
-                   echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
+// We don't write the amortization tables during Flow 2. New tables are defined un Flow 3B 
+            if (!empty($database['globalcashflowdata'])) {               
+                $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
+                $this->Globalcashflowdata->create();            
+                if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
+                    echo "Done\n";
                 }
-            }            
+                else {
+                    if (Configure::read('debug')) {
+                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
+                    }
+                }
+            }
+            
             break;
         }
      echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2 for an investment\n";        
-  
+ print_r ($this->variablesConfig);
     return;   
     }
    

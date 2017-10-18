@@ -56,6 +56,14 @@ class Investment extends AppModel
             'fields' => '',
             'order' => '',
         ),
+        'Amortizationtable' => array(
+            'className' => 'Amortizationtable',
+            'foreignKey' => 'investment_id',
+            'fields' => '',
+            'order' => '',
+        ),       
+        
+        
     );
 
 /**

@@ -232,7 +232,7 @@ if ($loanIdKey == "1242052-01") {
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
         }
- //       print_r($returnData);
+        print_r($returnData);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         }        

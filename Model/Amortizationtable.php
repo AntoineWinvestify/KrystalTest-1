@@ -43,15 +43,6 @@ Pending:
 class Amortizationtable extends AppModel
 {
 	var $name= 'Amortization';
-/*
-	var $hasOne = array(
-		'Company' => array(
-			'className' => 'Company',
-			'foreignKey' => 'marketplace_id',
-		)
-	);
-*/
-
 
 
 /**
@@ -65,7 +56,38 @@ var $validate = array(
 
 
 
+    /**
+     * creates a new 'investment' table and also links the 'paymenttotal' database table
+     * The $amortizationdata is an array of the following structure (not all elements are mandatory)
+     * array   ['cuoteNo']['amortizationtable_scheduledDate' => xx         (format yyyy-mm-dd)
+     *         ['cuoteNo']['amortizationtable_interest'      => yy
+     *         ['cuoteNo']['amortizationtable_capitalRepayment' => zz
+     *        
+     * 	@param 		array 	$investmentId    	Link to the corresponding Investment table
+     * 	@param 		array 	$amortizationdata 	All the data to be saved
+     * 	@return 	boolean   
+     * 			
+     */
+    public function createNewAmortizationTable($investmentId ,$amortizationdata) {
 
+        $instalmentNumber = 1;
+        foreach ($amortizationdata as $item) {
+            $this->create();
+            $item['amortizationtable_quoteNumber'] = $instalmentNumber;
+            $item['investment_id'] = $investmentId;
+            if ($this->save($item, $validate = true)) {
+                $ids[] = $this->id;
+            }
+            else {  // error occured, so delete already created tables and return false
+                foreach ($ids as $id) {
+                    $this->delete($id);
+                }
+                return false;
+            }  
+            $instalmentNumber = $instalmentNumber + 1;
+        } 
+        return true;         
+    }
 
 
 

@@ -44,16 +44,8 @@ class Globalcashflowdata extends AppModel
 {
 	var $name = 'Globalcashflowdata';
         var $useTable = "globalcashflowdatas";
-/*
-	var $hasOne = array(
-		'Company' => array(
-			'className' => 'Company',
-			'foreignKey' => 'marketplace_id',
-		)
-	);
-*/
 
-
+        
 
 /**
 *	Apparently can contain any type field which is used in a field. It does NOT necessarily
