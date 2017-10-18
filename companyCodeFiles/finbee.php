@@ -27,29 +27,26 @@
  */
 class finbee extends p2pCompany {
 
-    
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
- 
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+    protected $transactionConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
+    protected $investmentConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
 
-/*    NOT YET READY
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );      
- 
- */    
-    
-    
+    /*    NOT YET READY
+      protected $investmentConfigParms = array ('OffsetStart' => 1,
+      'offsetEnd'     => 0,
+      'separatorChar' => ";",
+      'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+      );
+
+     */
+
     function __construct() {
         $this->i = 0;
         parent::__construct();
@@ -173,22 +170,34 @@ class finbee extends p2pCompany {
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 5:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $fileName = "ControlVariables.xlsx"; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 6:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $this->numFileInvestment++;
                 $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 7:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 8:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 return $this->tempArray;
         }
     }

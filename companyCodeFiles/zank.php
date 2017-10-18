@@ -76,30 +76,26 @@ class zank extends p2pCompany {
     private $resultMiZank = false;
     private $url;
     private $start = 0;
+    protected $transactionConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
+    protected $investmentConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
 
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
- 
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+    /*    NOT YET READY
+      protected $investmentConfigParms = array ('OffsetStart' => 1,
+      'offsetEnd'     => 0,
+      'separatorChar' => ";",
+      'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+      );
 
-/*    NOT YET READY
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );      
- 
- */    
-    
-    
-    
+     */
+
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -110,9 +106,6 @@ class zank extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-
-    
-    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount
@@ -165,7 +158,7 @@ class zank extends p2pCompany {
             exit;
         }
 
-        
+
         $form = [
             "length" => 20,
             "start" => $this->start
@@ -199,7 +192,7 @@ class zank extends p2pCompany {
                 $form['start'] = $form['start'] + $form['length'];
             }
             //echo 'aqui es' . $form['start'];
-          
+
             foreach ($jsonResults as $key => $jsonEntry) {
 
                 if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
@@ -339,13 +332,13 @@ class zank extends p2pCompany {
                 }
 
 
-                
+
 
                 if ($inversionReadController == 1) {
                     //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $readControl++;
                     echo 'Advance:' . $readControl . SHELL_ENDOFLINE;
-                } 
+                }
                 if ($readControl > 20) {
                     echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
                     $reading = false;
@@ -353,7 +346,7 @@ class zank extends p2pCompany {
                     break;
                 } else {
                     // echo 'Add:<br>';  
-                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);                       
+                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                     array_push($totalArray, $tempArray);
                     unset($tempArray);
                     /* echo 'Total<br>';
@@ -366,86 +359,85 @@ class zank extends p2pCompany {
         }
 
         echo 'Search this investments: ' . SHELL_ENDOFLINE;
-        $this->print_r2($this->investmentDeletedList); 
+        $this->print_r2($this->investmentDeletedList);
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         echo 'Hidden: ' . SHELL_ENDOFLINE;
         $this->print_r2($hiddenInvestments);
 
         $this->companyUserLogout();
-        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        $totalArray = array_merge($totalArray, $hiddenInvestments);
         //$this->print_r2($totalArray);  
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
-    
-     /**Read hidden investment.
+
+    /*     * Read hidden investment.
      * 
      * @param array $investmentDeletedList loan id list
      * @return array investments info list
      */
-    function readHiddenInvestment ($investmentDeletedList){
-        
+
+    function readHiddenInvestment($investmentDeletedList) {
+
         $url = array_shift($this->urlSequence);
-        
+
         $tempArray = array();
         $newTotalArray = array();
         //Read investment info
-        foreach($investmentDeletedList as $loanId) {
-            echo 'loan id: ' .  substr($loanId,3) . SHELL_ENDOFLINE;
-            echo $url . substr($loanId,3) . SHELL_ENDOFLINE;
-            $str = $this->getCompanyWebpage($url . substr($loanId,3));
+        foreach ($investmentDeletedList as $loanId) {
+            echo 'loan id: ' . substr($loanId, 3) . SHELL_ENDOFLINE;
+            echo $url . substr($loanId, 3) . SHELL_ENDOFLINE;
+            $str = $this->getCompanyWebpage($url . substr($loanId, 3));
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             $dom->loadHTML($str);
-   
-            $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');                   
-            foreach($container as $div){               
+
+            $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');
+            foreach ($container as $div) {
                 $subdivs = $div->getElementsByTagName('div');
-               /*foreach($subdivs as $subkey => $subdiv){
-                    echo 'Div: ' . HTML_ENDOFLINE;
-                    echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
-                }*/             
-                    $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
-                    $tempArray['marketplace_loanReference'] = $loanId;
-                    //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
-                    $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
-                    $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
-                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
-                    $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
-                    $status = $tempArray['marketplace_statusLiteral'];
-                    if($status == 'Completado'){   
-                        $tempArray['marketplace_status'] = PERCENT;
-                        $tempArray['marketplace_subscriptionProgress'] = 10000;
-                    }else if($status == 'Amortizado' || $status == 'Retrasado' ){
-                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
-                        $tempArray['marketplace_subscriptionProgress'] = 10000; 
-                    } else if(strpos($status, 'mortiza') != false){
-                        $tempArray['marketplace_status'] = CONFIRMED;
-                        $tempArray['marketplace_subscriptionProgress'] = 10000;       
-                    }else if($status == 'Publicado'){   
-                        $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;     
-                    }                
-                    
-                    $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
-                    $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
-                    
-                    echo  $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
-                    $tds =  $subdivs[126]->getElementsByTagName('td');
-                    $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+                /* foreach($subdivs as $subkey => $subdiv){
+                  echo 'Div: ' . HTML_ENDOFLINE;
+                  echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
+                  } */
+                $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
+                $tempArray['marketplace_loanReference'] = $loanId;
+                //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
+                $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
+                $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
+                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
+                $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
+                $status = $tempArray['marketplace_statusLiteral'];
+                if ($status == 'Completado') {
+                    $tempArray['marketplace_status'] = PERCENT;
+                    $tempArray['marketplace_subscriptionProgress'] = 10000;
+                } else if ($status == 'Amortizado' || $status == 'Retrasado') {
+                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                    $tempArray['marketplace_subscriptionProgress'] = 10000;
+                } else if (strpos($status, 'mortiza') != false) {
+                    $tempArray['marketplace_status'] = CONFIRMED;
+                    $tempArray['marketplace_subscriptionProgress'] = 10000;
+                } else if ($status == 'Publicado') {
+                    $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;
+                }
+
+                $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;
+                $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;
+
+                echo $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
+                $tds = $subdivs[126]->getElementsByTagName('td');
+                $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
             $newTotalArray[] = $tempArray;
             unset($tempArray);
         }
-        /*echo 'return new array: ' . HTML_ENDOFLINE;
-        print_r($newTotalArray);*/
+        /* echo 'return new array: ' . HTML_ENDOFLINE;
+          print_r($newTotalArray); */
         return $newTotalArray;
     }
-    
-    
 
     /**
      * collect all investment
@@ -506,7 +498,7 @@ class zank extends p2pCompany {
         foreach ($jsonResults as $jsonEntry) {
 
 
-            
+
             if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
                 $structureRevision = $this->jsonRevision($structure, $jsonEntry);
                 if ($structureRevision[1]) { //Structural error
@@ -600,7 +592,7 @@ class zank extends p2pCompany {
         //}
         //echo 'AQUI ES ' . $reading;
         $this->companyUserLogout();
-        return [$totalArray, $form['start'], null, $structureRevision[0],$structureRevision[2]]; //$form['start'] is the next page, return false if is the last page
+        return [$totalArray, $form['start'], null, $structureRevision[0], $structureRevision[2]]; //$form['start'] is the next page, return false if is the last page
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
@@ -1079,7 +1071,7 @@ class zank extends p2pCompany {
      * 	
      */
     function collectUserGlobalFilesParallel($str = null) {
-        switch ($this->idForSwitch){
+        switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
@@ -1214,10 +1206,13 @@ class zank extends p2pCompany {
                 $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 echo 'URL SEQUECE FLOW: ' . SHELL_ENDOFLINE;
                 print_r($this->urlSequence);
                 $url = array_shift($this->urlSequence) . $this->userId;
-                
+
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
@@ -1225,20 +1220,21 @@ class zank extends p2pCompany {
                 $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 return $this->tempArray;
                 break;
-            
         }
-        
     }
-    
+
     /**
      *  Read amortization tables
      * @param type $str
      * @return type
      */
-    function collectAmortizationTablesParallel($str){
-         switch ($this->idForSwitch){
+    function collectAmortizationTablesParallel($str) {
+        switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
@@ -1308,7 +1304,7 @@ class zank extends p2pCompany {
                     //fix this problem
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
-                
+
                 echo "LOGIN CONFIRMED";
                 // We are at page: "MI ZANK". Look for the "internal user identification"
                 $dom = new DOMDocument;
@@ -1349,48 +1345,46 @@ class zank extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // load Webpage into a string variable so it can be parsed	
                 break;
-                
+
             case 4:
-                if(empty($this->tempUrl['investmentUrl'])){
+                if (empty($this->tempUrl['investmentUrl'])) {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
                 $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
-                echo "the table url is: " . $url; 
+                echo "the table url is: " . $url;
                 $this->i++;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
                 break;
-                
+
             case 5:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
-                foreach($tables as $table){     
-                    if($table->getAttribute('id') == 'parte'){
+                foreach ($tables as $table) {
+                    if ($table->getAttribute('id') == 'parte') {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
-                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
-                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
+                        $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
                     }
                 }
-                if($this->i < $this->maxLoans){
+                if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
-                    break;               
-                }else{
+                    break;
+                } else {
                     return $this->tempArray;
                     break;
                 }
-         }
+        }
     }
 
-
-    
     /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account

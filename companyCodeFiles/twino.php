@@ -161,33 +161,30 @@ class twino extends p2pCompany {
             "name" => "status",
         ]
     ];
+    protected $valuesAmortizationTable = [// NOT FINISHED
+        "A" => [
+            "name" => "transaction_id"
+        ],
+    ];
+    protected $transactionConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        //        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
+    protected $investmentConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        //       'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];    
+    /*   NOT YET READY
+      protected $amortizationConfigParms = array ('OffsetStart' => 1,
+      'offsetEnd'     => 0,
+      //       'separatorChar' => ";",
+      'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+      );
+     */
 
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                        //        'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
- 
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
-/*   NOT YET READY
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
-*/     
-    
-    
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -196,7 +193,6 @@ class twino extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY twino DURING LOGIN PROCESS
@@ -330,6 +326,9 @@ class twino extends p2pCompany {
                 }
                 break;
             case 6:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 //Download cash flow
                 $date1 = "[2017,9,1]";
                 $date2 = "[2017,9,20]";
@@ -373,6 +372,9 @@ class twino extends p2pCompany {
                 }
                 break;
             case 9:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 //return $tempArray["global"] = "waiting_for_global";
@@ -385,7 +387,7 @@ class twino extends p2pCompany {
                 $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($variables['investmentBalance']); //My wallet
                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($variables['interest']); //Interest
-                
+
                 return $this->tempArray;
         }
     }
@@ -468,7 +470,7 @@ class twino extends p2pCompany {
                 $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']);
                 $this->tempArray[$this->loanIds[$this->i - 1]] = $table;
                 echo "_-_-_-_-_-_-_-_table is : " . $table . "_-_-_-_-_-_-_-_";
-                        
+
                 if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
@@ -479,8 +481,6 @@ class twino extends p2pCompany {
                 }
         }
     }
-
-
 
     /**
      *
