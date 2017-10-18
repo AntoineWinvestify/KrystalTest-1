@@ -362,6 +362,9 @@ class zank extends p2pCompany {
         $newTotalArray = array();
         //Read investment info
         foreach($investmentDeletedList as $loanId) {
+            if(empty($loanId)){
+                continue;
+            }
             echo 'loan id: ' .  substr($loanId,3) . SHELL_ENDOFLINE;
             echo $url . substr($loanId,3) . SHELL_ENDOFLINE;
             $str = $this->getCompanyWebpage($url . substr($loanId,3));
