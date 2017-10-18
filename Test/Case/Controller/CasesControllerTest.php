@@ -184,11 +184,18 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected, $actual['85005-01'][0]['investment']['hashCoutry']);
     }
     
-   /* public function testRowData(){
+    public function testRowData() { 
+        $expected = 'Business Loan';
+        $actual = $this->testAction("/cases/testRowData");
+        $this->assertEquals($expected, $actual['888888-10'][0]['loanType']);
+    }
+
+   public function testTransactionDetail() { 
+        $expected = 'investment_principalAndInterestPayment';
+        $actual = $this->testAction("/cases/testTransactionDetail");
+        $this->assertEquals($expected, $actual[197174787][0]['internalName']);
+    }
         
-        
-        
-    }*/
     
 
     public function tearDown() {

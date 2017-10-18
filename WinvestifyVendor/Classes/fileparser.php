@@ -749,7 +749,11 @@ echo "INPUT FILE = $file \n";
      *
      */
     private function getRowData($input, $field, $overwrite) {
-
+        
+        echo 'ENTRO';
+        echo $input . HTML_ENDOFLINE;
+        echo $field . HTML_ENDOFLINE;
+        
         if (empty($input)) {
             return $field;
         }

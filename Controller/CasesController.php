@@ -24,9 +24,10 @@ class CasesController extends AppController {
         $this->Security->requireAuth();
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
-            'testAmount6', 'testAmount7', 'testExtracData', 'testHash', 'testRowData'
+            'testAmount6', 'testAmount7', 'testExtracData', 'testHash', 'testRowData', 'testTransactionDetail'
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'my-investments(1).xlsx';
+        $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'transaction.xlsx';
     }
 
     /**
@@ -1051,11 +1052,16 @@ class CasesController extends AppController {
     public function testRowData() {
         $parserConfig = [
             "B" => [
-                "name" => "investment.investment_loanId",
-                [
-                    "type" => "type", // Winvestify standardized name   OK
+                "name" => "investment.investment_loanId",  
+            ],
+            "D" => [
+                "name" => "loanType",
+            ],
+            "Z" => [
+                 [
+                    "type" => "loanType", // Winvestify standardized name   OK
                     "inputData" => [
-                        "input2" => "#previous.type", // The calculated field  "Type" from the *previous* excel row (i.e. previous aray index) is loaded
+                        "input2" => "#previous.loanType", // The calculated field  "Type" from the *previous* excel row (i.e. previous aray index) is loaded
                         // Note that "Type" must be a field defined in this config file
                         // keywords are "#previous" and "#current" 
                         // Be aware that #previous does NOT contain any data in case of parsing the
@@ -1066,10 +1072,7 @@ class CasesController extends AppController {
                     ],
                     "functionName" => "getRowData",
                 ]
-            ],
-            "D" => [
-                "name" => "type",
-            ],
+            ]
         ];
 
         App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
@@ -1086,19 +1089,19 @@ class CasesController extends AppController {
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
-        print_r($tempResult);
+        $this->print_r2($tempResult);
         return $tempResult;
     }
 
     public function testTransactionDetail() {
 
-        $filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'my-investments(1).xlsx';
-        echo $filePath;
-
         $parserConfig = [
-            "D" => [
+            "A" =>[
+                "name" => "Trasaction.TransactionID",
+            ],
+            "C" => [
                 [
-                    "type" => "transactionDetail", // Winvestify standardized name   OK
+                    "type" => "Trasaction.transactionDetail", // Winvestify standardized name   OK
                     "inputData" => [// List of all concepts that the platform can generate
                         // format ["concept string platform", "concept string Winvestify"]
                         "input8" => ["Incoming client payment" => "Cash_deposit",
@@ -1126,12 +1129,12 @@ class CasesController extends AppController {
 
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
+            'sortParameter' => "Trasaction.TransactionID",
             'offsetStart' => 1,
             'offsetEnd' => 0,
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->TransactionfilePath, $parserConfig);
         print_r($tempResult);
         return $tempResult;
     }
