@@ -375,12 +375,12 @@ class ParseDataClientShell extends AppShell {
                 "function" => ""        
             ],
         43 => [
-                "databaseName" => "investment.investment_interestGrossIncome", 
-                "internalName" => "investment_interestGrossIncome",             
+                "databaseName" => "payment.payment_regularGrossInterestIncome", 
+                "internalName" => "payment_regularGrossInterestIncome",             
                 "internalIndex" => 43,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""           
+                "function" => "calculateRegularGrossInterestIncome"           
             ],  
         44 => [
                 "databaseName" => "payment.payment_interestIncomeBuyback",
@@ -708,10 +708,6 @@ print_r($subDir);
 
 
 
-
-
-
-
     /**
      * Get the list of all active investments for a PFP as identified by the
      * linkedaccount identifier.
@@ -737,13 +733,6 @@ print_r($subDir);
         $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
         return $list;
     }
-
-
-
-
-
-
-
 
 
 
@@ -799,8 +788,8 @@ print_r($subDir);
 
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
         foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
-            $newLoan = "20729-01";
-            $loanIdKey = 20;
+   //         $newLoan = "20729-01";
+   //         $loanIdKey = 20;
             
             echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
             print_r($platformData['parsingResultInvestments'][$newLoan]);
@@ -856,7 +845,7 @@ print_r($subDir);
                 }   
             } 
  
-$database['payment']['investment_id'] = 98;
+//$database['payment']['investment_id'] = 98;
 print_r($database);      
  // write all relevant tables, WE DON'T HAVE TO UPDATE AMORTIZATION TABLES???
 
@@ -917,10 +906,11 @@ print_r($database);
                 }
             }
             
-            break;
+       //     break;
+        unset($database);
         }
      echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2 for an investment\n";        
- print_r ($this->variablesConfig);
+ //print_r ($this->variablesConfig);
     return;   
     }
    
@@ -1013,15 +1003,7 @@ print_r($database);
         return $transactionData['amount']; 
     } 
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
     
     
     /* 
@@ -1030,7 +1012,7 @@ print_r($database);
      *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
      *  @return
     */
-    public function getLoanId5(&$transactionData, &$resultData) {
+    public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
     }   
         
@@ -1078,19 +1060,7 @@ print_r($database);
         return $transactionData['amount']; 
     }   
      
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 
 
     /**
@@ -1150,7 +1120,6 @@ print_r($database);
      * instead of $GLOBALS. Would be great to have a class with objects that know their own name. E.g. $a1 = new varNameClass(); with 
      * a method: $a1->getName() returning the string 'a1'.
      */
-
 
 
 
