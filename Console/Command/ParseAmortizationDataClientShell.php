@@ -43,6 +43,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $fileName = "amortizationtable";
+        $workerFunction = "collectamortizationtablesFileFlow";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
@@ -74,6 +75,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
                     echo "Subdiiiiiiir";
                     print_r($subDir);
+                    $i = 0;
                     foreach ($subDir[0] as $subDirectory) {
                         $tempName = explode("/", $subDirectory);
                         if (Configure::read('debug')) {
@@ -88,15 +90,16 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
                         echo "pfp = " . $pfp . "\n";
                         print_r($allFiles);
+                        $this->userLinkaccountIds[$job['Queue']['id']][$i] = $linkedAccountId;
+                        $i++;
                         //$files = $this->readFilteredFiles($allFiles, TRANSACTION_FILE + INVESTMENT_FILE);
                         //$listOfActiveLoans = $this->getListActiveLoans($linkedAccountId);
                         $params[$linkedAccountId] = array('queue_id' => $job['Queue']['id'],
                             'pfp' => $pfp,
-                            'listOfCurrentActiveLoans' => $listOfActiveLoans,
                             'userReference' => $job['Queue']['queue_userReference'],
-                            'files' => $files);
-                        
+                            'files' => $allFiles);
                     }
+                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
                     //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
             }
