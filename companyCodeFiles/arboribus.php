@@ -118,20 +118,15 @@ class arboribus extends p2pCompany {
 
         $tables = $dom->getElementsByTagName('table');
         foreach ($tables as $keyTable => $table) {
-            $classy = $table->getAttribute("class");
-
-            //echo 'CLASE' . $classy;
-            //echo '<br>';
-
-
-            if ($classy == "arb_subasta_table") { //Read the tables with investment
+            if ($keyTable == 0) { //Read the tables with investment
                 $trs = $table->getElementsByTagName('tr');
                 if ($totalArray !== false) {
                     foreach ($trs as $key => $tr) {
+                        
+                        
+                        
+                        
                         $tempArray = array();
-
-
-
                         if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
                            $structureRevision = $this->htmlRevision($structure,'tr', $table, null, null ,null ,0 , 1);
                            if($structureRevision[1]){
@@ -170,14 +165,15 @@ class arboribus extends p2pCompany {
 
                         $tempArray['marketplace_country'] = 'ES';
 
-                        foreach ($tds as $td) {
+                        foreach ($tds as $tdkey => $td) {
+                            echo $tdkey . " => " . $td->nodeValue . HTML_ENDOFLINE;
 
                             $index = $index + 1;
                             switch ($index) {
-                                case 1:
+                                case 0:
                                     $tempArray['marketplace_loanReference'] = $td->nodeValue;
                                     break;
-                                case 2:
+                                case 1:
                                     $innerIndex = 0;
                                     $as = $td->getElementsByTagName('a');
 
@@ -186,16 +182,16 @@ class arboribus extends p2pCompany {
                                     }
                                     $tempArray['marketplace_requestorLocation'] = trim(str_replace($tempArray['marketplace_purpose'], "", $td->nodeValue));
                                     break;
-                                case 3:
+                                /*case 3:
                                     $tempArray['marketplace_rating'] = $td->nodeValue;
-                                    break;
-                                case 4:
+                                    break;*/
+                                case 3:
                                     $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
                                     break;
-                                case 6:
+                                case 5:
                                     $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($td->nodeValue));
                                     break;
-                                case 7:
+                                case 6:
                                     $divs = $td->getElementsByTagName('div');
                                     $innerIndex = 0;
                                     foreach ($divs as $div) {
@@ -226,7 +222,7 @@ class arboribus extends p2pCompany {
                                         $innerIndex = $innerIndex + 1;
                                     }
                                     break;
-                                case 8:
+                                case 7:
                                     list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
                                     break;
                             }
