@@ -42,7 +42,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->flowName = "GEARMAN_FLOW1";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-
+        $fileName = "amortizationtable";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
@@ -53,15 +53,54 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
-        $this->Investor = ClassRegistry::init('Investor');
-        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
-        $companyTypes = $this->Company->find('list', array(
-            'fields' => array('Company.company_typeAccessTransaction')
-        ));
         $this->date = date("Ymd");
         $numberOfIteration = 0;
-        while ($numberOfIteration == 0){
-            
+        while ($numberOfIteration == 0) {
+            if (Configure::read('debug')) {
+                $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
+            }
+            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, $jobsInParallel);
+            if (!empty($pendingJobs)) {
+                if (Configure::read('debug')) {
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
+                    print_r($pendingJobs);
+                }
+                $linkedaccountsResults = [];
+                foreach ($pendingJobs as $keyjobs => $job) {
+                    $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
+                    $userReference = $job['Queue']['queue_userReference'];
+                    $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->date . DS;
+                    $dir = new Folder($directory);
+                    $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
+                    echo "Subdiiiiiiir";
+                    print_r($subDir);
+                    foreach ($subDir[0] as $subDirectory) {
+                        $tempName = explode("/", $subDirectory);
+                        if (Configure::read('debug')) {
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");
+                            print_r($tempName);
+                        }
+                        $linkedAccountId = $tempName[count($tempName) - 1];
+                        $dirs = new Folder($subDirectory);
+                        $nameCompany = $dirs->findRecursive();
+                        $allFiles = $dirs->findRecursive($fileName . ".*");
+                        $tempPfpName = explode("/", $nameCompany[0]);
+                        $pfp = $tempPfpName[count($tempPfpName) - 2];
+                        echo "pfp = " . $pfp . "\n";
+                        print_r($allFiles);
+                        //$files = $this->readFilteredFiles($allFiles, TRANSACTION_FILE + INVESTMENT_FILE);
+                        //$listOfActiveLoans = $this->getListActiveLoans($linkedAccountId);
+                        $params[$linkedAccountId] = array('queue_id' => $job['Queue']['id'],
+                            'pfp' => $pfp,
+                            'listOfCurrentActiveLoans' => $listOfActiveLoans,
+                            'userReference' => $job['Queue']['queue_userReference'],
+                            'files' => $files);
+                        
+                    }
+                    //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+                }
+            }
+            exit;
         }
     }
     
