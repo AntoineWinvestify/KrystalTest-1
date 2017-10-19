@@ -237,7 +237,7 @@ class GearmanClientShell extends AppShell {
         $this->Applicationerror->saveAppError($error['typeOfError'],$error['detailedErrorInformation'], $error['line'], $error['file'], $error['urlsequenceUrl'], $error['typeErrorId'], $error['subtypeErrorId']);
     }
     
-    public function verifiedStatus($status, $message) {
+    public function verifiedStatus($status, $message, $restartStatus, $errorStatus) {
         foreach ($this->userResult as $queueId => $userResult) {
             $statusProcess = $this->consolidationResult($userResult, $queueId);
             $this->Queue->id = $queueId;
@@ -248,14 +248,14 @@ class GearmanClientShell extends AppShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
                 }
             } else {
-                $newState = WIN_QUEUE_STATUS_START_COLLECTING_DATA;
+                $newState = $restartStatus;
                 echo "There was an error downloading data";
                 if (empty($this->queueInfo[$queueId]['numberTries'])) {
                     $this->queueInfo[$queueId]['numberTries'] = 1;
                 } else if ($this->queueInfo[$queueId]['numberTries'] == 1) {
                     $this->queueInfo[$queueId]['numberTries'] = 2;
                 } else {
-                    $newState = UNRECOVERED_ERROR_ENCOUNTERED;
+                    $newState = $errorStatus; //UNRECOVERED_ERROR_ENCOUNTERED;
                 }
                 $queueInfo = $this->queueInfo[$queueId];
             }
