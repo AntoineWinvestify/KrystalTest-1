@@ -51,15 +51,15 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $resultQueue = $this->checkJobs(WIN_QUEUE_STATUS_DATA_EXTRACTED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_DATA_EXTRACTED, $jobsInParallel);
             $linkedaccountsResults = [];
             $queueInfos = [];
-            print_r($resultQueue);
-            if (!empty($resultQueue)) {
-                foreach ($resultQueue as $result) {
-                    $queueInfoJson = $result['Queue']['queue_info'];
+            print_r($pendingJobs);
+            if (!empty($pendingJobs)) {
+                foreach ($pendingJobs as $job) {
+                    $queueInfoJson = $job['Queue']['queue_info'];
                     $queueInfo = json_decode($queueInfoJson, true);
-                    $this->queueInfo[$result['Queue']['id']] = $queueInfo;
+                    $this->queueInfo[$job['Queue']['id']] = $queueInfo;
                     $linkAccountId = [];
                     foreach ($queueInfo['loanIds'] as $key => $loanId) {
                         if (!in_array($key, $linkAccountId)) {
@@ -78,12 +78,12 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     $i = 0;
                     foreach ($linkedaccountResult as $linkedaccount) {
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
-                        $folderExist = $this->verifyCompanyFolderExist($resultQueue[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id'], "amortizationTable");
+                        $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id'], "amortizationTable");
                         if (!$folderExist) {
                             $linkedaccountId = $linkedaccount['Linkedaccount']['id'];
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
-                            $this->userLinkaccountIds[$resultQueue[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
+                            $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
                             $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key][$linkedaccountId];
                             $i++;
                         }
@@ -96,8 +96,8 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
                         $data["companies"] = $linkedaccountsByType;
                         $data["loanIds"] = $loandIdLinkedaccounts[$key][$key2];
-                        $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
-                        $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
+                        $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
+                        $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
                         print_r($data["companies"]);
                         print_r($data["loanIds"]);
                         echo "\n";
@@ -109,7 +109,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                         echo "\n";
                         echo $key2;
                         echo "\n aquiiiiiiiiiiiiiii";
-                        $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2 . ".-;" . $resultQueue[$key]['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2 . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
                     }
                 }
 
