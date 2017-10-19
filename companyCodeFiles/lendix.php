@@ -118,35 +118,37 @@ class lendix extends p2pCompany {
 
         while ($reading) { //Pagination loop
             $investmentNumber = 0;
-            $str = $this->getCompanyWebpage($url . $offset);  // load Webpage into a string variable so it can be parsed
+            $urlPagination = $url . $offset;
+            echo $urlPagination;
+            $str = $this->getCompanyWebpage($urlPagination);  // load Webpage into a string variable so it can be parsed
             $dom = new DOMDocument;
             $dom->loadHTML($str);
 
             $dom->preserveWhiteSpace = false;
             $divs = $this->getElements($dom, "li", "class", "card clickable project");
 
-           foreach ($divs as $key2 => $div2) {
-              echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-              } //Debug
+            foreach ($divs as $key2 => $div2) {
+                echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
+            } //Debug
 
             if ($totalArray !== false) {
                 foreach ($divs as $key => $div) {
 
 
                     if ($offset == 0 && $key == 0) { //Compare structures, only compare the first element                      
-                        $structureRevision = $this->htmlRevision($structure,'li',null,null,null,array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
-                        if($structureRevision[1]){
+                        $structureRevision = $this->htmlRevision($structure, 'li', null, null, null, array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
+                        if ($structureRevision[1]) {
                             $totalArray = false; //Stop reading in error
                             $reading = false;
                             break;
-                        }      
+                        }
                     }
 
 
                     $projectDivs = $this->getElements($div, "div");
                     foreach ($projectDivs as $key11 => $div11) {
-                      echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
-                      }  //Debug
+                        echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
+                    }  //Debug
 
                     $tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
                     $tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
@@ -157,39 +159,23 @@ class lendix extends p2pCompany {
                     $tempArray['marketplace_durationUnit'] = 2;
                     /*                     * **************************************************** */
 
-                    if (count($projectDivs) >= 25) {
-                        if(strpos($projectDivs[12]->getAttribute('title') == '100%')){
-                            $tempArray['marketplace_subscriptionProgress'] = 10000;
-                        }
-                        else{
-                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
-                        }
-                        $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
-                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
-                        $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
-                        $tempArray['marketplace_requestorLocation'] = trim($projectDivs[18]->nodeValue);
-                        $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
-                    }
-                    if (count($projectDivs) <= 24) { //if we dont have country ( $projectDivs[9]), the array positions displace, we need to fix them.(Index -2)
-                        if(strpos($projectDivs[10]->getAttribute('title') == '100%')){
-                            $tempArray['marketplace_subscriptionProgress'] = 10000;
-                        }
-                        else{
-                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[10]->getAttribute('title'));
-                        }
-                        $tempArray['marketplace_purpose'] = trim($projectDivs[19]->nodeValue);
-                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[14]->nodeValue);
-                        $tempArray['marketplace_country'] = 'N/A'; //We dont have country
-                        $tempArray['marketplace_requestorLocation'] = trim($projectDivs[17]->nodeValue);
-                        $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
-                    }
 
-
+                    if (strpos($projectDivs[12]->getAttribute('title') == '100%')) {
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;
+                    } else {
+                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                    }
+                    $tempArray['marketplace_purpose'] = trim($projectDivs[20]->nodeValue);
+                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
+                    $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
+                    $tempArray['marketplace_requestorLocation'] = trim($projectDivs[18]->nodeValue);
+                    $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
 
 
                     $as = $this->getElements($div, "a");
-                    $loanId = explode(":", $as[0]->getAttribute("title"));
-                    $tempArray['marketplace_loanReference'] = trim($loanId[1]);
+                    $loanId = explode("/", $as[0]->getAttribute("href"));
+                    print_r($loanId);
+                    $tempArray['marketplace_loanReference'] = trim($loanId[4]);
 
                     if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
                         $tempArray['marketplace_statusLiteral'] = 'Completado';
@@ -264,12 +250,12 @@ class lendix extends p2pCompany {
             foreach ($divs as $key => $div) {
 
                 if ($offset == 0 && $key == 0) { //Compare structures, only compare the first element
-                    $structureRevision = $this->htmlRevision($structure,'li',null,null,null,array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
-                    if($structureRevision[1]){
+                    $structureRevision = $this->htmlRevision($structure, 'li', null, null, null, array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
+                    if ($structureRevision[1]) {
                         $totalArray = false; //Stop reading in error
                         $offset = false;
                         break;
-                    }           
+                    }
                 }
 
 
@@ -292,9 +278,9 @@ class lendix extends p2pCompany {
 
                 if (count($projectDivs) >= 27) {
 
-                    if($projectDivs[12]->getAttribute('title'))
-                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
-                    
+                    if ($projectDivs[12]->getAttribute('title'))
+                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+
                     $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
                     $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
                     $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
