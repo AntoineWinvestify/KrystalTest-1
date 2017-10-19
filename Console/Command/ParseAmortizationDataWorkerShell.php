@@ -59,9 +59,29 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
      */   
     public function collectamortizationtablesFileFlow($job) {
 
-        $data = json_decode($job->workload(), true);
-        $myCompany = companyClass($data['PFPname']);        // create instance of companyCodeClass        
-
+        $platformData = json_decode($job->workload(), true);
+        $this->job = $job;
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        if (Configure::read('debug')) {
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
+            print_r($platformData);
+        }
+        $index = 0;
+        $i = 0;
+        foreach ($platformData as $linkedAccountKey => $data) {
+            $platform = $data['pfp'];
+            $companyHandle = $this->companyClass($data['pfp']);
+            
+             if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
+            }
+            // Deal first with the transaction file(s)
+            print_r($data);
+            $files = $data['files'];
+            
+        }
+        
+        
         foreach ($data['PFPname'] as $platformkey => $platform) {
             if ($data['PFPname']['files']['typeOfFile'] == AMORTIZATION_TABLE_ARRAY) {
                 //   if (not JSON then jmp over next part
@@ -69,7 +89,7 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
                 if ($a) {
                     foreach ($data['files'] as $key => $filename) {     // read the amortization table files /perp PFP of the investor
                         if ($data['files'['filetype']] == "CSV") {
-                            $config = array('seperatorChar' => ";", // Only makes sense in case input file is a CSV.
+                            $config = array('separatorChar' => ";", // Only makes sense in case input file is a CSV.
                                 'sortByLoanId' => true, // Make the loanId the main index and all XLS/CSV entries of
                                 // same loan are stored under the same index.
                                 'offset' => 3, // Number of "lines" to be discarded at beginning of file
