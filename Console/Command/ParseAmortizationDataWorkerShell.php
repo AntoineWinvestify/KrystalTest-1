@@ -21,15 +21,12 @@
  * @package
  */
 
-class CollectAmortizatioDataWorkerShell extends AppShell {
-    
-    protected $GearmanWorker;
+App::import('Shell','GearmanWorker');
+
+class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
+   
     
     var $uses = array('Amortizationtable', 'Queue');
-    
-    public function startup() {
-            $this->GearmanWorker = new GearmanWorker();
-    }
     
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
