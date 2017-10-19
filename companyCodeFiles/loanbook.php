@@ -62,28 +62,26 @@
  */
 class loanbook extends p2pCompany {
 
-    
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
- 
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+    protected $transactionConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
+    protected $investmentConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
 
-/*    NOT YET READY
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );      
- 
- */    
-    
+    /*    NOT YET READY
+      protected $investmentConfigParms = array ('OffsetStart' => 1,
+      'offsetEnd'     => 0,
+      'separatorChar' => ";",
+      'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+      );
+
+     */
+
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -95,9 +93,6 @@ class loanbook extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    
-    
-    
     /**
      *
      * 	Calculates how must it will cost in total to obtain a loan for a certain amount
@@ -928,16 +923,17 @@ class loanbook extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $forms = $dom->getElementsByTagName('form');
-                /* $this->verifyNodeHasElements($forms);
-                  if (!$this->hasElements) {
-                  return $this->getError(__LINE__, __FILE__);
-                  } */
+                $this->verifyNodeHasElements($forms);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 $index = 0;
                 foreach ($forms as $form) {
                     $index = $index + 1;
                     $inputs = $form->getElementsByTagName('input');
+                    $this->verifyNodeHasElements($inputs);
                     if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
                     foreach ($inputs as $input) {
                         if (!empty($input->getAttribute('name'))) {  // check all hidden input fields, like csrf
@@ -960,15 +956,16 @@ class loanbook extends p2pCompany {
 
                 $resultMiLoanbook = false; // Could not login, credential error
                 $uls = $dom->getElementsByTagName('ul');
-                /* if (!$this->hasElements) {
-                  return $this->getError(__LINE__, __FILE__);
-                  } */
+                $this->verifyNodeHasElements($uls);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($uls as $ul) {
 
                     $as = $ul->getElementsByTagName('a');
                     $this->verifyNodeHasElements($as);
                     if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
                     $index = 0;
                     foreach ($as as $a) {
@@ -992,49 +989,49 @@ class loanbook extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
 
-                $dom = new DOMDocument;
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($this->mainPortalPage); // obtained in the function	"companyUserLogin"	
-                $dom->preserveWhiteSpace = false;
-
-                // Read the global investment data of this user
-                $globals = $this->getElements($dom, "span", "class", "lb_main_menu_bold");
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
-                }
-                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($globals[0]->nodeValue);
-
-                $globals = $this->getElements($dom, "div", "id", "lb_cartera_data_3");
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
-                }
-                $spans = $globals[0]->getElementsByTagName('span');
-                $this->verifyNodeHasElements($spans);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
-                }
-                $this->tempArray['global']['yield'] = $this->getPercentage(trim($spans[0]->nodeValue));
-
-                $globals = $this->getElements($dom, "div", "id", "lb_cartera_data_1");
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
-                }
-                $spans = $globals[0]->getElementsByTagName('span');
-                $this->verifyNodeHasElements($spans);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
-                }
-                
-                
-                $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
-                $this->tempArray['global']['activeInInvestments'] = $outstanding;//$this->getMonetaryValue($spans[0]->nodeValue);
-                
-                
-                $this->tempArray['global']['activeInvestments'] = $this->getMonetaryValue($spans[1]->nodeValue);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
+
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str); // obtained in the function	"companyUserLogin"	
+                $dom->preserveWhiteSpace = false;
+
+                // Read the global investment data of this user
+                $spans = $dom->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
+                foreach ($spans as $span) {
+                    if ($span->getAttribute('class') == 'lb_main_menu_bold') {
+                        $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($span->nodeValue);
+                        echo $this->tempArray['global']['myWallet'];
+                        break; //myWallet is only the first span
+                    }
+                }
+
+                $divs = $dom->getElementsByTagName('div');
+                $this->verifyNodeHasElements($divs);          
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
+                 foreach ($divs as $div) {
+                    if ($div->getAttribute('id') == 'lb_cartera_data_2') {
+                        $this->tempArray['global']['activeInvestments'] = trim($div->nodeValue);
+                        echo $div->nodeValue;
+                    }
+                }
+                
+                
+                $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
+                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($outstanding); //$this->getMonetaryValue($spans[0]->nodeValue);
+               
+
+                print_r($this->tempArray);
+                
                 $this->idForSwitch++;
                 $url = array_shift($this->urlSequence);
                 $url = strtr($url, array('{$date1}' => 1476223200000)); //Date in seconds
@@ -1056,32 +1053,27 @@ class loanbook extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $trs = $dom->getElementsByTagName('tr');
+                $this->verifyNodeHasElements($trs);
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
                 foreach ($trs as $tr) {
 
                     $as = $dom->getElementsByTagName('a');
+                    $this->verifyNodeHasElements($as);
                     if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
                     foreach ($as as $a) {
                         if (!empty($a->getAttribute('data-id'))) {
                             $this->UserLoansId[] = $a->getAttribute('data-id');
                             if (!$this->hasElements) {
-                                return $this->getError(__LINE__, __FILE__);
+                                return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                             }
                             break;
                         }
                     }
-                    /* echo $tr->getAttribute('data-contractid') . SHELL_ENDOFLINE;
-                      if (!empty($tr->getAttribute('data-contractid'))) {
-                      $this->UserLoansId[] = $tr->getAttribute('data-contractid');
-                      if (!$this->hasElements) {
-                      return $this->getError(__LINE__, __FILE__);
-                      }
-                      } */
                 }
 
                 $this->UserLoansId = array_unique($this->UserLoansId); //We have duplicate loans because a tag, we use this for delete duplicated loans
@@ -1115,9 +1107,13 @@ class loanbook extends p2pCompany {
 
                 $top = $this->getElements($dom, 'div', 'class', 'loantop')[0];
                 $divs = $top->getElementsByTagName('div');
+                $this->verifyNodeHasElements($divs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($divs as $key => $div) {
+                    echo 'Entro ' . $key;
                     //echo $key . " is " . trim($div->nodeValue) . SHELL_ENDOFLINE;
-
                     switch ($key) {
                         case 7:
                             $str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));
@@ -1138,18 +1134,26 @@ class loanbook extends p2pCompany {
                 }
 
                 $tables = $dom->getElementsByTagName('table');
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($tables as $table) {
                     if ($table->getAttribute("id") == "table-1") {
                         $tds = $table->getElementsByTagName('td');
+                        $this->verifyNodeHasElements($tds);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                        }
                         foreach ($tds as $subkey => $td) {
                             echo $subkey . " is " . trim($td->nodeValue) . SHELL_ENDOFLINE;
                             switch ($subkey) {
                                 case 3:
-                                  $this->loanArray[$this->j - 1]['H'] = trim($td->nodeValue); //Type
-                                  break;
-                               /* case 7:
-                                    $this->loanArray[$this->j - 1]['H'] = trim($td->nodeValue); //Loan Type
-                                    break;*/
+                                    $this->loanArray[$this->j - 1]['H'] = trim($td->nodeValue); //Type
+                                    break;
+                                /* case 7:
+                                  $this->loanArray[$this->j - 1]['H'] = trim($td->nodeValue); //Loan Type
+                                  break; */
                                 case 9:
                                     $this->loanArray[$this->j - 1]['I'] = trim($td->nodeValue); //Frecuencia pago
                                     break;
@@ -1187,7 +1191,7 @@ class loanbook extends p2pCompany {
                     break;
                 }
             case 9:
-                echo 'Stop';         
+                echo 'Stop';
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }

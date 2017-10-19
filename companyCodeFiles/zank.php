@@ -1092,7 +1092,7 @@ class zank extends p2pCompany {
                 $this->verifyNodeHasElements($forms);
                 $index = 0;
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
                 foreach ($forms as $form) {
@@ -1103,7 +1103,7 @@ class zank extends p2pCompany {
                     $inputs = $form->getElementsByTagName('input');
                     $this->verifyNodeHasElements($inputs);
                     if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
 
                     foreach ($inputs as $input) {
@@ -1151,7 +1151,7 @@ class zank extends p2pCompany {
                 $scripts = $dom->getElementsByTagName('script');
                 $this->verifyNodeHasElements($scripts);
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
                 foreach ($scripts as $script) {
@@ -1173,10 +1173,9 @@ class zank extends p2pCompany {
 
                 $index = 0;
                 $ps = $dom->getElementsByTagName('p');
-
                 $this->verifyNodeHasElements($ps);
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($ps as $p) {
                     $class = trim($p->getAttribute('class'));

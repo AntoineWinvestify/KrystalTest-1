@@ -83,8 +83,9 @@ class finbee extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($inputs as $input) {
                     //echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;

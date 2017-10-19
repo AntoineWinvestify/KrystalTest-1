@@ -302,6 +302,10 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
 
                 foreach ($inputs as $key => $input) {
                     echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . SHELL_ENDOFLINE;
@@ -334,6 +338,10 @@ class bondora extends p2pCompany {
                 $confirm = false;
 
                 $spans = $dom->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($spans as $span) {
                     echo $span->nodeValue . SHELL_ENDOFLINE;
                     if (trim($span->nodeValue) == 'Account value') {
@@ -357,6 +365,10 @@ class bondora extends p2pCompany {
                 //Get global data
                 $this->tempArray['global'] = "";
                 $spans = $dom->getElementsByTagName("span");
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 echo "GLOBAL DATA: ";
                 foreach ($spans as $globalDataKey => $span) {
                     echo $globalDataKey . " IS " . $span->getAttribute('data-original-title');
@@ -376,6 +388,10 @@ class bondora extends p2pCompany {
                 $searchTransactions = false;
 
                 $trs = $dom->getElementsByTagName('tr');
+                $this->verifyNodeHasElements($trs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 $date1 = "14/09/2017"; // Delete this dates
                 $date2 = "20/09/2017";
                 if (empty($this->tempUrl['generateReport'])) {
@@ -385,6 +401,10 @@ class bondora extends p2pCompany {
                     echo $tr->nodeValue . SHELL_ENDOFLINESHELL_ENDOFLINE;
                     if (strpos($tr->nodeValue, "Investments list") && strpos($tr->nodeValue, $date1) && strpos($tr->nodeValue, $date2)) {
                         $urls = $tr->getElementsByTagName('a');
+                        $this->verifyNodeHasElements($urls);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                        }
                         $this->tempUrl['downloadInvesment'] = $urls[0]->getAttribute('href');
                         $this->tempUrl['deleteInvesment'] = $urls[1]->getAttribute('href');
                         $searchInvesmnet = true;
@@ -393,6 +413,10 @@ class bondora extends p2pCompany {
                 }
                 if (!$searchInvesmnet) {
                     $inputs = $dom->getElementsByTagName('input');
+                    $this->verifyNodeHasElements($inputs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
                     foreach ($inputs as $key => $input) {
                         $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                     }
@@ -465,6 +489,10 @@ class bondora extends p2pCompany {
                     echo $tr->nodeValue . SHELL_ENDOFLINE;
                     if (strpos($tr->nodeValue, "Account statement") && strpos($tr->nodeValue, $date1) && strpos($tr->nodeValue, $date2)) {
                         $urls = $tr->getElementsByTagName('a');
+                        $this->verifyNodeHasElements($urls);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                        }
                         $this->tempUrl['downloadCashFlow'] = $urls[0]->getAttribute('href');
                         $this->tempUrl['deleteCashFlow'] = $urls[1]->getAttribute('href');
                         $searchTransactions = true;
@@ -472,6 +500,10 @@ class bondora extends p2pCompany {
                     }
                 } if (!$searchTransactions) {
                     $inputs = $dom->getElementsByTagName('input');
+                    $this->verifyNodeHasElements($inputs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
                     foreach ($inputs as $key => $input) {
                         $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                     }
@@ -578,6 +610,10 @@ class bondora extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $scripts = $dom->getElementsByTagName('script');
+                $this->verifyNodeHasElements($scripts);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($scripts as $script) {
                     //echo "search scripts: " . SHELL_ENDOFLINE;
                     //echo $script->nodeValue . SHELL_ENDOFLINE;
@@ -621,6 +657,10 @@ class bondora extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $tds = $dom->getElementsByTagName('td');
+                $this->verifyNodeHasElements($tds);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 /* foreach($tds as $key=>$td){
                   echo $key . " is " . $td->nodeValue;
                   } */
@@ -629,6 +669,10 @@ class bondora extends p2pCompany {
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($tds[2]->nodeValue); //My wallet
 
                 $spans = $dom->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 /* foreach($spans as $key=>$span){
                   echo $key . " is " . $span->getAttribute('title');
                   } */

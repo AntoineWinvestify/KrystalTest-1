@@ -258,20 +258,6 @@ class twino extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             case 2:
-                $dom = new DOMDocument;  //Check if works
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-
-                $containers = $dom->getElementsByTagName('section');
-                var_dump($containers);
-                foreach ($containers as $container) {
-                    $divs = $container->getElementsByTagName('div');
-                    foreach ($divs as $key => $div) {
-                        echo "Key " . $key . " is " . $div->nodeValue;
-                    }
-                }
-
-
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
