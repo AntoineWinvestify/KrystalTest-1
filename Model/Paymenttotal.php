@@ -58,7 +58,15 @@ class Paymenttotal extends AppModel
         
         
         
-        
+    /*
+     * 
+     * Update the corresponding fields in the paymenttotal table 
+     * 
+     */
+    function afterSave1($created, $options = array()) {  
+        echo "AAMAMAMA";
+        print_r($this->data['Paymenttotal']);
+    }       
         
         
 

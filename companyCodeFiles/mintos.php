@@ -78,17 +78,19 @@ class mintos extends p2pCompany {
                     "type" => "transactionDetail",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
-                                   "input8" => ["Incoming client payment" => "Cash_deposit",    // OK
+                                   "input8" => ["Incoming client payment" => "Cash_deposit",                // OK
                                                 "Investment principal increase" => "Primary_market_investment",
-                                                "Investment share buyer pays to a seller" => "Investment",
-                                                "Investment principal repayment" => "Capital_repayment",  //OK
-                                                "Investment principal rebuy" => "Principal_buyback",      // OK                               
-                                                "Interest income on rebuy" => "Interest_income_buyback",  // OK
-                                                "Interest income" => "Regular_gross_interest_income",//
-                                                "Delayed interest income" => "Delayed_interest_income",   // OK
-                                                "Late payment fee income" =>"Late_payment_fee_income",    // OK                                       
+                                                "Investment share buyer pays to a seller" => "Secondary_market_investment",
+                                                "Investment principal repayment" => "Capital_repayment",    //OK
+                                                "Investment principal rebuy" => "Principal_buyback",        // OK                               
+                                                "Interest income on rebuy" => "Interest_income_buyback",    // OK
+                                                "Interest income" => "Regular_gross_interest_income",       //
+                                                "Delayed interest income" => "Delayed_interest_income",     // OK
+                                                "Late payment fee income" =>"Late_payment_fee_income",      // OK                                       
                                                 "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",  // OK
-                                                "Disc/premum paid secondary market" => "Income"]
+                                                "Disc/premium paid secondary market" => "Income_secondary_market",   // For seller
+                                                "Disc/premium paid secondary market" => "Cost_secondary_market",     // for buyer
+                                                ]
                             ],
                     "functionName" => "getTransactionDetail",
                 ]
@@ -102,7 +104,55 @@ class mintos extends p2pCompany {
                                 "input4" => 16
                                 ],
                     "functionName" => "getAmount",
-                ]
+                ],
+                [
+                    "type" => "transactionDetail",                           // The "original field" transactionDetail in [C] will be overwritten
+                    "inputData" => [                                         // but keeping in mind if the amount of current row is an income or a cost
+                                "input2" => "#current.transactionDetail",                     
+                                "input8" => ["Incoming client payment" => "Cash_deposit",                // OK
+                                            "Investment principal increase" => "Primary_market_investment",
+                                            "Investment share buyer pays to a seller" => "Secondary_market_investment",
+                                            "Investment principal repayment" => "Capital_repayment",    //OK
+                                            "Investment principal rebuy" => "Principal_buyback",        // OK                               
+                                            "Interest income on rebuy" => "Interest_income_buyback",    // OK
+                                            "Interest income" => "Regular_gross_interest_income",       //
+                                            "Delayed interest income" => "Delayed_interest_income",     // OK
+                                            "Late payment fee income" =>"Late_payment_fee_income",      // OK                                       
+                                            "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",  // OK
+                                            "Disc/premium paid secondary market" => "Income_secondary_market",   // For seller
+                                            "Disc/premium paid secondary market" => "Cost_secondary_market",     // for buyer
+                                            ]
+                                ],
+                    "functionName" => "testing12",
+                ],               
+                [
+                    "type" => "amount13",                                    // This is *mandatory* field which is required for the 
+                    "inputData" => [                                         // "transactionDetail"
+                                "input2" => "Daniel",                        // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ".",                             // and its content is the result of the "getAmount" method
+
+                                "input8" => ["Incoming client payment" => "Cash_deposit",                // OK
+                                            "Investment principal increase" => "Primary_market_investment",
+                                            "Investment share buyer pays to a seller" => "Secondary_market_investment",
+                                            "Investment principal repayment" => "Capital_repayment",    //OK
+                                            "Investment principal rebuy" => "Principal_buyback",        // OK                               
+                                            "Interest income on rebuy" => "Interest_income_buyback",    // OK
+                                            "Interest income" => "Regular_gross_interest_income",       //
+                                            "Delayed interest income" => "Delayed_interest_income",     // OK
+                                            "Late payment fee income" =>"Late_payment_fee_income",      // OK                                       
+                                            "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",  // OK
+                                            "Disc/premium paid secondary market" => "Income_secondary_market",   // For seller
+                                            "Disc/premium paid secondary market" => "Cost_secondary_market",     // for buyer
+                                            ]
+                                ],
+                    "functionName" => "testing13",
+                ]   
+                
+                
+                
+                
+                
+                
             ],      
             "E" => [
                 [
@@ -318,13 +368,13 @@ class mintos extends p2pCompany {
              ],
         ];
 
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
+    protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                         //        'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
  
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
+    protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.

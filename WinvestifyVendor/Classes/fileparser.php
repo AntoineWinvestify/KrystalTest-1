@@ -73,90 +73,83 @@
                                         RUB => ["RUB", "₽"],
                                         );
 
-        protected $transactionDetails = [  // CHECK THIS Table againsT TYPE OF STATEMENTS  OF FLOWDATA
-                0 => [
+        protected $transactionDetails = [  
+                1 => [
                     "detail" => "Cash_deposit",
                     "cash" => 1,                                    // 1 = in, 2 = out
                     "account" => "CF",
                     "transactionType" => "Deposit",
                     "type" => "globalcashflowdata_platformDeposits" // internal variable for this concept
                     ],
-                1 => [
+                2 => [
                     "detail" => "Cash_withdrawal",
                     "cash" => 2,
                     "account" => "CF",
                     "transactionType" => "Withdraw",
-                    "type" => "userdatainvestment_withdrawals"
+                    "type" => "globalcashflowdata_platformWithdrawal"
                     ],
-                2 => [
+                3 => [
                     "detail" => "Primary_market_investment",
                     "cash" => 2,
                     "account" => "Capital",
                     "transactionType" => "Investment",
-                    "type" => "concept1",
+                    "type" => "investment_myInvestment",
                     ],
-                3 => [
+                4 => [
                     "detail" => "Secondary_market_investment",
                     "cash" => 2,
                     "account" => "Capital",
                     "transactionType" => "Investment",
-                    "type" => "concept2"
+                    "type" => "concept4"
                     ],
-                4 => [
+                5 => [
                     "detail" => "Capital_repayment",
                     "cash" => 1,
                     "account" => "Capital",
                     "transactionType" => "Repayment",
                     "type" => "payment_capitalRepayment"   // OK 
                     ],
-                5 => [
+                6 => [
                     "detail" => "Partial_principal_repayment",
                     "cash" => 1,
                     "account" => "Capital",
                     "transactionType" => "Repayment",
-                    "type" => "concept5"
+                    "type" => "concept6"
                     ],
-                6 => [
+                7 => [
                     "detail" => "Principal_buyback",
                     "cash" => 1,
                     "account" => "Capital",
                     "transactionType" => "Repayment",
                     "type" => "payment_principalBuyback"   // OK
                     ],
-                7 => [
+                8 => [
                     "detail" => "Principal_and_interest_payment",
                     "cash" => 1,
                     "account" => "Mix",
                     "transactionType" => "Mix",
-                    "type" => "concept7"
+                    "type" => "concept8"
                     ],
-                8 => [
+                9 => [
                     "detail" => "Regular_gross_interest_income",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
                     "type" => "payment_regularGrossInterestIncome"
                     ],
-                9 => [
+                10 => [
                     "detail" => "Delayed_interest_income",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
                     "type" => "payment_delayedInterestPayment" // OK
                     ],
-                10 => [ 
+                11 => [ 
                     "detail" => "Late_payment_fee_income",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
                     "type" => "payment_latePaymentFeeIncome"  // OK
-                    ],
-                11 => [
-                    "detail" => "Cash_deposit",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept11"
                     ],
                 12 => [
                     "detail" => "Interest_income_buyback",
@@ -173,81 +166,139 @@
                     "type" => "payment_delayedInterestIncomeBuyback"   // OK
                     ],
                 14 => [
-                    "detail" => "Cash_withdrawal",
+                    "detail" => "Incentives_and_bonus",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "globalcashflowdata_platformWithdrawal"  //
+                    "type" => "concept14"  
                     ],
                 15 => [
-                    "detail" => "Cash_deposit",
+                    "detail" => "Compensation",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "globalcashflowdata_platformDeposit"    //
+                    "type" => "concept15"    //
                     ],
                 16 => [
-                    "detail" => "Cash_withdrawal1",
+                    "detail" => "Income_secondary_Market",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "concept16"
+                    "type" => "concept16"   
                     ],
                 17 => [
+                    "detail" => "Currency_fluctuation_positive",
+                    "cash" => 1,
+                    "account" => "PL",
+                    "transactionType" => "Income",
+                    "type" => "concept17"  
+                    ],
+
+                19 => [
                     "detail" => "Recoveries",
                     "cash" => 1,
                     "account" => "PL",
                     "transactionType" => "Income",
-                    "type" => "concept17"
-                    ],
-                18 => [
-                    "detail" => "Commission",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept18"
-                    ],
-                19 => [
-                    "detail" => "Bank_charges",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept19"
                     ],
                 20 => [
-                    "detail" => "Premium_paid_secondary_market",
+                    "detail" => "Commission",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
                     "type" => "concept20"
                     ],
                 21 => [
-                    "detail" => "Interest_payment_secondary_market_purchase",
+                    "detail" => "Bank_charges",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
                     "type" => "concept21"
                     ],
                 22 => [
-                    "detail" => "Tax_VAT",
+                    "detail" => "Cost_secondary_market",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
                     "type" => "concept22"
                     ],
                 23 => [
-                    "detail" => "Tax_income_withholding_tax",
+                    "detail" => "Interest_payment_secondary_market_purchase",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
                     "type" => "concept23"
                     ],
+            
                 24 => [
-                    "detail" => "Write-off",
+                    "detail" => "currency_exchange_fee",
                     "cash" => 2,
                     "account" => "PL",
                     "transactionType" => "Costs",
                     "type" => "concept24"
+                    ],
+                25 => [
+                    "detail" => "currency_fluctuation_negative",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Costs",
+                    "type" => "concept25"
+                    ],                        
+                26 => [
+                    "detail" => "Tax_VAT",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Costs",
+                    "type" => "concept26"
+                    ],
+                27 => [
+                    "detail" => "Tax_income_withholding_tax",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Costs",
+                    "type" => "concept27"
+                    ],
+                28 => [
+                    "detail" => "Write-off",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Costs",
+                    "type" => "concept28"
+                    ],
+                29 => [
+                    "detail" => "Registration",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Costs",
+                    "type" => "concept29"
+                    ],
+                30 => [
+                    "detail" => "Currency_exchange_transaction",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Costs",
+                    "type" => "concept30"
+                    ],
+                31 => [
+                    "detail" => "Unknown_income",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Income",
+                    "type" => "concept31"
+                    ],
+                32 => [
+                    "detail" => "Unknown_cost",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Cost",
+                    "type" => "concept32"
+                    ],
+                33 => [
+                    "detail" => "Unknown_concept",
+                    "cash" => 2,
+                    "account" => "PL",
+                    "transactionType" => "Cost",
+                    "type" => "concept33"
                     ]
             ];
 
@@ -288,7 +339,8 @@ echo "INPUT FILE = $file \n";
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-        $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['OffsetStart']);
+        print_r($this->config);
+        $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         return $datas;
         }
 
@@ -307,7 +359,7 @@ echo "INPUT FILE = $file \n";
 
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
-            if ($i == $this->offsetStart) {
+            if ($i == $this->config['offsetStart']) {
                 break;
             }
             unset($rowDatas[$key]);
@@ -317,7 +369,7 @@ echo "INPUT FILE = $file \n";
         $i = 0;
         $totalRows = count($rowData);
         foreach ($rowDatas as $key => $rowData) {
-            if ($i == $this->offsetEnd) {
+            if ($i == $this->config['offsetEnd'] - 1) {
                 break;
             }
             unset($rowDatas[$totalRows - 1]);
@@ -389,7 +441,8 @@ echo "INPUT FILE = $file \n";
                     }
                 }
             }
-
+print_r($tempArray);
+exit;
             if (!empty($this->config['sortParameter'])) {
                 if (!empty($this->config['sortParameter'])) {
                     $temp = "\$tempArray[\$tempArray[\$i]['" . str_replace(".", "']['", $this->config['sortParameter']) . "']][] = \$tempArray[\$i];";
@@ -661,6 +714,29 @@ echo "INPUT FILE = $file \n";
     }
     
 
+    
+    private function testing12($input, $par2, $par3) {
+        echo "AAA\n";
+        print_r($input);
+        echo "AAA\n";
+        print_r($par2);
+        echo "AAA\n";
+        print_r($par3);
+        return "246810";
+    } 
+    
+    private function testing13($input, $thousandsSep, $decimalSep, $decimals) {
+        echo "execute exit\n";
+
+    } 
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Translates the currency to internal representation.
      * The currency can be the ISO code or the currency symbol.
@@ -712,19 +788,26 @@ echo "INPUT FILE = $file \n";
      *                  The variable name is read from "internal variable" $this->transactionDetails.
      */
     private function getTransactionDetail($input, $config) {
+        echo "____________-\n";
+        print_r($input);
         foreach ($config as $configKey => $configItem) {
             $position = stripos($input, $configKey);
             if ($position !== false) {
                 foreach ($this->transactionDetails as $key => $detail) {  
                     if ($detail['detail'] == $configItem) {
-                  //      $result = array($configItem,"type" => $detail['type']);
                         $result = array($detail['type'],"type" => "internalName");
+                        print_r($result);
+                        echo "__________-\n";
                         return $result;
                     }
                 }
             }
         }
         echo "getTransactionDetail => unknown concept encountered\n";
+        print_r($input);
+        echo "\n-----\n";
+        print_r($config);
+        echo "END\n";
         // an unknown concept was found, do some intelligent guessing about its meaning
         $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
         return result;

@@ -93,7 +93,7 @@ class ParseDataWorkerShell extends AppShell {
      *
      *
      *
-     * @return array queue_id, userReference, exception error
+     * @return array queue_id, userReference, linkedaccount_id, exception error
      *  The worker provides all error information to the Client
      *
      *           array     analyse    convert internal array to external format using definitions of configuration file
@@ -148,19 +148,22 @@ class ParseDataWorkerShell extends AppShell {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment File\n";
                         }
-                        $parserConfig = $companyHandle->getParserConfigInvestmentFile(); 
+                        $parserConfigFile = $companyHandle->getParserConfigInvestmentFile(); 
+                        $configParameters = $companyHandle->getParserInvestmentConfigParms();
                         break;
                     case TRANSACTION_FILE:
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction File\n";
                         }
-                        $parserConfig = $companyHandle->getParserConfigTransactionFile();
+                        $parserConfigFile = $companyHandle->getParserConfigTransactionFile();
+                        $configParameters = $companyHandle->getParserTransactionConfigParms();
                         break;                     
                     case EXTENDED_TRANSACTION_FILE:
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Extended Transaction File\n";
                         } 
-                        $parserConfig = $companyHandle->getParserConfigExtendedTransactionFile();
+                        $parserConfigFile = $companyHandle->getParserConfigExtendedTransactionFile();
+                        $configParameters = $companyHandle->getParserExtendedTransactionconfigParm();
                         break; 
                 }
                 
@@ -170,7 +173,9 @@ class ParseDataWorkerShell extends AppShell {
 
                     $myParser->setConfig(array('sortParameter' => "investment_loanId"));
 echo __FILE__ . " " . __LINE__ . "\n";
-                    $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);     // if successfull analysis, result is an array with loanId's as index
+                    
+                    $myParser->setConfig($configParameters);
+                    $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
 
                     echo "Dealing with file $approvedFile\n";
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
@@ -183,7 +188,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
                         if ($actualFileType == INVESTMENT_FILE) {
                             $totalParsingresultInvestments = $tempResult;    // add $result, combine the arrays
                         }
-                        if ( $actualFileType == TRANSACTION_FILE) {
+                        if ($actualFileType == TRANSACTION_FILE) {
                             $totalParsingresultTransactions = $tempResult;
                             print_r($totalParsingresultTransactions);
                         }
@@ -219,6 +224,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
             $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
             $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id'];
             $returnData[$linkedAccountKey]['pfp'] = $platform;
+            $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
 
             foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
                 if (array_search($loanIdKey, $listOfCurrentActiveLoans) !== false) {         // Check if new investments have appeared

@@ -134,16 +134,16 @@ class ParseDataClientShell extends AppShell {
                 "internalIndex" => 12,           
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
+                "function" => "calculateCapitalRepayment" 
             ],   
                 
         13 => [
-                "databaseName" => "investment.investment_investmentDate", 
-                "internalName" => "investment_investmentDate",  
+                "databaseName" => "investment.investment_myInvestmentDate", 
+                "internalName" => "investment_myInvestmentDate",  
                 "internalIndex" => 13,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable       
+                "function" => "calculateCapitalRepayment"          
             ], 
         14 => [
                 "databaseName" => "investment.issueDate", 
@@ -770,7 +770,7 @@ print_r($subDir);
     /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values" 
      * and writes all values to the database.
-     *  @param  $array          Array which holds the data as received from the Worker
+     *  @param  $array          Array which holds the data (perp PFP) as received from the Worker
      * 
      *  @return boolean true
      *                  false
@@ -781,21 +781,17 @@ print_r($subDir);
      */
     public function mapData (&$platformData) {
         $variables = array();
-
-
+        $linkedaccountId = $platformData['linkedaccountId'];
 
 // create a default AmortizationTable for the loan if it is a new loan?
 
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
         foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
-   //         $newLoan = "20729-01";
-   //         $loanIdKey = 20;
             
-            echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
-            print_r($platformData['parsingResultInvestments'][$newLoan]);
+//            echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
+ //           print_r($platformData['parsingResultInvestments'][$newLoan]);
             // check if we have information in the investment list about this loan.
             if (array_key_exists( $newLoan, $platformData['parsingResultInvestments'])) {  // this is a new loan and we have some info
-                echo "loanIdKey = $loanIdKey, so start to copy the data\n";
                 // check all the data in analyzed investment table
 
                 foreach ($platformData['parsingResultInvestments'][$newLoan] as $investmentDataKey => $investmentData) {
@@ -811,7 +807,7 @@ print_r($subDir);
 
  // also check if they belong to the same date, if not flush it          
             if (array_key_exists( $newLoan, $platformData['parsingResultTransactions'])) {  // this is a new loan and we have some info
-                 print_r($platformData['parsingResultTransactions'][$newLoan]);
+ //                print_r($platformData['parsingResultTransactions'][$newLoan]);
                  
                 // check all the data in analyzed transaction table
                 foreach ($platformData['parsingResultTransactions'][$newLoan] as $transactionData) { 
@@ -846,15 +842,19 @@ print_r($subDir);
             } 
  
 //$database['payment']['investment_id'] = 98;
+echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";             
 print_r($database);      
  // write all relevant tables, WE DON'T HAVE TO UPDATE AMORTIZATION TABLES???
-
+// if it is a new loan, then save the data,
+// else read the investment_id from the database and use it while saving data to payment, paymenttotals,...
             if (!empty($database['investment'])) {
                 $this->Investment = ClassRegistry::init('Investment');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";                 
-                $this->Investment->create();
-                if ($this->Investment->save($database['investment'], $validate = true)) {
-                    echo "Done\n";
+                $database['investment']['linkedaccount_id'] = $linkedaccountId;
+                $resultCreate = $this->Investment->createNewInvestment($database['investment']);
+                if ($resultCreate[0]) {
+                    $investmentId = $resultCreate[1];
+                    echo " investmentId = $investmentId, Done\n";
                 }
                 else {
                     if (Configure::read('debug')) {
@@ -865,7 +865,8 @@ print_r($database);
             
             if (!empty($database['payment'])) {
                 $this->Payment = ClassRegistry::init('Payment');
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data... ";            
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";            
+                $database['payment']['investment_id'] = $investmentId;
                 $this->Payment->create();            
                 if ($this->Payment->save($database['payment'], $validate = true)) {
                     echo "Done\n";
@@ -891,7 +892,7 @@ print_r($database);
                 }  
             }
             
-// We don't write the amortization tables during Flow 2. New tables are defined un Flow 3B 
+// We don't write the amortization tables during Flow 2. New tables are collected and written to DB in Flow 3B 
             if (!empty($database['globalcashflowdata'])) {               
                 $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            

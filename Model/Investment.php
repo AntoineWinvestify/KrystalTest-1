@@ -86,22 +86,19 @@ var $validate = array(
      * 	@param 		array 	$investmentdata 	All the data to be saved
      * 	@return 	array[0]    => boolean
      *                  array[1]    => detailed error information if array[0] = false
+     *                                 id if array[0] = true
      * 			
      */
     public function createNewInvestment($investmentdata) {
-        
+        $this->create();
         if ($this->save($investmentdata, $validation = true)) {   // OK
             $investmentId = $this->id;
-            $data = array('investment_id' => $investmentId ,
-                            'paymenttotal_status' => ACTIVE);
-
-            if ($this->Paymenttotal->save($data, $validation = true)) {                                   // OK
-                $paymentId = $this->Payment->id;
-
-                if ($this->save(array('id' => $investmentId, 
-                                'paymenttotal_id' => $paymentId))) {
-                    $result[0] = true;
-                }
+            $data = array('investment_id' => $investmentId);
+            $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
+            $this->Paymenttotal->create();
+            if ($this->Paymenttotal->save($data, $validation = true)) { 
+                $result[0] = true;
+                $result[1] = $investmentId;
             } 
             else {
                 $result[0] = false;

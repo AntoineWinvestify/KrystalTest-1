@@ -70,16 +70,18 @@ var $validate = array(
      * 
      */
     function afterSave($created, $options = array()) {
+
         $data = array();
         $paymentPrefix = "payment";
         $paymentTotalPrefix = "paymenttotal";  
-        
+ 
         foreach ($this->data['Payment'] as $paymentKey => $value) {
             if ($paymentKey == "investment_id") {
                 $investmentId = $value;
                 break;
             }         
         }
+
         $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
  
         $latestValuesPaymenttotals = $this->Paymenttotal->find("first",array(
@@ -101,8 +103,6 @@ var $validate = array(
         $data ['investment_id'] = $investmentId;
         $this->Paymenttotal->save($data, $validate = true); 
     }
-
-
 
 
 }
