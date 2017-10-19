@@ -146,26 +146,29 @@ class GearmanClientShell extends AppShell {
     public function consolidationResult($userResult, $queueId) {
         $statusProcess = true;
         $globalDestruction = false;
-        foreach ($userResult as $key => $result) {
-            if ($key == 'global') {
+        unset($this->queueInfo[$queueId]['companiesInProcess']);
+        foreach ($userResult as $linkaccountId => $result) {
+            if ($linkaccountId == 'global') {
                 $globalDestruction = true;
                 break;
             }
             if (!$result) {
                 $statusProcess = false;
-                $this->deleteFolderByDateAndLinkaccountId($queueId, $key); //1 = $todaydate
-                $this->gearmanErrors[$queueId][$key]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
-                $this->gearmanErrors[$queueId][$key]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $key ;
-                $this->gearmanErrors[$queueId][$key]['detailedErrorInformation'] = "ERROR on " . $this->flowName
-                        . " with type of error: " . $this->gearmanErrors[$queueId][$key]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$key]['subtypeErrorId'] ;
+                $this->deleteFolderByDateAndLinkaccountId($queueId, $linkaccountId); //1 = $todaydate
+                $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                $this->gearmanErrors[$queueId][$linkaccountId]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                $this->gearmanErrors[$queueId][$linkaccountId]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                        . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId]['subtypeErrorId'] ;
                 print_r($this->gearmanErrors);
-                $this->saveGearmanError($this->gearmanErrors[$queueId][$key]);
+                $this->queueInfo[$queueId]['companiesInProcess'][] = $linkaccountId; 
+                $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId]);
             }
         }
         
         if ($globalDestruction) {
             foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
                 $this->deleteFolderByDateAndLinkaccountId($queueId, $userLinkaccountId);
+                $this->queueInfo[$queueId]['companiesInProcess'][] = $userLinkaccountId;
             }
             $statusProcess = false;
         }
