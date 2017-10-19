@@ -66,7 +66,6 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
                     print_r($pendingJobs);
                 }
-                $linkedaccountsResults = [];
                 foreach ($pendingJobs as $keyjobs => $job) {
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
                     $userReference = $job['Queue']['queue_userReference'];
@@ -100,10 +99,29 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             'files' => $allFiles);
                     }
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
-                    //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
+                $this->GearmanClient->runTasks();
+                    
+                if (Configure::read('debug')) {
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
+                }
+                $this->verifiedStatus(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_START_COLLECTING_DATA, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
+                unset($pendingJobs);
+                $numberOfIteration++;
             }
-            exit;
+            else {
+                $inActivityCounter++;
+                if (Configure::read('debug')) {       
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
+                }     
+                sleep (4); 
+            }
+            if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
+                if (Configure::read('debug')) {       
+                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
+                }                     
+                exit;
+            }
         }
     }
     
