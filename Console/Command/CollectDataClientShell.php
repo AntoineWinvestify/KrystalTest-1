@@ -136,8 +136,7 @@ class CollectDataClientShell extends GearmanClientShell {
                 $this->verifiedStatus(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_START_COLLECTING_DATA, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
                 unset($pendingJobs);
                 unset($jobInvestor);
-                unset($linkedaccountsResults); 
-                unset($linkedaccountsResults);        
+                unset($linkedaccountsResults);    
                 unset($userLinkedaccounts);
                 $numberOfIteration++;
             }
