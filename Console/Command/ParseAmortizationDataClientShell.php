@@ -39,7 +39,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
      */
     public function initClient() {
         $inActivityCounter = 0;
-        $this->flowName = "GEARMAN_FLOW1";
+        $this->flowName = "GEARMAN_FLOW3B";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $fileName = "amortizationtable";
