@@ -251,7 +251,6 @@
                     ]
             ];
 
-
     function __construct() {
         echo "starting parser\n";
     }
@@ -266,7 +265,7 @@
      *          false in case an error occurred
      */
     public function analyzeFile($file, $configuration) {
-echo "INPUT FILE = $file \n";
+        echo "INPUT FILE = $file \n";
        // determine first if it a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -290,7 +289,7 @@ echo "INPUT FILE = $file \n";
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $highestRow);
         return $datas;
-        }
+    }
 
 
     /**
@@ -764,6 +763,41 @@ echo "INPUT FILE = $file \n";
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $launch = explode($delimiters[0], $ready);
         return  $launch;
+    }
+    
+    /**
+     * Function to get the loanId from the file name of one amortization table
+     * @param string $filePath It is the path to the file
+     * @return string It is the loanId
+     */
+    public function getLoanIdFromFile($filePath) {
+        $file = new File($filePath, false);
+        $name = $file->name();
+        $nameSplit = explode("_", $name);
+        $loanId = $nameSplit[1];
+        return $loanId;
+    }
+    
+    public function getExtensionFile($filePath) {
+        $file = new File($filePath, false);
+        $extension = $file->ext();
+        return $extension;
+    }
+    
+    public function analyzeFileAmortization($filePath, $parserConfig, $extension) {
+        
+        switch($extension) {
+            case "html":
+                $tempArray = $this->getHtmlData($filePath, $parserConfig);
+                break;
+        }
+        
+    }
+    
+    public function getHtmlData($filePath, $parserConfig) {
+        $dom = new DOMDocument();
+        $dom->loadHTMLFile($filePath);
+        
     }
 
 }
