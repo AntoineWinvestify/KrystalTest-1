@@ -159,8 +159,8 @@ class lendix extends p2pCompany {
                     $tempArray['marketplace_durationUnit'] = 2;
                     /*                     * **************************************************** */
 
-                    if (count($div11) >= 24) {
-                        if (strpos($projectDivs[12]->getAttribute('title') == '100%')) {
+                    if (count($projectDivs) >= 24) {
+                        if (strpos($projectDivs[12]->getAttribute('title') == '100%') || $projectDivs[12]->nodeValue == '100%') {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;
                         } else {
                             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
@@ -174,7 +174,7 @@ class lendix extends p2pCompany {
                         if (strpos($projectDivs[10]->getAttribute('title') == '100%')) {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;
                         } else {
-                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[10]->getAttribute('title'));
                         }
                         $tempArray['marketplace_purpose'] = trim($projectDivs[18]->nodeValue);
                         $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[14]->nodeValue);
