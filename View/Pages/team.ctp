@@ -30,10 +30,6 @@
             id = $(this).attr("id");
             $(".teamBox" + id).toggleClass("teamBoxColor");
         });
-        /*$(document).on("mouseleave", ".teamBox", function() {
-            id = $(this).attr("id");
-            $(".teamBox" + id).removeClass("teamBoxColor");
-        });*/
     });
 </script>
 <div id="winvestifyTeam">
@@ -91,7 +87,7 @@
                             <img src="/img/teamfiles/team_KlausKukovetz.png" class="img-responsive center-block teamImg"/>
                             <div id="team_klaus">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Klaus Kukovetz')?></center></span>
-                                <span class="teamPosition"><center><?php echo __('Investor Relations')?></center></span>
+                                <span class="teamPosition"><center><?php echo __('International Investor Relations')?></center></span>
                                 <a href="" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>

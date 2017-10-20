@@ -36,11 +36,6 @@
         <link rel="icon" href="/img/logo_winvestify/Logo_favicon.png">
     </head>
     <body>
-        <div id="enlargeImg" style="display:none;">
-            <img id="largeImg" src="" alt="">
-                <button id="btnCloseLargeImg" type="button" class="close" data-dismiss="modal" aria-hidden="true"><?php echo __('CLOSE')?> &times;</button>
-            </img>
-        </div>
         <?php echo $this->Html->script(array('local')); ?>
         <!--========== HEADER ==========-->
         <header class="s-header js__header-sticky js__header-overlay">
@@ -172,7 +167,7 @@
                             <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-left navGreen">
-                            <li><a href="/pages/investors"><?php echo __('Inversores') ?></a></li>
+                            <li><a href="/pages/investors"><?php echo __('Investors') ?></a></li>
                             <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -194,331 +189,82 @@
         </header>
 
         <!--========== END HEADER ==========-->
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        <!--========== PROMO BLOCK ==========-->
-        <a name="mark_login"></a>
-        <div class="s-promo-block-v1 g-bg-color--primary-to-blueviolet-ltr g-fullheight--md" style="background-image:url(/img/admin/login.png); background-size:cover ;">
-            <div class="container g-ver-center--md g-padding-y-100--xs">
-                <div class="row g-hor-centered-row--md g-margin-t-30--xs g-margin-t-20--sm">
-                    <div class="col-lg-8 col-sm-8 g-hor-centered-row__col g-text-center--xs g-text-left--md g-margin-b-60--xs g-margin-b-0--md">
-                        <h1 class="g-font-size-32--xs g-font-size-45--sm g-font-size-50--lg g-color--white">
-                            <img src="/img/logo_winvestify/Logo_texto.png" alt="winvestify logo" class="responsiveImg center-block" style="float:center; max-width:400px;"/>
-                        </h1>
-                        <p style="text-align:center" class="g-font-size-32--xs g-font-size-42--md g-color--white g-margin-b-0--xs">
-                            <strong><?php echo __('Connect to the major crowdlending platforms from our portal') ?>
-                            </strong></p>
-                        <p style="text-align:center">
-                            <a href="/users/registerPanel" style="margin-top:10px;" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs btnRegister">
-                                <?php echo __('Register') ?>
-                            </a>
-                        </p>
-                    </div>
-                    <div class="col-lg-2"></div>
-                    <div class="col-lg-3 col-sm-4 g-hor-centered-row__col" style="display:none;">
-                        <div class="wow fadeInUp" data-wow-duration=".3" data-wow-delay=".1s" style="border: 2px solid white; padding: 20px;">
-                            <?php echo $this->Form->create('User', array('url' => "/users/loginAction",
-                                'class' => "center-block g-width-340--xs g-bg-color--white-opacity-lightest g-padding-x-40--xs g-padding-y-30--xs g-radius--4",));
-                            ?>
-
-                            <div class="g-text-center--xs">
-                                <h2 class="g-font-size-30--xs g-color--white"><?php echo __('Login') ?></h2>
-                            </div>
-                            <?php
-                            $authMsg = $this->Session->consume('Message.auth.message');
-                            ?>
-                            <div class="errorInputMessage ErrorInactiveAccount col-xs-offset-1">
-                                <i class="fa fa-exclamation-circle"></i>
-                                <span class="errorMessage">
-                                    <?php echo "ABC" . $authMsg; ?>
-                                </span>
-                            </div>
-                            <?php
-                            if (!empty($authMsg)) {            // Authentication Error
-                                $errorClassesForTexts = "errorInputMessage ErrorUsernameLogin col-xs-offset-1";
-                                if (array_key_exists('username', $validationResult)) {
-                                    $errorClassesForTexts .= " " . "actived";
-                                }
-                                ?>
-                                <div class="<?php echo $errorClassesForTexts ?>">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
-                                </div>
-                                <?php
-                            }
-                            ?>									
-                            <?php
-                            $errorClass = "";
-                            if (!empty($authMsg)) {
-                                $errorClass = "redBorder";
-                            }
-                            $class = "form-control1 s-form-v3__input userNameLogin" . ' ' . $errorClass;
-                            ?>
-                            <div class="col-xs-offset-1">
-                                <input type="email" id="btnLoginUsername" name="data[User][username]" class="<?php echo $class ?>" placeholder="<?php echo __('Email') ?>">
-                            </div>
-                            <?php
-                            $errorClassesText = "errorInputMessage ErrorInactiveaccount col-xs-offset-1";
-                            if (!empty($authMsg)) {
-                                $errorClassesText .= " " . "actived";
-                            }
-                            ?>
-                            <div class="<?php echo $errorClassesText ?>">
-                                <i class="fa fa-exclamation-circle"></i>
-                                <span class="errorMessage">
-                                    <?php echo $authMsg ?>
-                                </span>
-                            </div>									
-                            <?php
-                            $errorClass = "";
-                            if (!empty($authMsg)) {
-                                $errorClass = "redBorder";
-                            }
-                            $class = "form-control1 s-form-v3__input passwordLogin" . ' ' . $errorClass;
-                            ?>								
-                            <div style="margin-top:30px" class="col-xs-offset-1">
-                                <input type="password" id="btnLoginPassword" name="data[User][password]" class="<?php echo $class ?>" placeholder="<?php echo __('Password') ?>">
-                            </div>
-
-                            <div class="errorInputMessage ErrorPassword">
-                                <i class="fa fa-exclamation-circle"></i>
-                                <span class="errorMessage">
-                                    <?php echo $error ?>
-                                </span>
-                            </div>									
-
-                            <?php
-                            if (!empty($authMsg)) {            // Authentication Error as detected by server
-                                $errorClassesForTexts = "errorInputMessage ErrorPasswordLogin col-xs-offset-1";
-                                if (!empty($authMsg)) {
-                                    $errorClassesForTexts .= " " . "actived";
-                                }
-                                ?>
-                                <div class="<?php echo $errorClassesForTexts ?>">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
-                                </div>
-                                <?php
-                            }
-                            ?>									
-
-                            <div class="g-text-center--xs"> 
-                                <button type="submit" id="loginBtn" style="margin-top:30px" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs"><?php echo __('Send') ?>
-                                </button><br/>
-                                <a class="g-color--white g-font-size-13--xs" href="#"><?php //echo __('Forgot your password?')  ?></a>
-                            </div>
-                            <!--	</form> -->
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-sm-4 g-hor-centered-row__col">
-                        <div class="wow fadeInUp" data-wow-duration=".3" data-wow-delay=".1s" style="border: 2px solid #87e14b; padding: 20px; background-color: rgba(255,255,255,0.2);">
-                            <?php echo $this->Form->create('User', array('url' => "/users/loginAction",
-                                'class' => "center-block g-width-340--xs g-bg-color--white-opacity-lightest g-padding-x-40--xs g-padding-y-30--xs g-radius--4",));
-                            ?>
-
-                            <div class="g-text-center--xs">
-                                <h2 class="g-font-size-30--xs"><?php echo __('Login') ?></h2>
-                            </div>
-                            <?php
-                            $authMsg = $this->Session->consume('Message.auth.message');
-                            ?>
-                            <div class="errorInputMessage ErrorInactiveAccount col-xs-offset-1">
-                                <i class="fa fa-exclamation-circle"></i>
-                                <span class="errorMessage">
-                                    <?php echo "ABC" . $authMsg; ?>
-                                </span>
-                            </div>
-                            <?php
-                            if (!empty($authMsg)) {            // Authentication Error
-                                $errorClassesForTexts = "errorInputMessage ErrorUsernameLogin col-xs-offset-1";
-                                if (array_key_exists('username', $validationResult)) {
-                                    $errorClassesForTexts .= " " . "actived";
-                                }
-                                ?>
-                                <div class="<?php echo $errorClassesForTexts ?>">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
-                                </div>
-                                <?php
-                            }
-                            ?>									
-                            <?php
-                            $errorClass = "";
-                            if (!empty($authMsg)) {
-                                $errorClass = "redBorder";
-                            }
-                            $class = "form-control1 s-form-v3__input userNameLogin" . ' ' . $errorClass;
-                            ?>
-                            <div class="col-xs-offset-1">
-                                <input type="email" id="btnLoginUsername" name="data[User][username]" class="<?php echo $class ?>" placeholder="<?php echo __('Email') ?>">
-                            </div>
-                            <?php
-                            $errorClassesText = "errorInputMessage ErrorInactiveaccount col-xs-offset-1";
-                            if (!empty($authMsg)) {
-                                $errorClassesText .= " " . "actived";
-                            }
-                            ?>
-                            <div class="<?php echo $errorClassesText ?>">
-                                <i class="fa fa-exclamation-circle"></i>
-                                <span class="errorMessage">
-                                    <?php echo $authMsg ?>
-                                </span>
-                            </div>									
-                            <?php
-                            $errorClass = "";
-                            if (!empty($authMsg)) {
-                                $errorClass = "redBorder";
-                            }
-                            $class = "form-control1 s-form-v3__input passwordLogin" . ' ' . $errorClass;
-                            ?>								
-                            <div style="margin-top:30px" class="col-xs-offset-1">
-                                <input type="password" id="btnLoginPassword" name="data[User][password]" class="<?php echo $class ?>" placeholder="<?php echo __('Password') ?>">
-                            </div>
-
-                            <div class="errorInputMessage ErrorPassword">
-                                <i class="fa fa-exclamation-circle"></i>
-                                <span class="errorMessage">
-                                    <?php echo $error ?>
-                                </span>
-                            </div>									
-
-                            <?php
-                            if (!empty($authMsg)) {            // Authentication Error as detected by server
-                                $errorClassesForTexts = "errorInputMessage ErrorPasswordLogin col-xs-offset-1";
-                                if (!empty($authMsg)) {
-                                    $errorClassesForTexts .= " " . "actived";
-                                }
-                                ?>
-                                <div class="<?php echo $errorClassesForTexts ?>">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <span id="ContentPlaceHolder_ErrorPassword" class="errorMessage"><?php echo $authMsg ?></span>
-                                </div>
-                                <?php
-                            }
-                            ?>									
-
-                            <div class="g-text-center--xs"> 
-                                <button type="submit" id="loginBtn" style="margin-top:30px" class="text-uppercase s-btn s-btn--md s-btn--white-bg g-radius--50 g-padding-x-50--xs g-margin-b-20--xs"><?php echo __('Send') ?>
-                                </button><br/>
-                                <a class="g-color--white g-font-size-13--xs" href="#"><?php //echo __('Forgot your password?')  ?></a>
-                            </div>
-                            <!--	</form> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--========== END PROMO BLOCK ==========-->
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         <!--========== PAGE CONTENT ==========-->
         <!-- Toolbox -->
         <a name="mark_ftb"></a>
-        <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed; display:none;">
+        <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed; padding-bottom: 150px;">
             <div class="container g-text-center--xs g-padding-y-80--xs g-padding-y-125--sm">
                 <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
-                    <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Investor ToolBox Manager') ?></h2>      
                 </div>
-                <br/><br/>
             </div>
-        </div>
-        <!-- End ftp -->
-        <!-- Mockup -->
-        <div class="container_features row" style="display:none;">
-            <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-offset-2 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
-                <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?></p>
-                <div class="row" id="featuresButton">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <a class="center-block" style="text-align: center;" href="/users/registerPanel">
-                            <button class="btn btn-lg" id="registerButton" type="button">
-                                <?php echo __('Register NOW') ?>
-                            </button>
-                        </a>
+            <!-- Mockup -->
+            <div class="container_features row">
+                <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
+                    <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><br/>
+                        <img src="/img/logo_winvestify/logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
+                        <span id="headerTitle"><?php echo __('Creemos que tienes derecho a sacar el máximo partido a tus inversiones') ?></span>
+                        <span class="headerText"><?php echo __('Entérate de qué pasa con todas tus inversiones, de un modo organizado y estandarizado. Conecta con tus plataformas desde Winvestify y obtén el control total de todas tus cuentas.')?></span><br/>
+                        <span class="headerText"><?php echo __('Somos la herramienta líder española en Crowdlending que te ayuda a controlar todas tus inversiones de un modo preciso y eficaz')?></span>
+                    </p>
+                    <div class="row" id="featuresButton">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <a class="center-block" style="text-align: center;" href="/users/registerPanel">
+                                <button class="btn btn-lg" id="registerButton" type="button">
+                                    <?php echo __('Register NOW') ?>
+                                </button>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="features_left" class="col-lg-1 col-md-12 col-sm-12 hidden-xs">
-                <div class="s-mockup-v1" style="position:absolute;">
-                    <div id="screen" data-wow-duration=".3" data-wow-delay=".1s">
-                        <div class="screen_mark">
-                            <ul class="nopad">
-                                <li><img id="imgDashboard" src="/megaKit/img/mockups/ss_dashboard.png" style="cursor:pointer;" class="liElement"/></li>
-                                <li><img id="imgMarketplace" src="/megaKit/img/mockups/ss_marketplace.png" style="cursor:pointer;" class="liElement"/></li>
-                                <li><img id="imgLinkedAccounts" src="/megaKit/img/mockups/ss_linkaccounts.png" style="cursor:pointer;" class="liElement"/></li>
-                                <li><img id="imgUserData" src="/megaKit/img/mockups/ss_userdata.png" style="cursor:pointer;" class="liElement"/></li>
-                            </ul>
+                <div id="features_left" class="col-lg-1 col-md-12 hidden-sm hidden-xs">
+                    <div class="s-mockup-v1" style="position:absolute;">
+                        <div id="screen" data-wow-duration=".3" data-wow-delay=".1s">
+                            <iframe style="position: absolute; top: 50px; left: 170px;" width="480" height="255" src="https://www.youtube.com/embed/Bk4o89mTG2U?rel=0" frameborder="0" allowfullscreen></iframe>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!-- End Mockup -->
-        <!-- Features -->
         <div class="reestructure"></div>
-        
-        <a name="mark_features"></a>
-        <div id="js__scroll-to-section" class="container" style="margin-top: 75px;">
-            <div id="featuresPadding" class="row g-margin-b-60--xs g-margin-b-70--md">
-                <div class="col-sm-4 g-margin-b-60--xs g-margin-b-0--md">
-                    <div class="clearfix">
-                        <div class="g-media__body g-padding-x-20--xs">
-                            <p style="text-align:center"><i class="g-font-size-80--xs g-color--primary ion-person-stalker"></i></p>
-                            <h3 class="g-font-size-18--xs" style="text-align:center"><?php echo __('Register') ?></h3>
-                            <p class="g-margin-b-0--xs" style="text-align:center"><?php echo __('Use our platform for free and enjoy all the benefits') ?></p>
-                        </div>
-
+        <div id="prizes" class="row">
+            <div class="col-xs-12 col-sm-12 col-sm-10 col-lg-10 col-sm-offset-1 col-lg-offset-1">
+                <div class="col-xs-12 col-sm-12 col-sm-3 col-lg-3">
+                    <div class="row">
+                        <img src="/img/logo/BBVA.png" class="pull-left imgResponsive" width="150px;"/>
                     </div>
+                    <div class="row"><?php echo __('Premio Mejor Fintech Andaluza')?></div>
                 </div>
-                <div class="col-sm-4 g-margin-b-60--xs g-margin-b-0--md">
-                    <div class="clearfix">
-                        <div class="g-media__body g-padding-x-20--xs">
-                            <p style="text-align:center"><i class="g-font-size-80--xs g-color--primary ion-link"></i></p>
-                            <h3 class="g-font-size-18--xs" style="text-align:center"><?php echo __('Link your accounts') ?></h3>
-                            <p class="g-margin-b-0--xs" style="text-align:center"><?php echo __('Connect to the principal alternative financing plataforms') ?></p>
-                        </div>
+                <div class="col-xs-12 col-sm-12 col-sm-3 col-lg-3">
+                    <div class="row">
+                        <span style="font-weight: bold; font-size: xx-large; display:inline-block; margin-bottom: 7px;">+ 1.000.000 €</span>
                     </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="clearfix">
-                        <div class="g-media__body g-padding-x-20--xs">
-                            <p style="text-align:center"><i class="g-font-size-80--xs g-color--primary ion-ios-settings-strong"></i></p>
-                            <h3 class="g-font-size-18--xs" style="text-align:center"><?php echo __('Manage your investments') ?></h3>
-                            <p class="g-margin-b-0--xs" style="text-align:center"><?php echo __('Your investments are completely organized, all automatically') ?></p>
-                        </div>
-                    </div>
+                    <div class="row"><?php echo __('Asset Under Administration')?></div>
                 </div>
             </div>
-            <div class="g-text-center--xs g-margin-b-100--xs">
-                <p id="pDescription" style="text-align:center" class="g-font-size-18--xs">
-                    <strong>
-                        <?php echo __('Centralize all your investment accounts and connect to the major Crowdlending and Invoice Trading platforms
-							  from a single portal. Our tool lets you organize and manage all your investments more efficiently. 
-						At the same time you can access all investment oportunities in real time and have a truly global view of the Crowdlending market') ?>
-                    </strong>
-                </p>
-            </div>
-            <!-- // end row  -->
         </div>
-        <!-- End Features -->
-
+        <div id="schema" class="row">
+            <hr class="specialHr" width="90%">
+            <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+                <div class="divmiddle" style="height: 500px;">
+                    <img src="/img/landingpage/schema_spa.png" class="imgResponsive schemaImg center-block" style="height: 100%; margin-top: -50px"/>
+                </div>
+                <div class="divmiddle">
+                    <h3><?php echo __('What is CrowdLending?')?></h3>
+                    <p><?php echo __('El Crowdlending es un modelo de Financiación Alternativa, por el cual inversores particulares y profesionales utilizando Plataformas de Financiación Participativa prestan su dinero a cambio de recibir un interés acorde al riesgo asumido.')?></p>
+                    <p><?php echo __('El resultado es que el prestatario consigue financiarse a un precio más competitivo y el inversor recibe una rentabilidad superior a otros productos financieros.')?></p>
+                    <h3><?php echo __('Basic Rules for Investing in P2P Lending')?></h3>
+                    <p>
+                        <strong><?php echo __('Buy fractions of loans')?></strong><br/>
+                        <?php echo __('Make wise fractional investments in several loans across different P2P Platforms')?>
+                    </p>
+                    <p>
+                        <strong><?php echo __('Diversify your investments')?></strong><br/>
+                        <?php echo __('Spread your money over many loans to reduce the risk of your investment.')?>
+                    </p>
+                </div>
+            </div>
+        </div>
         <!-- Popup -->
         <div id="popUp" class="g-box-shadow__bluegreen-v1 wow fadeInLeft" data-wow-duration="5" data-wow-delay=".1s" style="position:fixed;">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -610,10 +356,6 @@
                 $(document).on("click", ".closePopUp", function () {
                     $("#popUp").css("display", "none");
                 });
-                //dismiss enlargeImg
-                $(document).on("click", "#btnCloseLargeImg", function () {
-                    $("#enlargeImg").css("display", "none");
-                });
                 //fadeout popup
                 fadeOutElement("#popUp", 15000);
                 
@@ -640,73 +382,9 @@
                   $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
                 });
                 
-                //Screenshots Slider + Text Slider
-                <?php 
-                      /*
-                       *  El slider de imágenes funciona desplazando los elementos la cantidad de pxs que ocupa cada una de las imágenes.
-                       *  En caso de que se quiera cambiar la configuración, hay que modificar el width inferior para que  se ajuste al
-                       *      ancho de la imagen correspondiente.
-                       * 
-                       *  El slider de textos funciona insertando el texto que se corresponde con la imagen del slider, quedando así asociados
-                       *      los elementos entre sí.
-                       *
-                       */ 
-                ?>
-		var self = this;
-		var slider = $("#screen");
-		var holder = slider.find(".screen_mark ul");
-		var current = 0;
-		var limit = slider.find("li").length;
-		var width = 356;
-		var t;
-
-		$("img.liElement").css({"cursor": "pointer"}).click(function(){
-			self.move(current+1);
-		});
-
-		this.move = function(to) {
-			current = to >= limit ? 0 : to;
-			to = current * -width;
-			holder.animate({left: to+"px"});
-			
-			clearTimeout(t);
-			t = setTimeout(function(){
-				self.move(current+1);
-                                $(".featuresP").hide();
-                                $(".featuresP").html(sliderText[current]);
-                                $(".featuresP").fadeIn("slow");
-			}, 7000);
-		};
-		self.move(0);
-                var sliderText = ["<?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?>", 
-                                  "<?php echo __('MARKETPLACE<br/>Our global marketplace contains all the investment opportunities in real time') ?>", 
-                                  "<?php echo __('LINKED ACCOUNTS PANEL<br/>Incorporate all your Investment Accounts in our linked accounts panel') ?>", 
-                                  "<?php echo __('PERSONAL DATA PANEL<br/>Access to your personal data is simple, secure and fast') ?>"
-                                 ];
-                
-                //enlarge img
-                $(document).on("click", ".liElement", function() {
-                    imgID = $(this).attr("id");
-                    switch(imgID){
-                        case 'imgDashboard':
-                            $("#largeImg").attr("src", "/megaKit/img/mockups/large_dashboard.png");
-                            $("#largeImg").attr("alt", "Dashboard Screenshot");
-                            break;
-                        case 'imgMarketplace':
-                            $("#largeImg").attr("src", "/megaKit/img/mockups/large_marketplace.png");
-                            $("#largeImg").attr("alt", "Marketplace Screenshot");
-                            break;
-                        case 'imgLinkAccounts':
-                            $("#largeImg").attr("src", "/megaKit/img/mockups/large_linkaccounts.png");
-                            $("#largeImg").attr("alt", "Link Accounts Screenshot");
-                            break;
-                        case 'imgUserData':
-                            $("#largeImg").attr("src", "/megaKit/img/mockups/large_userdata.png");
-                            $("#largeImg").attr("alt", "User Data Screenshot");
-                            break;
-                        }
-                    $("#enlargeImg").css("display", "block");
-                });
+                //Get flag value
+                var val1 = $('.flag-language').attr('id');
+                $('.schemaImg').prop('src', "/img/landingpage/schema_" + val1 + ".png");
             });
             
         </script>

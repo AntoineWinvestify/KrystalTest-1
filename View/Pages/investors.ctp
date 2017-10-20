@@ -30,17 +30,6 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1" style="min-height: 600px;">
             <div class="row">
-                <h2 class="g-color--primary"><?php echo __('How Winvestify works')?></h2>
-                <div>
-                    <h2><?php echo __('Creemos que tienes derecho a sacar el máximo partido a tus inversiones ')?></h2>
-                    <h5><?php echo __('Entérate de qué pasa con  todas tus inversiones, de un modo organizado y estandarizado. Conecta con tus plataformas desde Winvestify y obtén el control total de todas tus cuentas.')?></h5>
-                    <div><?php echo __('Somos la herramienta líder española en Crowdlending que te ayuda a controlar todas tus inversiones de un modo preciso y eficaz')?></div>
-                    <div><?php echo __('Más poder, más información, más control con Winvestify')?></div>
-                    <img src="/img/screenshots/linkaccounts.png" class="imgResponsive investorsImg center-block"/>
-                </div>
-            </div>
-            <div class="row">
-                <hr class="specialHr">
                 <h2 class="g-color--primary"><?php echo __('Dashboard')?></h2>
                 <div class="divmiddle"><img src="/img/screenshots/linkaccounts.png" class="imgResponsive investorsImg center-block"/></div>
                 <div class="divmiddle">

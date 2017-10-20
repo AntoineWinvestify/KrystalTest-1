@@ -1134,8 +1134,9 @@ textarea[name="error"] {
 #registerButton {
     width: auto;
     position: absolute;
-    left: 45%;
     background-color: white;
+    margin-top: 150px;
+    left: 15%;
 }
 #registerButton:hover {
     background-color:#66615b !important;
@@ -1143,10 +1144,13 @@ textarea[name="error"] {
 }
 #featuresButton {
     width: 100%;
+    margin-top: 100px;
+    padding-bottom: 200px;
+    text-align: left;
 }
  .featuresP{
      color: white;
-     text-align: center;
+     text-align: left;
      padding-left: 100px;
      margin-top: 20px;
      display: block;
@@ -1156,44 +1160,13 @@ textarea[name="error"] {
 
 /*Screenshots slider*/
 #screen {
-    background: url('../megaKit/img/mockups/device_01.png') no-repeat top left;
-    width: 648px;
-    height: 372px;
-    top: 50px;
+    background: url('/img/landingpage/dashboard_lp.png') no-repeat top left;
+    width: 818px;
+    height: 470px;
+    top: 100px;
     margin: auto;
     position: relative;
     z-index: 20;
-}
-.screen_mark {
-    width: 355px;
-    height: 205px;
-    overflow: hidden;
-    position: relative;
-    top: 16px;
-    margin-left: 188px;
-}
-.nopad {
-    padding-left: 0;
-}
-#screen ul {
-	width: 10000px;
-	overflow: hidden;	
-	position: relative;
-	top: 0px;
-	left: 438px;
-	list-style: none;
-}
-
-#screen ul li {
-	float: left;
-}
-
-#screen ul li img {
-	cursor: pointer;
-	z-index: 15;
-	width: 356px; 
-	height: 205px;
-        left: 238px;
 }
 .liElement {
     top: -20px;
@@ -1208,29 +1181,16 @@ textarea[name="error"] {
      width: 100%;
      margin-bottom: 10px !important;
  }
-/*Tips to enlarge slider */
- #enlargeImg {
-     position: fixed;
-     background-color: rgba(0, 0, 0, 0.7);
-     width: 100%;
-     height: 100%;
-     z-index: 200;
-     top: 0;
-     left: 0;
- }
  
- #enlargeImg img {
-     width: 75%;
-     margin-left: 12%;
-     margin-top: 7%;
+ #headerTitle {
+     font-size: x-large;
+     font-weight: bold;
+     padding-bottom: 20px;
  }
- 
- #btnCloseLargeImg {
-     color: white;
-     position: absolute;
-     margin-top: 75px;
-     float: right;
-     padding: 5px !important;
+ .headerText {
+     font-size: medium;
+     padding-top: 15px;
+     display: inline-block;
  }
 /************************************
     ONE CLICK REGISTRATION STYLES
@@ -1700,13 +1660,20 @@ hr.nomargin {
                         width: 1200px;
                         position: fixed;
                     }
+                     #headerTitle {
+                        font-size: large;
+                        font-weight: bold;
+                    }
                 }
         @media (min-width: 1200px) {
             .reestructure {
-                height: 300px;
+                height: 50px;
             }
             #features_right {
                 top: 20px !important;
+            }
+            #featuresButton {
+                margin-top: 100px;
             }
         }
         
@@ -2225,10 +2192,19 @@ hr.specialHr:after {
 
 #security {
     background-color: #f2f2f2;
-    background-image: url('/img/lock_2.png');
+    background: url('/img/lock_2.png') no-repeat center center;
     padding: 30px;
 }
 
 .divpadding {
     padding: 0px 20px;
+}
+/*         LANDING PAGE SCHEMA          */
+.schemaTitle {
+    z-index:20; 
+    position: absolute;
+}
+
+#schemaCreditL {
+    top: 400px;
 }
