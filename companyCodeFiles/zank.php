@@ -434,7 +434,12 @@ class zank extends p2pCompany {
      * @return Array
      */
     function collectHistorical($structure, $start) {
-
+        /**
+         * ID FOR TEST
+         * F0039675
+         * F0042205
+         * F0042193
+         */
         $totalArray = array();
         $result = $this->companyUserLogin($this->config['company_username'], $this->config['company_password']);
 
