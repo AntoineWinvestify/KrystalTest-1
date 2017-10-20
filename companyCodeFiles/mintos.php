@@ -83,7 +83,7 @@ class mintos extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "transactionDetail1",                                      // Winvestify standardized name   OK
+                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
    
@@ -133,7 +133,7 @@ class mintos extends p2pCompany {
                 ],
                 
                 [
-                    "type" => "transactionDetailNew",                       // The "original field" transactionDetail in [C] will be overwritten
+                    "type" => "transactionDetail",                       // The "original field" transactionDetail in [C] will be overwritten
                     "inputData" => [                                          // but keeping in mind if the amount of current row is an income or a cost
                                 "input2" => "#current.original_concept",  
                                                                             // input3 is a two dimensional array as a key, which is the 

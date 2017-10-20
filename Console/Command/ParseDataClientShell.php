@@ -128,7 +128,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""                                        // Not applicable  
             ],   
-        12 => [
+        12 => [ //OK-OK
                 "databaseName" => "investment.investment_myInvestment",        
                 "internalName" => "investment_myInvestment", 
                 "internalIndex" => 12,           
@@ -241,7 +241,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""           
             ],  
-        26 => [
+        26 => [    //OK-ok
                 "databaseName" => "investment.investment_secondaryMarketInvestment", 
                 "internalName" => "investment_secondaryMarketInvestment",  
                 "internalIndex" => 26,            
@@ -301,7 +301,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
             ],               
-        34 => [
+        34 => [    //OK ok 
                 "databaseName" => "payment.payment_capitalRepayment",  
                 "internalName" => "payment_capitalRepayment",         
                 "internalIndex" => 34,            
@@ -318,7 +318,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculatePartialPrincipalBuyback" 
             ],       
-        36 => [
+        36 => [    //OK ok
                 "databaseName" => "payment.payment_principalBuyback",
                 "internalName" => "payment_principalBuyback",    
                 "internalIndex" => 36,            
@@ -366,7 +366,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""      
             ],       
-        42 => [
+        42 => [   
                 "databaseName" => "investment.investment_totalGrossIncome", 
                 "internalName" => "investment_totalGrossIncome", 
                 "internalIndex" => 42,            
@@ -374,7 +374,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""        
             ],
-        43 => [
+        43 => [  //OK ok
                 "databaseName" => "payment.payment_regularGrossInterestIncome", 
                 "internalName" => "payment_regularGrossInterestIncome",             
                 "internalIndex" => 43,            
@@ -382,7 +382,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "calculateRegularGrossInterestIncome"           
             ],  
-        44 => [
+        44 => [    //OK ok
                 "databaseName" => "payment.payment_interestIncomeBuyback",
                 "internalName" => "payment_interestIncomeBuyback",      
                 "internalIndex" => 44,            
@@ -390,7 +390,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "calculateInterestIncomeBuyback"         
             ],
-        45 => [
+        45 => [    //OK ok
                 "databaseName" => "payment.payment_delayedInterestIncome",
                 "internalName" => "payment_delayedInterestPayment",         
                 "internalIndex" => 45,            
@@ -398,7 +398,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculateDelayedInterestIncome" 
             ],       
-        46 => [
+        46 => [    //OK ok
                 "databaseName" => "payment.payment_delayedInterestIncomeBuyback",
                 "internalName" => "payment_delayedInterestIncomeBuyback",   
                 "internalIndex" => 46,            
@@ -406,7 +406,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculateDelayedInterestIncomeBuyback"        
             ],
-        47 => [
+        47 => [    //OK ok
                 "databaseName" => "payment.payment_latePaymentFeeIncome",
                 "internalName" => "payment_latePaymentFeeIncome",        
                 "internalIndex" => 47,            
@@ -415,7 +415,7 @@ class ParseDataClientShell extends AppShell {
                 "function" => "calculateLatePaymentFeeIncome"           
             ],
         48 => [
-                "databaseName" => "investment.investment_recoveries", 
+                "databaseName" => "investment.investment_loanRecoveries", 
                 "internalName" => "investment_recoveries",             
                 "internalIndex" => 48,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
@@ -423,7 +423,7 @@ class ParseDataClientShell extends AppShell {
                 "function" => ""  
             ],
         49 => [ // TO CHECK WITH LATEST INVESTMENT LIST
-                "databaseName" => "investment.investment_loanIdAA",  
+                "databaseName" => "investment.investment_loanIncentivesAndBonus",  
                 "internalName" => "investment_originalDuration",     
                 "internalIndex" => 49,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
@@ -431,14 +431,14 @@ class ParseDataClientShell extends AppShell {
                 "function" => "" 
             ], 
         50 => [
-                "databaseName" => "investment.investment_compensation",  
+                "databaseName" => "investment.investment_loanCompensation",  
                 "internalName" => "investment_compensation",        
                 "internalIndex" => 50,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "" 
             ],       
-        51 => [
+        51 => [    //OK
                 "databaseName" => "investment.investment_premiumSecondaryMarket",
                 "internalName" => "investment_premiumSecondaryMarket",  
                 "internalIndex" => 51,            
@@ -447,7 +447,7 @@ class ParseDataClientShell extends AppShell {
                 "function" => "" 
             ],                 
         53 => [
-                "databaseName" => "investment.investment_totalCost",  
+                "databaseName" => "investment.investment_loanTotalCost",  
                 "internalName" => "investment_totalCost",             
                 "internalIndex" => 53,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
@@ -502,7 +502,7 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "" 
             ], 
-        60 => [
+        60 => [    //OK
                 "databaseName" => "investment.investment_costSecondaryMarket", 
                 "internalName" => "investment_costSecondaryMarket",  
                 "internalIndex" => 60,            
@@ -543,22 +543,71 @@ class ParseDataClientShell extends AppShell {
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => "" 
             ],       
-        66 => [
+        66 => [    //OK--
                 "databaseName" => "globalcashflowdata.globalcashflowdata_platformDeposit", 
-                "internalName" => "globalcashflowdata_platformDeposit",          
+                "internalName" => "globalcashflowdata_platformDeposits",          
                 "internalIndex" => 66,           
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
                 "function" => "calculatePlatformDeposit"        
             ],
-        67 => [
+        67 => [   //OK--
                 "databaseName" => "globalcashflowdata.globalcashflowdata__platformWithdrawal",  
-                "internalName" => "globalcashflowdata_platformWithdrawal",        
+                "internalName" => "globalcashflowdata_platformWithdrawals",        
                 "internalIndex" => 67,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE, 
                 "function" => "calculatePlatformWithdrawal" 
+            ], 
+        68 => [
+                "databaseName" => "payment.payment_currencyFluctuationPositive", 
+                "internalName" => "payment_currencyFluctuationPositive",             
+                "internalIndex" => 68,            
+                "state" => FLOWDATA_VARIABLE_NOT_DONE,
+                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
+                "function" => ""  
             ],
+        69 => [ 
+                "databaseName" => "payment.payment_currencyFluctuationNegative",  
+                "internalName" => "payment_currencyFluctuationNegative",     
+                "internalIndex" => 69,            
+                "state" => FLOWDATA_VARIABLE_NOT_DONE,
+                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
+                "function" => "" 
+            ], 
+        70 => [
+                "databaseName" => "globalcashflowdata.globalcashflowdata_platformRecoveries",  
+                "internalName" => "globalcashflowdata_platformRecoveries",        
+                "internalIndex" => 70,            
+                "state" => FLOWDATA_VARIABLE_NOT_DONE,
+                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
+                "function" => "" 
+            ],                 
+        71 => [
+                "databaseName" => "globalcashflowdata.globalcashflowdata_platformIncentivesAndBonus", 
+                "internalName" => "globalcashflowdata_platformIncentivesAndBonus",             
+                "internalIndex" => 71,            
+                "state" => FLOWDATA_VARIABLE_NOT_DONE,
+                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
+                "function" => ""  
+            ],
+        72 => [ 
+                "databaseName" => "globalcashflowdata.globalcashflowdata_platformCompensation",  
+                "internalName" => "globalcashflowdata_platformCompensation",     
+                "internalIndex" => 72,            
+                "state" => FLOWDATA_VARIABLE_NOT_DONE,
+                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
+                "function" => "" 
+            ], 
+        73 => [
+                "databaseName" => "globalcashflowdata.globalcashflowdata_platformTotalCost",  
+                "internalName" => "globalcashflowdata_platformTotalCost",        
+                "internalIndex" => 73,            
+                "state" => FLOWDATA_VARIABLE_NOT_DONE,
+                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
+                "function" => "" 
+            ],        
+ 
         ];
          
     

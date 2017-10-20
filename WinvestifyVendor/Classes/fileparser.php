@@ -78,25 +78,25 @@
                     "detail" => "Cash_deposit",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
                     "account" => "CF",
-                    "type" => "globalcashflowdata_platformDeposits"             // OK
+                    "type" => "globalcashflowdata_platformDeposits"             // OK OK
                     ],
                 2 => [
                     "detail" => "Cash_withdrawal",
                     "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "CF",
-                    "type" => "globalcashflowdata_platformWithdrawal"           // OK
+                    "type" => "globalcashflowdata_platformWithdrawals"           // OK OK
                     ],
                 3 => [
                     "detail" => "Primary_market_investment",
                     "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "Capital",
-                    "type" => "investment_myInvestment",                        // OK
+                    "type" => "investment_myInvestment",                        // OK OK
                     ],
                 4 => [
                     "detail" => "Secondary_market_investment",
                     "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "Capital",
-                    "type" => "concept4"                                        // OK
+                    "type" => "investment_secondaryMarketInvestment"               // OK
                     ],
                 5 => [
                     "detail" => "Capital_repayment",
@@ -108,7 +108,7 @@
                     "detail" => "Partial_principal_repayment",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "Capital",
-                    "type" => "concept6"
+                    "type" => "payment_partialPrincipalRepayment"
                     ],
                 7 => [
                     "detail" => "Principal_buyback",
@@ -120,7 +120,7 @@
                     "detail" => "Principal_and_interest_payment",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "Mix",
-                    "type" => "concept8"
+                    "type" => "payment_principalAndInterestPayment"
                     ],
                 9 => [
                     "detail" => "Regular_gross_interest_income",
@@ -168,7 +168,7 @@
                     "detail" => "Income_secondary_market",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "type" => "investment_priceInSecondaryMarket"               //XX   
+                    "type" => "investment_incomeSecondaryMarket"               //XX   
                     ],
                 17 => [
                     "detail" => "Currency_fluctuation_positive",
@@ -199,7 +199,7 @@
                     "detail" => "Cost_secondary_market",
                     "transactionType" => WIN_CONCEPT_TYPE_COST,                 //XX
                     "account" => "PL",
-                    "type" => "investment_secondaryMarketInvestment"
+                    "type" => "investment_costSecondaryMarket"
                     ],
                 23 => [
                     "detail" => "Interest_payment_secondary_market_purchase",
