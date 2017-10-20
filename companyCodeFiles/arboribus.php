@@ -108,7 +108,7 @@ class arboribus extends p2pCompany {
         $investmentController = false;
         $totalArray = array();
         $this->investmentDeletedList = $loanIdList;
-        
+
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
 
         $dom = new DOMDocument;
@@ -122,17 +122,17 @@ class arboribus extends p2pCompany {
                 $trs = $table->getElementsByTagName('tr');
                 if ($totalArray !== false) {
                     foreach ($trs as $key => $tr) {
-                        
-                        
-                        
-                        
+
+
+
+
                         $tempArray = array();
                         if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
-                           $structureRevision = $this->htmlRevision($structure,'tr', $table, null, null ,null ,0 , 1);
-                           if($structureRevision[1]){
-                               $totalArray = false; //Stop reading in error                 
-                               break;
-                           }
+                            $structureRevision = $this->htmlRevision($structure, 'tr', $table, null, null, null, 0, 1);
+                            if ($structureRevision[1]) {
+                                $totalArray = false; //Stop reading in error                 
+                                break;
+                            }
                         }
 
 
@@ -182,9 +182,9 @@ class arboribus extends p2pCompany {
                                     }
                                     $tempArray['marketplace_requestorLocation'] = trim(str_replace($tempArray['marketplace_purpose'], "", $td->nodeValue));
                                     break;
-                                /*case 3:
-                                    $tempArray['marketplace_rating'] = $td->nodeValue;
-                                    break;*/
+                                /* case 3:
+                                  $tempArray['marketplace_rating'] = $td->nodeValue;
+                                  break; */
                                 case 3:
                                     $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
                                     break;
@@ -234,7 +234,7 @@ class arboribus extends p2pCompany {
                             unset($tempArray);
                             $investmentController = false;
                         } else {
-                            $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);
+                            $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                             $totalArray[] = $tempArray;
                             unset($tempArray);
                         }
@@ -243,99 +243,128 @@ class arboribus extends p2pCompany {
             }
             $tableNumber++;
         }
-        
+
         echo 'Search this investments: ' . SHELL_ENDOFLINE;
-        $this->print_r2($this->investmentDeletedList); 
+        $this->print_r2($this->investmentDeletedList);
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         echo 'Hidden: ' . SHELL_ENDOFLINE;
         $this->print_r2($hiddenInvestments);
-        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        $totalArray = array_merge($totalArray, $hiddenInvestments);
         echo 'Marketplace:' . HTML_ENDOFLINE;
         $this->print_r2($totalArray);
-        return [$totalArray, $structureRevision[0],$structureRevision[2]];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
-    
-    
-    /**Read hidden investment.
+
+    /*     * Read hidden investment.
      * 
      * @param array $investmentDeletedList loan id list
      * @return array investments info list
      */
-    function readHiddenInvestment ($investmentDeletedList){
-        
-        
+
+    function readHiddenInvestment($investmentDeletedList) {
+
+
         $url = array_shift($this->urlSequence);
         $tempArray = array();
         $newTotalArray = array();
         //Read investment info
-        foreach($investmentDeletedList as $loanId) {
-            
+        foreach ($investmentDeletedList as $loanId) {
+
             $str = $this->getCompanyWebpage($url . $loanId . ".html");
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             $dom->loadHTML($str);
-            
+
             $tempArray['marketplace_loanReference'] = $loanId;
-            
-            $tables = $dom->getElementsByTagName('table');
-            foreach($tables as $key => $table){
-                echo $key . '=>' . $table->nodeValue . HTML_ENDOFLINE;          
-                if($key == 0){
-                    if(strpos($table->nodeValue, "100%")){
-                        $tempArray['marketplace_subscriptionProgress'] == 10000;
-                        $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-                        $tempArray['marketplace_status'] = CONFIRMED;
+
+            $divs = $dom->getElementsByTagName('div');
+            foreach ($divs as $key => $div) {
+                
+                //Progress and ammount
+                if ($div->getAttribute('class') == 'price-and-percent clearfix') {
+                    $subDivs = $dom->getElementsByTagName('div');
+                    foreach ($subDivs as $subKey => $subDiv) {
+                        switch ($subKey) {
+                            case 0:
+                                $tempArray['marketplace_amount'] = $this->getMonetaryValue($subDiv->nodeValue);
+                                break;
+                            case 1:
+                                $temp = explode(" ", $subDiv->nodeValue);
+                                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($temp[0]));
+                                $tempArray['marketplace_amountTotal'] = $this->getMonetaryValue(trim($temp[2]));
+                        }
                     }
-                    else {
-                        $tempArray['marketplace_statusLiteral'] = 'Cancelado';
-                        $tempArray['marketplace_status'] = REJECTED;
-                    }
-                }
-            }      
-            
-            $price = $this->getElements($dom, "div", "class", "price");
-            $tempArray['marketplace_amount'] = $this->getMonetaryValue($price[0]->nodeValue);
-            
-            $lis = $dom->getElementsByTagName("li");
-            foreach($lis as $keyLi => $li){
-                echo 'li ' . $keyLi . " is " . $li->nodeValue . HTML_ENDOFLINE;
-                switch ($keyLi){
-                    case 7:
-                        $str = explode(":",$li->nodeValue);
-                        print_r($str);
-                        $tempArray['marketplace_interestRate'] = $this->getPercentage($str[1]);
-                        break;
-                    case 9:
-                        $str = explode(":",$li->nodeValue);
-                        $tempArray['marketplace_rating'] = trim($str[1]);
-                        break;
-                    case 10:
-                        $str = explode(":",$li->nodeValue);
-                        list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit']) = $this->getDurationValue($str[1]);
-                        break;
-                    case 11:
-                        $str = explode(":",$li->nodeValue);
-                        $tempArray['marketplace_sector'] = trim($str[1]);
-                        break;
-                    case 15:
-                        $str = explode("-",$li->nodeValue);
-                        $tempArray['marketplace_purpose'] = trim($str[1]);
-                        break;
-                    case 16:
-                        $str = explode(":",$li->nodeValue);
-                        $tempArray['marketplace_requestorLocation'] = trim($str[1]);
-                        break;
-                    
-                }
+                } //Progress and ammount END
+                $this->print_r2($tempArray);
+                //Investment Info
+                 $lis = $dom->getElementsByTagName('li');
+                 echo "Div =>" . $key . HTML_ENDOFLINE;
+                 foreach ($lis as $subKey => $li) {                  
+                     echo "Li => " . $subKey . " => " . $li->nodeValue . HTML_ENDOFLINE;
+                 }
+                 
             }
+
+
+            /* $tables = $dom->getElementsByTagName('table');
+              foreach($tables as $key => $table){
+              echo $key . '=>' . $table->nodeValue . HTML_ENDOFLINE;
+              if($key == 0){
+              if(strpos($table->nodeValue, "100%")){
+              $tempArray['marketplace_subscriptionProgress'] == 10000;
+              $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+              $tempArray['marketplace_status'] = CONFIRMED;
+              }
+              else {
+              $tempArray['marketplace_statusLiteral'] = 'Cancelado';
+              $tempArray['marketplace_status'] = REJECTED;
+              }
+              }
+              }
+
+              $price = $this->getElements($dom, "div", "class", "price");
+              $tempArray['marketplace_amount'] = $this->getMonetaryValue($price[0]->nodeValue);
+
+              $lis = $dom->getElementsByTagName("li");
+              foreach($lis as $keyLi => $li){
+              echo 'li ' . $keyLi . " is " . $li->nodeValue . HTML_ENDOFLINE;
+              switch ($keyLi){
+              case 7:
+              $str = explode(":",$li->nodeValue);
+              print_r($str);
+              $tempArray['marketplace_interestRate'] = $this->getPercentage($str[1]);
+              break;
+              case 9:
+              $str = explode(":",$li->nodeValue);
+              $tempArray['marketplace_rating'] = trim($str[1]);
+              break;
+              case 10:
+              $str = explode(":",$li->nodeValue);
+              list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit']) = $this->getDurationValue($str[1]);
+              break;
+              case 11:
+              $str = explode(":",$li->nodeValue);
+              $tempArray['marketplace_sector'] = trim($str[1]);
+              break;
+              case 15:
+              $str = explode("-",$li->nodeValue);
+              $tempArray['marketplace_purpose'] = trim($str[1]);
+              break;
+              case 16:
+              $str = explode(":",$li->nodeValue);
+              $tempArray['marketplace_requestorLocation'] = trim($str[1]);
+              break;
+
+              }
+              } */
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
             $newTotalArray[] = $tempArray;
             unset($tempArray);
-        }       
+        }
         return $newTotalArray;
     }
 
@@ -373,11 +402,11 @@ class arboribus extends p2pCompany {
 
 
                         if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
-                           $structureRevision = $this->htmlRevision($structure,'tr',$table, null, null, null, 0, 1);
-                           if($structureRevision[1]){
-                               $totalArray = false; //Stop reading in error                 
-                               break;
-                           }
+                            $structureRevision = $this->htmlRevision($structure, 'tr', $table, null, null, null, 0, 1);
+                            if ($structureRevision[1]) {
+                                $totalArray = false; //Stop reading in error                 
+                                break;
+                            }
                         }
 
 
@@ -431,9 +460,9 @@ class arboribus extends p2pCompany {
                                     }
                                     $tempArray['marketplace_requestorLocation'] = trim(str_replace($tempArray['marketplace_purpose'], "", $td->nodeValue));
                                     break;
-                                case 3:
-                                    $tempArray['marketplace_rating'] = $td->nodeValue;
-                                    break;
+                                /* case 3:
+                                  $tempArray['marketplace_rating'] = $td->nodeValue;
+                                  break; */
                                 case 4:
                                     $tempArray['marketplace_amount'] = $this->getMonetaryValue($td->nodeValue);
                                     break;
@@ -1089,10 +1118,10 @@ class arboribus extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('src', 'alt', 'href', 'style', 'id'));
 
-       $node1 = $this->cleanDomTag($node1, array(
+        $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'script'),
         ));
-        
+
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -1100,10 +1129,10 @@ class arboribus extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('src', 'alt', 'href', 'style', 'id'));
 
-       $node2 = $this->cleanDomTag($node2, array(
+        $node2 = $this->cleanDomTag($node2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'script'),
         ));
-        
+
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
