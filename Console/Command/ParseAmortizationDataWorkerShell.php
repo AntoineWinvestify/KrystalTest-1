@@ -68,16 +68,33 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
         }
         $index = 0;
         $i = 0;
+        $tempArray = array();
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
-            
+            $tempArray[$linkedAccountKey];
              if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
             }
             // Deal first with the transaction file(s)
             print_r($data);
             $files = $data['files'];
+            $extensionFile = null;
+            foreach ($files as $file) {
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Amortization table File\n";
+                } 
+                $parserConfig = $companyHandle->getParserConfigAmortizationTableFile();
+                $tempResult = array();
+                $loanId = $myParser->getLoanIdFromFile($file);
+                if (empty($extension)) {
+                    $extensionFile = $myParser->getExtensionFile($file);
+                }
+                $data = $myParser->analyzeFileAmortization($file, $parserConfig);
+                
+            }
+            
+             
             
         }
         
