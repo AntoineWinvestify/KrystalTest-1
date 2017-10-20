@@ -282,32 +282,68 @@ class arboribus extends p2pCompany {
 
             $divs = $dom->getElementsByTagName('div');
             foreach ($divs as $key => $div) {
-                
+
                 //Progress and ammount
                 if ($div->getAttribute('class') == 'price-and-percent clearfix') {
                     $subDivs = $dom->getElementsByTagName('div');
                     foreach ($subDivs as $subKey => $subDiv) {
+                        //echo $subKey . " => " . $subDiv->nodeValue . HTML_ENDOFLINE;
                         switch ($subKey) {
-                            case 0:
+                            case 53:
                                 $tempArray['marketplace_amount'] = $this->getMonetaryValue($subDiv->nodeValue);
                                 break;
-                            case 1:
+                            case 54:
                                 $temp = explode(" ", $subDiv->nodeValue);
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($temp[0]));
                                 $tempArray['marketplace_amountTotal'] = $this->getMonetaryValue(trim($temp[2]));
                         }
                     }
+                    $this->print_r2($tempArray);
                 } //Progress and ammount END
-                $this->print_r2($tempArray);
                 //Investment Info
-                 $lis = $dom->getElementsByTagName('li');
-                 echo "Div =>" . $key . HTML_ENDOFLINE;
-                 foreach ($lis as $subKey => $li) {                  
-                     echo "Li => " . $subKey . " => " . $li->nodeValue . HTML_ENDOFLINE;
-                 }
-                 
+                if ($key == 0) {
+                    $lis = $dom->getElementsByTagName('li');
+                    foreach ($lis as $subKey => $li) {
+                        echo "Li => " . $subKey . " => " . $li->nodeValue . HTML_ENDOFLINE;
+                        switch ($subKey) {
+                            case 7:
+                                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($li->nodeValue);
+                                break;
+                            case 8:
+                                $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($li->nodeValue));
+                                break;
+                            case 9:
+                                $tempArray['marketplace_sector'] = trim($li->nodeValue);
+                                $tempArray['marketplace_purpose'] = trim($li->nodeValue);
+                                break;
+                            //case 13: carencia 
+                            case 27:
+                                $tempArray['marketplace_requestorLocation'] = explode(" ", trim($li->nodeValue))[2];
+                                break;
+                        }
+                    }
+                }
             }
 
+            if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
+                if ($tableNumber == 1) {
+                    $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
+                    $tempArray['marketplace_status'] = PERCENT;
+                } else {
+                    $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
+                    $tempArray['marketplace_status'] = CONFIRMED;
+                }
+                foreach ($companyBackup as $inversionBackup) {
+                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                        $readController++;
+                        $investmentController = true;
+                        $tempArray['marketplace_timeLeft'] = 0;
+                        $tempArray['marketplace_timeLeftUnit'] = -1;
+                    }
+                }
+            } else {
+                $tempArray['marketplace_statusLiteral'] = 'En proceso';
+            }
 
             /* $tables = $dom->getElementsByTagName('table');
               foreach($tables as $key => $table){
@@ -365,7 +401,7 @@ class arboribus extends p2pCompany {
             $newTotalArray[] = $tempArray;
             unset($tempArray);
         }
-        return $newTotalArray;
+        //return $newTotalArray;
     }
 
     /**
