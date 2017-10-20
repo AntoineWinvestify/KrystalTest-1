@@ -287,13 +287,15 @@ class arboribus extends p2pCompany {
                 if ($div->getAttribute('class') == 'price-and-percent clearfix') {
                     $subDivs = $dom->getElementsByTagName('div');
                     foreach ($subDivs as $subKey => $subDiv) {
-                        //echo $subKey . " => " . $subDiv->nodeValue . HTML_ENDOFLINE;
+                        echo $subKey . " => " . $subDiv->nodeValue . HTML_ENDOFLINE;
                         switch ($subKey) {
                             case 53:
                                 $tempArray['marketplace_amount'] = $this->getMonetaryValue($subDiv->nodeValue);
                                 break;
                             case 54:
-                                $temp = explode(" ", $subDiv->nodeValue);
+                                $temp = explode(" ", trim($subDiv->nodeValue));
+                                echo "temp value";
+                                print_r($temp);
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(trim($temp[0]));
                                 $tempArray['marketplace_amountTotal'] = $this->getMonetaryValue(trim($temp[2]));
                         }
@@ -343,6 +345,7 @@ class arboribus extends p2pCompany {
                 }
             } else {
                 $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                $tempArray['marketplace_status'] = REJECTED;
             }
 
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
