@@ -159,18 +159,29 @@ class lendix extends p2pCompany {
                     $tempArray['marketplace_durationUnit'] = 2;
                     /*                     * **************************************************** */
 
-
-                    if (strpos($projectDivs[12]->getAttribute('title') == '100%')) {
-                        $tempArray['marketplace_subscriptionProgress'] = 10000;
+                    if (count($div11) >= 24) {
+                        if (strpos($projectDivs[12]->getAttribute('title') == '100%')) {
+                            $tempArray['marketplace_subscriptionProgress'] = 10000;
+                        } else {
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                        }
+                        $tempArray['marketplace_purpose'] = trim($projectDivs[20]->nodeValue);
+                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
+                        $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
+                        $tempArray['marketplace_requestorLocation'] = trim($projectDivs[18]->nodeValue);
+                        $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
                     } else {
-                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                        if (strpos($projectDivs[10]->getAttribute('title') == '100%')) {
+                            $tempArray['marketplace_subscriptionProgress'] = 10000;
+                        } else {
+                            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+                        }
+                        $tempArray['marketplace_purpose'] = trim($projectDivs[18]->nodeValue);
+                        $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[14]->nodeValue);
+                        $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[16]->nodeValue));
+                        $tempArray['marketplace_requestorLocation'] = trim($projectDivs[16]->nodeValue);
+                        $tempArray['marketplace_sector'] = trim($projectDivs[18]->nodeValue);
                     }
-                    $tempArray['marketplace_purpose'] = trim($projectDivs[20]->nodeValue);
-                    $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
-                    $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
-                    $tempArray['marketplace_requestorLocation'] = trim($projectDivs[18]->nodeValue);
-                    $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
-
 
                     $as = $this->getElements($div, "a");
                     $loanId = explode("/", $as[0]->getAttribute("href"));
@@ -275,8 +286,8 @@ class lendix extends p2pCompany {
                 /* HARD CODED AS PREVIOUS STATEMENT GENERATES AN ERROR */
                 $tempArray['marketplace_durationUnit'] = 2;
                 /*                 * **************************************************** */
-                
-                
+
+
                 if (strpos($projectDivs[12]->getAttribute('title') == '100%')) {
                     $tempArray['marketplace_subscriptionProgress'] = 10000;
                 } else {
