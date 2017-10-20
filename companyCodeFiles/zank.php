@@ -337,6 +337,11 @@ class zank extends p2pCompany {
 
         echo 'Search this investments: ' . SHELL_ENDOFLINE;
         $this->print_r2($this->investmentDeletedList); 
+        foreach($this->investmentDeletedList as $key => $id){
+            if(empty($id)){
+                unset($this->investmentDeletedList[$key]);
+            }
+        }
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         echo 'Hidden: ' . SHELL_ENDOFLINE;
         $this->print_r2($hiddenInvestments);
