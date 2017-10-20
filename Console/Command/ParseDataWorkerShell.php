@@ -183,6 +183,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
                                             "errorDetails"  => $myParser->getLastError(),
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
+                        exit;
                     }
                     else {       // all is OK
                         if ($actualFileType == INVESTMENT_FILE) {
@@ -190,7 +191,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
                         }
                         if ($actualFileType == TRANSACTION_FILE) {
                             $totalParsingresultTransactions = $tempResult;
-                            print_r($totalParsingresultTransactions);
+       //                     print_r($totalParsingresultTransactions);
                         }
 
                         try {
@@ -234,7 +235,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
         }
- //       print_r($returnData);
+        print_r($returnData[885]['newLoans']);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         }        

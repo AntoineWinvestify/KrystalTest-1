@@ -787,6 +787,12 @@ print_r($subDir);
 
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
         foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
+if ($newLoan <> "1604819-01" ) {
+    echo "flushing loanId $newLoan\n";
+    continue;
+}
+            
+            
             
 //            echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
  //           print_r($platformData['parsingResultInvestments'][$newLoan]);
@@ -805,9 +811,10 @@ print_r($subDir);
                 }  
             }
 
- // also check if they belong to the same date, if not flush it          
+ // also check if they belong to the same date, if not flush it     
+echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";   
             if (array_key_exists( $newLoan, $platformData['parsingResultTransactions'])) {  // this is a new loan and we have some info
- //                print_r($platformData['parsingResultTransactions'][$newLoan]);
+                print_r($platformData['parsingResultTransactions'][$newLoan]);
                  
                 // check all the data in analyzed transaction table
                 foreach ($platformData['parsingResultTransactions'][$newLoan] as $transactionData) { 
@@ -815,10 +822,13 @@ print_r($subDir);
                         if ($transactionDataKey == "internalName") {        // dirty trick to keep it simple
                             $transactionDataKey = $transaction; 
                         }
+
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
+                        
                         if (!empty($tempResult))  { 
                             unset($result);
                             $functionToCall = $tempResult['function'];
+
                             $dataInformation = explode (".", $tempResult['databaseName'] );
                             $dbTable = $dataInformation[0];
                             if (!empty($functionToCall)) {
@@ -835,7 +845,7 @@ print_r($subDir);
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
-                            $this->variablesConfig[$tempResult['internalIndex']]['state'] = FLOWDATA_VARIABLE_DONE;  // Mark done
+                    //??        $this->variablesConfig[$tempResult['internalIndex']]['state'] = FLOWDATA_VARIABLE_DONE;  // Mark done
                         } 
                     }
                 }   
@@ -909,6 +919,7 @@ print_r($database);
             
        //     break;
         unset($database);
+
         }
      echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2 for an investment\n";        
  //print_r ($this->variablesConfig);

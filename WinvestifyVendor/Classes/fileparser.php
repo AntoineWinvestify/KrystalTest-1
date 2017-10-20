@@ -76,228 +76,195 @@
         protected $transactionDetails = [  
                 1 => [
                     "detail" => "Cash_deposit",
-                    "cash" => 1,                                    // 1 = in, 2 = out
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
                     "account" => "CF",
-                    "transactionType" => "Deposit",
-                    "type" => "globalcashflowdata_platformDeposits" // internal variable for this concept
+                    "type" => "globalcashflowdata_platformDeposits"             // OK
                     ],
                 2 => [
                     "detail" => "Cash_withdrawal",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "CF",
-                    "transactionType" => "Withdraw",
-                    "type" => "globalcashflowdata_platformWithdrawal"
+                    "type" => "globalcashflowdata_platformWithdrawal"           // OK
                     ],
                 3 => [
                     "detail" => "Primary_market_investment",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "Capital",
-                    "transactionType" => "Investment",
-                    "type" => "investment_myInvestment",
+                    "type" => "investment_myInvestment",                        // OK
                     ],
                 4 => [
                     "detail" => "Secondary_market_investment",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "Capital",
-                    "transactionType" => "Investment",
-                    "type" => "concept4"
+                    "type" => "concept4"                                        // OK
                     ],
                 5 => [
                     "detail" => "Capital_repayment",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "Capital",
-                    "transactionType" => "Repayment",
-                    "type" => "payment_capitalRepayment"   // OK 
+                    "type" => "payment_capitalRepayment"                        // OK 
                     ],
                 6 => [
                     "detail" => "Partial_principal_repayment",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "Capital",
-                    "transactionType" => "Repayment",
                     "type" => "concept6"
                     ],
                 7 => [
                     "detail" => "Principal_buyback",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "Capital",
-                    "transactionType" => "Repayment",
-                    "type" => "payment_principalBuyback"   // OK
+                    "type" => "payment_principalBuyback"                        // OK
                     ],
                 8 => [
                     "detail" => "Principal_and_interest_payment",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "Mix",
-                    "transactionType" => "Mix",
                     "type" => "concept8"
                     ],
                 9 => [
                     "detail" => "Regular_gross_interest_income",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "payment_regularGrossInterestIncome"
+                    "type" => "payment_regularGrossInterestIncome"              // OK
                     ],
                 10 => [
                     "detail" => "Delayed_interest_income",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "payment_delayedInterestPayment" // OK
+                    "type" => "payment_delayedInterestPayment"                  // OK
                     ],
                 11 => [ 
                     "detail" => "Late_payment_fee_income",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "payment_latePaymentFeeIncome"  // OK
+                    "type" => "payment_latePaymentFeeIncome"                    // OK
                     ],
                 12 => [
                     "detail" => "Interest_income_buyback",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "payment_interestIncomeBuyback"  // OK
+                    "type" => "payment_interestIncomeBuyback"                   // OK
                     ],
                 13 => [
                     "detail" => "Delayed_interest_income_buyback",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "payment_delayedInterestIncomeBuyback"   // OK
+                    "type" => "payment_delayedInterestIncomeBuyback"            // OK
                     ],
                 14 => [
                     "detail" => "Incentives_and_bonus",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
                     "type" => "concept14"  
                     ],
                 15 => [
                     "detail" => "Compensation",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept15"    //
+                    "type" => "concept15"    
                     ],
                 16 => [
-                    "detail" => "Income_secondary_Market",
-                    "cash" => 1,
+                    "detail" => "Income_secondary_market",
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept16"   
+                    "type" => "investment_priceInSecondaryMarket"               //XX   
                     ],
                 17 => [
                     "detail" => "Currency_fluctuation_positive",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
                     "type" => "concept17"  
                     ],
 
                 19 => [
                     "detail" => "Recoveries",
-                    "cash" => 1,
+                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "transactionType" => "Income",
                     "type" => "concept19"
                     ],
                 20 => [
                     "detail" => "Commission",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept20"
                     ],
                 21 => [
                     "detail" => "Bank_charges",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept21"
                     ],
                 22 => [
                     "detail" => "Cost_secondary_market",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,                 //XX
                     "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept22"
+                    "type" => "investment_secondaryMarketInvestment"
                     ],
                 23 => [
                     "detail" => "Interest_payment_secondary_market_purchase",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept23"
-                    ],
-            
+                    ],           
                 24 => [
                     "detail" => "currency_exchange_fee",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept24"
                     ],
                 25 => [
                     "detail" => "currency_fluctuation_negative",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept25"
                     ],                        
                 26 => [
                     "detail" => "Tax_VAT",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept26"
                     ],
                 27 => [
                     "detail" => "Tax_income_withholding_tax",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept27"
                     ],
                 28 => [
                     "detail" => "Write-off",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept28"
                     ],
                 29 => [
                     "detail" => "Registration",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept29"
                     ],
                 30 => [
                     "detail" => "Currency_exchange_transaction",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Costs",
                     "type" => "concept30"
                     ],
                 31 => [
                     "detail" => "Unknown_income",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Income",
                     "type" => "concept31"
                     ],
                 32 => [
                     "detail" => "Unknown_cost",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Cost",
                     "type" => "concept32"
                     ],
                 33 => [
                     "detail" => "Unknown_concept",
-                    "cash" => 2,
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "PL",
-                    "transactionType" => "Cost",
                     "type" => "concept33"
                     ]
             ];
@@ -441,8 +408,7 @@ echo "INPUT FILE = $file \n";
                     }
                 }
             }
-print_r($tempArray);
-exit;
+
             if (!empty($this->config['sortParameter'])) {
                 if (!empty($this->config['sortParameter'])) {
                     $temp = "\$tempArray[\$tempArray[\$i]['" . str_replace(".", "']['", $this->config['sortParameter']) . "']][] = \$tempArray[\$i];";
@@ -557,23 +523,23 @@ exit;
 
     //    read the unknown concept
         $result = 0;
-        $dictionaryWords = array('tax'          => COST,
-                                'instalment'    => INCOME,
-                                'installment'   => INCOME,
-                                'payment'       => COST,
-                                'back fee'      => COST,
-                                'back tax'      => COST,
-                                'cost'          => COST,
-                                'purchase'      => COST,
-                                'bid'           => COST,
-                                'auction'       => COST,
-                                'sale'          => INCOME,
-                                'swap'          => INCOME,
-                                'loan'          => COST,
-                                'buy'           => INCOME,
-                                'sell'          => INCOME,
-                                'sale'          => INCOME,
-                                'earning'       => INCOME
+        $dictionaryWords = array('tax'          => WIN_CONCEPT_TYPE_COST,
+                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
+                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
+                                'payment'       => WIN_CONCEPT_TYPE_COST,
+                                'back fee'      => WIN_CONCEPT_TYPE_COST,
+                                'back tax'      => WIN_CONCEPT_TYPE_COST,
+                                'cost'          => WIN_CONCEPT_TYPE_COST,
+                                'purchase'      => WIN_CONCEPT_TYPE_COST,
+                                'bid'           => WIN_CONCEPT_TYPE_COST,
+                                'auction'       => WIN_CONCEPT_TYPE_COST,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
+                                'loan'          => WIN_CONCEPT_TYPE_COST,
+                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
+                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'earning'       => WIN_CONCEPT_TYPE_INCOME
 
                             );
         foreach ($dictionaryWords as $wordKey => $word) {
@@ -585,11 +551,11 @@ exit;
         }
 
         switch($result) {
-            case COST:                                  // A result was found.
+            case WIN_CONCEPT_TYPE_COST:                                  // A result was found.
                 return "Unknown_cost";
                 break;
 
-            case INCOME:                                // A result was found
+            case WIN_CONCEPT_TYPE_INCOME:                                // A result was found
                 return "Unknown_income";
                 break;
             default:                                    // Nothing found, so do some maths to
@@ -714,27 +680,58 @@ exit;
     }
     
 
-    
-    private function testing12($input, $par2, $par3) {
-        echo "AAA\n";
-        print_r($input);
-        echo "AAA\n";
-        print_r($par2);
-        echo "AAA\n";
-        print_r($par3);
-        return "246810";
-    } 
-    
-    private function testing13($input, $thousandsSep, $decimalSep, $decimals) {
-        echo "execute exit\n";
+    /**
+     *
+     * Determines the 'transactiondetail' based on a translationtable (=$config) and the sign of the amount ( positive or negative).
+     * Note that the amount must already have been calculated before executing this function
+     *
+     * @param string   $input
+     * @return array    [0] => Winvestify standardized concept
+     *                  [1] => array of parameter, i.e. list of variables in which the result
+     *                         of this function is to be stored. In practice it is normally
+     *                         only 1 variable, but the same value could be replicated in many
+     *                         variables.
+     *                  The variable name is read from "internal variable" $this->transactionDetails.
+     */   
+    private function getComplexTransactionDetail($input, $originalConceptMintos, $config) {
 
+        $position = strpos($input, "-");
+        
+        if ($position !== false) {      // contains - sign 
+            $type = WIN_CONCEPT_TYPE_COST;
+        }    
+        else {
+            $type = WIN_CONCEPT_TYPE_INCOME;
+        }
+
+        $found = NO;        
+        foreach ($config as $configKey => $item) {
+            $configItemKey = key($item);
+            $configItem = $item[$configItemKey];
+            foreach ($this->transactionDetails as $key => $detail) {  
+                $position = strpos($originalConceptMintos, $configItemKey );
+                if ($position !== false) {
+                    if ($detail['detail'] == $configItem){
+                        if ($type == $detail['transactionType']) {
+                            $internalConceptName = $detail['type'];
+                            $found = YES;
+                            break 2;
+                        }
+                    }
+                }
+            }
+        }        
+          
+        if ($found == YES) {
+            $result = array($internalConceptName,"type" => "internalName");
+            return $result;
+        }
+        else {
+            echo "unknown concept, so start doing some guessing for concept $originalConceptMintos\n";  
+        }
     } 
     
-    
-    
-    
-    
-    
+
     
     
     /**
@@ -788,29 +785,56 @@ exit;
      *                  The variable name is read from "internal variable" $this->transactionDetails.
      */
     private function getTransactionDetail($input, $config) {
-        echo "____________-\n";
-        print_r($input);
+print_r($input);
+print_r($config);
+        
+         foreach ($config as $configKey => $item) {
+            $configItemKey = key($item);
+            $configItem = $item[$configItemKey];
+            echo "configItemKey = $configItemKey and configItem = $configItem \n";
+            foreach ($this->transactionDetails as $key => $detail) { 
+                $position = strpos($input, $configItemKey );
+                if ($position !== false) {
+                    echo "The detail = " . $detail['detail'] . "\n";
+                    if ($detail['detail'] == $configItem){
+                        $internalConceptName = $detail['type'];
+                        $found = YES;
+                        echo "Jackpot\n";
+                        break 2;
+                    }
+                }
+            }
+        }        
+        if ($found == YES) {
+            echo "YES FOUND\n";
+            $result = array($internalConceptName,"type" => "internalName");
+            print_r($result);
+            return $result;
+        }
+        else {
+            echo "unknown concept, so start doing some Guessing for concept $originalConceptMintos\n";  
+        }     
+       
+        
+        
+        
+        
+  /*      
         foreach ($config as $configKey => $configItem) {
             $position = stripos($input, $configKey);
             if ($position !== false) {
                 foreach ($this->transactionDetails as $key => $detail) {  
                     if ($detail['detail'] == $configItem) {
                         $result = array($detail['type'],"type" => "internalName");
-                        print_r($result);
-                        echo "__________-\n";
                         return $result;
                     }
                 }
             }
         }
-        echo "getTransactionDetail => unknown concept encountered\n";
-        print_r($input);
-        echo "\n-----\n";
-        print_r($config);
-        echo "END\n";
+*/
         // an unknown concept was found, do some intelligent guessing about its meaning
         $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
-        return result;
+        return $result;
     }
 
     /**
@@ -840,7 +864,7 @@ exit;
      *
      */
     private function getRowData($input, $field, $overwrite) {
-echo "getRowData, input = $input, field = $field and overwrite = $overwrite\n";
+
         if (empty($input)) {
             return $field;
         }
