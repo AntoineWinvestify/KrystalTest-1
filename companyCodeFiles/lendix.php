@@ -543,7 +543,12 @@ class lendix extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
 
-
+        $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'small-spacer'),
+         ));
+        
+        
+        
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -555,7 +560,10 @@ class lendix extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
 
-
+        $node2 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'small-spacer'),
+        ));
+        
 
 
         $structureRevision = $this->verifyDomStructure($node1, $node2);
