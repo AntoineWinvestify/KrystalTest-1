@@ -245,7 +245,8 @@ class zank extends p2pCompany {
                 foreach ($divs as $div) {
                     switch ($index) {
                         case 0:
-                            $tempArray['marketplace_numberOfInvestors'] = preg_replace("/[^0-9]/","",strtoupper($div->nodeValue));
+                            $tempArray['marketplace_numberOfInvestors'] =  str_replace(['+', '-'], '', filter_var($div->nodeValue, FILTER_SANITIZE_NUMBER_INT));
+
                             break;
                         case 1:
                             if (stristr(trim($div->nodeValue), "%") == true) {
