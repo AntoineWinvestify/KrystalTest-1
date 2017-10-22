@@ -314,7 +314,7 @@ class mintos extends p2pCompany {
         ];
 
     protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
+            0 =>  [
                 [
                     "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
                     "inputData" => [
@@ -323,7 +323,7 @@ class mintos extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
             ],
-            "B" => [
+            1 => [
                 [
                     "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
                     "inputData" => [
@@ -334,7 +334,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            "C" => [
+            2 => [
                 [
                     "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
                     "inputData" => [
@@ -345,7 +345,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            "E" => [
+            4 => [
                 [
                     "type" => "amortizationtable_capitalAndInterestPayment",                      // Winvestify standardized name  OK
                     "inputData" => [
@@ -356,7 +356,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            "F" => [
+            5 => [
                 [
                     "type" => "amortizationtable_paymentDate",                         // Winvestify standardized name   OK
                     "inputData" => [
@@ -365,7 +365,7 @@ class mintos extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
             ],
-            "G" => [
+            6 => [
                 "name" => "amortizationtable_paymentStatus"
             ]
              
@@ -382,13 +382,11 @@ class mintos extends p2pCompany {
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
-/*   NOT YET READY
     protected $amortizationConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
-*/   
      
      
      
