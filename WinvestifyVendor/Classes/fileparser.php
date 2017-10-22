@@ -797,6 +797,82 @@
     public function getHtmlData($filePath, $parserConfig) {
         $dom = new DOMDocument();
         $dom->loadHTMLFile($filePath);
+        $trs = $dom->getElementsByTagName('tr');
+        $tempArray = [];
+        $i = 0;
+        foreach ($trs as $tr) {
+            if ($i == $this->config['offsetStart']) {
+                break;
+            }
+            $tr->parentNode->removeChild($tr);
+            $i++;
+        }
+
+        foreach ($trs as $tr) {
+            $tds = $dom->getElementsByTagName('td');
+            $keyTr = 0;
+            $i = 0;
+            $outOfRange = false;
+            foreach ($parserConfig as $key => $value) {
+                $previousKey = $i - 1;
+                $currentKey = $i;
+                $valueTd = $tds[$key]->nodeValue;
+                if (array_key_exists("name", $value)) {      // "name" => .......
+                    $keys = explode("_", $value);
+                    $tempArray[$i][$keys[0]][$keys[1]] = $valueTd;
+                }
+                else {
+                    foreach ($value as $userFunction ) {
+                        if (!array_key_exists('inputData',$userFunction)) {
+                            $userFunction['inputData'] = [];
+                        }
+                        else {
+                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file
+                                if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
+                                    if (stripos ($input, "#previous.") !== false) {
+                                        if ($previousKey == -1) {
+                                            $outOfRange = true;
+                                            break;
+                                        }
+                                        $temp = explode(".", $input);
+                                        $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
+                                    }
+                                    if (stripos ($input, "#current.") !== false) {
+                                        $temp = explode(".", $input);
+                                        $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];
+                                    }
+                                }
+                            }
+                        }
+                        
+                        array_unshift($userFunction['inputData'], $tds[$keyTr]);       // Add cell content to list of input parameters
+                        if ($outOfRange == false) {
+                            $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
+                                                                       $userFunction['functionName']),
+                                                                       $userFunction['inputData']
+                                    );
+
+                            if (is_array($tempResult)) {
+                                $userFunction = $tempResult;
+                                $tempResult = $tempResult[0];
+                            }
+
+                            // Write the result to the array with parsing result. The first index is written
+                            // various variables if $tempResult is an array
+                            if (!empty($tempResult)) {
+                                $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']";
+                                $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
+                                eval($tempString);
+                            }
+                        }
+                        else {
+                            $outOfRange = false;        // reset
+                        }
+                    }
+                }
+                $keyTr++;
+            }
+        }
         
     }
 
