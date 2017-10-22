@@ -89,14 +89,86 @@ class zank extends p2pCompany {
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
-/*    NOT YET READY
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
+    protected $amortizationConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );      
- 
- */    
+                                 ); 
+    
+    protected $valuesAmortizationTable = [  // NOT FINISHED
+            //See this value, it has two, the scheduledDate and the paymentDate
+            1 =>  [
+                [
+                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            2 => [
+                [
+                    "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            3 => [
+                [
+                    "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            //Change this, further investigation
+            4 => [
+                [
+                    "type" => "amortizationtable_capitalAndInterestPayment",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            5 => [
+                [
+                    "type" => "amortizationtable_comission",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            6 => [
+                [
+                    "type" => "amortizationtable_latePaymentFee",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            //I think its better the 8
+            7 => [
+                "name" => "amortizationtable_paymentStatus"
+            ]
+             
+        ];
+  
     
     
     
