@@ -90,7 +90,9 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
                 if (empty($extension)) {
                     $extensionFile = $myParser->getExtensionFile($file);
                 }
+                $myParser->setConfig($this->getParserAmortizationConfigParms());
                 $data = $myParser->analyzeFileAmortization($file, $parserConfig);
+                
                 
             }
             
