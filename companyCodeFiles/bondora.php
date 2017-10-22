@@ -30,11 +30,59 @@ class bondora extends p2pCompany {
 
     
  
-    protected $valuesAmortizationTable = [  // NOT FINISHED
+    /*protected $valuesAmortizationTable = [  // NOT FINISHED
             "A" =>  [
                 "name" => "transaction_id"
              ],
-        ];    
+        ];   */
+    
+    protected $valuesAmortizationTable = [  // NOT FINISHED
+            //See this value, it has two, the scheduledDate and the paymentDate
+            0 =>  [
+                [
+                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            2 => [
+                [
+                    "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            3 => [
+                [
+                    "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            //Change this, further investigation
+            4 => [
+                [
+                    "type" => "amortizationtable_capitalAndInterestPayment",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ]
+             
+        ];
 
     protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
