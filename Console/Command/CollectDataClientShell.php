@@ -80,6 +80,15 @@ class CollectDataClientShell extends GearmanClientShell {
                     print_r($jobInvestor);
                     $investorId = $jobInvestor['Investor']['id'];
                     $filterConditions = array('investor_id' => $investorId);
+                    if (!empty($queueInfo['companiesInFlow'])) {
+                        foreach ($queueInfo['companiesInFlow'] as $key => $linkaccountIdInFlow) {
+                            $linkAccountId[] = $linkaccountIdInFlow;
+                        }
+                        $filterConditions = array(
+                                'investor_id' => $investorId,
+                                'id' => $linkAccountId
+                            );
+                    }
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     echo "linkAccount \n";
                     print_r($linkedaccountsResults);
