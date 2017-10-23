@@ -172,7 +172,7 @@ class p2pCompany {
     
     protected $valuesTransaction;
     protected $valuesInvestment;  
-    protected $valuesamortizationTable;     
+    protected $valuesAmortizationTable;     
 
     /**
      *
@@ -2702,7 +2702,7 @@ class p2pCompany {
      * 
      */    
     public function getParserConfigAmortizationTableFile() {
-        return $this->valuesAmortization;
+        return $this->valuesAmortizationTable;
     }  
     
     
