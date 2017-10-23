@@ -786,8 +786,11 @@
     
     public function analyzeFileAmortization($filePath, $parserConfig, $extension) {
         
+        echo "llegue $extension \n\n";
+        
         switch($extension) {
             case "html":
+                echo "hello\n";
                 $tempArray = $this->getHtmlData($filePath, $parserConfig);
                 break;
         }
@@ -800,6 +803,13 @@
         $trs = $dom->getElementsByTagName('tr');
         $tempArray = [];
         $i = 0;
+        echo "parserConfig";
+        print_r($parserConfig);
+        if ($trs->length > 0) {
+            echo "holaaaaaaaaa";
+        }
+        
+        
         foreach ($trs as $tr) {
             if ($i == $this->config['offsetStart']) {
                 break;
