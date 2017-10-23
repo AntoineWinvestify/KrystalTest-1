@@ -27,6 +27,51 @@
  */
 class finbee extends p2pCompany {
 
+    protected $valuesAmortizationTable = [  // NOT FINISHED
+            1 =>  [
+                [
+                    "type" => "amortizationtable_capitalAndInterestPayment",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            2 => [
+                [
+                    "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            3 => [
+                [
+                    "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            //Change this, further investigation
+            4 => [
+                [
+                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "Y-M-D",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ]
+        ];
     
     protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -40,14 +85,12 @@ class finbee extends p2pCompany {
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
-/*    NOT YET READY
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
+    protected $amortizationConfigParms = array ('OffsetStart' => 0,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );      
- 
- */    
+     
     
     
     function __construct() {
