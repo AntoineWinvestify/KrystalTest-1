@@ -78,31 +78,31 @@
                     "detail" => "Cash_deposit",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
                     "account" => "CF",
-                    "type" => "globalcashflowdata_platformDeposits"             // OK OK
+                    "type" => "globalcashflowdata_platformDeposits"            
                     ],
                 2 => [
                     "detail" => "Cash_withdrawal",
                     "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "CF",
-                    "type" => "globalcashflowdata_platformWithdrawals"           // OK OK
+                    "type" => "globalcashflowdata_platformWithdrawals"          
                     ],
                 3 => [
                     "detail" => "Primary_market_investment",
                     "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "Capital",
-                    "type" => "investment_myInvestment",                        // OK OK
+                    "type" => "investment_myInvestment",                     
                     ],
                 4 => [
                     "detail" => "Secondary_market_investment",
                     "transactionType" => WIN_CONCEPT_TYPE_COST,
                     "account" => "Capital",
-                    "type" => "investment_secondaryMarketInvestment"               // OK
+                    "type" => "investment_secondaryMarketInvestment"              
                     ],
                 5 => [
                     "detail" => "Capital_repayment",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "Capital",
-                    "type" => "payment_capitalRepayment"                        // OK 
+                    "type" => "payment_capitalRepayment"                      
                     ],
                 6 => [
                     "detail" => "Partial_principal_repayment",
@@ -114,7 +114,7 @@
                     "detail" => "Principal_buyback",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "Capital",
-                    "type" => "payment_principalBuyback"                        // OK
+                    "type" => "payment_principalBuyback"                     
                     ],
                 8 => [
                     "detail" => "Principal_and_interest_payment",
@@ -126,31 +126,31 @@
                     "detail" => "Regular_gross_interest_income",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "type" => "payment_regularGrossInterestIncome"              // OK
+                    "type" => "payment_regularGrossInterestIncome"           
                     ],
                 10 => [
                     "detail" => "Delayed_interest_income",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "type" => "payment_delayedInterestPayment"                  // OK
+                    "type" => "payment_delayedInterestPayment"          
                     ],
                 11 => [ 
                     "detail" => "Late_payment_fee_income",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "type" => "payment_latePaymentFeeIncome"                    // OK
+                    "type" => "payment_latePaymentFeeIncome"                  
                     ],
                 12 => [
                     "detail" => "Interest_income_buyback",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "type" => "payment_interestIncomeBuyback"                   // OK
+                    "type" => "payment_interestIncomeBuyback"                 
                     ],
                 13 => [
                     "detail" => "Delayed_interest_income_buyback",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "type" => "payment_delayedInterestIncomeBuyback"            // OK
+                    "type" => "payment_delayedInterestIncomeBuyback"           
                     ],
                 14 => [
                     "detail" => "Incentives_and_bonus",
@@ -168,7 +168,7 @@
                     "detail" => "Income_secondary_market",
                     "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                     "account" => "PL",
-                    "type" => "investment_incomeSecondaryMarket"               //XX   
+                    "type" => "investment_incomeSecondaryMarket"        
                     ],
                 17 => [
                     "detail" => "Currency_fluctuation_positive",
@@ -197,7 +197,7 @@
                     ],
                 22 => [
                     "detail" => "Cost_secondary_market",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,                 //XX
+                    "transactionType" => WIN_CONCEPT_TYPE_COST,                
                     "account" => "PL",
                     "type" => "investment_costSecondaryMarket"
                     ],

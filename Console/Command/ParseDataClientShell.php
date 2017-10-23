@@ -552,7 +552,7 @@ class ParseDataClientShell extends AppShell {
                 "function" => "calculatePlatformDeposit"        
             ],
         67 => [   //OK--
-                "databaseName" => "globalcashflowdata.globalcashflowdata__platformWithdrawal",  
+                "databaseName" => "globalcashflowdata.globalcashflowdata_platformWithdrawal",  
                 "internalName" => "globalcashflowdata_platformWithdrawals",        
                 "internalIndex" => 67,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
@@ -836,16 +836,15 @@ print_r($subDir);
 
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
         foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
-if ($newLoan <> "1604819-01" ) {
+if ($newLoan <> "840073-01" ) {
     echo "flushing loanId $newLoan\n";
     continue;
 }
-            
-            
-            
-//            echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
- //           print_r($platformData['parsingResultInvestments'][$newLoan]);
-            // check if we have information in the investment list about this loan.
+  
+//  echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
+//  print_r($platformData['parsingResultInvestments'][$newLoan]);
+//  check if we have information in the investment list about this loan.
+//  The table of userinvestmentdata is 'allocated' with default values (=000000?)
             if (array_key_exists( $newLoan, $platformData['parsingResultInvestments'])) {  // this is a new loan and we have some info
                 // check all the data in analyzed investment table
 
@@ -855,12 +854,13 @@ if ($newLoan <> "1604819-01" ) {
                         $dataInformation = explode (".",$tempResult['databaseName'] );
                         $dbTable = $dataInformation[0];
                         $database[$dbTable][$investmentDataKey] = $investmentData;
-                        $this->variablesConfig[$tempResult['internalIndex']]['state'] = FLOWDATA_VARIABLE_DONE;   // Mark done
+                        $variablesConfigStatus[$investmentDataKey]['state'] = FLOWDATA_VARIABLE_DONE;   // Mark done
                     }
                 }  
             }
-
- // also check if they belong to the same date, if not flush it     
+//print_r($variablesConfigStatus);
+echo "Total = " . count($variablesConfigStatus) . "\n";
+ // also check if they belong to the same date, if not flush it    STILL PENDING 
 echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";   
             if (array_key_exists( $newLoan, $platformData['parsingResultTransactions'])) {  // this is a new loan and we have some info
                 print_r($platformData['parsingResultTransactions'][$newLoan]);
@@ -894,12 +894,95 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
-                    //??        $this->variablesConfig[$tempResult['internalIndex']]['state'] = FLOWDATA_VARIABLE_DONE;  // Mark done
+                            $variablesConfigStatus[$transactionDataKey]['state'] = FLOWDATA_VARIABLE_DONE;  // Mark done
                         } 
                     }
                 }   
-            } 
+            }
+       
+ //print_r($variablesConfigStatus);
+ echo "Total = " . count($variablesConfigStatus) . "\n";
+// Now start consolidating the results, these are to be stored in the investment table (variable part)
+
+ // check if variable is already defined:
  
+// Calculate var 17:  
+            if ($variablesConfigStatus[17]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17] 
+                $varName = $variablesConfigStatus[17]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateRemainingTerm($database);
+                $variablesConfigStatus[17]['state'] = FLOWDATA_VARIABLE_DONE;                
+            }
+            
+            if ($variablesConfigStatus[30]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
+                $varName = $variablesConfigStatus[30]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidatePrincipalAndInterestPayment($database);
+                $variablesConfigStatus[30]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            }           
+
+            if ($variablesConfigStatus[31]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // installmentPaymentProgress [31]
+                $varName = $variablesConfigStatus[31]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateInstallmentPaymentProgress($database);
+                $variablesConfigStatus[31]['state'] = FLOWDATA_VARIABLE_DONE;                   
+            }
+
+            if ($variablesConfigStatus[34]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // capital repayment (34)
+                $varName = $variablesConfigStatus[34]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateCapitalRepayment($database);
+                $variablesConfigStatus[34]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            }  
+
+            if ($variablesConfigStatus[35]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
+                $varName = $variablesConfigStatus[35]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidatePartialPrincipalPayment($database);
+                $variablesConfigStatus[35]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            } 
+            
+            if ($variablesConfigStatus[37]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
+                $result = $this->consolidateOutstandingPrincipal($database);
+                $varName = $variablesConfigStatus[37]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
+                $variablesConfigStatus[37]['state'] = FLOWDATA_VARIABLE_DONE;                
+            }
+          
+            if ($variablesConfigStatus[38]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
+                $varName = $variablesConfigStatus[38]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
+                $variablesConfigStatus[38]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            } 
+            
+            if ($variablesConfigStatus[42]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // total gross income (42
+                $varName = $variablesConfigStatus[42]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateTotalGrossIncome($database);
+                $variablesConfigStatus[42]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            } 
+            
+            if ($variablesConfigStatus[43]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // interest gross income (43)
+                $varName = $variablesConfigStatus[43]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateInterestgrossIncome($database);
+                $variablesConfigStatus[43]['state'] = FLOWDATA_VARIABLE_DONE;                    
+            }
+            
+            if ($variablesConfigStatus[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
+                $varName = $variablesConfigStatus[53]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
+                $variablesConfigStatus[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            }  
+            
+            if ($variablesConfigStatus[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
+                $varName = $variablesConfigStatus[53]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateNextPaymentDate($database);
+                $variablesConfigStatus[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            }  
+            
+            if ($variablesConfigStatus[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // estimated next payment (40)
+                $varName = $variablesConfigStatus[53]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateEstimatedNextPayment($database);
+                $variablesConfigStatus[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            }  
+            
+            
+            
+            
 //$database['payment']['investment_id'] = 98;
 echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";             
 print_r($database);      
@@ -968,10 +1051,10 @@ print_r($database);
             
        //     break;
         unset($database);
-
+        unset($variablesConfigStatus);
         }
-     echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2 for an investment\n";        
- //print_r ($this->variablesConfig);
+     echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2 for an investment\n";      
+     
     return;   
     }
    

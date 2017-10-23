@@ -22,7 +22,10 @@
 * @package
 *
 
-Hold "total" values of many of the concepts that are applicable to a loan
+
+
+Hold "total" values of many of the concepts that are global to a user
+
 
 2017-10-18		version 0.1
 initial version
@@ -41,33 +44,23 @@ Pending:
 
 */
 
-
-class Paymenttotal extends AppModel
+class Globalcashflowdatatotal extends AppModel
 {
-	var $name= 'Paymenttotal';
-/*
-	var $hasOne = array(
-		'Investment' => array(
-			'className' => 'Investment',
-			'foreignKey' => '_id',
-		)
-	);
+	var $name = 'Globalcashflowdatatotal';
+
+        
+
+/**
+*	Apparently can contain any type field which is used in a field. It does NOT necessarily
+*	have to map to a existing field in the database. Very useful for automatic checks
+*	provided by framework
 */
+var $validate = array(
+
+);
 
 
-        
-        
-        
-    /*
-     * 
-     * Update the corresponding fields in the paymenttotal table 
-     * 
-     */
-    function afterSave1($created, $options = array()) {  
 
-        print_r($this->data['Paymenttotal']);
-    }       
-        
-        
+
 
 }

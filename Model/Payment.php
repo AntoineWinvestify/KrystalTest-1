@@ -83,7 +83,8 @@ var $validate = array(
         }
 
         $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
- 
+         
+        // get the *latest* paymenttotal table
         $latestValuesPaymenttotals = $this->Paymenttotal->find("first",array(
                                                         'conditions' => array('investment_id' => $investmentId),
                                                         'order' => array('Paymenttotal.id DESC'),
@@ -96,12 +97,14 @@ var $validate = array(
                 foreach ($latestValuesPaymenttotals['Paymenttotal'] as $paymentTotalKey => $paymentItem) {
                     if ($paymentTotalKey === $paymentTotalPrefix . "_" .$paymentKeyNames[1]) {
                         $data [$paymentTotalKey] = $paymentItem + $value;
+                        $data[$paymentTotalKey] = sprintf("%017d", $data[$paymentTotalKey]);  // Normalize length with leading 0's
                     }
                 }
             } 
         }    
         $data ['investment_id'] = $investmentId;
         $this->Paymenttotal->save($data, $validate = true); 
+         
     }
 
 

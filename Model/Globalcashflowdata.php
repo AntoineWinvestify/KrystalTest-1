@@ -57,7 +57,50 @@ var $validate = array(
 );
 
 
+   /*
+     * **** CALLBACK FUNCTIONS *****
+     */
 
+    /*
+     * 
+     * Update the corresponding fields in the 'paymenttotal' table 
+     * 
+     */
+    function afterSave($created, $options = array()) {
 
+        $data = array();
+        $prefix = "globalcashflowdata";
+        $totalPrefix = "globalcashflowdatatotal";  
+ 
+        foreach ($this->data['Globalcashflowdata'] as $globalcashflowKey => $value) {
+            if ($globalcashflowKey == "userinvestmentdata_id") {
+                $userinvestmentdataId = $value;
+                break;
+            }         
+        }
+
+        $this->Globalcashflowdatatotal = ClassRegistry::init('Globalcashflowdatatotal');
+         
+        // get the *latest* globalcashflowdatatotal table
+        $latestValuesGlobalCashflowdata = $this->Globalcashflowdata->find("first",array(
+                                                        'conditions' => array('userinvestmentdata_id' => $userinvestmentdataId),
+                                                        'order' => array('Globalcashflowdata.id DESC'),
+                                                         ) );
+
+        foreach ($this->data['Globalcashflowdata'] as $globalCashflowKey => $value) {
+            $globalCashflowKeyNames = explode("_", $globalCashflowKey);
+
+            if ($globalCashflowKeyNames[0] == $prefix) {   // check if the field exists in table paymenttotals
+                foreach ($latestValuesGlobalCashflowdata['Globalcashflowdata'] as $globalCashflowTotalKey => $globalcashflowItem) {
+                    if ($globalCashflowTotalKey === $totalPrefix . "_" . $globalCashflowKeyNames[1]) {
+                        $data [$globalCashflowTotalKey] = $globalcashflowItem + $value;
+                        $data[$globalCashflowTotalKey] = sprintf("%017d", $data[$globalCashflowTotalKey]);  // Normalize length with leading 0's
+                    }
+                }
+            } 
+        }    
+        $data ['userinvestmentdata_id'] = $userinvestmentdataId;
+        $this->Globalcashflowdatatotal->save($data, $validate = true); 
+    }
 
 }
