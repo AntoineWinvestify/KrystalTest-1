@@ -23,7 +23,7 @@
 
 App::import('Shell','GearmanWorker');
 
-class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
+class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
    
     
     var $uses = array('Amortizationtable', 'Queue');
@@ -33,7 +33,7 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
      */
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
-        $this->GearmanWorker->addFunction('collectamortizationtablesFileFlow', array($this, 'collectamortizationtablesFile'));   
+        $this->GearmanWorker->addFunction('collectamortizationtablesFileFlow', array($this, 'collectamortizationtablesFileFlow'));   
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
         while($this->GearmanWorker->work());
     }
@@ -70,7 +70,7 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
         $i = 0;
         $tempArray = array();
         foreach ($platformData as $linkedAccountKey => $data) {
-            $platform = $data['pfp'];
+            //$platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
              if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
@@ -84,25 +84,26 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Amortization table File\n";
                 } 
                 $parserConfig = $companyHandle->getParserConfigAmortizationTableFile();
-                $tempResult = array();
+                echo "parser Config \n";
+                print_r($parserConfig);
                 $loanId = $this->myParser->getLoanIdFromFile($file);
                 if (empty($extensionFile)) {
                     $extensionFile = $this->myParser->getExtensionFile($file);
                 }
-                $this->myParser->setConfig($this->getParserAmortizationConfigParms());
-                $tempResult[$loanId] = $this->myParser->analyzeFileAmortization($file, $parserConfig);
+                $this->myParser->setConfig($companyHandle->getParserAmortizationConfigParms());
+                $tempArray[$linkedAccountKey][$loanId] = $this->myParser->analyzeFileAmortization($file, $parserConfig, 'html');
+                echo "tempResult" . $loanId . "\n";
+                print_r($tempArray);
             }
-            $tempArray[$linkedAccountKey] = $tempResult;
-            unset($tempResult);
             if (empty($tempArray[$linkedAccountKey])) {
                 $data['statusCollect'][$linkedAccountKey] = "0";
             }
             else {
                 $data['statusCollect'][$linkedAccountKey] = "1";
             }
-            
         }
         $data['tempArray'] = $tempArray;
+        print_r($tempArray);
         if (Configure::read('debug')) {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
             print_r($data);
