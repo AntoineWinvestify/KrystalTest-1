@@ -247,7 +247,7 @@
             <hr class="specialHr" width="90%">
             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                 <div class="divmiddle" style="height: 500px;">
-                    <img src="/img/landingpage/schema_spa.png" class="imgResponsive schemaImg center-block" style="height: 100%; margin-top: -50px"/>
+                    <img src="/img/LandingPage/schema_spa.png" class="imgResponsive schemaImg center-block" style="height: 100%; margin-top: -50px"/>
                 </div>
                 <div class="divmiddle">
                     <h3><?php echo __('What is CrowdLending?')?></h3>
@@ -382,11 +382,12 @@
                   $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
                 });
                 
-                //Get flag value
-                var val1 = $('.flag-language').attr('id');
-                $('.schemaImg').prop('src', "/img/landingpage/schema_" + val1 + ".png");
+                //Schema img
+                $(".flag-language").on('load', function() {        
+                    
+                });
             });
-            
+
         </script>
         <!--========== END JAVASCRIPTS ==========-->
     </body>
