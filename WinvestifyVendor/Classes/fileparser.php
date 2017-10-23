@@ -786,11 +786,8 @@
     
     public function analyzeFileAmortization($filePath, $parserConfig, $extension) {
         
-        echo "llegue $extension \n\n";
-        
         switch($extension) {
             case "html":
-                echo "hello\n";
                 $tempArray = $this->getHtmlData($filePath, $parserConfig);
                 break;
         }
@@ -803,27 +800,21 @@
         $trs = $dom->getElementsByTagName('tr');
         $tempArray = [];
         $i = 0;
-        echo "parserConfig";
-        print_r($parserConfig);
-        if ($trs->length > 0) {
-            echo "holaaaaaaaaa";
-        }
-        
-        
         foreach ($trs as $tr) {
-            if ($i == $this->config['offsetStart']) {
+            if ($i == $this->config['OffsetStart']) {
                 break;
             }
             $tr->parentNode->removeChild($tr);
             $i++;
-        }
-
+        } 
         foreach ($trs as $tr) {
-            $tds = $dom->getElementsByTagName('td');
+            $tds = $tr->getElementsByTagName('td');
             $keyTr = 0;
             $i = 0;
             $outOfRange = false;
             foreach ($parserConfig as $key => $value) {
+                echo "value";
+                print_r($value);
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 $valueTd = $tds[$key]->nodeValue;
@@ -837,6 +828,7 @@
                             $userFunction['inputData'] = [];
                         }
                         else {
+                            echo "finding Error \n";
                             foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file
                                 if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
                                     if (stripos ($input, "#previous.") !== false) {
@@ -855,8 +847,9 @@
                             }
                         }
                         
-                        array_unshift($userFunction['inputData'], $tds[$keyTr]);       // Add cell content to list of input parameters
+                        array_unshift($userFunction['inputData'], $tds[$key]);       // Add cell content to list of input parameters
                         if ($outOfRange == false) {
+                            echo "finding Error3434 \n";
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
                                                                        $userFunction['functionName']),
                                                                        $userFunction['inputData']
@@ -870,6 +863,7 @@
                             // Write the result to the array with parsing result. The first index is written
                             // various variables if $tempResult is an array
                             if (!empty($tempResult)) {
+                                echo "finding Error 3434343231233\n";
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']";
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
                                 eval($tempString);
@@ -880,7 +874,10 @@
                         }
                     }
                 }
+                echo "tempArray";
+                print_r($tempArray);
                 $keyTr++;
+                exit;
             }
         }
         return $tempArray;
