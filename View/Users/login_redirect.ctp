@@ -114,7 +114,7 @@
                         <?php
                     }
                     ?>
-                   <input type="submit" name="btLogin" value="Acceder" id="btLogin" class="btn btn-default center-block" style="margin-top: 20px;" />
+                   <input type="submit" name="btnLogin" value="Acceder" id="btnLogin" class="btn btn-default center-block" style="margin-top: 20px;" />
                    <span id="lbAviso" class="displayBlock" style="color:Red;"></span>
                 </form>
             </div>   
