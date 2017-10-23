@@ -82,6 +82,9 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             print_r($tempName);
                         }
                         $linkedAccountId = $tempName[count($tempName) - 1];
+                        if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
+                            continue;
+                        }
                         $dirs = new Folder($subDirectory);
                         $nameCompany = $dirs->findRecursive();
                         $allFiles = $dirs->findRecursive($fileName . ".*");
