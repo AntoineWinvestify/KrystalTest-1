@@ -72,7 +72,6 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
-            $tempArray[$linkedAccountKey];
              if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
             }
@@ -86,99 +85,29 @@ class CollectAmortizatioDataWorkerShell extends GearmanWorkerShell {
                 } 
                 $parserConfig = $companyHandle->getParserConfigAmortizationTableFile();
                 $tempResult = array();
-                $loanId = $myParser->getLoanIdFromFile($file);
-                if (empty($extension)) {
-                    $extensionFile = $myParser->getExtensionFile($file);
+                $loanId = $this->myParser->getLoanIdFromFile($file);
+                if (empty($extensionFile)) {
+                    $extensionFile = $this->myParser->getExtensionFile($file);
                 }
-                $myParser->setConfig($this->getParserAmortizationConfigParms());
-                $data = $myParser->analyzeFileAmortization($file, $parserConfig);
-                
-                
+                $this->myParser->setConfig($this->getParserAmortizationConfigParms());
+                $tempResult[$loanId] = $this->myParser->analyzeFileAmortization($file, $parserConfig);
+            }
+            $tempArray[$linkedAccountKey] = $tempResult;
+            unset($tempResult);
+            if (empty($tempArray[$linkedAccountKey])) {
+                $data['statusCollect'][$linkedAccountKey] = "0";
+            }
+            else {
+                $data['statusCollect'][$linkedAccountKey] = "1";
             }
             
-             
-            
         }
-        
-        
-        foreach ($data['PFPname'] as $platformkey => $platform) {
-            if ($data['PFPname']['files']['typeOfFile'] == AMORTIZATION_TABLE_ARRAY) {
-                //   if (not JSON then jmp over next part
-            } else {  // CSV of XLS file
-                if ($a) {
-                    foreach ($data['files'] as $key => $filename) {     // read the amortization table files /perp PFP of the investor
-                        if ($data['files'['filetype']] == "CSV") {
-                            $config = array('separatorChar' => ";", // Only makes sense in case input file is a CSV.
-                                'sortByLoanId' => true, // Make the loanId the main index and all XLS/CSV entries of
-                                // same loan are stored under the same index.
-                                'offset' => 3, // Number of "lines" to be discarded at beginning of file
-                            );
-                            //parse cvs
-                        } else {
-                            //parse XLS
-                        }
-                        // this is n
-                    }
-                    unset($myParser);
-                }
-            }
-
-            // *ALL* new amortization tables have been downloaded
-        $result = $mycompany->amortizationtablesdownloaded($parsedFiles);
-
-       // go throuh all tables to normalize the data for at least the fields: duration, status and rating
-        foreach ($parsesTables as $platformKey => $platform) {
-            foreach($platform as $loanKey => $loanid) {
-                if (!empty($normalizedStatus = $mycompany->normalizeLoanStatus($data['PFPname']))) {
-                    $parsedTables[$platformKey]['status'] = $normalizedStatus;
-                }
-
-                if (!empty($normalizedRating = $mycompany->normalizeLoanRating($data['PFPname']))) {
-                    $parsedTables[$platformKey]['rating'] = $normalizedRating;
-                }
-
-                if (!empty($normalizedDuration = $mycompany->normalizeLoanDuration($data['PFPname']))) {
-                    $parsedTables[$platformKey]['duration_value'] = $normalizedStatus[0];
-                    $parsedTables[$platformKey]['duration_unit'] = $normalizedStatus[1];
-                }
-            }
+        $data['tempArray'] = $tempArray;
+        if (Configure::read('debug')) {
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
+            print_r($data);
         }
-        
-        // prepare to save the tables to db. link to corresponding loan, without overwriting already stored data
-        
-//        tempArray['zank']['schedule'][]
-//        tempArray['growly']['schedule'][]        
-/*        etc.
-                
-        loop [
-            load existing data 
-            store the *complete* table for the loan and Investor:
- *          store totals at bottom of amortization table
-        ]    
-           
-  */        
-        
-
-        if (empty($collectLoanIds)) {
-            $jobState = AMORTIZATION_TABLES_DOWNLOADED;                        // Do not collect amortization tables
-        }
-        // write new jobstatus
-        
-        }
-        /*
-    
-                 $myParser->analysisErrors();
-                $this->Applicationerror = ClassRegistry::init('Applicationerror');
-                $par1 = "ERROR Parsing error of downloaded file";
-                $par2 = $data;
-                $par3 = __LINE__;
-                $par4 = __FILE__;
-                $par5 = "";
-                $this->applicationerror->saveAppError($par1, $par2, $par3, $par4, $par5);
-   
-    */
-    
-    
+        return json_encode($data);
     }
     
     
