@@ -84,8 +84,6 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Amortization table File\n";
                 } 
                 $parserConfig = $companyHandle->getParserConfigAmortizationTableFile();
-                echo "parser Config \n";
-                print_r($parserConfig);
                 $loanId = $this->myParser->getLoanIdFromFile($file);
                 if (empty($extensionFile)) {
                     $extensionFile = $this->myParser->getExtensionFile($file);
