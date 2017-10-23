@@ -27,7 +27,6 @@
  * link account
  */
 
-
 /**
  * Contains the code required for accessing the website of "Bondora".
  * function calculateLoanCost()						[Not OK]
@@ -706,7 +705,7 @@ class bondora extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) {
+    function collectAmortizationTablesParallel($str) { //{"loanIds":{"702":["7e89377c-15fc-4de3-8b65-a55500ef6a1b","6b3649c5-9a6b-4cee-ac05-a55500ef480a"]}} example in queue_info
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -797,6 +796,13 @@ class bondora extends p2pCompany {
                     if ($table->getAttribute('class') == 'table') {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
+
+                        $clone = $this->cleanDomTag($clone, array(
+                            array('typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'white'),  
+                            array('typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'gray'), //Delete rows that we don't want
+                        ));
+
+
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
