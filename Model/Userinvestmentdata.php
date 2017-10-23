@@ -29,15 +29,21 @@ class Userinvestmentdata extends AppModel {
     var $name= 'Userinvestmentdata';
     var $useTable = "userinvestmentdatas";
 
-     public $hasMany = array(
-        'Investment' => array(
-            'className' => 'Investment',
+    
+    public $hasMany = array(
+        'Globalcashflowdata' => array(
+            'className' => 'Globalcashflowdata',
             'foreignKey' => 'userinvestmentdata_id',
             'fields' => '',
             'order' => '',
         ),
-    );
-
-    
+    );     
+     
+     
+     
+     
+     
+     
+     
 
 }
