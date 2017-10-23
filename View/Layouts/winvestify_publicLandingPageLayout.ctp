@@ -226,23 +226,70 @@
             </div>
         </div>
         <!-- End Mockup -->
+        <!-- Prizes -->
         <div class="reestructure"></div>
         <div id="prizes" class="row">
             <div class="col-xs-12 col-sm-12 col-sm-10 col-lg-10 col-sm-offset-1 col-lg-offset-1">
-                <div class="col-xs-12 col-sm-12 col-sm-3 col-lg-3">
+                <?php /*<div class="col-xs-12 col-sm-12 col-sm-3 col-lg-3">
                     <div class="row">
-                        <img src="/img/logo/BBVA.png" class="pull-left imgResponsive" width="150px;"/>
+                        <span style="font-weight: bold; font-size: xx-large; display:inline-block; margin-bottom: 7px;">+1.000.000 €</span>
                     </div>
-                    <div class="row"><?php echo __('Premio Mejor Fintech Andaluza')?></div>
+                    <div class="row"><?php echo __('Asset Under Administration')?></div>
+                </div>*/?>
+                <div class="col-xs-12 col-sm-12 col-sm-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
+                    <div class="box box-widget1 widget-user-2 boxPrize">
+                        <div class="widget-user-header">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <img src="/img/logo/BBVA.png" class="center-block imgResponsive" height="100px;"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer no-padding">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div style="font-size: 18px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Premio Mejor Fintech Andaluza')?></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-sm-5 col-lg-5">
+                    <div class="box box-widget1 widget-user-2 boxPrize">
+                        <div class="widget-user-header">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <img src="/img/logo/santander.jpg" class="center-block imgResponsive" height="100px;"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer no-padding">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div style="font-size: 18px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Finalista Santander Open Challenge')?></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-sm-10 col-lg-10 col-sm-offset-1 col-lg-offset-1" style="display:none;">
+                <div class="col-xs-12 col-sm-12 col-sm-offset-3 col-lg-offset-3 col-sm-3 col-lg-3">
+                    <div class="row">
+                        <img src="/img/logo/BBVA.png" class="pull-right imgResponsive" width="210px;"/>
+                    </div>
+                    <div class="row pull-right" style="font-weight: 18px;"><?php echo __('Premio Mejor Fintech Andaluza')?></div>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-sm-3 col-lg-3">
                     <div class="row">
-                        <span style="font-weight: bold; font-size: xx-large; display:inline-block; margin-bottom: 7px;">+ 1.000.000 €</span>
+                        <img src="/img/logo/santander.jpg" class="pull-right imgResponsive" width="150px;"/>
                     </div>
-                    <div class="row"><?php echo __('Asset Under Administration')?></div>
+                    <div class="row pull-right"><?php echo __('Finalista Santander Open Challenge')?></div>
                 </div>
             </div>
         </div>
+        <!-- /Prizes -->
+        <!-- Schema -->
         <div id="schema" class="row">
             <hr class="specialHr" width="90%">
             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
@@ -250,10 +297,10 @@
                     <img src="/img/LandingPage/schema_spa.png" class="imgResponsive schemaImg center-block" style="height: 100%; margin-top: -50px"/>
                 </div>
                 <div class="divmiddle">
-                    <h3><?php echo __('What is CrowdLending?')?></h3>
+                    <h3><?php echo __('What is Crowdlending?')?></h3>
                     <p><?php echo __('El Crowdlending es un modelo de Financiación Alternativa, por el cual inversores particulares y profesionales utilizando Plataformas de Financiación Participativa prestan su dinero a cambio de recibir un interés acorde al riesgo asumido.')?></p>
                     <p><?php echo __('El resultado es que el prestatario consigue financiarse a un precio más competitivo y el inversor recibe una rentabilidad superior a otros productos financieros.')?></p>
-                    <h3><?php echo __('Basic Rules for Investing in P2P Lending')?></h3>
+                    <h3><?php echo __('Basic Rules for Investing in Crowdlending')?></h3>
                     <p>
                         <strong><?php echo __('Buy fractions of loans')?></strong><br/>
                         <?php echo __('Make wise fractional investments in several loans across different P2P Platforms')?>
@@ -265,6 +312,46 @@
                 </div>
             </div>
         </div>
+        <!-- /schema -->
+        <!-- Info -->
+        <div class="js__parallax-window" style="background: url(/megakit/img/1920x1080/07.jpg) 50% 0 no-repeat fixed;">
+            <div class="g-container--sm g-text-center--xs" style="padding: 80px 0px 0px 0px;">
+                <div>
+                    <p class="text-uppercase g-font-size-14--xs g-font-weight--700 g-color--white-opacity g-letter-spacing--2"><?php echo __('TECHNOLOGY SOLUTIONS FOR PROFESSIONAL INVESTOR')?></p>
+                    <h2 class="g-font-size-32--xs g-font-size-36--md g-color--white"><?php echo __('All your portfolio and market data. Standardized.')?></h2>
+                </div>
+            </div>
+            <div class="row" style="padding: 0px 0px 50px 0px;">
+                <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <h4 class="g-color--white" align="center"><?php echo __('PORTFOLIO DATA')?></h4>
+                            <p class="g-color--white" align="center"><?php echo __('Winvestify has direct, automated feeds from all major European online lenders, allowing us to display, in real-time, your loan portfolio.')?></p>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <h4 class="g-color--white" align="center"><?php echo __('NORMALIZATION')?></h4>
+                            <p class="g-color--white" align="center"><?php echo __('Winvestify has established universal data formats across all credit verticals, allowing consistent, views of loans purchased across all major lending platforms.')?></p>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <h4 class="g-color--white" align="center"><?php echo __('VALIDATION AND TRANSFORMATION')?></h4>
+                            <p class="g-color--white" align="center"><?php echo __('We run platforms-specific data cleaning rules to ensure that our clients always access the highest quality data possible.')?></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1" style="padding: 50px 0px">
+                <div class="g-text-center--xs">
+                    <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __("Join us. It's easy") ?></p>
+                </div>
+                <h4 align="center" style="padding: 0px 0px 20px 0px;"><?php echo __('Open an account and explore all the connected platforms. We make it easy for you access the main Lending platforms with "One Click Registration"')?></h4>
+                <a href="/users/registerPanel">
+                    <button class="btn btn-lg btn1CR center-block"><?php echo __('Open new account')?></button>
+                </a>
+            </div>
+        </div>
+        <!-- /Info -->
         <!-- Popup -->
         <div id="popUp" class="g-box-shadow__bluegreen-v1 wow fadeInLeft" data-wow-duration="5" data-wow-delay=".1s" style="position:fixed;">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -380,11 +467,6 @@
                   $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
                 }, function() {
                   $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
-                });
-                
-                //Schema img
-                $(".flag-language").on('load', function() {        
-                    
                 });
             });
 

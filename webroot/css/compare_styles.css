@@ -1189,6 +1189,7 @@ textarea[name="error"] {
  }
  .headerText {
      font-size: medium;
+     font-weight: 500;
      padding-top: 15px;
      display: inline-block;
  }
@@ -1617,8 +1618,7 @@ hr.nomargin {
             }
             /*Features new design*/
             .s-mockup-v1 {
-                left: 25%;
-                top: 30px;
+                top: 0px !important;
             }
             .reestructure {
                 height: 300px;
@@ -1639,10 +1639,17 @@ hr.nomargin {
             }
             #features_right {
                 margin-top: 0px !important;
+                width: 95%;
             }
             .featuresP {
                 padding-left: 50px;
                 margin-top: 50px;
+            }
+            .container_features {
+                width: 100%;
+            }
+            #featuresButton {
+                padding-bottom: 100px;
             }
         }
                 @media (min-width: 1024px) and (max-width: 1200px) {
@@ -1663,6 +1670,14 @@ hr.nomargin {
                      #headerTitle {
                         font-size: large;
                         font-weight: bold;
+                    }
+                    #features_right {
+                        top: 20px !important;
+                        margin-left: 0px;
+                    }
+                    #featuresButton {
+                        margin-top: 70px;
+                        margin-left: 20px;
                     }
                 }
         @media (min-width: 1200px) {

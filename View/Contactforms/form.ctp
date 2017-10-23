@@ -3,7 +3,7 @@
 <!-- Feedback Form -->
 <div class="container">
     <div class="g-text-center--xs">
-        <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Contacto') ?></p>
+        <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Do you need help?')?></p>
     </div>
     <?php
     echo $this->Form->create('ContactForm', array('default' => false));
@@ -12,6 +12,7 @@
         <div class="row">
             <div id="reporting"></div>
             <div class="col-sm-8 col-sm-offset-2 g-margin-b-20--xs g-margin-b-0--md">
+                <h4 align="left"><?php echo __('If you have any questions or are missing something, please contact out customer service')?></h4>
                 <div id="overlay">
                     <div id="spinner">  
                     </div>
