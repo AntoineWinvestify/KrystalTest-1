@@ -70,7 +70,7 @@ class GearmanClientShell extends AppShell {
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_FAIL;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Fail: " . $task->data() . WIN_GEARMAN_WORK_FAIL . "\n";
+        echo "Fail: " . $task->data() . GEARMAN_WORK_FAIL . "\n";
     }
     
     /**
@@ -90,7 +90,7 @@ class GearmanClientShell extends AppShell {
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_EXCEPTION;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Exception: " . $task->data() . WIN_GEARMAN_WORK_EXCEPTION . "\n";
+        echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
     }
     
