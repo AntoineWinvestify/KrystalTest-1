@@ -434,9 +434,12 @@ class mintos extends p2pCompany {
         return false;
     }
 
-     /**
-     * Function to download every file that is needed to read the investment of an investor
-     * @param string $str It is the html of the last url we accessed
+
+    /**
+     * Download investments and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str = null) {
 
@@ -602,9 +605,9 @@ class mintos extends p2pCompany {
     }
     
     /**
-     * 
-     * @param type $str
-     * @return type
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null){
 

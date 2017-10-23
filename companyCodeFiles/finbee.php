@@ -25,6 +25,16 @@
  * 2017-08-25
  * Created
  */
+
+/**
+ * Contains the code required for accessing the website of "Finbee".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, not tested]
+ * parallelization                                                      [OK, tested]
+ */
 class finbee extends p2pCompany {
 
     protected $transactionConfigParms = array('OffsetStart' => 1,
@@ -65,9 +75,11 @@ class finbee extends p2pCompany {
         return $this->$valuesFinbeeAmortization;
     }
 
-    /**
-     * Function to download every file that is needed to read the investment of an investor
-     * @param string $str It is the html of the last url we accessed
+     /**
+     * Download investment, cash flow files and control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return 
      */
     function collectUserGlobalFilesParallel($str) {
         switch ($this->idForSwitch) {
@@ -204,9 +216,9 @@ class finbee extends p2pCompany {
     }
 
     /**
-     * 
-     * @param type $str
-     * @return type
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {

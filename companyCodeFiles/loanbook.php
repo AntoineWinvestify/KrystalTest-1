@@ -60,6 +60,16 @@
  *
  *
  */
+
+/**
+ * Contains the code required for accessing the website of "Loanbook".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[OK, tested]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, not tested]
+ * parallelization                                                      [OK, tested]
+ */
 class loanbook extends p2pCompany {
 
     protected $transactionConfigParms = array('OffsetStart' => 1,
@@ -888,9 +898,10 @@ class loanbook extends p2pCompany {
     }
 
     /**
-     * Download the file with the user investment
-     * @param string $user
-     * @param string $password
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str) {
 
@@ -1200,9 +1211,9 @@ class loanbook extends p2pCompany {
     }
 
     /**
-     * 
-     * @param type $str
-     * @return type
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str) {
         switch ($this->idForSwitch) {

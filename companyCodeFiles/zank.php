@@ -69,6 +69,16 @@
  *
  *
  */
+
+/**
+ * Contains the code required for accessing the website of "Zank".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[OK, tested]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, not tested]
+ * parallelization                                                      [OK, tested]
+ */
 class zank extends p2pCompany {
 
     private $credentials = array();
@@ -1065,10 +1075,10 @@ class zank extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the investment data of the user
-     * 	@return array	Data of each investment of the user as an element of an array
-     * 	
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str = null) {
         switch ($this->idForSwitch) {
@@ -1228,9 +1238,9 @@ class zank extends p2pCompany {
     }
 
     /**
-     *  Read amortization tables
-     * @param type $str
-     * @return type
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str) {
         switch ($this->idForSwitch) {

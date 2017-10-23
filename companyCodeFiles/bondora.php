@@ -26,6 +26,17 @@
  * Created
  * link account
  */
+
+
+/**
+ * Contains the code required for accessing the website of "Bondora".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, not tested]
+ * parallelization                                                      [OK, tested]
+ */
 class bondora extends p2pCompany {
 
     protected $valuesAmortizationTable = [// NOT FINISHED
@@ -285,10 +296,10 @@ class bondora extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the investment data of the user
-     * 	@return array	Data of each investment of the user as an element of an array
-     * 	
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str) {
         switch ($this->idForSwitch) {
@@ -691,9 +702,9 @@ class bondora extends p2pCompany {
     }
 
     /**
-     * 
-     * @param type $str
-     * @return type
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str) {
         switch ($this->idForSwitch) {

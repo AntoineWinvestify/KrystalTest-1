@@ -357,9 +357,10 @@ class finanzarel extends p2pCompany {
     }
     
     /**
-     * Download the file with the user investment
-     * @param string $user
-     * @param string $password
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str = null) {
         

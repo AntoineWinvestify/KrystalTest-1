@@ -26,6 +26,16 @@
  * Created
  * link account
  */
+
+/**
+ * Contains the code required for accessing the website of "Twino".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, not tested]
+ * parallelization                                                      [OK, tested]
+ */
 class twino extends p2pCompany {
 
     protected $statusDownloadUrl = null;
@@ -235,9 +245,10 @@ class twino extends p2pCompany {
     }
 
     /**
-     * Download the file with the user investment
-     * @param string $user
-     * @param string $password
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str) {
 
@@ -378,6 +389,11 @@ class twino extends p2pCompany {
         }
     }
 
+     /**
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
+     */
     function collectAmortizationTablesParallel($str) {
         switch ($this->idForSwitch) {
 
@@ -453,7 +469,7 @@ class twino extends p2pCompany {
                     $arrayAmortizationTable['scheduleItems'][$i]['dueDate'] = implode("-", $arrayAmortizationTable['scheduleItems'][$i]['dueDate']);
                 }
                 //print_r($arrayAmortizationTable['scheduleItems']);
-                $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']);
+                $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']); //Sent an array and return a html table
                 $this->tempArray[$this->loanIds[$this->i - 1]] = $table;
                 echo "_-_-_-_-_-_-_-_table is : " . $table . "_-_-_-_-_-_-_-_";
 
@@ -461,7 +477,8 @@ class twino extends p2pCompany {
                     $this->idForSwitch = 4;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
-                } else {
+                }
+                else {
                     return $this->tempArray;
                     break;
                 }
