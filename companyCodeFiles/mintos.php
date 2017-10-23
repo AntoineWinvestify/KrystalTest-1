@@ -313,64 +313,62 @@ class mintos extends p2pCompany {
              ],
         ];
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            0 =>  [
-                [
-                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
-                    "inputData" => [
-				"input2" => "D.M.Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]
-            ],
-            1 => [
-                [
-                    "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ".",
-                                "input4" => 16
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],
-            2 => [
-                [
-                    "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ".",
-                                "input4" => 16
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],
-            4 => [
-                [
-                    "type" => "amortizationtable_capitalAndInterestPayment",                      // Winvestify standardized name  OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ".",
-                                "input4" => 16
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],
-            5 => [
-                [
-                    "type" => "amortizationtable_paymentDate",                         // Winvestify standardized name   OK
-                    "inputData" => [
-				"input2" => "D.M.Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]
-            ],
-            6 => [
-                "name" => "amortizationtable_paymentStatus"
+    protected $valuesAmortizationTable = [
+        0 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D.M.Y",
+                ],
+                "functionName" => "normalizeDate",
             ]
-             
-        ];
-
+        ],
+        1 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        2 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_paymentDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D.M.Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        6 => [
+            "name" => "amortizationtable_paymentStatus"
+        ]
+    ];
     protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
                         //        'separatorChar' => ";",
