@@ -791,7 +791,7 @@
                 $tempArray = $this->getHtmlData($filePath, $parserConfig);
                 break;
         }
-        
+        return $tempArray;
     }
     
     public function getHtmlData($filePath, $parserConfig) {
@@ -873,7 +873,7 @@
                 $keyTr++;
             }
         }
-        
+        return $tempArray;
     }
 
 }
