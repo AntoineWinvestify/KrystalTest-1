@@ -67,7 +67,9 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     print_r($pendingJobs);
                 }
                 foreach ($pendingJobs as $keyjobs => $job) {
+                    $params = [];
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
+                    print_r($this->queueInfo);
                     $userReference = $job['Queue']['queue_userReference'];
                     $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->date . DS;
                     $dir = new Folder($directory);
@@ -85,6 +87,9 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
                             continue;
                         }
+                        if (Configure::read('debug')) {
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": queueInfo " . $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][0]);
+                        }
                         $dirs = new Folder($subDirectory);
                         $nameCompany = $dirs->findRecursive();
                         $allFiles = $dirs->findRecursive($fileName . ".*");
@@ -100,6 +105,9 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             'pfp' => $pfp,
                             'userReference' => $job['Queue']['queue_userReference'],
                             'files' => $allFiles);
+                        
+                        echo "PARAM TOTAL";
+                        print_r($params);
                     }
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
                 }
