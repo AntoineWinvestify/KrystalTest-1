@@ -167,6 +167,7 @@
                             <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-left navGreen">
+                            <li><a href="/"><img src="/img/logo_winvestify/Logo_favicon.png" class="center-block hidden-xs hidden-sm" width="85%"/></a></li>
                             <li><a href="/pages/investors"><?php echo __('Investors') ?></a></li>
                             <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
                             <li class="dropdown">
