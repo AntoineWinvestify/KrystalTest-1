@@ -210,7 +210,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <a class="center-block" style="text-align: center;" href="/users/registerPanel">
                                 <button class="btn btn-lg" id="registerButton" type="button">
-                                    <?php echo __('Register NOW') ?>
+                                    <?php echo __('Open new account') ?>
                                 </button>
                             </a>
                         </div>
@@ -230,25 +230,19 @@
         <div class="reestructure"></div>
         <div id="prizes" class="row">
             <div class="col-xs-12 col-sm-12 col-sm-10 col-lg-10 col-sm-offset-1 col-lg-offset-1">
-                <?php /*<div class="col-xs-12 col-sm-12 col-sm-3 col-lg-3">
-                    <div class="row">
-                        <span style="font-weight: bold; font-size: xx-large; display:inline-block; margin-bottom: 7px;">+1.000.000 €</span>
-                    </div>
-                    <div class="row"><?php echo __('Asset Under Administration')?></div>
-                </div>*/?>
                 <div class="col-xs-12 col-sm-12 col-sm-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
                     <div class="box box-widget1 widget-user-2 boxPrize">
                         <div class="widget-user-header">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <img src="/img/logo/BBVA.png" class="center-block imgResponsive" height="100px;"/>
+                                    <img src="/img/logo/BBVA.png" class="center-block imgResponsive" height="50px;"/>
                                 </div>
                             </div>
                         </div>
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div style="font-size: 18px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Premio Mejor Fintech Andaluza')?></div>
+                                    <div style="font-size: 10px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Premio Mejor Fintech Andaluza')?></div>
                                 </div>
                             </div>
                         </div>
@@ -259,14 +253,14 @@
                         <div class="widget-user-header">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <img src="/img/logo/santander.jpg" class="center-block imgResponsive" height="100px;"/>
+                                    <img src="/img/logo/santander.jpg" class="center-block imgResponsive" height="50px;"/>
                                 </div>
                             </div>
                         </div>
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div style="font-size: 18px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Finalista Santander Open Challenge')?></div>
+                                    <div style="font-size: 10px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Finalista Santander Open Challenge')?></div>
                                 </div>
                             </div>
                         </div>
@@ -325,14 +319,17 @@
                 <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <img src="/img/analytics_4.png" class="center-block imgResponsive" height="75px;"/>
                             <h4 class="g-color--white" align="center"><?php echo __('PORTFOLIO DATA')?></h4>
                             <p class="g-color--white" align="center"><?php echo __('Winvestify has direct, automated feeds from all major European online lenders, allowing us to display, in real-time, your loan portfolio.')?></p>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <img src="/img/man.png" class="center-block imgResponsive" height="75px;"/>
                             <h4 class="g-color--white" align="center"><?php echo __('NORMALIZATION')?></h4>
                             <p class="g-color--white" align="center"><?php echo __('Winvestify has established universal data formats across all credit verticals, allowing consistent, views of loans purchased across all major lending platforms.')?></p>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <img src="/img/analytics_3.png" class="center-block imgResponsive" height="75px;"/>
                             <h4 class="g-color--white" align="center"><?php echo __('VALIDATION AND TRANSFORMATION')?></h4>
                             <p class="g-color--white" align="center"><?php echo __('We run platforms-specific data cleaning rules to ensure that our clients always access the highest quality data possible.')?></p>
                         </div>
@@ -341,11 +338,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1" style="padding: 50px 0px">
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2" style="padding: 50px 0px">
                 <div class="g-text-center--xs">
                     <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __("Join us. It's easy") ?></p>
                 </div>
-                <h4 align="center" style="padding: 0px 0px 20px 0px;"><?php echo __('Open an account and explore all the connected platforms. We make it easy for you access the main Lending platforms with "One Click Registration"')?></h4>
+                <h4 align="center" style="padding: 0px 0px 20px 0px;"><?php echo __('Open an account and explore all the connected platforms.')?><br/><?php echo __('We make it easy for you access the main Lending platforms with "One Click Registration"')?></h4>
                 <a href="/users/registerPanel">
                     <button class="btn btn-lg btn1CR center-block"><?php echo __('Open new account')?></button>
                 </a>

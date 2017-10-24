@@ -96,7 +96,8 @@
 </div>
 <div id="contact">
     <div class="row">
-        <h1 align="center" style="font-weight: 800"><?php echo __('GET STARTED')?></h1>
-        <a href="/Contactforms/form/"><button class="btn btn-lg btn1CR-inverted center-block" style="border-radius: 20px;"><?php echo __('Contact Us')?></button></a>
+        <h1 align="center" style="font-weight: 800"><?php echo __('Suggestions')?></h1>
+        <h3 align="center" style="font-weight: 500"><?php echo __('Here you can suggest us ideas or enhancements')?></h3><br/>
+        <a href="/Contactforms/form/"><button class="btn btn-lg btn1CR center-block" style="border-radius: 25px;"><?php echo __('Contact Us')?></button></a>
     </div>
 </div>

@@ -43,16 +43,16 @@
 </script>
 <div class="winvestifyFAQ">
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1">
+        <div class="col-xs-12 col-sm-12 col-md-8 col-sm-offset-2 col-lg-8 col-lg-offset-2">
             <div class="row">
                 <div class="g-text-center--xs">
                     <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Frequently Asked Questions') ?></p>
                 </div>
             </div>
             <div class="row">	
-                <ul  class="nav nav-pills">
+                <ul class="nav nav-pills">
                     <li class="active"><a class="greenTab" href="#about" data-toggle="tab"><?php echo __('Sobre Winvestify')?></a></li>
-                    <li><a class="greenTab" href="#security" data-toggle="tab"><?php echo __('Seguridad y privacidad')?></a></li>
+                    <li><a class="greenTab" href="#security2" data-toggle="tab"><?php echo __('Seguridad y privacidad')?></a></li>
                     <li><a class="greenTab" href="#account" data-toggle="tab"><?php echo __('Tu cuenta')?></a></li>
                 </ul>   
                 <div class="tab-content clearfix">
@@ -87,7 +87,7 @@
                             </div>
                         </ul>
                     </div>
-                    <div class="tab-pane" id="security">
+                    <div class="tab-pane" id="security2">
                          <ul style="list-style-type: none;">
                             <li id="a2_1" class="questionTitle"><i class="fa fa-circle-o"></i>&nbsp;&nbsp;<?php echo __('¿Qué necesito para crearme una cuenta en Winvestify?')?></li>
                             <div id="answer_a2_1" style="display:none"><?php echo __('Para crear una cuenta de usuario en Winvestify es necesario un correo electrónico, teléfono móvil y una contraseña.')?></div>
@@ -141,7 +141,7 @@
 </div>
 <div id="contact">
     <div class="row">
-        <h1 align="center" style="font-weight: 800"><?php echo __('GET STARTED')?></h1>
-        <a href="/Contactforms/form/"><button class="btn btn-lg btn1CR-inverted center-block" style="border-radius: 20px;"><?php echo __('Contact Us')?></button></a>
+        <h3 align="center" style="font-weight: 500"><?php echo __("Drop us a line and we'll be delighted to help you")?></h3>
+        <a href="/Contactforms/form/"><button class="btn btn-lg btn1CR center-block" style="border-radius: 25px;"><?php echo __('Contact Us')?></button></a>
     </div>
 </div>

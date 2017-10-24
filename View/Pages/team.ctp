@@ -37,10 +37,14 @@
         <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1" style="min-height: 600px;">
             <div class="row">
                 <div class="g-text-center--xs">
-                    <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('El equipo de Winvestify') ?></p>
+                    <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Why trust us?') ?></p>
                 </div>
+                <h5 align="center" style="padding: 0px 0px 20px 0px;"><?php echo __('We have many years of experience in the P2P Lending industry.')?><br/><?php echo __('We are standing with our names and faces behind what we do.')?></h5>
             </div>
             <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                    <h4><?php echo __('Management Team')?></h4>
+                </div>
                 <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 teamBox teamBoxmanuel" id="manuel">
@@ -94,7 +98,10 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-top: 50px;">
+                <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                    <h4><?php echo __('Member Team')?></h4>
+                </div>
                 <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 teamBox teamBoxcris" id="cris">

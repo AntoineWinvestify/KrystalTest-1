@@ -446,7 +446,7 @@
         </div>
     </div>
 </div>
-<div id="winvestifyFuturePlatforms">
+<div id="winvestifyFuturePlatforms" style="margin-top: 100px;">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1">
             <div class="row">

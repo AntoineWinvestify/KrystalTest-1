@@ -211,7 +211,9 @@
             <?php echo $this->fetch('content'); ?>
         </div>
         <!-- End Terms & Conditions -->
-
+        <div id="footer">
+          <?php echo $this->element('publicfooter'); ?>  
+        </div>
         <script type="text/javascript" src="/js/bootstrap.min.js"></script>
         <script>
             $(function (){

@@ -12,7 +12,7 @@
         <div class="row">
             <div id="reporting"></div>
             <div class="col-sm-8 col-sm-offset-2 g-margin-b-20--xs g-margin-b-0--md">
-                <h4 align="left"><?php echo __('If you have any questions or are missing something, please contact out customer service')?></h4>
+                <h4 align="left"><?php echo __('If you have any questions or are missing something, please contact our customer service')?></h4>
                 <div id="overlay">
                     <div id="spinner">  
                     </div>

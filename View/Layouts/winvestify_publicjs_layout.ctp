@@ -228,6 +228,9 @@
         <div id="js__scroll-to-section" style="margin: 50px 50px 10px 50px">
             <?php echo $this->fetch('content'); ?>
         </div>
+        <div id="footer">
+          <?php echo $this->element('publicfooter'); ?>  
+        </div>
         <!-- End Terms & Conditions -->
         <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
         <script type="text/javascript" src="/js/bootstrap.min.js"></script>
