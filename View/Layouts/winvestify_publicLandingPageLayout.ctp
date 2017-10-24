@@ -202,7 +202,7 @@
             <div class="container_features row">
                 <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
                     <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><br/>
-                        <img href="/" src="/img/logo_winvestify/logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
+                        <img href="/" src="/img/logo_winvestify/Logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
                         <span id="headerTitle"><?php echo __('Creemos que tienes derecho a sacar el máximo partido a tus inversiones') ?></span>
                         <span class="headerText"><?php echo __('Entérate de qué pasa con todas tus inversiones, de un modo organizado y estandarizado. Conecta con tus plataformas desde Winvestify y obtén el control total de todas tus cuentas.')?></span><br/>
                         <span class="headerText"><?php echo __('Somos la herramienta líder española en Crowdlending que te ayuda a controlar todas tus inversiones de un modo preciso y eficaz')?></span>
@@ -275,7 +275,7 @@
             <hr class="specialHr" width="90%">
             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="height: 500px;">
-                    <img src="/img/LandingPage/schema_spa.png" class="imgResponsive schemaImg center-block"/>
+                    <img src="/img/landingpage/schema_spa.png" class="imgResponsive schemaImg center-block"/>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <h3><?php echo __('What is Crowdlending?')?></h3>
@@ -295,7 +295,7 @@
         </div>
         <!-- /schema -->
         <!-- Info -->
-        <div class="js__parallax-window" style="background: url(/megakit/img/1920x1080/07.jpg) 50% 0 no-repeat fixed;">
+        <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/07.jpg) 50% 0 no-repeat fixed;">
             <div class="g-container--sm g-text-center--xs" style="padding: 80px 0px 0px 0px;">
                 <div>
                     <p class="text-uppercase g-font-size-14--xs g-font-weight--700 g-color--white-opacity g-letter-spacing--2"><?php echo __('TECHNOLOGY SOLUTIONS FOR PROFESSIONAL INVESTOR')?></p>
