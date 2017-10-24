@@ -125,13 +125,23 @@ class GearmanClientShell extends AppShell {
     public function deleteFolderByDateAndLinkaccountId($queueId, $linkAccountId) {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
+        $flow = constant("WIN_ERROR_" . $this->flowName);
         $path = $this->userReference[$queueId] . DS . $this->date . DS . $linkAccountId;
         print_r($this->userReference);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
         $delete = false;
-        if (!is_null($folder->path)) {
-            $delete = $folder->delete();
+        if ($flow < 8) {
+            if (!is_null($folder->path)) {
+                $delete = $folder->delete();
+            }
+        }
+        else {
+            $allFiles = $folder->findRecursive($this->fileName . ".*");
+            foreach ($allFiles as $file) {
+                $fileInit = new File($file);
+                $fileInit->delete();
+            }
         }
         return $delete;
     }
