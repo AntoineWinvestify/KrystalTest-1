@@ -798,12 +798,23 @@ class Fileparser {
         $tempArray = [];
         $i = 0;
         foreach ($trs as $tr) {
-            if ($i == $this->config['OffsetStart']) {
+            if ($i == $this->config['offsetStart']) {
                 break;
             }
             $tr->parentNode->removeChild($tr);
             $i++;
-        } 
+        }
+        
+        $i = 0;
+        foreach ($trs as $tr) {
+            if ($i == $this->config['offsetEnd']) {
+                break;
+            }
+            $tr = $tr->parentNode->lastChild;
+            $tr->parentNode->removeChild($tr);
+            $i++;
+        }
+        
         $i = 0;
         foreach ($trs as $tr) {
             $tds = $tr->getElementsByTagName('td');
