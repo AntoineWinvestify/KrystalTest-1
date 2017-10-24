@@ -39,6 +39,9 @@
  *
  * 2017-09-29 version_0.7
  * Integration of downloading amortization tables with Gearman
+ * 
+ * 2017-10-24 version_0.8
+ * Integration of parsing amortization tables with Gearman and fileparser
  *
  */
 
@@ -48,7 +51,8 @@
  * function collectCompanyMarketplaceData()				[Not OK]
  * function companyUserLogin()						[OK, tested]
  * function collectUserGlobalFilesParallel                              [OK, tested]
- * function collectAmortizationTablesParallel()                         [Ok, testing]
+ * function collectAmortizationTablesParallel()                         [OK, tested]
+ * Parser AmortizationTables                                            [OK, tested]
  * parallelization                                                      [OK, tested]
  */
 class mintos extends p2pCompany {
