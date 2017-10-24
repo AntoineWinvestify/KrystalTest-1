@@ -39,6 +39,8 @@ class GearmanWorkerShell extends AppShell {
      */
     public function startup() {
         $this->GearmanWorker = new GearmanWorker();
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
         $this->myParser = new Fileparser();  
         set_exception_handler(array($this, 'exception_handler'));
         set_error_handler(array($this, 'error_handler'));
