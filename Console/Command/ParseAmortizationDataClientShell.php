@@ -46,7 +46,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->fileName = "amortizationtable";
         $workerFunction = "collectamortizationtablesFileFlow";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
-        $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
+        $this->GearmanClient->setCompleteCallback(array($this, 'parseVerifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
         //$resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
         if (Configure::read('debug')) {
