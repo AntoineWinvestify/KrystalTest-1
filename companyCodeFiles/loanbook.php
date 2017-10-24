@@ -62,6 +62,43 @@
  */
 class loanbook extends p2pCompany {
 
+    protected $valuesAmortizationTable = [
+        
+        2 => [
+                [
+                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "D-M-Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+        3 => [
+            "name" => "amortizationtable_paymentStatus"
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
+                "inputData" => [
+                            "input2" => "",
+                            "input3" => ",",
+                            "input4" => 16
+                            ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
+                "inputData" => [
+                            "input2" => "",
+                            "input3" => ",",
+                            "input4" => 16
+                            ],
+                "functionName" => "getAmount",
+            ]
+        ]
+    ];
     
     protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -75,14 +112,11 @@ class loanbook extends p2pCompany {
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
-/*    NOT YET READY
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
+    protected $amortizationConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 1,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );      
- 
- */    
     
     function __construct() {
         parent::__construct();
