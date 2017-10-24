@@ -39,6 +39,7 @@ class GearmanClientShell extends AppShell {
     protected $gearmanErrors = [];
     protected $date;
     protected $flowName;
+    protected $tempArray = [];
     
     public $uses = array('Company', 'Queue');
     
@@ -108,12 +109,40 @@ class GearmanClientShell extends AppShell {
             $this->userResult[$data[0]][$linkaccountId] = $status;
             $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
         }
+        if (!empty($dataWorker['tempArray'])) {
+            $this->tempArray[$data[0]] = $dataWorker['tempArray'];
+        }
+        
         print_r($this->userResult);
         print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
     }
+    
+    /**
+     * Function that runs after a task was complete on the Gearman Worker
+     * @param GearmanTask $task
+     */
+    public function parseVerifyCompleteTask (GearmanTask $task) {
+        $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
+        $dataWorker = json_decode($task->data(), true);
+        foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
+            $this->userResult[$data[0]] = $status;
+            $this->gearmanErrors[$data[0]] = $dataWorker['errors'];
+            $this->tempArray[$data[0]] = $dataWorker['tempArray'];
+        }
+        print_r($this->userResult);
+        print_r($this->userReference);
+        echo "ID Unique: " . $task->unique() . "\n";
+        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
+        echo GEARMAN_SUCCESS;
+    }
+    
+    
     
     /**
      * Function to delete a folder of a day and a investor if there was some 
