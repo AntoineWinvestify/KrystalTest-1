@@ -380,7 +380,7 @@ class mintos extends p2pCompany {
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
+    protected $amortizationConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
