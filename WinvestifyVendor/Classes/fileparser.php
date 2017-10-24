@@ -39,217 +39,214 @@
  */
 
 
+/**
+ *
+ * Class that can analyze a xls/csv/pdf/html file(s) and writes the information to an array
+ *
+ *
+ */
+class Fileparser {
+    protected $config = array ('offsetStart' => 0,
+                            'offsetEnd'     => 0,
+                            'separatorChar' => ";",
+                            'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
+                             );                     // if array does not have $sortParameter then "global" index is used
+                                                    // Typically used for sorting by loanId index
 
+    protected $errorData = array();                 // Contains the information of the last occurred error
 
+    protected $currencies = array(EUR => ["EUR", "€"],
+                                    GBP => ["GBP", "£"],
+                                    USD => ["USD", "$"],
+                                    ARS => ["ARS", "$"],
+                                    AUD => ["AUD", "$"],
+                                    NZD => ["NZD", "$"],
+                                    BYN => ["BYN", "BR"],
+                                    BGN => ["BGN", "лв"],
+                                    CZK => ["CZK", "Kč"],
+                                    DKK => ["DKK", "Kr"],
+                                    CHF => ["CHF", "Fr"],
+                                    MXN => ["MXN", "$"],
+                                    RUB => ["RUB", "₽"],
+                                    );
 
-    /**
-     *
-     * Class that can analyze a xls/csv/pdf/html file(s) and writes the information to an array
-     *
-     *
-     */
-    class Fileparser {
-        protected $config = array ('offsetStart' => 0,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
-                                 );                     // if array does not have $sortParameter then "global" index is used
-                                                        // Typically used for sorting by loanId index
-
-        protected $errorData = array();                 // Contains the information of the last occurred error
-
-        protected $currencies = array(EUR => ["EUR", "€"],
-                                        GBP => ["GBP", "£"],
-                                        USD => ["USD", "$"],
-                                        ARS => ["ARS", "$"],
-                                        AUD => ["AUD", "$"],
-                                        NZD => ["NZD", "$"],
-                                        BYN => ["BYN", "BR"],
-                                        BGN => ["BGN", "лв"],
-                                        CZK => ["CZK", "Kč"],
-                                        DKK => ["DKK", "Kr"],
-                                        CHF => ["CHF", "Fr"],
-                                        MXN => ["MXN", "$"],
-                                        RUB => ["RUB", "₽"],
-                                        );
-
-        protected $transactionDetails = [  // CHECK THIS Table againsT TYPE OF STATEMENTS  OF FLOWDATA
-                0 => [
-                    "detail" => "Cash_deposit",
-                    "cash" => 1,                                    // 1 = in, 2 = out
-                    "account" => "CF",
-                    "transactionType" => "Deposit",
-                    "type" => "userdatainvestment_deposits" // internal variable for this concept
-                    ],
-                1 => [
-                    "detail" => "Cash_withdrawal",
-                    "cash" => 2,
-                    "account" => "CF",
-                    "transactionType" => "Withdraw",
-                    "type" => "userdatainvestment_withdrawals"
-                    ],
-                2 => [
-                    "detail" => "Primary_market_investment",
-                    "cash" => 2,
-                    "account" => "Capital",
-                    "transactionType" => "Investment",
-                    "type" => "concept1",
-                    ],
-                3 => [
-                    "detail" => "Secundary_market_investment",
-                    "cash" => 2,
-                    "account" => "Capital",
-                    "transactionType" => "Investment",
-                    "type" => "concept2"
-                    ],
-                4 => [
-                    "detail" => "Principal_repayment",
-                    "cash" => 1,
-                    "account" => "Capital",
-                    "transactionType" => "Repayment",
-                    "type" => "investment_principalAndInterestPayment"
-                    ],
-                5 => [
-                    "detail" => "Partial_principal_repayment",
-                    "cash" => 1,
-                    "account" => "Capital",
-                    "transactionType" => "Repayment",
-                    "type" => "concept5"
-                    ],
-                6 => [
-                    "detail" => "Principal_buyback",
-                    "cash" => 1,
-                    "account" => "Capital",
-                    "transactionType" => "Repayment",
-                    "type" => "concept6"
-                    ],
-                7 => [
-                    "detail" => "Principal_and_interest_payment",
-                    "cash" => 1,
-                    "account" => "Mix",
-                    "transactionType" => "Mix",
-                    "type" => "concept7"
-                    ],
-                8 => [
-                    "detail" => "Regular_gross_interest_income",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept8"
-                    ],
-                9 => [
-                    "detail" => "Delayed_interest_income",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept9"
-                    ],
-                10 => [ //OK
-                    "detail" => "Late_payment_fee_income",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "payment_latePaymentFeeIncome"
-                    ],
-                11 => [
-                    "detail" => "Cash_deposit",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept11"
-                    ],
-                12 => [
-                    "detail" => "Interest_income_buyback",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept12"
-                    ],
-                13 => [
-                    "detail" => "Delayed_interest_income_buyback",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept13"
-                    ],
-                14 => [
-                    "detail" => "Cash_withdrawal",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept14"
-                    ],
-                15 => [
-                    "detail" => "Cash_deposit",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept15"
-                    ],
-                16 => [
-                    "detail" => "Cash_withdrawal",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept16"
-                    ],
-                17 => [
-                    "detail" => "Recoveries",
-                    "cash" => 1,
-                    "account" => "PL",
-                    "transactionType" => "Income",
-                    "type" => "concept17"
-                    ],
-                18 => [
-                    "detail" => "Commission",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept18"
-                    ],
-                19 => [
-                    "detail" => "Bank_charges",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept19"
-                    ],
-                20 => [
-                    "detail" => "Premium_paid_secondary_market",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept20"
-                    ],
-                21 => [
-                    "detail" => "Interest_payment_secondary_market_purchase",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept21"
-                    ],
-                22 => [
-                    "detail" => "Tax_VAT",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept22"
-                    ],
-                23 => [
-                    "detail" => "Tax_income_withholding_tax",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept23"
-                    ],
-                24 => [
-                    "detail" => "Write-off",
-                    "cash" => 2,
-                    "account" => "PL",
-                    "transactionType" => "Costs",
-                    "type" => "concept24"
-                    ]
-            ];
+    protected $transactionDetails = [  // CHECK THIS Table againsT TYPE OF STATEMENTS  OF FLOWDATA
+            0 => [
+                "detail" => "Cash_deposit",
+                "cash" => 1,                                    // 1 = in, 2 = out
+                "account" => "CF",
+                "transactionType" => "Deposit",
+                "type" => "userdatainvestment_deposits" // internal variable for this concept
+                ],
+            1 => [
+                "detail" => "Cash_withdrawal",
+                "cash" => 2,
+                "account" => "CF",
+                "transactionType" => "Withdraw",
+                "type" => "userdatainvestment_withdrawals"
+                ],
+            2 => [
+                "detail" => "Primary_market_investment",
+                "cash" => 2,
+                "account" => "Capital",
+                "transactionType" => "Investment",
+                "type" => "concept1",
+                ],
+            3 => [
+                "detail" => "Secundary_market_investment",
+                "cash" => 2,
+                "account" => "Capital",
+                "transactionType" => "Investment",
+                "type" => "concept2"
+                ],
+            4 => [
+                "detail" => "Principal_repayment",
+                "cash" => 1,
+                "account" => "Capital",
+                "transactionType" => "Repayment",
+                "type" => "investment_principalAndInterestPayment"
+                ],
+            5 => [
+                "detail" => "Partial_principal_repayment",
+                "cash" => 1,
+                "account" => "Capital",
+                "transactionType" => "Repayment",
+                "type" => "concept5"
+                ],
+            6 => [
+                "detail" => "Principal_buyback",
+                "cash" => 1,
+                "account" => "Capital",
+                "transactionType" => "Repayment",
+                "type" => "concept6"
+                ],
+            7 => [
+                "detail" => "Principal_and_interest_payment",
+                "cash" => 1,
+                "account" => "Mix",
+                "transactionType" => "Mix",
+                "type" => "concept7"
+                ],
+            8 => [
+                "detail" => "Regular_gross_interest_income",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept8"
+                ],
+            9 => [
+                "detail" => "Delayed_interest_income",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept9"
+                ],
+            10 => [ //OK
+                "detail" => "Late_payment_fee_income",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "payment_latePaymentFeeIncome"
+                ],
+            11 => [
+                "detail" => "Cash_deposit",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept11"
+                ],
+            12 => [
+                "detail" => "Interest_income_buyback",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept12"
+                ],
+            13 => [
+                "detail" => "Delayed_interest_income_buyback",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept13"
+                ],
+            14 => [
+                "detail" => "Cash_withdrawal",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept14"
+                ],
+            15 => [
+                "detail" => "Cash_deposit",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept15"
+                ],
+            16 => [
+                "detail" => "Cash_withdrawal",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept16"
+                ],
+            17 => [
+                "detail" => "Recoveries",
+                "cash" => 1,
+                "account" => "PL",
+                "transactionType" => "Income",
+                "type" => "concept17"
+                ],
+            18 => [
+                "detail" => "Commission",
+                "cash" => 2,
+                "account" => "PL",
+                "transactionType" => "Costs",
+                "type" => "concept18"
+                ],
+            19 => [
+                "detail" => "Bank_charges",
+                "cash" => 2,
+                "account" => "PL",
+                "transactionType" => "Costs",
+                "type" => "concept19"
+                ],
+            20 => [
+                "detail" => "Premium_paid_secondary_market",
+                "cash" => 2,
+                "account" => "PL",
+                "transactionType" => "Costs",
+                "type" => "concept20"
+                ],
+            21 => [
+                "detail" => "Interest_payment_secondary_market_purchase",
+                "cash" => 2,
+                "account" => "PL",
+                "transactionType" => "Costs",
+                "type" => "concept21"
+                ],
+            22 => [
+                "detail" => "Tax_VAT",
+                "cash" => 2,
+                "account" => "PL",
+                "transactionType" => "Costs",
+                "type" => "concept22"
+                ],
+            23 => [
+                "detail" => "Tax_income_withholding_tax",
+                "cash" => 2,
+                "account" => "PL",
+                "transactionType" => "Costs",
+                "type" => "concept23"
+                ],
+            24 => [
+                "detail" => "Write-off",
+                "cash" => 2,
+                "account" => "PL",
+                "transactionType" => "Costs",
+                "type" => "concept24"
+                ]
+        ];
 
     function __construct() {
         echo "starting parser\n";
@@ -807,20 +804,23 @@
             $tr->parentNode->removeChild($tr);
             $i++;
         } 
+        $i = 0;
         foreach ($trs as $tr) {
             $tds = $tr->getElementsByTagName('td');
             $keyTr = 0;
-            $i = 0;
             $outOfRange = false;
             foreach ($parserConfig as $key => $value) {
                 echo "value";
                 print_r($value);
                 $previousKey = $i - 1;
                 $currentKey = $i;
-                $valueTd = $tds[$key]->nodeValue;
+                $valueTd = trim($tds[$key]->nodeValue);
+                echo "tdValue";
+                print_r($valueTd);
                 if (array_key_exists("name", $value)) {      // "name" => .......
-                    $keys = explode("_", $value);
-                    $tempArray[$i][$keys[0]][$keys[1]] = $valueTd;
+                    $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
+                    $tempString = $finalIndex  . "= '" . $valueTd .  "'; ";
+                    eval($tempString);
                 }
                 else {
                     foreach ($value as $userFunction ) {
@@ -828,8 +828,8 @@
                             $userFunction['inputData'] = [];
                         }
                         else {
-                            echo "finding Error \n";
                             foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file
+                                print_r($input);
                                 if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
                                     if (stripos ($input, "#previous.") !== false) {
                                         if ($previousKey == -1) {
@@ -846,15 +846,14 @@
                                 }
                             }
                         }
-                        
-                        array_unshift($userFunction['inputData'], $tds[$key]);       // Add cell content to list of input parameters
+                        array_unshift($userFunction['inputData'], $valueTd);       // Add cell content to list of input parameters
+                        print_r($userFunction['inputData']);
                         if ($outOfRange == false) {
-                            echo "finding Error3434 \n";
-                            $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
+                            $tempResult = call_user_func_array(array($this,
                                                                        $userFunction['functionName']),
                                                                        $userFunction['inputData']
                                     );
-
+                            print_r($tempResult);
                             if (is_array($tempResult)) {
                                 $userFunction = $tempResult;
                                 $tempResult = $tempResult[0];
@@ -863,7 +862,6 @@
                             // Write the result to the array with parsing result. The first index is written
                             // various variables if $tempResult is an array
                             if (!empty($tempResult)) {
-                                echo "finding Error 3434343231233\n";
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']";
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
                                 eval($tempString);
@@ -874,11 +872,9 @@
                         }
                     }
                 }
-                echo "tempArray";
-                print_r($tempArray);
-                $keyTr++;
-                exit;
             }
+            $keyTr++;
+            $i++;
         }
         return $tempArray;
     }
