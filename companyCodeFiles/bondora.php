@@ -36,72 +36,79 @@ class bondora extends p2pCompany {
              ],
         ];   */
     
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            //See this value, it has two, the scheduledDate and the paymentDate
-            0 =>  [
-                [
-                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
-                    "inputData" => [
-				"input2" => "D/M/Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]
-            ],
-            2 => [
-                [
-                    "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ".",
-                                "input4" => 16
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],
-            3 => [
-                [
-                    "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ".",
-                                "input4" => 16
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],
-            //Change this, further investigation
-            4 => [
-                [
-                    "type" => "amortizationtable_capitalAndInterestPayment",                      // Winvestify standardized name  OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ".",
-                                "input4" => 16
-                                ],
-                    "functionName" => "getAmount",
-                ]
+    protected $valuesAmortizationTable = [// NOT FINISHED
+        //See this value, it has two, the scheduledDate and the paymentDate
+        0 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D/M/Y",
+                ],
+                "functionName" => "normalizeDate",
             ]
-             
-        ];
-
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
+        ],
+        1 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        2 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        3 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_latePaymentFee", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+    ];
+        
+    protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                         //        'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
  
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
+    protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
-/*   NOT YET READY
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
+    protected $amortizationConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 1,
                          //       'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
-*/    
+                                //'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );  
     
     function __construct() {
         parent::__construct();
@@ -109,18 +116,6 @@ class bondora extends p2pCompany {
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
-    }
-
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesBondoraTransaction;
-    }
-
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesBondoraInvestment;
-    }
-
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesBondoraAmortization;
     }
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
