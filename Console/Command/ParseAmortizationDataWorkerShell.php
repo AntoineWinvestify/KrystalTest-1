@@ -66,7 +66,6 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
             print_r($platformData);
         }
-        $index = 0;
         $i = 0;
         $tempArray = array();
         foreach ($platformData as $linkedAccountKey => $data) {
@@ -95,12 +94,14 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
             }
             if (empty($tempArray[$linkedAccountKey])) {
                 $data['statusCollect'][$linkedAccountKey] = "0";
+                $errors[$linkedAccountKey] = $this->tempArray[$i]['global']['error'];
             }
             else {
                 $data['statusCollect'][$linkedAccountKey] = "1";
             }
         }
         $data['tempArray'] = $tempArray;
+        $data['errors'] = $errors;
         print_r($tempArray);
         if (Configure::read('debug')) {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
