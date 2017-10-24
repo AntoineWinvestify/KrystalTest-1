@@ -56,6 +56,11 @@
  * shows that it should be ten. Take care of this
  * Added new url sequence for pagination
  * 
+ * 2017-10-24 version_0.7
+ * Integration of parsing amortization tables with Gearman and fileparser
+ * 
+ * Parser AmortizationTables                                            [OK, tested]
+ * 
  * PENDING:
  *
  *
