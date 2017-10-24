@@ -31,6 +31,7 @@ App::import('Shell','GearmanClient');
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
     public $uses = array('Queue', 'Payment', 'Investment');  
+    protected $fileName = "amortizationtable";
     
     /**
      * Function to init the process to parse all the user's amortization tables
@@ -42,7 +43,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->flowName = "GEARMAN_FLOW3B";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-        $fileName = "amortizationtable";
+        $this->fileName = "amortizationtable";
         $workerFunction = "collectamortizationtablesFileFlow";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
@@ -55,6 +56,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         $this->date = date("Ymd");
+        //$this->date = "20171023";
         $numberOfIteration = 0;
         while ($numberOfIteration == 0) {
             if (Configure::read('debug')) {
@@ -92,7 +94,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         }
                         $dirs = new Folder($subDirectory);
                         $nameCompany = $dirs->findRecursive();
-                        $allFiles = $dirs->findRecursive($fileName . ".*");
+                        $allFiles = $dirs->findRecursive($this->fileName . ".*");
                         $tempPfpName = explode("/", $nameCompany[0]);
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
                         echo "pfp = " . $pfp . "\n";
@@ -112,11 +114,10 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
                 }
                 $this->GearmanClient->runTasks();
-                    
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
-                $this->verifiedStatus(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_START_COLLECTING_DATA, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
+                $this->verifiedStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_AMORTIZATION_TABLE);
                 unset($pendingJobs);
                 $numberOfIteration++;
             }
