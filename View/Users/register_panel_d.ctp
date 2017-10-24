@@ -98,7 +98,7 @@ ajax spinner
 													'label'	=> false,
 													'empty' => __("Choose one"),
 													'id'   	=> 'investor_investmentPlatforms',
-													'class' => 'form-control blue'
+													'class' => 'form-control blue_noborder'
 												));
 											?>
 										</div>

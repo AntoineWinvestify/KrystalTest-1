@@ -88,7 +88,7 @@ echo $this->Form->input('', array('name' => 'telephone',
                                                     if (!empty($errorMsg)) {
                                                         $errorClass = "redBorder";
                                                     }
-                                                    $class = "center-block blue form-control confirmationCode" . " " . $errorClass;
+                                                    $class = "center-block blue_noborder form-control confirmationCode" . " " . $errorClass;
                                                     echo $this->Form->input('Confirmationcode', array("label" => false,
                                                         "placeholder" => "1234567",
                                                         "class" => $class,
