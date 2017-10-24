@@ -55,8 +55,8 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
-        $this->date = date("Ymd");
-        //$this->date = "20171023";
+        //$this->date = date("Ymd");
+        $this->date = "20171023";
         $numberOfIteration = 0;
         while ($numberOfIteration == 0) {
             if (Configure::read('debug')) {
@@ -117,7 +117,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
-                
+                $this->saveToDB();
                 $this->verifiedStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_AMORTIZATION_TABLE);
                 unset($pendingJobs);
                 $numberOfIteration++;
@@ -136,6 +136,33 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 exit;
             }
         }
+    }
+    
+    public function saveToDB() {
+        $investmentId = [];
+        foreach ($this->tempArray as $queuekey => $tempArray) {
+            foreach ($tempArray as $loanId => $data) {
+                $investmentId["loans"][$loanId];
+                $loanIds[] = $loanId;
+            }
+        }
+        
+        $filterConditions = array(
+                'fields' => array('investment_loanReference', 'id'),
+                'conditions' => array('invesment_loanReference' => $loanIds)
+            );
+        $this->Investment = ClassRegistry::init('Investment');
+        $investmentId = $this->Investment->getInvestmentIdByLoanId($filterConditions);
+        
+    }
+    
+    public function getInvestmentIdByLoanId() {
+        foreach ($queueInfo['loanIds'] as $key => $loanId) {
+                        if (!in_array($key, $linkAccountId)) {
+                            $linkAccountId[] = $key; 
+                        }
+                    }
+                   
     }
     
 }
