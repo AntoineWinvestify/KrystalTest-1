@@ -20,11 +20,16 @@
  * @date 2016-10-25
  * @package
  *
+ *
  * 
- * 
- * 2017-08-23
+ * 2017-08-23 version_0.2
  * Created
  * link account
+ * 
+ * 2017-10-24 version_0.3
+ * Integration of parsing amortization tables with Gearman and fileparser
+ * 
+ * Parser AmortizationTables                                            [OK, tested]
  */
 class twino extends p2pCompany {
 
@@ -162,11 +167,55 @@ class twino extends p2pCompany {
         ]
     ];
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];    
+    protected $valuesAmortizationTable = [
+        3 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "Y-M-D",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        6 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        12 => [
+            "name" => "amortizationtable_paymentStatus"
+        ]
+    ];
+
+      
 
     protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -179,13 +228,11 @@ class twino extends p2pCompany {
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
-/*   NOT YET READY
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
+    protected $amortizationConfigParms = array ('OffsetStart' => 0,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
-*/     
+                                 );  
     
     
     function __construct() {
