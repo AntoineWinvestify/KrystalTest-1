@@ -805,16 +805,12 @@ class Fileparser {
             $i++;
         }
         
-        $i = 0;
-        foreach ($trs as $tr) {
-            if ($i == $this->config['offsetEnd']) {
-                break;
-            }
-            $tr = $tr->parentNode->lastChild;
+        $trsNumber = $trs->length - 1;
+        for ($i = $trsNumber; $i > $trsNumber-$this->config['offsetEnd']; $i--) {
+            $tr = $trs[$i]->parentNode->lastChild;
             $tr->parentNode->removeChild($tr);
-            $i++;
         }
-        
+
         $i = 0;
         foreach ($trs as $tr) {
             $tds = $tr->getElementsByTagName('td');
