@@ -38,38 +38,6 @@
  * getLastError
  */
 
-
-/**
- *
- * Class that can analyze a xls/csv/pdf/html file(s) and writes the information to an array
- *
- *
- */
-class Fileparser {
-    protected $config = array ('offsetStart' => 0,
-                            'offsetEnd'     => 0,
-                            'separatorChar' => ";",
-                            'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
-                             );                     // if array does not have $sortParameter then "global" index is used
-                                                    // Typically used for sorting by loanId index
-
-    protected $errorData = array();                 // Contains the information of the last occurred error
-
-    protected $currencies = array(EUR => ["EUR", "€"],
-                                    GBP => ["GBP", "£"],
-                                    USD => ["USD", "$"],
-                                    ARS => ["ARS", "$"],
-                                    AUD => ["AUD", "$"],
-                                    NZD => ["NZD", "$"],
-                                    BYN => ["BYN", "BR"],
-                                    BGN => ["BGN", "лв"],
-                                    CZK => ["CZK", "Kč"],
-                                    DKK => ["DKK", "Kr"],
-                                    CHF => ["CHF", "Fr"],
-                                    MXN => ["MXN", "$"],
-                                    RUB => ["RUB", "₽"],
-                                    );
-
     /**
      *
      * Class that can analyze a xls/csv/pdf/html file(s) and writes the information to an array
