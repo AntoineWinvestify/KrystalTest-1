@@ -31,8 +31,8 @@
         <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1" style="min-height: 600px;">
             <div class="row">
                 <h2 class="g-color--primary"><?php echo __('Dashboard')?></h2>
-                <div class="divmiddle"><img src="/img/screenshots/linkaccounts.png" class="imgResponsive investorsImg center-block"/></div>
-                <div class="divmiddle">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6"><img src="/img/screenshots/linkaccounts.png" class="imgResponsive investorsImg center-block"/></div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <h4><?php echo __('Más Información, Más Control')?></h4>
                     <p>Para que sepa a qué ritmo inviertes y donde pierdes dinero</p>
                     <ul>
@@ -46,7 +46,7 @@
             <div class="row">
                 <hr class="specialHr">
                 <h2 class="g-color--primary"><?php echo __('Global Marketplace')?></h2>
-                <div class="divmiddle">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <h4><?php echo ('Más oferta, más diversificación')?></h4>
                     <div><?php echo __('En Winvestify mostramos los mejores préstamos activos para invertir y conectamos con las plataformas de Crowdlending más rentables')?></div>
                     <ul>
@@ -55,7 +55,7 @@
                         <li>Filtra atendiendo a tus criterios de inversión</li>
                     </ul>
                 </div>
-                <div class="divmiddle"><img src="/img/screenshots/marketplace.png" class="imgResponsive investorsImg center-block"/></div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6"><img src="/img/screenshots/marketplace.png" class="imgResponsive investorsImg center-block"/></div>
             </div>
             <div class="row">
                 <hr class="specialHr">
@@ -69,11 +69,11 @@
                         <li>Proceso sencillo y seguro</li>
                     </ul>
                 </div>
-                <div class="divmiddle">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <img src="/img/screenshots/ocr1.png" class="imgResponsive investorsImg center-block"/>
                     <p align="center"><?php echo __('Select your preferred platforms')?></p>
                 </div>
-                <div class="divmiddle">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <img src="/img/screenshots/ocr2.png" class="imgResponsive investorsImg center-block"/>
                     <p align="center"><?php echo __('A single registration process')?></p>
                 </div>
@@ -83,8 +83,8 @@
 </div>
 <div id="security">
     <div class="row">
-        <h6 style="font-weight: 800; color: #23b18f;"><span style="border-bottom: 5px solid #808080;"><?php echo __('SEGURIDAD')?></span></h6>
-        <div class="divmiddle">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <h6 style="font-weight: 800; color: #23b18f;"><span style="border-bottom: 5px solid #808080;"><?php echo __('SEGURIDAD')?></span></h6>
             <h3 class="g-color--primary"><?php echo __('Nos tomamos la seguridad muy en serio')?></h3>
             <h6><?php echo __('Para Winvestify su comunidad de inversores son lo más valioso y por tanto los datos propiedad de estos son si cabe aún más importantes.')?></h6>
             <br/>
@@ -96,8 +96,10 @@
 </div>
 <div id="contact">
     <div class="row">
-        <h1 align="center" style="font-weight: 800"><?php echo __('Suggestions')?></h1>
-        <h3 align="center" style="font-weight: 500"><?php echo __('Here you can suggest us ideas or enhancements')?></h3><br/>
-        <a href="/Contactforms/form/"><button class="btn btn-lg btn1CR center-block" style="border-radius: 25px;"><?php echo __('Contact Us')?></button></a>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <h1 align="center" style="font-weight: 800"><?php echo __('Suggestions')?></h1>
+            <h3 align="center" style="font-weight: 500"><?php echo __('Here you can suggest us ideas or enhancements')?></h3><br/>
+            <a href="/Contactforms/form/"><button class="btn btn-lg btn1CR center-block" style="border-radius: 25px;"><?php echo __('Contact Us')?></button></a>
+        </div>
     </div>
 </div>

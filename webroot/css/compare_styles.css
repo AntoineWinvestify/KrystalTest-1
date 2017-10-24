@@ -1400,6 +1400,12 @@ hr.nomargin {
                         .logoRedirect {
                             height: 40px;
                         }
+                        #parallaxFeatures {
+                            margin-top: 150px;
+                        }
+                        #security {
+                            padding: 0px !important;
+                        }
                     }
 
         /*MOBILE MEDIA QUERY <480px */
@@ -1621,7 +1627,7 @@ hr.nomargin {
                 top: 0px !important;
             }
             .reestructure {
-                height: 300px;
+                height: 20px;
             }
             #popUp {
                 width: 50%;
@@ -1634,7 +1640,7 @@ hr.nomargin {
                 margin-top: 120px !important;
             }
             #registerButton {
-                left: 45% !important;
+                left: 40% !important;
                 margin-bottom: 20px;
             }
             #features_right {
@@ -1647,9 +1653,13 @@ hr.nomargin {
             }
             .container_features {
                 width: 100%;
+                margin-left: -50px;
             }
             #featuresButton {
                 padding-bottom: 100px;
+            }
+            .schemaImg {
+                width: 90%;
             }
         }
                 @media (min-width: 1024px) and (max-width: 1200px) {
@@ -1658,7 +1668,11 @@ hr.nomargin {
                         top: 30px;
                     }
                     .reestructure {
-                        height: 300px;
+                        height: 400px;
+                    }
+                    .schemaImg{
+                        height: 70%;
+                        margin-top: 0px;
                     }
                     #popUp {
                         width: 50%;
@@ -1689,6 +1703,10 @@ hr.nomargin {
             }
             #featuresButton {
                 margin-top: 100px;
+            }
+            .schemaImg {
+                height: 100%;
+                margin-top: -35px;
             }
         }
         

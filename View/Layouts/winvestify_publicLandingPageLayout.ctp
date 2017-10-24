@@ -167,7 +167,7 @@
                             <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-left navGreen">
-                            <li><a href="/"><img src="/img/logo_winvestify/Logo_favicon.png" class="center-block hidden-xs hidden-sm" width="85%"/></a></li>
+                            <li><a href="/"><img src="/img/logo_winvestify/Logo_favicon.png" class="center-block hidden-xs hidden-sm hidden-md" width="85%"/></a></li>
                             <li><a href="/pages/investors"><?php echo __('Investors') ?></a></li>
                             <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
                             <li class="dropdown">
@@ -202,7 +202,7 @@
             <div class="container_features row">
                 <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
                     <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><br/>
-                        <img src="/img/logo_winvestify/logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
+                        <img href="/" src="/img/logo_winvestify/logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
                         <span id="headerTitle"><?php echo __('Creemos que tienes derecho a sacar el máximo partido a tus inversiones') ?></span>
                         <span class="headerText"><?php echo __('Entérate de qué pasa con todas tus inversiones, de un modo organizado y estandarizado. Conecta con tus plataformas desde Winvestify y obtén el control total de todas tus cuentas.')?></span><br/>
                         <span class="headerText"><?php echo __('Somos la herramienta líder española en Crowdlending que te ayuda a controlar todas tus inversiones de un modo preciso y eficaz')?></span>
@@ -230,8 +230,8 @@
         <!-- Prizes -->
         <div class="reestructure"></div>
         <div id="prizes" class="row">
-            <div class="col-xs-12 col-sm-12 col-sm-10 col-lg-10 col-sm-offset-1 col-lg-offset-1">
-                <div class="col-xs-12 col-sm-12 col-sm-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
+            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1">
+                <div class="col-xs-12 col-sm-12 col-sm-5 col-sm-offset-1 col-lg-5 col-md-offset-1 col-lg-offset-1">
                     <div class="box box-widget1 widget-user-2 boxPrize">
                         <div class="widget-user-header">
                             <div class="row">
@@ -268,30 +268,16 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-12 col-sm-10 col-lg-10 col-sm-offset-1 col-lg-offset-1" style="display:none;">
-                <div class="col-xs-12 col-sm-12 col-sm-offset-3 col-lg-offset-3 col-sm-3 col-lg-3">
-                    <div class="row">
-                        <img src="/img/logo/BBVA.png" class="pull-right imgResponsive" width="210px;"/>
-                    </div>
-                    <div class="row pull-right" style="font-weight: 18px;"><?php echo __('Premio Mejor Fintech Andaluza')?></div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-sm-3 col-lg-3">
-                    <div class="row">
-                        <img src="/img/logo/santander.jpg" class="pull-right imgResponsive" width="150px;"/>
-                    </div>
-                    <div class="row pull-right"><?php echo __('Finalista Santander Open Challenge')?></div>
-                </div>
-            </div>
         </div>
         <!-- /Prizes -->
         <!-- Schema -->
         <div id="schema" class="row">
             <hr class="specialHr" width="90%">
             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
-                <div class="divmiddle" style="height: 500px;">
-                    <img src="/img/LandingPage/schema_spa.png" class="imgResponsive schemaImg center-block" style="height: 100%; margin-top: -50px"/>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="height: 500px;">
+                    <img src="/img/LandingPage/schema_spa.png" class="imgResponsive schemaImg center-block"/>
                 </div>
-                <div class="divmiddle">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <h3><?php echo __('What is Crowdlending?')?></h3>
                     <p><?php echo __('El Crowdlending es un modelo de Financiación Alternativa, por el cual inversores particulares y profesionales utilizando Plataformas de Financiación Participativa prestan su dinero a cambio de recibir un interés acorde al riesgo asumido.')?></p>
                     <p><?php echo __('El resultado es que el prestatario consigue financiarse a un precio más competitivo y el inversor recibe una rentabilidad superior a otros productos financieros.')?></p>
