@@ -49,16 +49,15 @@ class TestsController extends AppController {
 
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Test', "Data", "Investor");
+    var $uses = array('Test', "Data", "Investor", "Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Company");
     var $error;
 
     function beforeFilter() {
         parent::beforeFilter();
 
 
-        $this->Security->requireAuth();
-
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount'));
+        //$this->Security->requireAuth();
+        // $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview"));
     }
 
     /**
@@ -130,6 +129,58 @@ class TestsController extends AppController {
 
     function dashboardOverview() {
         $this->layout = 'azarus_private_layout';
+
+        //Get data from db
+        $investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity');
+        $globalData = $this->Userinvestmentdata->getGlobalData($investorIdentity);
+
+        //Get global data
+        $global['totalVolume'] = 0;
+        $global['investedAssets'] = 0;
+        $global['reservedFunds'] = 0;
+        $global['cash'] = 0;
+        $global['activeInvestment'] = 0;
+        $global['netDeposits'] = 0;
+        foreach ($globalData as $globalKey => $individualPfpData) {
+            foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
+                if ($key == "userinvestmentdata_activeInInvestments") {
+                    $global['investedAssets'] = $global['investedAssets'] + $individualData;
+                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
+                }
+                if ($key == "userinvestmentdata_myWallet") {
+                    $global['cash'] = $global['cash'] + $individualData;
+                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
+                }
+                if ($key == "userinvestmentdata_reservedFunds") {
+                    $global['reservedFunds'] = $global['reservedFunds'] + $individualData;
+                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
+                }
+                if ($key == "userinvestmentdata_investments") {
+                    $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
+                }
+                if ($key == "id") {
+                    $cashFlowData = $this->Globalcashflowdata->getData(array('userinvestmentdata_id' => $individualData), array('globalcashflowdata_platformDeposit'));
+                    $global['netDeposits'] = $global['netDeposits'] + $cashFlowData[0]['Globalcashflowdata']['globalcashflowdata_platformDeposit'];
+                }
+                if ($key == "linkedaccount_id") {
+                    //Get the pfp id of the linked acount
+                    $pfpData = $this->Linkedaccount->getLinkedaccountDataList(array('id' => $individualData));
+                    $pfpId = $pfpData[0]['Linkedaccount']['company_id'];
+                    $globalData[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
+                    //Get pfp logo and name
+                    $pfpFullData = $this->Company->getCompanyDataList(array('id' => $pfpId));
+                    $globalData[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpFullData[$pfpId]['company_logoGUID'];
+                    $globalData[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpFullData[$pfpId]['company_name'];
+                }
+            }
+        }
+
+        
+        //Set global data
+        $this->set('global', $global);
+        //Set an array with individual info
+        $this->set('individualInfoArray', $globalData);
+        
     }
 
     function dashboardMyInvestments() {
