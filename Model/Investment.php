@@ -112,6 +112,13 @@ var $validate = array(
         }
         return $result;         
     }
+    
+    public function getInvestmentIdByLoanId($filterConditions) {
+        $investmentIds = $this->find('list', $params = array('recursive' => -1,
+            'conditions' => $filterConditions
+        ));
+        return $investmentIds;
+    }
 
 
 
