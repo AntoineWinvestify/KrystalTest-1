@@ -1395,7 +1395,7 @@ class loanbook extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) {
+    function collectAmortizationTablesParallel($str) { //Queue_info example {"loanIds":{"704":["472"]}}
         switch ($this->idForSwitch) {
             case 0:
                 /*
@@ -1512,7 +1512,20 @@ class loanbook extends p2pCompany {
                 foreach ($tables as $table) {
                     if ($table->getAttribute('id') == 'paymentsTable') {
                         $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $clone = $table->cloneNode(TRUE); //Clone the table
+                        
+                        //Mod the dom clone
+                        $is = $clone->getElementsByTagName('i');
+                        foreach($is as $key => $status){
+                            echo "search status";
+                            echo $status->getAttribute('class');
+                            if($status->getAttribute('class') == 'fa fa-circle'){
+                                echo 'Finded';
+                                echo $status->getAttribute('title');
+                                $clone->getElementsByTagName('i')->item($key)->nodeValue = $status->getAttribute('title');
+                            }
+                        }
+                        
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
