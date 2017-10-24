@@ -922,7 +922,16 @@ textarea[name="error"] {
     color:white;
     display: inline-block;
 }
-
+.btnGeneral {
+    background-color: white  !important;
+    border: 2px solid #66615B !important;
+    color: #66615B !important;
+}
+.btnGeneral:hover, .btnGeneral:active {
+	border: 2px solid #66615B !important;
+        background-color: #66615B !important;
+	color: white !important;
+}
 /*     CUADROS DE COLORES      */
 .bg-win1 {
 	background-color: #87e14b !important;

@@ -3,37 +3,45 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
-        <title>Winvestify</title>
-        <!-- Tell the browser to be responsive to screen width -->
-        <meta content="width=device-width, initial-scale=1" name="viewport">
-       
-        <!-- Theme STYLES -->
-        <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/style.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/global.css"/>
-        <link type="text/css" rel="stylesheet" href="/css/compare_styles.css"/>
-        <!-- Ionicons -->
-        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"/>
-        <!-- Web Fonts -->
-        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"/>
-        <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,400i/Montserrat:400,700"/>
-        <link type="text/css" rel="stylesheet" href='https://fonts.googleapis.com/css?family=Muli:400,300'/>
-        <!-- Plugins -->
-        <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/animate.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/themify/themify.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/scrollbar/scrollbar.min.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/swiper/swiper.min.css"/>
+        <meta name="author" content="">
 
-        <?php
-        $file = APP . "Config" . DS . "googleCode.php";
-        if (file_exists($file)) {
-            include_once($file);
-        }
-        ?>
+        <title>Winvestify</title>
+
+        <!-- Bootstrap 3.3.6 -->
+        <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
+
+        <!-- Web Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i|Montserrat:400,700" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
         <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
-        <link rel="icon" href="/img/logo_winvestify/Logo_favicon.png">
+        <!-- Vendor Styles -->
+        <link href="/megaKit/vendor/themify/themify.css" rel="stylesheet" type="text/css"/>
+
+        <!-- Theme Styles -->
+        <link href="/megaKit/css/style.css" rel="stylesheet" type="text/css"/>
+        <link href="/megaKit/css/global.css" rel="stylesheet" type="text/css"/>
+        <link href="/megaKit/css/custom.css" rel="stylesheet" type="text/css"/>
+        <link href="/css/compare_styles.css" rel="stylesheet" type="text/css"/>
+        
+        <?php /*
+          <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+          <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+          <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+          <![endif]-->
+         */
+        ?>
+        */
+        <?php
+            $file = APP . "Config" . DS . "googleCode.php";
+            if (file_exists($file)) {
+                include_once($file);
+            }
+        ?>
     </head>
 
 
@@ -135,7 +143,7 @@
 
                                             <div class="pull-right"> 
                                                 <?php /*<a href="#" class="center-block"><?php echo __('Forgot your password?')  ?></a>*/?>
-                                                <button type="submit" id="loginBtn" style="margin-top:10px; margin-bottom: 10px;" class="text-uppercase btn"><?php echo __('Send') ?>
+                                                <button type="submit" id="loginBtn" style="margin-top:10px; margin-bottom: 10px;" class="text-uppercase btn btnRounded btnGeneral"><?php echo __('Send') ?>
                                                 </button><br/>
                                             </div>
                                         </div>
