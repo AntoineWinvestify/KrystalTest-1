@@ -261,14 +261,14 @@ class ParseDataClientShell extends AppShell {
                         28 => [ // CHECK
                                 "databaseName" => "investment.investment_forSale",
                                 "internalName" => "investment_forSale",    
-                "internalIndex" => 28,                            
+                                "internalIndex" => 28,                            
                                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                                 "function" => ""        
                             ],
 
 
-        30 => [
+        30 => [  // This item is ONLY used to calculate the values of the base elements: PrincipalPayment and InterestPayment
                 "databaseName" => "investment.investment_principalAndInterestPayment",  
                 "internalName" => "investment_principalAndInterestPayment", 
                 "internalIndex" => 30,            
@@ -819,7 +819,7 @@ print_r($subDir);
     /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values" 
      * and writes all values to the database.
-     *  @param  $array          Array which holds the data (perp PFP) as received from the Worker
+     *  @param  $array          Array which holds the data (per PFP) as received from the Worker
      * 
      *  @return boolean true
      *                  false
@@ -832,7 +832,6 @@ print_r($subDir);
         $variables = array();
         $linkedaccountId = $platformData['linkedaccountId'];
 
-// create a default AmortizationTable for the loan if it is a new loan?
 
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
         foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
@@ -858,6 +857,8 @@ if ($newLoan <> "840073-01" ) {
                     }
                 }  
             }
+
+            
 //print_r($variablesConfigStatus);
 echo "Total = " . count($variablesConfigStatus) . "\n";
  // also check if they belong to the same date, if not flush it    STILL PENDING 
@@ -884,8 +885,7 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
                                 $result = $this->$functionToCall($transactionData, $database);
 
                                 if ($tempResult['charAcc'] == FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                                   $database[$dbTable][$transactionDataKey] = $database[$dbTable][$transactionDataKey] + $result; 
-                                    $database[$dbTable][$transactionDataKey] = sprintf("%017d", $database[$dbTable][$transactionDataKey]);
+                                    $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
                                 }
                                 else {
                                     $database[$dbTable][$transactionDataKey] = $result;  
@@ -913,6 +913,9 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
                 $variablesConfigStatus[17]['state'] = FLOWDATA_VARIABLE_DONE;                
             }
             
+            
+ // these are the total values per PFP           
+            
             if ($variablesConfigStatus[30]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
                 $varName = $variablesConfigStatus[30]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidatePrincipalAndInterestPayment($database);
@@ -938,7 +941,6 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
             } 
             
             if ($variablesConfigStatus[37]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
-                $result = $this->consolidateOutstandingPrincipal($database);
                 $varName = $variablesConfigStatus[37]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
                 $variablesConfigStatus[37]['state'] = FLOWDATA_VARIABLE_DONE;                
@@ -946,7 +948,7 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
           
             if ($variablesConfigStatus[38]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
                 $varName = $variablesConfigStatus[38]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
+                $database[$varName[0]][$varName[1]] =  $this->consolidateReceivedPrepayments($database);
                 $variablesConfigStatus[38]['state'] = FLOWDATA_VARIABLE_DONE;                 
             } 
             
@@ -1059,6 +1061,204 @@ print_r($database);
     }
    
  
+    
+
+    
+    
+    
+      
+    /* OK
+     *  Get the amount, for all "active investments", which corresponds to the "CapitalRepayment" concept 
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     * 
+    */ 
+    public function consolidateCapitalRepayment() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('Paymenttotal.paymenttotal_capitalRepayment'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult['Payment'] as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* OK
+     *  Get the amount which corresponds to the "PartialPrincipalPayment" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidatePartialPrincipalRepayment() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('Paymenttotal.partialPrincipalRepayment'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* OK
+     *  Get the amount which corresponds to the "OutstandingPrincipal" concept
+     *  "Outstanding principal" = total amount of investment - paymenttotal_capitalRepayment
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateOutstandingPrincipal() {
+        $listResult = $this->Paymenttotal('list', array(
+            
+                                            'fields' => array('Paymenttotal.OutstandingPrincipal'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* 
+     *  Get the amount which corresponds to the "ReceivedPrepayments" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateReceivedPrepayments() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+         
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* 
+     *  Get the amount which corresponds to the "TotalGrossIncome" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateTotalGrossIncome() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+           
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "InterestgrossIncome" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateInterestgrossIncome() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+               
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "TotalCost" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateTotalCost() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "NextPaymentDate" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateNextPaymentDate() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "EstimatedNextPayment" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateEstimatedNextPayment() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }  
+    
+    /* 
+     *  Get the amount which corresponds to the "InstallmentPaymentProgress" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateInstallmentPaymentProgress() {
+        $listResult = $this->Paymenttotal('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     /* 
      *  Get the amount which corresponds to the "late payment fee" concept
