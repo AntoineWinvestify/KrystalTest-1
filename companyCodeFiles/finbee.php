@@ -24,10 +24,16 @@
  * 
  * 2017-08-25
  * Created
+ * 
+ * 
+ * 2017-10-24 version_0.2
+ * Integration of parsing amortization tables with Gearman and fileparser
+ * 
+ * Parser AmortizationTables                                            [OK, tested]
  */
 class finbee extends p2pCompany {
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
+    protected $valuesAmortizationTable = [
             1 =>  [
                 [
                     "type" => "amortizationtable_capitalAndInterestPayment",                      // Winvestify standardized name  OK
@@ -61,7 +67,6 @@ class finbee extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            //Change this, further investigation
             4 => [
                 [
                     "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
@@ -97,18 +102,6 @@ class finbee extends p2pCompany {
         $this->i = 0;
         parent::__construct();
 // Do whatever is needed for this subsclass
-    }
-
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesFinbeeTransaction;
-    }
-
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesFinbeeInvestment;
-    }
-
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesFinbeeAmortization;
     }
 
     /**
