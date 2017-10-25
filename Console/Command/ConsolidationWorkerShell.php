@@ -113,6 +113,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         return $result;
     }
     
+    /**
+     * Function to initiate the formulas, in the future, this will be a config file
+     */
     public function initFormula() {
         $this->formula[0]['eval'] = "$interestPaidGlobalOld-$interestPaidOld+$interestPaidNew";
         $this->formula[0]['externalName'] = 'interestPaidGlobal';
