@@ -101,6 +101,10 @@ class CollectDataClientShell extends GearmanClientShell {
                     foreach ($linkedaccountResult as $linkedaccount) {
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
                         $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id']);
+                        if (empty($this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
+                            $this->queueInfo[$job['Queue']['id']]['companiesInFlow'] = $linkedaccount['Linkedaccount']['id'];
+                        }
+                        
                         if (!$folderExist) {
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
