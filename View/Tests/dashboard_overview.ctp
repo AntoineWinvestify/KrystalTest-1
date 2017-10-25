@@ -47,19 +47,19 @@
             $("#keyIndividualPlatforms").show();
         });
         
-        $(document).on("click", "[data-toggle='tab']", function(){
+        /*$(document).on("click", "[data-toggle='tab']", function(){
             $("#btnMyInvestments").hide();
             $("#btnAccountLinkingB").hide();
             $("#dashboardMyInvestments").show();
             $("#keyIndividualPlatforms").hide();
-        });
+        });*/
         
-        $(document).on("click", "#globalOverviewTab", function(){
+       /* $(document).on("click", "#globalOverviewTab", function(){
             $("#btnMyInvestments").show();
             $("#btnAccountLinkingB").show();
             $("#dashboardMyInvestments").hide();
             $("#keyIndividualPlatforms").hide();
-        });
+        });*/
         
         $(document).on("click", ".logo", function(){ 
             var params = {
@@ -308,14 +308,14 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">2,25%</h3>
+                                            <h3 class="title">8,45%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
-                                                        <td class="right"><?php echo __('2,25%')?></td>
+                                                        <td class="right"><?php echo __('91,55%')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('8-30 DPD')?></td>
@@ -493,8 +493,8 @@
                         <thead>
                             <tr>
                                 <th><?php echo __('Lending Company')?></th>
-                                <th><?php echo __('Total Volume')?></th>
-                                <th><?php echo __('Cash')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="Las cantidades seran convertidas a euros" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="Las cantidades seran convertidas a euros" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to platform')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
