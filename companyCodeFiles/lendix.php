@@ -110,7 +110,7 @@ class lendix extends p2pCompany {
         $tempArray = array();
         $totalArray = array();
 
-        $offset = 0;  //Lendix have offsets of 12 invesments
+        $offset = 0;  //Lendix have offsets of 12 investments
         $url = array_shift($this->urlSequence);
         $reading = true;
         $readController = 0;
