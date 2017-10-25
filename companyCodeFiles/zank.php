@@ -69,6 +69,16 @@
  *
  *
  */
+
+/**
+ * Contains the code required for accessing the website of "Zank".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[OK, tested]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, not tested]
+ * parallelization                                                      [OK, tested]
+ */
 class zank extends p2pCompany {
 
     private $credentials = array();
@@ -76,6 +86,198 @@ class zank extends p2pCompany {
     private $resultMiZank = false;
     private $url;
     private $start = 0;
+    protected $transactionConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
+    protected $investmentConfigParms = array('OffsetStart' => 1,
+        'offsetEnd' => 0,
+        'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
+
+    // NOT FINISHED
+    protected $valuesInvestment = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                    "name" => "loanId"                                          // Winvestify standardized name
+            ],
+            "B" => [
+                    "name" => "investment_debtor",                           // Winvestify standardized name  OK
+            ],
+            "C" => [
+                    "name" => "investment_riskRating",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "D" =>  [
+                [
+                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            "E" => [
+                    "type" => "investment_fullLoanAmount",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "F" => [// NOT FINISHED YET
+                [
+                    "name" => "dummy_cuarter",                                      // Winvestify standardized name   OK
+                    "inputData" => [                                                    // List of all concepts that the platform can generate
+                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                                "input3" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
+                                            1 => ["Investment principal increase" => "Primary_market_investment"],
+                                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
+                                            3 => ["Investment principal repayment" => "Capital_repayment"],    //OK
+                                            4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
+                                            5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
+                                            6 => ["Interest income" => "Regular_gross_interest_income"],       //
+                                            7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
+                                            8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
+                                            9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
+                                            10 => ["Discount/premium for secondary market" => "Income_secondary_market"],   // For seller
+                                            11 => ["Discount/premium for secondary market" => "Cost_secondary_market"],     // for buyer
+                                            ] 
+                            ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "G" => [
+                [
+                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "G" => [
+                [
+                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ],
+            ],
+            "H" => [
+                [
+                    "type" => "investment.currency",                                    // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ]
+            ],
+            "G" =>  [
+                [
+                    "type" => "investment.nextPaymentAmount",                           // Winvestify standardized name
+                    "inputData" => [
+				"input2" => ".",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+        ];
+// NOT FINISHED
+   protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                    "name" => "transactionId"                                          // Winvestify standardized name
+            ],
+            "B" => [
+                    "name" => "dummy_year",                                                  // Winvestify standardized name  OK
+            ],
+            "C" => [
+                    "name" => "dummy_quarter",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "D" =>  [
+                [
+                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            "E" => [
+                    "type" => "loanId",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "F" => [// NOT FINISHED YET
+                [
+                    "name" => "get_detail",                                      // Winvestify standardized name   OK
+                    "inputData" => [                                                    // List of all concepts that the platform can generate
+                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                                    "input3" => [0 => ["ingreso" => "Cash_deposit"],
+                                                1 => ["Retirado" => "Cash_withdrawal"],
+                                                2 => ["inversion" => "Primary_market_investment"],
+                                //              3 => [  "" => "Secondary_market_investment"],
+                                //              4 => [  "" => "Principal_repayment"],
+                                                5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
+                                //              6 => [  "" => "Principal_buyback"].
+                                                7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
+                                //              8 => [  "" => "Regular_gross_interest_income"],
+                                                9 => ["recargo" => "Delayed_interest_income"],
+                                //              10 => [  "" => "Late_payment_fee_income"],
+                                //              11 => [  "" => "Interest_income_buyback"],
+                                //              12 => [  "" => "Delayed_interest_income_buyback"],
+                                //              13 => [  "" => "Incentive_and_bonus"],
+                                                14 => ["Retrocesión de comisiones" => "Compensation"],
+                                //              15 => [  "" => "Disc/premium paid secondary market"],
+                                //              16 => [  "" => "Other 4 income"],
+                                //              17 => [  "" => "Recoveries"],
+                                                18 => ["Comisiones" => "Commission"],
+                                //              19 => [ "" => "Bank_charges",
+                                //              20 => [  "" => "Disc/premium_paid_secondary_market"],
+                                //              21 => [  "" => "Interest_payment_secondary_market_purchase"],
+                                //              22 => [  "" => "Currency_exchange_fee"],
+                                //              23 => [ "" => "Other_cost"],
+                                                24 => ["IVA sobre Comisiones" => "Tax_VAT"],
+                                //              25 => ["Tax: Income withholding tax"],
+                                //              26 => [  "" => "Write-off"],
+                                //              27 => [  "" => "Registration"],
+                                //              28 => [   "" => "Currency_exchange_transaction"],
+                                //              29 => [   "" => "Unknown_income"],
+                                //              30 => [  "" => "Unknown_cost"],
+                                //              31 => [  "" => "Unknown_concept"],
+                                                ]
+                            ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "G" => [
+                [
+                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "H" => [
+                [
+                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ],
+            ]
+        ];
+
+    protected $valuesAmortizationTable = [  // NOT FINISHED
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+        ];
+
+     
 
     function __construct() {
         parent::__construct();
@@ -87,21 +289,6 @@ class zank extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-  
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesZankTransaction;
-    }
- 
-     public function getParserConfigInvestmentFile() {
-        return $this->$valuesZankInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesZankAmortization;
-    }   
-    
-    
-    
     /**
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount
@@ -154,7 +341,7 @@ class zank extends p2pCompany {
             exit;
         }
 
-        
+
         $form = [
             "length" => 20,
             "start" => $this->start
@@ -188,7 +375,7 @@ class zank extends p2pCompany {
                 $form['start'] = $form['start'] + $form['length'];
             }
             //echo 'aqui es' . $form['start'];
-          
+
             foreach ($jsonResults as $key => $jsonEntry) {
 
                 if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
@@ -328,13 +515,13 @@ class zank extends p2pCompany {
                 }
 
 
-                
+
 
                 if ($inversionReadController == 1) {
                     //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $readControl++;
                     echo 'Advance:' . $readControl . SHELL_ENDOFLINE;
-                } 
+                }
                 if ($readControl > 20) {
                     echo __FUNCTION__ . __LINE__ . "Demasiadas inversiones completadas ya existentes, forzando salida";
                     $reading = false;
@@ -342,7 +529,7 @@ class zank extends p2pCompany {
                     break;
                 } else {
                     // echo 'Add:<br>';  
-                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);                       
+                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                     array_push($totalArray, $tempArray);
                     unset($tempArray);
                     /* echo 'Total<br>';
@@ -355,86 +542,85 @@ class zank extends p2pCompany {
         }
 
         echo 'Search this investments: ' . SHELL_ENDOFLINE;
-        $this->print_r2($this->investmentDeletedList); 
+        $this->print_r2($this->investmentDeletedList);
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         echo 'Hidden: ' . SHELL_ENDOFLINE;
         $this->print_r2($hiddenInvestments);
 
         $this->companyUserLogout();
-        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        $totalArray = array_merge($totalArray, $hiddenInvestments);
         //$this->print_r2($totalArray);  
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
-    
-     /**Read hidden investment.
+
+    /*     * Read hidden investment.
      * 
      * @param array $investmentDeletedList loan id list
      * @return array investments info list
      */
-    function readHiddenInvestment ($investmentDeletedList){
-        
+
+    function readHiddenInvestment($investmentDeletedList) {
+
         $url = array_shift($this->urlSequence);
-        
+
         $tempArray = array();
         $newTotalArray = array();
         //Read investment info
-        foreach($investmentDeletedList as $loanId) {
-            echo 'loan id: ' .  substr($loanId,3) . SHELL_ENDOFLINE;
-            echo $url . substr($loanId,3) . SHELL_ENDOFLINE;
-            $str = $this->getCompanyWebpage($url . substr($loanId,3));
+        foreach ($investmentDeletedList as $loanId) {
+            echo 'loan id: ' . substr($loanId, 3) . SHELL_ENDOFLINE;
+            echo $url . substr($loanId, 3) . SHELL_ENDOFLINE;
+            $str = $this->getCompanyWebpage($url . substr($loanId, 3));
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             $dom->loadHTML($str);
-   
-            $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');                   
-            foreach($container as $div){               
+
+            $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');
+            foreach ($container as $div) {
                 $subdivs = $div->getElementsByTagName('div');
-               /*foreach($subdivs as $subkey => $subdiv){
-                    echo 'Div: ' . HTML_ENDOFLINE;
-                    echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
-                }*/             
-                    $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
-                    $tempArray['marketplace_loanReference'] = $loanId;
-                    //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
-                    $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
-                    $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
-                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
-                    $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
-                    $status = $tempArray['marketplace_statusLiteral'];
-                    if($status == 'Completado'){   
-                        $tempArray['marketplace_status'] = PERCENT;
-                        $tempArray['marketplace_subscriptionProgress'] = 10000;
-                    }else if($status == 'Amortizado' || $status == 'Retrasado' ){
-                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
-                        $tempArray['marketplace_subscriptionProgress'] = 10000; 
-                    } else if(strpos($status, 'mortiza') != false){
-                        $tempArray['marketplace_status'] = CONFIRMED;
-                        $tempArray['marketplace_subscriptionProgress'] = 10000;       
-                    }else if($status == 'Publicado'){   
-                        $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;     
-                    }                
-                    
-                    $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
-                    $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
-                    
-                    echo  $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
-                    $tds =  $subdivs[126]->getElementsByTagName('td');
-                    $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+                /* foreach($subdivs as $subkey => $subdiv){
+                  echo 'Div: ' . HTML_ENDOFLINE;
+                  echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
+                  } */
+                $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
+                $tempArray['marketplace_loanReference'] = $loanId;
+                //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
+                $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
+                $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
+                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
+                $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
+                $status = $tempArray['marketplace_statusLiteral'];
+                if ($status == 'Completado') {
+                    $tempArray['marketplace_status'] = PERCENT;
+                    $tempArray['marketplace_subscriptionProgress'] = 10000;
+                } else if ($status == 'Amortizado' || $status == 'Retrasado') {
+                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                    $tempArray['marketplace_subscriptionProgress'] = 10000;
+                } else if (strpos($status, 'mortiza') != false) {
+                    $tempArray['marketplace_status'] = CONFIRMED;
+                    $tempArray['marketplace_subscriptionProgress'] = 10000;
+                } else if ($status == 'Publicado') {
+                    $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;
+                }
+
+                $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;
+                $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;
+
+                echo $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
+                $tds = $subdivs[126]->getElementsByTagName('td');
+                $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
             $newTotalArray[] = $tempArray;
             unset($tempArray);
         }
-        /*echo 'return new array: ' . HTML_ENDOFLINE;
-        print_r($newTotalArray);*/
+        /* echo 'return new array: ' . HTML_ENDOFLINE;
+          print_r($newTotalArray); */
         return $newTotalArray;
     }
-    
-    
 
     /**
      * collect all investment
@@ -495,7 +681,7 @@ class zank extends p2pCompany {
         foreach ($jsonResults as $jsonEntry) {
 
 
-            
+
             if ($form['start'] == $form['length'] && $key == 0) { //Only compare the first entry
                 $structureRevision = $this->jsonRevision($structure, $jsonEntry);
                 if ($structureRevision[1]) { //Structural error
@@ -589,7 +775,7 @@ class zank extends p2pCompany {
         //}
         //echo 'AQUI ES ' . $reading;
         $this->companyUserLogout();
-        return [$totalArray, $form['start'], null, $structureRevision[0],$structureRevision[2]]; //$form['start'] is the next page, return false if is the last page
+        return [$totalArray, $form['start'], null, $structureRevision[0], $structureRevision[2]]; //$form['start'] is the next page, return false if is the last page
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
@@ -1062,13 +1248,13 @@ class zank extends p2pCompany {
     }
 
     /**
-     *
-     * 	Collects the investment data of the user
-     * 	@return array	Data of each investment of the user as an element of an array
-     * 	
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
-    function collectUserGlobalFilesParallel($str) {
-        switch ($this->idForSwitch){
+    function collectUserGlobalFilesParallel($str = null) {
+        switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
@@ -1089,7 +1275,7 @@ class zank extends p2pCompany {
                 $this->verifyNodeHasElements($forms);
                 $index = 0;
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
                 foreach ($forms as $form) {
@@ -1100,7 +1286,7 @@ class zank extends p2pCompany {
                     $inputs = $form->getElementsByTagName('input');
                     $this->verifyNodeHasElements($inputs);
                     if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__);
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
 
                     foreach ($inputs as $input) {
@@ -1136,7 +1322,7 @@ class zank extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     //fix this problem
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
                 echo "LOGIN CONFIRMED";
                 // We are at page: "MI ZANK". Look for the "internal user identification"
@@ -1148,7 +1334,7 @@ class zank extends p2pCompany {
                 $scripts = $dom->getElementsByTagName('script');
                 $this->verifyNodeHasElements($scripts);
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
                 foreach ($scripts as $script) {
@@ -1170,10 +1356,9 @@ class zank extends p2pCompany {
 
                 $index = 0;
                 $ps = $dom->getElementsByTagName('p');
-
                 $this->verifyNodeHasElements($ps);
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($ps as $p) {
                     $class = trim($p->getAttribute('class'));
@@ -1203,10 +1388,13 @@ class zank extends p2pCompany {
                 $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 echo 'URL SEQUECE FLOW: ' . SHELL_ENDOFLINE;
                 print_r($this->urlSequence);
                 $url = array_shift($this->urlSequence) . $this->userId;
-                
+
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
@@ -1214,20 +1402,21 @@ class zank extends p2pCompany {
                 $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 return $this->tempArray;
                 break;
-            
         }
-        
     }
-    
+
     /**
-     *  Read amortization tables
-     * @param type $str
-     * @return type
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str){
-         switch ($this->idForSwitch){
+    function collectAmortizationTablesParallel($str) {
+        switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
@@ -1295,9 +1484,9 @@ class zank extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     //fix this problem
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
-                
+
                 echo "LOGIN CONFIRMED";
                 // We are at page: "MI ZANK". Look for the "internal user identification"
                 $dom = new DOMDocument;
@@ -1338,48 +1527,46 @@ class zank extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // load Webpage into a string variable so it can be parsed	
                 break;
-                
+
             case 4:
-                if(empty($this->tempUrl['investmentUrl'])){
+                if (empty($this->tempUrl['investmentUrl'])) {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
                 $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
-                echo "the table url is: " . $url; 
+                echo "the table url is: " . $url;
                 $this->i++;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
                 break;
-                
+
             case 5:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
-                foreach($tables as $table){     
-                    if($table->getAttribute('id') == 'parte'){
+                foreach ($tables as $table) {
+                    if ($table->getAttribute('id') == 'parte') {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
-                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
-                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
+                        $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
                     }
                 }
-                if($this->i < $this->maxLoans){
+                if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
-                    break;               
-                }else{
+                    break;
+                } else {
                     return $this->tempArray;
                     break;
                 }
-         }
+        }
     }
 
-
-    
     /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account
@@ -1489,4 +1676,4 @@ class zank extends p2pCompany {
     }
 
 }
-?> 
+

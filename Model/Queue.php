@@ -186,7 +186,15 @@ public function beforeSave1($options = array()) {
     $this->data[$this->alias]['created'] = date("Y-m-d H:i:s", time());
     return true;
 }
-
+    
+    /**
+     * Function to get queue request by status
+     * @param int $queuetype It is the type of the queue
+     * @param int $status It is the status of the queue
+     * @param array $info It is a json with info data about the queue
+     * @param int $limit It is the limit of queue to collect from DB 
+     * @return array It is the queue request
+     */
     public function getUsersByStatus($queuetype, $status, $info = null, $limit = null) {
         
         switch ($queuetype) {
@@ -220,6 +228,21 @@ public function beforeSave1($options = array()) {
         if (empty($result)) {
             return;
         }
+        return $result;
+    }
+    
+    /**
+     * Function to retrieve the date of the last time the user get the data
+     * @param string $userReference It is the user's internal id
+     * @return array It is the information of the user
+     */
+    public function calculateDate($userReference) {
+        $conditions["queue_userReference"] = $userReference;
+        $result = $this->find("all", array(
+                    "conditions" => $conditions,
+                    'order' => array('id DESC'),
+                    "limit" => 2
+                ));
         return $result;
     }
 }

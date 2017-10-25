@@ -61,6 +61,18 @@
             $("#keyIndividualPlatforms").hide();
         });
         
+        $(document).on("click", ".logo", function(){ 
+            var params = {
+                id : $(this).attr("id"),
+                logo : $("#logo"+id).attr("src"),
+                name : $("#logo"+id).attr("alt"),
+            };
+            var data = jQuery.param(params);
+            link = '../Dashboard2s/getDashboard2SinglePfpData/';
+            getServerData(link, data, successAjax, errorAjax);
+               
+        });
+        
         <?php //Tooltip clicks ?>
         $(".logo").hover(function() {
             id = $(this).attr("id");
@@ -106,6 +118,18 @@
           options: chartOptions
         });
     });
+    
+    function successAjax(result){
+       // alert("ok " + result);
+       $(".dashboarGlobaldOverview").fadeOut();
+       $(".ajaxResponse").html(result);
+       
+    }
+    
+    function errorAjax(result){
+         //alert("not ok " + result);
+    }
+    
 </script>
 <style>
     td {
@@ -179,7 +203,7 @@
         transform: rotate3d(0, 0, 1, -135deg);
     }
 </style>
-<div class="dashboardOverview">
+<div class="dashboarGlobaldOverview">
     <div class="row" id="overview">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card card-nav-tabs">
@@ -205,22 +229,22 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">76.125,11 €</h3>
+                                            <h3 class="title"> <?php echo number_format((float) $global['totalVolume'] / 100, 2, ',', '') . " &euro;"; ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
-                                                        <td class="right"><?php echo __('76.125,00 €')?></td>
+                                                        <td class="right"><?php echo number_format((float) $global['investedAssets'] / 100, 2, ',', '') . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
-                                                        <td class="right"><?php echo __('32.000,00 €')?></td>
+                                                        <td class="right"><?php echo number_format((float) $global['reservedFunds'] / 100, 2, ',', '') . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
-                                                        <td class="right"><?php echo __('25.252,00 €')?></td>
+                                                        <td class="right"><?php echo number_format((float) $global['cash'] / 100, 2, ',', '') . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
@@ -228,11 +252,11 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
-                                                        <td class="right"><?php echo __('13.000,00 €')?></td>
+                                                        <td class="right"><?php echo number_format((float) $global['netDeposits'] / 100, 2, ',', '') . " &euro;";?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Number of Active Investments')?></td>
-                                                        <td class="right"><?php echo __('1254')?></td>
+                                                        <td class="right"><?php echo $global['activeInvestment'] ?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -326,6 +350,7 @@
                                 </div>
                             </div>
                         </div>
+                       
                         <div class="tab-pane" id="zankTab">
                             <div class="row">
                                 <div class="col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
@@ -451,12 +476,13 @@
             </div>
         </div>
     </div>
+    <?php if(count($individualInfoArray) == 0) {?>
     <div class="row" id="btnAL">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <input type='button' id="btnAccountLinkingB" class='btn btn-default btnDefault pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
         </div>
-    </div>
-    <div class="row" style="display:none;" id="keyIndividualPlatforms">
+    </div> <?php } else {?>
+    <div class="row" id="keyIndividualPlatforms">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="gray">
@@ -475,35 +501,22 @@
                             </tr>
                         </thead>
                         <tbody>
+                           <?php //Here go pfp data
+                            foreach($individualInfoArray as $individualInfo){ 
+                                $total = $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] + $individualInfo['Userinvestmentdata']['userinvestmentdata_activeInInvestments'] + $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedFunds'];
+                                ?>
                             <tr>
-                                <td class="logo">
-                                    <a href="/tests/dashboardCompanyOverview">
-                                        <button style="display:none;" id="showBtn" class="btn btn-default btn1CR btn-sm center-block"><?php echo __('btn1')?></button>
-                                    </a>
-                                    <img src="/img/logo/MyTripleA.png" class="img-responsive center-block platformLogo" id="mytriplea"/>
+                                <td class="logo" id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
+                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
                                 </td>
-                                <td>1.000.000,00 €</td>
-                                <td>10.000 €</td>
-                                <td>80%</td>
+                                
+                                <td><?php echo number_format((float) $total / 100, 2, ',', '') . " &euro;"?></td>
+                                <td><?php echo number_format((float) $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] / 100, 2, ',', '') . " &euro;"?></td>
+                                <td><?php echo number_format((float) ($total/$global['totalVolume'])*100, 2, ',', '') . " %"?></td>
                                 <td>12,11</td>
                                 <td>63,22%</td>
                             </tr>
-                            <tr>
-                                <td><img src="/img/logo/Zank.png" class="img-responsive center-block platformLogo"/></td>
-                                <td>30.000,00 €</td>
-                                <td>10.000 €</td>
-                                <td>80%</td>
-                                <td>12,11</td>
-                                <td>63,22%</td>
-                            </tr>
-                            <tr>
-                                <td><img src="/img/logo/Arboribus.png" class="img-responsive center-block platformLogo"/></td>
-                                <td>30.000,00 €</td>
-                                <td>10.000 €</td>
-                                <td>80%</td>
-                                <td>12,11</td>
-                                <td>63,22%</td>
-                            </tr>
+                            <?php } ?>
                         </tbody>
                     </table>
                 </div>
@@ -514,5 +527,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> <?php  } ?>
+</div>
+<div class = "ajaxResponse"> 
 </div>

@@ -54,24 +54,210 @@ class finanzarel extends p2pCompany {
     protected $credentialsGlobal = array();
     protected $requestFiles = array();
     
+    protected $valuesInvestment = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                    "name" => "loanId"                                          // Winvestify standardized name
+            ],
+            "B" => [
+                    "name" => "investment_debtor",                           // Winvestify standardized name  OK
+            ],
+            "C" => [
+                    "name" => "investment_riskRating",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "D" =>  [
+                [
+                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            "E" => [
+                    "type" => "investment_fullLoanAmount",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "F" => [// NOT FINISHED YET
+                [
+                    "name" => "dummy_cuarter",                                      // Winvestify standardized name   OK
+                    "inputData" => [                                                    // List of all concepts that the platform can generate
+                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                                "input3" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
+                                            1 => ["Investment principal increase" => "Primary_market_investment"],
+                                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
+                                            3 => ["Investment principal repayment" => "Capital_repayment"],    //OK
+                                            4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
+                                            5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
+                                            6 => ["Interest income" => "Regular_gross_interest_income"],       //
+                                            7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
+                                            8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
+                                            9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
+                                            10 => ["Discount/premium for secondary market" => "Income_secondary_market"],   // For seller
+                                            11 => ["Discount/premium for secondary market" => "Cost_secondary_market"],     // for buyer
+                                            ] 
+                            ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "G" => [
+                [
+                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "G" => [
+                [
+                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ],
+            ],
+            "H" => [
+                [
+                    "type" => "investment.currency",                                    // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ]
+            ],
+            "G" =>  [
+                [
+                    "type" => "investment.nextPaymentAmount",                           // Winvestify standardized name
+                    "inputData" => [
+				"input2" => ".",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+        ];
+
+   protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                    "name" => "transactionId"                                          // Winvestify standardized name
+            ],
+            "B" => [
+                    "name" => "dummy_year",                                                  // Winvestify standardized name  OK
+            ],
+            "C" => [
+                    "name" => "dummy_quarter",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "D" =>  [
+                [
+                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            "E" => [
+                    "type" => "loanId",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "F" => [// NOT FINISHED YET
+                [
+                    "name" => "get_detail",                                      // Winvestify standardized name   OK
+                    "inputData" => [                                                    // List of all concepts that the platform can generate
+                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                                    "input3" => [0 => ["Provisión de fondos" => "Cash_deposit"],
+                                //              1 => [ "" => "Cash_withdrawal"],
+                                                2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
+                                //              3 => [  "" => "Secondary_market_investment"],
+                                //              4 => [  "" => "Principal_repayment"],
+                                                5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
+                                //              6 => [  "" => "Principal_buyback"].
+                                                7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
+                                //              8 => [  "" => "Regular_gross_interest_income"],
+                                                9 => ["Intereses de demora" => "Delayed_interest_income"],
+                                //              10 => [  "" => "Late_payment_fee_income"],
+                                //              11 => [  "" => "Interest_income_buyback"],
+                                //              12 => [  "" => "Delayed_interest_income_buyback"],
+                                //              13 => [  "" => "Incentive_and_bonus"],
+                                                14 => ["Retrocesión de comisiones" => "Compensation"],
+                                //              15 => [  "" => "Disc/premium paid secondary market"],
+                                //              16 => [  "" => "Other 4 income"],
+                                //              17 => [  "" => "Recoveries"],
+                                                18 => ["Comisiones" => "Commission"],
+                                //              19 => [ "" => "Bank_charges",
+                                //              20 => [  "" => "Disc/premium_paid_secondary_market"],
+                                //              21 => [  "" => "Interest_payment_secondary_market_purchase"],
+                                //              22 => [  "" => "Currency_exchange_fee"],
+                                //              23 => [ "" => "Other_cost"],
+                                                24 => ["IVA sobre Comisiones" => "Tax_VAT"],
+                                //              25 => ["Tax: Income withholding tax"],
+                                //              26 => [  "" => "Write-off"],
+                                //              27 => [  "" => "Registration"],
+                                //              28 => [   "" => "Currency_exchange_transaction"],
+                                //              29 => [   "" => "Unknown_income"],
+                                //              30 => [  "" => "Unknown_cost"],
+                                //              31 => [  "" => "Unknown_concept"],
+                                                ]
+                            ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "G" => [
+                [
+                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "H" => [
+                [
+                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ],
+            ]
+        ];
+
+    protected $valuesAmortizationTable = [  // NOT FINISHED
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+        ];
+
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
     }   
-    
-    
-    
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesFinanzarelTransaction;
-    }
- 
-     public function getParserConfigInvestmentFile() {
-        return $this->$valuesFinanzarelInvestment;
-    }
-    
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesFinanzarelAmortization;
-    }    
 
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
@@ -154,9 +340,10 @@ class finanzarel extends p2pCompany {
     }
     
     /**
-     * Download the file with the user investment
-     * @param string $user
-     * @param string $password
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str = null) {
         
@@ -173,6 +360,10 @@ class finanzarel extends p2pCompany {
                 //echo $str;
 
                 $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($inputs as $input) {
                     echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;
                     $name = $input->getAttribute('name');
@@ -228,6 +419,10 @@ class finanzarel extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 //echo $str;
                 $h2s = $dom->getElementsByTagName('h2');
+                $this->verifyNodeHasElements($h2s);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 $resultLogin = false;
                 foreach ($h2s as $h2) {
                     echo $h2->nodeValue . HTML_ENDOFLINE;
@@ -245,12 +440,32 @@ class finanzarel extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
                 echo 'Login ok';
                 
+                //Get cv
+                
+                $controlVariables = $this->getElements($dom, 'span', 'class', 't-MediaList-badge');
+                $controlVariables = array_merge($controlVariables, $this->getElements($dom, 'p', 'class', 't-MediaList-desc'));
+                $controlVariablesArray = array();
+                foreach ($controlVariables as $controlVariable){
+                    $controlVariablesArray[] = $controlVariable->nodeValue;
+                }
+                print_r($controlVariablesArray);
+                
+                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($controlVariablesArray[5]);
+                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($controlVariablesArray[2]);
+                $this->tempArray['global']['amortization'] = $this->getMonetaryValue($controlVariablesArray[11]);
+                $this->tempArray['InversionNetaComprometida'] = $this->getMonetaryValue($controlVariablesArray[6]);
+                
+                print_r($this->tempArray);
                 //Get the request to download the file
                 $as = $dom->getElementsByTagName('a');
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $key => $a) {
                     //echo $key . " => " . $a->getAttribute('href') . "   " . $a->nodeValue .  HTML_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Descargar en csv') {
@@ -289,6 +504,9 @@ class finanzarel extends p2pCompany {
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
                 break; 
             case 4:
+                                                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $this->url =  array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $this->referer = strtr($referer, array(
@@ -314,6 +532,9 @@ class finanzarel extends p2pCompany {
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $fileName);
                 break;
             case 5:
+                                                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 //$credentials = array_shift($this->urlSequence);
                 $credentialsFile = array(
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
@@ -328,17 +549,26 @@ class finanzarel extends p2pCompany {
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $fileName);
                 break;
             case 6:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $this->idForSwitch++;
+            case 7:
                 $url = array_shift($this->urlSequence);
                 //echo $url . HTML_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
                 break;
-            case 7:
+            case 8:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 
                 $buttons = $this->getElementsByClass($dom, "a-IRR-button");
+                $this->verifyNodeHasElements($buttons);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($buttons as $button) {
                     $id = $button->getAttributeNode("id")->nodeValue;
                     //echo "El id es $id \n";
@@ -369,103 +599,12 @@ class finanzarel extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
                 break;
-            case 7:
-                return $tempArray["global"] = "waiting_for_global";
-                
-            /*case 6:
-                $dom = new DOMDocument;
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-                
-                $buttons = $this->getElementsByClass($dom, "a-IRR-button");
-                foreach ($buttons as $button) {
-                    $id = $button->getAttributeNode("id")->nodeValue;
-                    //echo "El id es $id \n";
-                    $pos = stripos($id, "actions_button");
-                    if ($pos !== false) {
-                        echo "cashflow $id";
-                        $credentialCashflows = explode("_", $id);
-                        $this->credentialCashflow = $credentialCashflows[0];
-                        echo "Found cashflow $this->credentialCashflow";
-                        break;
-                    }
-                        
+            case 8:
+                                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                return $tempArray;
                 
-                $inputs = $this->getElements($dom, "input");
-                
-                foreach ($inputs as $input) {
-                    $id = $input->getAttributeNode("id")->nodeValue;
-                    //echo "El id es $id \n";
-                    $pos = stripos($id, "worksheet_id");
-                    if ($pos !== false) {
-                        echo "worksheet $id \n";
-                        $x1 = $input->getAttributeNode("value")->nodeValue;
-                        echo "Found x01 $x1";
-                    }
-                    $pos = stripos($id, "report_id");
-                    if ($pos !== false) {
-                        //GET THE NODE VALUE
-                        echo "report $id \n";
-                        $x2 = $input->getAttributeNode("value")->nodeValue;
-                        echo "Found x02 $x2";
-                        break;
-                    }
-                }
-                
-                echo "The worksheet id is $x1 and $x2 \n";
-                // get ONLY the <script> nodes that dont have the src attribute
-                $xpath = new DOMXPath($dom);
-                $script_tags = $xpath->query('//body//script[not(@src)]');
-                
-                foreach ($script_tags as $script_tag) {
-                    $value = $script_tag->nodeValue;
-                    $pos = stripos($value, "LEGACY");
-                    if ($pos !== false) {
-                        echo "Found LEGACY";
-                        $posInit = stripos($value, ":", $pos);
-                        $posFinal = stripos($value, "}", $pos);
-                        $request = substr($value, $posInit+2, $posFinal - $posInit -3);
-                        echo "The request is : " . $request . "\n";
-                    }
-                }
-                
-                $credentials = array(
-                        'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
-                        'p_flow_step_id' => 11, 
-                        'p_instance' => $this->credentialsGlobal['p_instance'],  
-                        'p_debug' => '',
-                        'p_request' => 'PLUGIN=' . $request,
-                        'p_widget_name' => 'worksheet',
-                        'p_widget_mod' => 'ACTION',
-                        'p_widget_action'=> 'QUICK_FILTER',
-                        'p_widget_num_return' => 100,
-                        'x01' => $x1,
-                        'x02' => $x2,
-                        'f01' => $this->credentialCashflow . '_column_search_current_column',
-                        'f01' => $this->credentialCashflow . '_search_field',
-                        'f01' => $this->credentialCashflow . '_row_select',
-                        'f02' => 'FECHA',
-                        'f02' => '21/09/17',
-                        'f02' => 100,
-                         'p_json' => '{"pageItems":null,"salt":"204941615398798274516216840009288834792"}'
-                    );
-                $url = array_shift($this->urlSequence);
-                echo "The url of last is : ".$url;
-                $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array(
-                            '{$p_flow_step_id}' => 11,
-                            '{$p_instance}' => $this->credentialsGlobal['p_instance']
-                        ));
-                $this->headers = array(
-                    "X-Requested-With: XMLHttpRequest", 
-                    "Content-Type: application/x-www-form-urlencoded; charset=UTF-8", 
-                    "Host: $this->baseUrl");
-                //$fileName = "cashflow_1";
-                $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($url, $credentials, null, $referer);
-                //$this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
-                break;*/
         }
     }
 

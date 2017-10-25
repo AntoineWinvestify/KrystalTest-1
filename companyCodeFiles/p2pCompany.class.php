@@ -170,6 +170,9 @@ class p2pCompany {
     //Variables for amortization tables
     protected $loanIds = [];
     
+    protected $valuesTransaction;
+    protected $valuesInvestment;  
+    protected $valuesamortizationTable;     
 
     /**
      *
@@ -1558,15 +1561,44 @@ class p2pCompany {
      * @param object $error It is the error that pass the plugin of multicurl
      * @return array It is the principal array with only the error variable
      */
-    public function getError($line, $file, $id = null, $error = null) {
-        $newLine = "\n";
-        $type_sequence = null;
-        if (!empty($id)) {
-            $type_sequence = "$newLine The sequence is " . $id;
+    public function getError($line, $file, $typeErrorId = null, $typeSequence = null, $error = null) {
+        if (!empty($typeErrorId)) {
+            $this->tempArray['global']['error']['subtypeErrorId'] = $typeErrorId;
+            if (!empty($error)) {
+                $this->tempArray['global']['error']['subtypeErrorId'] = $this->getErrorCurlType($error->getCode());
+            }  
+            //$this->tempArray['global']['error']['typeOfError'] = "";
+            //$this->tempArray['global']['error']['detailedErrorInformation'] = "";
+            $this->tempArray['global']['error']['line'] = $line;
+            $this->tempArray['global']['error']['file'] = $file;
+            $this->tempArray['global']['error']['urlsequenceUrl'] = $this->errorInfo;
         }
-        $error_request = null;
+        else {
+            $this->tempArray = $this->setErrorOldUserinvestmentdata($line, $file, $typeSequence, $error);
+        }
+        return $this->tempArray;
+    }
+    
+    public function getErrorCurlType($code) {
+        $subtypeError = WIN_ERROR_FLOW_CURL;
+        switch($code) {
+            case 3:
+                $subtypeError = WIN_ERROR_FLOW_URLSEQUENCE;
+                break;
+            case 28:
+                $subtypeError = WIN_ERROR_FLOW_CURL_TIMEOUT;
+        }
+        return $subtypeError;
+    }
+    
+    public function setErrorOldUserinvestmentdata($line, $file, $typeSequence = null, $error = null) {
+        $newLine = "\n";
+        if (!empty($typeSequence)) {
+            $typeSequence = "$newLine The sequence is " . $typeSequence;
+        }
+        $errorRequest = null;
         if (!empty($error)) {
-            $error_request = "$newLine The error code of the request: " . $error->getCode()
+            $errorRequest = "$newLine The error code of the request: " . $error->getCode()
                     . "$newLine The error message of the request: " . $error->getMessage();
         }
         
@@ -1574,16 +1606,16 @@ class p2pCompany {
                 . ". The queueId is " . $this->queueId['Queue']['id']
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
                 . " ERROR Userinvestmentdata: detected in PFP id: " .  $this->companyName
-                . "$newLine Error type " . ERROR_USER_INVESTMENT_DATA
-                . " " . $type_sequence
-                . " " . $error_request;
+                . "$newLine Error type " . WIN_ERROR_USER_INVESTMENT_DATA
+                . " " . $typeSequence
+                . " " . $errorRequest;
         $this->tempArray['global']['error'] = $errorDetailed;
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
-        $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, ERROR_USER_INVESTMENT_DATA);
+        $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, WIN_ERROR_USER_INVESTMENT_DATA);
         return $this->tempArray;
     }
-
+    
     /**
      * 	borrowed from "http://guid.us/"
      * 	Generates a GUID
@@ -2496,33 +2528,33 @@ class p2pCompany {
     
     
     
-     /** 
-     * Callback functions required for Dashboard 2. 
+    /** 
+     * Callback function for Dashboard 2.  
      * The companycodeFile class can override these methods.
-     * these callback also exist in case the platform does not support xls/csv file download and the information
+     * These callback also exist in case the platform does not support xls/csv file download and the information
      * had to be collected using webscraping
      * The companycodefiles can "delete or modify" any index of the array $fileContent and as such influence "the 
-     * process of writing the data to the database. Could be used to delete one or more indices at beginning or 1 or 
-     * more at end of array.
+     * process of writing the data to the database. 
+     * Could for instance be used to delete one or more indices at beginning or 1 or more at end of array.
      * 
      * @param string $fileName      The filename (as FQDN) which has been analyzed
-     * @param string $typeOfFile    the type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
-     * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
+     * @param string $typeOfFile    The type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
+     * @param array $fileContentArray    The array which contains the result of the parsing of the downloaded file
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */   
-    public function fileanalyzed($fileName, $typeOfFile, array $fileContent) {
+    public function fileAnalyzed($fileName, $typeOfFile, array &$fileContentArray) {
         return true;
     }
 
 
     /** 
-     * Callback functions required for Dashboard 2. 
-     * The system is ready to construct the list of amortization tables to be downloaded. The default
+     * Callback function for Dashboard 2.  
+     * The system is ready to construct the list of new amortization tables to be downloaded. The default
      * algorithm is to go through the list of indices of $fileContents( = loanId) and check one by one if an entry 
      * exists for the investor. If no entry exists the loanId is added to the list of amortization tables
      * to be collected.
-     * If a array is returned then the internal algorithm is bypassed.
+     * If a non empty array is returned then the internal algorithm is bypassed.
      * 
      * @param string $fileName      The filename (as FQDN) which has been analyzed
      * @param string $typeOfFile    the type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
@@ -2535,7 +2567,7 @@ class p2pCompany {
 
     
     /** 
-     * Callback functions required for Dashboard 2. 
+     * Callback function for Dashboard 2.  
      * The system has constructed the list of amortization tables to be downloaded. 
      * This callback is only called if one or more amortizationtable(s) need(s) to be downloaded. 
      * Also note that this callback is ALSO called in case the companycodefile has facilitated the list using the
@@ -2544,13 +2576,13 @@ class p2pCompany {
      * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
      * @return ??
      */ 
-    public function afterAmortizationlist(array $amortizationtables){
+    public function afterAmortizationlist(array $amortizationTables){
          return ;   
     }    
     
 
     /** 
-     * Callback functions required for Dashboard 2.  
+     * Callback function for Dashboard 2.  
      * All the amortization tables have been downloaded and analyzed and are available in array $amortizationTables. 
      * No processing of the table(s) has yet been done.
      * 
@@ -2559,17 +2591,17 @@ class p2pCompany {
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */ 
-    public function amortizationtablesdownloaded(array $amortizationTables) {
+    public function amortizationTablesDownloaded(array $amortizationTables) {
         return true;
     }
 
 
-    /** 
-     * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during this data reading period
+    /** PROBABLY NOT NEEDED
+     * Callback function for Dashboard 2. 
+     * The main flow loops through all the active loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan status 
      * 
-     * @param string $loanStatus    Ccontains the data of the amortization tables. Main index is the loanId
+     * @param string $loanStatus    Contains the data of the amortization tables. Main index is the loanId
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
      */ 
@@ -2578,20 +2610,21 @@ class p2pCompany {
     }
 
     /** 
-     * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during this data reading period
+     * Callback function for Dashboard 2. 
+     * The main flow loops through all new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan rate 
      * 
      * @param string    Contains the data of the amortization tables. Main index is the loanId
-     * @return  integer     Loan duration as defined by Winvestify
+     * @return  integer     Loan rate as defined by Winvestify
+     *                 
      */ 
     public function normalizeLoanRate($loanRate) {
         return $loanRate;
     }
 
     /** 
-     * Callback functions required for Dashboard 2. 
-     * The main flow loops through all the new loans in which the investor has invested during this data reading period
+     * Callback function for Dashboard 2.  
+     * The main flow loops through all the active loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan duration 
      * 
      * @param string $durationString    Contains the data of the amortization tables. Main index is
@@ -2600,24 +2633,17 @@ class p2pCompany {
      *                           $duration['unit']   
      */ 
     public function normalizeLoanDuration($durationString) {
-        
-        //$amortiza 
-        
+ 
         return ;
     }
 
 
-    
-    
-    
-    
-    
-    
+       
     
     /** 
      * Callback functions required for Dashboard 2. 
      * The table was downloaded in pdf format and its content is available as pure text. This must be converted to
-     * html >table> format
+     * html <table> format
      * 
      * @param string $contentsString    Contains the data of the amortization tables. Main index is
      *                                  the loanId
@@ -2643,10 +2669,77 @@ class p2pCompany {
      */ 
     public function amortizationTableAnalyzed(array $table) {
         
-        //$amortiza 
+  
         
         return ;
     }    
+  
+    
+    /** 
+     * Read transaction configuration file
+     *     
+     * @return  array with configuration parameters
+     *              getParserConfigTransactionFile
+     */    
+    public function getParserConfigTransactionFile() {
+        return $this->valuesTransaction;
+    }
+    
+     /** 
+     * Read investment configuration file
+     *     
+     * @return  array with configuration parameters
+     * 
+     */
+    public function getParserConfigInvestmentFile() {
+        return $this->valuesInvestment;
+    }
+    
+    /** 
+     * Read amortizationtable configuration file
+     *     
+     * @return  array with configuration parameters
+     * 
+     */    
+    public function getParserConfigAmortizationTableFile() {
+        return $this->valuesAmortization;
+    }  
+    
+    
+    /** 
+     * Read configuration parameters for the transaction configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */    
+    public function getParserTransactionConfigParms() {
+        return $this->transactionConfigParms;
+    }
+
+    /** 
+     * Read configuration parameters for the investment configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */    
+    public function getParserInvestmentConfigParms() {
+        return $this->investmentConfigParms;
+    }
+    
+    /** 
+     * Read configuration parameters for the amortizationtable configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */
+    public function getParserAmortizationConfigParms() {
+        return $this->amortizationConfigParms;
+    }     
+    
+    
+    
+    
+    
     
     /**
      * Function to start the casper object
