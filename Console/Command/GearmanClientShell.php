@@ -15,8 +15,8 @@
  * +----------------------------------------------------------------------------+
  *
  *
- * @author 0.1
- * @version
+ * @author 
+ * @version 0.5
  * @date
  * @package
  */
@@ -56,7 +56,7 @@ class GearmanClientShell extends AppShell {
     
     /**
      * Function to catch a fail on a Gearman Worker
-     * @param GearmanTask $task
+     * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
      */
     public function verifyFailTask(GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -76,7 +76,7 @@ class GearmanClientShell extends AppShell {
     
     /**
      * Function to catch a exception on a Gearman Worker
-     * @param GearmanTask $task
+     * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
      */
     public function verifyExceptionTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -97,7 +97,7 @@ class GearmanClientShell extends AppShell {
     
     /**
      * Function that runs after a task was complete on the Gearman Worker
-     * @param GearmanTask $task
+     * @param GearmanTask $task It is a Gearman::Client's representation of a task done.
      */
     public function verifyCompleteTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -119,31 +119,6 @@ class GearmanClientShell extends AppShell {
         echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
     }
-    
-    /**
-     * Function that runs after a task was complete on the Gearman Worker
-     * @param GearmanTask $task
-     */
-    public function parseVerifyCompleteTask (GearmanTask $task) {
-        $data = explode(".-;", $task->unique());
-        if (empty($this->userReference[$data[0]])) {
-            $this->userReference[$data[0]] = $data[2];
-        }
-        $dataWorker = json_decode($task->data(), true);
-        foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
-            $this->userResult[$data[0]] = $status;
-            $this->gearmanErrors[$data[0]] = $dataWorker['errors'];
-            $this->tempArray[$data[0]] = $dataWorker['tempArray'];
-        }
-        print_r($this->userResult);
-        print_r($this->userReference);
-        echo "ID Unique: " . $task->unique() . "\n";
-        echo "COMPLETE: " . $task->jobHandle() . ", " . "\n";
-        print_r($dataWorker);
-        echo GEARMAN_SUCCESS;
-    }
-    
-    
     
     /**
      * Function to delete a folder of a day and a investor if there was some 
@@ -261,6 +236,17 @@ class GearmanClientShell extends AppShell {
         return $jobList;
     }    
     
+    /**
+     * Function to save an application error produce on a Gearman Worker
+     * @param array $error It contains all the information about the error
+     *              $error['line'] It is the line where the error happened
+     *              $error['file'] It is the file where the error happened
+     *              $error['urlsequenceUrl'] It is the url sequence if applied where the error happened
+     *              $error['subtypeErrorId'] It is the subtype of the error
+     *              $error['typeOfError'] It is the type of error or the summary of the detailed information of the error
+     *              $error['detailedErrorInformation'] It is the detailed information of the error
+     *              $error['typeErrorId'] It is the principal id of the error
+     */
     public function saveGearmanError($error) {
         if (empty($this->Applicationerror)) {
             $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -280,6 +266,13 @@ class GearmanClientShell extends AppShell {
         $this->Applicationerror->saveAppError($error['typeOfError'],$error['detailedErrorInformation'], $error['line'], $error['file'], $error['urlsequenceUrl'], $error['typeErrorId'], $error['subtypeErrorId']);
     }
     
+    /**
+     * Function to verify that the job was successful
+     * @param int $status It is the Id of the next queue status
+     * @param string $message It is the message to show on console
+     * @param int $restartStatus It is the Id of the queue if something fail
+     * @param int $errorStatus It is the Id of the queue if the error repeats and it is irrecoverable
+     */
     public function verifiedStatus($status, $message, $restartStatus, $errorStatus) {
         foreach ($this->userResult as $queueId => $userResult) {
             $statusProcess = $this->consolidationResult($userResult, $queueId);
