@@ -84,7 +84,7 @@ class ecrowdinvest extends p2pCompany {
      * @param Array $structure
      * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) { //ecrown doesnt have pagination
+    function collectCompanyMarketplaceData($companyBackup, $structure) { //ecrowd doesnt have pagination
         
         
         $readController = 0;
@@ -161,7 +161,7 @@ class ecrowdinvest extends p2pCompany {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
                     $tempArray['marketplace_status'] = PERCENT;
                 }
-                foreach ($companyBackup as $inversionBackup) { //if completed and same status that in backup
+                foreach ($companyBackup as $inversionBackup) { //if completed and same status that is in backup
                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] === $tempArray['marketplace_status']) {
                         echo HTML_ENDOFLINE . $tempArray['marketplace_loanReference'] . HTML_ENDOFLINE;
                         print_r($inversionBackup);
@@ -314,7 +314,7 @@ class ecrowdinvest extends p2pCompany {
      */
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
+          FIELDS USED BY Ecrowd DURING LOGIN PROCESS
           $credentials['signin']	 = 'Login';
           $credentials['csrf'] = "XXXXX";
          */
@@ -326,58 +326,6 @@ class ecrowdinvest extends p2pCompany {
                 $credentials[$key] = $option[$key];
             }
         }
-
-        /*
-
-          The csrf token is sent in the /https://www.loanbook.es/webuser/login message
-          <div id="login-body" class="jumbotron" style="border: none !important;padding: 5px 5px 5px 5px;margin-bottom
-          :5px;">
-          <p style="font-size:13px;">Introduzca su login y password:</p>
-          <div class="alert alert-error">
-          <ul>
-          </ul>
-          </div>
-
-          <form action="/webuser/login-ajax" method="post" name="LoginForm" class="form-horizontal"
-          id="loginAjax">    <input type="hidden" name="csrf" value="55141da7b21d23187a5ba86f40766cc8" />
-          <div class="control-group row">
-          <div class="col-md-5 col-xs-12" style="padding-left:15px;padding-right
-          : 5px">
-          <input name="username" type="text" class="all-wide required active" id="username"
-          placeholder="Usuario" value="">                </div>
-          <div class="col-md-4 col-xs-12" style="padding-left:5px;padding-right: 5px;">
-          <input name="password" type="password" class="all-wide required" id="password" placeholder
-          ="Contraseña" onkeypress="capLock(event)" value="">                    <p class="size1" id="divMayus"
-          style="display:none;text-align: left;">Bloq Mayús está activado</p>
-          </div>
-          <div class="col-md-2 col-xs-2" style="/*width:18%; padding-left:5px;padding-right:15px
-          ;">
-          <input name="signin" class="btn btn-warning" type="submit" id="formSubHeader" value
-          ="Login">                </div>
-          </div>
-          </form>    <p class="size1"><a data-modal="modal" href="/user/forgotpassword">¿Olvid
-          ó su contraseña? No hay problema. Por favor, haga clic aquí para recuperarla.</a></p>
-          <div style="clear:both;"></div>
-          <p class="size1"><a data-modal="modal" onclick="" data-containerwidth="800" data-backdrop="static"
-          href="/contact/invest">
-          ¿Aún no tiene un nombre de usuario y una contraseña?&nbsp;Regístrese ahora.
-          </a></p>
-
-          </div>
-          </div>
-          <div class="modal-footer">
-          <div class="modal-footer-message">
-          <label id="modal-error" class="error"></label>
-          </div>
-
-
-          </div>
-
-
-
-
-         */
-
 
         $str = $this->doCompanyLogin($credentials);
 
