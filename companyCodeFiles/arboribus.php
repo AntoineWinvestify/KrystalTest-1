@@ -127,7 +127,7 @@ class arboribus extends p2pCompany {
 
 
                         $tempArray = array();
-                        if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
+                        if ($key == 0 && $keyTable == 0) { //Compare structures, only compare the first element
                             $structureRevision = $this->htmlRevision($structure, 'tr', $table, null, null, null, 0, 1);
                             if ($structureRevision[1]) {
                                 $totalArray = false; //Stop reading in error                 
