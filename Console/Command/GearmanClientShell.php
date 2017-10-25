@@ -277,9 +277,9 @@ class GearmanClientShell extends AppShell {
         foreach ($this->userResult as $queueId => $userResult) {
             $statusProcess = $this->consolidationResult($userResult, $queueId);
             $this->Queue->id = $queueId;
-            $queueInfo = null;
             if ($statusProcess) {
                 $newState = $status;
+                $this->queueInfo[$queueId]['numberTries'] = 0;
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
                 }
@@ -293,11 +293,10 @@ class GearmanClientShell extends AppShell {
                 } else {
                     $newState = $errorStatus; //UNRECOVERED_ERROR_ENCOUNTERED;
                 }
-                $queueInfo = $this->queueInfo[$queueId];
             }
             $this->Queue->save(array(
                     'queue_status' => $newState,
-                    'queue_info' => $queueInfo
+                    'queue_info' => $this->queueInfo[$queueId]
                 ),
                 $validate = true);
         }
