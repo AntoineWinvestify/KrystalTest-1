@@ -163,6 +163,20 @@ class Linkedaccount extends AppModel {
             }
         }
         return $results;
+    } 
+    
+    public function afterSave($created, $option = array()) {
+        if ($created) {
+            $this->Investor = ClassRegistry::init('Investor');
+            $this->Queue = ClassRegistry::init('Queue');
+            $data = [];
+            $linkaccountId = $this->id;
+            $investorId = $this->data['Linkedaccount']['investor_id'];
+            $data["companiesInFlow"][0] = $linkaccountId;
+            $userReference =  $this->Investor->getInvestorIdentityByInvestorId($investorId);
+            $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data));
+            return $result;
+        }
     }
 
     /**
