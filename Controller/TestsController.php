@@ -164,13 +164,13 @@ class TestsController extends AppController {
                 }
                 if ($key == "linkedaccount_id") {
                     //Get the pfp id of the linked acount
-                    $pfpData = $this->Linkedaccount->getLinkedaccountDataList(array('id' => $individualData));
-                    $pfpId = $pfpData[0]['Linkedaccount']['company_id'];
+                    $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData),array('company_id'));
+                    $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
                     $globalData[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
                     //Get pfp logo and name
-                    $pfpFullData = $this->Company->getCompanyDataList(array('id' => $pfpId));
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpFullData[$pfpId]['company_logoGUID'];
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpFullData[$pfpId]['company_name'];
+                    $pfpOtherData = $this->Company->getData(array('id' => $pfpId),array("company_logoGUID", "company_name"));
+                    $globalData[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
+                    $globalData[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                 }
             }
         }
