@@ -79,7 +79,7 @@
                                             if (!empty($authMsg)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder center-block userNameLogin" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder4 center-block userNameLogin" . ' ' . $errorClass;
                                             ?>
                                             
                                             <div>
@@ -103,7 +103,7 @@
                                             if (!empty($authMsg)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue_noborder center-block passwordLogin" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder4 center-block passwordLogin" . ' ' . $errorClass;
                                             ?>		
                                             <div style="margin-top:30px">
                                                 <label><?php echo __('Password')?></label>
