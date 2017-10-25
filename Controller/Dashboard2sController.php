@@ -68,10 +68,7 @@ class Dashboard2sController extends AppController {
         $investorReference = $this->Session->read('Auth.User.Investor.investor_identity');
         $filterConditions = array('userinvestmentdata_investorIdentity' => $investorReference, 'linkedaccount_id' => $linkedAccount);
 
-        $dataResult = $this->Userinvestmentdata->find("first", array("recursive" => -1,
-            "conditions" => $filterConditions,
-            "order" => "created DESC",
-        ));
+        $dataResult = $this->Userinvestmentdata->getData($filterConditions);
         $dataResult['logo'] = $logo;
         $dataResult['name'] = $name;
         
