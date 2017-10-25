@@ -41,6 +41,9 @@ App::uses('Model', 'Model');
 Version 0.1		2016-10-29																
 function createReference															[OK, tested]
 
+
+Version 0.2		2017-10-25
+function getData        [Tested local, OK]
  
  
 */
@@ -240,5 +243,22 @@ public function matchFields($check = array(), $compareField = null) {
 		return true;
 }
 
+
+    /**
+     *Generic function to get the data of a table
+     * 
+     * @param array $filter filter of the table  ---> array("key" => value, ...)
+     * @param array $field Fields you want get   ---> array(field, ...);
+     */
+    public function getData($filter, $field){
+
+        $resultData = $this->find("all", array("recursive" => -1,
+            "conditions" => $filter,
+            "fields" => $field,
+
+        ));
+
+        return $resultData;
+    }
 
 }

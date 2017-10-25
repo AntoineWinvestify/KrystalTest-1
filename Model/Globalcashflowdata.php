@@ -101,24 +101,6 @@ var $validate = array(
         }    
         $data ['userinvestmentdata_id'] = $userinvestmentdataId;
         $this->Globalcashflowdatatotal->save($data, $validate = true); 
-    }
-    
-    
-    /**
-     * Get generic data of the table
-     * 
-     * @param array $filter filter of the table  ---> array("key" => value, ...)
-     * @param array $field Fields you want get   ---> array(field, ...);
-     */
-    public function getData($filter, $field){
-        
-        $resultData = $this->find("all", array("recursive" => -1,
-            "conditions" => $filter,
-            "fields" => $field,
-            
-        ));
-        
-        return $resultData;
-    }
+    }  
 
 }
