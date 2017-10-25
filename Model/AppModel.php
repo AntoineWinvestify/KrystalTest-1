@@ -250,7 +250,7 @@ public function matchFields($check = array(), $compareField = null) {
      * @param array $filter filter of the table  ---> array("key" => value, ...)
      * @param array $field Fields you want get   ---> array(field, ...);
      */
-    public function getData($filter, $field = null){
+    public function getData($filter = null, $field = null){
 
         $resultData = $this->find("all", array("recursive" => -1,
             "conditions" => $filter,
