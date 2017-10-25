@@ -245,17 +245,20 @@ public function matchFields($check = array(), $compareField = null) {
 
 
     /**
-     *Generic function to get the data of a table
-     * 
-     * @param array $filter filter of the table  ---> array("key" => value, ...)
-     * @param array $field Fields you want get   ---> array(field, ...);
+     *  Generic function to get the data of a table
+     * @param  array $filter filter of the table  ---> array("key" => value, ...),
+     * @param  array $field  Fields you want get  ---> array("field", ...),
+     * @param  array $order  table order          ---> array("field" DES or ASC),
+     * @param  int   $limit  Limit table result   ---> 1,
+     * @return array         data from the table
      */
-    public function getData($filter = null, $field = null){
+    public function getData($filter = null, $field = null, $order = null, $limit = null){
 
         $resultData = $this->find("all", array("recursive" => -1,
             "conditions" => $filter,
             "fields" => $field,
-
+            "order" => $order,
+            "limit" => $limit,
         ));
 
         return $resultData;

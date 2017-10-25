@@ -28,6 +28,12 @@
  * Added style
  * Added Js
  * Added all content
+ * 
+ * [2017-10-24] version 0.3
+ * Added db data
+ * 
+ * [2017-10-24] version 0.4
+ * Added ajax function for individual pfp data
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>

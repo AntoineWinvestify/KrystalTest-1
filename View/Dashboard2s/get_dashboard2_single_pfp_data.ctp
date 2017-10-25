@@ -241,14 +241,14 @@ echo $companyInvestmentDetails[0];
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Defaulted') ?></strong></p>
-                                            <h3 class="title">2,25%</h3>
+                                            <h3 class="title">8,45%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><?php echo __('Current') ?></td>
-                                                        <td class="right"><?php echo __('2,25%') ?></td>
+                                                        <td class="right"><?php echo __('91,55%') ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('8-30 DPD') ?></td>
