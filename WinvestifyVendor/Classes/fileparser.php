@@ -38,232 +38,232 @@
  * getLastError
  */
 
-    /**
-     *
-     * Class that can analyze a xls/csv/pdf/html file(s) and writes the information to an array
-     *
-     *
-     */
-    class Fileparser {
-        protected $config = array ('offsetStart' => 0,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
-                                 );                     // if array does not have $sortParameter then "global" index is used
-                                                        // Typically used for sorting by loanId index
+/**
+ *
+ * Class that can analyze a xls/csv/pdf/html file(s) and writes the information to an array
+ *
+ *
+ */
+class Fileparser {
+    protected $config = array ('offsetStart' => 0,
+                            'offsetEnd'     => 0,
+                            'separatorChar' => ";",
+                            'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
+                             );                     // if array does not have $sortParameter then "global" index is used
+                                                    // Typically used for sorting by loanId index
 
-        protected $errorData = array();                 // Contains the information of the last occurred error
+    protected $errorData = array();                 // Contains the information of the last occurred error
 
-        protected $currencies = array(EUR => ["EUR", "€"],
-                                        GBP => ["GBP", "£"],
-                                        USD => ["USD", "$"],
-                                        ARS => ["ARS", "$"],
-                                        AUD => ["AUD", "$"],
-                                        NZD => ["NZD", "$"],
-                                        BYN => ["BYN", "BR"],
-                                        BGN => ["BGN", "лв"],
-                                        CZK => ["CZK", "Kč"],
-                                        DKK => ["DKK", "Kr"],
-                                        CHF => ["CHF", "Fr"],
-                                        MXN => ["MXN", "$"],
-                                        RUB => ["RUB", "₽"],
-                                        );
+    protected $currencies = array(EUR => ["EUR", "€"],
+                                    GBP => ["GBP", "£"],
+                                    USD => ["USD", "$"],
+                                    ARS => ["ARS", "$"],
+                                    AUD => ["AUD", "$"],
+                                    NZD => ["NZD", "$"],
+                                    BYN => ["BYN", "BR"],
+                                    BGN => ["BGN", "лв"],
+                                    CZK => ["CZK", "Kč"],
+                                    DKK => ["DKK", "Kr"],
+                                    CHF => ["CHF", "Fr"],
+                                    MXN => ["MXN", "$"],
+                                    RUB => ["RUB", "₽"],
+                                    );
 
-        protected $transactionDetails = [  
-                1 => [
-                    "detail" => "Cash_deposit",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
-                    "account" => "CF",
-                    "type" => "globalcashflowdata_platformDeposits"            
-                    ],
-                2 => [
-                    "detail" => "Cash_withdrawal",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "CF",
-                    "type" => "globalcashflowdata_platformWithdrawals"          
-                    ],
-                3 => [
-                    "detail" => "Primary_market_investment",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "Capital",
-                    "type" => "investment_myInvestment",                     
-                    ],
-                4 => [
-                    "detail" => "Secondary_market_investment",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "Capital",
-                    "type" => "investment_secondaryMarketInvestment"              
-                    ],
-                5 => [
-                    "detail" => "Capital_repayment",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "Capital",
-                    "type" => "payment_capitalRepayment"                      
-                    ],
-                6 => [
-                    "detail" => "Partial_principal_repayment",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "Capital",
-                    "type" => "payment_partialPrincipalRepayment"
-                    ],
-                7 => [
-                    "detail" => "Principal_buyback",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "Capital",
-                    "type" => "payment_principalBuyback"                     
-                    ],
-                8 => [
-                    "detail" => "Principal_and_interest_payment",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "Mix",
-                    "type" => "payment_principalAndInterestPayment"
-                    ],
-                9 => [
-                    "detail" => "Regular_gross_interest_income",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_regularGrossInterestIncome"           
-                    ],
-                10 => [
-                    "detail" => "Delayed_interest_income",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_delayedInterestPayment"          
-                    ],
-                11 => [ 
-                    "detail" => "Late_payment_fee_income",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_latePaymentFeeIncome"                  
-                    ],
-                12 => [
-                    "detail" => "Interest_income_buyback",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_interestIncomeBuyback"                 
-                    ],
-                13 => [
-                    "detail" => "Delayed_interest_income_buyback",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_delayedInterestIncomeBuyback"           
-                    ],
-                14 => [
-                    "detail" => "Incentives_and_bonus",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "concept14"  
-                    ],
-                15 => [
-                    "detail" => "Compensation",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "concept15"    
-                    ],
-                16 => [
-                    "detail" => "Income_secondary_market",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "investment_incomeSecondaryMarket"        
-                    ],
-                17 => [
-                    "detail" => "Currency_fluctuation_positive",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "concept17"  
-                    ],
+    protected $transactionDetails = [  
+            1 => [
+                "detail" => "Cash_deposit",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
+                "account" => "CF",
+                "type" => "globalcashflowdata_platformDeposits"            
+                ],
+            2 => [
+                "detail" => "Cash_withdrawal",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "CF",
+                "type" => "globalcashflowdata_platformWithdrawals"          
+                ],
+            3 => [
+                "detail" => "Primary_market_investment",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestment",                     
+                ],
+            4 => [
+                "detail" => "Secondary_market_investment",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_secondaryMarketInvestment"              
+                ],
+            5 => [
+                "detail" => "Capital_repayment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Capital",
+                "type" => "payment_capitalRepayment"                      
+                ],
+            6 => [
+                "detail" => "Partial_principal_repayment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Capital",
+                "type" => "payment_partialPrincipalRepayment"
+                ],
+            7 => [
+                "detail" => "Principal_buyback",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Capital",
+                "type" => "payment_principalBuyback"                     
+                ],
+            8 => [
+                "detail" => "Principal_and_interest_payment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Mix",
+                "type" => "payment_principalAndInterestPayment"
+                ],
+            9 => [
+                "detail" => "Regular_gross_interest_income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_regularGrossInterestIncome"           
+                ],
+            10 => [
+                "detail" => "Delayed_interest_income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_delayedInterestPayment"          
+                ],
+            11 => [ 
+                "detail" => "Late_payment_fee_income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_latePaymentFeeIncome"                  
+                ],
+            12 => [
+                "detail" => "Interest_income_buyback",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_interestIncomeBuyback"                 
+                ],
+            13 => [
+                "detail" => "Delayed_interest_income_buyback",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_delayedInterestIncomeBuyback"           
+                ],
+            14 => [
+                "detail" => "Incentives_and_bonus",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept14"  
+                ],
+            15 => [
+                "detail" => "Compensation",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept15"    
+                ],
+            16 => [
+                "detail" => "Income_secondary_market",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "investment_incomeSecondaryMarket"        
+                ],
+            17 => [
+                "detail" => "Currency_fluctuation_positive",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept17"  
+                ],
 
-                19 => [
-                    "detail" => "Recoveries",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "concept19"
-                    ],
-                20 => [
-                    "detail" => "Commission",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept20"
-                    ],
-                21 => [
-                    "detail" => "Bank_charges",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept21"
-                    ],
-                22 => [
-                    "detail" => "Cost_secondary_market",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,                
-                    "account" => "PL",
-                    "type" => "investment_costSecondaryMarket"
-                    ],
-                23 => [
-                    "detail" => "Interest_payment_secondary_market_purchase",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept23"
-                    ],           
-                24 => [
-                    "detail" => "currency_exchange_fee",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept24"
-                    ],
-                25 => [
-                    "detail" => "currency_fluctuation_negative",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept25"
-                    ],                        
-                26 => [
-                    "detail" => "Tax_VAT",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept26"
-                    ],
-                27 => [
-                    "detail" => "Tax_income_withholding_tax",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept27"
-                    ],
-                28 => [
-                    "detail" => "Write-off",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept28"
-                    ],
-                29 => [
-                    "detail" => "Registration",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept29"
-                    ],
-                30 => [
-                    "detail" => "Currency_exchange_transaction",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept30"
-                    ],
-                31 => [
-                    "detail" => "Unknown_income",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept31"
-                    ],
-                32 => [
-                    "detail" => "Unknown_cost",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept32"
-                    ],
-                33 => [
-                    "detail" => "Unknown_concept",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept33"
-                    ]
-            ];
+            19 => [
+                "detail" => "Recoveries",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept19"
+                ],
+            20 => [
+                "detail" => "Commission",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept20"
+                ],
+            21 => [
+                "detail" => "Bank_charges",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept21"
+                ],
+            22 => [
+                "detail" => "Cost_secondary_market",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,                
+                "account" => "PL",
+                "type" => "investment_costSecondaryMarket"
+                ],
+            23 => [
+                "detail" => "Interest_payment_secondary_market_purchase",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept23"
+                ],           
+            24 => [
+                "detail" => "currency_exchange_fee",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept24"
+                ],
+            25 => [
+                "detail" => "currency_fluctuation_negative",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept25"
+                ],                        
+            26 => [
+                "detail" => "Tax_VAT",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept26"
+                ],
+            27 => [
+                "detail" => "Tax_income_withholding_tax",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept27"
+                ],
+            28 => [
+                "detail" => "Write-off",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept28"
+                ],
+            29 => [
+                "detail" => "Registration",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept29"
+                ],
+            30 => [
+                "detail" => "Currency_exchange_transaction",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept30"
+                ],
+            31 => [
+                "detail" => "Unknown_income",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept31"
+                ],
+            32 => [
+                "detail" => "Unknown_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept32"
+                ],
+            33 => [
+                "detail" => "Unknown_concept",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept33"
+                ]
+        ];
 
 
     function __construct() {
@@ -897,12 +897,25 @@ print_r($config);
         return $loanId;
     }
     
+    /**
+     * Function to get the extension of a file
+     * @param string $filePath It is the path to the file
+     * @return string It is the extension of the file
+     */
     public function getExtensionFile($filePath) {
         $file = new File($filePath, false);
         $extension = $file->ext();
         return $extension;
     }
     
+    /**
+     * Function to analyze a file depending on its extension
+     * @param string $filePath It is the path to the file
+     * @param array  $parserConfig Array that contains the configuration data of a specific "document"
+     * @param string $extension It is the extension of the file
+     * @return array $parsedData
+     *         false in case an error occurred
+     */
     public function analyzeFileAmortization($filePath, $parserConfig, $extension) {
         
         switch($extension) {
@@ -913,6 +926,13 @@ print_r($config);
         return $tempArray;
     }
     
+    /**
+     * Function to analyze a html file to get its content
+     * @param string $filePath It is the path to the file
+     * @param array  $parserConfig Array that contains the configuration data of a specific "document"
+     * @return array $parsedData
+     *         false in case an error occurred
+     */
     public function getHtmlData($filePath, $parserConfig) {
         $dom = new DOMDocument();
         $dom->loadHTMLFile($filePath);
