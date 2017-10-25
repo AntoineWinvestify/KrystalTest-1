@@ -51,13 +51,17 @@ class Dashboard2sController extends AppController {
      * 	Read the data of all active investments that belong to a linked account
      *
      */
-    function getDashboard2SinglePfpData($linkedAccount) {
+    function getDashboard2SinglePfpData() {
 
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
 
+        $linkedAccount = $this->request->data['id'];
+        $logo = $this->request->data['logo'];
+        $name = $this->request->data['name'];
+        
         $this->layout = 'ajax';
         $this->disableCache();
 
@@ -68,8 +72,11 @@ class Dashboard2sController extends AppController {
             "conditions" => $filterConditions,
             "order" => "created DESC",
         ));
+        $dataResult['logo'] = $logo;
+        $dataResult['name'] = $name;
         
-        $this->set('companyInvestmentDetails', $dataResult);
+        $result = array(true, $dataResult);
+        $this->set('companyInvestmentDetails', $result);
     }
 
     /**

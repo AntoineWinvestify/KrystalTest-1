@@ -61,6 +61,18 @@
             $("#keyIndividualPlatforms").hide();
         });
         
+        $(document).on("click", ".logo", function(){ 
+            var params = {
+                id : $(this).attr("id"),
+                logo : $("#logo"+id).attr("src"),
+                name : $("#logo"+id).attr("alt"),
+            };
+            var data = jQuery.param(params);
+            link = '../Dashboard2s/getDashboard2SinglePfpData/';
+            getServerData(link, data, successAjax, errorAjax);
+               
+        });
+        
         <?php //Tooltip clicks ?>
         $(".logo").hover(function() {
             id = $(this).attr("id");
@@ -106,6 +118,18 @@
           options: chartOptions
         });
     });
+    
+    function successAjax(result){
+       // alert("ok " + result);
+       $(".dashboarGlobaldOverview").fadeOut();
+       $(".ajaxResponse").html(result);
+       
+    }
+    
+    function errorAjax(result){
+         //alert("not ok " + result);
+    }
+    
 </script>
 <style>
     td {
@@ -179,7 +203,7 @@
         transform: rotate3d(0, 0, 1, -135deg);
     }
 </style>
-<div class="dashboardOverview">
+<div class="dashboarGlobaldOverview">
     <div class="row" id="overview">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card card-nav-tabs">
@@ -452,12 +476,13 @@
             </div>
         </div>
     </div>
+    <?php if(count($individualInfoArray) == 0) {?>
     <div class="row" id="btnAL">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <input type='button' id="btnAccountLinkingB" class='btn btn-default btnDefault pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
         </div>
-    </div>
-    <div class="row" style="display:none;" id="keyIndividualPlatforms">
+    </div> <?php } else {?>
+    <div class="row" id="keyIndividualPlatforms">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header" data-background-color="gray">
@@ -481,15 +506,13 @@
                                 $total = $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] + $individualInfo['Userinvestmentdata']['userinvestmentdata_activeInInvestments'] + $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedFunds'];
                                 ?>
                             <tr>
-                                <td class="logo">
-                                    <a href="/tests/dashboardCompanyOverview">
-                                        <button style="display:none;" id="showBtn" class="btn btn-default btn1CR btn-sm center-block"><?php echo __('btn1')?></button>
-                                    </a>
-                                    <img src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" id="mytriplea"/>
+                                <td class="logo" id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
+                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
                                 </td>
-                                <td><?php echo round($total, 2 , PHP_ROUND_HALF_UP) . " &euro;"?></td>
-                                <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'], 2 , PHP_ROUND_HALF_UP) . " &euro;"?></td>
-                                <td><?php echo round(($total/$global['totalVolume'])*100, 2 , PHP_ROUND_HALF_UP) . " %"?></td>
+                                
+                                <td><?php echo number_format((float) $total / 100, 2, ',', '') . " &euro;"?></td>
+                                <td><?php echo number_format((float) $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] / 100, 2, ',', '') . " &euro;"?></td>
+                                <td><?php echo number_format((float) ($total/$global['totalVolume'])*100, 2, ',', '') . " %"?></td>
                                 <td>12,11</td>
                                 <td>63,22%</td>
                             </tr>
@@ -504,5 +527,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> <?php  } ?>
+</div>
+<div class = "ajaxResponse"> 
 </div>
