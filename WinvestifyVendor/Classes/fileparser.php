@@ -32,6 +32,9 @@
  * 2017-10-15           version 0.2
  * support of configuration parameters 'offsetStart' and 'offsetEnd'
  * 
+ * 2017-10-24           version 0.3
+ * Added function to parse a html file
+ * 
  * 
  * Pending:
  * chunking, csv file check
