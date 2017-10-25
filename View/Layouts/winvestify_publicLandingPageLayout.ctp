@@ -193,7 +193,7 @@
         <!--========== PAGE CONTENT ==========-->
         <!-- Toolbox -->
         <a name="mark_ftb"></a>
-        <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed; padding-bottom: 150px;">
+        <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed;">
             <div class="container g-text-center--xs g-padding-y-80--xs g-padding-y-125--sm">
                 <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
                 </div>
@@ -274,7 +274,7 @@
         <div id="schema" class="row">
             <hr class="specialHr" width="90%">
             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="height: 500px;">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="schemaImgDiv">
                     <img src="/img/landingpage/schema_spa.png" class="imgResponsive schemaImg center-block"/>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -325,11 +325,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2" style="padding: 50px 0px">
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2" style="padding: 50px 10px">
                 <div class="g-text-center--xs">
-                    <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __("Join us. It's easy") ?></p>
+                    <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs" style="padding: 0px 5px"><?php echo __("Join us. It's easy") ?></p>
                 </div>
-                <h4 align="center" style="padding: 0px 0px 20px 0px;"><?php echo __('Open an account and explore all the connected platforms.')?><br/><?php echo __('We make it easy for you access the main Lending platforms with "One Click Registration"')?></h4>
+                <h4 align="center" style="padding: 0px 10px 20px 10px;"><?php echo __('Open an account and explore all the connected platforms.')?><br/><?php echo __('We make it easy for you access the main Lending platforms with "One Click Registration"')?></h4>
                 <a href="/users/registerPanel">
                     <button class="btn btn-lg btn1CR center-block"><?php echo __('Open new account')?></button>
                 </a>
