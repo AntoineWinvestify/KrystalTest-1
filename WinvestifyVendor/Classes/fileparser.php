@@ -36,6 +36,9 @@
  * Pending:
  * chunking, csv file check
  * getLastError
+ * adapt to usage of library bc-math
+ * 
+ * 
  */
 
 
@@ -285,6 +288,7 @@
      */
     public function analyzeFile($file, $configuration) {
 echo "INPUT FILE = $file \n";
+echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
        // determine first if it a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -299,11 +303,12 @@ echo "INPUT FILE = $file \n";
             $objPHPExcel = PHPExcel_IOFactory::load($file);
         }
 
-        ini_set('memory_limit','2048M');
+        ini_set('memory_limit','1048M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         print_r($this->config);
@@ -348,6 +353,7 @@ echo "INPUT FILE = $file \n";
         $outOfRange = false;
 
         foreach ($rowDatas as $keyRow => $rowData) {
+//            echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
@@ -358,7 +364,7 @@ echo "INPUT FILE = $file \n";
                     eval($tempString);
                 }
                 else {          // "type" => .......
-                    foreach ($value as $userFunction ) {
+                    foreach ($value as $myKey => $userFunction ) {
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
                         }
@@ -382,7 +388,18 @@ echo "INPUT FILE = $file \n";
                                 }
                             }
                         }
+if (empty($rowData[$key])) { // All rowData is empty
+//echo __FUNCTION__ . " " . __LINE__ . " ERROR: Memory = " . memory_get_usage (false)  . "\n"; 
+    echo __FUNCTION__ . " " . __LINE__ . " Key = $key ,keyRow = $keyRow, i = $i and myKey = $myKey\n";
 
+ //   echo __FUNCTION__ . " " . __LINE__ . "\n";
+ //  print_r($userFunction['inputData']);
+ //  print_r($rowData);
+
+  //  echo __FILE__ . " " . __LINE__ . " END OF DEBUG\n";
+ 
+   // exit;
+} 
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
@@ -727,7 +744,7 @@ echo "INPUT FILE = $file \n";
             return $result;
         }
         else {
-            echo "unknown concept, so start doing some guessing for concept $originalConceptMintos\n";  
+            echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
         }
     } 
     
@@ -785,39 +802,39 @@ echo "INPUT FILE = $file \n";
      *                  The variable name is read from "internal variable" $this->transactionDetails.
      */
     private function getTransactionDetail($input, $config) {
-print_r($input);
-print_r($config);
-        
+
+echo __FUNCTION__ . " " . __LINE__ . " Entering with input = $input\n";     
+    
          foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
             echo "configItemKey = $configItemKey and configItem = $configItem \n";
             foreach ($this->transactionDetails as $key => $detail) { 
                 $position = strpos($input, $configItemKey );
-                if ($position !== false) {
+                if ($position !== false) {                   
                     echo "The detail = " . $detail['detail'] . "\n";
                     if ($detail['detail'] == $configItem){
                         $internalConceptName = $detail['type'];
                         $found = YES;
-                        echo "Jackpot\n";
+                        echo __FUNCTION__ . " " . __LINE__ . " OK analysis\n";  
                         break 2;
                     }
                 }
             }
         }        
         if ($found == YES) {
-            echo "YES FOUND\n";
             $result = array($internalConceptName,"type" => "internalName");
-            print_r($result);
+ //           print_r($result);
             return $result;
         }
         else {
-            echo "unknown concept, so start doing some Guessing for concept $originalConceptMintos\n";  
+            echo "unknown concept, so start doing some Guessing for concept $input\n";  
         }     
        
-        
-        
-        
+//print_r($config);       
+echo "Exiting";
+exit;
+      
         
   /*      
         foreach ($config as $configKey => $configItem) {

@@ -121,6 +121,7 @@ class ParseDataWorkerShell extends AppShell {
 
         foreach ($platformData as $linkedAccountKey => $data) {
             if ($data['pfp'] <> "mintos") { // TO BE REMOVED           TO BE REMOVED
+                echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
                 continue;
             }
             $platform = $data['pfp'];
@@ -170,7 +171,8 @@ class ParseDataWorkerShell extends AppShell {
                 $tempResult = array();
                 foreach ($approvedFiles as $approvedFile) {
                     unset($errorInfo);
-
+echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
+                    
                     $myParser->setConfig(array('sortParameter' => "investment_loanId"));
 echo __FILE__ . " " . __LINE__ . "\n";
                     
@@ -215,7 +217,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
             foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
                 $totalParsingresultInvestmentsTemp[$loanIdKey] = $totalParsingresultInvestments[$loanIdKey][0];
                 if ( !array_key_exists ($loanIdKey , $totalParsingresultInvestments ))  {
-                    echo "NO found match for loanId = $loanIdKey  \n";                      // THIS IS NEVER POSSIBLE
+          //          echo "NO found match for loanId = $loanIdKey  \n";                      // THIS IS NEVER POSSIBLE
                 }
             }
  echo __FILE__ . " " . __LINE__ . "   \n";
@@ -233,12 +235,18 @@ echo __FILE__ . " " . __LINE__ . "\n";
                 }
             }
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
+echo "Number of transactions is " . count ($returnData[$linkedAccountKey]['parsingResultTransactions']) . "\n";
+echo "Number of investments  is " . count ($returnData[$linkedAccountKey]['parsingResultInvestments']) . "\n";  
+echo "Number of new loans  is " . count ($returnData[$linkedAccountKey]['newLoans']) . "\n";
             unset( $newLoans);
         }
-        print_r($returnData[885]['newLoans']);
+//        print_r($returnData[885]['newLoans']);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         }        
         return json_encode($returnData);
     }
 }
+
+
+
