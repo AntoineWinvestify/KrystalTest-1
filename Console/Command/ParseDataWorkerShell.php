@@ -145,20 +145,24 @@ class ParseDataWorkerShell extends AppShell {
             foreach ($fileTypesToCheck as $actualFileType) {
                 $approvedFiles = $this->readFilteredFiles($files,  $actualFileType);
                 switch ($actualFileType) {
-                    case INVESTMENT_FILE:
-                        if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment File\n";
-                        }
-                        $parserConfigFile = $companyHandle->getParserConfigInvestmentFile(); 
-                        $configParameters = $companyHandle->getParserInvestmentConfigParms();
-                        break;
                     case TRANSACTION_FILE:
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction File\n";
                         }
                         $parserConfigFile = $companyHandle->getParserConfigTransactionFile();
                         $configParameters = $companyHandle->getParserTransactionConfigParms();
-                        break;                     
+                        continue;
+                        break;  
+                        
+                    case INVESTMENT_FILE:
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment File\n";
+                        }
+                        $parserConfigFile = $companyHandle->getParserConfigInvestmentFile(); 
+                        $configParameters = $companyHandle->getParserInvestmentConfigParms();
+                        print_r($configParameters);
+                        break;                        
+                        
                     case EXTENDED_TRANSACTION_FILE:
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Extended Transaction File\n";
@@ -167,17 +171,16 @@ class ParseDataWorkerShell extends AppShell {
                         $configParameters = $companyHandle->getParserExtendedTransactionconfigParm();
                         break; 
                 }
-                
+        
                 $tempResult = array();
                 foreach ($approvedFiles as $approvedFile) {
                     unset($errorInfo);
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-                    
-                    $myParser->setConfig(array('sortParameter' => "investment_loanId"));
-echo __FILE__ . " " . __LINE__ . "\n";
-                    
+                                       
                     $myParser->setConfig($configParameters);
+ echo "TTTTT\n";                   
                     $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
+ echo "VVVVV\n";                   
 
                     echo "Dealing with file $approvedFile\n";
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
@@ -190,6 +193,9 @@ echo __FILE__ . " " . __LINE__ . "\n";
                     else {       // all is OK
                         if ($actualFileType == INVESTMENT_FILE) {
                             $totalParsingresultInvestments = $tempResult;    // add $result, combine the arrays
+                            print_r($tempResult);
+                            echo "DDD";
+                            exit;
                         }
                         if ($actualFileType == TRANSACTION_FILE) {
                             $totalParsingresultTransactions = $tempResult;
@@ -213,7 +219,9 @@ echo __FILE__ . " " . __LINE__ . "\n";
                     }
                 }
             }
-//print_r($totalParsingresultInvestments);
+//print_r($totalParsingresultTransactions);
+echo "EE";
+
             foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
                 $totalParsingresultInvestmentsTemp[$loanIdKey] = $totalParsingresultInvestments[$loanIdKey][0];
                 if ( !array_key_exists ($loanIdKey , $totalParsingresultInvestments ))  {
@@ -235,12 +243,9 @@ echo __FILE__ . " " . __LINE__ . "\n";
                 }
             }
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
-echo "Number of transactions is " . count ($returnData[$linkedAccountKey]['parsingResultTransactions']) . "\n";
-echo "Number of investments  is " . count ($returnData[$linkedAccountKey]['parsingResultInvestments']) . "\n";  
-echo "Number of new loans  is " . count ($returnData[$linkedAccountKey]['newLoans']) . "\n";
             unset( $newLoans);
         }
-//        print_r($returnData[885]['newLoans']);
+        print_r($returnData);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         }        

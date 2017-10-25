@@ -328,7 +328,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */
     private function saveExcelToArray($rowDatas, $values) {
         $tempArray = [];
-
+        $maxRows = count($rowDatas);
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $this->config['offsetStart']) {
@@ -338,16 +338,46 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $i++;
         }
 
+        echo "totalRows = $maxRows\n";
+     
+        for ($i = $maxRows; $i > 0; $i--) {
+            if (empty($rowDatas[$i]["A"])) {
+                echo "Deleting some shit, i = " . ($i) . "\n";
+                unset($rowDatas[$i]);
+            }
+        }   
+/*
+        foreach ($rowDatas as $key => $rowData) {
+            echo "i = $i\n";
+            print_r($rowDatas[$key]['A']);
+            echo " ";
+            print_r($rowDatas[$key]['B']);
+            echo " ";
+            print_r($rowDatas[$key]['C']);
+            echo " ";
+            print_r($rowDatas[$key]['D']);
+            echo " ";
+            print_r($rowDatas[$key]['E']);
+            echo " ";
+            print_r($rowDatas[$key]['F']);
+            echo " ";
+            print_r($rowDatas[$key]['G']);
+            echo " ";
+        }
+*/
+ 
         $i = 0;
         $totalRows = count($rowData);
+        echo "totalRows = $totalRows\n";
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $this->config['offsetEnd'] - 1) {
                 break;
             }
-            unset($rowDatas[$totalRows - 1]);
+            unset($rowDatas[$totalRows]);
             $i++;
-        }        
-        
+        }  
+       
+      
         
         $i = 0;
         $outOfRange = false;
@@ -390,7 +420,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                         }
 if (empty($rowData[$key])) { // All rowData is empty
 //echo __FUNCTION__ . " " . __LINE__ . " ERROR: Memory = " . memory_get_usage (false)  . "\n"; 
-    echo __FUNCTION__ . " " . __LINE__ . " Key = $key ,keyRow = $keyRow, i = $i and myKey = $myKey\n";
+ //   echo __FUNCTION__ . " " . __LINE__ . " Key = $key ,keyRow = $keyRow, i = $i and myKey = $myKey\n";
 
  //   echo __FUNCTION__ . " " . __LINE__ . "\n";
  //  print_r($userFunction['inputData']);
@@ -426,25 +456,47 @@ if (empty($rowData[$key])) { // All rowData is empty
                 }
             }
 
-            if (!empty($this->config['sortParameter'])) {
-                if (!empty($this->config['sortParameter'])) {
-                    $temp = "\$tempArray[\$tempArray[\$i]['" . str_replace(".", "']['", $this->config['sortParameter']) . "']][] = \$tempArray[\$i];";
-                    eval($temp);
-                }
-                else {      // move to the global index
-                    $tempArray['global'][] = $tempArray[$i];
-                }
+            $countSortParameters = count($this->config['sortParameter']);
+            switch ($countSortParameters) {
+                case 1:
+                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                    echo "sortParam1 = $sortParam1 \n";
+                    $tempArray[$sortParam1][] = $tempArray[$i];
+                    unset($tempArray[$i]);         
+                break; 
+            
+                case 2:
+                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
+                    $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];        
+                    echo "sortParam1 = $sortParam1 and sortParam2 = $sortParam2\n";
+                    $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
+                    unset($tempArray[$i]);
+                break;               
             }
-     //        unset($tempArray[$i]);  
+            
+            if (!empty($this->config['sortParameter'])) {
+                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
+                $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];
+                echo "sortParam1 = $sortParam1 and sortParam2 = $sortParam2\n";
+DO a case in order to have 0, 1 or 2 indeces
+                $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
+                unset($tempArray[$i]);
+            }
+            else {      // move to the global index
+            }
+  
         $i++;
-    }
+        }
+//print_r($tempArray);
 
 // Delete the numeric indices. This should not be necesary but the code above does
 // NOT work, the bad line is "unset($tempArray[$i]);".// So below is a stupid work-around
-        for ($i; $i >= 0; $i--) {
-            unset($tempArray[$i]);
-        }
-        return $tempArray;
+    for ($i; $i >= 0; $i--) {
+  //      unset($tempArray[$i]);
+    }
+ //      exit;
+   
+    return $tempArray;
     }
 
 
@@ -803,20 +855,20 @@ if (empty($rowData[$key])) { // All rowData is empty
      */
     private function getTransactionDetail($input, $config) {
 
-echo __FUNCTION__ . " " . __LINE__ . " Entering with input = $input\n";     
+//echo __FUNCTION__ . " " . __LINE__ . " Entering with input = $input\n";     
     
          foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
-            echo "configItemKey = $configItemKey and configItem = $configItem \n";
+//            echo "configItemKey = $configItemKey and configItem = $configItem \n";
             foreach ($this->transactionDetails as $key => $detail) { 
                 $position = strpos($input, $configItemKey );
                 if ($position !== false) {                   
-                    echo "The detail = " . $detail['detail'] . "\n";
+  //                  echo "The detail = " . $detail['detail'] . "\n";
                     if ($detail['detail'] == $configItem){
                         $internalConceptName = $detail['type'];
                         $found = YES;
-                        echo __FUNCTION__ . " " . __LINE__ . " OK analysis\n";  
+ //                       echo __FUNCTION__ . " " . __LINE__ . " OK analysis\n";  
                         break 2;
                     }
                 }
@@ -833,7 +885,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Entering with input = $input\n";
        
 //print_r($config);       
 echo "Exiting";
-exit;
+
       
         
   /*      
