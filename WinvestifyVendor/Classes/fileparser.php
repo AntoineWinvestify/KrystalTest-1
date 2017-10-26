@@ -546,7 +546,7 @@ print_r($this->config);
      * @return string
      * also check for the presence of loanId, and + or - sign of field
      */
-    private function analyzeUnknownConcept($input, $config) {
+    private function analyzeUnknownConcept($input, $config = null) {
 
     //    read the unknown concept
         $result = 0;
@@ -686,12 +686,18 @@ print_r($this->config);
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
 
-            if ($decimalSep == ".") {
+        if ($decimalSep == ".") {
             $seperator = "\.";
         }
         else if($decimalSep == 'E'){
-            $input = strtr($input, array(',' => '.'));
-            $input = number_format(floatval($input),$decimals);
+            if(strpos($input, "E")){
+                $decArray = explode("E", $input);
+                $dec = preg_replace("/[-]/", "", $decArray[1]);
+                echo "AQUI " . $input;
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), $dec+2);
+ 
+            }
             $seperator = ".";
         }
         else {                                                              // seperator =>  ","
@@ -832,6 +838,7 @@ print_r($this->config);
      */
     private function getTransactionDetail($input, $config) {
 
+        $found = null;
         foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
