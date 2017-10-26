@@ -151,14 +151,9 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $investmentIds = $this->Investment->getInvestmentIdByLoanId($loanIds);
         foreach ($this->tempArray as $queuekey => $tempArray) {
             foreach ($tempArray as $linkaccount => $linkaccountData) {
-                foreach ($linkaccountData as $loanId => $loanData) {
-                    $this->Amortizationtable->saveAmortizationtable($loanData, $investmentIds[$loanId]);
-                }
+                $this->Amortizationtable->saveAmortizationtable($linkaccountData, $investmentIds);
             }
         }
-        
-        
-        
     }
     
 }
