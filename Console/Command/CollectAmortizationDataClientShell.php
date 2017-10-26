@@ -98,6 +98,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                         $data["loanIds"] = $loandIdLinkedaccounts[$key][$key2];
                         $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
                         $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
+                        $data["date"] = $this->queueInfo[$data["queue_id"]]["date"];
                         print_r($data["companies"]);
                         print_r($data["loanIds"]);
                         echo "\n";
