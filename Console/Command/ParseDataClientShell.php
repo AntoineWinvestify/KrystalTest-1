@@ -37,7 +37,7 @@ App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
 class ParseDataClientShell extends AppShell {
-    public $uses = array('Queue');
+    public $uses = array('Queue', 'Paymenttotal');
     
     protected $GearmanClient;
     
@@ -261,14 +261,14 @@ class ParseDataClientShell extends AppShell {
                         28 => [ // CHECK
                                 "databaseName" => "investment.investment_forSale",
                                 "internalName" => "investment_forSale",    
-                "internalIndex" => 28,                            
+                                "internalIndex" => 28,                            
                                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                                 "function" => ""        
                             ],
 
 
-        30 => [
+        30 => [  // This item is ONLY used to calculate the values of the base elements: PrincipalPayment and InterestPayment
                 "databaseName" => "investment.investment_principalAndInterestPayment",  
                 "internalName" => "investment_principalAndInterestPayment", 
                 "internalIndex" => 30,            
@@ -662,7 +662,7 @@ class ParseDataClientShell extends AppShell {
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . date("Ymd",time()) . DS ;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
-print_r($subDir);
+
                     foreach ($subDir[0] as $subDirectory) {
                         $tempName = explode("/", $subDirectory);
                         $linkedAccountId = $tempName[count($tempName) - 1];
@@ -697,6 +697,7 @@ print_r($subDir);
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
                 $result = json_decode($this->workerResult, true);
+                
                 foreach ($result as $platformKey => $platformResult) {
                     if (Configure::read('debug')) {
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "platformkey = $platformKey\n";
@@ -819,7 +820,7 @@ print_r($subDir);
     /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values" 
      * and writes all values to the database.
-     *  @param  $array          Array which holds the data (perp PFP) as received from the Worker
+     *  @param  $array          Array which holds the data (per PFP) as received from the Worker
      * 
      *  @return boolean true
      *                  false
@@ -832,16 +833,15 @@ print_r($subDir);
         $variables = array();
         $linkedaccountId = $platformData['linkedaccountId'];
 
-// create a default AmortizationTable for the loan if it is a new loan?
 
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
         foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
-if ($newLoan <> "840073-01" ) {
+if ($newLoan <> "1465476-01" ) {
     echo "flushing loanId $newLoan\n";
-    continue;
+ //   continue;
 }
   
-//  echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
+echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
 //  print_r($platformData['parsingResultInvestments'][$newLoan]);
 //  check if we have information in the investment list about this loan.
 //  The table of userinvestmentdata is 'allocated' with default values (=000000?)
@@ -858,10 +858,7 @@ if ($newLoan <> "840073-01" ) {
                     }
                 }  
             }
-//print_r($variablesConfigStatus);
-echo "Total = " . count($variablesConfigStatus) . "\n";
- // also check if they belong to the same date, if not flush it    STILL PENDING 
-echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";   
+ 
             if (array_key_exists( $newLoan, $platformData['parsingResultTransactions'])) {  // this is a new loan and we have some info
                 print_r($platformData['parsingResultTransactions'][$newLoan]);
                  
@@ -884,8 +881,7 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
                                 $result = $this->$functionToCall($transactionData, $database);
 
                                 if ($tempResult['charAcc'] == FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                                   $database[$dbTable][$transactionDataKey] = $database[$dbTable][$transactionDataKey] + $result; 
-                                    $database[$dbTable][$transactionDataKey] = sprintf("%017d", $database[$dbTable][$transactionDataKey]);
+                                    $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
                                 }
                                 else {
                                     $database[$dbTable][$transactionDataKey] = $result;  
@@ -900,7 +896,7 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
                 }   
             }
        
- //print_r($variablesConfigStatus);
+
  echo "Total = " . count($variablesConfigStatus) . "\n";
 // Now start consolidating the results, these are to be stored in the investment table (variable part)
 
@@ -912,6 +908,9 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
                 $database[$varName[0]][$varName[1]] =  $this->consolidateRemainingTerm($database);
                 $variablesConfigStatus[17]['state'] = FLOWDATA_VARIABLE_DONE;                
             }
+            
+            
+ // these are the total values per PFP           
             
             if ($variablesConfigStatus[30]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
                 $varName = $variablesConfigStatus[30]['databaseName'];
@@ -938,7 +937,6 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
             } 
             
             if ($variablesConfigStatus[37]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
-                $result = $this->consolidateOutstandingPrincipal($database);
                 $varName = $variablesConfigStatus[37]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
                 $variablesConfigStatus[37]['state'] = FLOWDATA_VARIABLE_DONE;                
@@ -946,7 +944,7 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
           
             if ($variablesConfigStatus[38]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
                 $varName = $variablesConfigStatus[38]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
+                $database[$varName[0]][$varName[1]] =  $this->consolidateReceivedPrepayments($database);
                 $variablesConfigStatus[38]['state'] = FLOWDATA_VARIABLE_DONE;                 
             } 
             
@@ -981,13 +979,10 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
             }  
             
             
-            
-            
 //$database['payment']['investment_id'] = 98;
 echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";             
 print_r($database);      
- // write all relevant tables, WE DON'T HAVE TO UPDATE AMORTIZATION TABLES???
-// if it is a new loan, then save the data,
+// write all relevant tables
 // else read the investment_id from the database and use it while saving data to payment, paymenttotals,...
             if (!empty($database['investment'])) {
                 $this->Investment = ClassRegistry::init('Investment');
@@ -996,7 +991,7 @@ print_r($database);
                 $resultCreate = $this->Investment->createNewInvestment($database['investment']);
                 if ($resultCreate[0]) {
                     $investmentId = $resultCreate[1];
-                    echo " investmentId = $investmentId, Done\n";
+                    echo "Saving new loan with investmentId = $investmentId, Done\n";
                 }
                 else {
                     if (Configure::read('debug')) {
@@ -1004,7 +999,7 @@ print_r($database);
                     }
                 }
             }
-            
+          
             if (!empty($database['payment'])) {
                 $this->Payment = ClassRegistry::init('Payment');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";            
@@ -1020,21 +1015,6 @@ print_r($database);
                 }
             }
 
-            if (!empty($database['userinvestmentdata'])) {            
-                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
-                $this->Userinvestmentdata->create();            
-                if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
-                    echo "Done\n";
-                }
-                else {
-                    if (Configure::read('debug')) {
-                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
-                    }
-                }  
-            }
-            
-// We don't write the amortization tables during Flow 2. New tables are collected and written to DB in Flow 3B 
             if (!empty($database['globalcashflowdata'])) {               
                 $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
@@ -1048,8 +1028,23 @@ print_r($database);
                     }
                 }
             }
-            
-       //     break;
+                    
+// Consolidate the data on platform level      
+            $this->consolidatePlatformData($database);
+            if (!empty($database['userinvestmentdata'])) {            
+                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
+                $this->Userinvestmentdata->create();            
+                if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
+                    echo "Done\n";
+                }
+                else {
+                    if (Configure::read('debug')) {
+                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+                    }
+                }  
+            }           
+           
         unset($database);
         unset($variablesConfigStatus);
         }
@@ -1059,6 +1054,230 @@ print_r($database);
     }
    
  
+    /*
+     * 
+     *  Consolidates all the basic variables that are required on platformlevel.
+     *
+    */ 
+    public function consolidatePlatformData(&$database) {    
+  echo "FxF";     
+        $database['userinvestmentdata'][''] = $this->consolidateCapitalRepayment();
+  echo "FtF";
+        $database['userinvestmentdata'][''] = $this->consolidatePartialPrincipalRepayment();
+ 
+        $database['userinvestmentdata'][''] = $this->consolidateOutstandingPrincipal();
+  echo "FFgF";
+        $database['userinvestmentdata'][''] = $this->consolidateReceivedPrepayments();
+
+        $database['userinvestmentdata'][''] = $this->consolidateTotalGrossIncome();
+  echo "FhF";
+        $database['userinvestmentdata'][''] = $this->consolidateInterestgrossIncome();
+  echo "FFF";
+        $database['userinvestmentdata'][''] = $this->consolidateTotalCost();
+ 
+  echo "FoF";  
+        $database['userinvestmentdata'][''] = $this->consolidateNextPaymentDate();
+  echo "FpF";
+        $database['userinvestmentdata'][''] = $this->consolidateEstimatedNextPayment();
+  echo "FmF";
+        $database['userinvestmentdata'][''] = $this->consolidateInstallmentPaymentProgress();
+         
+    }
+    
+    
+    
+      
+    /* OK
+     *  Get the amount, for all "active investments", which corresponds to the "CapitalRepayment" concept 
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     * 
+    */ 
+    public function consolidateCapitalRepayment() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('Paymenttotal.paymenttotal_capitalRepayment'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+    
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* OK
+     *  Get the amount which corresponds to the "PartialPrincipalPayment" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidatePartialPrincipalRepayment() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('Paymenttotal.partialPrincipalRepayment'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* OK
+     *  Get the amount which corresponds to the "OutstandingPrincipal" concept
+     *  "Outstanding principal" = total amount of investment - paymenttotal_capitalRepayment
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateOutstandingPrincipal() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('Paymenttotal.outstandingPrincipal'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* 
+     *  Get the amount which corresponds to the "ReceivedPrepayments" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateReceivedPrepayments() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+         
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* 
+     *  Get the amount which corresponds to the "TotalGrossIncome" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateTotalGrossIncome() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+           
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "InterestgrossIncome" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateInterestgrossIncome() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+               
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "TotalCost" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateTotalCost() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "NextPaymentDate" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateNextPaymentDate() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "EstimatedNextPayment" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateEstimatedNextPayment() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }  
+    
+    /* 
+     *  Get the amount which corresponds to the "InstallmentPaymentProgress" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateInstallmentPaymentProgress() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     /* 
      *  Get the amount which corresponds to the "late payment fee" concept

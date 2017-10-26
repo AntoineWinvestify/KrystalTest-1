@@ -85,22 +85,21 @@ var $validate = array(
         $latestValuesGlobalCashflowdata = $this->Globalcashflowdata->find("first",array(
                                                         'conditions' => array('userinvestmentdata_id' => $userinvestmentdataId),
                                                         'order' => array('Globalcashflowdata.id DESC'),
-                                                         ) );
-
+                                                         ));
+        $this->Globalcashflowdata->create();
         foreach ($this->data['Globalcashflowdata'] as $globalCashflowKey => $value) {
             $globalCashflowKeyNames = explode("_", $globalCashflowKey);
 
             if ($globalCashflowKeyNames[0] == $prefix) {   // check if the field exists in table paymenttotals
                 foreach ($latestValuesGlobalCashflowdata['Globalcashflowdata'] as $globalCashflowTotalKey => $globalcashflowItem) {
                     if ($globalCashflowTotalKey === $totalPrefix . "_" . $globalCashflowKeyNames[1]) {
-                        $data [$globalCashflowTotalKey] = $globalcashflowItem + $value;
-                        $data[$globalCashflowTotalKey] = sprintf("%017d", $data[$globalCashflowTotalKey]);  // Normalize length with leading 0's
+                        $data[$globalCashflowTotalKey] = bcadd($globalcashflowItem, $value, 16);
                     }
                 }
             } 
         }    
         $data ['userinvestmentdata_id'] = $userinvestmentdataId;
         $this->Globalcashflowdatatotal->save($data, $validate = true); 
-    }
+    }  
 
 }

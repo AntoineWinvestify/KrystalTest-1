@@ -93,7 +93,7 @@ var $validate = array(
         $this->create();
         if ($this->save($investmentdata, $validation = true)) {   // OK
             $investmentId = $this->id;
-            $data = array('investment_id' => $investmentId);
+            $data = array('investment_id' => $investmentId, 'status' => WIN_ERROR_PAYMENTTOTALS_LAST);
             $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
             $this->Paymenttotal->create();
             if ($this->Paymenttotal->save($data, $validation = true)) { 

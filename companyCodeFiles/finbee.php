@@ -31,6 +31,16 @@
  * 
  * Parser AmortizationTables                                            [OK, tested]
  */
+
+/**
+ * Contains the code required for accessing the website of "Finbee".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, not tested]
+ * parallelization                                                      [OK, tested]
+ */
 class finbee extends p2pCompany {
 
     protected $valuesAmortizationTable = [
@@ -104,9 +114,11 @@ class finbee extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    /**
-     * Function to download every file that is needed to read the investment of an investor
-     * @param string $str It is the html of the last url we accessed
+     /**
+     * Download investment, cash flow files and control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return 
      */
     function collectUserGlobalFilesParallel($str) {
         switch ($this->idForSwitch) {
@@ -122,8 +134,9 @@ class finbee extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($inputs as $input) {
                     //echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;
@@ -209,30 +222,42 @@ class finbee extends p2pCompany {
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 5:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $fileName = "ControlVariables.xlsx"; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 6:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $this->numFileInvestment++;
                 $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 7:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
             case 8:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 return $this->tempArray;
         }
     }
 
     /**
-     * 
-     * @param type $str
-     * @return type
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {

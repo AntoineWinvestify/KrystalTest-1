@@ -25,9 +25,15 @@
  */
 ?>
 <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
-<script src="/plugins/chartjs/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 <script>
     $(function (){
+        
+        <?php //Tooltip clicks ?>
+        $(document).on("click", ".tooltipIcon", function() {
+            id = $(this).attr("id");
+            $("#tooltip_" + id).toggle();
+        });
         
         //polarChart1
         var birdsCanvas = document.getElementById("birdsChart");
@@ -66,9 +72,6 @@
         });
     });
 </script>
-<style>
-    
-</style>
 <div class="dashboardStats">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">

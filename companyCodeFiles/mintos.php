@@ -409,13 +409,13 @@ class mintos extends p2pCompany {
     protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
                         //        'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"      // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("date","investment_loanId")       // used to "sort" the array and use $sortParameter as prime index.
                                  );
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"      // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("investment_loanId")      // used to "sort" the array and use $sortParameter as prime index.
                                  );
     protected $amortizationConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -519,9 +519,12 @@ class mintos extends p2pCompany {
         return false;
     }
 
-     /**
-     * Function to download every file that is needed to read the investment of an investor
-     * @param string $str It is the html of the last url we accessed
+
+    /**
+     * Download investments and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str = null) {
 
@@ -687,9 +690,9 @@ class mintos extends p2pCompany {
     }
     
     /**
-     * 
-     * @param type $str
-     * @return type
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null){
 
