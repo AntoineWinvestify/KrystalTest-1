@@ -626,16 +626,16 @@ class mintos extends p2pCompany {
                 break;
             case 6:
                 //This two variables should disappear
-                $yesterday = date('d.m.Y',strtotime("-1 days"));
-                $today = date("d.m.Y");
+                $dateInit = date("d.m.Y", strtotime($this->dateInit));
+                $dateFinish = date('d.m.Y',strtotime($this->dateFinish));
                 //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array('{$date1}' => $yesterday));
-                $referer = strtr($referer, array('{$date2}' => $today));
+                $referer = strtr($referer, array('{$date1}' => $dateInit));
+                $referer = strtr($referer, array('{$date2}' => $dateFinish));
                 $credentials = array_shift($this->urlSequence);
-                $credentials = strtr($credentials, array('{$date1}' => $yesterday));
-                $credentials = strtr($credentials, array('{$date2}' => $today));
+                $credentials = strtr($credentials, array('{$date1}' => $dateInit));
+                $credentials = strtr($credentials, array('{$date2}' => $dateFinish));
                 $headersJson = array_shift($this->urlSequence);
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
                 $headers = json_decode($headers, true);
