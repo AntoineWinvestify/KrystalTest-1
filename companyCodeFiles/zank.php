@@ -1117,7 +1117,7 @@ class zank extends p2pCompany {
           $login = $this->getElements($dom, "a");
           //print_r($login); */
 
-        if ($str == 302 || $str == 200) {
+        if ($str == 302 || $str == 200 || $str == 103) {
 
 //		echo "CODE 103 or 200 received, so do it again , OK <br>";
             $str = $this->doCompanyLogin($credentials);
