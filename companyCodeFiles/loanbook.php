@@ -240,13 +240,6 @@ class loanbook extends p2pCompany {
             ]
         ];
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];
-
-
     protected $valuesAmortizationTable = [
         
         2 => [
@@ -1256,8 +1249,10 @@ class loanbook extends p2pCompany {
             case 4:
                 $this->idForSwitch++;
                 $url = array_shift($this->urlSequence);
-                $url = strtr($url, array('{$date1}' => 1476223200000)); //Date in seconds
-                $url = strtr($url, array('{$date2}' => 1504216800000));
+                $dateInit = strtotime($this->dateInit);
+                $dateFinish = strtotime($this->dateFinish);
+                $url = strtr($url, array('{$date1}' => $dateInit)); //Date in seconds
+                $url = strtr($url, array('{$date2}' => $dateFinish));
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
