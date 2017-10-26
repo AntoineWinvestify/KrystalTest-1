@@ -105,9 +105,12 @@ class GearmanClientShell extends AppShell {
             $this->userReference[$data[0]] = $data[2];
         }
         $dataWorker = json_decode($task->data(), true);
-        foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
-            $this->userResult[$data[0]][$linkaccountId] = $status;
-            $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
+        
+        if (!empty($dataWorker['statusCollect'])) {
+            foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
+                $this->userResult[$data[0]][$linkaccountId] = $status;
+                $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
+            }
         }
         if (!empty($dataWorker['tempArray'])) {
             $this->tempArray[$data[0]] = $dataWorker['tempArray'];
