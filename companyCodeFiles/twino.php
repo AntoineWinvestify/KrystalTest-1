@@ -378,11 +378,11 @@ class twino extends p2pCompany {
                 break;
             case 6:
                 //Download cash flow
-                $date1 = "[2017,9,1]";
-                $date2 = "[2017,9,20]";
-                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":{$date1},"processingDateTo":{$date2},"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
-                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $date1)); //date must be [year,month.day]
-                $credentialsFile = strtr($credentialsFile, array('{$date2}' => $date2));
+                $dateInit = date("Y,m,d", strtotime($this->dateInit));
+                $dateFinish = date('Y,m,d',strtotime($this->dateFinish));
+                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":[{$date1}],"processingDateTo":[{$date2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
+                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $dateInit)); //date must be [year,month.day]
+                $credentialsFile = strtr($credentialsFile, array('{$date2}' => $dateFinish));
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
