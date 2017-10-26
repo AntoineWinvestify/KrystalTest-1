@@ -176,21 +176,6 @@ class twino extends p2pCompany {
             "name" => "status",
         ]
     ];
-    protected $valuesAmortizationTable = [// NOT FINISHED
-        "A" => [
-            "name" => "transaction_id"
-        ],
-    ];
-    protected $transactionConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //       'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
 
     protected $valuesAmortizationTable = [
         3 => [
