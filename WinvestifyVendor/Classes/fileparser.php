@@ -16,8 +16,8 @@
  * 
  * 
  * @author
- * @version
- * @date
+ * @version 0.3
+ * @date  2017-10-26
  * @package
  *
  *
@@ -33,10 +33,16 @@
  * support of configuration parameters 'offsetStart' and 'offsetEnd'
  * 
  * 
+ * 2017-10-26           version 0.3
+ * due to use of bc-math functionality, the amounts are now ordinary string with the decimal point
+ * 
+ * 
+ * 
+ * 
+ * 
  * Pending:
  * chunking, csv file check
  * getLastError
- * adapt to usage of library bc-math
  * 
  * 
  */
@@ -311,7 +317,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
 
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-        print_r($this->config);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         return $datas;
         }
@@ -342,29 +347,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      
         for ($i = $maxRows; $i > 0; $i--) {
             if (empty($rowDatas[$i]["A"])) {
-                echo "Deleting some shit, i = " . ($i) . "\n";
+//                echo "Deleting some shit, i = " . ($i) . "\n";
                 unset($rowDatas[$i]);
             }
         }   
-/*
-        foreach ($rowDatas as $key => $rowData) {
-            echo "i = $i\n";
-            print_r($rowDatas[$key]['A']);
-            echo " ";
-            print_r($rowDatas[$key]['B']);
-            echo " ";
-            print_r($rowDatas[$key]['C']);
-            echo " ";
-            print_r($rowDatas[$key]['D']);
-            echo " ";
-            print_r($rowDatas[$key]['E']);
-            echo " ";
-            print_r($rowDatas[$key]['F']);
-            echo " ";
-            print_r($rowDatas[$key]['G']);
-            echo " ";
-        }
-*/
  
         $i = 0;
         $totalRows = count($rowData);
@@ -382,8 +368,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $i = 0;
         $outOfRange = false;
 
-        foreach ($rowDatas as $keyRow => $rowData) {
-//            echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
+        foreach ($rowDatas as $rowData) {
+//            echo __FUNCTION__ . " " . __LINE__ . " MEMORY USAGE = " . memory_get_usage (false)  . "\n"; 
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
@@ -418,18 +404,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                                 }
                             }
                         }
-if (empty($rowData[$key])) { // All rowData is empty
-//echo __FUNCTION__ . " " . __LINE__ . " ERROR: Memory = " . memory_get_usage (false)  . "\n"; 
- //   echo __FUNCTION__ . " " . __LINE__ . " Key = $key ,keyRow = $keyRow, i = $i and myKey = $myKey\n";
 
- //   echo __FUNCTION__ . " " . __LINE__ . "\n";
- //  print_r($userFunction['inputData']);
- //  print_r($rowData);
-
-  //  echo __FILE__ . " " . __LINE__ . " END OF DEBUG\n";
- 
-   // exit;
-} 
                         array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
@@ -455,47 +430,24 @@ if (empty($rowData[$key])) { // All rowData is empty
                     }
                 }
             }
-
+//echo __FUNCTION__ . " " . __LINE__ . " MEMORY USAGE = " . memory_get_usage (false)  . "\n"; 
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:
                     $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
-                    echo "sortParam1 = $sortParam1 \n";
-                    $tempArray[$sortParam1][] = $tempArray[$i];
-                    unset($tempArray[$i]);         
+                    $tempArray[$sortParam1] = $tempArray[$i];
+                    unset($tempArray[$i]); 
                 break; 
             
                 case 2:
                     $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
                     $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];        
-                    echo "sortParam1 = $sortParam1 and sortParam2 = $sortParam2\n";
                     $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
                     unset($tempArray[$i]);
                 break;               
             }
-            
-            if (!empty($this->config['sortParameter'])) {
-                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
-                $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];
-                echo "sortParam1 = $sortParam1 and sortParam2 = $sortParam2\n";
-DO a case in order to have 0, 1 or 2 indeces
-                $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
-                unset($tempArray[$i]);
-            }
-            else {      // move to the global index
-            }
-  
         $i++;
         }
-//print_r($tempArray);
-
-// Delete the numeric indices. This should not be necesary but the code above does
-// NOT work, the bad line is "unset($tempArray[$i]);".// So below is a stupid work-around
-    for ($i; $i >= 0; $i--) {
-  //      unset($tempArray[$i]);
-    }
- //      exit;
-   
     return $tempArray;
     }
 
@@ -704,6 +656,13 @@ DO a case in order to have 0, 1 or 2 indeces
     }
 
     /**  STILL TO DO (scientific) exponential notation
+     * 
+     * This function uses the bcmath package of PHP.
+     * Format is converted to internal format, which is using the "." as a decimal separator, and
+     * the thousands separator is removed
+     * 
+     * 
+     * 
      * Gets an amount. The "length" of the number is determined by the required number
      * of decimals. If there are more decimals then required, the number is truncated and rounded
      * else 0's are added.
@@ -711,15 +670,17 @@ DO a case in order to have 0, 1 or 2 indeces
      * getAmount("1.234,56789€", ".", ",", 3) => 1234568
      * getAmount("1234.56789€", "", ".", 7) => 12345678900
      * getAmount("1,234.56 €", ",", ".", 2) => 123456
-     *
+     * @param string    $input      
      * @param string  $thousandsSep character that separates units of 1000 in a number
      * @param string  $decimalSep   character that separates the decimals
-     * @param int     $decimals     number of required decimals in the amount to be returned
-     * @return int    represents the amount including its decimals
+     * 
+     * @param int     $decimals     number of required decimals in the amount to be returned   NOT NEEDED, TO BE DELETED
+     * @return string    represents the amount, including a decimal separator (= ".") in case of decimals
      *
-     */
+     */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
-        if ($decimalSep == ".") {
+
+            if ($decimalSep == ".") {
             $seperator = "\.";
         }
         else {                                                              // seperator =>  ","
@@ -728,7 +689,10 @@ DO a case in order to have 0, 1 or 2 indeces
         $allowedChars =  "/[^0-9" . $seperator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
+        return $normalizedInputFinal;
 
+        
+ /*       
         // determine how many decimals are actually used
         $position = strpos($input, $decimalSep);
         $decimalPart = preg_replace('/[^0-9]+/' ,"", substr($input, $position + 1, 100));
@@ -746,6 +710,8 @@ DO a case in order to have 0, 1 or 2 indeces
             $amount = preg_replace('/[^0-9]+/', "", $input) . str_pad("", ($decimals - $numberOfDecimals), "0");
         }
         return preg_replace('/[^0-9]+/' ,"", $amount);
+  */
+  
     }
     
 
@@ -855,20 +821,15 @@ DO a case in order to have 0, 1 or 2 indeces
      */
     private function getTransactionDetail($input, $config) {
 
-//echo __FUNCTION__ . " " . __LINE__ . " Entering with input = $input\n";     
-    
-         foreach ($config as $configKey => $item) {
+        foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
-//            echo "configItemKey = $configItemKey and configItem = $configItem \n";
             foreach ($this->transactionDetails as $key => $detail) { 
                 $position = strpos($input, $configItemKey );
                 if ($position !== false) {                   
-  //                  echo "The detail = " . $detail['detail'] . "\n";
                     if ($detail['detail'] == $configItem){
                         $internalConceptName = $detail['type'];
                         $found = YES;
- //                       echo __FUNCTION__ . " " . __LINE__ . " OK analysis\n";  
                         break 2;
                     }
                 }
@@ -876,34 +837,14 @@ DO a case in order to have 0, 1 or 2 indeces
         }        
         if ($found == YES) {
             $result = array($internalConceptName,"type" => "internalName");
- //           print_r($result);
             return $result;
         }
         else {
             echo "unknown concept, so start doing some Guessing for concept $input\n";  
+         // an unknown concept was found, do some intelligent guessing about its meaning
+            $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
+            return $result;           
         }     
-       
-//print_r($config);       
-echo "Exiting";
-
-      
-        
-  /*      
-        foreach ($config as $configKey => $configItem) {
-            $position = stripos($input, $configKey);
-            if ($position !== false) {
-                foreach ($this->transactionDetails as $key => $detail) {  
-                    if ($detail['detail'] == $configItem) {
-                        $result = array($detail['type'],"type" => "internalName");
-                        return $result;
-                    }
-                }
-            }
-        }
-*/
-        // an unknown concept was found, do some intelligent guessing about its meaning
-        $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
-        return $result;
     }
 
     /**

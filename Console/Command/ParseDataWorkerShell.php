@@ -32,14 +32,20 @@
  *
  *
  * @author
- * @version
- * @date
+ * @version v 0.2
+ * @date    2017-10-26
  * @package
  *
  *
- * 2017-08-11		version 0.1
+ * 2017-08-11           version 0.1
  * Basic version
  *
+ * 
+ * 2017-10-26           version 0.2
+ * 
+ * 
+ * 
+ * 
  * TO BE DONE:
  * CHECK THE STRUCTURE OF A XLS/XLSX/CSV FILE BY CHECKING THE NAMES OF THE HEADERS.
  * detecting "unknown concept"
@@ -90,9 +96,7 @@ class ParseDataWorkerShell extends AppShell {
      *                                        ... ... ...
      *      $data['linkedAccountId']['listOfCurrentActiveLoans']    => list of all active loans BEFORE this analysis
      *
-     *
-     *
-     *
+
      * @return array queue_id, userReference, linkedaccount_id, exception error
      *  The worker provides all error information to the Client
      *
@@ -100,11 +104,6 @@ class ParseDataWorkerShell extends AppShell {
      *                      true  analysis done with success
      *                      array with all errorData related to occurred error
      *
-     *
-     *
-     * The investment_* parsing will parse the whole contents, but afterwards a consolidation
-     * takes that will filter out only the investments with some kind of change during the current
-     * reading period.
      *
      */
      
@@ -130,7 +129,7 @@ class ParseDataWorkerShell extends AppShell {
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
             }
-            // Deal first with the transaction file(s)
+
             print_r($data);
             $files = $data['files'];
             // First analyze the transaction file(s)
@@ -139,8 +138,8 @@ class ParseDataWorkerShell extends AppShell {
 // do this first for the transaction file and then for investmentfile(s)
             $fileTypesToCheck = array (0 => TRANSACTION_FILE,
                                        1 => INVESTMENT_FILE,
-                                   //    2 => EXTENDED_TRANSACTION_FILE
-                );                     // So we cover Finanzarel
+                                   //    2 => EXTENDED_TRANSACTION_FILE // So we cover Finanzarel
+                                        );                     
 
             foreach ($fileTypesToCheck as $actualFileType) {
                 $approvedFiles = $this->readFilteredFiles($files,  $actualFileType);
@@ -151,7 +150,6 @@ class ParseDataWorkerShell extends AppShell {
                         }
                         $parserConfigFile = $companyHandle->getParserConfigTransactionFile();
                         $configParameters = $companyHandle->getParserTransactionConfigParms();
-                        continue;
                         break;  
                         
                     case INVESTMENT_FILE:
@@ -175,12 +173,9 @@ class ParseDataWorkerShell extends AppShell {
                 $tempResult = array();
                 foreach ($approvedFiles as $approvedFile) {
                     unset($errorInfo);
-echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-                                       
+                             
                     $myParser->setConfig($configParameters);
- echo "TTTTT\n";                   
                     $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
- echo "VVVVV\n";                   
 
                     echo "Dealing with file $approvedFile\n";
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
@@ -188,18 +183,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                                             "errorDetails"  => $myParser->getLastError(),
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
-                        exit;
                     }
                     else {       // all is OK
                         if ($actualFileType == INVESTMENT_FILE) {
-                            $totalParsingresultInvestments = $tempResult;    // add $result, combine the arrays
-                            print_r($tempResult);
-                            echo "DDD";
-                            exit;
+                            $totalParsingresultInvestments = $tempResult;    
                         }
                         if ($actualFileType == TRANSACTION_FILE) {
                             $totalParsingresultTransactions = $tempResult;
-       //                     print_r($totalParsingresultTransactions);
                         }
 
                         try {
@@ -215,40 +205,36 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                                                 );
                             $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                         }
-echo __FILE__ . " " . __LINE__ . "\n";
                     }
                 }
             }
-//print_r($totalParsingresultTransactions);
-echo "EE";
-
-            foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
-                $totalParsingresultInvestmentsTemp[$loanIdKey] = $totalParsingresultInvestments[$loanIdKey][0];
-                if ( !array_key_exists ($loanIdKey , $totalParsingresultInvestments ))  {
-          //          echo "NO found match for loanId = $loanIdKey  \n";                      // THIS IS NEVER POSSIBLE
-                }
-            }
- echo __FILE__ . " " . __LINE__ . "   \n";
 
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
-            $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestmentsTemp;
+            $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
             $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id'];
             $returnData[$linkedAccountKey]['pfp'] = $platform;
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
 
-            foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
-                if (array_search($loanIdKey, $listOfCurrentActiveLoans) !== false) {         // Check if new investments have appeared
-                    $newLoans[] = $loanIdKey;
+// check if we have new loans for this reading period            
+            $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
+            $iteriter = new RecursiveIteratorIterator($arrayiter);
+            foreach ($iteriter as $key => $value) {
+                if ($key == "investment_loanId"){
+                    if (array_search($loanIdKey, $listOfCurrentActiveLoans) !== false) {         // Check if new investments have appeared
+                        $newLoans[] = $value;
+                    }
                 }
-            }
+            }          
+
+            $newLoans = array_unique($newLoans);
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
         }
-        print_r($returnData);
+
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
-        }        
+        } 
         return json_encode($returnData);
     }
 }
