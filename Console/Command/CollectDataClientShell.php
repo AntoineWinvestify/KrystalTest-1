@@ -72,6 +72,12 @@ class CollectDataClientShell extends GearmanClientShell {
                 foreach ($pendingJobs as $job) {
                     $queueInfo = json_decode($job['Queue']['queue_info'], true);
                     $this->queueInfo[$job['Queue']['id']] = $queueInfo;
+                    if (empty($this->queueInfo[$job['Queue']['id']]['date'] )) {
+                        $this->queueInfo[$job['Queue']['id']]['date'] = $this->date;
+                    }
+                    else {
+                        $this->date = $this->queueInfo[$job['Queue']['id']]['date'];
+                    }
                     $jobInvestor = $this->Investor->find("first", array('conditions' =>
                         array('Investor.investor_identity' => $job['Queue']['queue_userReference']),
                         'fields' => 'id',
@@ -127,6 +133,7 @@ class CollectDataClientShell extends GearmanClientShell {
                         $data["companies"] = $linkedaccountsByType;
                         $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
                         $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
+                        $data["date"] = $this->date;
                         print_r($data["companies"]);
                         echo "\n";
                         echo "userReference ". $data["queue_userReference"];
