@@ -73,7 +73,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
                     print_r($this->queueInfo);
                     $userReference = $job['Queue']['queue_userReference'];
-                    $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->date . DS;
+                    $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
                     echo "Subdiiiiiiir";
