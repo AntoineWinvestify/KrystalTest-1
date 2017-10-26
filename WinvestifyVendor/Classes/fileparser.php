@@ -36,8 +36,8 @@
  * 2017-10-26           version 0.3
  * Due to use of bc-math functionality, the amounts are now ordinary string with the decimal point
  * getLastError is returning real data, for 'unknown concept'
- * 
- * 
+ * E format in getAmount fixed. Format example: 2,31E-6.
+ * Minor fixes.
  * 
  * 
  * Pending:
