@@ -30,7 +30,7 @@ App::import('Shell','GearmanClient');
  */
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
-    public $uses = array('Queue', 'Payment', 'Investment');  
+    public $uses = array('Queue', 'Payment', 'Investment', 'Amortizationtable');  
     protected $fileName = "amortizationtable";
     
     /**
@@ -46,7 +46,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->fileName = "amortizationtable";
         $workerFunction = "collectamortizationtablesFileFlow";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
-        $this->GearmanClient->setCompleteCallback(array($this, 'parseVerifyCompleteTask'));
+        $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
         //$resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
         if (Configure::read('debug')) {
@@ -117,7 +117,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
-                $this->saveToDB();
+                $this->saveAmortizationtablesToDB();
                 $this->verifiedStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_AMORTIZATION_TABLE);
                 unset($pendingJobs);
                 $numberOfIteration++;
@@ -138,31 +138,27 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         }
     }
     
-    public function saveToDB() {
-        $investmentId = [];
+    public function saveAmortizationtablesToDB() {
+        $loanIds = [];
         foreach ($this->tempArray as $queuekey => $tempArray) {
-            foreach ($tempArray as $loanId => $data) {
-                $investmentId["loans"][$loanId];
-                $loanIds[] = $loanId;
+            foreach ($tempArray as $data) {
+                foreach ($data as $loanId => $value) {
+                    $loanIds[] = $loanId;
+                }
+            }
+        }
+        $this->Investment = ClassRegistry::init('Investment');
+        $investmentIds = $this->Investment->getInvestmentIdByLoanId($loanIds);
+        foreach ($this->tempArray as $queuekey => $tempArray) {
+            foreach ($tempArray as $linkaccount => $linkaccountData) {
+                foreach ($linkaccountData as $loanId => $loanData) {
+                    $this->Amortizationtable->saveAmortizationtable($loanData, $investmentIds[$loanId]);
+                }
             }
         }
         
-        $filterConditions = array(
-                'fields' => array('investment_loanReference', 'id'),
-                'conditions' => array('invesment_loanReference' => $loanIds)
-            );
-        $this->Investment = ClassRegistry::init('Investment');
-        $investmentId = $this->Investment->getInvestmentIdByLoanId($filterConditions);
         
-    }
-    
-    public function getInvestmentIdByLoanId() {
-        foreach ($queueInfo['loanIds'] as $key => $loanId) {
-                        if (!in_array($key, $linkAccountId)) {
-                            $linkAccountId[] = $key; 
-                        }
-                    }
-                   
+        
     }
     
 }
