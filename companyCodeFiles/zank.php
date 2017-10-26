@@ -255,14 +255,6 @@ class zank extends p2pCompany {
                 ],
             ]
         ];
-
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];
-
-  
     
     protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
