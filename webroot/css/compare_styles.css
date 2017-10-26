@@ -234,6 +234,20 @@ body {
     border: none;
     border-bottom: 1px solid #9f9a93 !important;
 }
+.blue_noborder4 {
+    border: none !important;
+    border-bottom: 1px solid #9f9a93 !important;
+    border-radius: 0px !important;
+    background-color: white !important;
+}
+
+#loginDropdown .blue_noborder4 {
+    background-color: #f8f8f8 !important;
+}
+/*Placeholders*/
+#loginDropdown ::-webkit-input-placeholder, #loginDropdown ::-moz-placeholder, #loginDropdown :-ms-input-placeholder, #loginDropdown :-moz-placeholder {
+    color: #9f9a93;
+}
 
 
 .green {
@@ -2087,6 +2101,13 @@ hr.nomargin {
 .blue_noborder3:focus {
     border: none;
     border-bottom:  2px solid #ff9933 !important;
+}
+/*Gray*/
+.blue_noborder4:focus {
+    border: none !important;
+    border-bottom:  2px solid #9f9a93 !important;
+    border-radius: 0px !important;
+    background-color: white;
 }
 
 .feedbackIcon {

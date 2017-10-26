@@ -343,7 +343,7 @@ insted of the types of platforms.
 												if (array_key_exists('username', $validationResult)) {
 													$errorClass = "redBorder";
 												}
-												$class = "form-control blue center-block userName". ' ' . $errorClass;
+												$class = "form-control blue_noborder4 center-block userName". ' ' . $errorClass;
 												echo $this->Form->input('username',array("label"	=> false,
 																					"placeholder"	=> "Email",
 																					"class" 		=> $class,
@@ -376,7 +376,7 @@ insted of the types of platforms.
 												if (array_key_exists('password', $validationResult)) {
 													$errorClass = "redBorder";
 												}
-												$class = "form-control blue center-block password1". ' ' . $errorClass;
+												$class = "form-control blue_noborder4 center-block password1". ' ' . $errorClass;
 								
 												echo $this->Form->input('password1',array("label"		=> false,
 																						"placeholder"	=> __("Password"),
@@ -406,7 +406,7 @@ insted of the types of platforms.
 												if (array_key_exists('password', $validationResult)) {
 													$errorClass = "redBorder";
 												}	
-												$class = "form-control blue center-block password2". ' ' . $errorClass;
+												$class = "form-control blue_noborder4 center-block password2". ' ' . $errorClass;
 								
 												echo $this->Form->input('password2',array("label"		=> false,
 																						"placeholder"	=> __("Repeat Password"),
@@ -437,7 +437,7 @@ insted of the types of platforms.
                                                 ?>
                                                 </small>
                                             </div>
-                                            <div class="form-control blue">
+                                            <div class="form-control blue_noborder4">
 												<?php
 													$errorClass = "";
 													if (array_key_exists('investor_telephone', $validationResult)) {
