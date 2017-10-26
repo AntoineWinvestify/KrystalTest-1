@@ -93,7 +93,7 @@ class ParseDataWorkerShell extends AppShell {
      *
      *
      *
-     * @return array queue_id, userReference, exception error
+     * @return array queue_id, userReference, linkedaccount_id, exception error
      *  The worker provides all error information to the Client
      *
      *           array     analyse    convert internal array to external format using definitions of configuration file
@@ -121,6 +121,7 @@ class ParseDataWorkerShell extends AppShell {
 
         foreach ($platformData as $linkedAccountKey => $data) {
             if ($data['pfp'] <> "mintos") { // TO BE REMOVED           TO BE REMOVED
+                echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
                 continue;
             }
             $platform = $data['pfp'];
@@ -148,44 +149,51 @@ class ParseDataWorkerShell extends AppShell {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment File\n";
                         }
-                        $parserConfig = $companyHandle->getParserConfigInvestmentFile(); 
+                        $parserConfigFile = $companyHandle->getParserConfigInvestmentFile(); 
+                        $configParameters = $companyHandle->getParserInvestmentConfigParms();
                         break;
                     case TRANSACTION_FILE:
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction File\n";
                         }
-                        $parserConfig = $companyHandle->getParserConfigTransactionFile();
+                        $parserConfigFile = $companyHandle->getParserConfigTransactionFile();
+                        $configParameters = $companyHandle->getParserTransactionConfigParms();
                         break;                     
                     case EXTENDED_TRANSACTION_FILE:
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Extended Transaction File\n";
                         } 
-                        $parserConfig = $companyHandle->getParserConfigExtendedTransactionFile();
+                        $parserConfigFile = $companyHandle->getParserConfigExtendedTransactionFile();
+                        $configParameters = $companyHandle->getParserExtendedTransactionconfigParm();
                         break; 
                 }
                 
                 $tempResult = array();
                 foreach ($approvedFiles as $approvedFile) {
                     unset($errorInfo);
-
+echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
+                    
                     $myParser->setConfig(array('sortParameter' => "investment_loanId"));
 echo __FILE__ . " " . __LINE__ . "\n";
-                    $tempResult = $myParser->analyzeFile($approvedFile, $parserConfig);     // if successfull analysis, result is an array with loanId's as index
-echo __FILE__ . " " . __LINE__ . "\n";
-//print_r($tempResult);
+                    
+                    $myParser->setConfig($configParameters);
+                    $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
+
                     echo "Dealing with file $approvedFile\n";
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
                         $errorInfo = array( "typeOfError"   => "parsingError",
                                             "errorDetails"  => $myParser->getLastError(),
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
+                        exit;
                     }
                     else {       // all is OK
                         if ($actualFileType == INVESTMENT_FILE) {
                             $totalParsingresultInvestments = $tempResult;    // add $result, combine the arrays
                         }
-                        if ( $actualFileType == TRANSACTION_FILE) {
+                        if ($actualFileType == TRANSACTION_FILE) {
                             $totalParsingresultTransactions = $tempResult;
+       //                     print_r($totalParsingresultTransactions);
                         }
 
                         try {
@@ -208,12 +216,8 @@ echo __FILE__ . " " . __LINE__ . "\n";
 //print_r($totalParsingresultInvestments);
             foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
                 $totalParsingresultInvestmentsTemp[$loanIdKey] = $totalParsingresultInvestments[$loanIdKey][0];
-if ($loanIdKey == "1242052-01") {
-    echo "LOANID = 1242052-01 FOUND \n";
-    exit;
-}
                 if ( !array_key_exists ($loanIdKey , $totalParsingresultInvestments ))  {
-                    echo "NO found match for loanId = $loanIdKey  \n";                      // THIS IS NEVER POSSIBLE
+          //          echo "NO found match for loanId = $loanIdKey  \n";                      // THIS IS NEVER POSSIBLE
                 }
             }
  echo __FILE__ . " " . __LINE__ . "   \n";
@@ -223,6 +227,7 @@ if ($loanIdKey == "1242052-01") {
             $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
             $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id'];
             $returnData[$linkedAccountKey]['pfp'] = $platform;
+            $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
 
             foreach ($totalParsingresultTransactions as $loanIdKey => $transaction) {
                 if (array_search($loanIdKey, $listOfCurrentActiveLoans) !== false) {         // Check if new investments have appeared
@@ -230,12 +235,18 @@ if ($loanIdKey == "1242052-01") {
                 }
             }
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
+echo "Number of transactions is " . count ($returnData[$linkedAccountKey]['parsingResultTransactions']) . "\n";
+echo "Number of investments  is " . count ($returnData[$linkedAccountKey]['parsingResultInvestments']) . "\n";  
+echo "Number of new loans  is " . count ($returnData[$linkedAccountKey]['newLoans']) . "\n";
             unset( $newLoans);
         }
- //       print_r($returnData);
+//        print_r($returnData[885]['newLoans']);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         }        
         return json_encode($returnData);
     }
 }
+
+
+

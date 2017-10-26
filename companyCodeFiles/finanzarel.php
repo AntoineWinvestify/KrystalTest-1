@@ -54,15 +54,15 @@ class finanzarel extends p2pCompany {
     protected $credentialsGlobal = array();
     protected $requestFiles = array();
     
-    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+    protected $valuesInvestment = [     // All types/names will be defined as associative index in array
             "A" =>  [
-                    "name" => "transactionId"                                          // Winvestify standardized name
+                    "name" => "loanId"                                          // Winvestify standardized name
             ],
             "B" => [
-                    "name" => "dummy_year",                                                  // Winvestify standardized name  OK
+                    "name" => "investment_debtor",                           // Winvestify standardized name  OK
             ],
             "C" => [
-                    "name" => "dummy_quarter",                                            // This is an "empty variable name". So "type" is
+                    "name" => "investment_riskRating",                                            // This is an "empty variable name". So "type" is
             ], 
             "D" =>  [
                 [
@@ -74,25 +74,26 @@ class finanzarel extends p2pCompany {
                 ]
             ],
             "E" => [
-                    "type" => "dummy_auction",                                            // This is an "empty variable name". So "type" is
+                    "type" => "investment_fullLoanAmount",                                            // This is an "empty variable name". So "type" is
             ], 
             "F" => [// NOT FINISHED YET
                 [
                     "name" => "dummy_cuarter",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
-                                   "input8" => ["Incoming client payment" => "Cash_deposit",
-                                                "Investment principal increase" => "Primary_market_investment",
-                                                "Investment share buyer pays to a seller" => "Investment",
-                                                "Investment principal repayment" => "Principal_repayment",
-                                                "Investment principal rebuy" => "Principal_buyback",
-                                                "Interest income" => "Regular_gross_interest_income",
-                                                "Delayed interest income" => "Delayed_interest_income",
-                                                "Late payment fee income" =>"Late_payment_fee_income",
-                                       
-                                                "Interest income on rebuy" => "Interest_income_buyback",
-                                                "Delayed interest income on rebuy" => "Delayed_interest_income_buyback",
-                                                "Disc/premum paid secondary market" => "Income"]
+                                "input3" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
+                                            1 => ["Investment principal increase" => "Primary_market_investment"],
+                                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
+                                            3 => ["Investment principal repayment" => "Capital_repayment"],    //OK
+                                            4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
+                                            5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
+                                            6 => ["Interest income" => "Regular_gross_interest_income"],       //
+                                            7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
+                                            8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
+                                            9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
+                                            10 => ["Discount/premium for secondary market" => "Income_secondary_market"],   // For seller
+                                            11 => ["Discount/premium for secondary market" => "Cost_secondary_market"],     // for buyer
+                                            ] 
                             ],
                     "functionName" => "getTransactionDetail",
                 ]
@@ -138,7 +139,7 @@ class finanzarel extends p2pCompany {
             ],
         ];
 
-   protected $valuesInvestment = [     // All types/names will be defined as associative index in array
+   protected $valuesTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
                     "name" => "transactionId"                                          // Winvestify standardized name
             ],
@@ -158,51 +159,50 @@ class finanzarel extends p2pCompany {
                 ]
             ],
             "E" => [
-                    "type" => "dummy_auction",                                            // This is an "empty variable name". So "type" is
+                    "type" => "loanId",                                            // This is an "empty variable name". So "type" is
             ], 
             "F" => [// NOT FINISHED YET
                 [
                     "name" => "get_detail",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
-                                    "input8" => ["Provisión de fondos" => "Cash_deposit",
-                                //                "" => "Cash_withdrawal",
-                                                "Cargo por inversión en efecto" => "Primary_market_investment",
-                                //                "" => "Secondary_market_investment",
-                                //                "" => "Principal_repayment",
-                                                "Abono por cobro parcial de efecto" => "Partial_principal_repayment",
-                                //                "" => "Principal_buyback".
-                                                "Abono por cobro efecto" => "Principal_and_interest_payment",
-                                //                "" => "Regular_gross_interest_income",
-                                                "Intereses de demora" => "Delayed_interest_income",
-                                //                "" => "Late_payment_fee_income",
-                                //                "" => "Interest_income_buyback",
-                                //                "" => "Delayed_interest_income_buyback",
-                                //                "" => "Incentive_and_bonus",
-                                                "Retrocesión de comisiones" => "Compensation",
-                                //                "" => "Disc/premium paid secondary market",
-                                //                "" => "Other 4 income",
-                                //                "" => "Recoveries",
-                                                "Comisiones" => "Commission",
-                                //                "" => "Bank_charges",
-                                //                "" => "Disc/premium_paid_secondary_market",
-                                //                "" => "Interest_payment_secondary_market_purchase",
-                                //                "" => "Currency_exchange_fee",
-                                //                "" => "Other_cost",
-                                                "IVA sobre Comisiones" => "Tax_VAT",
-                                                "Tax: Income withholding tax",
-                                //                "" => "Write-off",
-                                //                "" => "Registration",
-                                //                "" => "Currency_exchange_transaction",
-                                //                "" => "Unknown_income",
-                                //                "" => "Unknown_cost",
-                                //                "" => "Unknown_concept",
+                                    "input3" => [0 => ["Provisión de fondos" => "Cash_deposit"],
+                                //              1 => [ "" => "Cash_withdrawal"],
+                                                2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
+                                //              3 => [  "" => "Secondary_market_investment"],
+                                //              4 => [  "" => "Principal_repayment"],
+                                                5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
+                                //              6 => [  "" => "Principal_buyback"].
+                                                7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
+                                //              8 => [  "" => "Regular_gross_interest_income"],
+                                                9 => ["Intereses de demora" => "Delayed_interest_income"],
+                                //              10 => [  "" => "Late_payment_fee_income"],
+                                //              11 => [  "" => "Interest_income_buyback"],
+                                //              12 => [  "" => "Delayed_interest_income_buyback"],
+                                //              13 => [  "" => "Incentive_and_bonus"],
+                                                14 => ["Retrocesión de comisiones" => "Compensation"],
+                                //              15 => [  "" => "Disc/premium paid secondary market"],
+                                //              16 => [  "" => "Other 4 income"],
+                                //              17 => [  "" => "Recoveries"],
+                                                18 => ["Comisiones" => "Commission"],
+                                //              19 => [ "" => "Bank_charges",
+                                //              20 => [  "" => "Disc/premium_paid_secondary_market"],
+                                //              21 => [  "" => "Interest_payment_secondary_market_purchase"],
+                                //              22 => [  "" => "Currency_exchange_fee"],
+                                //              23 => [ "" => "Other_cost"],
+                                                24 => ["IVA sobre Comisiones" => "Tax_VAT"],
+                                //              25 => ["Tax: Income withholding tax"],
+                                //              26 => [  "" => "Write-off"],
+                                //              27 => [  "" => "Registration"],
+                                //              28 => [   "" => "Currency_exchange_transaction"],
+                                //              29 => [   "" => "Unknown_income"],
+                                //              30 => [  "" => "Unknown_cost"],
+                                //              31 => [  "" => "Unknown_concept"],
                                                 ]
                             ],
                     "functionName" => "getTransactionDetail",
                 ]
             ],
-       
             "G" => [
                 [
                     "name" => "amount",                                            // This is an "empty variable name". So "type" is
@@ -214,7 +214,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            "G" => [
+            "H" => [
                 [
                     "type" => "balance",                                            // This is an "empty variable name". So "type" is
                     "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
@@ -224,24 +224,7 @@ class finanzarel extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ],
-            ],
-            "H" => [
-                [
-                    "type" => "investment.currency",                                    // Winvestify standardized name  OK
-                    "functionName" => "getCurrency",
-                ]
-            ],
-            "G" =>  [
-                [
-                    "type" => "investment.nextPaymentAmount",                           // Winvestify standardized name
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ".",
-                                "input4" => 16
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],
+            ]
         ];
 
     protected $valuesAmortizationTable = [  // NOT FINISHED
