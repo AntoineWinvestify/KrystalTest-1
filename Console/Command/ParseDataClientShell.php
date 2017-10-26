@@ -697,6 +697,7 @@ class ParseDataClientShell extends AppShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
                 $result = json_decode($this->workerResult, true);
+                
                 foreach ($result as $platformKey => $platformResult) {
                     if (Configure::read('debug')) {
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "platformkey = $platformKey\n";
@@ -835,7 +836,7 @@ class ParseDataClientShell extends AppShell {
 
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
         foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
-if ($newLoan <> "840073-01" ) {
+if ($newLoan <> "1465476-01" ) {
     echo "flushing loanId $newLoan\n";
  //   continue;
 }

@@ -34,15 +34,14 @@
  * 
  * 
  * 2017-10-26           version 0.3
- * due to use of bc-math functionality, the amounts are now ordinary string with the decimal point
- * 
+ * Due to use of bc-math functionality, the amounts are now ordinary string with the decimal point
+ * getLastError is returning real data, for 'unknown concept'
  * 
  * 
  * 
  * 
  * Pending:
  * chunking, csv file check
- * getLastError
  * 
  * 
  */
@@ -278,7 +277,9 @@
                     ]
             ];
 
-
+        private $filename;      // holds name of the file being analyzed
+        
+        
     function __construct() {
         echo "starting parser\n";
     }
@@ -294,7 +295,9 @@
      */
     public function analyzeFile($file, $configuration) {
 echo "INPUT FILE = $file \n";
+    $this->filename = $file;
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
+print_r($this->config);
        // determine first if it a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -491,13 +494,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     /**
      * Returns information of the last occurred error. Can also detect if
      * an unknown "payment" concept was found.
-     *  @return array   $analyzedData
-     *          false in case an error occurred
+     *  @return JSON   
+     *         
      */
     public function getLastError()  {
-        return $this->errorData;
+        $this->errorData['file'] = $this->filename;
+        return json_decode($this->errorData);
     }
 
+    
     /**
      * Sets one or more configuration parameters.
      * The following parameters can be configured:
@@ -843,6 +848,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             echo "unknown concept, so start doing some Guessing for concept $input\n";  
          // an unknown concept was found, do some intelligent guessing about its meaning
             $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
+            
+            // collect error information 
+            unset($errorMsg);
+            $errorMsg['input'] = $input;
+            $errorMsg['config'] = $config;
+            $this->errorData = $errorMsg;
+
             return $result;           
         }     
     }

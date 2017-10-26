@@ -158,7 +158,6 @@ class ParseDataWorkerShell extends AppShell {
                         }
                         $parserConfigFile = $companyHandle->getParserConfigInvestmentFile(); 
                         $configParameters = $companyHandle->getParserInvestmentConfigParms();
-                        print_r($configParameters);
                         break;                        
                         
                     case EXTENDED_TRANSACTION_FILE:
@@ -235,6 +234,7 @@ class ParseDataWorkerShell extends AppShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
+    //    print_r($returnData);
         return json_encode($returnData);
     }
 }
