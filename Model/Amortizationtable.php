@@ -89,12 +89,16 @@ class Amortizationtable extends AppModel
         return true;         
     }
     
-    public function saveAmortizationtable($amortizationtable, $investmentId) {
-        $i = 0;
-        foreach ($amortizationtable as $value) {
-            $amortizationtable[$i]['investment_id'] = $investmentId;
-            $i++;
+    public function saveAmortizationtable($linkaccountData, $investmentIds) {
+        $amortizationtable = [];
+        foreach ($linkaccountData as $loanId => $loanData) {
+            foreach ($loanData as $value) {
+                $value['investment_id'] = $investmentIds[$loanId];
+                $amortizationtable[] = $value;
+            }
         }
+        echo "amortization";
+        print_r($amortizationtable);
         $this->saveMany($amortizationtable);
         return true;
     }
