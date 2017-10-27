@@ -108,7 +108,7 @@
                             <img src="/img/teamfiles/team_CristinaOrtega.png" class="img-responsive center-block teamImg"/>
                             <div id="team_cris">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Cristina Ortega')?></center></span>
-                                <span class="teamPosition"><center><?php echo __('Junior Software Designer')?></center></span>
+                                <span class="teamPosition"><center><?php echo __('Software Designer')?></center></span>
                                 <a href="https://www.linkedin.com/in/crisortegadc/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
@@ -121,7 +121,7 @@
                             <img src="/img/teamfiles/team_AntonioIbanez.png" class="img-responsive center-block teamImg"/>
                             <div id="team_antonio">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Antonio Ibañez')?></center></span>
-                                <span class="teamPosition"><center><?php echo __('Junior Software Designer')?></center></span>
+                                <span class="teamPosition"><center><?php echo __('Software Designer')?></center></span>
                                 <a href="https://www.linkedin.com/in/antonio-jes%C3%BAs-ib%C3%A1%C3%B1ez-garc%C3%ADa-47107871/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
@@ -134,7 +134,7 @@
                             <img src="/img/teamfiles/team_EduardoIbanez.png" class="img-responsive center-block teamImg"/>
                             <div id="team_eduardo">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Eduardo Ibañez')?></center></span>
-                                <span class="teamPosition"><center><?php echo __('Junior Software Designer')?></center></span>
+                                <span class="teamPosition"><center><?php echo __('Software Designer')?></center></span>
                                 <a href="https://www.linkedin.com/in/eduardo-iba%C3%B1ez-carmona-565147146/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>

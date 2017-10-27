@@ -26,6 +26,16 @@
  * 
  */
 ?>
+<style>
+    ul li {
+        font-size: medium;
+        color: black;
+    }
+    p {
+        font-size: 16px; 
+        color: black;
+    }
+</style>
 <div id="winvestifySolutionsInvestors">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1" style="min-height: 600px;">
@@ -48,7 +58,7 @@
                 <h2 class="g-color--primary"><?php echo __('Global Marketplace')?></h2>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <h4><?php echo ('Más oferta, más diversificación')?></h4>
-                    <div><?php echo __('En Winvestify mostramos los mejores préstamos activos para invertir y conectamos con las plataformas de Crowdlending más rentables')?></div>
+                    <p><?php echo __('En Winvestify mostramos los mejores préstamos activos para invertir y conectamos con las plataformas de Crowdlending más rentables')?></p>
                     <ul>
                         <li>Miramos por tu interés, sea cual sea la plataforma</li>
                         <li>Concentramos toda la oferta del mercado en un único portal</li>
@@ -62,7 +72,7 @@
                 <h2 class="g-color--primary"><?php echo __('One Click Registration')?></h2>
                 <div>
                     <h4><?php echo __('Más accesible, más ágil')?></h4>
-                    <div><?php echo __('En Winvestify apostamos fuerte por este modelo de inversión alternativa. Colaboramos activamente con las plataformas más importantes para facilitar tu acceso a ellas:')?></div>
+                    <p><?php echo __('En Winvestify apostamos fuerte por este modelo de inversión alternativa. Colaboramos activamente con las plataformas más importantes para facilitar tu acceso a ellas:')?></p>
                     <ul>
                         <li>Registrate en cualquier plataformas ¡Sin salir de Winvestify!</li>
                         <li>Un único formulario de registro para acceder a las principales plataformas</li>
@@ -71,11 +81,11 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <img src="/img/screenshots/ocr1.png" class="imgResponsive investorsImg center-block"/>
-                    <p align="center"><?php echo __('Select your preferred platforms')?></p>
+                    <p align="center"><strong><?php echo __('Select your preferred platforms')?></strong></p>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <img src="/img/screenshots/ocr2.png" class="imgResponsive investorsImg center-block"/>
-                    <p align="center"><?php echo __('A single registration process')?></p>
+                    <p align="center"><strong><?php echo __('A single registration process')?></strong></p>
                 </div>
             </div>
         </div>
@@ -88,9 +98,9 @@
             <h3 class="g-color--primary"><?php echo __('Nos tomamos la seguridad muy en serio')?></h3>
             <h6><?php echo __('Para Winvestify su comunidad de inversores son lo más valioso y por tanto los datos propiedad de estos son si cabe aún más importantes.')?></h6>
             <br/>
-            <div class="divpadding"><strong><i class="fa fa-shield"></i> Alta Seguridad:</strong><?php echo __(' La información está protegida con nivel de seguridad bancaria de 256 bits, que es el mismo nivel de protección que tienen los bancos más avanzados.')?></div>
+            <p class="divpadding"><strong><i class="fa fa-shield"></i> Alta Seguridad:</strong><?php echo __(' La información está protegida con nivel de seguridad bancaria de 256 bits, que es el mismo nivel de protección que tienen los bancos más avanzados.')?></p>
             <br/>
-            <div class="divpadding"><strong><i class="fa fa-user-circle-o"></i> Tus datos:</strong><?php echo __(' Tus datos personales están amparados por la Ley Orgánica de Protección de Datos (LOPD). La información es almacenada en distintos soportes de información con sistemas de cifrado, de forma disociada que la convierte en inútil en caso de no disponer de todos los componentes de la misma, y anonimizada por lo que nunca puede ser relacionada a una persona.')?></div>
+            <p class="divpadding"><strong><i class="fa fa-user-circle-o"></i> Tus datos:</strong><?php echo __(' Tus datos personales están amparados por la Ley Orgánica de Protección de Datos (LOPD). La información es almacenada en distintos soportes de información con sistemas de cifrado, de forma disociada que la convierte en inútil en caso de no disponer de todos los componentes de la misma, y anonimizada por lo que nunca puede ser relacionada a una persona.')?></p>
         </div>
     </div>
 </div>
