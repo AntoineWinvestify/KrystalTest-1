@@ -189,6 +189,7 @@ class ParseDataWorkerShell extends AppShell {
                         }
                         if ($actualFileType == TRANSACTION_FILE) {
                             $totalParsingresultTransactions = $tempResult;
+                            print_r($totalParsingresultTransactions);
                         }
 
                         try {
@@ -214,7 +215,7 @@ class ParseDataWorkerShell extends AppShell {
             $returnData[$linkedAccountKey]['queue_id'] = $data['queue_id'];
             $returnData[$linkedAccountKey]['pfp'] = $platform;
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
-
+            
 // check if we have new loans for this reading period            
             $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
             $iteriter = new RecursiveIteratorIterator($arrayiter);
@@ -230,11 +231,11 @@ class ParseDataWorkerShell extends AppShell {
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
         }
-
+  //      $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-    //    print_r($returnData);
+  //      print_r($returnData);
         return json_encode($returnData);
     }
 }
