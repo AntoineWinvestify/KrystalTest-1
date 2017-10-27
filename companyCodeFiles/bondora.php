@@ -346,7 +346,7 @@ class bondora extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array Control variables.
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -751,7 +751,7 @@ class bondora extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) { //{"loanIds":{"702":["7e89377c-15fc-4de3-8b65-a55500ef6a1b","6b3649c5-9a6b-4cee-ac05-a55500ef480a"]}} example in queue_info
+    function collectAmortizationTablesParallel($str = null) { //{"loanIds":{"702":["7e89377c-15fc-4de3-8b65-a55500ef6a1b","6b3649c5-9a6b-4cee-ac05-a55500ef480a"]}} example in queue_info
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -863,7 +863,6 @@ class bondora extends p2pCompany {
                     break;
                 } else {
                     return $this->tempArray;
-                    break;
                 }
         }
     }
