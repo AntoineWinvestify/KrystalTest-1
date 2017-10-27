@@ -389,7 +389,7 @@
         <script type="text/javascript">
             function successLanguage(data) {
                 location.reload(true);
-                var id = $(".flag-language").attr("id");
+                var id = $(".flagvalue").attr("id");
                 $(".schemaImg").attr("src", "/img/landingpage/schema_" + id + ".png");
             }
 
@@ -456,7 +456,7 @@
                 });
                 
                 //Initial schemaImg
-                var id = $(".flag-language").attr("id");
+                var id = $(".flagvalue").attr("id");
                 $(".schemaImg").attr("src", "/img/landingpage/schema_" + id + ".png");
             });
 
