@@ -1117,7 +1117,7 @@ class loanbook extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array Control variables.
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
 
         switch ($this->idForSwitch) {
             case 0:
@@ -1431,7 +1431,7 @@ class loanbook extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) { //Queue_info example {"loanIds":{"704":["472"]}}
+    function collectAmortizationTablesParallel($str = null) { //Queue_info example {"loanIds":{"704":["472"]}}
         switch ($this->idForSwitch) {
             case 0:
                 /*
