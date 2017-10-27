@@ -1488,7 +1488,7 @@ class zank extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) {
+    function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
