@@ -343,7 +343,7 @@ class GearmanClientShell extends AppShell {
                 'conditions' => array('queue_id' => $queueId)
         ));
         $data["date"] = $this->queueInfo[$queueId]["date"];
-        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newQueueStatus);
+        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $data["newStatus"]);
     }
     
     /**
