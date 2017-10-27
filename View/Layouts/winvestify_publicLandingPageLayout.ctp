@@ -275,7 +275,7 @@
             <hr class="specialHr" width="90%">
             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="schemaImgDiv">
-                    <img src="/img/landingpage/schema_eng.png" class="imgResponsive schemaImg center-block"/>
+                    <img src="" class="imgResponsive schemaImg center-block"/>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <h3><?php echo __('What is Crowdlending?')?></h3>
@@ -389,6 +389,8 @@
         <script type="text/javascript">
             function successLanguage(data) {
                 location.reload(true);
+                var id = $(".flag-language").attr("id");
+                $(".schemaImg").attr("src", "/img/landingpage/schema_" + id + ".png");
             }
 
             function sendLocationDataSuccess(data) {
@@ -452,6 +454,10 @@
                 }, function() {
                   $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
                 });
+                
+                //Initial schemaImg
+                var id = $(".flag-language").attr("id");
+                $(".schemaImg").attr("src", "/img/landingpage/schema_" + id + ".png");
             });
 
         </script>
