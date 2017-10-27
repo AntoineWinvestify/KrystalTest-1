@@ -120,7 +120,7 @@ class finbee extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return 
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
         switch ($this->idForSwitch) {
             //LOGIN
             case 0:
