@@ -31,9 +31,10 @@
  * 
  * [2017-10-24] version 0.3
  * Added db data
- * 
- * [2017-10-24] version 0.4
  * Added ajax function for individual pfp data
+ * 
+ * [2017-10-27] version 0.4
+ * Moved from test to dasboard2s
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
