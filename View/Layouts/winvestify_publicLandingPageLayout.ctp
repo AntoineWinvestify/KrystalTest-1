@@ -48,7 +48,7 @@
                             <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
                                 <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
                                     <div class="row">
-                                        <div class="col-sm-offset-1 col-sm-10 col-xs-12" style="margin-top:10px;">
+                                        <div class="col-sm-offset-1 col-sm-10 col-xs-offset-1 col-xs-10" style="margin-top:10px;">
                                             <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
                                             ?>
                                             <?php
@@ -194,23 +194,22 @@
         <!-- Toolbox -->
         <a name="mark_ftb"></a>
         <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed;">
-            <div class="container g-text-center--xs g-padding-y-80--xs g-padding-y-125--sm">
-                <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
-                </div>
-            </div>
             <!-- Mockup -->
             <div class="container_features row">
                 <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
-                    <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><br/>
-                        <img href="/" src="/img/logo_winvestify/Logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
-                        <span id="headerTitle"><?php echo __('Creemos que tienes derecho a sacar el máximo partido a tus inversiones') ?></span>
-                        <span class="headerText"><?php echo __('Entérate de qué pasa con todas tus inversiones, de un modo organizado y estandarizado. Conecta con tus plataformas desde Winvestify y obtén el control total de todas tus cuentas.')?></span><br/>
-                        <span class="headerText"><?php echo __('Somos la herramienta líder española en Crowdlending que te ayuda a controlar todas tus inversiones de un modo preciso y eficaz')?></span>
-                    </p>
+                    <div class="row featuresP" data-wow-duration="1s" data-wow-delay=".1s">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <br/>
+                            <img href="/" src="/img/logo_winvestify/Logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
+                            <span id="headerTitle"><?php echo __('Creemos que tienes derecho a sacar el máximo partido a tus inversiones') ?></span>
+                            <span class="headerText"><?php echo __('Entérate de qué pasa con todas tus inversiones, de un modo organizado y estandarizado. Conecta con tus plataformas desde Winvestify y obtén el control total de todas tus cuentas.')?></span><br/>
+                            <span class="headerText"><?php echo __('Somos la herramienta líder española en Crowdlending que te ayuda a controlar todas tus inversiones de un modo preciso y eficaz')?></span>
+                        </div>
+                    </div>
                     <div class="row" id="featuresButton">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12"><br/>
                             <a class="center-block" style="text-align: center;" href="/users/registerPanel">
-                                <button class="btn btn-lg" id="registerButton" type="button">
+                                <button class="btn btn-lg btnGeneral pull-left" type="button">
                                     <?php echo __('Open new account') ?>
                                 </button>
                             </a>
@@ -228,7 +227,6 @@
         </div>
         <!-- End Mockup -->
         <!-- Prizes -->
-        <div class="reestructure"></div>
         <div id="prizes" class="row">
             <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1">
                 <div class="col-xs-12 col-sm-12 col-sm-5 col-sm-offset-1 col-lg-5 col-md-offset-1 col-lg-offset-1">
@@ -274,7 +272,7 @@
         <div id="schema" class="row">
             <hr class="specialHr" width="90%">
             <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="schemaImgDiv">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 hidden-xs hidden-sm" id="schemaImgDiv">
                     <img src="" class="imgResponsive schemaImg center-block"/>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">

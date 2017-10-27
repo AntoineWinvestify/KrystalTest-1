@@ -56,7 +56,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -95,7 +95,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -134,7 +134,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -176,7 +176,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -215,7 +215,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -254,7 +254,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -296,7 +296,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -335,7 +335,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -374,7 +374,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -416,7 +416,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
@@ -468,7 +468,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="checkboxDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/ES.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
+                                    <div class = 'input_platforms' style="font-size: 18px"><img src="/img/flags/es.png" style="vertical-align: middle;" alt="Spain Flag"/> Spain</div>
                                     <div class="divmiddle">
                                         <div class = 'input_platforms'>
                                             <strong><?php echo __('Modality')?></strong><br/>
