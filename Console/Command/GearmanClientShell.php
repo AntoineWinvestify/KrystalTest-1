@@ -299,7 +299,7 @@ class GearmanClientShell extends AppShell {
             }
             $this->Queue->save(array(
                     'queue_status' => $newState,
-                    'queue_info' => $this->queueInfo[$queueId]
+                    'queue_info' => json_encode($this->queueInfo[$queueId])
                 ),
                 $validate = true);
         }
