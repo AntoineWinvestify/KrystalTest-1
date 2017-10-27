@@ -59,7 +59,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         print_r($data);
-        $this->date = date("Y-m-d");
         //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
         $index = 0;
         $i = 0;
@@ -77,7 +76,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $newComp->setCompanyName($result[$companyId]['company_codeFile']);
             $newComp->setUserReference($data["queue_userReference"]);
             $newComp->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
-            ///MAybe this is needed 
+            ///Maybe this is needed 
             //https://book.cakephp.org/2.0/en/core-utility-libraries/time.html#CakeTime::dayAsSql
             $formulas = $newComp->getFormulas();
             foreach ($formulas as $formula) {
