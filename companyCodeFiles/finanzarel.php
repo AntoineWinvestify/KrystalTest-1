@@ -615,7 +615,7 @@ class finanzarel extends p2pCompany {
                                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                return $tempArray;
+                return $this->tempArray;
                 
         }
     }
