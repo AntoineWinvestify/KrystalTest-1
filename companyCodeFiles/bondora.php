@@ -82,6 +82,20 @@ class bondora extends p2pCompany {
         return $this->$valuesBondoraAmortization;
     }
 
+    
+    
+    
+    /**
+     *
+     * 	Checks if the user can login to its portal. Typically used for linking a company account
+     * 	to our account
+     * 	
+     * 	@param string	$user		username
+     * 	@param string	$password	password
+     * 	@return	boolean	true: 		user has successfully logged in.
+     * 			false: 		user could not log in
+     * 	
+     */
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY Bondora DURING LOGIN PROCESS

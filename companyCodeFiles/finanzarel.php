@@ -259,8 +259,20 @@ class finanzarel extends p2pCompany {
 // Do whatever is needed for this subsclass
     }   
 
-
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    
+    
+    /**
+     *
+     * 	Checks if the user can login to its portal. Typically used for linking a company account
+     * 	to our account
+     * 	
+     * 	@param string	$user		username
+     * 	@param string	$password	password
+     * 	@return	boolean	true: 		user has successfully logged in.
+     * 			false: 		user could not log in
+     * 	
+     */
+    function companyUserLogin($user = "", $password = "") {
         /*
           FIELDS USED BY finanzarel DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
@@ -669,10 +681,12 @@ class finanzarel extends p2pCompany {
         echo 'Downloaded';
     }
     
+    
     public function companyUserLogout($url = null) {
         $this->doCompanyLogout(); //logout
         return true;
     }
+    
     
     public function companyUserLogoutMultiCurl($str = null) {
         //Get logout url
