@@ -118,7 +118,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
                 $this->saveAmortizationtablesToDB();
-                $this->verifiedStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_AMORTIZATION_TABLE);
+                $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_AMORTIZATION_TABLE);
                 unset($pendingJobs);
                 $numberOfIteration++;
             }
