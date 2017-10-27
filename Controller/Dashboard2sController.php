@@ -60,20 +60,22 @@ class Dashboard2sController extends AppController {
             FatalErrorException(__('You cannot access this page directly'));
         }
 
-        $linkedAccount = $this->request->data['id'];
-        $logo = $this->request->data['logo'];
-        $name = $this->request->data['name'];
+        //Request data
+        $linkedAccount = $this->request->data['id']; //Link account id
+        $logo = $this->request->data['logo']; //Pfp Logo
+        $name = $this->request->data['name']; //Pfp Name
 
         $this->layout = 'ajax';
         $this->disableCache();
 
+        //Read investment info
         $investorReference = $this->Session->read('Auth.User.Investor.investor_identity');
         $filterConditions = array('userinvestmentdata_investorIdentity' => $investorReference, 'linkedaccount_id' => $linkedAccount);
-
         $dataResult = $this->Userinvestmentdata->getData($filterConditions);
         $dataResult['logo'] = $logo;
         $dataResult['name'] = $name;
-
+        
+       //Set result
         $result = array(true, $dataResult);
         $this->set('companyInvestmentDetails', $result);
     }
@@ -94,19 +96,19 @@ class Dashboard2sController extends AppController {
 
         $this->layout = 'azarus_private_layout';
         $this->Company = ClassRegistry::init('Company');
-
-        //Get data from db
-        $investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity');
-        $globalData = $this->Userinvestmentdata->getGlobalData($investorIdentity);
+        $investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
+        
+        //Get investment data from db
+        $allInvestment = $this->Userinvestmentdata->getGlobalData($investorIdentity);
 
         //Get global data
-        $global['totalVolume'] = 0;
+        $global['totalVolume'] = 0; // totalVolume = investedAssets + reservedFunds + cash
         $global['investedAssets'] = 0;
         $global['reservedFunds'] = 0;
         $global['cash'] = 0;
         $global['activeInvestment'] = 0;
         $global['netDeposits'] = 0;
-        foreach ($globalData as $globalKey => $individualPfpData) {
+        foreach ($allInvestment as $globalKey => $individualPfpData) {
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
                 if ($key == "userinvestmentdata_activeInInvestments") { //Get global active in investment
                     $global['investedAssets'] = $global['investedAssets'] + $individualData;
@@ -131,11 +133,11 @@ class Dashboard2sController extends AppController {
                     //Get the pfp id of the linked acount
                     $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData), array('company_id'));
                     $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
+                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
                     //Get pfp logo and name
                     $pfpOtherData = $this->Company->getData(array('id' => $pfpId), array("company_logoGUID", "company_name"));
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
+                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
+                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                 }
             }
         }
@@ -143,7 +145,7 @@ class Dashboard2sController extends AppController {
         //Set global data
         $this->set('global', $global);
         //Set an array with individual info
-        $this->set('individualInfoArray', $globalData);
+        $this->set('individualInfoArray', $allInvestment);
     }
 
 }
