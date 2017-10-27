@@ -336,14 +336,15 @@ class GearmanClientShell extends AppShell {
         print_r($this->gearmanErrors);
         $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId]);
         $data = [];
-        $data = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
+        $newData = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
+        $data["numberTries"] = $newData["numberTries"];
         $data["companiesInFlow"][0] = $linkaccountId;
         $userReference = $this->Queue->find('first', array(
                 'fields' => 'queue_userReference',
                 'conditions' => array('queue_id' => $queueId)
         ));
         $data["date"] = $this->queueInfo[$queueId]["date"];
-        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $data["newStatus"]);
+        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"]);
     }
     
     /**
