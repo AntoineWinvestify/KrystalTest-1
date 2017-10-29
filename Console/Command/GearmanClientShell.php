@@ -194,6 +194,7 @@ class GearmanClientShell extends AppShell {
         }
         return $statusProcess;
     }
+    
     /**
      * Function to verify if a folder exist searching by path or it containing files
      * @param string $userReference It is the user reference used by our database
