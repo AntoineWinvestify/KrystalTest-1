@@ -204,7 +204,8 @@ class GearmanClientShell extends AppShell {
     public function verifyCompanyFolderExist($userReference, $linkaccountId, $fileName = null) {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $userReference . DS . $this->date . DS . $linkaccountId;
+        $date = date("Ymd", strtotime($this->date-1));
+        $path = $userReference . DS . $date . DS . $linkaccountId;
         print_r($path);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
