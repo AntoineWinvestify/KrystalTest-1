@@ -134,7 +134,8 @@ class GearmanClientShell extends AppShell {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $flow = constant("WIN_ERROR_" . $this->flowName);
-        $path = $this->userReference[$queueId] . DS . $this->date . DS . $linkAccountId;
+        $date = date("Ymd", strtotime($this->date-1));
+        $path = $this->userReference[$queueId] . DS . $date . DS . $linkAccountId;
         print_r($this->userReference);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
@@ -273,7 +274,7 @@ class GearmanClientShell extends AppShell {
     }
     
     /**
-     * Function to verify that the job was successful
+     * Function to verify that the job was successful per user and per company
      * @param int $status It is the Id of the next queue status
      * @param string $message It is the message to show on console
      * @param int $restartStatus It is the Id of the queue if something fail
