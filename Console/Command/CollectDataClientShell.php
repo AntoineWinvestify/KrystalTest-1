@@ -86,6 +86,8 @@ class CollectDataClientShell extends GearmanClientShell {
                     print_r($jobInvestor);
                     $investorId = $jobInvestor['Investor']['id'];
                     $filterConditions = array('investor_id' => $investorId);
+                    //We verify that companiesInFlow exists and if exists, 
+                    //we only get that companies information from database
                     if (!empty($queueInfo['companiesInFlow'])) {
                         foreach ($queueInfo['companiesInFlow'] as $key => $linkaccountIdInFlow) {
                             $linkAccountId[] = $linkaccountIdInFlow;
@@ -107,11 +109,16 @@ class CollectDataClientShell extends GearmanClientShell {
                     foreach ($linkedaccountResult as $linkedaccount) {
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
                         $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id']);
-                        if (empty($this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
-                            $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
-                        }
-                        
+                        //We verify that a company doesn't have a folder with information, 
+                        //if the folder exists, it means that we get than company previously on that day
                         if (!$folderExist) {
+                            //After verify that a folder doesn't exist, 
+                            //we verify that companiesInFlow doesn't exist neither
+                            if (empty($this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
+                                //If not exists, we put all the linkaccounts of the companies 
+                                //that we are going to collect inside the variables companiesInFlow
+                                $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
+                            }
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
@@ -127,9 +134,9 @@ class CollectDataClientShell extends GearmanClientShell {
 
 
                 //$key is the number of the internal id of the array (0,1,2)
-                //$key2 is type of access to company (multicurl, casper, etc)
+                //$typeAccessKey is type of access to company (multicurl, casper, etc)
                 foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
-                    foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
+                    foreach ($userLinkedaccount as $typeAccessKey => $linkedaccountsByType) {
                         $data["companies"] = $linkedaccountsByType;
                         $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
                         $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
@@ -142,9 +149,9 @@ class CollectDataClientShell extends GearmanClientShell {
                         echo "\n";
                         echo json_encode($data);
                         echo "\n";
-                        echo $key2;
+                        echo $typeAccessKey;
                         echo "\n aquiiiiiiiiiiiiiii";
-                        $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2 . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
                     }
                 }
 
