@@ -57,6 +57,11 @@ class GearmanClientShell extends AppShell {
     /**
      * Function to catch a fail on a Gearman Worker
      * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
+     *          $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
+     *                  $data[0] It is the queueId of the task
+     *                  $data[1] It is the function name on the Gearman Worker
+     *                  $data[2] It is the userReference        
+     * 
      */
     public function verifyFailTask(GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -77,6 +82,10 @@ class GearmanClientShell extends AppShell {
     /**
      * Function to catch a exception on a Gearman Worker
      * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
+     *          $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
+     *                  $data[0] It is the queueId of the task
+     *                  $data[1] It is the function name on the Gearman Worker
+     *                  $data[2] It is the userReference  
      */
     public function verifyExceptionTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -98,6 +107,14 @@ class GearmanClientShell extends AppShell {
     /**
      * Function that runs after a task was complete on the Gearman Worker
      * @param GearmanTask $task It is a Gearman::Client's representation of a task done.
+     *          string $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
+     *                  $data[0] It is the queueId of the task
+     *                  $data[1] It is the function name on the Gearman Worker
+     *                  $data[2] It is the userReference  
+     *          string $task->data Returns data being returned for a task by a worker
+     *                  $data["statusCollect"] It is the status of the request by linkaccount Id
+     *                  $data["errors"] If the statusCollect is 0, the error is saved on it
+     *                  $data["tempArray"] The information to save on database by linkaccount id
      */
     public function verifyCompleteTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
