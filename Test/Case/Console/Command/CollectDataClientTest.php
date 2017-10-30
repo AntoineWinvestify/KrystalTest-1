@@ -51,14 +51,16 @@ class CollectDataClientTest extends CakeTestCase {
         $this->assertTrue($actual);
     }
     
-    public function testCheckJobs() {
+    /*public function testCheckJobs() {
         $resultQueue = $this->GearmanClient->checkJobs(WIN_QUEUE_STATUS_START_COLLECTING_DATA, 1);
         foreach ($resultQueue as $result) {
-            
             $result['Queue']['id'];
-            $result['Queue']['queue_userReference']
-                    ;
+            $result['Queue']['queue_userReference'];
         }
+    }*/
+    
+    public function testUserReferenceIsOk() {
+        
     }
     
 }
