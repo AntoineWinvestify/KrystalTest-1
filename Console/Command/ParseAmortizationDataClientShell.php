@@ -139,6 +139,9 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         }
     }
     
+    /**
+     * Function to save all the amortization tables on DB per user and per linkaccount
+     */
     public function saveAmortizationtablesToDB() {
         $loanIds = [];
         foreach ($this->tempArray as $queuekey => $tempArray) {
