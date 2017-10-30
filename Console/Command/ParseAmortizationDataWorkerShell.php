@@ -39,14 +39,14 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
     }
     
     /**
-     * Parse the content of a file (xls, xlsx, csv) into an array 
+     * Parse the content of a file (xls, xlsx, csv, html) into an array 
      * The $job->workload() function read the input data as sent by the Gearman client
      * This is json_encoded data with the following structure:
-     *      $data['PFPname']['files']                  array
-     *      $data['PFPname']['files'][filename']       array of filenames, FQDN's
-     *      $data['PFPname']['files'][typeOfFile']     type of file, CASHFLOW, INVESTMENT,...
-     *      $data['PFPname']['files']['filetype']      CSV or XLS
-     *      $data['userReference']
+     *      $data['linkedAccountId']['userReference']
+     *      $data['linkedAccountId']['queue_id']
+     *      $data['linkedAccountId']['pfp']
+     *      $data['linkedAccountId']['files'][filename1']           => array of filenames, FQDN's
+     *      $data['linkedAccountId']['files'][filename2']
      * 
      * 
      * @return array  
