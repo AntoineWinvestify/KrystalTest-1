@@ -50,6 +50,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
      *      $data["queue_userReference"]        string It is the user reference
      *      $data["queue_id"]                   integer It is the queue id
      *      $data["loandIds"]                   array It contains all the loandId needed to save from the companies
+     *      $data["date"]                       integer It is the today's date
      * @return json Json containing all the status collect and errors by link account id
      */
     public function getAmortizationDataMulticurl($job) {
