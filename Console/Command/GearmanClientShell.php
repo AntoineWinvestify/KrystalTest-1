@@ -229,7 +229,7 @@ class GearmanClientShell extends AppShell {
     
     
     /**
-     * checks to see if jobs are waiting in the queue for processing
+     * Checks to see if jobs are waiting in the queue for processing
      * 
      * @param int $presentStatus    status of job to be located
      * @param int $newStatus        status to change to when pulling job out of queue 
@@ -330,11 +330,11 @@ class GearmanClientShell extends AppShell {
     }
     
     /**
-     * 
-     * @param type $queueId
-     * @param type $linkaccountId
-     * @param type $restartStatus
-     * @param type $errorStatus
+     * Function to requeue a company when fails to collect the data or parse the information
+     * @param int $queueId It is the queueId of the request
+     * @param int $linkaccountId It is the linkaccountId of the company to requeue
+     * @param int $restartStatus It is the status to which we must put if the request is to be restarted
+     * @param int $errorStatus It is the status to which we must put if the request fails
      */
     public function requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus) {
         $this->deleteFolderByDateAndLinkaccountId($queueId, $linkaccountId); //1 = $todaydate
@@ -348,19 +348,16 @@ class GearmanClientShell extends AppShell {
         $newData = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
         $data["numberTries"] = $newData["numberTries"];
         $data["companiesInFlow"][0] = $linkaccountId;
-        $userReference = $this->Queue->find('first', array(
-                'fields' => 'queue_userReference',
-                'conditions' => array('queue_id' => $queueId)
-        ));
+        $userReference = $this->userReference[$queueId];
         $data["date"] = $this->queueInfo[$queueId]["date"];
         $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"]);
     }
     
     /**
-     * 
-     * @param type $queueId
-     * @param type $restartStatus
-     * @param type $errorStatus
+     * Function to get the status we must put on the queue request if it failed
+     * @param int $queueId It is the queueId of the request
+     * @param int $restartStatus It is the status to which we must put if the request is to be restarted
+     * @param int $errorStatus It is the status to which we must put if the request fails
      */
     public function getFailStatus($queueId, $restartStatus, $errorStatus) {
         $data["newStatus"] = $restartStatus;
