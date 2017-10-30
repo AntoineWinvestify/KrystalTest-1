@@ -69,6 +69,7 @@ class CollectDataClientShell extends GearmanClientShell {
                     print_r($pendingJobs);
                 }
                 $linkedaccountsResults = [];
+                $companiesInFlowExist = [];
                 foreach ($pendingJobs as $job) {
                     $queueInfo = json_decode($job['Queue']['queue_info'], true);
                     $this->queueInfo[$job['Queue']['id']] = $queueInfo;
@@ -85,10 +86,12 @@ class CollectDataClientShell extends GearmanClientShell {
                     ));
                     print_r($jobInvestor);
                     $investorId = $jobInvestor['Investor']['id'];
+                    $companiesInFlowExist[$job['Queue']['id']] = false;
                     $filterConditions = array('investor_id' => $investorId);
                     //We verify that companiesInFlow exists and if exists, 
                     //we only get that companies information from database
                     if (!empty($queueInfo['companiesInFlow'])) {
+                        $companiesInFlowExist[$job['Queue']['id']] = true;
                         foreach ($queueInfo['companiesInFlow'] as $key => $linkaccountIdInFlow) {
                             $linkAccountId[] = $linkaccountIdInFlow;
                         }
@@ -114,11 +117,13 @@ class CollectDataClientShell extends GearmanClientShell {
                         if (!$folderExist) {
                             //After verify that a folder doesn't exist, 
                             //we verify that companiesInFlow doesn't exist neither
-                            if (empty($this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
+                            if (!$companiesInFlowExist[$job['Queue']['id']]) {
                                 //If not exists, we put all the linkaccounts of the companies 
                                 //that we are going to collect inside the variables companiesInFlow
                                 $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
                             }
+                            //After verify that a folder doesn't exist, 
+                            //we verify that companiesInFlow doesn't exist neither
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
