@@ -1634,6 +1634,19 @@ hr.nomargin {
             .navbar-collapse {
                 width: auto;
             }
+            /*Navbar header collapse correctly*/
+            .navbar-collapse.collapse {
+                display: none !important;
+            }
+            .navbar-collapse.collapse.in {
+                display: block !important;
+            }
+            .navbar-header .collapse, .navbar-toggle {
+                display:block !important;
+            }
+            .navbar-header {
+                float:none;
+            }
         }
                                 @media (min-width: 1024px) and (max-width: 1200px) {
                                     #features_right {
@@ -1651,7 +1664,7 @@ hr.nomargin {
                                         left: 50px;
                                     }
                                 }
-                            
+                                
                                 @media (min-width: 1200px) {
                                 #features_right {
                                     top: 20px !important;
@@ -1661,7 +1674,7 @@ hr.nomargin {
                                     margin-bottom: 40px;
                                 }
                                 .schemaImg {
-                                    height: 100%;
+                                    height: 90%;
                                     margin-top: -15px;
                                 }
                             }
