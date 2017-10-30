@@ -32,7 +32,8 @@
 //P info
 
 echo $companyInvestmentDetails[0];
-/*echo json_encode($companyInvestmentDetails[1]);*/
+/*echo print_r($activeInvestments) . HTML_ENDOFLINE;
+echo print_r($defaultedInvestments) . HTML_ENDOFLINE;*/
 ?>
 <script>
     $(function () {

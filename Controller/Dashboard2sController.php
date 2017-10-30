@@ -41,7 +41,7 @@ class Dashboard2sController extends AppController {
 
     var $name = 'Dashboard2s';
     var $helpers = array('Html', 'Js');
-    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount");
+    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount","Investment");
 
     function beforeFilter() {
 
@@ -73,11 +73,25 @@ class Dashboard2sController extends AppController {
         $filterConditions = array('userinvestmentdata_investorIdentity' => $investorReference, 'linkedaccount_id' => $linkedAccount);
         $dataResult = $this->Userinvestmentdata->getData($filterConditions);
         $dataResult['logo'] = $logo;
-        $dataResult['name'] = $name;
+        $dataResult['name'] = $name;      
         
-       //Set result
+        //Get loan, Active -> Yes // Defaulted -> ¿? // 
+        $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_ACTIVE_LOAN));
+        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_DEFAULTED_LOAN));
+      
+        //Debug
+        /*echo 1;
+        echo "ACTIVE" . HTML_ENDOFLINE;
+        print_r($activeInvestments);
+        echo HTML_ENDOFLINE . "DEFAULTED" . HTML_ENDOFLINE;
+        print_r($defaultedInvestments);*/
+        
+        //Set result
         $result = array(true, $dataResult);
         $this->set('companyInvestmentDetails', $result);
+        $this->set('activeInvestments', $activeInvestments);
+        $this->set('defaultedInvestments', $defaultedInvestments);
+        
     }
 
     /**
