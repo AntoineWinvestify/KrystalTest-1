@@ -49,6 +49,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
      *      $data["companies"]                  array It contains all the linkedaccount information
      *      $data["queue_userReference"]        string It is the user reference
      *      $data["queue_id"]                   integer It is the queue id
+     *      $data["date"]                       integer It is the today's date
      * @return json Json containing all the status collect and errors by link account id
      */
     public function getDataMulticurlFiles($job) {
