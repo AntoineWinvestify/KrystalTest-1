@@ -95,15 +95,6 @@ class Dashboard2sController extends AppController {
     }
 
     /**
-     *
-     * Read all the data related to all the investments of an investor. 
-     * $userReference is read from the session
-     */
-    function getDashboard2GlobalData() {
-        
-    }
-
-    /**
      * Global dashboard view
      */
     function dashboardOverview() {
@@ -125,23 +116,23 @@ class Dashboard2sController extends AppController {
         foreach ($allInvestment as $globalKey => $individualPfpData) {
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
                 if ($key == "userinvestmentdata_activeInInvestments") { //Get global active in investment
-                    $global['investedAssets'] = $global['investedAssets'] + $individualData;
-                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
+                    $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
+                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                 }
                 if ($key == "userinvestmentdata_myWallet") { //Get global wallet
-                    $global['cash'] = $global['cash'] + $individualData;
-                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
+                    $global['cash'] = bcadd($global['cash'], $individualData, 16);
+                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                 }
                 if ($key == "userinvestmentdata_reservedFunds") { //Get global reserved funds
-                    $global['reservedFunds'] = $global['reservedFunds'] + $individualData;
-                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
+                    $global['reservedFunds'] = bcadd($global['reservedFunds'], $individualData, 16);
+                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                 }
                 if ($key == "userinvestmentdata_investments") { //Get global active investmnent
                     $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
                 }
                 if ($key == "id") {
                     $cashFlowData = $this->Globalcashflowdata->getData(array('userinvestmentdata_id' => $individualData), array('globalcashflowdata_platformDeposit'));
-                    $global['netDeposits'] = $global['netDeposits'] + $cashFlowData[0]['Globalcashflowdata']['globalcashflowdata_platformDeposit'];
+                    $global['netDeposits'] = bcadd($global['netDeposits'], $cashFlowData[0]['Globalcashflowdata']['globalcashflowdata_platformDeposit'], 16);
                 }
                 if ($key == "linkedaccount_id") {
                     //Get the pfp id of the linked acount
