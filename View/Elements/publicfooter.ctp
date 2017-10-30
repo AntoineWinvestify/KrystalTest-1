@@ -52,7 +52,7 @@ Pending:
                             <h3 class="g-font-size-18--xs g-color--white">
 								<img src="/img/logo_winvestify/Logo_texto.png" class="responsiveImg" style="text-align: center; margin-top:-20px; max-width:200px;"/>
                             </h3>
-                            <p class="g-color--white-opacity"><?php echo __('Our mission is to help investors minimize the risks of investing in the crowdlending market
+                            <p class="g-color--white-opacity"><?php echo __('Our mission is to help investors minimize the risks of investing in the P2P Lending market
 																			and increase their earnings. We support continuous, global growth of a dynamic crowdlending market,
 																			both by market size and investors');
 																			?>

@@ -70,7 +70,7 @@
                                     <div class="divmiddle">
                                         <div class="input_platforms">
                                             <strong><?php echo __('Cross-border')?></strong><br/>
-                                            <?php echo __('Yes') ?>
+                                            <?php echo __('No') ?>
                                         </div>
                                         <div class="input_platforms">
                                             <strong><?php echo __('Minimum Investment')?></strong><br/>

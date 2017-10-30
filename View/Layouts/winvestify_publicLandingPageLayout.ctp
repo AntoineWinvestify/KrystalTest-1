@@ -200,16 +200,16 @@
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <br/>
                             <img href="/" src="/img/logo_winvestify/Logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
-                            <span id="headerTitle"><?php echo __('Creemos que tienes derecho a sacar el máximo partido a tus inversiones') ?></span>
-                            <span class="headerText"><?php echo __('Entérate de qué pasa con todas tus inversiones, de un modo organizado y estandarizado. Conecta con tus plataformas desde Winvestify y obtén el control total de todas tus cuentas.')?></span><br/>
-                            <span class="headerText"><?php echo __('Somos la herramienta líder española en Crowdlending que te ayuda a controlar todas tus inversiones de un modo preciso y eficaz')?></span>
+                            <span id="headerTitle"><?php echo __('We believe you have the right to get the most out of your investments') ?></span>
+                            <span class="headerText"><?php echo __('Find out what is happening to all your investments in an organized and standardized way. Connect with your platforms from Winvestify and get total control of all your accounts.')?></span><br/>
+                            <span class="headerText"><?php echo __('We are the leading tool in P2P Lending that helps you manage all your investments in a precise and effective way.')?></span>
                         </div>
                     </div>
                     <div class="row" id="featuresButton">
                         <div class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12"><br/>
                             <a class="center-block" style="text-align: center;" href="/users/registerPanel">
                                 <button class="btn btn-lg btnGeneral pull-left" type="button">
-                                    <?php echo __('Open new account') ?>
+                                    <?php echo __('Open account') ?>
                                 </button>
                             </a>
                         </div>
@@ -275,10 +275,10 @@
                     <img src="" class="imgResponsive schemaImg center-block"/>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                    <h3><?php echo __('What is Crowdlending?')?></h3>
-                    <p><?php echo __('El Crowdlending es un modelo de Financiación Alternativa, por el cual inversores particulares y profesionales utilizando Plataformas de Financiación Participativa prestan su dinero a cambio de recibir un interés acorde al riesgo asumido.')?></p>
-                    <p><?php echo __('El resultado es que el prestatario consigue financiarse a un precio más competitivo y el inversor recibe una rentabilidad superior a otros productos financieros.')?></p>
-                    <h3><?php echo __('Basic Rules for Investing in Crowdlending')?></h3>
+                    <h3><?php echo __('What is P2P Lending?')?></h3>
+                    <p><?php echo __('P2P Lending is a model of Alternative Financing, whereby private and professional investors, using Participative Financing Platforms, lend their money in exchange for receiving an interest in accordance with the risk assumed.')?></p>
+                    <p><?php echo __('The result is that the borrower gets financed at a more competitive price and the investor receives a higher return than other financial products.')?></p>
+                    <h3><?php echo __('Basic Rules for Investing in P2P Lending')?></h3>
                     <p>
                         <strong><?php echo __('Buy fractions of loans')?></strong><br/>
                         <?php echo __('Make wise fractional investments in several loans across different P2P Platforms')?>
@@ -295,7 +295,7 @@
         <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/07.jpg) 50% 0 no-repeat fixed;">
             <div class="g-container--sm g-text-center--xs" style="padding: 80px 0px 0px 0px;">
                 <div>
-                    <p class="text-uppercase g-font-size-14--xs g-font-weight--700 g-color--white-opacity g-letter-spacing--2"><?php echo __('TECHNOLOGY SOLUTIONS FOR PROFESSIONAL INVESTOR')?></p>
+                    <p class="text-uppercase g-font-size-14--xs g-font-weight--700 g-color--white-opacity g-letter-spacing--2"><?php echo __('TECHNOLOGY SOLUTIONS FOR THE PROFESSIONAL INVESTOR')?></p>
                     <h2 class="g-font-size-32--xs g-font-size-36--md g-color--white"><?php echo __('All your portfolio and market data. Standardized.')?></h2>
                 </div>
             </div>
@@ -326,9 +326,9 @@
                 <div class="g-text-center--xs">
                     <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs" style="padding: 0px 5px"><?php echo __("Join us. It's easy") ?></p>
                 </div>
-                <h4 align="center" style="padding: 0px 10px 20px 10px;"><?php echo __('Open an account and explore all the connected platforms.')?><br/><?php echo __('We make it easy for you access the main Lending platforms with "One Click Registration"')?></h4>
+                <h4 align="center" style="padding: 0px 10px 20px 10px;"><?php echo __('Open an account and explore all the connected platforms.')?><br/><?php echo __('We make it easy for you to access the main Lending platforms with "One Click Registration"')?></h4>
                 <a href="/users/registerPanel">
-                    <button class="btn btn-lg btn1CR center-block"><?php echo __('Open new account')?></button>
+                    <button class="btn btn-lg btn1CR center-block"><?php echo __('Open account')?></button>
                 </a>
             </div>
         </div>
