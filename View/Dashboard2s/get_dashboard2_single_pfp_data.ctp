@@ -316,14 +316,14 @@ echo $companyInvestmentDetails[0];
                                         <table id="defaultedInvestmentTable" class="investmentDetails table striped display" width="100%" cellspacing="0" data-page-length='25'>
                                             <thead>
                                                 <tr>
-                                                    <th><?php echo __('Name') ?></th>
-                                                    <th><?php echo __('Purpose') ?></th>
-                                                    <th><?php echo __('Interest Rate') ?></th>
-                                                    <th><?php echo __('Duration') ?></th>
-                                                    <th><?php echo __('Rating') ?></th>
-                                                    <th><?php echo __('Progress') ?></th>
+                                                    <th><?php echo __('Loan ID') ?></th>
+                                                    <th><?php echo __('Date') ?></th>
                                                     <th><?php echo __('Amount') ?></th>
-                                                    <th><?php echo __('Action') ?></th>
+                                                    <th><?php echo __('Interest') ?></th>
+                                                    <th><?php echo __('Progress') ?></th>
+                                                    <th><?php echo __('Outstanding Principal') ?></th>
+                                                    <th><?php echo __('Term') ?></th>
+                                                    <th><?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
