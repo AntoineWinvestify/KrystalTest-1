@@ -90,21 +90,25 @@ var $validate = array(
                                                         'order' => array('Paymenttotal.id DESC'),
                                                          ) );
 
+        $this->Paymenttotal->create();
         foreach ($this->data['Payment'] as $paymentKey => $value) {
             $paymentKeyNames = explode("_", $paymentKey);
 
             if ($paymentKeyNames[0] == $paymentPrefix) {   // check if the field exists in table paymenttotals
                 foreach ($latestValuesPaymenttotals['Paymenttotal'] as $paymentTotalKey => $paymentItem) {
                     if ($paymentTotalKey === $paymentTotalPrefix . "_" .$paymentKeyNames[1]) {
-                        $data [$paymentTotalKey] = $paymentItem + $value;
-                        $data[$paymentTotalKey] = sprintf("%017d", $data[$paymentTotalKey]);  // Normalize length with leading 0's
+                        $data [$paymentTotalKey] = bcadd($paymentItem, $value, 16);
                     }
                 }
             } 
         }    
-        $data ['investment_id'] = $investmentId;
+        $data['investment_id'] = $investmentId;
+        $data['status'] = WIN_ERROR_PAYMENTTOTALS_LAST;
         $this->Paymenttotal->save($data, $validate = true); 
          
+        $this->Paymenttotal->create();
+        $this->Paymenttotal->id = $latestValuesPaymenttotals['Paymenttotal']['id'];
+        $this->Paymenttotal->save(array("status" => WIN_ERROR_PAYMENTTOTALS_OLD));              
     }
 
 

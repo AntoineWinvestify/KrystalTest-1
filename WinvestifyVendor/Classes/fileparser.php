@@ -16,8 +16,8 @@
  * 
  * 
  * @author
- * @version
- * @date
+ * @version 0.3
+ * @date  2017-10-26
  * @package
  *
  *
@@ -32,244 +32,253 @@
  * 2017-10-15           version 0.2
  * support of configuration parameters 'offsetStart' and 'offsetEnd'
  * 
+ * 2017-10-24           version 0.3
+ * Added function to parse a html file
+ * 
+ * 
+ * 2017-10-26           version 0.3
+ * Due to use of bc-math functionality, the amounts are now ordinary string with the decimal point
+ * getLastError is returning real data, for 'unknown concept'
+ * E format in getAmount fixed. Format example: 2,31E-6.
+ * Minor fixes.
+ * 
  * 
  * Pending:
  * chunking, csv file check
- * getLastError
+ * 
+ * 
  */
 
+/**
+ *
+ * Class that can analyze a xls/csv/pdf/html file(s) and writes the information to an array
+ *
+ *
+ */
+class Fileparser {
+    protected $config = array ('offsetStart' => 0,
+                            'offsetEnd'     => 0,
+                            'separatorChar' => ";",
+                            'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
+                             );                     // if array does not have $sortParameter then "global" index is used
+                                                    // Typically used for sorting by loanId index
 
+    protected $errorData = array();                 // Contains the information of the last occurred error
 
+    protected $currencies = array(EUR => ["EUR", "€"],
+                                    GBP => ["GBP", "£"],
+                                    USD => ["USD", "$"],
+                                    ARS => ["ARS", "$"],
+                                    AUD => ["AUD", "$"],
+                                    NZD => ["NZD", "$"],
+                                    BYN => ["BYN", "BR"],
+                                    BGN => ["BGN", "лв"],
+                                    CZK => ["CZK", "Kč"],
+                                    DKK => ["DKK", "Kr"],
+                                    CHF => ["CHF", "Fr"],
+                                    MXN => ["MXN", "$"],
+                                    RUB => ["RUB", "₽"],
+                                    );
 
+    protected $transactionDetails = [  
+            1 => [
+                "detail" => "Cash_deposit",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
+                "account" => "CF",
+                "type" => "globalcashflowdata_platformDeposits"            
+                ],
+            2 => [
+                "detail" => "Cash_withdrawal",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "CF",
+                "type" => "globalcashflowdata_platformWithdrawals"          
+                ],
+            3 => [
+                "detail" => "Primary_market_investment",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestment",                     
+                ],
+            4 => [
+                "detail" => "Secondary_market_investment",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_secondaryMarketInvestment"              
+                ],
+            5 => [
+                "detail" => "Capital_repayment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Capital",
+                "type" => "payment_capitalRepayment"                      
+                ],
+            6 => [
+                "detail" => "Partial_principal_repayment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Capital",
+                "type" => "payment_partialPrincipalRepayment"
+                ],
+            7 => [
+                "detail" => "Principal_buyback",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Capital",
+                "type" => "payment_principalBuyback"                     
+                ],
+            8 => [
+                "detail" => "Principal_and_interest_payment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Mix",
+                "type" => "payment_principalAndInterestPayment"
+                ],
+            9 => [
+                "detail" => "Regular_gross_interest_income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_regularGrossInterestIncome"           
+                ],
+            10 => [
+                "detail" => "Delayed_interest_income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_delayedInterestPayment"          
+                ],
+            11 => [ 
+                "detail" => "Late_payment_fee_income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_latePaymentFeeIncome"                  
+                ],
+            12 => [
+                "detail" => "Interest_income_buyback",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_interestIncomeBuyback"                 
+                ],
+            13 => [
+                "detail" => "Delayed_interest_income_buyback",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_delayedInterestIncomeBuyback"           
+                ],
+            14 => [
+                "detail" => "Incentives_and_bonus",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept14"  
+                ],
+            15 => [
+                "detail" => "Compensation",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept15"    
+                ],
+            16 => [
+                "detail" => "Income_secondary_market",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "investment_incomeSecondaryMarket"        
+                ],
+            17 => [
+                "detail" => "Currency_fluctuation_positive",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept17"  
+                ],
 
-    /**
-     *
-     * Class that can analyze a xls/csv/pdf/html file(s) and writes the information to an array
-     *
-     *
-     */
-    class Fileparser {
-        protected $config = array ('offsetStart' => 0,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
-                                 );                     // if array does not have $sortParameter then "global" index is used
-                                                        // Typically used for sorting by loanId index
+            19 => [
+                "detail" => "Recoveries",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept19"
+                ],
+            20 => [
+                "detail" => "Commission",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept20"
+                ],
+            21 => [
+                "detail" => "Bank_charges",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept21"
+                ],
+            22 => [
+                "detail" => "Cost_secondary_market",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,                
+                "account" => "PL",
+                "type" => "investment_costSecondaryMarket"
+                ],
+            23 => [
+                "detail" => "Interest_payment_secondary_market_purchase",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept23"
+                ],           
+            24 => [
+                "detail" => "currency_exchange_fee",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept24"
+                ],
+            25 => [
+                "detail" => "currency_fluctuation_negative",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept25"
+                ],                        
+            26 => [
+                "detail" => "Tax_VAT",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept26"
+                ],
+            27 => [
+                "detail" => "Tax_income_withholding_tax",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept27"
+                ],
+            28 => [
+                "detail" => "Write-off",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept28"
+                ],
+            29 => [
+                "detail" => "Registration",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept29"
+                ],
+            30 => [
+                "detail" => "Currency_exchange_transaction",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept30"
+                ],
+            31 => [
+                "detail" => "Unknown_income",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept31"
+                ],
+            32 => [
+                "detail" => "Unknown_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept32"
+                ],
+            33 => [
+                "detail" => "Unknown_concept",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "concept33"
+                ]
+        ];
 
-        protected $errorData = array();                 // Contains the information of the last occurred error
-
-        protected $currencies = array(EUR => ["EUR", "€"],
-                                        GBP => ["GBP", "£"],
-                                        USD => ["USD", "$"],
-                                        ARS => ["ARS", "$"],
-                                        AUD => ["AUD", "$"],
-                                        NZD => ["NZD", "$"],
-                                        BYN => ["BYN", "BR"],
-                                        BGN => ["BGN", "лв"],
-                                        CZK => ["CZK", "Kč"],
-                                        DKK => ["DKK", "Kr"],
-                                        CHF => ["CHF", "Fr"],
-                                        MXN => ["MXN", "$"],
-                                        RUB => ["RUB", "₽"],
-                                        );
-
-        protected $transactionDetails = [  
-                1 => [
-                    "detail" => "Cash_deposit",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
-                    "account" => "CF",
-                    "type" => "globalcashflowdata_platformDeposits"            
-                    ],
-                2 => [
-                    "detail" => "Cash_withdrawal",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "CF",
-                    "type" => "globalcashflowdata_platformWithdrawals"          
-                    ],
-                3 => [
-                    "detail" => "Primary_market_investment",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "Capital",
-                    "type" => "investment_myInvestment",                     
-                    ],
-                4 => [
-                    "detail" => "Secondary_market_investment",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "Capital",
-                    "type" => "investment_secondaryMarketInvestment"              
-                    ],
-                5 => [
-                    "detail" => "Capital_repayment",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "Capital",
-                    "type" => "payment_capitalRepayment"                      
-                    ],
-                6 => [
-                    "detail" => "Partial_principal_repayment",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "Capital",
-                    "type" => "payment_partialPrincipalRepayment"
-                    ],
-                7 => [
-                    "detail" => "Principal_buyback",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "Capital",
-                    "type" => "payment_principalBuyback"                     
-                    ],
-                8 => [
-                    "detail" => "Principal_and_interest_payment",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "Mix",
-                    "type" => "payment_principalAndInterestPayment"
-                    ],
-                9 => [
-                    "detail" => "Regular_gross_interest_income",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_regularGrossInterestIncome"           
-                    ],
-                10 => [
-                    "detail" => "Delayed_interest_income",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_delayedInterestPayment"          
-                    ],
-                11 => [ 
-                    "detail" => "Late_payment_fee_income",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_latePaymentFeeIncome"                  
-                    ],
-                12 => [
-                    "detail" => "Interest_income_buyback",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_interestIncomeBuyback"                 
-                    ],
-                13 => [
-                    "detail" => "Delayed_interest_income_buyback",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "payment_delayedInterestIncomeBuyback"           
-                    ],
-                14 => [
-                    "detail" => "Incentives_and_bonus",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "concept14"  
-                    ],
-                15 => [
-                    "detail" => "Compensation",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "concept15"    
-                    ],
-                16 => [
-                    "detail" => "Income_secondary_market",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "investment_incomeSecondaryMarket"        
-                    ],
-                17 => [
-                    "detail" => "Currency_fluctuation_positive",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "concept17"  
-                    ],
-
-                19 => [
-                    "detail" => "Recoveries",
-                    "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                    "account" => "PL",
-                    "type" => "concept19"
-                    ],
-                20 => [
-                    "detail" => "Commission",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept20"
-                    ],
-                21 => [
-                    "detail" => "Bank_charges",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept21"
-                    ],
-                22 => [
-                    "detail" => "Cost_secondary_market",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,                
-                    "account" => "PL",
-                    "type" => "investment_costSecondaryMarket"
-                    ],
-                23 => [
-                    "detail" => "Interest_payment_secondary_market_purchase",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept23"
-                    ],           
-                24 => [
-                    "detail" => "currency_exchange_fee",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept24"
-                    ],
-                25 => [
-                    "detail" => "currency_fluctuation_negative",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept25"
-                    ],                        
-                26 => [
-                    "detail" => "Tax_VAT",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept26"
-                    ],
-                27 => [
-                    "detail" => "Tax_income_withholding_tax",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept27"
-                    ],
-                28 => [
-                    "detail" => "Write-off",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept28"
-                    ],
-                29 => [
-                    "detail" => "Registration",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept29"
-                    ],
-                30 => [
-                    "detail" => "Currency_exchange_transaction",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept30"
-                    ],
-                31 => [
-                    "detail" => "Unknown_income",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept31"
-                    ],
-                32 => [
-                    "detail" => "Unknown_cost",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept32"
-                    ],
-                33 => [
-                    "detail" => "Unknown_concept",
-                    "transactionType" => WIN_CONCEPT_TYPE_COST,
-                    "account" => "PL",
-                    "type" => "concept33"
-                    ]
-            ];
-
-
+        private $filename;      // holds name of the file being analyzed
+        
+        
     function __construct() {
         echo "starting parser\n";
     }
@@ -285,6 +294,9 @@
      */
     public function analyzeFile($file, $configuration) {
 echo "INPUT FILE = $file \n";
+    $this->filename = $file;
+echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
+print_r($this->config);
        // determine first if it a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -299,17 +311,17 @@ echo "INPUT FILE = $file \n";
             $objPHPExcel = PHPExcel_IOFactory::load($file);
         }
 
-        ini_set('memory_limit','2048M');
+        ini_set('memory_limit','1048M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
 
+
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-        print_r($this->config);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         return $datas;
-        }
+    }
 
 
     /**
@@ -323,7 +335,7 @@ echo "INPUT FILE = $file \n";
      */
     private function saveExcelToArray($rowDatas, $values, $totalRows) {
         $tempArray = [];
-
+        $maxRows = count($rowDatas);
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $this->config['offsetStart']) {
@@ -333,21 +345,33 @@ echo "INPUT FILE = $file \n";
             $i++;
         }
 
+        echo "totalRows = $maxRows\n";
+     
+        for ($i = $maxRows; $i > 0; $i--) {
+            if (empty($rowDatas[$i]["A"])) {
+//                echo "Deleting some shit, i = " . ($i) . "\n";
+                unset($rowDatas[$i]);
+            }
+        }   
+ 
         $i = 0;
+        $totalRows = count($rowData);
+        echo "totalRows = $totalRows\n";
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $this->config['offsetEnd'] - 1) {
                 break;
             }
             unset($rowDatas[$totalRows]);
-            $totalRows = $totalRows - 1;
             $i++;
-        }        
-        
+        }  
+       
+      
         
         $i = 0;
         $outOfRange = false;
 
-        foreach ($rowDatas as $keyRow => $rowData) {
+        foreach ($rowDatas as $rowData) {
+//            echo __FUNCTION__ . " " . __LINE__ . " MEMORY USAGE = " . memory_get_usage (false)  . "\n"; 
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
@@ -358,7 +382,7 @@ echo "INPUT FILE = $file \n";
                     eval($tempString);
                 }
                 else {          // "type" => .......
-                    foreach ($value as $userFunction ) {
+                    foreach ($value as $myKey => $userFunction ) {
                         if (!array_key_exists('inputData',$userFunction)) {
                             $userFunction['inputData'] = [];
                         }
@@ -408,26 +432,25 @@ echo "INPUT FILE = $file \n";
                     }
                 }
             }
-
-            if (!empty($this->config['sortParameter'])) {
-                if (!empty($this->config['sortParameter'])) {
-                    $temp = "\$tempArray[\$tempArray[\$i]['" . str_replace(".", "']['", $this->config['sortParameter']) . "']][] = \$tempArray[\$i];";
-                    eval($temp);
-                }
-                else {      // move to the global index
-                    $tempArray['global'][] = $tempArray[$i];
-                }
+//echo __FUNCTION__ . " " . __LINE__ . " MEMORY USAGE = " . memory_get_usage (false)  . "\n"; 
+            $countSortParameters = count($this->config['sortParameter']);
+            switch ($countSortParameters) {
+                case 1:
+                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                    $tempArray[$sortParam1] = $tempArray[$i];
+                    unset($tempArray[$i]); 
+                break; 
+            
+                case 2:
+                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
+                    $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];        
+                    $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
+                    unset($tempArray[$i]);
+                break;               
             }
-     //        unset($tempArray[$i]);  
         $i++;
-    }
-
-// Delete the numeric indices. This should not be necesary but the code above does
-// NOT work, the bad line is "unset($tempArray[$i]);".// So below is a stupid work-around
-        for ($i; $i >= 0; $i--) {
-            unset($tempArray[$i]);
         }
-        return $tempArray;
+    return $tempArray;
     }
 
 
@@ -470,13 +493,15 @@ echo "INPUT FILE = $file \n";
     /**
      * Returns information of the last occurred error. Can also detect if
      * an unknown "payment" concept was found.
-     *  @return array   $analyzedData
-     *          false in case an error occurred
+     *  @return JSON   
+     *         
      */
     public function getLastError()  {
-        return $this->errorData;
+        $this->errorData['file'] = $this->filename;
+        return json_decode($this->errorData);
     }
 
+    
     /**
      * Sets one or more configuration parameters.
      * The following parameters can be configured:
@@ -519,7 +544,7 @@ echo "INPUT FILE = $file \n";
      * @return string
      * also check for the presence of loanId, and + or - sign of field
      */
-    private function analyzeUnknownConcept($input, $config) {
+    private function analyzeUnknownConcept($input, $config = null) {
 
     //    read the unknown concept
         $result = 0;
@@ -635,6 +660,13 @@ echo "INPUT FILE = $file \n";
     }
 
     /**  STILL TO DO (scientific) exponential notation
+     * 
+     * This function uses the bcmath package of PHP.
+     * Format is converted to internal format, which is using the "." as a decimal separator, and
+     * the thousands separator is removed
+     * 
+     * 
+     * 
      * Gets an amount. The "length" of the number is determined by the required number
      * of decimals. If there are more decimals then required, the number is truncated and rounded
      * else 0's are added.
@@ -642,20 +674,28 @@ echo "INPUT FILE = $file \n";
      * getAmount("1.234,56789€", ".", ",", 3) => 1234568
      * getAmount("1234.56789€", "", ".", 7) => 12345678900
      * getAmount("1,234.56 €", ",", ".", 2) => 123456
-     *
+     * @param string    $input      
      * @param string  $thousandsSep character that separates units of 1000 in a number
      * @param string  $decimalSep   character that separates the decimals
-     * @param int     $decimals     number of required decimals in the amount to be returned
-     * @return int    represents the amount including its decimals
+     * 
+     * @param int     $decimals     number of required decimals in the amount to be returned   NOT NEEDED, TO BE DELETED
+     * @return string    represents the amount, including a decimal separator (= ".") in case of decimals
      *
-     */
-    private function getAmount($input, $thousandsSep, $decimalSep, $decimals) {
+     */  
+    private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
+
         if ($decimalSep == ".") {
             $seperator = "\.";
         }
         else if($decimalSep == 'E'){
-            $input = strtr($input, array(',' => '.'));
-            $input = number_format($input,$decimals);
+            if(strpos($input, "E")){
+                $decArray = explode("E", $input);
+                $dec = preg_replace("/[-]/", "", $decArray[1]);
+                echo "AQUI " . $input;
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), $dec+2);
+ 
+            }
             $seperator = ".";
         }
         else {                                                              // seperator =>  ","
@@ -664,7 +704,10 @@ echo "INPUT FILE = $file \n";
         $allowedChars =  "/[^0-9" . $seperator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
+        return $normalizedInputFinal;
 
+        
+ /*       
         // determine how many decimals are actually used
         $position = strpos($input, $decimalSep);
         $decimalPart = preg_replace('/[^0-9]+/' ,"", substr($input, $position + 1, 100));
@@ -682,6 +725,8 @@ echo "INPUT FILE = $file \n";
             $amount = preg_replace('/[^0-9]+/', "", $input) . str_pad("", ($decimals - $numberOfDecimals), "0");
         }
         return preg_replace('/[^0-9]+/' ,"", $amount);
+  */
+  
     }
     
 
@@ -732,7 +777,7 @@ echo "INPUT FILE = $file \n";
             return $result;
         }
         else {
-            echo "unknown concept, so start doing some guessing for concept $originalConceptMintos\n";  
+            echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
         }
     } 
     
@@ -790,56 +835,38 @@ echo "INPUT FILE = $file \n";
      *                  The variable name is read from "internal variable" $this->transactionDetails.
      */
     private function getTransactionDetail($input, $config) {
-print_r($input);
-print_r($config);
-        
-         foreach ($config as $configKey => $item) {
+
+        foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
-            echo "configItemKey = $configItemKey and configItem = $configItem \n";
             foreach ($this->transactionDetails as $key => $detail) { 
                 $position = strpos($input, $configItemKey );
-                if ($position !== false) {
-                    echo "The detail = " . $detail['detail'] . "\n";
+                if ($position !== false) {                   
                     if ($detail['detail'] == $configItem){
                         $internalConceptName = $detail['type'];
                         $found = YES;
-                        echo "Jackpot\n";
                         break 2;
                     }
                 }
             }
         }        
         if ($found == YES) {
-            echo "YES FOUND\n";
             $result = array($internalConceptName,"type" => "internalName");
-            print_r($result);
             return $result;
         }
         else {
-            echo "unknown concept, so start doing some Guessing for concept $originalConceptMintos\n";  
+            echo "unknown concept, so start doing some Guessing for concept $input\n";  
+         // an unknown concept was found, do some intelligent guessing about its meaning
+            $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
+            
+            // collect error information 
+            unset($errorMsg);
+            $errorMsg['input'] = $input;
+            $errorMsg['config'] = $config;
+            $this->errorData = $errorMsg;
+
+            return $result;           
         }     
-       
-        
-        
-        
-        
-  /*      
-        foreach ($config as $configKey => $configItem) {
-            $position = stripos($input, $configKey);
-            if ($position !== false) {
-                foreach ($this->transactionDetails as $key => $detail) {  
-                    if ($detail['detail'] == $configItem) {
-                        $result = array($detail['type'],"type" => "internalName");
-                        return $result;
-                    }
-                }
-            }
-        }
-*/
-        // an unknown concept was found, do some intelligent guessing about its meaning
-        $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
-        return $result;
     }
 
     /**
@@ -886,6 +913,150 @@ print_r($config);
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $launch = explode($delimiters[0], $ready);
         return  $launch;
+    }
+    
+    /**
+     * Function to get the loanId from the file name of one amortization table
+     * @param string $filePath It is the path to the file
+     * @return string It is the loanId
+     */
+    public function getLoanIdFromFile($filePath) {
+        $file = new File($filePath, false);
+        $name = $file->name();
+        $nameSplit = explode("_", $name);
+        $loanId = $nameSplit[1];
+        return $loanId;
+    }
+    
+    /**
+     * Function to get the extension of a file
+     * @param string $filePath It is the path to the file
+     * @return string It is the extension of the file
+     */
+    public function getExtensionFile($filePath) {
+        $file = new File($filePath, false);
+        $extension = $file->ext();
+        return $extension;
+    }
+    
+    /**
+     * Function to analyze a file depending on its extension
+     * @param string $filePath It is the path to the file
+     * @param array  $parserConfig Array that contains the configuration data of a specific "document"
+     * @param string $extension It is the extension of the file
+     * @return array $parsedData
+     *         false in case an error occurred
+     */
+    public function analyzeFileAmortization($filePath, $parserConfig, $extension) {
+        
+        switch($extension) {
+            case "html":
+                $tempArray = $this->getHtmlData($filePath, $parserConfig);
+                break;
+        }
+        return $tempArray;
+    }
+    
+    /**
+     * Function to analyze a html file to get its content
+     * @param string $filePath It is the path to the file
+     * @param array  $parserConfig Array that contains the configuration data of a specific "document"
+     * @return array $parsedData
+     *         false in case an error occurred
+     */
+    public function getHtmlData($filePath, $parserConfig) {
+        $dom = new DOMDocument();
+        $dom->loadHTMLFile($filePath);
+        $trs = $dom->getElementsByTagName('tr');
+        $tempArray = [];
+        $i = 0;
+        foreach ($trs as $tr) {
+            if ($i == $this->config['offsetStart']) {
+                break;
+            }
+            $tr->parentNode->removeChild($tr);
+            $i++;
+        }
+        
+        $trsNumber = $trs->length - 1;
+        for ($i = $trsNumber; $i > $trsNumber-$this->config['offsetEnd']; $i--) {
+            $tr = $trs[$i]->parentNode->lastChild;
+            $tr->parentNode->removeChild($tr);
+        }
+
+        $i = 0;
+        foreach ($trs as $tr) {
+            $tds = $tr->getElementsByTagName('td');
+            $keyTr = 0;
+            $outOfRange = false;
+            foreach ($parserConfig as $key => $value) {
+                echo "value";
+                print_r($value);
+                $previousKey = $i - 1;
+                $currentKey = $i;
+                $valueTd = trim($tds[$key]->nodeValue);
+                echo "tdValue";
+                print_r($valueTd);
+                if (array_key_exists("name", $value)) {      // "name" => .......
+                    $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
+                    $tempString = $finalIndex  . "= '" . $valueTd .  "'; ";
+                    eval($tempString);
+                }
+                else {
+                    foreach ($value as $userFunction ) {
+                        if (!array_key_exists('inputData',$userFunction)) {
+                            $userFunction['inputData'] = [];
+                        }
+                        else {
+                            foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file
+                                print_r($input);
+                                if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
+                                    if (stripos ($input, "#previous.") !== false) {
+                                        if ($previousKey == -1) {
+                                            $outOfRange = true;
+                                            break;
+                                        }
+                                        $temp = explode(".", $input);
+                                        $userFunction["inputData"][$keyInputData] = $tempArray[$previousKey][$temp[1]];
+                                    }
+                                    if (stripos ($input, "#current.") !== false) {
+                                        $temp = explode(".", $input);
+                                        $userFunction["inputData"][$keyInputData] = $tempArray[$currentKey][$temp[1]];
+                                    }
+                                }
+                            }
+                        }
+                        array_unshift($userFunction['inputData'], $valueTd);       // Add cell content to list of input parameters
+                        print_r($userFunction['inputData']);
+                        if ($outOfRange == false) {
+                            $tempResult = call_user_func_array(array($this,
+                                                                       $userFunction['functionName']),
+                                                                       $userFunction['inputData']
+                                    );
+                            print_r($tempResult);
+                            if (is_array($tempResult)) {
+                                $userFunction = $tempResult;
+                                $tempResult = $tempResult[0];
+                            }
+
+                            // Write the result to the array with parsing result. The first index is written
+                            // various variables if $tempResult is an array
+                            if (!empty($tempResult)) {
+                                $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']";
+                                $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
+                                eval($tempString);
+                            }
+                        }
+                        else {
+                            $outOfRange = false;        // reset
+                        }
+                    }
+                }
+            }
+            $keyTr++;
+            $i++;
+        }
+        return $tempArray;
     }
 
 }

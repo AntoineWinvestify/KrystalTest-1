@@ -36,8 +36,10 @@
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
+App::import('Shell','GearmanClient');
+
 class ParseDataClientShell extends AppShell {
-    public $uses = array('Queue');
+    public $uses = array('Queue', 'Paymenttotal');
     
     protected $GearmanClient;
     
@@ -175,7 +177,7 @@ class ParseDataClientShell extends AppShell {
                 "internalIndex" => 17,            
                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""        
+                "function" => "calculateRemainingterm"        
             ],  
         18 => [
                 "databaseName" => "investment.investment_paymentFrequency", 
@@ -261,14 +263,14 @@ class ParseDataClientShell extends AppShell {
                         28 => [ // CHECK
                                 "databaseName" => "investment.investment_forSale",
                                 "internalName" => "investment_forSale",    
-                "internalIndex" => 28,                            
+                                "internalIndex" => 28,                            
                                 "state" => FLOWDATA_VARIABLE_NOT_DONE,
                                 "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                                 "function" => ""        
                             ],
 
 
-        30 => [
+        30 => [  // This item is ONLY used to calculate the values of the base elements: PrincipalPayment and InterestPayment
                 "databaseName" => "investment.investment_principalAndInterestPayment",  
                 "internalName" => "investment_principalAndInterestPayment", 
                 "internalIndex" => 30,            
@@ -628,25 +630,29 @@ class ParseDataClientShell extends AppShell {
 
 
     public function initDataAnalysisClient() {
-        $inActivityCounter = 0;
+   
         $this->GearmanClient->addServers();
+        $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
+        $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
+        $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask')); 
+        
+        $this->flowName = "GEARMAN_FLOW2";        
+        $this->fileName = "amortizationtable";
+        $inActivityCounter = 0;
+        $workerFunction = "parseFileFlow";        
+        
         echo __FUNCTION__ . " " . __LINE__ .": " . "\n";       
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 2 Client\n";
         }
 
-        $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
-        $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-        $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
-
         $resultQueue = $this->Queue->getUsersByStatus(FIFO, GLOBAL_DATA_DOWNLOADED);
 
-        $inActivityCounter++;                                           // Gearman client
+        $inActivityCounter++;                                       
 
         Configure::load('p2pGestor.php', 'default');
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
 
-        $response = [];
 
         while (true){
             $pendingJobs = $this->checkJobs(GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
@@ -659,10 +665,11 @@ class ParseDataClientShell extends AppShell {
                 }
                 foreach ($pendingJobs as $keyjobs => $job) {
                     $userReference = $job['Queue']['queue_userReference'];
+                    $queueId = $job['Queue']['id'];
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . date("Ymd",time()) . DS ;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
-print_r($subDir);
+
                     foreach ($subDir[0] as $subDirectory) {
                         $tempName = explode("/", $subDirectory);
                         $linkedAccountId = $tempName[count($tempName) - 1];
@@ -682,11 +689,15 @@ print_r($subDir);
                     }
                     debug($params);
                     
-                    $response[] = $this->GearmanClient->addTask("parseFileFlow", json_encode($params));
+                 //   $response[] = $this->GearmanClient->addTask("parseFileFlow", json_encode($params));
+                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" . 
+                            $workerFunction . ".-;" . $job['Queue']['queue_userReference']);
+                   
+
                 }
 
                 if (Configure::read('debug')) {
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the previous information to Worker\n";
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                 }
                 $this->GearmanClient->runTasks();
 
@@ -697,6 +708,7 @@ print_r($subDir);
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
                 $result = json_decode($this->workerResult, true);
+                
                 foreach ($result as $platformKey => $platformResult) {
                     if (Configure::read('debug')) {
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "platformkey = $platformKey\n";
@@ -819,7 +831,7 @@ print_r($subDir);
     /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values" 
      * and writes all values to the database.
-     *  @param  $array          Array which holds the data (perp PFP) as received from the Worker
+     *  @param  $array          Array which holds the data (per PFP) as received from the Worker
      * 
      *  @return boolean true
      *                  false
@@ -829,51 +841,48 @@ print_r($subDir);
      *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData (&$platformData) {
+    echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";    
+    
         $variables = array();
         $linkedaccountId = $platformData['linkedaccountId'];
 
-// create a default AmortizationTable for the loan if it is a new loan?
 
-    echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";       
-        foreach ($platformData['newLoans'] as $loanIdKey => $newLoan) {
-if ($newLoan <> "840073-01" ) {
-    echo "flushing loanId $newLoan\n";
-    continue;
-}
-  
-//  echo "New loanIdKey = $loanIdKey and value = $newLoan\n";
-//  print_r($platformData['parsingResultInvestments'][$newLoan]);
-//  check if we have information in the investment list about this loan.
-//  The table of userinvestmentdata is 'allocated' with default values (=000000?)
-            if (array_key_exists( $newLoan, $platformData['parsingResultInvestments'])) {  // this is a new loan and we have some info
-                // check all the data in analyzed investment table
+        foreach ($platformData['parsingResultTransactions'] as $dateKey => $date) { // these are all transactions, per day
+            echo "dateKey = $dateKey\n";
+            foreach ($date as $keyDateTransaction => $dateTransaction) {            // read transactions
+  //              echo "keyDateTransaction = $keyDateTransaction \n";
+                if (in_array($keyDateTransaction, $platformData['newLoans'])) {          // check if loanId is new 
+                    echo "Loading the data of a new loan\n";
+                   // if (array_key_exists( $newLoan, $platformData['parsingResultInvestments'])) {  // this is a new loan and we have some info
+                    // check all the data in the analyzed investment table
+                        foreach ($platformData['parsingResultInvestments'][$keyDateTransaction] as $investmentDataKey => $investmentData) {
+     //                       echo "investmentDataKey = $investmentDataKey\n";
+                            $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
+                            if (!empty($tempResult))  {    
+                                $dataInformation = explode (".",$tempResult['databaseName'] );
+                                $dbTable = $dataInformation[0];
+                                $database[$dbTable][$investmentDataKey] = $investmentData;
+                                $this->variablesConfig[$investmentDataKey]['state'] = FLOWDATA_VARIABLE_DONE;   // Mark done
+                            }
+                        }  
+                  //  }                     
+                }
+                else { // existing loan
+                    echo "This is an existing loan\n";
+                }
+                // load all the transaction data
 
-                foreach ($platformData['parsingResultInvestments'][$newLoan] as $investmentDataKey => $investmentData) {
-                    $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
-                    if (!empty($tempResult))  {    
-                        $dataInformation = explode (".",$tempResult['databaseName'] );
-                        $dbTable = $dataInformation[0];
-                        $database[$dbTable][$investmentDataKey] = $investmentData;
-                        $variablesConfigStatus[$investmentDataKey]['state'] = FLOWDATA_VARIABLE_DONE;   // Mark done
-                    }
-                }  
-            }
-//print_r($variablesConfigStatus);
-echo "Total = " . count($variablesConfigStatus) . "\n";
- // also check if they belong to the same date, if not flush it    STILL PENDING 
-echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";   
-            if (array_key_exists( $newLoan, $platformData['parsingResultTransactions'])) {  // this is a new loan and we have some info
-                print_r($platformData['parsingResultTransactions'][$newLoan]);
-                 
-                // check all the data in analyzed transaction table
-                foreach ($platformData['parsingResultTransactions'][$newLoan] as $transactionData) { 
+                foreach ($dateTransaction as $transactionKey => $transactionData) { 
+    //                echo "transactionKey = $transactionKey \n";
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // 0,1,2
+     //                   echo "transactionDataKey = $transactionDataKey \n";
+
                         if ($transactionDataKey == "internalName") {        // dirty trick to keep it simple
-                            $transactionDataKey = $transaction; 
+                             $transactionDataKey = $transaction; 
                         }
 
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-                        
+
                         if (!empty($tempResult))  { 
                             unset($result);
                             $functionToCall = $tempResult['function'];
@@ -884,111 +893,139 @@ echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
                                 $result = $this->$functionToCall($transactionData, $database);
 
                                 if ($tempResult['charAcc'] == FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                                   $database[$dbTable][$transactionDataKey] = $database[$dbTable][$transactionDataKey] + $result; 
-                                    $database[$dbTable][$transactionDataKey] = sprintf("%017d", $database[$dbTable][$transactionDataKey]);
+                                    $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
                                 }
                                 else {
-                                    $database[$dbTable][$transactionDataKey] = $result;  
+                                     $database[$dbTable][$transactionDataKey] = $result;  
                                 }
                             }
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
-                            $variablesConfigStatus[$transactionDataKey]['state'] = FLOWDATA_VARIABLE_DONE;  // Mark done
+                            $this->variablesConfig[$transactionDataKey]['state'] = FLOWDATA_VARIABLE_DONE;  // Mark done
                         } 
-                    }
+                     }
                 }   
-            }
-       
- //print_r($variablesConfigStatus);
- echo "Total = " . count($variablesConfigStatus) . "\n";
-// Now start consolidating the results, these are to be stored in the investment table (variable part)
 
+                 
+echo "Total = " . count($this->variablesConfig) . "\n";
+// Now start consolidating the results, these are to be stored in the investment table (variable part)
+// check if variable is already defined:
+/*
+ *         17 => [
+                "databaseName" => "investment.investment_remainingDuration", 
+                "internalName" => "investment_remainingDuration",   
+                "internalIndex" => 17,            
+                "state" => FLOWDATA_VARIABLE_NOT_DONE,
+                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
+                "function" => "calculateRemainingterm"        
+            ],
+ */
+// Calculate var 17:
+
+                $variableToHandle = array(17,47,34,45,44,36,46,66,67,43);  
+                
+                foreach ($variableToHandle as $item) {
+                    if ($this->variablesConfig[$item]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17] 
+                        print_r($this->variablesConfig[$item]);
+                        $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                        $functionToCall = $this->variablesConfig[$item]['function'];
+                        $database[$varName[0]][$varName[1]] =  $this->$functionToCall($database);
+                        $this->variablesConfig[$item]['state'] = FLOWDATA_VARIABLE_DONE;                
+                    }                     
+                    
+                }
+              
+ 
+            
+echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";             
+print_r($database); 
+            } 
+        }
+
+
+ echo "Total = " . count($this->variablesConfig) . "\n";
+// Now start consolidating the results, these are to be stored in the investment table (variable part)
  // check if variable is already defined:
  
-// Calculate var 17:  
-            if ($variablesConfigStatus[17]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17] 
-                $varName = $variablesConfigStatus[17]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateRemainingTerm($database);
-                $variablesConfigStatus[17]['state'] = FLOWDATA_VARIABLE_DONE;                
-            }
+
             
-            if ($variablesConfigStatus[30]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
-                $varName = $variablesConfigStatus[30]['databaseName'];
+/*            
+ // these are the total values per PFP           
+            
+            if ($this->variablesConfig[30]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
+                $varName = $this->variablesConfig[30]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidatePrincipalAndInterestPayment($database);
-                $variablesConfigStatus[30]['state'] = FLOWDATA_VARIABLE_DONE;                 
+                $this->variablesConfig[30]['state'] = FLOWDATA_VARIABLE_DONE;                 
             }           
 
-            if ($variablesConfigStatus[31]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // installmentPaymentProgress [31]
-                $varName = $variablesConfigStatus[31]['databaseName'];
+            if ($this->variablesConfig[31]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // installmentPaymentProgress [31]
+                $varName = $this->variablesConfig[31]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateInstallmentPaymentProgress($database);
-                $variablesConfigStatus[31]['state'] = FLOWDATA_VARIABLE_DONE;                   
+                $this->variablesConfig[31]['state'] = FLOWDATA_VARIABLE_DONE;                   
             }
 
-            if ($variablesConfigStatus[34]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // capital repayment (34)
-                $varName = $variablesConfigStatus[34]['databaseName'];
+            if ($this->variablesConfig[34]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // capital repayment (34)
+                $varName = $this->variablesConfig[34]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateCapitalRepayment($database);
-                $variablesConfigStatus[34]['state'] = FLOWDATA_VARIABLE_DONE;                 
+                $this->variablesConfig[34]['state'] = FLOWDATA_VARIABLE_DONE;                 
             }  
 
-            if ($variablesConfigStatus[35]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
-                $varName = $variablesConfigStatus[35]['databaseName'];
+            if ($this->variablesConfig[35]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
+                $varName = $this->variablesConfig[35]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidatePartialPrincipalPayment($database);
-                $variablesConfigStatus[35]['state'] = FLOWDATA_VARIABLE_DONE;                 
+                $this->variablesConfig[35]['state'] = FLOWDATA_VARIABLE_DONE;                 
             } 
             
-            if ($variablesConfigStatus[37]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
-                $result = $this->consolidateOutstandingPrincipal($database);
-                $varName = $variablesConfigStatus[37]['databaseName'];
+            if ($this->variablesConfig[37]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
+                $varName = $this->variablesConfig[37]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
-                $variablesConfigStatus[37]['state'] = FLOWDATA_VARIABLE_DONE;                
+                $this->variablesConfig[37]['state'] = FLOWDATA_VARIABLE_DONE;                
             }
           
-            if ($variablesConfigStatus[38]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
-                $varName = $variablesConfigStatus[38]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
-                $variablesConfigStatus[38]['state'] = FLOWDATA_VARIABLE_DONE;                 
+            if ($this->variablesConfig[38]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
+                $varName = $this->variablesConfig[38]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateReceivedPrepayments($database);
+                $this->variablesConfig[38]['state'] = FLOWDATA_VARIABLE_DONE;                 
             } 
             
-            if ($variablesConfigStatus[42]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // total gross income (42
-                $varName = $variablesConfigStatus[42]['databaseName'];
+            if ($this->variablesConfig[42]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // total gross income (42
+                $varName = $this->variablesConfig[42]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateTotalGrossIncome($database);
-                $variablesConfigStatus[42]['state'] = FLOWDATA_VARIABLE_DONE;                 
+                $this->variablesConfig[42]['state'] = FLOWDATA_VARIABLE_DONE;                 
             } 
             
-            if ($variablesConfigStatus[43]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // interest gross income (43)
-                $varName = $variablesConfigStatus[43]['databaseName'];
+            if ($this->variablesConfig[43]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // interest gross income (43)
+                $varName = $this->variablesConfig[43]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateInterestgrossIncome($database);
-                $variablesConfigStatus[43]['state'] = FLOWDATA_VARIABLE_DONE;                    
+                $this->variablesConfig[43]['state'] = FLOWDATA_VARIABLE_DONE;                    
             }
             
-            if ($variablesConfigStatus[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
-                $varName = $variablesConfigStatus[53]['databaseName'];
+            if ($this->variablesConfig[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
+                $varName = $this->variablesConfig[53]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
-                $variablesConfigStatus[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
+                $this->variablesConfig[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
             }  
             
-            if ($variablesConfigStatus[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
-                $varName = $variablesConfigStatus[53]['databaseName'];
+            if ($this->variablesConfig[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
+                $varName = $this->variablesConfig[53]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateNextPaymentDate($database);
-                $variablesConfigStatus[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
+                $this->variablesConfig[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
             }  
             
-            if ($variablesConfigStatus[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // estimated next payment (40)
-                $varName = $variablesConfigStatus[53]['databaseName'];
+            if ($this->variablesConfig[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // estimated next payment (40)
+                $varName = $this->variablesConfig[53]['databaseName'];
                 $database[$varName[0]][$varName[1]] =  $this->consolidateEstimatedNextPayment($database);
-                $variablesConfigStatus[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
+                $this->variablesConfig[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
             }  
             
-            
-            
-            
+ */           
 //$database['payment']['investment_id'] = 98;
 echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";             
 print_r($database);      
- // write all relevant tables, WE DON'T HAVE TO UPDATE AMORTIZATION TABLES???
-// if it is a new loan, then save the data,
+// write all relevant tables
 // else read the investment_id from the database and use it while saving data to payment, paymenttotals,...
+
             if (!empty($database['investment'])) {
                 $this->Investment = ClassRegistry::init('Investment');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";                 
@@ -996,7 +1033,7 @@ print_r($database);
                 $resultCreate = $this->Investment->createNewInvestment($database['investment']);
                 if ($resultCreate[0]) {
                     $investmentId = $resultCreate[1];
-                    echo " investmentId = $investmentId, Done\n";
+                    echo "Saving new loan with investmentId = $investmentId, Done\n";
                 }
                 else {
                     if (Configure::read('debug')) {
@@ -1004,7 +1041,7 @@ print_r($database);
                     }
                 }
             }
-            
+          
             if (!empty($database['payment'])) {
                 $this->Payment = ClassRegistry::init('Payment');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";            
@@ -1020,21 +1057,6 @@ print_r($database);
                 }
             }
 
-            if (!empty($database['userinvestmentdata'])) {            
-                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
-                $this->Userinvestmentdata->create();            
-                if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
-                    echo "Done\n";
-                }
-                else {
-                    if (Configure::read('debug')) {
-                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
-                    }
-                }  
-            }
-            
-// We don't write the amortization tables during Flow 2. New tables are collected and written to DB in Flow 3B 
             if (!empty($database['globalcashflowdata'])) {               
                 $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
@@ -1048,23 +1070,269 @@ print_r($database);
                     }
                 }
             }
-            
-       //     break;
+                    
+// Consolidate the data on platform level      
+            $this->consolidatePlatformData($database);
+            if (!empty($database['userinvestmentdata'])) {            
+                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
+                $this->Userinvestmentdata->create();            
+                if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
+                    echo "Done\n";
+                }
+                else {
+                    if (Configure::read('debug')) {
+                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+                    }
+                }  
+            }           
+           
         unset($database);
         unset($variablesConfigStatus);
-        }
+        
      echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2 for an investment\n";      
      
     return;   
     }
    
  
+    /*
+     * 
+     *  Consolidates all the basic variables that are required on platformlevel.
+     *
+    */ 
+    public function consolidatePlatformData(&$database) {    
+  echo "FxF";     
+        $database['userinvestmentdata']['userinvestmentdata_capitalRepaymentcapitalRepayment'] = $this->consolidateCapitalRepayment();
+  echo "FtF";
+        $database['userinvestmentdata']['userinvestmentdata_partialPrincipalRepayment'] = $this->consolidatePartialPrincipalRepayment();
+   echo "FccFgF";
+        $database['userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] = $this->consolidateOutstandingPrincipal();
+  echo "FFgF";
+        $database['userinvestmentdata']['userinvestmentdata_receivedPrepayments'] = $this->consolidateReceivedPrepayments();
+  echo "FtytyFgF";
+        $database['userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $this->consolidateTotalGrossIncome();
+  echo "FhF";
+        $database['userinvestmentdata']['userinvestmentdata_interestgrossIncome'] = $this->consolidateInterestgrossIncome();
+  echo "FFF";
+        $database['userinvestmentdata']['userinvestmentdata_totalCost'] = $this->consolidateTotalCost();
+   echo "FpF";
+    }
+    
+    
+    
+    
+   
+    
+    /* OK
+     *  Get the amount, for all "active investments", which corresponds to the "CapitalRepayment" concept 
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     * 
+    */ 
+    public function consolidateCapitalRepayment() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('Paymenttotal.paymenttotal_capitalRepayment'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+    
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* OK
+     *  Get the amount which corresponds to the "PartialPrincipalPayment" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidatePartialPrincipalRepayment() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('Paymenttotal.partialPrincipalRepayment'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* OK
+     *  Get the amount which corresponds to the "OutstandingPrincipal" concept
+     *  "Outstanding principal" = total amount of investment - paymenttotal_capitalRepayment
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateOutstandingPrincipal() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('Paymenttotal.outstandingPrincipal'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* 
+     *  Get the amount which corresponds to the "ReceivedPrepayments" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateReceivedPrepayments() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+         
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+
+    /* 
+     *  Get the amount which corresponds to the "TotalGrossIncome" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateTotalGrossIncome() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+           
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "InterestgrossIncome" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateInterestgrossIncome() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+               
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "TotalCost" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateTotalCost() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "NextPaymentDate" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateNextPaymentDate() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    /* 
+     *  Get the amount which corresponds to the "EstimatedNextPayment" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateEstimatedNextPayment() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }  
+    
+    /* 
+     *  Get the amount which corresponds to the "InstallmentPaymentProgress" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+    */ 
+    public function consolidateInstallmentPaymentProgress() {
+        $listResult = $this->Paymenttotal->find('list', array(
+                                            'fields' => array('User.username'),
+                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                        ));
+        
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    /* 
+     *  Get the amount which corresponds to the "late payment fee" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     * 17
+    */              
+    public function calculateRemainingTerm(&$transactionData, &$resultData) {
+        return 44332211;
+       return $transactionData['amount']; 
+       //investment.investment_remainingDuration
+    }    
     
     /* 
      *  Get the amount which corresponds to the "late payment fee" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      
+     * 47
     */              
     public function calculateLatePaymentFeeIncome(&$transactionData, &$resultData) {
        return $transactionData['amount']; 
@@ -1072,10 +1340,11 @@ print_r($database);
 
     
     /* 
-     *  Get the amount which corresponds to the "capitalRepayment" concept
+     *  Get the amount which corresponds to the "capitalRepayment Winvestify Format" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      
+     * 34
     */ 
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
@@ -1085,8 +1354,9 @@ print_r($database);
     /* 
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      
+     * 45
     */
     public function calculateDelayedInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
@@ -1096,8 +1366,9 @@ print_r($database);
     /* 
      *  Get the amount which corresponds to the "InterestIncomeBuyback" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      
+     * 44
     */
     public function calculateInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
@@ -1107,8 +1378,9 @@ print_r($database);
     /* 
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      
+     * 36
     */             
     public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
@@ -1118,8 +1390,9 @@ print_r($database);
     /* 
      *  Get the amount which corresponds to the "DelayedInterestIncomeBuyback" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      
+     * 46
     */
     public function calculateDelayedInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
@@ -1129,8 +1402,9 @@ print_r($database);
     /* 
      *  Get the amount which corresponds to the "PlatformDeposit" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      
+     * 66
     */
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
@@ -1140,8 +1414,9 @@ print_r($database);
     /* 
      *  Get the amount which corresponds to the "Platformwithdrawal" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      
+     * 67
     */
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
@@ -1154,58 +1429,14 @@ print_r($database);
      * 
      *  @param  FILE            FQDN of the file to analyze
      *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
-     *  @return
+     *  @return string
+     * 43
     */
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
     }   
         
-   
-    /* 
-     *  Get the amount which corresponds to the "delayedInterestIncome" concept
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
-    */
-    public function getLoanOriginatork5(&$transactionData, &$resultData) {
-        return $transactionData['amount']; 
-    }   
-    
-    
-    /* 
-     * 
-     *  @param  FILE            FQDN of the file to analyze
-     *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
-     *  @return
-    */
-    public function getLoanIdk(&$transactionData, &$resultData) {
-        return $transactionData['amount']; 
-    }
- 
-    
-     /* 
-     *  Get the amount which corresponds to the "delayedInterestIncome" concept
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be wirtten to DB
-     *  @return string      the string representation of a large integer
-    */
-    public function getLoanOriginato0(&$transactionData, &$resultData) {
-        return $transactionData['amount']; 
-    }   
-    
-    
-    /* 
-     * 
-     *  @param  FILE            FQDN of the file to analyze
-     *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
-     *  @return
-    */
-    public function getLoanId0(&$transactionData, &$resultData) {
-        return $transactionData['amount']; 
-    }   
-     
-
-
+  
 
     /**
      * checks if an element with value $element exists in a two dimensional array

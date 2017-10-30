@@ -38,48 +38,94 @@
  */
 class bondora extends p2pCompany {
 
+    
+ 
+    /*protected $valuesAmortizationTable = [  // NOT FINISHED
+            "A" =>  [
+                "name" => "transaction_id"
+             ],
+        ];   */
+    
     protected $valuesAmortizationTable = [// NOT FINISHED
-        "A" => [
-            "name" => "transaction_id"
+        //See this value, it has two, the scheduledDate and the paymentDate
+        0 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D/M/Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        1 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        2 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        3 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_latePaymentFee", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
         ],
     ];
-    protected $transactionConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //       'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-
-    /*   NOT YET READY
-      protected $amortizationConfigParms = array ('OffsetStart' => 1,
-      'offsetEnd'     => 0,
-      //       'separatorChar' => ";",
-      'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-      );
-     */
-
+        
+    protected $transactionConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                        //        'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+    protected $amortizationConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 1,
+                         //       'separatorChar' => ";",
+                                //'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );  
+    
     function __construct() {
         parent::__construct();
         $this->i = 0;
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
-    }
-
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesBondoraTransaction;
-    }
-
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesBondoraInvestment;
-    }
-
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesBondoraAmortization;
     }
 
     function companyUserLogin($user = "", $password = "", $options = array()) {
@@ -224,8 +270,8 @@ class bondora extends p2pCompany {
                 echo "INPUTS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($inputsValue);
                 echo "ENDS INPUTS VALUE" . SHELL_ENDOFLINE;
-                $date1 = "14/09/2017";
-                $date2 = "20/09/2017";
+                $dateInit = date("d/m/Y", strtotime($this->dateInit));
+                $dateFinish = date('d/m/Y',strtotime($this->dateFinish));
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
                     'NewReports[0].ReportType' => 'InvestmentsListV2',
@@ -235,8 +281,8 @@ class bondora extends p2pCompany {
                     //"NewReports[0].Selected" => false,
                     "NewReports[0].DateFilterSelected" => 'true',
                     //"NewReports[0].DateFilterSelected" => false,
-                    "NewReports[0].StartDate" => $date1, //22/08/2017
-                    "NewReports[0].EndDate" => $date2, //20/09/2017
+                    "NewReports[0].StartDate" => $dateInit, //22/08/2017
+                    "NewReports[0].EndDate" => $dateFinish, //20/09/2017
                     "NewReports[1].ReportType" => "Repayments",
                     "NewReports[1].DateFilterRequired" => 'False',
                     "NewReports[1].DateFilterShown" => 'True',
@@ -264,8 +310,8 @@ class bondora extends p2pCompany {
                     //"NewReports[5].Selected" => false,
                     "NewReports[5].DateFilterSelected" => 'true',
                     //"NewReports[5].DateFilterSelected" => false,
-                    "NewReports[5].StartDate" => $date1, //14/09/2017
-                    "NewReports[5].EndDate" => $date2, //21/09/2017
+                    "NewReports[5].StartDate" => $dateInit, //14/09/2017
+                    "NewReports[5].EndDate" => $dateFinish, //21/09/2017
                     "NewReports[6].ReportType" => 'IncomeReport',
                     "NewReports[6].DateFilterRequired" => 'True',
                     "NewReports[6].DateFilterShown" => 'True',
@@ -300,7 +346,7 @@ class bondora extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array Control variables.
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -705,7 +751,7 @@ class bondora extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) { //{"loanIds":{"702":["7e89377c-15fc-4de3-8b65-a55500ef6a1b","6b3649c5-9a6b-4cee-ac05-a55500ef480a"]}} example in queue_info
+    function collectAmortizationTablesParallel($str = null) { //{"loanIds":{"702":["7e89377c-15fc-4de3-8b65-a55500ef6a1b","6b3649c5-9a6b-4cee-ac05-a55500ef480a"]}} example in queue_info
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;
@@ -817,7 +863,6 @@ class bondora extends p2pCompany {
                     break;
                 } else {
                     return $this->tempArray;
-                    break;
                 }
         }
     }

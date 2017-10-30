@@ -127,6 +127,9 @@ class TestsController extends AppController {
         $this->layout = 'azarus_private_layout';
     }
 
+    /**
+     * Global dashboard view
+     */
     function dashboardOverview() {
         $this->layout = 'azarus_private_layout';
 
@@ -143,19 +146,19 @@ class TestsController extends AppController {
         $global['netDeposits'] = 0;
         foreach ($globalData as $globalKey => $individualPfpData) {
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
-                if ($key == "userinvestmentdata_activeInInvestments") {
+                if ($key == "userinvestmentdata_activeInInvestments") { //Get global active in investment
                     $global['investedAssets'] = $global['investedAssets'] + $individualData;
                     $global['totalVolume'] = $global['totalVolume'] + $individualData;
                 }
-                if ($key == "userinvestmentdata_myWallet") {
+                if ($key == "userinvestmentdata_myWallet") { //Get global wallet
                     $global['cash'] = $global['cash'] + $individualData;
                     $global['totalVolume'] = $global['totalVolume'] + $individualData;
                 }
-                if ($key == "userinvestmentdata_reservedFunds") {
+                if ($key == "userinvestmentdata_reservedFunds") { //Get global reserved funds
                     $global['reservedFunds'] = $global['reservedFunds'] + $individualData;
                     $global['totalVolume'] = $global['totalVolume'] + $individualData;
                 }
-                if ($key == "userinvestmentdata_investments") {
+                if ($key == "userinvestmentdata_investments") { //Get global active investmnent
                     $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
                 }
                 if ($key == "id") {
@@ -164,13 +167,13 @@ class TestsController extends AppController {
                 }
                 if ($key == "linkedaccount_id") {
                     //Get the pfp id of the linked acount
-                    $pfpData = $this->Linkedaccount->getLinkedaccountDataList(array('id' => $individualData));
-                    $pfpId = $pfpData[0]['Linkedaccount']['company_id'];
+                    $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData),array('company_id'));
+                    $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
                     $globalData[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
                     //Get pfp logo and name
-                    $pfpFullData = $this->Company->getCompanyDataList(array('id' => $pfpId));
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpFullData[$pfpId]['company_logoGUID'];
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpFullData[$pfpId]['company_name'];
+                    $pfpOtherData = $this->Company->getData(array('id' => $pfpId),array("company_logoGUID", "company_name"));
+                    $globalData[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
+                    $globalData[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                 }
             }
         }

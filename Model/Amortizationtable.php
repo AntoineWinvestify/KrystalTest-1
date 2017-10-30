@@ -42,17 +42,17 @@ Pending:
 
 class Amortizationtable extends AppModel
 {
-	var $name= 'Amortization';
+	var $name= 'Amortizationtable';
 
 
-/**
-*	Apparently can contain any type field which is used in a field. It does NOT necessarily
-*	have to map to a existing field in the database. Very useful for automatic checks
-*	provided by framework
-*/
-var $validate = array(
+    /**
+    *	Apparently can contain any type field which is used in a field. It does NOT necessarily
+    *	have to map to a existing field in the database. Very useful for automatic checks
+    *	provided by framework
+    */
+    var $validate = array(
 
-);
+    );
 
 
 
@@ -87,6 +87,26 @@ var $validate = array(
             $instalmentNumber = $instalmentNumber + 1;
         } 
         return true;         
+    }
+    
+    /**
+     * Function to save amortization tables by company
+     * @param array $linkaccountData It contains the data of a company
+     * @param array $investmentIds It contains all the investmentId by LoanId
+     * @return boolean
+     */
+    public function saveAmortizationtable($linkaccountData, $investmentIds) {
+        $amortizationtable = [];
+        foreach ($linkaccountData as $loanId => $loanData) {
+            foreach ($loanData as $value) {
+                $value['investment_id'] = $investmentIds[$loanId];
+                $amortizationtable[] = $value;
+            }
+        }
+        echo "amortization";
+        print_r($amortizationtable);
+        $this->saveMany($amortizationtable, $validate = true);
+        return true;
     }
 
 

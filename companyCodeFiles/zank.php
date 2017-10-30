@@ -64,6 +64,11 @@
  * 2017-08-29
  * json revision
  * 
+ * 2017-10-24 version_0.9
+ * Integration of parsing amortization tables with Gearman and fileparser
+ * 
+ * Parser AmortizationTables                                            [OK, tested]
+ * 
  * Pending:
  * Fecha en duda
  *
@@ -86,6 +91,7 @@ class zank extends p2pCompany {
     private $resultMiZank = false;
     private $url;
     private $start = 0;
+    
     protected $transactionConfigParms = array('OffsetStart' => 1,
         'offsetEnd' => 0,
         'separatorChar' => ";",
@@ -271,13 +277,81 @@ class zank extends p2pCompany {
             ]
         ];
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];
-
-     
+    protected $amortizationConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 ); 
+    
+    protected $valuesAmortizationTable = [
+        1 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D/M/Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        2 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        3 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_comission", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        6 => [
+            [
+                "type" => "amortizationtable_latePaymentFee", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        8 => [
+            "name" => "amortizationtable_paymentStatus"
+        ]
+    ];
 
     function __construct() {
         parent::__construct();
@@ -1406,7 +1480,6 @@ class zank extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 return $this->tempArray;
-                break;
         }
     }
 
@@ -1415,7 +1488,7 @@ class zank extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) {
+    function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
                 $this->idForSwitch++;

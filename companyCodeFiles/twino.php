@@ -20,11 +20,16 @@
  * @date 2016-10-25
  * @package
  *
+ *
  * 
- * 
- * 2017-08-23
+ * 2017-08-23 version_0.2
  * Created
  * link account
+ * 
+ * 2017-10-24 version_0.3
+ * Integration of parsing amortization tables with Gearman and fileparser
+ * 
+ * Parser AmortizationTables                                            [OK, tested]
  */
 
 /**
@@ -171,30 +176,75 @@ class twino extends p2pCompany {
             "name" => "status",
         ]
     ];
-    protected $valuesAmortizationTable = [// NOT FINISHED
-        "A" => [
-            "name" => "transaction_id"
+
+    protected $valuesAmortizationTable = [
+        3 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "Y-M-D",
+                ],
+                "functionName" => "normalizeDate",
+            ]
         ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        6 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        12 => [
+            "name" => "amortizationtable_paymentStatus"
+        ]
     ];
-    protected $transactionConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //       'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
 
-    /*   NOT YET READY
-      protected $amortizationConfigParms = array ('OffsetStart' => 1,
-      'offsetEnd'     => 0,
-      //       'separatorChar' => ";",
-      'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-      );
-     */
+      
 
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                        //        'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+    protected $amortizationConfigParms = array ('OffsetStart' => 0,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );  
+    
+    
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -250,7 +300,7 @@ class twino extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array Control variables.
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
 
 
         switch ($this->idForSwitch) {
@@ -327,11 +377,11 @@ class twino extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 //Download cash flow
-                $date1 = "[2017,9,1]";
-                $date2 = "[2017,9,20]";
-                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":{$date1},"processingDateTo":{$date2},"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
-                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $date1)); //date must be [year,month.day]
-                $credentialsFile = strtr($credentialsFile, array('{$date2}' => $date2));
+                $dateInit = date("Y,m,d", strtotime($this->dateInit));
+                $dateFinish = date('Y,m,d',strtotime($this->dateFinish));
+                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":[{$date1}],"processingDateTo":[{$date2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
+                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $dateInit)); //date must be [year,month.day]
+                $credentialsFile = strtr($credentialsFile, array('{$date2}' => $dateFinish));
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
@@ -394,7 +444,7 @@ class twino extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) {
+    function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {
 
             /////////////LOGIN

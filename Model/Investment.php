@@ -93,7 +93,7 @@ var $validate = array(
         $this->create();
         if ($this->save($investmentdata, $validation = true)) {   // OK
             $investmentId = $this->id;
-            $data = array('investment_id' => $investmentId);
+            $data = array('investment_id' => $investmentId, 'status' => WIN_ERROR_PAYMENTTOTALS_LAST);
             $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
             $this->Paymenttotal->create();
             if ($this->Paymenttotal->save($data, $validation = true)) { 
@@ -111,6 +111,16 @@ var $validate = array(
             $result[1] = $this->validationErrors;
         }
         return $result;         
+    }
+    
+    public function getInvestmentIdByLoanId($loanIds) {
+        $fields = array('Investment.investment_loanReference', 'Investment.id');
+        $conditions = array('investment_loanReference' => $loanIds);
+        $investmentIds = $this->find('list', $params = array('recursive' => -1,
+            'fields' => $fields,
+            'conditions' => $conditions
+        ));
+        return $investmentIds;
     }
 
 

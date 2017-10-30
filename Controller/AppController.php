@@ -241,7 +241,6 @@ class AppController extends Controller {
 
             $action = $this->action;
             $controller = $this->params['controller'];
-            $action2 = $this->params['action'];
             //Here we verify if this user has authorization to acces the controller and the action
             $resultAcl = $this->isAuthorized($controller, $action);
             if (!$resultAcl) {

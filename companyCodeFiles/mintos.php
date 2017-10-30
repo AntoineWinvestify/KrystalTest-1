@@ -39,6 +39,9 @@
  *
  * 2017-09-29 version_0.7
  * Integration of downloading amortization tables with Gearman
+ * 
+ * 2017-10-24 version_0.8
+ * Integration of parsing amortization tables with Gearman and fileparser
  *
  */
 
@@ -48,7 +51,8 @@
  * function collectCompanyMarketplaceData()				[Not OK]
  * function companyUserLogin()						[OK, tested]
  * function collectUserGlobalFilesParallel                              [OK, tested]
- * function collectAmortizationTablesParallel()                         [Ok, testing]
+ * function collectAmortizationTablesParallel()                         [OK, tested]
+ * Parser AmortizationTables                                            [OK, tested]
  * parallelization                                                      [OK, tested]
  */
 class mintos extends p2pCompany {
@@ -346,30 +350,78 @@ class mintos extends p2pCompany {
              ],
         ];
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];
-
-    protected $transactionConfigParms = array ('offsetStart' => 1,
+    protected $valuesAmortizationTable = [
+        0 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D.M.Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        1 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        2 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_paymentDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D.M.Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        6 => [
+            "name" => "amortizationtable_paymentStatus"
+        ]
+    ];
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
                         //        'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"      // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("date","investment_loanId")       // used to "sort" the array and use $sortParameter(s) as prime index.
                                  );
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"      // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("investment_loanId")      // used to "sort" the array and use $sortParameter as prime index.
                                  );
-/*   NOT YET READY
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
+    protected $amortizationConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"      // used to "sort" the array and use $sortParameter as prime index.
                                  );
-*/   
      
      
      
@@ -577,16 +629,16 @@ class mintos extends p2pCompany {
                 break;
             case 6:
                 //This two variables should disappear
-                $yesterday = date("d.m.Y",strtotime("-1 days"));
-                $today = date("d.m.Y");
+                $dateInit = date("d.m.Y", strtotime($this->dateInit));
+                $dateFinish = date('d.m.Y',strtotime($this->dateFinish));
                 //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array('{$date1}' => $yesterday));
-                $referer = strtr($referer, array('{$date2}' => $today));
+                $referer = strtr($referer, array('{$date1}' => $dateInit));
+                $referer = strtr($referer, array('{$date2}' => $dateFinish));
                 $credentials = array_shift($this->urlSequence);
-                $credentials = strtr($credentials, array('{$date1}' => $yesterday));
-                $credentials = strtr($credentials, array('{$date2}' => $today));
+                $credentials = strtr($credentials, array('{$date1}' => $dateInit));
+                $credentials = strtr($credentials, array('{$date2}' => $dateFinish));
                 $headersJson = array_shift($this->urlSequence);
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
                 $headers = json_decode($headers, true);

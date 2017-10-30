@@ -56,6 +56,11 @@
  * shows that it should be ten. Take care of this
  * Added new url sequence for pagination
  * 
+ * 2017-10-24 version_0.7
+ * Integration of parsing amortization tables with Gearman and fileparser
+ * 
+ * Parser AmortizationTables                                            [OK, tested]
+ * 
  * PENDING:
  *
  *
@@ -245,33 +250,62 @@ class loanbook extends p2pCompany {
             ]
         ];
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];
+    protected $valuesAmortizationTable = [
+        
+        2 => [
+                [
+                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "D-M-Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+        3 => [
+            "name" => "amortizationtable_paymentStatus"
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
+                "inputData" => [
+                            "input2" => "",
+                            "input3" => ",",
+                            "input4" => 16
+                            ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
+                "inputData" => [
+                            "input2" => "",
+                            "input3" => ",",
+                            "input4" => 16
+                            ],
+                "functionName" => "getAmount",
+            ]
+        ]
+    ];
+    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
 
-
-    protected $transactionConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-
-    /*    NOT YET READY
-      protected $investmentConfigParms = array ('OffsetStart' => 1,
-      'offsetEnd'     => 0,
-      'separatorChar' => ";",
-      'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-      );
-
-     */
-
+    protected $amortizationConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 1,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+    
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -1083,7 +1117,7 @@ class loanbook extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array Control variables.
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
 
         switch ($this->idForSwitch) {
             case 0:
@@ -1225,8 +1259,10 @@ class loanbook extends p2pCompany {
                 
                 $this->idForSwitch++;
                 $url = array_shift($this->urlSequence);
-                $url = strtr($url, array('{$date1}' => 1476223200000)); //Date in seconds
-                $url = strtr($url, array('{$date2}' => 1504216800000));
+                $dateInit = strtotime($this->dateInit);
+                $dateFinish = strtotime($this->dateFinish);
+                $url = strtr($url, array('{$date1}' => $dateInit)); //Date in seconds
+                $url = strtr($url, array('{$date2}' => $dateFinish));
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);
                 break;
@@ -1395,7 +1431,7 @@ class loanbook extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str) { //Queue_info example {"loanIds":{"704":["472"]}}
+    function collectAmortizationTablesParallel($str = null) { //Queue_info example {"loanIds":{"704":["472"]}}
         switch ($this->idForSwitch) {
             case 0:
                 /*

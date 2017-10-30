@@ -15,8 +15,8 @@
  * +----------------------------------------------------------------------------+
  *
  *
- * @author 0.1
- * @version
+ * @author 
+ * @version 0.5
  * @date
  * @package
  */
@@ -39,6 +39,7 @@ class GearmanClientShell extends AppShell {
     protected $gearmanErrors = [];
     protected $date;
     protected $flowName;
+    protected $tempArray = [];
     
     public $uses = array('Company', 'Queue');
     
@@ -55,7 +56,7 @@ class GearmanClientShell extends AppShell {
     
     /**
      * Function to catch a fail on a Gearman Worker
-     * @param GearmanTask $task
+     * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
      */
     public function verifyFailTask(GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -70,12 +71,12 @@ class GearmanClientShell extends AppShell {
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_FAIL;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Fail: " . $task->data() . WIN_GEARMAN_WORK_FAIL . "\n";
+        echo "Fail: " . $task->data() . GEARMAN_WORK_FAIL . "\n";
     }
     
     /**
      * Function to catch a exception on a Gearman Worker
-     * @param GearmanTask $task
+     * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
      */
     public function verifyExceptionTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -90,13 +91,13 @@ class GearmanClientShell extends AppShell {
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_EXCEPTION;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "Exception: " . $task->data() . WIN_GEARMAN_WORK_EXCEPTION . "\n";
+        echo "Exception: " . $task->data() . GEARMAN_WORK_EXCEPTION . "\n";
         //return GEARMAN_WORK_EXCEPTION;
     }
     
     /**
      * Function that runs after a task was complete on the Gearman Worker
-     * @param GearmanTask $task
+     * @param GearmanTask $task It is a Gearman::Client's representation of a task done.
      */
     public function verifyCompleteTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -104,10 +105,17 @@ class GearmanClientShell extends AppShell {
             $this->userReference[$data[0]] = $data[2];
         }
         $dataWorker = json_decode($task->data(), true);
-        foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
-            $this->userResult[$data[0]][$linkaccountId] = $status;
-            $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
+        
+        if (!empty($dataWorker['statusCollect'])) {
+            foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
+                $this->userResult[$data[0]][$linkaccountId] = $status;
+                $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
+            }
         }
+        if (!empty($dataWorker['tempArray'])) {
+            $this->tempArray[$data[0]] = $dataWorker['tempArray'];
+        }
+        
         print_r($this->userResult);
         print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
@@ -125,13 +133,23 @@ class GearmanClientShell extends AppShell {
     public function deleteFolderByDateAndLinkaccountId($queueId, $linkAccountId) {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
+        $flow = constant("WIN_ERROR_" . $this->flowName);
         $path = $this->userReference[$queueId] . DS . $this->date . DS . $linkAccountId;
         print_r($this->userReference);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
         $delete = false;
-        if (!is_null($folder->path)) {
-            $delete = $folder->delete();
+        if ($flow < 8) {
+            if (!is_null($folder->path)) {
+                $delete = $folder->delete();
+            }
+        }
+        else {
+            $allFiles = $folder->findRecursive($this->fileName . ".*");
+            foreach ($allFiles as $file) {
+                $fileInit = new File($file);
+                $fileInit->delete();
+            }
         }
         return $delete;
     }
@@ -146,26 +164,29 @@ class GearmanClientShell extends AppShell {
     public function consolidationResult($userResult, $queueId) {
         $statusProcess = true;
         $globalDestruction = false;
-        foreach ($userResult as $key => $result) {
-            if ($key == 'global') {
+        unset($this->queueInfo[$queueId]['companiesInProcess']);
+        foreach ($userResult as $linkaccountId => $result) {
+            if ($linkaccountId == 'global') {
                 $globalDestruction = true;
                 break;
             }
             if (!$result) {
                 $statusProcess = false;
-                $this->deleteFolderByDateAndLinkaccountId($queueId, $key); //1 = $todaydate
-                $this->gearmanErrors[$queueId][$key]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
-                $this->gearmanErrors[$queueId][$key]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $key ;
-                $this->gearmanErrors[$queueId][$key]['detailedErrorInformation'] = "ERROR on " . $this->flowName
-                        . " with type of error: " . $this->gearmanErrors[$queueId][$key]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$key]['subtypeErrorId'] ;
+                $this->deleteFolderByDateAndLinkaccountId($queueId, $linkaccountId); //1 = $todaydate
+                $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                $this->gearmanErrors[$queueId][$linkaccountId]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                $this->gearmanErrors[$queueId][$linkaccountId]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                        . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId]['subtypeErrorId'] ;
                 print_r($this->gearmanErrors);
-                $this->saveGearmanError($this->gearmanErrors[$queueId][$key]);
+                $this->queueInfo[$queueId]['companiesInProcess'][] = $linkaccountId; 
+                $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId]);
             }
         }
         
         if ($globalDestruction) {
             foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
                 $this->deleteFolderByDateAndLinkaccountId($queueId, $userLinkaccountId);
+                $this->queueInfo[$queueId]['companiesInProcess'][] = $userLinkaccountId;
             }
             $statusProcess = false;
         }
@@ -218,6 +239,17 @@ class GearmanClientShell extends AppShell {
         return $jobList;
     }    
     
+    /**
+     * Function to save an application error produce on a Gearman Worker
+     * @param array $error It contains all the information about the error
+     *              $error['line'] It is the line where the error happened
+     *              $error['file'] It is the file where the error happened
+     *              $error['urlsequenceUrl'] It is the url sequence if applied where the error happened
+     *              $error['subtypeErrorId'] It is the subtype of the error
+     *              $error['typeOfError'] It is the type of error or the summary of the detailed information of the error
+     *              $error['detailedErrorInformation'] It is the detailed information of the error
+     *              $error['typeErrorId'] It is the principal id of the error
+     */
     public function saveGearmanError($error) {
         if (empty($this->Applicationerror)) {
             $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -237,31 +269,37 @@ class GearmanClientShell extends AppShell {
         $this->Applicationerror->saveAppError($error['typeOfError'],$error['detailedErrorInformation'], $error['line'], $error['file'], $error['urlsequenceUrl'], $error['typeErrorId'], $error['subtypeErrorId']);
     }
     
-    public function verifiedStatus($status, $message) {
+    /**
+     * Function to verify that the job was successful
+     * @param int $status It is the Id of the next queue status
+     * @param string $message It is the message to show on console
+     * @param int $restartStatus It is the Id of the queue if something fail
+     * @param int $errorStatus It is the Id of the queue if the error repeats and it is irrecoverable
+     */
+    public function verifiedStatus($status, $message, $restartStatus, $errorStatus) {
         foreach ($this->userResult as $queueId => $userResult) {
             $statusProcess = $this->consolidationResult($userResult, $queueId);
             $this->Queue->id = $queueId;
-            $queueInfo = null;
             if ($statusProcess) {
                 $newState = $status;
+                $this->queueInfo[$queueId]['numberTries'] = 0;
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
                 }
             } else {
-                $newState = WIN_QUEUE_STATUS_START_COLLECTING_DATA;
+                $newState = $restartStatus;
                 echo "There was an error downloading data";
                 if (empty($this->queueInfo[$queueId]['numberTries'])) {
                     $this->queueInfo[$queueId]['numberTries'] = 1;
                 } else if ($this->queueInfo[$queueId]['numberTries'] == 1) {
                     $this->queueInfo[$queueId]['numberTries'] = 2;
                 } else {
-                    $newState = UNRECOVERED_ERROR_ENCOUNTERED;
+                    $newState = $errorStatus; //UNRECOVERED_ERROR_ENCOUNTERED;
                 }
-                $queueInfo = $this->queueInfo[$queueId];
             }
             $this->Queue->save(array(
                     'queue_status' => $newState,
-                    'queue_info' => $queueInfo
+                    'queue_info' => json_encode($this->queueInfo[$queueId])
                 ),
                 $validate = true);
         }
