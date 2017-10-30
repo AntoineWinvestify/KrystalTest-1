@@ -146,16 +146,15 @@ class CollectDataClientShell extends GearmanClientShell {
                         $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
                         $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
                         $data["date"] = $this->date;
-                        print_r($data["companies"]);
-                        echo "\n";
-                        echo "userReference ". $data["queue_userReference"];
-                        echo "\n";
-                        echo "queueId " . $data["queue_id"];
-                        echo "\n";
-                        echo json_encode($data);
-                        echo "\n";
-                        echo $typeAccessKey;
-                        echo "\n aquiiiiiiiiiiiiiii";
+                        if (Configure::read('debug')) {
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
+                            print_r($data["companies"]);
+                            echo "userReference ". $data["queue_userReference"] . "\n";
+                            echo "queueId " . $data["queue_id"] . "\n";
+                            echo "Type of access for company" . $typeAccessKey . "\n";
+                            echo "All information \n";
+                            print_r($data);
+                        }
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
                     }
                 }
