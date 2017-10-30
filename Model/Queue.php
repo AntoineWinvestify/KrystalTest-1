@@ -91,11 +91,31 @@ public function addToQueue($queueReference, $queueType, $queueAction) {
 	}
 }
 
+    /**
+     * Put a new request into the queue for Dashboard 2.0
+     * @param array $queueReference The reference, as given by the user of the queue, to an item
+     * @param json $queueInfo It is the information about the queue request
+     * @param int $queueStatus It is the status to init the process of collecting information about the user's companies
+     * @param int $queueType LIFO, FIFO, CIRCULAR
+     * @return boolean true queueItem created
+     *                 false undefined error, item NOT created
+     */
+    public function addToQueueDashboard2($queueReference , $queueInfo= null, $queueStatus = WIN_QUEUE_STATUS_START_COLLECTING_DATA, $queueType = FIFO) {
+        
+        $data = array("queue_userReference" => $queueReference,
+            "queue_info" => $queueInfo,
+            "queue_type" => $queueType,
+            "queue_status" => $queueStatus,
+        );
 
+        if ($this->save($data, $validate = true)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-
-
-/*
+    /*
 *
 *	Removes all requests with value queueReference and which are not (yet) executing from the queue.
 *	@param	queueReference	varchar		the reference, as given by the user of the queue, to an item

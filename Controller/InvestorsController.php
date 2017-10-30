@@ -191,13 +191,13 @@ public function editUserProfileData() {
     
     
     
-/**
- *
- * 	Manage linked accounts, i.e. store new pair of userid/password for newly linked account 
- * 	Return list of currently linked accounts and an alert message about result of successfull linking of account
- * 	
- */
-function linkAccount() {
+    /**
+     *
+     * 	Manage linked accounts, i.e. store new pair of userid/password for newly linked account 
+     * 	Return list of currently linked accounts and an alert message about result of successfull linking of account
+     * 	
+     */
+    function linkAccount() {
         $error = false;
 
         if (!$this->request->is('ajax')) {
@@ -207,9 +207,9 @@ function linkAccount() {
 
         $this->layout = 'ajax';
         $this->disableCache();
-
+        $companyId = $this->request->data['companyId'];
         $investorId = $this->Auth->user('Investor.id');
-        $companyFilterConditions = array('id' => $_REQUEST['companyId']);
+        $companyFilterConditions = array('id' => $companyId);
         $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
 
         if (empty($companyResults)) {
@@ -217,8 +217,8 @@ function linkAccount() {
             return;
         }
 
-        $companyId = $_REQUEST['companyId'];
-        $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGIN_SEQUENCE);
+        
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGIN_SEQUENCE);
 
         $newComp = $this->companyClass($companyResults[$companyId]['company_codeFile']);
         $newComp->setUrlSequence($urlSequenceList);
@@ -227,7 +227,7 @@ function linkAccount() {
         );
         $newComp->defineConfigParms($configurationParameters);
         $newComp->generateCookiesFile();
-        $userInvestment = $newComp->companyUserLogin($_REQUEST['userName'], $_REQUEST['password']);
+        $userInvestment = $newComp->companyUserLogin($this->request->data['userName'], $this->request->data['password']);
 
         if (!$userInvestment) {                                                 // authentication error
             // load the list of all companies for display purposes
@@ -245,8 +245,8 @@ function linkAccount() {
             //$this->render('accountLinkingError');
 
         } else {
-            if ($this->Linkedaccount->createNewLinkedAccount($_REQUEST['companyId'], $this->Auth->user('Investor.id'), $_REQUEST['userName'], $_REQUEST['password'])) {
-                $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, LOGOUT_SEQUENCE);
+            if ($this->Linkedaccount->createNewLinkedAccount($companyId, $this->Auth->user('Investor.id'), $this->request->data['userName'], $this->request->data['password'])) {
+                $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGOUT_SEQUENCE);
                 $newComp->setUrlSequence($urlSequenceList);
                 $newComp->companyUserLogout();
                 $newComp->deleteCookiesFile();
@@ -305,12 +305,12 @@ function linkAccount() {
     
     
     
-/**
- *
- * 	Reads all the linked accounts of a user
- *
- */
-function readLinkedAccounts() {
+    /**
+     *
+     * 	Reads all the linked accounts of a user
+     *
+     */
+    function readLinkedAccounts() {
         $error = false;
         if (!$this->request->is('ajax')) {
             $this->layout = "azarus_private_layout";
@@ -359,14 +359,14 @@ function readLinkedAccounts() {
     
     
     
-/**
- *
- * 	Generates the basic panel for accessing investor's data, like personal data, linked
- * 	account data and social network data
- * 	
- * 	
- */
-function userProfileDataPanel() {
+    /**
+     *
+     * 	Generates the basic panel for accessing investor's data, like personal data, linked
+     * 	account data and social network data
+     * 	
+     * 	
+     */
+    function userProfileDataPanel() {
         $this->layout = 'azarus_private_layout';
     }
 

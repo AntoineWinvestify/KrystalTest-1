@@ -130,8 +130,10 @@ class Company extends AppModel {
      */
     public function getCompanyDataList($filterConditions) {
 
-        $businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
-            'Company.company_state' => ACTIVE);
+        /*$businessConditions = array('Company.company_isActiveInMarketplace' => ACTIVE,
+            'Company.company_state' => ACTIVE);*/
+        
+        $businessConditions = array('Company.company_state' => ACTIVE);
 
         array_push($businessConditions, $filterConditions);
 

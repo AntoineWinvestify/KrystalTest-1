@@ -20,11 +20,26 @@
  * @date 2016-10-25
  * @package
  *
+ *
  * 
- * 
- * 2017-08-23
+ * 2017-08-23 version_0.2
  * Created
  * link account
+ * 
+ * 2017-10-24 version_0.3
+ * Integration of parsing amortization tables with Gearman and fileparser
+ * 
+ * Parser AmortizationTables                                            [OK, tested]
+ */
+
+/**
+ * Contains the code required for accessing the website of "Twino".
+ * function calculateLoanCost()						[Not OK]
+ * function collectCompanyMarketplaceData()				[Not OK]
+ * function companyUserLogin()						[OK, tested]
+ * function collectUserGlobalFilesParallel                              [OK, tested]
+ * function collectAmortizationTablesParallel()                         [Ok, not tested]
+ * parallelization                                                      [OK, tested]
  */
 class twino extends p2pCompany {
 
@@ -162,11 +177,55 @@ class twino extends p2pCompany {
         ]
     ];
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];    
+    protected $valuesAmortizationTable = [
+        3 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "Y-M-D",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        6 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        12 => [
+            "name" => "amortizationtable_paymentStatus"
+        ]
+    ];
+
+      
 
     protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -179,13 +238,11 @@ class twino extends p2pCompany {
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
-/*   NOT YET READY
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
+    protected $amortizationConfigParms = array ('OffsetStart' => 0,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
-*/     
+                                 );  
     
     
     function __construct() {
@@ -196,7 +253,6 @@ class twino extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
           FIELDS USED BY twino DURING LOGIN PROCESS
@@ -239,11 +295,12 @@ class twino extends p2pCompany {
     }
 
     /**
-     * Download the file with the user investment
-     * @param string $user
-     * @param string $password
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
 
 
         switch ($this->idForSwitch) {
@@ -262,20 +319,6 @@ class twino extends p2pCompany {
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
             case 2:
-                $dom = new DOMDocument;  //Check if works
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-
-                $containers = $dom->getElementsByTagName('section');
-                var_dump($containers);
-                foreach ($containers as $container) {
-                    $divs = $container->getElementsByTagName('div');
-                    foreach ($divs as $key => $div) {
-                        echo "Key " . $key . " is " . $div->nodeValue;
-                    }
-                }
-
-
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 break;
@@ -330,12 +373,15 @@ class twino extends p2pCompany {
                 }
                 break;
             case 6:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 //Download cash flow
-                $date1 = "[2017,9,1]";
-                $date2 = "[2017,9,20]";
-                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":{$date1},"processingDateTo":{$date2},"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
-                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $date1)); //date must be [year,month.day]
-                $credentialsFile = strtr($credentialsFile, array('{$date2}' => $date2));
+                $dateInit = date("Y,m,d", strtotime($this->dateInit));
+                $dateFinish = date('Y,m,d',strtotime($this->dateFinish));
+                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":[{$date1}],"processingDateTo":[{$date2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
+                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $dateInit)); //date must be [year,month.day]
+                $credentialsFile = strtr($credentialsFile, array('{$date2}' => $dateFinish));
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
@@ -373,6 +419,9 @@ class twino extends p2pCompany {
                 }
                 break;
             case 9:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 //return $tempArray["global"] = "waiting_for_global";
@@ -385,10 +434,17 @@ class twino extends p2pCompany {
                 $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($variables['investmentBalance']); //My wallet
                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($variables['interest']); //Interest
+
+                return $this->tempArray;
         }
     }
 
-    function collectAmortizationTablesParallel($str) {
+     /**
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
+     */
+    function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {
 
             /////////////LOGIN
@@ -463,22 +519,21 @@ class twino extends p2pCompany {
                     $arrayAmortizationTable['scheduleItems'][$i]['dueDate'] = implode("-", $arrayAmortizationTable['scheduleItems'][$i]['dueDate']);
                 }
                 //print_r($arrayAmortizationTable['scheduleItems']);
-                $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']);
+                $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']); //Sent an array and return a html table
                 $this->tempArray[$this->loanIds[$this->i - 1]] = $table;
                 echo "_-_-_-_-_-_-_-_table is : " . $table . "_-_-_-_-_-_-_-_";
-                        
+
                 if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
-                } else {
+                }
+                else {
                     return $this->tempArray;
                     break;
                 }
         }
     }
-
-
 
     /**
      *

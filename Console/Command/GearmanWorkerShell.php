@@ -31,15 +31,70 @@ class GearmanWorkerShell extends AppShell {
     protected $newComp = array();
     protected $tempArray = array();
     protected $companyId = array();
+    protected $queueCurlFunction;
+    protected $myParser;  
     
     /**
      * Constructor of the class
      */
     public function startup() {
         $this->GearmanWorker = new GearmanWorker();
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
+        $this->myParser = new Fileparser();  
         set_exception_handler(array($this, 'exception_handler'));
         set_error_handler(array($this, 'error_handler'));
         register_shutdown_function(array($this, 'fatalErrorShutdownHandler'));
+    }
+    
+    /**
+     * This is the callback's queue for the companies cURLs, when one request is processed
+     * Another enters the queue until finishes
+     * @param cURL\Event $event Object that passes the multicurl Plugin with data concerned to 
+     * the url
+     *          $info["companyIdForQueue"] is the company id
+     *          $info["idForSwitch"] is the switch id
+     *          $info["typeOfRequest"]  is the type of request (WEBPAGE, DOWNLOADFILE, LOGIN, LOGOUT)   
+     */
+    public function multiCurlQueue(\cURL\Event $event) {
+        //We get the response of the request
+        $response = $event->response;
+        $error = null;
+        $info = json_decode($event->request->_page, true);
+        $queueCurlFunction = $this->queueCurlFunction;
+        if ($info["typeOfRequest"] == "DOWNLOADFILE") {
+            fclose($this->newComp[$info["companyIdForQueue"]]->getFopen());
+        }
+
+        if ($response->hasError()) {
+            $this->tempArray[$info["companyIdForQueue"]]['global']['error'] = $this->errorCurl($response->getError(), $info, $response);
+            $error = $response->getError();
+        }
+        if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
+            //We get the web page string
+            $str = $response->getContent();
+            $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
+            $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->$queueCurlFunction($str);
+        }
+
+        if ($info["typeOfRequest"] == "LOGOUT") {
+            echo "LOGOUT FINISHED <br>";
+            $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
+        } else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
+            if (!empty($error)) {
+                $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_CURL,$info["typeOfRequest"], $error);
+            }
+            else if ($this->queueCurlFunction == "collectUserGlobalFilesParallel") {
+                $this->newComp[$info["companyIdForQueue"]]->saveFilePFP("controlVariables.json", json_encode($this->tempArray[$info["companyIdForQueue"]]));
+            }
+            else if ($this->queueCurlFunction == "collectAmortizationTablesParallel") {
+                $this->newComp[$info["companyIdForQueue"]]->saveAmortizationTable();
+            }
+            $this->logoutOnCompany($info["companyIdForQueue"], $str);
+            if ($info["typeOfRequest"] == "LOGOUT") {
+                unset($this->tempArray[$info["companyIdForQueue"]]['global']['error']);
+            }
+        }
     }
     
     /**

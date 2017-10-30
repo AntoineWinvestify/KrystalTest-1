@@ -50,12 +50,15 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
      *      $data["queue_userReference"]        string It is the user reference
      *      $data["queue_id"]                   integer It is the queue id
      *      $data["loandIds"]                   array It contains all the loandId needed to save from the companies
+     *      $data["date"]                       integer It is the today's date
      * @return json Json containing all the status collect and errors by link account id
      */
     public function getAmortizationDataMulticurl($job) {
         $data = json_decode($job->workload(),true);
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        $this->queueCurlFunction = "collectAmortizationTablesParallel";
         print_r($data);
+        $queueCurlFunction = $this->queueCurlFunction;
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
         $index = 0;
@@ -80,6 +83,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], WIN_DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
+            $this->newComp[$i]->setDateFinal($data["date"]);
             $this->newComp[$i]->generateCookiesFile();
             $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
             $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
@@ -95,7 +99,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
         echo "MICROTIME_START = " . microtime() . "<br>";
         //We start at the same time the queue on every company
         foreach ($data["companies"] as $linkedaccount) {
-            $this->newComp[$companyNumber]->collectAmortizationTablesParallel();
+            $this->newComp[$companyNumber]->$queueCurlFunction();
             $companyNumber++;
         }
         
@@ -123,52 +127,6 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
        $data['statusCollect'] = $statusCollect;
        $data['errors'] = $errors;
        return json_encode($data);
-    }
-    
-    /**
-     * This is the callback's queue for the companies cURLs, when one request is processed
-     * Another enters the queue until finishes
-     * @param \cURL\Event $event Object that passes the multicurl Plugin with data concerned to 
-     * the url
-     *          $info["companyIdForQueue"] is the company id
-     *          $info["idForSwitch"] is the switch id
-     *          $info["typeOfRequest"]  is the type of request (WEBPAGE, DOWNLOADFILE, LOGIN, LOGOUT)   
-     */
-    public function multiCurlQueue(\cURL\Event $event) {
-        //We get the response of the request
-        $response = $event->response;
-        $error = null;
-        $info = json_decode($event->request->_page, true);
-
-        if ($info["typeOfRequest"] == "DOWNLOADFILE") {
-            fclose($this->newComp[$info["companyIdForQueue"]]->getFopen());
-        }
-
-        if ($response->hasError()) {
-            $this->tempArray[$info["companyIdForQueue"]]['global']['error'] = $this->errorCurl($response->getError(), $info, $response);
-            $error = $response->getError();
-        }
-        if (empty($error) && $info["typeOfRequest"] != "LOGOUT") {
-            //We get the web page string
-            $str = $response->getContent();
-            $this->newComp[$info["companyIdForQueue"]]->setIdForSwitch($info["idForSwitch"]);
-            $this->tempArray[$info["companyIdForQueue"]] = $this->newComp[$info["companyIdForQueue"]]->collectAmortizationTablesParallel($str);
-        }
-
-        if ($info["typeOfRequest"] == "LOGOUT") {
-            echo "LOGOUT FINISHED <br>";
-            $this->newComp[$info["companyIdForQueue"]]->deleteCookiesFile();
-        } else if ((!empty($this->tempArray[$info["companyIdForQueue"]]) || (!empty($error)) && $info["typeOfRequest"] != "LOGOUT")) {
-            if (!empty($error)) {
-                $this->newComp[$info["companyIdForQueue"]]->getError(__LINE__, __FILE__, $info["typeOfRequest"], $error);
-            } else {
-                $this->newComp[$info["companyIdForQueue"]]->saveAmortizationTable();
-            }
-            $this->logoutOnCompany($info["companyIdForQueue"], $str);
-            if ($info["typeOfRequest"] == "LOGOUT") {
-                unset($this->tempArray['global']['error']);
-            }
-        }
     }
 
 }

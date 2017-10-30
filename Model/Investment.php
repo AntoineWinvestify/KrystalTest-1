@@ -112,6 +112,16 @@ var $validate = array(
         }
         return $result;         
     }
+    
+    public function getInvestmentIdByLoanId($loanIds) {
+        $fields = array('Investment.investment_loanReference', 'Investment.id');
+        $conditions = array('investment_loanReference' => $loanIds);
+        $investmentIds = $this->find('list', $params = array('recursive' => -1,
+            'fields' => $fields,
+            'conditions' => $conditions
+        ));
+        return $investmentIds;
+    }
 
 
 

@@ -59,8 +59,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         print_r($data);
-        $this->queueCurls = new \cURL\RequestsQueue;
-        //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
+        //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
         $index = 0;
         $i = 0;
         foreach ($data["companies"] as $linkedaccount) {
@@ -77,6 +76,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $newComp->setCompanyName($result[$companyId]['company_codeFile']);
             $newComp->setUserReference($data["queue_userReference"]);
             $newComp->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
+            ///Maybe this is needed 
+            //https://book.cakephp.org/2.0/en/core-utility-libraries/time.html#CakeTime::dayAsSql
             $formulas = $newComp->getFormulas();
             foreach ($formulas as $formula) {
                 foreach ($formula['param'] as $param) {
@@ -88,7 +89,12 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             
         }
     }
-    
+    /**
+     * Function to get a value from the database
+     * @param string $var It is a variable with the table and the data that we should take from database
+     * @param iny $linkaccountId It is the linkaccount from which we must take the data
+     * @return array With the data containing the information needed
+     */
     public function getValue($var, $linkaccountId) {
         $consult = explode('.', $this->config[$var]);
         $model;
@@ -101,47 +107,42 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 break;
             case "payments":
                 $model = $this->Transaction;
-                $options['joins'] = array(
-                    array('table' => 'roles_sectors',
-                        'alias' => 'RolesSector',
-                        'type' => 'inner',
-                        'conditions' => array(
-                            'Sector.id = RolesSector.sector_id'
-                        )
-                    ),
-                    array('table' => 'roles',
-                        'alias' => 'Role',
-                        'type' => 'inner',
-                        'conditions' => array(
-                            'RolesSector.role_id = Role.id'
-                        )
-                    )
-                );
                 break;
         }
-        $params['fields'] = array($var);
-         $options['conditions'] = array(
-            'Role.id' => $roleId
-        );
-        //$options['field'] = array('Sector.*');
-        $options['recursive'] = -1;
-        $options['order'] = array(
-            'Sector.sectors_father',
-            'Sector.sectors_subSectorSequence'
-        );
-        $result = $model->find('first', $options);
         return $result;
     }
     
+    /**
+     * Function to initiate the formulas, in the future, this will be a config file
+     */
     public function initFormula() {
-        $this->formula[0]['eval'] = $investment - $total;
-        $this->formula[0]['externalName'] = 'cashDraw';
-        $this->formula[0]['internalName'] = 'userinvestmentdata.userinvestmentdata_cashDraw';
-        $this->formula[0]['param'][0] = 'investment';
-        $this->formula[0]['param'][1] = 'total';
+        $this->formula[0]['eval'] = "$interestPaidGlobalOld-$interestPaidOld+$interestPaidNew";
+        $this->formula[0]['externalName'] = 'interestPaidGlobal';
+        $this->formula[0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal';
+        $this->formula[0]['param'][0]['externalName'] = 'interestPaidNew';
+        $this->formula[0]['param'][0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaid';
+        $this->formula[0]['param'][0]['period'] = 'exclusive';
+        $this->formula[0]['param'][0]['date'] = '0';
+        $this->formula[0]['param'][0]['externalName'] = 'interestPaidOld';
+        $this->formula[0]['param'][0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaid';
+        $this->formula[0]['param'][0]['period'] = 'exclusive';
+        $this->formula[0]['param'][0]['date'] = '365';
+        $this->formula[0]['param'][0]['externalName'] = 'interestPaidGlobalOld';
+        $this->formula[0]['param'][0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal';
+        $this->formula[0]['param'][0]['period'] = 'exclusive';
+        $this->formula[0]['param'][0]['date'] = '1';
         
-        $this->config['investment'] = "investment.investment_deposits";
-        $this->config['total'] = 'userinvestmentdata.userinvestmentdata_myWallet';
+        
+        
+        /*$this->formula[1]['eval'] = "(1+(($interestPaidGlobal+$chargeOffGlobal)/$outstandingPrincipalGlobal)^365)-1";
+        $this->formula[1]['externalName'] = 'profitability';
+        $this->formula[1]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_profitability';
+        $this->formula[1]['param'][0] = 'interestPaidGlobal';
+        $this->formula[1]['param'][1] = 'chargeOffGlobal';
+        $this->formula[1]['param'][2] = 'outstandingPrincipalGlobal';
+        
+        $this->config['interestPaidGlobal'] = "newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal";
+        $this->config['chargeOffGlobal'] = 'userinvestmentdata.userinvestmentdata_myWallet';*/
     }
     
     

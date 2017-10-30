@@ -424,17 +424,17 @@ class Investor extends AppModel {
     }
 
     /**
-     * Get all data of a investor by investor.id
+     * Get the investor Identity by investor.id
      * @param int $id It is the investor's id
      * @return array $info It is all the investor's data
      */
     public function getInvestorIdentityByInvestorId($id) {
-
-        $info = $this->find("all", array(
+        $info = $this->find("first", array(
+            'fields' => array('Investor.investor_identity'),
             'conditions' => array('Investor.id' => $id),
             'recursive' => -1,
         ));
-        return $info;
+        return $info['Investor']['investor_identity'];
     }
 
     public function getJsonDataForPFP($id) {
