@@ -55,7 +55,6 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
      *                      true  analysis done with success
      *                  readErrorData 
      *                      array with all errorData related to occurred error
-     * load config (perhaps via constructor: index = loanId
      */   
     public function collectamortizationtablesFileFlow($job) {
 
