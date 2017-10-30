@@ -291,6 +291,9 @@ class GearmanClientShell extends AppShell {
                 }
                 if (!$result) {
                     $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus);
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
                     continue;
                 }
                 $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
@@ -299,6 +302,9 @@ class GearmanClientShell extends AppShell {
                 foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
                     $this->deleteFolderByDateAndLinkaccountId($queueId, $userLinkaccountId);
                     $this->queueInfo[$queueId]['companiesInProcess'][] = $userLinkaccountId;
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
                 }
             }
             //$statusProcess = $this->consolidationResult($userResult, $queueId);
