@@ -1,4 +1,5 @@
 <?php
+
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -15,29 +16,29 @@
  *
  *
  * @author 
- * @version
- * @date
+ * @version 0.1
+ * @date 2017-10-13
  * @package
  */
 
 App::import('Shell','GearmanClient');
 
 /**
- * Class CollectDataClientShell to init the process to collect all
- * the files of various investors using Gearman
+ * Description of PreprocessClientShell
+ *
+ * @author antoiba
  */
-class CollectDataClientShell extends GearmanClientShell {
-
+class PreprocessClientShell extends GearmanClientShell {
+    
     /**
      * Function to init the process to recollect all the user investment data
      *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
      *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
      */
     public function initClient() {
-        //$queueStatus = $this->args[0];
-        //$queueAcessType = $this->args[1];
+        
         $inActivityCounter = 0;
-        $this->flowName = "GEARMAN_FLOW1";
+        $this->flowName = "GEARMAN_FLOW0";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
 
@@ -45,29 +46,20 @@ class CollectDataClientShell extends GearmanClientShell {
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
         //$resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
-        if (Configure::read('debug')) {
-            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 2 Client\n");
-        }
-
+        
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         $this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $companyTypes = $this->Company->find('list', array(
-            'fields' => array('Company.company_typeAccessTransaction')
+            'fields' => array('Company.company_typeAccessPreprocess')
         ));
         $this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            if (Configure::read('debug')) {
-                $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
-            }
-            $resultQueue  = $this->checkJobs(WIN_QUEUE_STATUS_START_COLLECTING_DATA, $jobsInParallel);
+            $resultQueue  = $this->checkJobs(WIN_QUEUE_STATUS_START_PREPROCESS, $jobsInParallel);
+            print_r($resultQueue);
             if (!empty($resultQueue)) {
-                if (Configure::read('debug')) {
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
-                    print_r($resultQueue);
-                }
                 $linkedaccountsResults = [];
                 foreach ($resultQueue as $result) {
                     $queueInfo = json_decode($result['Queue']['queue_info'], true);
@@ -79,34 +71,28 @@ class CollectDataClientShell extends GearmanClientShell {
                     ));
                     print_r($resultInvestor);
                     $investorId = $resultInvestor['Investor']['id'];
-                    $filterConditions = array('investor_id' => $investorId);
+                    $filterConditions = array(  'investor_id' => $investorId,
+                                                'company_id' => 10
+                                            );
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     echo "linkAccount \n";
                     print_r($linkedaccountsResults);
                     //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
+                
                 $userLinkedaccounts = [];
                 foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
                     //In this case $key is the number of the linkaccount inside the array 0,1,2,3
                     $i = 0;
                     foreach ($linkedaccountResult as $linkedaccount) {
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
-                        $folderExist = $this->verifyCompanyFolderExist($resultQueue[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id']);
-                        if (!$folderExist) {
-                            $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
-                            //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
-                            $this->userLinkaccountIds[$resultQueue[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
-                            $i++;
-                        }
+                        $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
+                        //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
+                        $this->userLinkaccountIds[$resultQueue[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
+                        $i++;
                     }
-
                 }
                 
-                if (Configure::read('debug')) {
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending the previous information to Worker\n");
-                }
-
-
                 //$key is the number of the internal id of the array (0,1,2)
                 //$key2 is type of access to company (multicurl, casper, etc)
                 foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
@@ -129,11 +115,8 @@ class CollectDataClientShell extends GearmanClientShell {
                 }
 
                 $this->GearmanClient->runTasks();
-
-                if (Configure::read('debug')) {
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
-                }
-                $this->verifiedStatus(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded");
+                
+                $this->verifiedStatus(WIN_QUEUE_STATUS_START_COLLECTING_DATA, "Data succcessfully downloaded");
                 unset($resultQueue);
                 unset($resultInvestor);
                 unset($linkedaccountsResults); 
@@ -143,15 +126,11 @@ class CollectDataClientShell extends GearmanClientShell {
             }
             else {
                 $inActivityCounter++;
-                if (Configure::read('debug')) {       
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
-                }     
+                echo __METHOD__ . " " . __LINE__ . " Nothing in queue, so sleeping \n";                
                 sleep (4); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
-                if (Configure::read('debug')) {       
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
-                }                     
+                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  
                 exit;
             }
         }

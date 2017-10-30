@@ -289,7 +289,7 @@ class twino extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 } else {
                     echo 'twino login ok' . SHELL_ENDOFLINE;
                 }
@@ -433,7 +433,7 @@ class twino extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
                 echo 'twino login ok' . SHELL_ENDOFLINE;
 

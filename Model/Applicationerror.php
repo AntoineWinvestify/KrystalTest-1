@@ -45,9 +45,9 @@ Pending:
 
 App::uses('CakeEvent', 'Event');
 
-class Applicationerror extends AppModel
-{
-	var $name= 'Applicationerror';
+class Applicationerror extends AppModel {
+    
+    var $name= 'Applicationerror';
 
 /*
 	var $hasOne = array(
@@ -67,13 +67,7 @@ class Applicationerror extends AppModel
 */
 //var $validate = array(
 // );
-
-
-
-
-
-
-
+    
     /**
      *
      *  Saves all the data related to an application error in a centralized database
@@ -87,17 +81,19 @@ class Applicationerror extends AppModel
      * @return boolean
      * 
      */
-public function saveAppError($par1, $par2, $par3, $par4, $par5) {
-    $dataArray['applicationerror_typeOfError'] = $par1;
-    $dataArray['applicationerror_detailedErrorInformation'] = $par2;
-    $dataArray['applicationerror_line'] = $par3;
-    $dataArray['applicationerror_file'] = $par4;
-    $dataArray['applicationerror_urlsequenceUrl'] = $par5;
-    if ($this->save($dataArray, $validate = true)) {
-        return true ;       
+    public function saveAppError($par1, $par2, $par3, $par4, $par5, $par6 = null, $par7 = null) {
+        $dataArray['applicationerror_typeOfError'] = $par1;
+        $dataArray['applicationerror_detailedErrorInformation'] = $par2;
+        $dataArray['applicationerror_line'] = $par3;
+        $dataArray['applicationerror_file'] = $par4;
+        $dataArray['applicationerror_urlsequenceUrl'] = $par5;
+        $dataArray['applicationerror_typeErrorId'] = $par6;
+        $dataArray['applicationerror_subtypeErrorId'] = $par7;
+        if ($this->save($dataArray, $validate = true)) {
+            return true ;       
+        }
+        return false;
     }
-    return false;
-}
 
 
     /**
