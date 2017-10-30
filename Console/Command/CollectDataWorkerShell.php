@@ -86,7 +86,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
             $this->newComp[$i]->generateCookiesFile();
-            $this->newComp[$i]->setDateInit($linkedaccount['Linkedaccount']['lastAccessed']);
+            $this->newComp[$i]->setDateInit($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']);
             $this->newComp[$i]->setDateFinish($data["date"]);
             $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
             $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
