@@ -125,6 +125,11 @@ class CollectDataClientShell extends GearmanClientShell {
                             $i++;
                         }
                     }
+                    if (Configure::read('debug')) {
+                        $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "The companies in flow are");
+                        print_r($this->queueInfo[$job['Queue']['id']]['companiesInFlow']);
+                    }
+                    
 
                 }
                 
