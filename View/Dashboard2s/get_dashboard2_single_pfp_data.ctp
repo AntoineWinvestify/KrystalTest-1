@@ -176,22 +176,22 @@ echo $companyInvestmentDetails[0];
                                         <div class="card-content">
                                             <?php $total = round(bcadd(bcadd($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 16), $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'], 16), 2) ?>
                                             <p class="headerBox"><strong><?php echo __('Total Volume') ?></strong></p>
-                                            <h3 class="title"><?php echo number_format((float) $total / 100, 2, ',', '') . " &euro;"; ?></h3>
+                                            <h3 class="title"><?php echo $total . " &euro;"; ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><?php echo __('Invested Assets') ?></td>
-                                                        <td class="right"><?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'] . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Reserved Funds') ?></td>
-                                                        <td class="right"><?php echo number_format((float) $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'] / 100, 2, ',', '') . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Cash') ?></td>
-                                                        <td class="right"><?php echo number_format((float) $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'] / 100, 2, ',', '') . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Cash Drag') ?></td>
@@ -339,8 +339,8 @@ echo $companyInvestmentDetails[0];
                                                     <tr>
                                                         <td><?php echo $defaultedInvestment['Investment']['investment_loanId'] ?></td>
                                                         <td><?php echo $defaultedInvestment['Investment']['investment_investmentDate'] ?></td>
-                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo number_format((float)$defaultedInvestment['Investment']['investment_investment'] / 100, 2, ',', '') . " &euro;"; ?></td>
-                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo number_format((float) ($defaultedInvestment['Investment']['investment_nominalInterestRate'])/100, 2, ',', '') . " %" ?></td>
+                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_investment'], 2) . " &euro;"; ?></td>
+                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_nominalInterestRate']/100, 2) . " %" ?></td>
                                                         <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_paymentsDone']/$defaultedInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $defaultedInvestment['Investment']['investment_paymentsDone'] . "/" . $defaultedInvestment['Investment']['investment_numberOfInstalments']?></td>
                                                         <td>Outstanding</td>
                                                         <td>Term</td>

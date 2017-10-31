@@ -101,10 +101,11 @@ class Dashboard2sController extends AppController {
 
         $this->layout = 'azarus_private_layout';
         $this->Company = ClassRegistry::init('Company');
-        $investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
+        //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
+        $investorIdentityId = $this->Session->read('Auth.User.Investor.id');
         
         //Get investment data from db
-        $allInvestment = $this->Userinvestmentdata->getGlobalData($investorIdentity);
+        $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorIdentityId);
 
         //Get global data
         $global['totalVolume'] = 0; // totalVolume = investedAssets + reservedFunds + cash
