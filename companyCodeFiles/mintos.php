@@ -644,7 +644,16 @@ class mintos extends p2pCompany {
                 $headers = json_decode($headers, true);
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
-                $this->idForSwitch++;
+                if ($this->originExecution == QUEUE_ORINGIN_EXECUTION_LINKACCOUNT) {
+                    $this->idForSwitch++;
+                }
+                else {
+                    array_shift($this->urlSequence);
+                    array_shift($this->urlSequence);
+                    array_shift($this->urlSequence);
+                    array_shift($this->urlSequence);
+                    $this->idForSwitch = 9
+                }
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
@@ -671,11 +680,13 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                $this->idForSwitch++;     
+            case 9:
                 $this->idForSwitch++;          
                 $this->getCompanyWebpageMultiCurl();
                 break; 
             //////LOGOUT
-            case 9:
+            case 10:
                 echo "Read Globals";
                 //echo $str;
                 $dom = new DOMDocument;  //Check if works
