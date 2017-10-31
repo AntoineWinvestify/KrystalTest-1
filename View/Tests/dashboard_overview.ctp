@@ -147,7 +147,7 @@
     }
     th {
         text-align: center;
-        font-weight: bold;
+        font-weight: 500 !important;
         padding-bottom: 4px !important;
     }
     td.right { 
@@ -235,34 +235,34 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title"> <?php echo number_format((float) $global['totalVolume'] / 100, 2, ',', '') . " &euro;"; ?></h3>
+                                            <h3 class="title">39.082,63 €</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
-                                                        <td class="right"><?php echo number_format((float) $global['investedAssets'] / 100, 2, ',', '') . " &euro;"; ?></td>
+                                                        <td class="right">37.787,29 €</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
-                                                        <td class="right"><?php echo number_format((float) $global['reservedFunds'] / 100, 2, ',', '') . " &euro;"; ?></td>
+                                                        <td class="right">0,00 €</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
-                                                        <td class="right"><?php echo number_format((float) $global['cash'] / 100, 2, ',', '') . " &euro;"; ?></td>
+                                                        <td class="right">1.672,80 €</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
-                                                        <td class="right"><?php echo __('25%')?></td>
+                                                        <td class="right">4,28%</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
-                                                        <td class="right"><?php echo number_format((float) $global['netDeposits'] / 100, 2, ',', '') . " &euro;";?></td>
+                                                        <td class="right">39.000,00 €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Number of Active Investments')?></td>
-                                                        <td class="right"><?php echo $global['activeInvestment'] ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
+                                                        <td class="right">993</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -273,37 +273,37 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Actual Yield')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">12,25%</h3>
+                                            <h3 class="title">9,45%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Annual Total Funds Return')?></td>
-                                                        <td class="right"><?php echo __('12,15%')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
+                                                        <td class="right"><?php echo __('9,05%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Annual Return Past 12 Months')?></td>
-                                                        <td class="right"><?php echo __('11,33%')?></td>
+                                                            <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 mths')?></td>
+                                                        <td class="right"><?php echo __('9,45%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Annual Return Past Year')?></td>
-                                                        <td class="right"><?php echo __('9,22%')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past Year')?></td>
+                                                        <td class="right"><?php echo __('8,90%')?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
                                                         <td class="left">
                                                             <i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> 
                                                             <span class="chartIcon" id="netReturn">
-                                                                <?php echo __('Net Return year-to date')?> 
+                                                                <?php echo __('NAR Past 12 mths')?> 
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
-                                                        <td class="right"><?php echo __('995,00 €')?></td>
+                                                        <td class="right"><?php echo __('3.743,82 €')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net return, past year')?></td>
-                                                        <td class="right"><?php echo __('935,00 €')?></td>
+                                                        <td class="right"><?php echo __('3.439,10 €')?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -314,34 +314,34 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">8,45%</h3>
+                                            <h3 class="title">2,00%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
-                                                        <td class="right"><?php echo __('91,55%')?></td>
+                                                        <td class="right"><?php echo __('76,00%')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('8-30 DPD')?></td>
-                                                        <td class="right"><?php echo __('2,99%')?></td>
+                                                        <td class="right"><?php echo __('9,00%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('31-61 DPD')?></td>
-                                                        <td class="right"><?php echo __('2,25%')?></td>
+                                                        <td class="left"><?php echo __('31-60 DPD')?></td>
+                                                        <td class="right"><?php echo __('6,00%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('60-90 DPD')?></td>
-                                                        <td class="right"><?php echo __('1,99%')?></td>
+                                                        <td class="left"><?php echo __('61-90 DPD')?></td>
+                                                        <td class="right"><?php echo __('7,00%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('90 - DPD')?></td>
-                                                        <td class="right"><?php echo __('1,22%')?></td>
+                                                        <td class="left"><?php echo __('Default (> 90 DPD)')?></td>
+                                                        <td class="right"><?php echo __('2,00%')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
-                                                        <td class="right"><?php echo __('3.678,00 €')?></td>
+                                                        <td class="right"><?php echo __('869,11 €')?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -368,7 +368,7 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Total Volume')?></strong></p>
-                                            <h3 class="title">76.125,11 €</h3>
+                                            <h3 class="title">39.082 €</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
@@ -507,22 +507,39 @@
                             </tr>
                         </thead>
                         <tbody>
-                           <?php //Here go pfp data
-                            foreach($individualInfoArray as $individualInfo){ 
-                                $total = $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] + $individualInfo['Userinvestmentdata']['userinvestmentdata_activeInInvestments'] + $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedFunds'];
-                                ?>
                             <tr>
-                                <td class="logo" id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
-                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
+                                <td class="logo" id="">
+                                    <img id="logo1" src="/img/logo/Mintos.png" class="img-responsive center-block platformLogo" alt="Mintos logo"/>
                                 </td>
                                 
-                                <td><?php echo number_format((float) $total / 100, 2, ',', '') . " &euro;"?></td>
-                                <td><?php echo number_format((float) $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] / 100, 2, ',', '') . " &euro;"?></td>
-                                <td><?php echo number_format((float) ($total/$global['totalVolume'])*100, 2, ',', '') . " %"?></td>
-                                <td>12,11</td>
-                                <td>63,22%</td>
+                                <td>17.178,00 €</td>
+                                <td>54,00 €</td>
+                                <td>43,95%</td>
+                                <td>10,43%</td>
+                                <td>85,21%</td>
                             </tr>
-                            <?php } ?>
+                            <tr>
+                                <td class="logo" id="">
+                                    <img id="logo1" src="/img/logo/Twino.png" class="img-responsive center-block platformLogo" alt="Twino logo"/>
+                                </td>
+                                
+                                <td>16.071,15 €</td>
+                                <td>1.430,07 €</td>
+                                <td>41,12%</td>
+                                <td>10,62%</td>
+                                <td>65,88%</td>
+                            </tr>
+                            <tr>
+                                <td class="logo" id="">
+                                    <img id="logo1" src="/img/logo/FinBee.png" class="img-responsive center-block platformLogo" alt="Finbee logo"/>
+                                </td>
+                                
+                                <td>5.833,48 €</td>
+                                <td>188,73 €</td>
+                                <td>14,93%</td>
+                                <td>7,30%</td>
+                                <td>79,00%</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
