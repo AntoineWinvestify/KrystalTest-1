@@ -338,11 +338,16 @@ class GearmanClientShell extends AppShell {
                 $newState = $data["newStatus"];
                 $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
             }
-            $this->Queue->save(array(
-                    'queue_status' => $newState,
-                    'queue_info' => json_encode($this->queueInfo[$queueId])
-                ),
-                $validate = true);
+            $saved = $this->Queue->save(array(
+                        'queue_status' => $newState,
+                        'queue_info' => json_encode($this->queueInfo[$queueId])
+                    ),
+                    $validate = true
+                );
+            if (Configure::read('debug')) {
+                $saved['Queue']['id'] = $queueId;
+                return $saved;
+            }
         }
     }
     
@@ -413,7 +418,82 @@ class GearmanClientShell extends AppShell {
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->addTask('error', 'fakeData', null, "123.-;123.-;123");
         $this->GearmanClient->runTasks();
-        
         return $this->userResult[123]['global'];
     }
+    
+    function getGearmanClient() {
+        return $this->GearmanClient;
+    }
+
+    function getUserResult() {
+        return $this->userResult;
+    }
+
+    function getUserReference() {
+        return $this->userReference;
+    }
+
+    function getUserLinkaccountIds() {
+        return $this->userLinkaccountIds;
+    }
+
+    function getQueueInfo() {
+        return $this->queueInfo;
+    }
+
+    function getGearmanErrors() {
+        return $this->gearmanErrors;
+    }
+
+    function getDate() {
+        return $this->date;
+    }
+
+    function getFlowName() {
+        return $this->flowName;
+    }
+
+    function getTempArray() {
+        return $this->tempArray;
+    }
+
+    function setGearmanClient($GearmanClient) {
+        $this->GearmanClient = $GearmanClient;
+    }
+
+    function setUserResult($userResult) {
+        $this->userResult = $userResult;
+    }
+
+    function setUserReference($userReference) {
+        $this->userReference = $userReference;
+    }
+
+    function setUserLinkaccountIds($userLinkaccountIds) {
+        $this->userLinkaccountIds = $userLinkaccountIds;
+    }
+
+    function setQueueInfo($queueInfo) {
+        $this->queueInfo = $queueInfo;
+    }
+
+    function setGearmanErrors($gearmanErrors) {
+        $this->gearmanErrors = $gearmanErrors;
+    }
+
+    function setDate($date) {
+        $this->date = $date;
+    }
+
+    function setFlowName($flowName) {
+        $this->flowName = $flowName;
+    }
+
+    function setTempArray($tempArray) {
+        $this->tempArray = $tempArray;
+    }
+
+
+    
+    
 }
