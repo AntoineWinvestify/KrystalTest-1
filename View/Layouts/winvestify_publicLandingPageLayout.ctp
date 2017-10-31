@@ -3,7 +3,8 @@
     <head>  
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="description" content="">
+        <meta name="description" content="<?php echo __('Winvestify is a platform that integrates the management of all your investments in P2P Lending platforms in one global dashboard')?>">
+        <meta name="keywords" content="<?php echo __('Investor, Peer to Peer Lending, P2P Lending, Yield, Invest, Interest, High return on investment, dashboard, high ROI, personal loan')?>">
         <title>Winvestify</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -218,7 +219,7 @@
                 <div id="features_left" class="col-lg-1 col-md-12 hidden-sm hidden-xs">
                     <div class="s-mockup-v1" style="position:absolute;">
                         <div id="screen" data-wow-duration=".3" data-wow-delay=".1s">
-                            <iframe style="position: absolute; top: 50px; left: 170px;" width="480" height="255" src="https://www.youtube.com/embed/Bk4o89mTG2U?rel=0" frameborder="0" allowfullscreen></iframe>
+                            <iframe style="position: absolute; top: 50px; left: 170px;" width="480" height="255" src="https://www.youtube.com/watch?v=rGlo2JITu2E" frameborder="0" allowfullscreen></iframe>
                         </div>
                     </div>
                 </div>
