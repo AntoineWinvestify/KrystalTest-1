@@ -156,6 +156,8 @@ class p2pCompany {
     protected $valuesTransaction;
     protected $valuesInvestment;  
     protected $valuesAmortizationTable;     
+    protected $valuesTestHeaderTransaction;
+    protected $valuesTestHeaderInvestment;
 
     /**
      *
@@ -2731,8 +2733,23 @@ class p2pCompany {
         return $this->amortizationConfigParms;
     }     
     
-    
-    
+    function getValuesTestHeaderTransaction() {
+        return $this->valuesTestHeaderTransaction;
+    }
+
+    function getValuesTestHeaderInvestment() {
+        return $this->valuesTestHeaderInvestment;
+    }
+
+    function setValuesTestHeaderTransaction($valuesTestHeaderTransaction) {
+        $this->valuesTestHeaderTransaction = $valuesTestHeaderTransaction;
+    }
+
+    function setValuesTestHeaderInvestment($valuesTestHeaderInvestment) {
+        $this->valuesTestHeaderInvestment = $valuesTestHeaderInvestment;
+    }
+
+        
     
     
     
