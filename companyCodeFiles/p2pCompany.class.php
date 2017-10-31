@@ -1381,7 +1381,7 @@ class p2pCompany {
         $dir = $originPath . DS . $name;
         $folderCreated = false;
         if (!file_exists($dir)) {
-            $folderCreated = mkdir($dir, 0770, true);
+            $folderCreated = mkdir($dir, 0777, true);
         }
         else {
             $folderCreated = true;
