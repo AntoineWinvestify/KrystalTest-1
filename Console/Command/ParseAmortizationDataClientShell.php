@@ -55,8 +55,6 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
-        //$this->date = date("Ymd");
-        $this->date = "20171023";
         $numberOfIteration = 0;
         while ($numberOfIteration == 0) {
             if (Configure::read('debug')) {
