@@ -599,11 +599,31 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                $this->fileName = "expiredLoans" . "." . $this->typeFileInvestment;
+                $url = array_shift($this->urlSequence);
+                $referer = array_shift($this->urlSequence);
+                $credentials = array_shift($this->urlSequence);
+                $headersJson = array_shift($this->urlSequence);
+                $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers are : " . $headers . "\n";
+                }
+                $headers = json_decode($headers, true);
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers decode are : " . $headers . "\n";
+                }
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
+                $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 break;
-            //////LOGOUT
             case 8:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $this->idForSwitch++;          
+                $this->getCompanyWebpageMultiCurl();
+                break; 
+            //////LOGOUT
+            case 9:
                 echo "Read Globals";
                 //echo $str;
                 $dom = new DOMDocument;  //Check if works
