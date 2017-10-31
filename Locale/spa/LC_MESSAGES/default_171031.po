@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-08-11 10:10+0200\n"
+"PO-Revision-Date: 2017-08-23 14:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -1630,7 +1630,7 @@ msgstr "Capital total invertido"
 
 #: View/Marketplaces/show_market_place.ctp:135
 msgid "Total Amount Already Invested"
-msgstr "Capital Total invertido"
+msgstr "Capital Total Invertido"
 
 #: View/Marketplaces/show_market_place.ctp:141
 msgid "Total Amount of all the open investments"
@@ -1638,7 +1638,7 @@ msgstr "Capital total de inversiones activas"
 
 #: View/Marketplaces/show_market_place.ctp:170
 msgid "Total Investment Amount"
-msgstr "Capital Total Invertido"
+msgstr "Capital Total para Invertir"
 
 #: View/Marketplaces/show_market_place.ctp:180
 msgid "Total Number of Investments in Global Marketplace"
