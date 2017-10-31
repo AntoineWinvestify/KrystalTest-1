@@ -46,21 +46,39 @@ class CollectDataClientTest extends CakeTestCase {
         $this->GearmanClient->startup();
     }
     
-    public function testFlow1() {
-        $actual = $this->GearmanClient->initClient();
-        $this->assertTrue($actual);
-    }
     
-    /*public function testCheckJobs() {
+    public function testCheckJobs() {
         $resultQueue = $this->GearmanClient->checkJobs(WIN_QUEUE_STATUS_START_COLLECTING_DATA, 1);
         foreach ($resultQueue as $result) {
-            $result['Queue']['id'];
-            $result['Queue']['queue_userReference'];
+            $this->assertArrayHasKey('id', $result['Queue']);
+            $this->assertArrayHasKey('queue_userReference', $result['Queue']);
+            $this->assertArrayHasKey('queue_info', $result['Queue']);
         }
+    }
+    
+    public function testFlow1() {
+        $this->Queue = ClassRegistry::init('Queue');
+        $expected = $this->GearmanClient->initClient();
+        $this->assertEquals(3, $expected['Queue']['queue_status']);
+        return $expected;
+    }
+    
+    /**
+     * @depends testFlow1
+     */
+    public function testLinkAccountsAreCorrect(array $result_array) {
+        $result = json_decode($result_array['Queue']['queue_info'], true);
+        $queueId = $result_array['Queue']['id'];
+        $companiesInFlow = $result['companiesInFlow'];
+        $userLinkaccountsId = $this->GearmanClient->getUserLinkaccountIds();
+        foreach ($userLinkaccountsId[$queueId] as $key => $linkaccount) {
+            $this->assertEquals($linkaccount, $companiesInFlow[$key]);
+        }
+    }
+    
+    /*public function testFilesAreCorrect(array $result_array) {
+        
     }*/
     
-    public function testUserReferenceIsOk() {
-        
-    }
     
 }
