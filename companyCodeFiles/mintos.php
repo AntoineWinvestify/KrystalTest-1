@@ -431,6 +431,11 @@ class mintos extends p2pCompany {
         "E" => "Balance",
         "F" => "Currency"
     ];
+    
+    protected $configParamTestTransaction = [
+        "chunkInit" => 1,
+        "chunkSize" => 1
+    ];
      
     protected $valuesTestHeaderInvestment = array(
         "A" => "Country",
@@ -458,6 +463,11 @@ class mintos extends p2pCompany {
         "W" => "Discount/Premium",
         "X" => "Currency"
     );
+    
+    protected $configParamTestInvestment = [
+        "chunkInit" => 1,
+        "chunkSize" => 1
+    ];
      
      
 
