@@ -423,7 +423,41 @@ class mintos extends p2pCompany {
                                 'sortParameter' => "investment_loanId"      // used to "sort" the array and use $sortParameter as prime index.
                                  );
      
+    protected $valuesTestHeaderTransaction = [
+        "A" => "Transaction ID",
+        "B" => "Date",
+        "C" => "Details",
+        "D" => "Turnover",
+        "E" => "Balance",
+        "F" => "Currency"
+    ];
      
+    protected $valuesTestHeaderInvestment = array(
+        "A" => "Country",
+        "B" => "ID",
+        "C" => "Issue Date",
+        "D" => "Loan Type",
+        "E" => "Amortization Method",
+        "F" => "Loan Originator",
+        "G" => "Loan Amount",
+        "H" => "Remaining Principal",
+        "I" => "Next Payment",
+        "J" => "Estimated Next Payment",
+        "K" => "LTV",
+        "L" => "Interest Rate",
+        "M" => "Term",
+        "N" => "Payments Received",
+        "O" => "Status",
+        "P" => "Buyback Guarantee",
+        "Q" => "My investments",
+        "R" => "Date of Purchase",
+        "S" => "Received Payments",
+        "T" => "Outstanding Principal",
+        "U" => "Amount in Secondary Market",
+        "V" => "Price",
+        "W" => "Discount/Premium",
+        "X" => "Currency"
+    );
      
      
 
