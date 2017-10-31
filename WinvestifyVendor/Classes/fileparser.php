@@ -323,8 +323,7 @@ print_r($this->config);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $highestRow);
         return $datas;
     }
-
-
+    
     /**
      * Analyze the received data using the configuration data and store the result
      * in an array
@@ -451,8 +450,53 @@ print_r($this->config);
             }
         $i++;
         }
-    return $tempArray;
+        return $tempArray;
     }
+    
+    public function getFirstRow($file, $configParam) {
+        $extension = $this->getExtensionFile($file);
+        $inputType = $this->getInputFileType($extension);
+        $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
+        print_r($data[1]);
+        return $data[1];
+    }
+    
+    function convertExcelByParts($filePath, $chunkInit, $chunkSize, $inputFileType = null) {
+        if (empty($inputFileType)) {
+            $inputFileType = "Excel2007";
+        }
+        if (empty($chunkInit)) {
+            $chunkInit = 1;
+        }
+        if (empty($chunkSize)) {
+            $chunkSize = 500;
+        }
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        
+        /**  Create a new Instance of our Read Filter  **/
+        $chunkFilter = new readFilterWinvestify();
+        /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
+        $chunkFilter->setRows($chunkInit,$chunkSize);
+        /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
+        $objReader->setReadFilter($chunkFilter);
+        
+        $objPHPExcel = $objReader->load($filePath);
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        echo "sheetDAta <br>";
+        var_dump($sheetData);
+        return $sheetData;
+    }
+    
+    public function getInputFileType($extension) {
+        
+        switch($extension) {
+            case "xlsx":
+                $inputType = "Excel2007";
+                break;
+        }
+        return $inputType;
+    }
+   
 
 
 
