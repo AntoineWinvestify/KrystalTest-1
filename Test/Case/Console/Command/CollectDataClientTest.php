@@ -21,6 +21,8 @@
  * @package
  */
 
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
 App::uses('ConsoleOutput', 'Console');
 App::uses('ConsoleInput', 'Console');
 App::uses('Shell', 'Console');
@@ -44,6 +46,12 @@ class CollectDataClientTest extends CakeTestCase {
             array($out, $out, $in)
             );
         $this->GearmanClient->startup();
+        
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
+        $this->myParser = new Fileparser(); 
+        
+        
     }
     
     
@@ -60,25 +68,101 @@ class CollectDataClientTest extends CakeTestCase {
         $this->Queue = ClassRegistry::init('Queue');
         $expected = $this->GearmanClient->initClient();
         $this->assertEquals(3, $expected['Queue']['queue_status']);
-        return $expected;
+        $data['expected'] = $expected;
+        $data['userLinkaccountIds'] = $this->GearmanClient->getUserLinkaccountIds();
+        $data['userReference'] = $this->GearmanClient->getUserReference();
+        return $data;
     }
     
     /**
      * @depends testFlow1
      */
-    public function testLinkAccountsAreCorrect(array $result_array) {
-        $result = json_decode($result_array['Queue']['queue_info'], true);
-        $queueId = $result_array['Queue']['id'];
+    public function testLinkAccountsAreCorrect(array $data) {
+        $result = json_decode($data['expected']['Queue']['queue_info'], true);
+        $queueId = $data['expected']['Queue']['id'];
         $companiesInFlow = $result['companiesInFlow'];
-        $userLinkaccountsId = $this->GearmanClient->getUserLinkaccountIds();
-        foreach ($userLinkaccountsId[$queueId] as $key => $linkaccount) {
+        $userLinkaccountsId = $data['userLinkaccountIds'];
+        $linkaccounts = $userLinkaccountsId[$queueId];
+        foreach ($linkaccounts as $key => $linkaccount) {
             $this->assertEquals($linkaccount, $companiesInFlow[$key]);
         }
     }
     
-    /*public function testFilesAreCorrect(array $result_array) {
-        
-    }*/
+    /**
+     * @depends testFlow1
+     */
+    public function testFileTransactionIsCorrect(array $data) {
+        $queueId = $data['expected']['Queue']['id'];
+        $date = date("Ymd", strtotime(date("Ymd")-1));
+        $directoryParent = Configure::read('dashboard2Files') . $data['userReference'][$queueId] . DS . $date . DS ;
+        echo "directory " . $directoryParent;
+        $userLinkaccountsId = $data['userLinkaccountIds'];
+        $linkaccounts = $userLinkaccountsId[$queueId];
+        foreach ($linkaccounts as $linkaccount) {
+            $directory = $directoryParent . $linkaccount . DS;
+            echo "directory2 ". $directory;
+            $dir = new Folder($directory);
+            $allTransactionFiles = $dir->findRecursive("transaction.*");
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": allFiles ";
+                print_r($allTransactionFiles);
+            }
+            $tempPfpName = explode("/", $allTransactionFiles[0]);
+            $pfp = $tempPfpName[count($tempPfpName) - 2];
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": company ";
+                print_r($pfp);
+            }
+            $companyClass = $this->GearmanClient->companyClass($pfp);
+            $valuesTestHeaderTransaction = $companyClass->getValuesTestHeaderTransaction();
+            $configParam = $companyClass->getConfigParamTestTransaction();
+            foreach ($allTransactionFiles as $file) {
+                $data = $this->myParser->getFirstRow($file, $configParam);
+                $this->assertEquals(count($valuesTestHeaderTransaction), count($data));
+                foreach ($data as $excelKey => $value) {
+                    $this->assertEquals($value, $valuesTestHeaderTransaction[$excelKey]);
+                }
+            }
+        }
+    }
+    
+    /**
+     * @depends testFlow1
+     */
+    public function testFileInvestmentIsCorrect(array $data) {
+        $queueId = $data['expected']['Queue']['id'];
+        $date = date("Ymd", strtotime(date("Ymd")-1));
+        $directoryParent = Configure::read('dashboard2Files') . $data['userReference'][$queueId] . DS . $date . DS ;
+        echo "directory " . $directoryParent;
+        $userLinkaccountsId = $data['userLinkaccountIds'];
+        $linkaccounts = $userLinkaccountsId[$queueId];
+        foreach ($linkaccounts as $linkaccount) {
+            $directory = $directoryParent . $linkaccount . DS;
+            echo "directory2 ". $directory;
+            $dir = new Folder($directory);
+            $allInvestmentFiles = $dir->findRecursive("investment.*");
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": allFiles ";
+                print_r($allInvestmentFiles);
+            }
+            $tempPfpName = explode("/", $allInvestmentFiles[0]);
+            $pfp = $tempPfpName[count($tempPfpName) - 2];
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": company ";
+                print_r($pfp);
+            }
+            $companyClass = $this->GearmanClient->companyClass($pfp);
+            $valuesTestHeaderInvestment = $companyClass->getValuesTestHeaderInvestment();
+            $configParam = $companyClass->getConfigParamTestInvestment();
+            foreach ($allInvestmentFiles as $file) {
+                $data = $this->myParser->getFirstRow($file, $configParam);
+                $this->assertEquals(count($valuesTestHeaderInvestment), count($data));
+                foreach ($data as $excelKey => $value) {
+                    $this->assertEquals($value, $valuesTestHeaderInvestment[$excelKey]);
+                }
+            }
+        }
+    }
     
     
 }
