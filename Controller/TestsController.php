@@ -57,7 +57,7 @@ class TestsController extends AppController {
 
 
         //$this->Security->requireAuth();
-        // $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview"));
+        // $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview", "testFileTransactionIsCorrect"));
     }
 
     /**
