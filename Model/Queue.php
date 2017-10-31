@@ -251,6 +251,15 @@ public function beforeSave1($options = array()) {
         return $result;
     }
     
+    public function getQueueIdByUserReference($userReference) {
+        $result = $this->find("first", array(
+                    "conditions" => array('Queue.queue_userReference' => $userReference),
+                    "fields" => array('id'),
+                    "order" => "Queue.id ASC"
+                ));
+        return $result;
+    }
+    
     /**
      * Function to retrieve the date of the last time the user get the data
      * @param string $userReference It is the user's internal id
