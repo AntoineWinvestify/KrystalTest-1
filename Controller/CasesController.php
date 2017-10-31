@@ -24,10 +24,11 @@ class CasesController extends AppController {
         $this->Security->requireAuth();
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
-            'testAmount6', 'testAmount7', 'testExtracData', 'testHash', 'testRowData', 'testTransactionDetail'
+            'testAmount6', 'testAmount7', 'testExtracData', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData"
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'transaction.xlsx';
+        $this->amortizationPath = DS . "home" . DS . "eduardo" . DS . "Downloads" . DS . "amortization.html";
     }
 
     /**
@@ -123,7 +124,7 @@ class CasesController extends AppController {
             if ($i == 0) {
                 array_push($final, $result);
             }
-            if ($i == $count -1) {
+            if ($i == $count - 1) {
                 array_push($final, $result);
             }
             $i++;
@@ -1081,13 +1082,13 @@ class CasesController extends AppController {
     public function testRowData() {
         $parserConfig = [
             "B" => [
-                "name" => "investment.investment_loanId",  
+                "name" => "investment.investment_loanId",
             ],
             "D" => [
                 "name" => "loanType",
             ],
             "Z" => [
-                 [
+                [
                     "type" => "loanType", // Winvestify standardized name   OK
                     "inputData" => [
                         "input2" => "#previous.loanType", // The calculated field  "Type" from the *previous* excel row (i.e. previous aray index) is loaded
@@ -1126,28 +1127,28 @@ class CasesController extends AppController {
     public function testTransactionDetail() {
 
         $parserConfig = [
-            "A" =>[
+            "A" => [
                 "name" => "Trasaction.TransactionID",
             ],
             "C" => [
                 [
-                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
-                    "inputData" => [                                                    // List of all concepts that the platform can generate
-                                                                                        // format ["concept string platform", "concept string Winvestify"]
-                                "input3" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
-                                            1 => ["Investment principal increase" => "Primary_market_investment"],
-                                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
-                                            3 => ["Investment principal repayment" => "Capital_repayment"],    //OK
-                                            4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
-                                            5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
-                                            6 => ["Interest income" => "Regular_gross_interest_income"],       //
-                                            7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
-                                            8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
-                                            9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
-                                            10 => ["Discount/premium for secondary market" => "Income_secondary_market"],   // For seller
-                                            11 => ["Discount/premium for secondary market" => "Cost_secondary_market"],     // for buyer
-                                            ]                      
-                            ],
+                    "type" => "transactionDetail", // Winvestify standardized name   OK
+                    "inputData" => [// List of all concepts that the platform can generate
+                        // format ["concept string platform", "concept string Winvestify"]
+                        "input3" => [0 => ["Incoming client payment" => "Cash_deposit"], // OK
+                            1 => ["Investment principal increase" => "Primary_market_investment"],
+                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
+                            3 => ["Investment principal repayment" => "Capital_repayment"], //OK
+                            4 => ["Investment principal rebuy" => "Principal_buyback"], // OK                               
+                            5 => ["Interest income on rebuy" => "Interest_income_buyback"], // OK
+                            6 => ["Interest income" => "Regular_gross_interest_income"], //
+                            7 => ["Delayed interest income" => "Delayed_interest_income"], // OK
+                            8 => ["Late payment fee income" => "Late_payment_fee_income"], // OK                                       
+                            9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"], // OK
+                            10 => ["Discount/premium for secondary market" => "Income_secondary_market"], // For seller
+                            11 => ["Discount/premium for secondary market" => "Cost_secondary_market"], // for buyer
+                        ]
+                    ],
                     "functionName" => "getTransactionDetail",
                 ]
             ],
@@ -1172,6 +1173,70 @@ class CasesController extends AppController {
         return $tempResult;
     }
 
-}
+    public function testHtmlData() {
+        //$filePath = DS . "var" . DS . "www" . DS . "html" . DS . "cakephp" . DS . "app" . DS . "files" . DS . "investors" . DS . "39048098ab409be490A" . DS . "20171004" . DS . "682" . DS . "twino" . DS . "amortizationtable_629331.html";
+       /* echo $filePath;
+        $file = fopen($filePath, 'r+');
+        print_r($file);
+        echo fgets($file);*/
+        $parserConfig = [
+            3 => [
+                [
+                    "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "Y-M-D",
+                    ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            4 => [
+                [
+                    "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ",",
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            5 => [
+                [
+                    "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ",",
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            6 => [
+                [
+                    "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ",",
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            12 => [
+                "name" => "amortizationtable_paymentStatus"
+            ]
+        ];
 
-?>
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+        Configure::load('p2pGestor.php', 'default');
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
+        
+        $myParser = new Fileparser();
+
+        $result = $myParser->getHtmlData($this->amortizationPath, $parserConfig);
+        $this->print_r2($result);
+    }
+
+}

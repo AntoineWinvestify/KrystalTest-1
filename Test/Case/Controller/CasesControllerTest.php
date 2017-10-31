@@ -201,6 +201,17 @@ class CasesControllerTest extends ControllerTestCase {
     }
         
     
+    public function testHtmlData(){
+        $expected =  array(
+            "amortizationtable_scheduledDate" => 2017-10-25,
+            "amortizationtable_capitalAndInterestPayment" => 7726,
+            "amortizationtable_capitalRepayment" => 6994,
+            "amortizationtable_interest" => 732,
+            "amortizationtable_paymentStatus" => CURRENT);
+        
+        $actual = $this->testAction("/cases/testHtmlData");
+        $this->assertEquals($expected, $actual[0]);
+    }
 
     public function tearDown() {
         parent::tearDown();
