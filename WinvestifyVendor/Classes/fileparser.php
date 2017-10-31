@@ -689,12 +689,17 @@ print_r($this->config);
         }
         else if($decimalSep == 'E'){
             if(strpos($input, "E")){
-                $decArray = explode("E", $input);
-                $dec = preg_replace("/[-]/", "", $decArray[1]);
-                echo "AQUI " . $input;
-                $input = strtr($input, array(',' => '.'));    
-                $input = number_format(floatval($input), $dec+2);
- 
+                if(strpos($input, "-")){
+                    $decArray = explode("E", $input);
+                    $dec = preg_replace("/[-]/", "", $decArray[1]);
+                    $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
+                    echo "AQUI " . $dec2;
+                    $input = strtr($input, array(',' => '.'));    
+                    $input = number_format(floatval($input), $dec + $dec2);
+                } else{
+                    $input = strtr($input, array(',' => '.'));    
+                    $input = number_format(floatval($input), 0);
+                }
             }
             $seperator = ".";
         }
@@ -795,7 +800,7 @@ print_r($this->config);
      */
     private function getCurrency($loanCurrency) {
 
-        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ");
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
         foreach ($this->currencies as $currencyIndex => $currency) {
