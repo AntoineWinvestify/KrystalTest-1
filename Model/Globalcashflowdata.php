@@ -66,7 +66,7 @@ var $validate = array(
      * Update the corresponding fields in the 'paymenttotal' table 
      * 
      */
-    function afterSave($created, $options = array()) {
+    function afterSaveNOTNEEDED($created, $options = array()) {
 
         $data = array();
         $prefix = "globalcashflowdata";
@@ -78,7 +78,7 @@ var $validate = array(
                 break;
             }         
         }
-echo "AA";
+echo "AA investmentdataId = $userinvestmentdataId\n";
         $this->Globalcashflowdatatotal = ClassRegistry::init('Globalcashflowdatatotal');
          
         // get the *latest* globalcashflowdatatotal table
@@ -87,6 +87,8 @@ echo "AA";
                                                         'order' => array('Globalcashflowdata.id DESC'),
                                                          ));
 echo "bb";
+print_r($latestValuesGlobalCashflowdata);
+echo "Bb\n";
         $this->create();
         foreach ($this->data['Globalcashflowdata'] as $globalCashflowKey => $value) {
             $globalCashflowKeyNames = explode("_", $globalCashflowKey);
@@ -98,10 +100,12 @@ echo "bb";
                     }
                 }
             } 
-        } 
-echo "cc";
+        }
+        
+echo "cc id 0 " . $this->id ."\n";
+    
         $data ['userinvestmentdata_id'] = $userinvestmentdataId;
         $this->Globalcashflowdatatotal->save($data, $validate = true); 
-    }
+    }  
 
 }

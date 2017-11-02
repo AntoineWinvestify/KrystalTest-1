@@ -39,6 +39,9 @@
  *
  * 2017-09-29 version_0.7
  * Integration of downloading amortization tables with Gearman
+ * 
+ * 2017-10-24 version_0.8
+ * Integration of parsing amortization tables with Gearman and fileparser
  *
  */
 
@@ -48,7 +51,8 @@
  * function collectCompanyMarketplaceData()				[Not OK]
  * function companyUserLogin()						[OK, tested]
  * function collectUserGlobalFilesParallel                              [OK, tested]
- * function collectAmortizationTablesParallel()                         [Ok, testing]
+ * function collectAmortizationTablesParallel()                         [OK, tested]
+ * Parser AmortizationTables                                            [OK, tested]
  * parallelization                                                      [OK, tested]
  */
 class mintos extends p2pCompany {
@@ -156,9 +160,6 @@ class mintos extends p2pCompany {
                 ]
             ],
         ];
-
-
-
 
     protected $valuesInvestment = [
             "A" =>  [
@@ -346,32 +347,96 @@ class mintos extends p2pCompany {
              ],
         ];
 
-    protected $valuesAmortizationTable = [  // NOT FINISHED
-            "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];
+    protected $valuesAmortizationTable = [
+        0 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D.M.Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        1 => [
+            [
+                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        2 => [
+            [
+                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_paymentDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "D.M.Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        6 => [
+            "name" => "amortizationtable_paymentStatus"
+        ]
+    ];
+    
 
-    protected $transactionConfigParms = array ('offsetStart' => 170,
+    protected $valuesExpiredLoan = [                               // We are only interested in the loanId
+        "A" => [
+                "name" => "investment_country"                                  // Winvestify standardized name  OK
+             ], 
+        "B" => [
+                "name" => "investment_loanId"                                   // Winvestify standardized name  OK
+             ]   
+        // rest of information is NOT required for current implementation
+    ];
+    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
                         //        'separatorChar' => ";",
-                                'sortParameter' => array("date","investment_loanId")       // used to "sort" the array and use $sortParameter(s) as prime index.
+                                'sortParameter' => array("date","investment_loanId")   // used to "sort" the array and use $sortParameter(s) as prime index.
                                  );
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
-                                'sortParameter' => array("investment_loanId")      // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("investment_loanId")       // used to "sort" the array and use $sortParameter as prime index.
                                  );
-/*   NOT YET READY
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
+    protected $amortizationConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                          //       'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"      // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => "investment_loanId"              // used to "sort" the array and use $sortParameter as prime index.
                                  );
-*/   
-     
-     
+  
+    protected $expiredLoanConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                          //      'sortParameter' => "investment_loanId"              // used to "sort" the array and use $sortParameter as prime index.
+                                 ); 
      
      
 
@@ -467,9 +532,12 @@ class mintos extends p2pCompany {
         return false;
     }
 
-     /**
-     * Function to download every file that is needed to read the investment of an investor
-     * @param string $str It is the html of the last url we accessed
+
+    /**
+     * Download investments and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str = null) {
 
@@ -478,7 +546,6 @@ class mintos extends p2pCompany {
             case 0:
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
-                echo 'Next: ' . $next . SHELL_ENDOFLINE;
                 break;
             case 1:
                 //Login fixed
@@ -513,18 +580,25 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 //echo $str;
                 $resultLogin = false;
-                echo 'CHeck login' . SHELL_ENDOFLINE;
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": Check login \n";
+                }
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $a) {
                     echo $a->nodeValue . SHELL_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
-                        echo 'FindLOGGGGGGIN\n';
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": Login found";
+                        }
                         $resultLogin = true;
                         break;
                     }
                 }
 
                 if (!$resultLogin) {   // Error while logging in
+                    if (Configure::read('debug')) {
+                        echo __FUNCTION__ . " " . __LINE__ . ": Error login \n";
+                    }
                     $tracings = "Tracing:\n";
                     $tracings .= __FILE__ . " " . __LINE__ . " \n";
                     $tracings .= "Mintos login: userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
@@ -532,7 +606,7 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
 
                 $this->idForSwitch++;
@@ -547,36 +621,37 @@ class mintos extends p2pCompany {
                 $credentials = array_shift($this->urlSequence);
                 $headersJson = array_shift($this->urlSequence);
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
-                echo $headers;
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers are : " . $headers . "\n";
+                }
                 $headers = json_decode($headers, true);
-                echo "JSON ERROR: " . json_last_error();
-                echo 'HEADERS';
-                var_dump($headers);
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers decode are : " . $headers . "\n";
+                }
                 //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 //echo 'Downloaded';
                 break;
             case 5:
-                $path = $this->createFolderPFPFile();
-                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
-                    return $this->getError(__LINE__, __FILE__);
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
                 break;
             case 6:
                 //This two variables should disappear
-                $yesterday = date('d.m.Y',strtotime("-1 days"));
-                $today = date("d.m.Y");
+                $dateInit = date("d.m.Y", strtotime($this->dateInit));
+                $dateFinish = date('d.m.Y',strtotime($this->dateFinish));
                 //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array('{$date1}' => $yesterday));
-                $referer = strtr($referer, array('{$date2}' => $today));
+                $referer = strtr($referer, array('{$date1}' => $dateInit));
+                $referer = strtr($referer, array('{$date2}' => $dateFinish));
                 $credentials = array_shift($this->urlSequence);
-                $credentials = strtr($credentials, array('{$date1}' => $yesterday));
-                $credentials = strtr($credentials, array('{$date2}' => $today));
+                $credentials = strtr($credentials, array('{$date1}' => $dateInit));
+                $credentials = strtr($credentials, array('{$date2}' => $dateFinish));
                 $headersJson = array_shift($this->urlSequence);
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
                 $headers = json_decode($headers, true);
@@ -586,9 +661,8 @@ class mintos extends p2pCompany {
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
-                $path = $this->createFolderPFPFile();
-                if (!$this->verifyFileIsCorrect($path . DS . $this->fileName)) {
-                    return $this->getError(__LINE__, __FILE__);
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -601,13 +675,13 @@ class mintos extends p2pCompany {
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-
-                $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes');
-                foreach($boxes as $keyBox=>$box){
+                
+                $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes'); 
+                foreach($boxes as $keyBox => $box){
                     //echo $box->nodeValue;
                     //echo "BOX NUMBER: =>" . $keyBox;
                     $tds = $box->getElementsByTagName('td');
-                    foreach($tds as $key=>$td){
+                    foreach($tds as $key => $td){
                         //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["myWallet"] = $this->getMonetaryValue($tds[1]->nodeValue);
                         $tempArray["global"]["activeInInvestments"] = $this->getMonetaryValue($tds[23]->nodeValue);
@@ -627,8 +701,12 @@ class mintos extends p2pCompany {
                 return $tempArray["global"];
         }
     }
-
-
+    
+    /**
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
+     */
     function collectAmortizationTablesParallel($str = null){
 
         switch ($this->idForSwitch) {
@@ -670,7 +748,7 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 //echo $str;
                 $resultLogin = false;
-                echo 'CHeck login' . SHELL_ENDOFLINE;
+                echo 'Check login' . SHELL_ENDOFLINE;
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $a) {
                     echo $a->nodeValue . SHELL_ENDOFLINE;
@@ -689,7 +767,7 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
-                    return $this->getError(__LINE__, __FILE__);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
 
                 $this->idForSwitch++;
