@@ -81,11 +81,11 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <img src="/img/screenshots/ocr1.png" class="imgResponsive investorsImg center-block"/>
-                    <p align="center"><strong><?php echo __('Select your preferred platforms')?></strong></p>
+                    <p align="center"><strong><?php echo __('Selecciona tus plataformas preferidas')?></strong></p>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <img src="/img/screenshots/ocr2.png" class="imgResponsive investorsImg center-block"/>
-                    <p align="center"><strong><?php echo __('A single registration process')?></strong></p>
+                    <p align="center"><strong><?php echo __('Un solo proceso de registro')?></strong></p>
                 </div>
             </div>
         </div>
