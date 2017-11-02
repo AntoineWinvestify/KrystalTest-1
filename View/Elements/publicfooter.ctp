@@ -30,7 +30,7 @@ Pending:
                         <div class="col-sm-2 g-margin-b-20--xs g-margin-b-0--md footerLinks">
                             <ul class="list-unstyled g-ul-li-tb-5--xs g-margin-b-0--xs">
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="http://www.winvestify.com"><?php echo __('Home') ?></a></li>
-                                <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/aboutUs"><?php echo __('About Us') ?></a></li>
+                                <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/aboutUs"><?php echo __('About winvestify') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/Contactforms/form"><?php echo __('Contact') ?></a></li>
                             </ul>
                         </div>
