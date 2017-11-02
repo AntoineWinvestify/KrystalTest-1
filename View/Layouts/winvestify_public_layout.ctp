@@ -88,7 +88,7 @@
                                             if (!empty($authMsg)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue center-block userNameLogin" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder4 center-block userNameLogin" . ' ' . $errorClass;
                                             ?>
                                             
                                             <div>
@@ -112,7 +112,7 @@
                                             if (!empty($authMsg)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue center-block passwordLogin" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder4 center-block passwordLogin" . ' ' . $errorClass;
                                             ?>		
                                             <div style="margin-top:30px">
                                                 <label><?php echo __('Password')?></label>
@@ -157,7 +157,7 @@
                                 </a>
                             </li>
                             <li class="dropdown" style="margin-top:0px; display:inline-block">
-                                <?php echo $this->element('languageWidget') ?>
+                                <?php //echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
                         </ul>
@@ -176,7 +176,7 @@
                             <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-left navGreen">
-                            <li><a href="/"><img src="/img/logo_winvestify/Logo_favicon.png" class="center-block hidden-xs hidden-sm hidden-md" width="85%"/></a></li>
+                            <li><a href="/"><small><i class="g-padding-r-5--xs ti-home"></i></small></a></li>
                             <li><a href="/pages/investors"><?php echo __('Investors') ?></a></li>
                             <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
                             <li class="dropdown">
@@ -204,7 +204,7 @@
         <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed;">
             <div class="container g-text-center--xs">
                 <div class="g-margin-b-80--xs" style="padding-top: 100px;">
-                    <img src="/img/logo_winvestify/Logo_texto.png" class="responsiveImg center-block" style="max-width:600px;"/>                 
+                    <a href="/"><img src="/img/logo_winvestify/Logo_texto.png" class="responsiveImg center-block" style="max-width:600px;"/></a>                
                 </div>
             </div>
         </div>

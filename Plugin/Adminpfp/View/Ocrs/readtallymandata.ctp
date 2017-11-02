@@ -209,14 +209,6 @@ var myChart = new Chart(ctx, {
                 <div class="card-content table-responsive togetoverlay">
                     <div class="row firstParagraph">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <p><?php
-                                echo __('');
-                            
-                                ?></p>
-                        </div>
-                    </div>
-                    <div class="row firstParagraph">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="row">
@@ -228,9 +220,6 @@ var myChart = new Chart(ctx, {
                                                 <div class="card-content" style="text-align: center;">
                                                     <p>
                                                         <?php echo __('% Total Investment Portfolio')?>
-                                                        <strong>
-                                                            <?php echo __('')?>
-                                                        </strong>
                                                         <i class="fa fa-exclamation-circle tooltipIcon" id="totalPortfolioTendency"></i>
                                                     </p>
                                                     <h1><?php echo $resultTallyman[0]['totalPortfolio_Norm'] ?>%</h1>
