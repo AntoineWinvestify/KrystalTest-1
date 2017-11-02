@@ -55,7 +55,7 @@ class CollectAmortizationDataClientTest extends CakeTestCase {
     public function testFlow3A() {
         $this->Queue = ClassRegistry::init('Queue');
         $expected = $this->GearmanClient->initClient();
-        $this->assertEquals(3, $expected['Queue']['queue_status']);
+        $this->assertEquals(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, $expected['Queue']['queue_status']);
         $data['expected'] = $expected;
         $data['userLinkaccountIds'] = $this->GearmanClient->getUserLinkaccountIds();
         $data['userReference'] = $this->GearmanClient->getUserReference();
