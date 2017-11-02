@@ -652,7 +652,7 @@ class mintos extends p2pCompany {
                     array_shift($this->urlSequence);
                     array_shift($this->urlSequence);
                     array_shift($this->urlSequence);
-                    $this->idForSwitch = 9
+                    $this->idForSwitch = 9;
                 }
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 break;
