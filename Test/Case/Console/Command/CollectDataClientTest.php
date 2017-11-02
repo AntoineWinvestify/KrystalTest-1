@@ -16,8 +16,8 @@
  *
  *
  * @author 
- * @version
- * @date
+ * @version 0.5
+ * @date 2017-10-30
  * @package
  */
 
@@ -49,9 +49,7 @@ class CollectDataClientTest extends CakeTestCase {
         
         $pathVendor = Configure::read('winvestifyVendor');
         include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
-        $this->myParser = new Fileparser(); 
-        
-        
+        $this->myParser = new Fileparser();
     }
     
     
