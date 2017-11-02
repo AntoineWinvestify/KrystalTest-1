@@ -75,10 +75,6 @@ var $validate = array(
 
 );
 
-
-
-
-
     /**
      *
      * creates a new 'investment' table and also links the 'paymenttotal' database table
@@ -122,20 +118,6 @@ var $validate = array(
         ));
         return $investmentIds;
     }
-    
-    public function getInvestmentIdByLoanId($loanIds) {
-        $fields = array('Investment.investment_loanReference', 'Investment.id');
-        $conditions = array('investment_loanReference' => $loanIds);
-        $investmentIds = $this->find('list', $params = array('recursive' => -1,
-            'fields' => $fields,
-            'conditions' => $conditions
-        ));
-        return $investmentIds;
-    }
-
-
-
-
 
     /*
      * 
