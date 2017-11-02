@@ -116,7 +116,11 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
                 
-                $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
+                $saved = $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
+                print_r($saved);
+                if (Configure::read('debug')) {
+                    return $saved;
+                }
                 $numberOfIteration++;
             }
             else {
