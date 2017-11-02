@@ -441,12 +441,12 @@
                     event.stopPropagation();
                 });
                 
-                //navbar collapse on clicking outside navbar
-                $(document).on("click", function(){
-                    $('.navbar-collapse').collapse('hide');
-                });
-                
                 if ($(window).width() >= 1024) {
+                    //navbar collapse on clicking outside navbar
+                    $(document).on("click", function(){
+                        $('.navbar-collapse').collapse('hide');
+                    });
+
                     //Dropdown menu hover
                     $('ul.nav li.dropdown').hover(function() {
                       $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
