@@ -62,4 +62,56 @@ class CollectAmortizationDataClientTest extends CakeTestCase {
         return $data;
     }
     
+    /**
+     * @depends testFlow1
+     */
+    public function testLinkAccountsAreCorrect(array $data) {
+        $result = json_decode($data['expected']['Queue']['queue_info'], true);
+        $queueId = $data['expected']['Queue']['id'];
+        $companiesInFlow = $result['companiesInFlow'];
+        $userLinkaccountsId = $data['userLinkaccountIds'];
+        $linkaccounts = $userLinkaccountsId[$queueId];
+        foreach ($linkaccounts as $key => $linkaccount) {
+            $this->assertEquals($linkaccount, $companiesInFlow[$key]);
+        }
+    }
+    
+    /**
+     * @depends testFlow1
+     */
+    public function testFileAmortizationIsCorrect(array $data) {
+        $queueId = $data['expected']['Queue']['id'];
+        $date = date("Ymd", strtotime(date("Ymd")-1));
+        $directoryParent = Configure::read('dashboard2Files') . $data['userReference'][$queueId] . DS . $date . DS ;
+        echo "directory " . $directoryParent;
+        $userLinkaccountsId = $data['userLinkaccountIds'];
+        $linkaccounts = $userLinkaccountsId[$queueId];
+        foreach ($linkaccounts as $linkaccount) {
+            $directory = $directoryParent . $linkaccount . DS;
+            echo "directory2 ". $directory;
+            $dir = new Folder($directory);
+            $allTransactionFiles = $dir->findRecursive("amortizationtables.*");
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": allFiles ";
+                print_r($allTransactionFiles);
+            }
+            $tempPfpName = explode("/", $allTransactionFiles[0]);
+            $pfp = $tempPfpName[count($tempPfpName) - 2];
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": company ";
+                print_r($pfp);
+            }
+            $companyClass = $this->GearmanClient->companyClass($pfp);
+            $valuesTestHeaderTransaction = $companyClass->getValuesTestHeaderTransaction();
+            $configParam = $companyClass->getConfigParamTestTransaction();
+            foreach ($allTransactionFiles as $file) {
+                $data = $this->myParser->getFirstRow($file, $configParam);
+                $this->assertEquals(count($valuesTestHeaderTransaction), count($data));
+                foreach ($data as $excelKey => $value) {
+                    $this->assertEquals($value, $valuesTestHeaderTransaction[$excelKey]);
+                }
+            }
+        }
+    }
+    
 }
