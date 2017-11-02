@@ -307,7 +307,7 @@ class GearmanClientShell extends AppShell {
                     break;
                 }
                 if (!$result) {
-                    $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus);
+                    $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
                     if (!empty($this->tempArray)) {
                         unset($this->tempArray[$queueId][$linkaccountId]);
                     }
@@ -352,8 +352,9 @@ class GearmanClientShell extends AppShell {
      * @param int $linkaccountId It is the linkaccountId of the company to requeue
      * @param int $restartStatus It is the status to which we must put if the request is to be restarted
      * @param int $errorStatus It is the status to which we must put if the request fails
+     * @param int $numberOfCompanies It is the number of companies in the actual flow
      */
-    public function requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus) {
+    public function requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, $numberOfCompanies) {
         $this->deleteFolderByDateAndLinkaccountId($queueId, $linkaccountId); //1 = $todaydate
         $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
         $this->gearmanErrors[$queueId][$linkaccountId]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
@@ -367,7 +368,11 @@ class GearmanClientShell extends AppShell {
         $data["companiesInFlow"][0] = $linkaccountId;
         $userReference = $this->userReference[$queueId];
         $data["date"] = $this->queueInfo[$queueId]["date"];
-        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"]);
+        $newQueueId = null;
+        if ($numberOfCompanies == 1) {
+            $newQueueId = $queueId;
+        }
+        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"], $newQueueId);
     }
     
     /**
