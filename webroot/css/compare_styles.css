@@ -1663,9 +1663,13 @@ hr.nomargin {
                                     .featuresP {
                                         left: 50px;
                                     }
+                                    #screen {
+                                        left: -170px !important;
+                                        top: 50px;
+                                    }
                                 }
                                 
-                                @media (min-width: 1200px) {
+                                @media (min-width: 1205px) {
                                 #features_right {
                                     top: 20px !important;
                                 }
