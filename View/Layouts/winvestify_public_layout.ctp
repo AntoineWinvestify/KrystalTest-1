@@ -181,12 +181,12 @@
                             <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <?php echo __('About Us')?>
+                                    <?php echo __('About Winvestify')?>
                                     <span class="caret"></span>
                                 </a>
                                 <ul style="margin-top:0px;" class="dropdown-menu">
-                                    <li><a href="/pages/aboutUs "><?php echo __('Nuestra historia') ?></a></li>
-                                    <li><a href="/pages/team"><?php echo __('Nuestro equipo') ?></a></li>
+                                    <li><a href="/pages/aboutUs "><?php echo __('Our history') ?></a></li>
+                                    <li><a href="/pages/team"><?php echo __('Our team') ?></a></li>
                                 </ul>
                             </li>
                             <li><a href="/pages/faq"><?php echo __('FAQ') ?></a></li>

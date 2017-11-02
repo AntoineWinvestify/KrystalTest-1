@@ -171,7 +171,7 @@
                             <li><a href="/pages/investors"><?php echo __('Investors') ?></a></li>
                             <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
                             <li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="dropdown-toggle"style="cursor: pointer;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <?php echo __('About Winvestify')?>
                                     <span class="caret"></span>
                                 </a>
@@ -429,24 +429,25 @@
                 });
                 //fadeout popup
                 fadeOutElement("#popUp", 15000);
-                
-                //navbar collapse on clicking element
-                $(document).on("click", '.nav li a', function(){
-                    $('.navbar-collapse').collapse('hide');
-                });
-                
+
                 //navbar not collapsing on #loginDropdown
                 $(document).on("click", "#loginDropdown", function(event) {
                     event.preventDefault();
                     event.stopPropagation();
                 });
                 
-                if ($(window).width() >= 1024) {
-                    //navbar collapse on clicking outside navbar
-                    $(document).on("click", function(){
-                        $('.navbar-collapse').collapse('hide');
-                    });
+                //navbar not collapsing on #aboutDropdown
+                $(document).on("click", ".nav li a.collapseNav", function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                });
+                
+                //navbar collapse on clicking outside navbar
+                $(document).on("click", function(){
+                    $('.navbar-collapse').collapse('hide');
+                });
 
+                if ($(window).width() > 1023) {
                     //Dropdown menu hover
                     $('ul.nav li.dropdown').hover(function() {
                       $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
