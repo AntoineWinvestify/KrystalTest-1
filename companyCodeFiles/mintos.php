@@ -714,7 +714,6 @@ class mintos extends p2pCompany {
                     }
 
                 }
-
                 print_r($tempArray["global"]);
                 return $tempArray["global"];
         }
