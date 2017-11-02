@@ -185,6 +185,7 @@ class Linkedaccount extends AppModel {
             $linkaccountId = $this->id;
             $investorId = $this->data['Linkedaccount']['investor_id'];
             $data["companiesInFlow"][0] = $linkaccountId;
+            $data["originExecution"] = QUEUE_ORINGIN_EXECUTION_LINKACCOUNT;
             $userReference =  $this->Investor->getInvestorIdentityByInvestorId($investorId);
             $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data));
             return $result;

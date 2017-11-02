@@ -688,18 +688,49 @@ class mintos extends p2pCompany {
                 $headers = json_decode($headers, true);
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
-                $this->idForSwitch++;
+                if ($this->originExecution == QUEUE_ORINGIN_EXECUTION_LINKACCOUNT) {
+                    $this->idForSwitch++;
+                }
+                else {
+                    array_shift($this->urlSequence);
+                    array_shift($this->urlSequence);
+                    array_shift($this->urlSequence);
+                    array_shift($this->urlSequence);
+                    $this->idForSwitch = 9;
+                }
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                $this->fileName = "expiredLoans" . "." . $this->typeFileInvestment;
+                $url = array_shift($this->urlSequence);
+                $referer = array_shift($this->urlSequence);
+                $credentials = array_shift($this->urlSequence);
+                $headersJson = array_shift($this->urlSequence);
+                $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers are : " . $headers . "\n";
+                }
+                $headers = json_decode($headers, true);
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers decode are : " . $headers . "\n";
+                }
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
+                $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 break;
-            //////LOGOUT
             case 8:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $this->idForSwitch++;     
+            case 9:
+                $this->idForSwitch++;          
+                $this->getCompanyWebpageMultiCurl();
+                break; 
+            //////LOGOUT
+            case 10:
                 echo "Read Globals";
                 //echo $str;
                 $dom = new DOMDocument;  //Check if works
@@ -727,7 +758,6 @@ class mintos extends p2pCompany {
                     }
 
                 }
-
                 print_r($tempArray["global"]);
                 return $tempArray["global"];
         }

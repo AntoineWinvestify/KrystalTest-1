@@ -150,6 +150,9 @@ class CollectDataClientShell extends GearmanClientShell {
                         $data["companies"] = $linkedaccountsByType;
                         $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
                         $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
+                        if (!empty($this->queueInfo[$job['Queue']['id']]['originExecution'])) {
+                            $data["originExecution"] = $this->queueInfo[$job['Queue']['id']]['originExecution'];
+                        }
                         $data["date"] = $this->date;
                         if (Configure::read('debug')) {
                             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");

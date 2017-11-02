@@ -37,6 +37,9 @@
  * 2017-09-28 version_0.5
  * Added new file to download
  * 
+ * 2017-10-27
+ * Control variables
+ * 
  */
 
 /**
@@ -259,8 +262,20 @@ class finanzarel extends p2pCompany {
 // Do whatever is needed for this subsclass
     }   
 
-
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    
+    
+    /**
+     *
+     * 	Checks if the user can login to its portal. Typically used for linking a company account
+     * 	to our account
+     * 	
+     * 	@param string	$user		username
+     * 	@param string	$password	password
+     * 	@return	boolean	true: 		user has successfully logged in.
+     * 			false: 		user could not log in
+     * 	
+     */
+    function companyUserLogin($user = "", $password = "") {
         /*
           FIELDS USED BY finanzarel DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
@@ -603,7 +618,7 @@ class finanzarel extends p2pCompany {
                                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                return $tempArray;
+                return $this->tempArray;
                 
         }
     }
@@ -669,10 +684,12 @@ class finanzarel extends p2pCompany {
         echo 'Downloaded';
     }
     
+    
     public function companyUserLogout($url = null) {
         $this->doCompanyLogout(); //logout
         return true;
     }
+    
     
     public function companyUserLogoutMultiCurl($str = null) {
         //Get logout url

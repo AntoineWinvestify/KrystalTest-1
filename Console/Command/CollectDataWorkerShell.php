@@ -61,6 +61,11 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
             print_r($data);
         }
+        
+        if (empty($data['originExecution'])) {
+            $data['originExecution'] = null;
+        }
+        
         $queueCurlFunction = $this->queueCurlFunction;
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
@@ -88,6 +93,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->newComp[$i]->generateCookiesFile();
             $this->newComp[$i]->setDateInit($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']);
             $this->newComp[$i]->setDateFinish($data["date"]);
+            $this->newComp[$i]->setOriginExecution($data['originExecution']);
             $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
             $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
             $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class

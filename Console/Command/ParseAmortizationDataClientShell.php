@@ -55,8 +55,6 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
-        //$this->date = date("Ymd");
-        $this->date = "20171023";
         $numberOfIteration = 0;
         while ($numberOfIteration == 0) {
             if (Configure::read('debug')) {
@@ -118,7 +116,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
                 
-                $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_AMORTIZATION_TABLE);
+                $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 $this->saveAmortizationtablesToDB();
                 unset($pendingJobs);
                 $numberOfIteration++;

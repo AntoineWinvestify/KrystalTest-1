@@ -96,13 +96,16 @@ public function addToQueue($queueReference, $queueType, $queueAction) {
      * @param array $queueReference The reference, as given by the user of the queue, to an item
      * @param json $queueInfo It is the information about the queue request
      * @param int $queueStatus It is the status to init the process of collecting information about the user's companies
+     * @param int $queueId It is the queueId of the request
      * @param int $queueType LIFO, FIFO, CIRCULAR
      * @return boolean true queueItem created
      *                 false undefined error, item NOT created
      */
-    public function addToQueueDashboard2($queueReference , $queueInfo= null, $queueStatus = WIN_QUEUE_STATUS_START_COLLECTING_DATA, $queueType = FIFO) {
+    public function addToQueueDashboard2($queueReference , $queueInfo= null, $queueStatus = WIN_QUEUE_STATUS_START_COLLECTING_DATA, $queueId = null, $queueType = FIFO) {
         
-        $data = array("queue_userReference" => $queueReference,
+        $data = array(
+            "id" => $queueId,
+            "queue_userReference" => $queueReference,
             "queue_info" => $queueInfo,
             "queue_type" => $queueType,
             "queue_status" => $queueStatus,
