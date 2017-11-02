@@ -296,7 +296,7 @@ class Fileparser {
 echo "INPUT FILE = $file \n";
     $this->filename = $file;
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-print_r($this->config);
+
        // determine first if it a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -365,8 +365,7 @@ print_r($this->config);
             $i++;
         }  
        
-      
-        
+         
         $i = 0;
         $outOfRange = false;
 
@@ -376,7 +375,7 @@ print_r($this->config);
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 // check for subindices and construct them
-                if (array_key_exists("name", $value)) {      // "name" => .......
+                if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
                     eval($tempString);
@@ -782,7 +781,7 @@ print_r($this->config);
             return $result;
         }
         else {
-            echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
+ //           echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
         }
     } 
     
@@ -860,7 +859,7 @@ print_r($this->config);
             return $result;
         }
         else {
-            echo "unknown concept, so start doing some Guessing for concept $input\n";  
+ //           echo "unknown concept, so start doing some Guessing for concept $input\n";  
          // an unknown concept was found, do some intelligent guessing about its meaning
             $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
             

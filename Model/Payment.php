@@ -103,12 +103,12 @@ var $validate = array(
             } 
         }    
         $data['investment_id'] = $investmentId;
-        $data['status'] = WIN_ERROR_PAYMENTTOTALS_LAST;
+        $data['status'] = WIN_PAYMENTTOTALS_LAST;
         $this->Paymenttotal->save($data, $validate = true); 
          
         $this->Paymenttotal->create();
         $this->Paymenttotal->id = $latestValuesPaymenttotals['Paymenttotal']['id'];
-        $this->Paymenttotal->save(array("status" => WIN_ERROR_PAYMENTTOTALS_OLD));              
+        $this->Paymenttotal->save(array("status" => WIN_PAYMENTTOTALS_OLD));              
     }
 
 
