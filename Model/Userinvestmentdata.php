@@ -35,21 +35,7 @@ class Userinvestmentdata extends AppModel {
             'order' => '',
         ),
     );
-
-    /**
-     * Get data of all the linked accounts of an investor.
-     * @param string $investorIdentity investor identity number
-     * @return array Global data
-     */
-    public function getGlobalData($investorIdentity) {
-
-        $resultInvestorData = $this->find("all", array("recursive" => -1,
-            "conditions" => array("userinvestmentdata_investorIdentity" => $investorIdentity),
-        ));
-
-        return $resultInvestorData;
-    }
-
+    
     /**
      * Get data of the last linked accounts investments of an investor.
      * @param string $investorIdentityId investor id.
