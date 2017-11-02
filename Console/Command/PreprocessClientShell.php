@@ -116,7 +116,7 @@ class PreprocessClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
                 
-                $this->verifiedStatus(WIN_QUEUE_STATUS_START_COLLECTING_DATA, "Data succcessfully downloaded", WIN_QUEUE_STATUS_START_PREPROCESS, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
+                //$this->verifyStatus(WIN_QUEUE_STATUS_START_COLLECTING_DATA, "Data succcessfully downloaded", WIN_QUEUE_STATUS_START_PREPROCESS, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
                 unset($pendingJobs);
                 unset($jobInvestor);
                 unset($linkedaccountsResults); 
