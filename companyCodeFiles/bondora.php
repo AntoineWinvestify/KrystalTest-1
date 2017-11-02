@@ -37,14 +37,59 @@
  * parallelization                                                      [OK, tested]
  */
 class bondora extends p2pCompany {
-
     
- 
-    /*protected $valuesAmortizationTable = [  // NOT FINISHED
+    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
-                "name" => "transaction_id"
+                [
+                    "type" => "date",                                                  // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]                           // Winvestify standardized name
              ],
-        ];   */
+            "B" => [ 
+                [
+                    "type" => "currency",                                   // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ]
+            ],
+            "C" => [
+                [
+                    "type" => "amount",                                     // This is *mandatory* field which is required for the 
+                    "inputData" => [                                        // "transactionDetail"
+                                "input2" => "",                             // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ".",                            // and its content is the result of the "getAmount" method
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "D" => [
+                [
+                    "name" => "transaction_transactionId"                             // Winvestify standardized name
+                ]                
+            ],      
+            "E" => [
+                [
+                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
+                    "inputData" => [                                                    // List of all concepts that the platform can generate
+                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                                "input3" => [
+                                            3 => ["TransferMainRepaiment" => "Capital_repayment"],    //OK
+                                            6 => ["TransferInterestRepaiment" => "Regular_gross_interest_income"],       //
+ 
+                                            ]                      
+                            ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],      
+            "F" => [
+                [
+                    "name" => "investment_loanId"                             // Winvestify standardized name
+                ]         
+            ],
+        ];
     
     protected $valuesAmortizationTable = [// NOT FINISHED
         //See this value, it has two, the scheduledDate and the paymentDate
