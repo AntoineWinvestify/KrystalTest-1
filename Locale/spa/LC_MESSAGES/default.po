@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-11-03 08:30+0100\n"
+"PO-Revision-Date: 2017-11-03 09:13+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -1112,52 +1112,49 @@ msgid ""
 "proceso de alta a través de Winvestify: "
 msgstr ""
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:230
-#, fuzzy
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:222
 msgid "% Total Investment Portfolio"
 msgstr "Capital Total Invertido"
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:240;279
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:229;268
 msgid "Text"
 msgstr ""
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:246
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:235
 msgid ""
 "The amount invested in the platform of AdminPFP/ total invested amount[ in %]"
 msgstr ""
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:269
-#, fuzzy
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:258
 msgid "% Total cartera"
 msgstr "Total Invertido"
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:271
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:260
 msgid "por su modalidad"
 msgstr ""
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:284
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:273
 msgid ""
 "The amount invested in the platformtype of the AdminPFP/total invested "
 "amount in platformtype[ in %]"
 msgstr ""
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:308
-#, fuzzy
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:297
 msgid "Active Investor Platforms"
 msgstr "Inversiones Activas"
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:314
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:303
 msgid ""
 "The number of platforms where the user has ACTIVE investments. Investment "
 "MAY have payment delays"
 msgstr ""
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:325
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:314
 #: View/Investors/user_profile_data_panel.ctp:133
 msgid "Linked Accounts"
 msgstr "Cuentas Enlazadas"
 
-#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:331
+#: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:320
 msgid "The number of platforms where the investor has an account"
 msgstr "El número de plataformas en que el inversor tiene cuenta"
 
@@ -1278,7 +1275,6 @@ msgstr ""
 "ponte en contacto con nuestro equipo de atención al cliente."
 
 #: View/Contactforms/form.ctp:26
-#, fuzzy
 msgid "Your Name"
 msgstr "Su nombre"
 
@@ -1287,7 +1283,6 @@ msgid "Name not valid"
 msgstr "Nombre no válido"
 
 #: View/Contactforms/form.ctp:39
-#, fuzzy
 msgid "Your Email"
 msgstr "Su email"
 
@@ -1304,9 +1299,8 @@ msgid "Message"
 msgstr "Mensaje"
 
 #: View/Contactforms/form.ctp:66
-#, fuzzy
 msgid "Your message"
-msgstr "Usuario"
+msgstr "Escriba su mensaje aquí"
 
 #: View/Contactforms/form.ctp:72
 msgid "Message too short"
@@ -1482,23 +1476,20 @@ msgid "Period of<br>Investment"
 msgstr "Duración"
 
 #: View/Elements/leftnavigationmenu.ctp:51
-#, fuzzy
 msgid "Investor Menu"
 msgstr "Inversores"
 
 #: View/Elements/leftnavigationmenu.ctp:69
-#, fuzzy
 msgid "Dashboard 2.0"
-msgstr "Dashboard"
+msgstr "Dashboard 2.0"
 
 #: View/Elements/leftnavigationmenu.ctp:69
 msgid "Overview"
 msgstr ""
 
 #: View/Elements/leftnavigationmenu.ctp:69
-#, fuzzy
 msgid "Stats"
-msgstr "Estado"
+msgstr "Estadísticas"
 
 #: View/Elements/leftnavigationmenu.ctp:69
 msgid "Initial Panel"
@@ -1525,10 +1516,7 @@ msgid "Home"
 msgstr "Home"
 
 #: View/Elements/publicfooter.ctp:33
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:175
-#: View/Layouts/winvestify_public_layout.ctp:184
-#: View/Layouts/winvestify_publicjs_layout.ctp:200
-msgid "About Us"
+msgid "About winvestify"
 msgstr "Sobre Winvestify"
 
 #: View/Elements/publicfooter.ctp:34
@@ -1560,7 +1548,6 @@ msgid "Cookies Policy"
 msgstr "Política de Cookies"
 
 #: View/Elements/publicfooter.ctp:55
-#, fuzzy
 msgid ""
 "Our mission is to help investors minimize the risks of investing in the P2P "
 "Lending market\n"
@@ -1919,7 +1906,6 @@ msgid "Language"
 msgstr "Idioma"
 
 #: View/Layouts/default.ctp:39
-#, fuzzy
 msgid "Error:"
 msgstr "Error"
 
@@ -1940,7 +1926,6 @@ msgid "What can you do now?"
 msgstr "¿Qué puede hacer ahora?"
 
 #: View/Layouts/default.ctp:64
-#, fuzzy
 msgid "Go Home"
 msgstr "Home"
 
@@ -1990,17 +1975,20 @@ msgstr "Inversores"
 msgid "Platforms"
 msgstr "Plataformas"
 
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:175
+#: View/Layouts/winvestify_public_layout.ctp:184
+msgid "About Winvestify"
+msgstr "Sobre Winvestify"
+
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:179
-#: View/Layouts/winvestify_public_layout.ctp:188
-#: View/Layouts/winvestify_publicjs_layout.ctp:204
-msgid "Nuestra historia"
-msgstr ""
+#: View/Layouts/winvestify_public_layout.ctp:188 View/Pages/about_us.ctp:24
+msgid "Our history"
+msgstr "Nuestra historia"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:180
 #: View/Layouts/winvestify_public_layout.ctp:189
-#: View/Layouts/winvestify_publicjs_layout.ctp:205
-msgid "Nuestro equipo"
-msgstr ""
+msgid "Our team"
+msgstr "Nuestro equipo"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:183
 #: View/Layouts/winvestify_public_layout.ctp:192
@@ -2319,6 +2307,18 @@ msgstr ""
 msgid "Login"
 msgstr "Accede"
 
+#: View/Layouts/winvestify_publicjs_layout.ctp:200
+msgid "About Us"
+msgstr "Sobre Winvestify"
+
+#: View/Layouts/winvestify_publicjs_layout.ctp:204
+msgid "Nuestra historia"
+msgstr ""
+
+#: View/Layouts/winvestify_publicjs_layout.ctp:205
+msgid "Nuestro equipo"
+msgstr ""
+
 #: View/Layouts/Emails/html/standard_email_layout.ctp:207
 #: View/Layouts/Emails/html/standard_email_layout_2017-05-19.ctp:210
 msgid ""
@@ -2498,7 +2498,6 @@ msgstr ""
 
 #: View/Ocrs/company_filter.ctp:25
 #: View/Ocrs/ocr_investor_platform_selection.ctp:415
-#, fuzzy
 msgid "Terms and Conditions"
 msgstr "Términos y Condiciones de Uso"
 
@@ -2571,9 +2570,8 @@ msgid "Your company CIF"
 msgstr "CIF de la empresa"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:798
-#, fuzzy
 msgid "Your company name"
-msgstr "Su nombre"
+msgstr "Nombre de su empresa"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:835
 msgid "Documentation Uploading"
@@ -2961,10 +2959,6 @@ msgstr "Escríbenos por cualquier incidencia y te ayudaremos encantados"
 msgid "Contact Us"
 msgstr "Contáctanos"
 
-#: View/Pages/about_us.ctp:24
-msgid "Our history"
-msgstr "Nuestra historia"
-
 #: View/Pages/investors.ctp:46
 msgid "Más Información, Más Control"
 msgstr ""
@@ -2987,11 +2981,11 @@ msgid ""
 msgstr ""
 
 #: View/Pages/investors.ctp:84
-msgid "Select your preferred platforms"
+msgid "Selecciona tus plataformas preferidas"
 msgstr ""
 
 #: View/Pages/investors.ctp:88
-msgid "A single registration process"
+msgid "Un solo proceso de registro"
 msgstr ""
 
 #: View/Pages/investors.ctp:97
