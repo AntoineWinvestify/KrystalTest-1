@@ -472,7 +472,7 @@ insted of the types of platforms.
                                             <label>
                                                 <input name="privacyPolicy" id="ContentPlaceHolder_registerPrivacyPolicy" class="registerPrivacyPolicy" type="checkbox"/>
 													<?php echo __('I accept') ?>&nbsp;<a href="/pages/termsOfService" target="_blank">&nbsp;<?php echo __('the terms of service') ?>
-                                                </a><?php echo __(' and the ') ?><a href="/pages/privacyPolicy" target="_blank"><?php echo __('privacy policy') ?></a>   
+                                                </a>&nbsp;<?php echo __('and the') ?>&nbsp;<a href="/pages/privacyPolicy" target="_blank"><?php echo __('privacy policy') ?></a>   
                                             </label>
                                         </div>
                                         <div class="errorInputMessage ErrorPrivacyPolicy col-xs-offset-1">

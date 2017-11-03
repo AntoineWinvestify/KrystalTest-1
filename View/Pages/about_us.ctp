@@ -27,7 +27,7 @@
             <div class="row">
                 <p>
                     <strong>Winvestify es una comunidad de inversión especializada en crowdlending</strong> que se posiciona como una alternativa real a los modelos 
-                    actuales de inversión. A través de nuestra lataforma online conectamos las necesidades de nuestros inversores con los intereses 
+                    actuales de inversión. A través de nuestra plataforma online conectamos las necesidades de nuestros inversores con los intereses 
                     de nuestras compañias. Favorecemos que todas las operaciones se gestionen en un entorno seguro y honesto.
                 </p>
                 <p>

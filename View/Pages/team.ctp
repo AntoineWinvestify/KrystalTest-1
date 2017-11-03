@@ -141,7 +141,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <?php /*<div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 teamBox teamBoxana" id="ana">
                             <img src="/img/teamfiles/team_AnaMarin.png" class="img-responsive center-block teamImg"/>
@@ -153,7 +153,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>*/?>
             </div>
         </div>
     </div>

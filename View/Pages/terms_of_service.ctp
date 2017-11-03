@@ -268,7 +268,7 @@
                     datos de los Usuarios destinatarios. La inserción o el envío de publicidad de terceros anunciantes no puede entenderse como una
                     recomendación por parte de Winvestify de los productos o servicios anunciados. Winvestify no realiza ningún control o revisión de dicha
                     publicidad por lo que no se hace responsable de su contenido, de su calidad,
-                    ni de su adecuación a los intereses del Usuario. Ello no obstante, Winvestify pone a disposición de los Usuarios la dirección ayuda@winvestify.com
+                    ni de su adecuación a los intereses del Usuario. Ello no obstante, Winvestify pone a disposición de los Usuarios la dirección info@winvestify.com
                     para que los Usuarios puedan enviar sus quejas o sugerencias en relación con la idoneidad, adecuación o pertinencia de la publicidad
                     insertada en www.winvestify.es.
                 </p>
