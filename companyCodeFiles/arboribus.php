@@ -598,32 +598,35 @@ class arboribus extends p2pCompany {
                 $dom->loadHTML($summary); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
                 $dom->preserveWhiteSpace = false;
 
-
-                echo __FILE__ . " " . __LINE__ . "<br>";
-
-                $divs = $this->getElements($dom, "div", "class", "arb_detail_right col-xs-12 col-sm-6");
+                $tables = $dom->getElementsByTagName("table");
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                echo __FILE__ . " " . __LINE__ . "<br>";
-
-                foreach ($divs as $key => $div) {
-                    echo "key = $key, " . $div->nodeValue . "<br>";
+                foreach ($tables as $key => $table) { //DEBUG
+                    echo "Tables Value  ";
+                    echo $key . " => " . $table->nodeValue . HTML_ENDOFLINE;
                 }
 
-                $trs = $this->getElements($divs[1], "td", "class", "tcell-align-right");
+                $tds = $tables[1]->getElementsByTagName("tr");
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                echo __FILE__ . " " . __LINE__ . "<br>";
-                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($trs[1]->nodeValue);
-                echo __FILE__ . " " . __LINE__ . "<br>";
-                $h3s = $this->getElements($dom, "h3", "style", "font-size:xx-large;");
+                foreach ($tds as $key => $td) { //DEBUG
+                    echo "TD VALUE ";
+                    echo $key . " => " . $td->nodeValue;
+                }
+                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($tds[1]->nodeValue);
+
+                $spans = $dom->getElementsByTagName("span");
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                $this->tempArray['global']['profitibility'] = $this->getPercentage($h3s[0]->nodeValue);
-                echo __FILE__ . " " . __LINE__ . "<br>";
+                foreach ($spans as $key => $span) { //DEBUG
+                    echo "span Value ";
+                    echo $key . " => " . $span->nodeValue;
+                }
+                $this->tempArray['global']['profitibility'] = $this->getPercentage($spans[8]->nodeValue);
+
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();     // list of investments as JSON
                 break;
@@ -659,11 +662,12 @@ class arboribus extends p2pCompany {
                 //echo $str;
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
+                //echo $str;
                 $dom->preserveWhiteSpace = false;
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 // deal with amortization table and normalize the loan state
                 /* try { */
-                $projectAmortizationData = $this->getElements($dom, "table", "class", "resumen"); // only 1 found
+                $projectAmortizationData = $this->getElements($dom, "table", "class", "table table-striped table-hover table-responsive"); // only 1 found
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
@@ -781,24 +785,24 @@ class arboribus extends p2pCompany {
         $dom->preserveWhiteSpace = false;
 
         $tables = $dom->getElementsByTagName("table");
-        /*foreach ($tables as $key => $table) { //DEBUG
-            echo "Tables Value  ";
-            echo $key . " => " . $table->nodeValue . HTML_ENDOFLINE;
-        }*/
+        /* foreach ($tables as $key => $table) { //DEBUG
+          echo "Tables Value  ";
+          echo $key . " => " . $table->nodeValue . HTML_ENDOFLINE;
+          } */
 
         $tds = $tables[1]->getElementsByTagName("tr");
 
-        /*foreach ($tds as $key => $td) { //DEBUG
-            echo "TD VALUE ";
-            echo $key . " => " . $td->nodeValue;
-        }*/
+        /* foreach ($tds as $key => $td) { //DEBUG
+          echo "TD VALUE ";
+          echo $key . " => " . $td->nodeValue;
+          } */
         $tempArray['global']['myWallet'] = $this->getMonetaryValue($tds[1]->nodeValue);
 
         $spans = $dom->getElementsByTagName("span");
-        /*foreach ($spans as $key => $span) { //DEBUG
-            echo "span Value ";
-            echo $key . " => " . $span->nodeValue;
-        }*/
+        /* foreach ($spans as $key => $span) { //DEBUG
+          echo "span Value ";
+          echo $key . " => " . $span->nodeValue;
+          } */
         $tempArray['global']['profitibility'] = $this->getPercentage($spans[8]->nodeValue);
 
         $str1 = $this->getCompanyWebpage();     // list of investments as JSON
@@ -824,9 +828,9 @@ class arboribus extends p2pCompany {
             // mapping of the investment data to internal dashboard format of Winvestify
             $tempDataInvestment['loanId'] = $investmentListItem['id_company'];
             $tempDataInvestment['interest'] = $this->getPercentage(trim($investmentListItem['interes']));
-            $tempDataInvestment['xxxx'] = $this->getMonetaryValue(trim($investmentListItem['capitalpendiente']),".");
+            $tempDataInvestment['xxxx'] = $this->getMonetaryValue(trim($investmentListItem['capitalpendiente']), ".");
             //           $this->print_r2($tempDataInvestment);
-            /*echo __FILE__ . " " . __LINE__ . "<br>";*/
+            /* echo __FILE__ . " " . __LINE__ . "<br>"; */
             //Changed the parameter for the url
 
             $str = $this->getCompanyWebpage($url . $investmentListItem['id_company']);   // is the amortization table
@@ -862,32 +866,32 @@ class arboribus extends p2pCompany {
                 }
             }
 //                echo __FILE__ . " " . __LINE__ . "<br>";
-             $tempInvested = array_pop($amortizationTable);  // get contents of "footer" and remove it from the amortization table 
-              //		$tempDataInvestment['invested'] = stripos(trim($tempInvested[3]));
-              $tempDataInvestment['invested'] = trim(preg_replace('/\D/', '', $tempInvested[3]));
+            $tempInvested = array_pop($amortizationTable);  // get contents of "footer" and remove it from the amortization table 
+            //		$tempDataInvestment['invested'] = stripos(trim($tempInvested[3]));
+            $tempDataInvestment['invested'] = trim(preg_replace('/\D/', '', $tempInvested[3]));
 
-              // map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED
-              //		if (strncasecmp($investmentListItem['estado'], "Al d", 2) == 0) {		// checking for status words "Al día"
-              //			$tempDataInvestment['status'] = OK;
-              //		}
+            // map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED
+            //		if (strncasecmp($investmentListItem['estado'], "Al d", 2) == 0) {		// checking for status words "Al día"
+            //			$tempDataInvestment['status'] = OK;
+            //		}
 
-              $tempDataInvestment['commission'] = 0;
-              //Duration	Unit (=meses) is hard coded
-              $tempDataInvestment['duration'] = count($amortizationTable) . " Meses";
-              $tempDataInvestment['date'] = $this->getHighestDateValue($amortizationTable, "dd-mm-yyyy", 1);
-              $tempDataInvestment['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 7);
-              $tempDataInvestment['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 7);
-              $tempArray['investments'][] = $tempDataInvestment;
+            $tempDataInvestment['commission'] = 0;
+            //Duration	Unit (=meses) is hard coded
+            $tempDataInvestment['duration'] = count($amortizationTable) . " Meses";
+            $tempDataInvestment['date'] = $this->getHighestDateValue($amortizationTable, "dd-mm-yyyy", 1);
+            $tempDataInvestment['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 7);
+            $tempDataInvestment['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 7);
+            $tempArray['investments'][] = $tempDataInvestment;
 
-              // update the global data of Arboribus
-              $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] +
-              $tempDataInvestment['xxxx'];
-              $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] +
-              $tempDataInvestment['profitGained'];
-              $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $tempDataInvestment['invested'];
-              $tempArray['global']['investments'] = $tempArray['global']['investments'] + $numberOfInvestments + 1;
+            // update the global data of Arboribus
+            $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] +
+                    $tempDataInvestment['xxxx'];
+            $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] +
+                    $tempDataInvestment['profitGained'];
+            $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $tempDataInvestment['invested'];
+            $tempArray['global']['investments'] = $tempArray['global']['investments'] + $numberOfInvestments + 1;
 
-              unset($tempDataInvestment);
+            unset($tempDataInvestment);
         }
         echo __FILE__ . " " . __LINE__ . "<br>";
 
