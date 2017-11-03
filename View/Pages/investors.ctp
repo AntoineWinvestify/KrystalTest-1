@@ -100,7 +100,7 @@
             <br/>
             <p class="divpadding"><strong><i class="fa fa-shield"></i> Alta Seguridad:</strong><?php echo __(' La información está protegida con nivel de seguridad bancaria de 256 bits, que es el mismo nivel de protección que tienen los bancos más avanzados.')?></p>
             <br/>
-            <p class="divpadding"><strong><i class="fa fa-user-circle-o"></i> Tus datos:</strong><?php echo __(' Tus datos personales están amparados por la Ley Orgánica de Protección de Datos (LOPD). La información es almacenada en distintos soportes de información con sistemas de cifrado, de forma disociada que la convierte en inútil en caso de no disponer de todos los componentes de la misma, y anonimizada por lo que nunca puede ser relacionada a una persona.')?></p>
+            <p class="divpadding"><strong><i class="fa fa-user-circle-o"></i> Tus datos:</strong><?php echo __(' Tus datos personales están amparados por la Ley Orgánica de Protección de Datos (LOPD). La información es almacenada en distintos soportes de información con sistemas de cifrado, de forma disociada que la convierte en inútil en caso de no disponer de todos los componentes de la misma.')?></p>
         </div>
     </div>
 </div>

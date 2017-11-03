@@ -219,7 +219,7 @@
                 <div id="features_left" class="col-lg-1 col-md-12 hidden-sm hidden-xs">
                     <div class="s-mockup-v1" style="position:absolute;">
                         <div id="screen" data-wow-duration=".3" data-wow-delay=".1s">
-                            <iframe style="position: absolute; top: 50px; left: 170px;" width="480" height="255" src="https://www.youtube.com/watch?v=rGlo2JITu2E" frameborder="0" allowfullscreen></iframe>
+                            <iframe width="480" style="position: absolute; top: 50px; left: 170px;" height="255" src="https://www.youtube.com/embed/rGlo2JITu2E" frameborder="0" allowfullscreen></iframe>
                         </div>
                     </div>
                 </div>

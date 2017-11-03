@@ -103,6 +103,9 @@
                 </table>
             </div>
             <br/>
+            </div>
         </div>
+    </div>
+</div>
         <!-- End Terms & Conditions -->
         <!--========== END PAGE CONTENT ==========-->
