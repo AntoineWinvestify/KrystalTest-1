@@ -153,7 +153,7 @@ class zank extends p2pCompany {
     protected $valuesInvestment = [     // All types/names will be defined as associative index in array
             "A" =>  [
                 [
-                                [
+                                
                     "type" => "investment_investmentDate",                  // Winvestify standardized name
                     "inputData" => [
 				"input2" => "D.M.Y",
@@ -189,7 +189,7 @@ class zank extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ],
-                //MORE THINKING, CONSULT WITH ANTOINE
+                //MORE THINKING, CONSULT WITH Antoine
                 [
                     "type" => "investment_typeOfInvestment",                                      // 
                     "inputData" => [                                                   // Get the "original" Mintos concept, which is used later on
