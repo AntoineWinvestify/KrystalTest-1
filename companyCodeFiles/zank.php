@@ -102,29 +102,102 @@ class zank extends p2pCompany {
         'separatorChar' => ";",
         'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
     );
-
+    
     // NOT FINISHED
-    protected $valuesInvestment = [     // All types/names will be defined as associative index in array
+   protected $valuesTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
-                    "name" => "loanId"                                          // Winvestify standardized name
-            ],
-            "B" => [
-                    "name" => "investment_debtor",                           // Winvestify standardized name  OK
-            ],
-            "C" => [
-                    "name" => "investment_riskRating",                                            // This is an "empty variable name". So "type" is
-            ], 
-            "D" =>  [
                 [
                     "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
                     "inputData" => [
 				"input2" => "D/M/Y",
                                 ],
                     "functionName" => "normalizeDate",
+                ]                                        // Winvestify standardized name
+            ],
+            "B" => [
+                [
+                "name" => "get_detail", // Winvestify standardized name   OK
+                "inputData" => [// List of all concepts that the platform can generate
+                    // format ["concept string platform", "concept string Winvestify"]
+                    "input3" => [
+                        0 => ["ingreso" => "Cash_deposit"],
+                        1 => ["retirado" => "Cash_withdrawal"],
+                        2 => ["inversion" => "Primary_market_investment"],
+                        3 => ["principal" => "Capital_repayment"],
+                        4 => ["intereses" => "Regular_gross_interest_income"],
+                        5 => ["recargo" => "Delayed_interest_income"],
+                        6 => ["promocion" => "Incentive_and_bonus"],
+                        7 => ["comision" => "Commission"],
+                    ]
+                ],
+                "functionName" => "getTransactionDetail",
+            ]                                                 // Winvestify standardized name  OK
+            ],
+            "C" => [
+                [
+                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
                 ]
+            ], 
+            "D" =>  [
+                "type" => "loanId",  
+            ]
+        ];
+
+    // NOT FINISHED
+    protected $valuesInvestment = [     // All types/names will be defined as associative index in array
+            "A" =>  [
+                [
+                                [
+                    "type" => "investment_investmentDate",                  // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "D.M.Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]                                     // Winvestify standardized name
+            ],
+            "B" => [
+                "name" => "investment_loanId"                        // Winvestify standardized name  OK
+            ],
+                //FIX THIS
+            "C" => [
+                [
+                    "type" => "investment_expectAnnualYield",                    // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ]                                           // This is an "empty variable name". So "type" is
+            ], 
+            "D" =>  [
+                "name" => "investment_loanOriginator"
             ],
             "E" => [
-                    "type" => "investment_fullLoanAmount",                                            // This is an "empty variable name". So "type" is
+                [
+                    "type" => "investment_myInvestment",                    // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ],
+                //MORE THINKING, CONSULT WITH ANTOINE
+                [
+                    "type" => "investment_typeOfInvestment",                                      // 
+                    "inputData" => [                                                   // Get the "original" Mintos concept, which is used later on
+                                "input2" => "",                                        // 
+                                "input3" => "Loan ID:",
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]
             ], 
             "F" => [// NOT FINISHED YET
                 [
@@ -187,94 +260,6 @@ class zank extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-        ];
-// NOT FINISHED
-   protected $valuesTransaction = [     // All types/names will be defined as associative index in array
-            "A" =>  [
-                    "name" => "transactionId"                                          // Winvestify standardized name
-            ],
-            "B" => [
-                    "name" => "dummy_year",                                                  // Winvestify standardized name  OK
-            ],
-            "C" => [
-                    "name" => "dummy_quarter",                                            // This is an "empty variable name". So "type" is
-            ], 
-            "D" =>  [
-                [
-                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
-                    "inputData" => [
-				"input2" => "D/M/Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]
-            ],
-            "E" => [
-                    "type" => "loanId",                                            // This is an "empty variable name". So "type" is
-            ], 
-            "F" => [// NOT FINISHED YET
-                [
-                    "name" => "get_detail",                                      // Winvestify standardized name   OK
-                    "inputData" => [                                                    // List of all concepts that the platform can generate
-                                                                                        // format ["concept string platform", "concept string Winvestify"]
-                                    "input3" => [0 => ["ingreso" => "Cash_deposit"],
-                                                1 => ["Retirado" => "Cash_withdrawal"],
-                                                2 => ["inversion" => "Primary_market_investment"],
-                                //              3 => [  "" => "Secondary_market_investment"],
-                                //              4 => [  "" => "Principal_repayment"],
-                                                5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
-                                //              6 => [  "" => "Principal_buyback"].
-                                                7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
-                                //              8 => [  "" => "Regular_gross_interest_income"],
-                                                9 => ["recargo" => "Delayed_interest_income"],
-                                //              10 => [  "" => "Late_payment_fee_income"],
-                                //              11 => [  "" => "Interest_income_buyback"],
-                                //              12 => [  "" => "Delayed_interest_income_buyback"],
-                                //              13 => [  "" => "Incentive_and_bonus"],
-                                                14 => ["Retrocesión de comisiones" => "Compensation"],
-                                //              15 => [  "" => "Disc/premium paid secondary market"],
-                                //              16 => [  "" => "Other 4 income"],
-                                //              17 => [  "" => "Recoveries"],
-                                                18 => ["Comisiones" => "Commission"],
-                                //              19 => [ "" => "Bank_charges",
-                                //              20 => [  "" => "Disc/premium_paid_secondary_market"],
-                                //              21 => [  "" => "Interest_payment_secondary_market_purchase"],
-                                //              22 => [  "" => "Currency_exchange_fee"],
-                                //              23 => [ "" => "Other_cost"],
-                                                24 => ["IVA sobre Comisiones" => "Tax_VAT"],
-                                //              25 => ["Tax: Income withholding tax"],
-                                //              26 => [  "" => "Write-off"],
-                                //              27 => [  "" => "Registration"],
-                                //              28 => [   "" => "Currency_exchange_transaction"],
-                                //              29 => [   "" => "Unknown_income"],
-                                //              30 => [  "" => "Unknown_cost"],
-                                //              31 => [  "" => "Unknown_concept"],
-                                                ]
-                            ],
-                    "functionName" => "getTransactionDetail",
-                ]
-            ],
-            "G" => [
-                [
-                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],
-            "H" => [
-                [
-                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
-                ],
-            ]
         ];
 
     protected $amortizationConfigParms = array ('OffsetStart' => 1,
