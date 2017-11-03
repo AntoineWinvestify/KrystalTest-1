@@ -108,7 +108,7 @@ class arboribus extends p2pCompany {
         $investmentController = false;
         $totalArray = array();
         $this->investmentDeletedList = $loanIdList;
-        
+
         $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
 
         $dom = new DOMDocument;
@@ -133,11 +133,11 @@ class arboribus extends p2pCompany {
 
 
                         if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
-                           $structureRevision = $this->htmlRevision($structure,'tr', $table, null, null ,null ,0 , 1);
-                           if($structureRevision[1]){
-                               $totalArray = false; //Stop reading in error                 
-                               break;
-                           }
+                            $structureRevision = $this->htmlRevision($structure, 'tr', $table, null, null, null, 0, 1);
+                            if ($structureRevision[1]) {
+                                $totalArray = false; //Stop reading in error                 
+                                break;
+                            }
                         }
 
 
@@ -238,7 +238,7 @@ class arboribus extends p2pCompany {
                             unset($tempArray);
                             $investmentController = false;
                         } else {
-                            $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList,$tempArray);
+                            $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                             $totalArray[] = $tempArray;
                             unset($tempArray);
                         }
@@ -247,99 +247,97 @@ class arboribus extends p2pCompany {
             }
             $tableNumber++;
         }
-        
+
         echo 'Search this investments: ' . SHELL_ENDOFLINE;
-        $this->print_r2($this->investmentDeletedList); 
+        $this->print_r2($this->investmentDeletedList);
         $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
         echo 'Hidden: ' . SHELL_ENDOFLINE;
         $this->print_r2($hiddenInvestments);
-        $totalArray = array_merge($totalArray,$hiddenInvestments);
+        $totalArray = array_merge($totalArray, $hiddenInvestments);
         echo 'Marketplace:' . HTML_ENDOFLINE;
         $this->print_r2($totalArray);
-        return [$totalArray, $structureRevision[0],$structureRevision[2]];
+        return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
-    
-    
-    /**Read hidden investment.
+
+    /*     * Read hidden investment.
      * 
      * @param array $investmentDeletedList loan id list
      * @return array investments info list
      */
-    function readHiddenInvestment ($investmentDeletedList){
-        
-        
+
+    function readHiddenInvestment($investmentDeletedList) {
+
+
         $url = array_shift($this->urlSequence);
         $tempArray = array();
         $newTotalArray = array();
         //Read investment info
-        foreach($investmentDeletedList as $loanId) {
-            
+        foreach ($investmentDeletedList as $loanId) {
+
             $str = $this->getCompanyWebpage($url . $loanId . ".html");
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             $dom->loadHTML($str);
-            
+
             $tempArray['marketplace_loanReference'] = $loanId;
-            
+
             $tables = $dom->getElementsByTagName('table');
-            foreach($tables as $key => $table){
-                echo $key . '=>' . $table->nodeValue . HTML_ENDOFLINE;          
-                if($key == 0){
-                    if(strpos($table->nodeValue, "100%")){
+            foreach ($tables as $key => $table) {
+                echo $key . '=>' . $table->nodeValue . HTML_ENDOFLINE;
+                if ($key == 0) {
+                    if (strpos($table->nodeValue, "100%")) {
                         $tempArray['marketplace_subscriptionProgress'] == 10000;
                         $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
                         $tempArray['marketplace_status'] = CONFIRMED;
-                    }
-                    else {
+                    } else {
                         $tempArray['marketplace_statusLiteral'] = 'Cancelado';
                         $tempArray['marketplace_status'] = REJECTED;
                     }
                 }
-            }      
-            
+            }
+
             $price = $this->getElements($dom, "div", "class", "price");
             $tempArray['marketplace_amount'] = $this->getMonetaryValue($price[0]->nodeValue);
-            
+
             $lis = $dom->getElementsByTagName("li");
-            foreach($lis as $keyLi => $li){
+            foreach ($lis as $keyLi => $li) {
                 echo 'li ' . $keyLi . " is " . $li->nodeValue . HTML_ENDOFLINE;
-                switch ($keyLi){
+                switch ($keyLi) {
                     case 7:
-                        $str = explode(":",$li->nodeValue);
+                        $str = explode(":", $li->nodeValue);
                         print_r($str);
                         $tempArray['marketplace_interestRate'] = $this->getPercentage($str[1]);
                         break;
                     case 9:
-                        $str = explode(":",$li->nodeValue);
+                        $str = explode(":", $li->nodeValue);
                         $tempArray['marketplace_rating'] = trim($str[1]);
                         break;
                     case 10:
-                        $str = explode(":",$li->nodeValue);
+                        $str = explode(":", $li->nodeValue);
                         list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit']) = $this->getDurationValue($str[1]);
                         break;
                     case 11:
-                        $str = explode(":",$li->nodeValue);
+                        $str = explode(":", $li->nodeValue);
                         $tempArray['marketplace_sector'] = trim($str[1]);
                         break;
                     case 15:
-                        $str = explode("-",$li->nodeValue);
+                        $str = explode("-", $li->nodeValue);
                         $tempArray['marketplace_purpose'] = trim($str[1]);
                         break;
                     case 16:
-                        $str = explode(":",$li->nodeValue);
+                        $str = explode(":", $li->nodeValue);
                         $tempArray['marketplace_requestorLocation'] = trim($str[1]);
                         break;
-                    
                 }
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
             $newTotalArray[] = $tempArray;
             unset($tempArray);
-        }       
+        }
         return $newTotalArray;
     }
 
@@ -377,11 +375,11 @@ class arboribus extends p2pCompany {
 
 
                         if ($key == 0 && $keyTable == 0) { //Compare structures, olny compare the first element
-                           $structureRevision = $this->htmlRevision($structure,'tr',$table, null, null, null, 0, 1);
-                           if($structureRevision[1]){
-                               $totalArray = false; //Stop reading in error                 
-                               break;
-                           }
+                            $structureRevision = $this->htmlRevision($structure, 'tr', $table, null, null, null, 0, 1);
+                            if ($structureRevision[1]) {
+                                $totalArray = false; //Stop reading in error                 
+                                break;
+                            }
                         }
 
 
@@ -769,48 +767,49 @@ class arboribus extends p2pCompany {
             $this->logToFile("Warning", $msg);
             exit;
         }
+        //echo array_shift($this->urlSequence);
         echo __FILE__ . " " . __LINE__ . " LOGIN CONFIRMED<br>";
         $dom = new DOMDocument;
         $dom->loadHTML($this->mainPortalPage); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
         $dom->preserveWhiteSpace = false;
 
-        echo __FILE__ . " " . __LINE__ . "<br>";
-
-        echo __FILE__ . " " . __LINE__ . "<br>";
-
+        //echo array_shift($this->urlSequence);
         $resumen = $this->getCompanyWebpage();
 
         $dom = new DOMDocument;
         $dom->loadHTML($resumen); // "Mi Cuenta" page as obtained in the function "companyUserLogin"	
         $dom->preserveWhiteSpace = false;
 
+        $tables = $dom->getElementsByTagName("table");
+        /*foreach ($tables as $key => $table) { //DEBUG
+            echo "Tables Value  ";
+            echo $key . " => " . $table->nodeValue . HTML_ENDOFLINE;
+        }*/
 
-        echo __FILE__ . " " . __LINE__ . "<br>";
+        $tds = $tables[1]->getElementsByTagName("tr");
 
-        $divs = $this->getElements($dom, "div", "class", "arb_detail_right col-xs-12 col-sm-6");
+        /*foreach ($tds as $key => $td) { //DEBUG
+            echo "TD VALUE ";
+            echo $key . " => " . $td->nodeValue;
+        }*/
+        $tempArray['global']['myWallet'] = $this->getMonetaryValue($tds[1]->nodeValue);
 
-        echo __FILE__ . " " . __LINE__ . "<br>";
+        $spans = $dom->getElementsByTagName("span");
+        /*foreach ($spans as $key => $span) { //DEBUG
+            echo "span Value ";
+            echo $key . " => " . $span->nodeValue;
+        }*/
+        $tempArray['global']['profitibility'] = $this->getPercentage($spans[8]->nodeValue);
 
-        foreach ($divs as $key => $div) {
-            echo "key = $key, " . $div->nodeValue . "<br>";
-        }
-        $trs = $this->getElements($divs[1], "td", "class", "tcell-align-right");
-        echo __FILE__ . " " . __LINE__ . "<br>";
-        $tempArray['global']['myWallet'] = $this->getMonetaryValue($trs[1]->nodeValue);
-        echo __FILE__ . " " . __LINE__ . "<br>";
-        $h3s = $this->getElements($dom, "h3", "style", "font-size:xx-large;");
-        $tempArray['global']['profitibility'] = $this->getPercentage($h3s[0]->nodeValue);
-        echo __FILE__ . " " . __LINE__ . "<br>";
         $str1 = $this->getCompanyWebpage();     // list of investments as JSON
-
+        echo $str1;
         $strListInvestments = $str1;
-
-
         $investmentListItems = json_decode($strListInvestments, true);
+        print_r($investmentListItem);
         echo __FILE__ . " " . __LINE__ . "<br>";
 
         echo __FILE__ . " " . __LINE__ . "<br>";
-// Get next msg from the urlSequence queue:
+        // Get next msg from the urlSequence queue:
         $url = array_shift($this->urlSequence);
         echo __FILE__ . " " . __LINE__ . "<br>";
 
@@ -818,33 +817,27 @@ class arboribus extends p2pCompany {
         //       echo __FILE__ . " " . __LINE__ . "<br>";
         $numberIfInvestments = 0;
         foreach ($investmentListItems as $key => $investmentListItem) {
+            echo "KEY" . $key;
+            print_r($investmentListItem);
             $numberIfInvestments = $numberIfInvestments + 1;
 
-// mapping of the investment data to internal dashboard format of Winvestify
+            // mapping of the investment data to internal dashboard format of Winvestify
             $tempDataInvestment['loanId'] = $investmentListItem['id_company'];
             $tempDataInvestment['interest'] = $this->getPercentage(trim($investmentListItem['interes']));
             $tempDataInvestment['xxxx'] = $this->getMonetaryValue(trim($investmentListItem['capitalpendiente']));
-//           $this->print_r2($tempDataInvestment);
-            echo __FILE__ . " " . __LINE__ . "<br>";
-//Changed the parameter for the url
+            //           $this->print_r2($tempDataInvestment);
+            /*echo __FILE__ . " " . __LINE__ . "<br>";*/
+            //Changed the parameter for the url
 
             $str = $this->getCompanyWebpage($url . $investmentListItem['id_company']);   // is the amortization table
-
+            //echo $str;
             $dom = new DOMDocument;
             $dom->loadHTML($str);
             $dom->preserveWhiteSpace = false;
             echo __FILE__ . " " . __LINE__ . "<br>";
-// deal with amortization table and normalize the loan state
-            /* try { */
-            if (!$this->getElements($dom, "table", "class", "resumen")) {
-                throw new Exception('error tabla');
-            }
-            $projectAmortizationData = $this->getElements($dom, "table", "class", "resumen"); // only 1 found
+            // deal with amortization table and normalize the loan state
 
-            echo __FILE__ . " " . __LINE__ . "<br>";
-            if (!$projectAmortizationData[0]->getElementsByTagName('tr')) {
-                throw new Exception('error tabla');
-            }
+            $projectAmortizationData = $this->getElementsByTagName("table"); // only 1 found
             $trs = $projectAmortizationData[0]->getElementsByTagName('tr');
             echo __FILE__ . " " . __LINE__ . "<br>";
 
@@ -858,7 +851,7 @@ class arboribus extends p2pCompany {
 
                     if ($subIndex == 7) {
                         $imgs = $this->getElements($td, "img", "title", "pagado");
-                        if (!empty($imgs)) { // We found the footer, simply ignore			
+                        if (!empty($imgs)) { // We found the footer, simply ignore
                             $actualState = $imgs[0]->getAttribute("title");
                             $amortizationTable[$mainIndex][$subIndex] = $this->getLoanState($actualState);
                         }
@@ -868,33 +861,33 @@ class arboribus extends p2pCompany {
                 }
             }
 //                echo __FILE__ . " " . __LINE__ . "<br>";
-            $tempInvested = array_pop($amortizationTable);  // get contents of "footer" and remove it from the amortization table 
-//		$tempDataInvestment['invested'] = stripos(trim($tempInvested[3]));
-            $tempDataInvestment['invested'] = trim(preg_replace('/\D/', '', $tempInvested[3]));
+            /* $tempInvested = array_pop($amortizationTable);  // get contents of "footer" and remove it from the amortization table 
+              //		$tempDataInvestment['invested'] = stripos(trim($tempInvested[3]));
+              $tempDataInvestment['invested'] = trim(preg_replace('/\D/', '', $tempInvested[3]));
 
-// map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED		
-//		if (strncasecmp($investmentListItem['estado'], "Al d", 2) == 0) {		// checking for status words "Al día"
-//			$tempDataInvestment['status'] = OK;
-//		}
+              // map status to Winvestify normalized status, PENDING, OK, DELAYED, DEFAULTED
+              //		if (strncasecmp($investmentListItem['estado'], "Al d", 2) == 0) {		// checking for status words "Al día"
+              //			$tempDataInvestment['status'] = OK;
+              //		}
 
-            $tempDataInvestment['commission'] = 0;
-//Duration	Unit (=meses) is hard coded		
-            $tempDataInvestment['duration'] = count($amortizationTable) . " Meses";
-            $tempDataInvestment['date'] = $this->getHighestDateValue($amortizationTable, "dd-mm-yyyy", 1);
-            $tempDataInvestment['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 7);
-            $tempDataInvestment['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 7);
-            $tempArray['investments'][] = $tempDataInvestment;
+              $tempDataInvestment['commission'] = 0;
+              //Duration	Unit (=meses) is hard coded
+              $tempDataInvestment['duration'] = count($amortizationTable) . " Meses";
+              $tempDataInvestment['date'] = $this->getHighestDateValue($amortizationTable, "dd-mm-yyyy", 1);
+              $tempDataInvestment['profitGained'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 4, 7);
+              $tempDataInvestment['amortized'] = $this->getCurrentAccumulativeRowValue($amortizationTable, date("Y-m-d"), "dd-mm-yyyy", 1, 3, 7);
+              $tempArray['investments'][] = $tempDataInvestment;
 
-// update the global data of Arboribus
-            $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] +
-                    $tempDataInvestment['xxxx'];
-            $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] +
-                    $tempDataInvestment['profitGained'];
-            $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $tempDataInvestment['invested'];
-            $tempArray['global']['investments'] = $tempArray['global']['investments'] + $numberOfInvestments + 1;
+              // update the global data of Arboribus
+              $tempArray['global']['activeInInvestments'] = $tempArray['global']['activeInInvestments'] +
+              $tempDataInvestment['xxxx'];
+              $tempArray['global']['totalEarnedInterest'] = $tempArray['global']['totalEarnedInterest'] +
+              $tempDataInvestment['profitGained'];
+              $tempArray['global']['totalInvestment'] = $tempArray['global']['totalInvestment'] + $tempDataInvestment['invested'];
+              $tempArray['global']['investments'] = $tempArray['global']['investments'] + $numberOfInvestments + 1;
 
-            unset($tempDataInvestment);
-            /* } catch (Exception $e) {
+              unset($tempDataInvestment);
+              /* } catch (Exception $e) {
               echo 'Excepción capturada: ', $e->getMessage(), "\n";
               $tempArray['global']['myWallet'] = 0;
               $tempArray['global']['profitibility'] = 0;
@@ -906,8 +899,8 @@ class arboribus extends p2pCompany {
         }
         echo __FILE__ . " " . __LINE__ . "<br>";
 
-// The normal logout procedure does not work so do a workaround
-// Force a logout with data elements provided in the last read page.
+        // The normal logout procedure does not work so do a workaround
+        // Force a logout with data elements provided in the last read page.
 
         $credentials['username'] = $user;
         $credentials['password'] = $password;
@@ -1093,10 +1086,10 @@ class arboribus extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('src', 'alt', 'href', 'style', 'id'));
 
-       $node1 = $this->cleanDomTag($node1, array(
+        $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'script'),
         ));
-        
+
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'img'),
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -1104,10 +1097,10 @@ class arboribus extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('src', 'alt', 'href', 'style', 'id'));
 
-       $node2 = $this->cleanDomTag($node2, array(
+        $node2 = $this->cleanDomTag($node2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'script'),
         ));
-        
+
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }
