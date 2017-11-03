@@ -340,18 +340,17 @@ class finbee extends p2pCompany {
                         $trs = $dom->getElementsByTagName('tr');
                         $AmortizationHeaderTable = new DOMDocument();
                         $cloneHeader = $trs[0]->cloneNode(TRUE); //Clene the table
-                        $AmortizationHeaderTable->appendChild($AmortizationHeaderTable->importNode($cloneHeader, TRUE));
-                        $AmortizationHeaderTableString = $AmortizationHeaderTable->saveHTML();
-                        echo $AmortizationHeaderTableString;
+                        $header = $AmortizationHeaderTable->importNode($cloneHeader);
+                        /*$AmortizationHeaderTable->appendChild($AmortizationHeaderTable->importNode($cloneHeader, TRUE));
+                        $AmortizationHeaderTableString = $AmortizationHeaderTable->saveHTML();*/
+                        //echo $AmortizationHeaderTableString;
                     }
 
                     if ($table->getAttribute('class') == 'table table-striped table-no-more') {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
-                        $header = $AmortizationTable->createElement($AmortizationHeaderTableString);
                         $AmortizationTable->appendChild($header);
-                        $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] =  $AmortizationTableString;
                         echo $AmortizationTableString;
                     }
