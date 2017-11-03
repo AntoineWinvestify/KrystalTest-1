@@ -833,11 +833,12 @@ class arboribus extends p2pCompany {
             //echo $str;
             $dom = new DOMDocument;
             $dom->loadHTML($str);
+            echo $str;
             $dom->preserveWhiteSpace = false;
             echo __FILE__ . " " . __LINE__ . "<br>";
             // deal with amortization table and normalize the loan state
 
-            $projectAmortizationData = $this->getElementsByTagName("table"); // only 1 found
+            $projectAmortizationData = $dom->getElementsByTagName("table"); // only 1 found
             $trs = $projectAmortizationData[0]->getElementsByTagName('tr');
             echo __FILE__ . " " . __LINE__ . "<br>";
 
@@ -861,7 +862,7 @@ class arboribus extends p2pCompany {
                 }
             }
 //                echo __FILE__ . " " . __LINE__ . "<br>";
-            /* $tempInvested = array_pop($amortizationTable);  // get contents of "footer" and remove it from the amortization table 
+             $tempInvested = array_pop($amortizationTable);  // get contents of "footer" and remove it from the amortization table 
               //		$tempDataInvestment['invested'] = stripos(trim($tempInvested[3]));
               $tempDataInvestment['invested'] = trim(preg_replace('/\D/', '', $tempInvested[3]));
 
@@ -887,15 +888,6 @@ class arboribus extends p2pCompany {
               $tempArray['global']['investments'] = $tempArray['global']['investments'] + $numberOfInvestments + 1;
 
               unset($tempDataInvestment);
-              /* } catch (Exception $e) {
-              echo 'Excepción capturada: ', $e->getMessage(), "\n";
-              $tempArray['global']['myWallet'] = 0;
-              $tempArray['global']['profitibility'] = 0;
-              $tempArray['global']['activeInInvestments'] = 0;
-              $tempArray['global']['totalEarnedInterest'] = 0;
-              $tempArray['global']['totalInvestment'] = 0;
-              $tempArray['global']['investments'] = 0;
-              } */
         }
         echo __FILE__ . " " . __LINE__ . "<br>";
 
