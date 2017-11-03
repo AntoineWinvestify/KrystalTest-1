@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-11-03 09:13+0100\n"
+"PO-Revision-Date: 2017-11-03 10:32+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -3035,7 +3035,7 @@ msgstr ""
 
 #: View/Pages/platforms.ctp:66;105;144;186;225;264;306;345;384;426;478;517;556;598;637;676;718;757;796
 msgid "Investment Guarantee"
-msgstr "Garantía de Inversiones"
+msgstr "Garantía de Inversión"
 
 #: View/Pages/platforms.ctp:72;111;150;192;231;270;312;351;390;432;484;523;562;604;643;682;724;763;802
 msgid "Cross-border"
