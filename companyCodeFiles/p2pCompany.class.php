@@ -1949,6 +1949,10 @@ class p2pCompany {
      * Transform an array amortization table to a html structure with <table> tag
      * array stricture
      * array (                  //<table>
+     *                          //  <tr>
+     *                          //    <td>key1</td>
+     *                          //    <td>key2</td>
+     *                          //  <tr>
      *  [0] => array (          //  <tr>
      *      [key1] => value1    //      <td>value1</td> 
      *      [key2] => value2    //      <td>value2</td> 
@@ -1963,6 +1967,13 @@ class p2pCompany {
         ob_start();
         
         echo "<table>";
+        foreach ($rows as $row) {
+            echo "<tr>";
+            foreach ($row as $key => $column) {
+                echo "<td>$key</td>";
+            }
+            echo "</tr>";
+        }
         foreach ($rows as $row) {
             echo "<tr>";
             foreach ($row as $column) {
