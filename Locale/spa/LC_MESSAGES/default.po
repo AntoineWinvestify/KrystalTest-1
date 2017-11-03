@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-10-31 13:35+0100\n"
+"PO-Revision-Date: 2017-11-03 08:30+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -45,7 +45,7 @@ msgstr ""
 #: Controller/AppController.php:388
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:100
 msgid "Viewed"
-msgstr ""
+msgstr "Visto"
 
 #: Controller/AppController.php:391
 #: View/Invitation/create_invitation_panel.ctp:212;218
@@ -56,37 +56,35 @@ msgstr "Error"
 
 #: Controller/AppController.php:391
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:290;332;374;417;456;498;549;590;634;676;717;750;777;803;840
-#, fuzzy
 msgid "Pending"
-msgstr "sumando"
+msgstr "Pendiente"
 
 #: Controller/AppController.php:391
 msgid "Finished"
-msgstr ""
+msgstr "Finalizado"
 
 #: Controller/AppController.php:391
 msgid "Fixed"
-msgstr ""
+msgstr "Arrglado"
 
 #: Controller/AppController.php:394;398;402
 #: Plugin/Admin/View/Files/generate_excel.ctp:232
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:224
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:130
 msgid "Choose One"
-msgstr "Elige uno"
+msgstr "Elija uno"
 
 #: Controller/AppController.php:394
 msgid "Inactive"
-msgstr ""
+msgstr "Inactivo"
 
 #: Controller/AppController.php:394
-#, fuzzy
 msgid "Active"
-msgstr "Acción"
+msgstr "Activo"
 
 #: Controller/AppController.php:394
 msgid "Suspended"
-msgstr ""
+msgstr "Suspendido"
 
 #: Controller/AppController.php:398
 #, fuzzy
@@ -150,20 +148,19 @@ msgstr ""
 
 #: Controller/AppController.php:448
 msgid "Billing Dept"
-msgstr ""
+msgstr "Facturación"
 
 #: Controller/AppController.php:449
 msgid "Functional Improvement"
-msgstr ""
+msgstr "Mejora funcional"
 
 #: Controller/AppController.php:450
 msgid "New Feature"
-msgstr "Características"
+msgstr "Nueva Característica"
 
 #: Controller/AppController.php:451
-#, fuzzy
 msgid "Unsubscribe Account"
-msgstr "Suscribirse"
+msgstr "Darse de baja"
 
 #: Controller/AppController.php:457
 #, fuzzy
@@ -176,11 +173,11 @@ msgstr "España"
 
 #: Controller/AppController.php:457
 msgid "Italy"
-msgstr ""
+msgstr "Italia"
 
 #: Controller/AppController.php:458
 msgid "Type filter"
-msgstr ""
+msgstr "Tipo"
 
 #: Controller/AppController.php:458
 msgid "P2P (Peer-to-Peer)"
@@ -423,9 +420,8 @@ msgid "A new user want to register."
 msgstr "Se ha registrado un nuevo usuario"
 
 #: Event/GlobalEmailListener.php:247
-#, fuzzy
 msgid "You have a new bill."
-msgstr "Tienes"
+msgstr "Tienes una nueva factura"
 
 #: Event/GlobalEmailListener.php:277
 msgid "An "
@@ -433,15 +429,15 @@ msgstr ""
 
 #: Model/Company.php:231
 msgid "Company updated correctly"
-msgstr ""
+msgstr "Compañía actualizada correctamente"
 
 #: Model/Company.php:233
 msgid "Failed saving status"
-msgstr ""
+msgstr "Fallo al salvar el estado"
 
 #: Model/Company.php:236
 msgid "Failed update"
-msgstr ""
+msgstr "Fallo en la actualización"
 
 #: Model/Data.php:104
 msgid "Your dashboard has been updated"
@@ -456,7 +452,7 @@ msgstr ""
 
 #: Model/Investor.php:681
 msgid "Error updating companies status."
-msgstr ""
+msgstr "Error en la actualización del estado de compañía."
 
 #: Model/Investor.php:685
 #, fuzzy
@@ -465,36 +461,35 @@ msgstr "Reportar Error"
 
 #: Model/Investor.php:695
 msgid "Error updating files status."
-msgstr ""
+msgstr "Error en la actualización del estado de archivos."
 
 #: Model/Investor.php:706
 msgid "Saved correctly."
-msgstr ""
+msgstr "Salvado correctamente."
 
 #: Model/Investor.php:709
 msgid "Error updating investor status."
-msgstr ""
+msgstr "Error actualizando el estado de inversor."
 
 #: Model/Investor.php:713
-#, fuzzy
 msgid "Error saving."
-msgstr "Reportar Error"
+msgstr "Error de salvado."
 
 #: Model/Ocrfile.php:160
 msgid "Cannot move the file."
-msgstr ""
+msgstr "No se puede mover el archivo."
 
 #: Model/Ocrfile.php:177;204
 msgid "Upload ok"
-msgstr ""
+msgstr "Subida correcta"
 
 #: Model/Ocrfile.php:179
 msgid "Upload fail"
-msgstr ""
+msgstr "Subida fallida"
 
 #: Model/Ocrfile.php:206;210
 msgid "Upload failed. Incorrect type or file too big."
-msgstr ""
+msgstr "Subida fallida. Tipo incorrect o archivo demasiado grande."
 
 #: Model/Behavior/PasswordableBehavior.php:380
 msgid "valErrPwdNotMatch"
@@ -502,11 +497,11 @@ msgstr ""
 
 #: Plugin/Admin/Controller/OcrsController.php:134
 msgid "Error at refreshing the bills table."
-msgstr ""
+msgstr "Error al actualizar la tabla de facturas."
 
 #: Plugin/Admin/Controller/OcrsController.php:175
 msgid "Error updating data check."
-msgstr ""
+msgstr "Error al actualizar el check de datos."
 
 #: Plugin/Admin/View/Elements/headerlineadmin.ctp:125
 #: Plugin/Adminpfp/View/Elements/headerlinepfpadmin.ctp:123
@@ -528,14 +523,13 @@ msgstr ""
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:66;68
 #: View/Elements/leftnavigationmenu.ctp:64;66
 msgid "Bills"
-msgstr ""
+msgstr "Facturas"
 
 #: Plugin/Admin/View/Elements/leftnavigationmenuwinadmin.ctp:120
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:69
 #: View/Elements/leftnavigationmenu.ctp:67
-#, fuzzy
 msgid "Investor Checking"
-msgstr "Comunidad de Inversores"
+msgstr "Chequeo de Inversores"
 
 #: Plugin/Admin/View/Elements/leftnavigationmenuwinadmin.ctp:125
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:94
@@ -679,14 +673,14 @@ msgstr "Fecha"
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:211;401;410
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_billing_panel.ctp:94
 msgid "Bill Number"
-msgstr ""
+msgstr "Número de Factura"
 
 #: Plugin/Admin/View/Ocrs/bills_table.ctp:36;45
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:212;287;402;411
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_sold_users.ctp:108
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_billing_panel.ctp:95
 msgid "Concept"
-msgstr ""
+msgstr "Concepto"
 
 #: Plugin/Admin/View/Ocrs/bills_table.ctp:37;46
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:213;314;403;412
@@ -698,9 +692,8 @@ msgid "Amount"
 msgstr "Importe"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:161
-#, fuzzy
 msgid "Document selected"
-msgstr "Asunto no seleccionado"
+msgstr "Documento seleccionado"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:185
 msgid "WinAdmin - Update Bill"
@@ -750,21 +743,22 @@ msgstr ""
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:329
 msgid "The Amount value must be formatted with 2 decimal digits. (Ex: 1111,10)"
 msgstr ""
+"El valor de la cantidad debe de estar formateado con dos dígitos decimales "
+"(Ej: 1111,10)"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:379
 msgid "Bills History"
-msgstr ""
+msgstr "Historial de facturas"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_checking.ctp:72
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:65
 #: View/Elements/leftnavigationmenu.ctp:63
-#, fuzzy
 msgid "New Users"
-msgstr "Usuario"
+msgstr "Nuevos Usuarios"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_checking.ctp:87
 msgid "Investors registered on your platform"
-msgstr ""
+msgstr "Inversores registrados en su plataforma"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_checking.ctp:94
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:273;302
@@ -826,22 +820,20 @@ msgid "Action"
 msgstr "Acción"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_checking.ctp:137
-#, fuzzy
 msgid "View"
-msgstr "Ver todas"
+msgstr "Ver"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:212
 msgid "You must select on \"Yes\" all radio buttons"
-msgstr ""
+msgstr "Debe seleccionar en \"Sí\" todos los radio button"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:244
 msgid "Investor Data Checking"
 msgstr ""
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:268
-#, fuzzy
 msgid "Investor Data"
-msgstr "Comunidad de Inversores"
+msgstr "Datos de Inversor"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:280;322;364;407;446;488;539;580;624;666;707;740;767;801;830
 #: View/Pages/platforms.ctp:187;433;524;563;605;644;683;719;764;803
@@ -910,15 +902,15 @@ msgstr ""
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:760
 #: View/Ocrs/ocr_investor_data_panel.ctp:787
 msgid "Business Name"
-msgstr ""
+msgstr "Nombre de la empresa"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:790
 msgid "Investor Selected Platforms"
-msgstr ""
+msgstr "Plataformas seleccionadas"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:813
 msgid "Investor Uploaded Documents"
-msgstr ""
+msgstr "Documentos adjuntos"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:849
 #: View/Investors/edit_user_profile_data.ctp:575
@@ -928,16 +920,15 @@ msgstr "Guardar"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:850
 msgid "Approve"
-msgstr ""
+msgstr "Aprobar"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_sold_users.ctp:46
-#, fuzzy
 msgid "Sold Users"
-msgstr "Usuario"
+msgstr "Usuarios Vendidos"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_sold_users.ctp:72
 msgid "Sold Users History"
-msgstr ""
+msgstr "Historial de Usuarios Vendidos"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_tallyman.ctp:46
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:67
@@ -982,7 +973,7 @@ msgstr "Politica de Privacidad"
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:120
 #: View/Pages/platforms.ctp:62;101;140;182;221;260;302;341;380;422;474;513;552;594;633;672;714;753;792
 msgid "Modality"
-msgstr ""
+msgstr "Modalidad"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:168
 #, fuzzy
@@ -996,7 +987,7 @@ msgstr "Politica de Privacidad"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:277
 msgid "Update"
-msgstr ""
+msgstr "Actualizar"
 
 #: Plugin/Admin/View/Users/admin_home.ctp:26
 msgid "This is the profile"
@@ -1010,7 +1001,7 @@ msgstr ""
 
 #: Plugin/Admin/View/Users/login.ctp:29
 msgid "Access to Winvestify Administration"
-msgstr ""
+msgstr "Acceso a la Administración de Winvestify"
 
 #: Plugin/Admin/View/Users/testmodal.ctp:170
 msgid "You entred the homepage of winadm"
@@ -1033,7 +1024,7 @@ msgstr "Error"
 
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:54
 msgid "PFPADMIN NAVIGATION"
-msgstr ""
+msgstr "MENÚ PFPADMIN"
 
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:60
 #: View/Elements/leftnavigationmenu.ctp:58 View/Pages/investors.ctp:43
@@ -1073,12 +1064,16 @@ msgid ""
 "You requested information about an investor. This event is going to be "
 "charged to your account"
 msgstr ""
+"Ha solicitado información sobre un inversor. Este evento va a ser cargado a "
+"su cuenta."
 
 #: Plugin/Adminpfp/View/Ocrs/chargingconfirmationmodal.ctp:140
 msgid ""
 "You requested information about an investor. This event is going to be "
 "charged to your account."
 msgstr ""
+"Ha solicitado información sobre un inversor. Este evento va a ser cargado a "
+"su cuenta."
 
 #: Plugin/Adminpfp/View/Ocrs/chargingconfirmationmodal.ctp:141
 #: View/Tests/cronjob_do__billing__audit.ctp:81
@@ -1089,12 +1084,12 @@ msgstr "Confirmar"
 
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_billing_panel.ctp:81
 msgid "Billing Panel"
-msgstr ""
+msgstr "Panel de Facturación"
 
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_billing_panel.ctp:109
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:171;182
 msgid "Download"
-msgstr ""
+msgstr "Descargar"
 
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_tallyman.ctp:92
 msgid "PFPAdmin - Tallyman"
@@ -1164,7 +1159,7 @@ msgstr "Cuentas Enlazadas"
 
 #: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:331
 msgid "The number of platforms where the investor has an account"
-msgstr ""
+msgstr "El número de plataformas en que el inversor tiene cuenta"
 
 #: Plugin/Adminpfp/View/Ocrs/show_tallyman_panel.ctp:172
 msgid "Tallyman Search Panel"
@@ -1172,7 +1167,7 @@ msgstr ""
 
 #: Plugin/Adminpfp/View/Ocrs/show_tallyman_panel.ctp:182
 msgid "Define at least 2 searchfields"
-msgstr ""
+msgstr "Defina al menos dos campos de búsqueda"
 
 #: Plugin/Adminpfp/View/Ocrs/show_tallyman_panel.ctp:193;194
 msgid "ID"
@@ -1183,18 +1178,20 @@ msgid ""
 "The telephone number must be in international format: example United Kingdom "
 "+44 20 7946 0502)"
 msgstr ""
+"El número de teléfono debe ser en formato internacional: Ejemplo Reino "
+"Unido: +44 20 7946 0502)"
 
 #: Plugin/Adminpfp/View/Ocrs/tallyman_error_page.ctp:41
 msgid "The user does not exist in our database"
-msgstr ""
+msgstr "Este usuario no existe en nuestra base de datos"
 
 #: Plugin/Adminpfp/View/Ocrs/tallyman_error_page.ctp:44
 msgid "No data is available for this user"
-msgstr ""
+msgstr "No hay datos disponibles para este usuario"
 
 #: Plugin/Adminpfp/View/Ocrs/tallyman_error_page.ctp:47
 msgid "You must provide at least 2 parameters"
-msgstr ""
+msgstr "Debe proporcionar al menos dos parámetros"
 
 #: Plugin/Adminpfp/View/Users/login.ctp:29 View/Users/login_redirect.ctp:40
 msgid "párrafo"
@@ -1266,17 +1263,19 @@ msgstr "Rating"
 
 #: View/Contactforms/contact_form_send.ctp:3
 msgid "Message sent"
-msgstr ""
+msgstr "Mensaje enviado"
 
 #: View/Contactforms/form.ctp:6
 msgid "Do you need help?"
-msgstr ""
+msgstr "¿Necesitas ayuda?"
 
 #: View/Contactforms/form.ctp:15
 msgid ""
 "If you have any questions or are missing something, please contact our "
 "customer service"
 msgstr ""
+"Si tienes alguna duda o necesitas que te ayudemos a mejorar tu experiencia "
+"ponte en contacto con nuestro equipo de atención al cliente."
 
 #: View/Contactforms/form.ctp:26
 #, fuzzy
@@ -1503,7 +1502,7 @@ msgstr "Estado"
 
 #: View/Elements/leftnavigationmenu.ctp:69
 msgid "Initial Panel"
-msgstr ""
+msgstr "Panel Inicial"
 
 #: View/Elements/progresswizard.ctp:59
 msgid "User Data"
@@ -1587,7 +1586,7 @@ msgstr "teléfono:"
 
 #: View/Emails/html/admin_contactform.ctp:19
 msgid "has contact us via the contactForm"
-msgstr ""
+msgstr "ha contactado con nosotros vía contactForm"
 
 #: View/Emails/html/admin_contactform.ctp:20
 msgid "Email:"
@@ -1681,20 +1680,19 @@ msgid "Dear PFP Admin,"
 msgstr ""
 
 #: View/Emails/html/pfpadmin_new_bill.ctp:32
-#, fuzzy
 msgid "A new bill has been generated."
-msgstr "Se ha registrado un nuevo usuario"
+msgstr "Se ha generado una nueva factura"
 
 #: View/Emails/html/pfpadmin_new_user_ocr.ctp:32
 msgid "A new user is available for incorporation in your database."
 msgstr ""
+"Un nuevo usuario está disponible para incorporarse en su base de datos."
 
 #: View/Emails/html/winadmin_new_user_ocr.ctp:31
 msgid "Dear Winadmin,"
 msgstr ""
 
 #: View/Emails/html/winadmin_new_user_ocr.ctp:32
-#, fuzzy
 msgid "A new user has requested the use of 1CR."
 msgstr "Se ha registrado un nuevo usuario"
 
@@ -1787,7 +1785,6 @@ msgid "The account has been deleted"
 msgstr "Su cuenta ha sido eliminada"
 
 #: View/Investors/linkedaccounts_list.ctp:144
-#, fuzzy
 msgid ""
 "You currently don't have any account defined. By adding your crowdlending "
 "accounts\n"
@@ -1801,9 +1798,8 @@ msgstr ""
 "accediendo a su Dashboard."
 
 #: View/Investors/read_linked_accounts.ctp:207
-#, fuzzy
 msgid "Account Linking"
-msgstr "Nueva cuenta enlazada"
+msgstr "Enlazar cuentas"
 
 #: View/Investors/read_linked_accounts.ctp:216
 msgid ""
@@ -1814,7 +1810,6 @@ msgstr ""
 "motivos de seguridad."
 
 #: View/Investors/read_linked_accounts.ctp:286
-#, fuzzy
 msgid ""
 "You currently don't have any account defined. By adding your crowdlending "
 "accounts you will be able see all your global investment position in our "
@@ -1889,12 +1884,12 @@ msgstr "Me gustan los servicios que ofrece esta companía. Echa un vistazo"
 
 #: View/Layouts/activated_service.ctp:63
 msgid "The service you're trying to activate is already activated."
-msgstr ""
+msgstr "El servicio que intenta activar ya se encuentra activado."
 
 #: View/Layouts/activated_service.ctp:69
 #: View/Ocrs/ocr_investor_data_panel.ctp:941
 msgid "Back"
-msgstr ""
+msgstr "Volver"
 
 #: View/Layouts/compare_public_landingpage_layoutORIG.ctp:264
 #: View/Layouts/compare_public_landingpage_layout_ORIGINAL.ctp:269
@@ -1930,18 +1925,19 @@ msgstr "Error"
 
 #: View/Layouts/default.ctp:39
 msgid "Page Not Found"
-msgstr ""
+msgstr "Página No Encontrada"
 
 #: View/Layouts/default.ctp:40
 msgid ""
 "The page you were looking for appears to have been moved, deleted or does "
 "not exist."
 msgstr ""
+"Puede que el vinculo esté desactualizado, que la página no exista o que se "
+"haya tecleado incorrectamente."
 
 #: View/Layouts/default.ctp:61
-#, fuzzy
 msgid "What can you do now?"
-msgstr "¿Qué quiere hacer?"
+msgstr "¿Qué puede hacer ahora?"
 
 #: View/Layouts/default.ctp:64
 #, fuzzy
@@ -1949,13 +1945,12 @@ msgid "Go Home"
 msgstr "Home"
 
 #: View/Layouts/default.ctp:67
-#, fuzzy
 msgid "Contact Winvestify"
-msgstr "Cliente Winvestify"
+msgstr "Contactar con Winvestify"
 
 #: View/Layouts/default.ctp:70
 msgid "Go back"
-msgstr ""
+msgstr "Volver atrás"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:6
 msgid ""
@@ -1984,7 +1979,6 @@ msgstr "Regístrese"
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:171
 #: View/Layouts/winvestify_public_layout.ctp:180
 #: View/Layouts/winvestify_publicjs_layout.ctp:196
-#, fuzzy
 msgid "Investors"
 msgstr "Inversores"
 
@@ -2547,13 +2541,12 @@ msgid "Gracias por actualizar los datos erróneos que hemos detectado."
 msgstr ""
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:142
-#, fuzzy
 msgid "Your data is incorrect."
-msgstr "Sin datos"
+msgstr "Datos incorrectos."
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:246;907
 msgid "Not uploaded yet"
-msgstr ""
+msgstr "Sin cargar"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:257
 msgid "Cant go back"
@@ -2571,11 +2564,11 @@ msgstr ""
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:744
 msgid "I use my company as investment vehicle"
-msgstr ""
+msgstr "Utilizo mi empresa como vehículo de inversión"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:765
 msgid "Your company CIF"
-msgstr ""
+msgstr "CIF de la empresa"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:798
 #, fuzzy
@@ -2584,7 +2577,7 @@ msgstr "Su nombre"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:835
 msgid "Documentation Uploading"
-msgstr ""
+msgstr "Subida de Documentación"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:845
 msgid ""
@@ -2601,29 +2594,27 @@ msgstr ""
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:856
 msgid "Maximun File Size: 10MB"
-msgstr ""
+msgstr "Tamaño máximo de archivo: 10MB"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:857
 msgid "Permitted Formats:"
-msgstr ""
+msgstr "Formatos permitidos:"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:882
 msgid "Upload"
-msgstr ""
+msgstr "Subir"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:943
 msgid "Activate 1CR"
-msgstr ""
+msgstr "Activar 1CR"
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:114
-#, fuzzy
 msgid "Search results:"
-msgstr "Buscar nuevo chat"
+msgstr "Buscar resultados:"
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:118
-#, fuzzy
 msgid "Search error"
-msgstr "Buscar nuevo chat"
+msgstr "Buscar error"
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:303
 msgid ""
@@ -2640,9 +2631,8 @@ msgid "Sus plataformas seleccionadas:"
 msgstr ""
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:337
-#, fuzzy
 msgid "Go!"
-msgstr "¡Entendido!"
+msgstr "Siguiente"
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:384
 msgid "Seleccione las plataformas en las que registrarse:"
@@ -2658,11 +2648,11 @@ msgstr ""
 
 #: View/Pages/FAQ.ctp:49
 msgid "Frequently Asked Questions"
-msgstr ""
+msgstr "Preguntas Frecuentes"
 
 #: View/Pages/FAQ.ctp:54
 msgid "Sobre Winvestify"
-msgstr "Acerca de Winvestify"
+msgstr ""
 
 #: View/Pages/FAQ.ctp:55
 msgid "Seguridad y privacidad"
@@ -2673,9 +2663,8 @@ msgid "Tu cuenta"
 msgstr ""
 
 #: View/Pages/FAQ.ctp:61
-#, fuzzy
 msgid "¿Qué es Winvestify?"
-msgstr "Ir a Winvestify"
+msgstr ""
 
 #: View/Pages/FAQ.ctp:63
 msgid ""
@@ -2969,7 +2958,6 @@ msgid "Drop us a line and we'll be delighted to help you"
 msgstr "Escríbenos por cualquier incidencia y te ayudaremos encantados"
 
 #: View/Pages/FAQ.ctp:145 View/Pages/investors.ctp:112
-#, fuzzy
 msgid "Contact Us"
 msgstr "Contáctanos"
 
@@ -3036,36 +3024,32 @@ msgid ""
 msgstr ""
 
 #: View/Pages/investors.ctp:110
-#, fuzzy
 msgid "Suggestions"
 msgstr "Sugerencias"
 
 #: View/Pages/investors.ctp:111
 msgid "Here you can suggest us ideas or enhancements"
-msgstr ""
+msgstr "Aquí puede sugerir ideas o mejoras"
 
 #: View/Pages/platforms.ctp:42
-#, fuzzy
 msgid "Active Platforms"
-msgstr "Plataformas"
+msgstr "Plataformas Activas"
 
 #: View/Pages/platforms.ctp:63;595;754
 msgid "P2P Loan"
 msgstr ""
 
 #: View/Pages/platforms.ctp:66;105;144;186;225;264;306;345;384;426;478;517;556;598;637;676;718;757;796
-#, fuzzy
 msgid "Investment Guarantee"
-msgstr "Información de Inversiones"
+msgstr "Garantía de Inversiones"
 
 #: View/Pages/platforms.ctp:72;111;150;192;231;270;312;351;390;432;484;523;562;604;643;682;724;763;802
 msgid "Cross-border"
-msgstr ""
+msgstr "Transfronterizo"
 
 #: View/Pages/platforms.ctp:76;115;154;196;235;274;316;355;394;436;488;527;566;608;647;686;728;767;806
-#, fuzzy
 msgid "Minimum Investment"
-msgstr "Oportunidades de Inversión"
+msgstr "Inversión mínima"
 
 #: View/Pages/platforms.ctp:77;116;155;197;275;317;356;395;729
 msgid "50€"
@@ -3088,9 +3072,8 @@ msgid "P2B Social Loan"
 msgstr ""
 
 #: View/Pages/platforms.ctp:454
-#, fuzzy
 msgid "Next Platforms"
-msgstr "Plataformas"
+msgstr "Plataformas Futuras"
 
 #: View/Pages/platforms.ctp:489
 msgid "250€"
@@ -3098,7 +3081,7 @@ msgstr ""
 
 #: View/Pages/platforms.ctp:514
 msgid "All modalities"
-msgstr ""
+msgstr "Todas las modalidades"
 
 #: View/Pages/platforms.ctp:518;599;758
 msgid "BuyBack"
@@ -3113,13 +3096,12 @@ msgid "5€"
 msgstr ""
 
 #: View/Pages/platforms.ctp:677
-#, fuzzy
 msgid "Personal"
-msgstr "Datos Personales"
+msgstr ""
 
 #: View/Pages/platforms.ctp:715
 msgid "Mortgage Loan"
-msgstr ""
+msgstr "Préstamo hipotecario"
 
 #: View/Pages/platforms.ctp:725
 msgid "Colateral"
@@ -3227,7 +3209,7 @@ msgstr "Conoce más de cerca a todos los miembros de nuestro equipo."
 
 #: View/Pages/team.ctp:46
 msgid "Management Team"
-msgstr ""
+msgstr "Equipo Directivo"
 
 #: View/Pages/team.ctp:53
 msgid "Manuel Millán"
@@ -3263,7 +3245,7 @@ msgstr ""
 
 #: View/Pages/team.ctp:103
 msgid "Member Team"
-msgstr ""
+msgstr "Equipo"
 
 #: View/Pages/team.ctp:110
 msgid "Cristina Ortega"
@@ -3412,9 +3394,8 @@ msgid "I accept"
 msgstr "Acepto"
 
 #: View/Users/register_panel_a.ctp:474
-#, fuzzy
 msgid "the terms of service"
-msgstr " los términos del servicio"
+msgstr "los términos del servicio"
 
 #: View/Users/register_panel_a.ctp:475
 msgid " and the "
@@ -3534,7 +3515,6 @@ msgid "Too short."
 msgstr "Nombre muy corto"
 
 #: Model/Company.php:validation for field company_PFPType
-#, fuzzy
 msgid "Select one type."
 msgstr "Seleccione un asunto."
 
