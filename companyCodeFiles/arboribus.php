@@ -824,7 +824,7 @@ class arboribus extends p2pCompany {
             // mapping of the investment data to internal dashboard format of Winvestify
             $tempDataInvestment['loanId'] = $investmentListItem['id_company'];
             $tempDataInvestment['interest'] = $this->getPercentage(trim($investmentListItem['interes']));
-            $tempDataInvestment['xxxx'] = $this->getMonetaryValue(trim($investmentListItem['capitalpendiente']));
+            $tempDataInvestment['xxxx'] = $this->getMonetaryValue(trim($investmentListItem['capitalpendiente']),".");
             //           $this->print_r2($tempDataInvestment);
             /*echo __FILE__ . " " . __LINE__ . "<br>";*/
             //Changed the parameter for the url
