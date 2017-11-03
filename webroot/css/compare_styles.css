@@ -1655,6 +1655,7 @@ hr.nomargin {
                                     #featuresButton {
                                         margin-top: 100px;
                                         margin-bottom: 40px;
+                                        margin-left: 40px;
                                     }
                                     .schemaImg {
                                         height: 100%;
@@ -1665,7 +1666,7 @@ hr.nomargin {
                                     }
                                     #screen {
                                         left: -170px !important;
-                                        top: 50px;
+                                        top: 90px;
                                     }
                                 }
                                 
@@ -1676,10 +1677,14 @@ hr.nomargin {
                                 #featuresButton {
                                     margin-top: 100px;
                                     margin-bottom: 40px;
+                                    margin-left: 20px;
                                 }
                                 .schemaImg {
                                     height: 90%;
                                     margin-top: -15px;
+                                }
+                                #screen {
+                                    margin-left: -100px;
                                 }
                             }
         
