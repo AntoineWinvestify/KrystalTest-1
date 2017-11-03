@@ -46,11 +46,12 @@ App::import('Shell','GearmanClient');
 class ParseDataClientShell extends GearmanClientShell {
     public $uses = array('Queue', 'Paymenttotal', 'Investment');
     protected $variablesConfig;
-   
+ 
     
+// Only used for defining a stable testbed definition
 public function resetTestEnvironment() {
     echo "Deleting Investment\n";  
-    $this->Investment->deleteAll(array('Investment.id >' => 8000), false);
+    $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
     
     echo "Deleting Paymenttotal\n"; 
     $this->Paymenttotal->deleteAll(array('Paymenttotal.id >' => 0), false);
@@ -199,9 +200,7 @@ $this->resetTestEnvironment();      // Temporary function
                                          'queue_info' => json_encode($this->queueInfo[$queueIdKey]),
                                         ), $validate = true
                                     );                   
-                }
-                
-                
+                }               
                 break;
             }
             else {
@@ -267,8 +266,10 @@ $this->resetTestEnvironment();      // Temporary function
         $variables = array();
         $linkedaccountId = $platformData['linkedaccountId'];
         
-$platformData['newLoans'] = array("1465476-0","1245844-01" );  // JUST FOR TESTING       
-        
+//$platformData['newLoans'] = array("1690940-01","1535280-01", "1536345-01" );  // JUST FOR TESTING  
+        echo "new loans are:";
+        print_r($platformData['newLoans']);
+     
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, per day
             if (empty($dateKey)) {      // There is an empty index, WHY?
                continue;
@@ -297,7 +298,8 @@ echo "dateKey = $dateKey \n";
                             $this->variablesConfig[$investmentDataKey]['state'] = WIN_FLOWDATA_VARIABLE_DONE;   // Mark done
                             $newLoan = YES;
                         }
-                    }                     
+                    }
+               
                 }
                 else { // existing loan
 
@@ -305,12 +307,14 @@ echo "dateKey = $dateKey \n";
                          //     public function getData($filter = null, $field = null, $order = null, $limit = null)
                     $filterConditions = array("investment_loanId" => $keyDateTransaction, 
                                        "linkedaccount_id" => $linkedaccountId);
-print_r($filterConditions);
+//print_r($filterConditions);
                     $tempInvestmentId = $this->Investment->getData($filterConditions, array("id")); 
-                    print_r($tempInvestmentId);
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Existing Loan.. \n";   
+               //     print_r($tempInvestmentId);
                 
                     $investmentId = $tempInvestmentId[0]['Investment']['id'];
                     $database['investment']['id'] = $investmentId;
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Id of the existing loan $investmentId\n ";   
                 }
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) { 
@@ -363,19 +367,22 @@ print_r($filterConditions);
 
                     $database['investment']['linkedaccount_id'] = $linkedaccountId;
                     if ($newLoan == YES) {
+                        print_r($database['investment']);
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";    
-                        print_r( $database['investment']);
                         $resultCreate = $this->Investment->createInvestment($database['investment']);
                         print_r($resultCreate);
+
                         if ($resultCreate[0]) {
                             $investmentId = $resultCreate[1];
                             echo "Saving new loan with investmentId = $investmentId, Done\n";
+                            $database['investment']['id'] = $resultCreate[1];
                         }
                         else {
                             if (Configure::read('debug')) {
                                echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
                             }
                         }
+
                     }
                     else {
                         $database['investment']['id'] = $investmentId;
@@ -425,7 +432,7 @@ print_r($filterConditions);
                             }
                         } 
                     }
-                    
+                   
                     if (!empty($database['globalcashflowdata'])) {               
                         $database['globalcashflowdata']['userinvestmentdata_id'] = $linkedaccountId;
                         $database['globalcashflowdata']['date'] = $dateKey;
@@ -440,8 +447,10 @@ print_r($filterConditions);
                                echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
                             }
                         }
-                    }      
-                }                    
+                    }
+                    
+                } 
+
             print_r($database);
             unset($database);
             unset($investmentId);      
@@ -449,7 +458,8 @@ print_r($filterConditions);
 
             }
         }
-    echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2 for investment $investmentId\n";      
+    echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n"; 
+    
     return;   
     }
  
@@ -460,6 +470,7 @@ print_r($filterConditions);
      *
     */ 
     public function consolidatePlatformData(&$database) {    
+        return;
         echo "FxF";     
             $database['userinvestmentdata']['userinvestmentdata_capitalRepayment'] = $this->consolidateCapitalRepayment();
         echo "FtF";
@@ -467,14 +478,13 @@ print_r($filterConditions);
         echo "FccFgF";
             $database['userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] = $this->consolidateOutstandingPrincipal();
         echo "FFgF";
-            $database['userinvestmentdata']['userinvestmentdata_receivedPrepayments'] = $this->consolidateReceivedPrepayments();
+            $database['userinvestmentdata']['userinvestmentdata_receivedPrepayments'] = $this->consolidateReceivedPrepayment();
         echo "FtytyFgF";
             $database['userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $this->consolidateTotalGrossIncome();
         echo "FhF";
             $database['userinvestmentdata']['userinvestmentdata_interestgrossIncome'] = $this->consolidateInterestgrossIncome();
         echo "FFF";
-            $database['userinvestmentdata']['userinvestmentdata_totalCost'] = $this->consolidateTotalCost();
-        echo "FpF";
+    //        $database['userinvestmentdata']['userinvestmentdata_totalCost'] = $this->consolidateTotalCost();
     }
     
      
@@ -546,11 +556,11 @@ print_r($filterConditions);
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
-    public function consolidateReceivedPrepayments() {
+    public function consolidateReceivedPrepayment() {
         $sum = 0;        
         return;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('paymenttotal_outstandingPrincipal'),
+                                            'fields' => array('paymenttotal_receivedPrepayment'),
                                             "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
          
@@ -570,7 +580,7 @@ print_r($filterConditions);
         $sum = 0;        
         return;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('User.username'),
+                                            'fields' => array('paymenttotal_totalGrossIncome'),
                                             "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
            
@@ -590,7 +600,7 @@ print_r($filterConditions);
         $sum = 0;        
         return;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('User.username'),
+                                            'fields' => array('paymenttotal_interestgrossIncome'),
                                             "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
                
@@ -600,7 +610,7 @@ print_r($filterConditions);
         return $sum;
     }
     
-    /* 
+    /* NOT YET
      *  Get the amount which corresponds to the "TotalCost" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -610,7 +620,7 @@ print_r($filterConditions);
         $sum = 0;        
         return;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('User.username'),
+                                            'fields' => array('paymenttotal_totalCost'),
                                             "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
         
@@ -620,7 +630,7 @@ print_r($filterConditions);
         return $sum;
     }
     
-    /* 
+    /* NOT YET
      *  Get the amount which corresponds to the "NextPaymentDate" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -640,7 +650,7 @@ print_r($filterConditions);
         return $sum;
     }
     
-    /* 
+    /* NOT YET
      *  Get the amount which corresponds to the "EstimatedNextPayment" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -660,7 +670,7 @@ print_r($filterConditions);
         return $sum;
     }  
     
-    /* 
+    /* NOT YET
      *  Get the amount which corresponds to the "InstallmentPaymentProgress" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB

@@ -405,7 +405,7 @@ class mintos extends p2pCompany {
     ];
     
 
-    protected $valuesExpiredLoan = [                               // We are only interested in the loanId
+    protected $valuesExpiredLoan = [                               // We are only interested in the investment_loanId
         "A" => [
                 "name" => "investment_country"                                  // Winvestify standardized name  OK
              ], 
@@ -415,26 +415,22 @@ class mintos extends p2pCompany {
         // rest of information is NOT required for current implementation
     ];
     
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
+    protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                        //        'separatorChar' => ";",
                                 'sortParameter' => array("date","investment_loanId")   // used to "sort" the array and use $sortParameter(s) as prime index.
                                  );
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
-                                'sortParameter' => array("investment_loanId")       // used to "sort" the array and use $sortParameter as prime index.
+                                 'sortParameter' => array("investment_loanId")       // used to "sort" the array and use $sortParameter as prime index.
                                  );
     protected $amortizationConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"              // used to "sort" the array and use $sortParameter as prime index.
                                  );
   
     protected $expiredLoanConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
                           //      'sortParameter' => "investment_loanId"              // used to "sort" the array and use $sortParameter as prime index.
                                  ); 
      

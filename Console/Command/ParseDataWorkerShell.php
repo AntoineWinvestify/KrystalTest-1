@@ -120,6 +120,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
                 continue;
             }
+            
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
 
@@ -129,6 +130,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
             print_r($data);
             $files = $data['files'];
+//            $data['listOfCurrentActiveLoans'] = array("958187-01", "731064-01", "715891-01", "715544-01");
             // First analyze the transaction file(s)
             $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
 
@@ -177,7 +179,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 $tempResult = array();
                 foreach ($approvedFiles as $approvedFile) {
                     unset($errorInfo);
-                             
+                    print_r($configParameters);         
                     $myParser->setConfig($configParameters);
                     $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
 
@@ -205,7 +207,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                                 foreach ($tempResult as $expiredloankey => $item) {
                                     $listOfExpiredLoans[] = $expiredloankey;
                                 }
-    //                            print_r($listOfExpiredLoans);
                                 break;                            
                         }
 
@@ -223,7 +224,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                         }
                     }
-                }
+                } 
             }
 
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
@@ -232,15 +233,17 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['pfp'] = $platform;
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
             
+//            echo "Expired loans = \n";
+//            print_r($listOfExpiredLoans);
+//            echo "listOfCurrentActiveloans = ";
+//            print_r($data['listOfCurrentActiveLoans']);
 // check if we have new loans for this claculation period. Only collect the amortization tables of loans that have not already finished         
             $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
             $iteriter = new RecursiveIteratorIterator($arrayiter);
             foreach ($iteriter as $key => $value) {
                 if ($key == "investment_loanId"){
-     //               echo "value of loanId = $value\n";
-                    if (array_search($loanIdKey, $listOfCurrentActiveLoans) !== true) {         // Check if new investments have appeared
-                        if (array_search($loanIdKey, $listOfExpiredLoans) === true){
-                            echo "Add new loan ";
+                    if (in_array($value, $data['listOfCurrentActiveLoans']) == false) {         // Check if new investments have appeared
+                        if (in_array($value, $listOfExpiredLoans) == false){
                             $newLoans[] = $value;
                         }
                     }
@@ -248,6 +251,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
             
             $newLoans = array_unique($newLoans);
+            echo "New loans are\n";
+            print_r($newLoans);
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
         }

@@ -311,7 +311,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $objPHPExcel = PHPExcel_IOFactory::load($file);
         }
 
-        ini_set('memory_limit','1048M');
+        ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
@@ -336,11 +336,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     private function saveExcelToArray($rowDatas, $values, $totalRows) {
         $tempArray = [];
         $maxRows = count($rowDatas);
+
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $this->config['offsetStart']) {
                 break;
             }
+            echo "unset to happen, value of cell = " . 
+                    print_r($rowDatas[$key][2]);
+            echo "\n";
             unset($rowDatas[$key]);
             $i++;
         }
