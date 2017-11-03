@@ -76,9 +76,12 @@ class bondora extends p2pCompany {
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
                                 "input3" => [
+                                            0 => ["TransferPartialMainRepaiment" => "Partial_principal_repayment"],
+                                            1 => ["TransferExtraInterestRepaiment" => "Delayed_interest_income"],
+                                            2 => ["TransferWithdraw" => "Cash_withdrawal"],
                                             3 => ["TransferMainRepaiment" => "Capital_repayment"],    //OK
-                                            6 => ["TransferInterestRepaiment" => "Regular_gross_interest_income"],       //
- 
+                                            4 => ["TransferLatePenaltyRepaiment" => "Late_payment_fee_income"],
+                                            5 => ["TransferInterestRepaiment" => "Regular_gross_interest_income"],       //
                                             ]                      
                             ],
                     "functionName" => "getTransactionDetail",
