@@ -114,7 +114,7 @@ class Dashboard2sController extends AppController {
         $global['cash'] = 0;
         $global['activeInvestment'] = 0;
         $global['netDeposits'] = 0;
-        foreach ($allInvestment as $globalKey => $individualPfpData) {
+        /*foreach ($allInvestment as $globalKey => $individualPfpData) {
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
                 if ($key == "userinvestmentdata_activeInInvestments") { //Get global active in investment
                     $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
@@ -146,7 +146,7 @@ class Dashboard2sController extends AppController {
                     $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                 }
             }
-        }
+        }*/
 
         //Set global data
         $this->set('global', $global);

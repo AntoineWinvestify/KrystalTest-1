@@ -61,7 +61,7 @@
             $("#keyIndividualPlatforms").hide();
         });*/
         
-       /* $(document).on("click", "#globalOverviewTab", function(){
+       /*$(document).on("click", "#globalOverviewTab", function(){
             $("#btnMyInvestments").show();
             $("#btnAccountLinkingB").show();
             $("#dashboardMyInvestments").hide();
@@ -236,22 +236,22 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title"> <?php echo round($global['totalVolume'], 2) . " &euro;"; ?></h3>
+                                            <h3 class="title"> <?php// echo round($global['totalVolume'], 2) . " &euro;"; ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
-                                                        <td class="right"><?php echo round($global['investedAssets'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php //echo round($global['investedAssets'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
-                                                        <td class="right"><?php echo round($global['reservedFunds'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php //echo round($global['reservedFunds'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
-                                                        <td class="right"><?php echo round($global['cash'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php //echo round($global['cash'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
@@ -259,11 +259,11 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
-                                                        <td class="right"><?php echo round($global['netDeposits'], 2) . " &euro;";?></td>
+                                                        <td class="right"><?php //echo round($global['netDeposits'], 2) . " &euro;";?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Number of Active Investments')?></td>
-                                                        <td class="right"><?php echo $global['activeInvestment'] ?></td>
+                                                        <td class="right"><?php //echo $global['activeInvestment'] ?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -362,12 +362,12 @@
             </div>
         </div>
     </div>
-    <?php if(count($individualInfoArray) == 0) {?>
+    <?php //if(count($individualInfoArray) == 0) {?>
     <div class="row" id="btnAL">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <input type='button' id="btnAccountLinkingB" class='btn btn-default btnDefault pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
         </div>
-    </div> <?php } else {?>
+    </div> <?php //} else {?>
     <div class="row" id="keyIndividualPlatforms">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
@@ -388,21 +388,21 @@
                         </thead>
                         <tbody>
                            <?php //Here go pfp data
-                            foreach($individualInfoArray as $individualInfo){ 
-                                $total = round(bcadd(bcadd($individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'], $individualInfo['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], 16), $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 16), 2);
+                            //foreach($individualInfoArray as $individualInfo){ 
+                                //$total = round(bcadd(bcadd($individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'], $individualInfo['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], 16), $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 16), 2);
                                 ?>
                             <tr>
-                                <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
-                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
+                                <td class="logo" href='getDashboard2SinglePfpData' id="<?php //echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
+                                    <img id="logo<?php //echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php //echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php //echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
                                 </td>
                                 
-                                <td><?php echo $total . " &euro;"?></td>
-                                <td><?php echo $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] . " &euro;"?></td>
-                                <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2) . " %"?></td>
+                                <td><?php //echo $total . " &euro;"?></td>
+                                <td><?php //echo $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] . " &euro;"?></td>
+                                <td><?php //echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2) . " %"?></td>
                                 <td>12,11</td>
                                 <td>63,22%</td>
                             </tr>
-                            <?php } ?>
+                            <?php //} ?>
                         </tbody>
                     </table>
                 </div>
@@ -413,7 +413,7 @@
                 </div>
             </div>
         </div>
-    </div> <?php  } ?>
+    </div> <?php // } ?>
 </div>
 <div class = "ajaxResponse"> 
 </div>
