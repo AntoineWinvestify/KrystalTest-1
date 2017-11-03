@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-11-03 10:32+0100\n"
+"PO-Revision-Date: 2017-11-03 15:21+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -455,9 +455,8 @@ msgid "Error updating companies status."
 msgstr "Error en la actualización del estado de compañía."
 
 #: Model/Investor.php:685
-#, fuzzy
 msgid "Error generating JSON."
-msgstr "Reportar Error"
+msgstr "Error al generar JSON"
 
 #: Model/Investor.php:695
 msgid "Error updating files status."
@@ -1585,7 +1584,7 @@ msgstr "Asunto"
 
 #: View/Emails/html/contact_email.ctp:15
 msgid "Dear"
-msgstr ""
+msgstr "Estimado/a"
 
 #: View/Emails/html/contact_email.ctp:16
 msgid "Thank you for contacting Winvestify."
@@ -3013,8 +3012,7 @@ msgid ""
 " Tus datos personales están amparados por la Ley Orgánica de Protección de "
 "Datos (LOPD). La información es almacenada en distintos soportes de "
 "información con sistemas de cifrado, de forma disociada que la convierte en "
-"inútil en caso de no disponer de todos los componentes de la misma, y "
-"anonimizada por lo que nunca puede ser relacionada a una persona."
+"inútil en caso de no disponer de todos los componentes de la misma."
 msgstr ""
 
 #: View/Pages/investors.ctp:110
@@ -3257,14 +3255,6 @@ msgstr ""
 msgid "Eduardo Ibañez"
 msgstr ""
 
-#: View/Pages/team.ctp:149
-msgid "Ana Marín"
-msgstr ""
-
-#: View/Pages/team.ctp:150
-msgid "Costumer Care"
-msgstr ""
-
 #: View/Polls/store_poll_data.ctp:101
 msgid "Your rating has been saved"
 msgstr "Su rating ha sido guardado"
@@ -3364,7 +3354,7 @@ msgid ""
 "lowercase characters and a number."
 msgstr ""
 "Formato incorrecto. Su contraseña debe contener un mínimo de 8 caracteres, "
-"contener caracteres en minúscula, mayúscula y algún número\n"
+"contener caracteres en minúscula, mayúscula y algún número.\n"
 " "
 
 #: View/Users/register_panel_a.ctp:433
@@ -3392,8 +3382,8 @@ msgid "the terms of service"
 msgstr "los términos del servicio"
 
 #: View/Users/register_panel_a.ctp:475
-msgid " and the "
-msgstr " y la"
+msgid "and the"
+msgstr "y la"
 
 #: View/Users/register_panel_a.ctp:475
 msgid "privacy policy"
