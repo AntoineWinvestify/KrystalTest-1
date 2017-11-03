@@ -53,20 +53,6 @@
             $("#keyIndividualPlatforms").show();
         });
         
-        /*$(document).on("click", "[data-toggle='tab']", function(){
-            $("#btnMyInvestments").hide();
-            $("#btnAccountLinkingB").hide();
-            $("#dashboardMyInvestments").show();
-            $("#keyIndividualPlatforms").hide();
-        });*/
-        
-       /* $(document).on("click", "#globalOverviewTab", function(){
-            $("#btnMyInvestments").show();
-            $("#btnAccountLinkingB").show();
-            $("#dashboardMyInvestments").hide();
-            $("#keyIndividualPlatforms").hide();
-        });*/
-        
         $(document).on("click", ".logo", function(){ 
             var params = {
                 id : $(this).attr("id"),
@@ -234,34 +220,34 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
+                                            <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 01" data-toggle="tooltip" data-placement="top"class="ion ion-ios-information-outline" ></i></small></p>
                                             <h3 class="title">39.082,63 €</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 04" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
                                                         <td class="right">37.787,29 €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 05" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
                                                         <td class="right">0,00 €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 06" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
                                                         <td class="right">1.672,80 €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 07" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
                                                         <td class="right">4,28%</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 08" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
                                                         <td class="right">39.000,00 €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 09" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
                                                         <td class="right">993</td>
                                                     </tr>
                                                 </tbody>
@@ -272,28 +258,28 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Actual Yield')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
+                                            <p class="headerBox"><strong><?php echo __('Actual Yield')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 02" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
                                             <h3 class="title">9,45%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 10" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
                                                         <td class="right"><?php echo __('9,05%')?></td>
                                                     </tr>
                                                     <tr>
-                                                            <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 mths')?></td>
+                                                            <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 mths')?></td>
                                                         <td class="right"><?php echo __('9,45%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past Year')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 12" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past Year')?></td>
                                                         <td class="right"><?php echo __('8,90%')?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
                                                         <td class="left">
-                                                            <i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> 
+                                                            <i data-toggle="tooltip" data-placement="top" title="some text to tooltip 13" class="ion ion-ios-information-outline" ></i> 
                                                             <span class="chartIcon" id="netReturn">
                                                                 <?php echo __('NAR Past 12 mths')?> 
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
@@ -302,7 +288,7 @@
                                                         <td class="right"><?php echo __('3.743,82 €')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net return, past year')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 14" class="ion ion-ios-information-outline" ></i> <?php echo __('Net return, past year')?></td>
                                                         <td class="right"><?php echo __('3.439,10 €')?></td>
                                                     </tr>
                                                 </tbody>
@@ -313,14 +299,14 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
+                                            <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 03" class="ion ion-ios-information-outline" ></i></small></p>
                                             <h3 class="title">2,00%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 15" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
                                                         <td class="right"><?php echo __('76,00%')?></td>
                                                     </tr>
                                                     <tr>
@@ -340,7 +326,7 @@
                                                         <td class="right"><?php echo __('2,00%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 16" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
                                                         <td class="right"><?php echo __('869,11 €')?></td>
                                                     </tr>
                                                 </tbody>
@@ -499,11 +485,58 @@
                         <thead>
                             <tr>
                                 <th><?php echo __('Lending Company')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Las cantidades seran convertidas a euros" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Las cantidades seran convertidas a euros" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to platform')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 17" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 18" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 19" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to platform')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 20" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 21" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           <?php //Here go pfp data
+                            foreach($individualInfoArray as $individualInfo){ 
+                                $total = $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] + $individualInfo['Userinvestmentdata']['userinvestmentdata_activeInInvestments'] + $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedFunds'];
+                                ?>
+                            <tr>
+                                <td class="logo" id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
+                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
+                                </td>
+                                
+                                <td><?php echo number_format((float) $total / 100, 2, ',', '') . " &euro;"?></td>
+                                <td><?php echo number_format((float) $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] / 100, 2, ',', '') . " &euro;"?></td>
+                                <td><?php echo number_format((float) ($total/$global['totalVolume'])*100, 2, ',', '') . " %"?></td>
+                                <td>12,11</td>
+                                <td>63,22%</td>
+                            </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <input type='button' id="btnAccountLinking" class='btn btn-default btnDefault pull-left' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
+                    <input type='button' id="btnStart" class='btn btn-default btnDefault pull-right' name='accountLinking' value='<?php echo __('Go to One Click Registration')?>' />
+                    <br/><br/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="keyIndividualPlatformsCopy" style="display:none;">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-header" data-background-color="gray">
+                    <h4 class="title"><?php echo __('Key Performance statistics of Individual Platforms') ?></h4>
+                </div>
+                <div class="card-content table-responsive">
+                    <table id="keyPerformanceStatistics" class="table">
+                        <thead>
+                            <tr>
+                                <th><?php echo __('Lending Company')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="Las cantidades seran convertidas a euros 17" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="Las cantidades seran convertidas a euros 18" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 19" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to platform')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 20" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 21" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
                             </tr>
                         </thead>
                         <tbody>
