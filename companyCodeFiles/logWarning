@@ -19,3 +19,24 @@ MyTripleAAA login: userName =  inigo.iturburua@gmail.com, password = Ap_94!56
  
  
 
+03-11-17 07:31:14 Error while logging in user's portal. Wrong userid/password 
+Tracing:
+/var/www/html/cakephp/app/companyCodeFiles/arboribus.php 764 
+Arboribus login: userName =  inigo.iturburua@gmail.com, password = Ap_94!56 
+ 
+ 
+
+03-11-17 07:32:49 Error while logging in user's portal. Wrong userid/password 
+Tracing:
+/var/www/html/cakephp/app/companyCodeFiles/arboribus.php 764 
+Arboribus login: userName =  inigo.iturburua@gmail.com, password = Ap_94!56 
+ 
+ 
+
+03-11-17 07:33:12 Error while logging in user's portal. Wrong userid/password 
+Tracing:
+/var/www/html/cakephp/app/companyCodeFiles/arboribus.php 764 
+Arboribus login: userName =  inigo.iturburua@gmail.com, password = Ap_94!56 
+ 
+ 
+
