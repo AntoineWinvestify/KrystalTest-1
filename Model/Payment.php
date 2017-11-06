@@ -74,21 +74,19 @@ var $validate = array(
         $data = array();
         $paymentPrefix = "payment";
         $paymentTotalPrefix = "paymenttotal";  
- 
-        foreach ($this->data['Payment'] as $paymentKey => $value) {
-            if ($paymentKey == "investment_id") {
-                $investmentId = $value;
-                break;
-            }         
-        }
+        echo __FUNCTION__ . " " . __LINE__ . "\nPayment data = \n";
+ print_r($this->data['Payment']);
 
+echo __FUNCTION__ . " " . __LINE__ . " InvestmentId = " . $this->data['Payment']['investment_id'] . " and " . $this->data['Payment']['id'] . " \n";
         $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
          
         // get the *latest* paymenttotal table
         $latestValuesPaymenttotals = $this->Paymenttotal->find("first",array(
-                                                        'conditions' => array('investment_id' => $investmentId),
+                                                        'conditions' => array('investment_id' => $this->data['Payment']['investment_id']),
                                                         'order' => array('Paymenttotal.id DESC'),
                                                          ) );
+echo "latestValues\n";
+        print_r($latestValuesPaymenttotals);
 
         $this->Paymenttotal->create();
         foreach ($this->data['Payment'] as $paymentKey => $value) {
@@ -102,7 +100,7 @@ var $validate = array(
                 }
             } 
         }    
-        $data['investment_id'] = $investmentId;
+        $data['investment_id'] = $this->data['Payment']['investment_id'];
         $data['status'] = WIN_PAYMENTTOTALS_LAST;
         $this->Paymenttotal->save($data, $validate = true); 
          

@@ -80,6 +80,29 @@ class Fileparser {
                                     RUB => ["RUB", "₽"],
                                     );
 
+    // dictionary lookup for trying to identify an unknown concept
+    protected $dictionaryWords = array('tax'    => WIN_CONCEPT_TYPE_COST,
+                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
+                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
+                                'payment'       => WIN_CONCEPT_TYPE_COST,
+                                'withdraw'      => WIN_CONCEPT_TYPE_COST,
+                                'back fee'      => WIN_CONCEPT_TYPE_COST,
+                                'back tax'      => WIN_CONCEPT_TYPE_COST,
+                                'cost'          => WIN_CONCEPT_TYPE_COST,
+                                'purchase'      => WIN_CONCEPT_TYPE_COST,
+                                'bid'           => WIN_CONCEPT_TYPE_COST,
+                                'auction'       => WIN_CONCEPT_TYPE_COST,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
+                                'loan'          => WIN_CONCEPT_TYPE_COST,
+                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
+                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'earning'       => WIN_CONCEPT_TYPE_INCOME
+
+                            );   
+    
+    
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
@@ -548,28 +571,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * also check for the presence of loanId, and + or - sign of field
      */
     private function analyzeUnknownConcept($input, $config = null) {
-
-    //    read the unknown concept
         $result = 0;
-        $dictionaryWords = array('tax'          => WIN_CONCEPT_TYPE_COST,
-                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
-                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
-                                'payment'       => WIN_CONCEPT_TYPE_COST,
-                                'back fee'      => WIN_CONCEPT_TYPE_COST,
-                                'back tax'      => WIN_CONCEPT_TYPE_COST,
-                                'cost'          => WIN_CONCEPT_TYPE_COST,
-                                'purchase'      => WIN_CONCEPT_TYPE_COST,
-                                'bid'           => WIN_CONCEPT_TYPE_COST,
-                                'auction'       => WIN_CONCEPT_TYPE_COST,
-                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
-                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
-                                'loan'          => WIN_CONCEPT_TYPE_COST,
-                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
-                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
-                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
-                                'earning'       => WIN_CONCEPT_TYPE_INCOME
 
-                            );
+        
         foreach ($dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found
