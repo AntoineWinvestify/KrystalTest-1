@@ -25,6 +25,14 @@
  * 2017-08-23
  * Created
  * link account
+ * 
+ * 2017-03-11
+ * Header added in amortization tables.
+ * 
+ * 2017-06-11
+ * Finalized investment download in getPfpFiles
+ * 
+ * 
  */
 
 /**
@@ -203,7 +211,7 @@ class twino extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-     /**
+    /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account
      * 	to our account
@@ -298,10 +306,11 @@ class twino extends p2pCompany {
                     echo 'twino login ok' . SHELL_ENDOFLINE;
                 }
 
-                //Dowwnload
-                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["CURRENT","EXTENDED","DELAYED","DEFAULTED"]}}';
+                //Download
+                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["CURRENT","EXTENDED","DELAYED","DEFAULTED"]}}'; // ADD ,"REPAID","SOLD","RECOVERED" to download all investment
+                $this->tempUrl['ExportInvestment'] = array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
+                $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['ExportInvestment'], $credentialsFile, true);
                 break;
             case 4:
                 //Download investment
@@ -324,8 +333,9 @@ class twino extends p2pCompany {
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
                     $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                    $this->tempUrl['refererInvestment'] = array_shift($this->urlSequence);
                     $this->idForSwitch++;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
@@ -333,10 +343,59 @@ class twino extends p2pCompany {
                     echo 'Repeat Case: ' . $this->idForSwitch . SHELL_ENDOFLINE;
                 }
                 break;
+
+            //Dowanload finalized investment    
             case 6:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                echo $this->idForSwitch;
+                //Download
+                //$this->controlVariable = true;
+                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["REPAID","SOLD","RECOVERED"]}}'; // ADD ,"REPAID","SOLD","RECOVERED" to download all investment
+                $this->idForSwitch++;
+                $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['ExportInvestment'], $credentialsFile, true);
+                break;
+
+            case 7:
+                //Download investment
+                echo $this->idForSwitch;
+                $response = json_decode($str, true);
+                print_r($response);
+                if ($response['reportReady'] == true) {
+                    echo 'Status true, downloading' . SHELL_ENDOFLINE;
+                    $this->numFileInvestment++;
+                    $fileName = "expiredLoans." . $this->typeFileInvestment;
+                    $this->idForSwitch = 9;
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
+                } else {
+                    $this->controlVariable = false;
+                    $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
+                    $this->idForSwitch = 8;
+                }
+                break;
+
+            case 8:
+                echo $this->idForSwitch . SHELL_ENDOFLINE;
+                $response = json_decode($str, true);
+                print_r($response);
+                if ($response['reportReady'] == true) {
+                    echo 'Status true, downloading' . SHELL_ENDOFLINE;
+                    $this->numFileInvestment++;
+                    $fileName = "expiredLoans." . $this->typeFileInvestment;
+                    $this->idForSwitch++;
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
+                } else {
+                    echo 'Not ready yet' . SHELL_ENDOFLINE;
+                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
+                    $this->idForSwitch = 7;
+                    echo 'Repeat Case: ' . $this->idForSwitch . SHELL_ENDOFLINE;
+                }
+                break;
+
+
+            case 9:
+
                 //Download cash flow
                 $date1 = "[2017,9,1]";
                 $date2 = "[2017,9,20]";
@@ -346,7 +405,7 @@ class twino extends p2pCompany {
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
-            case 7:
+            case 10:
                 echo $str;
                 $response = json_decode($str, true);
                 print_r($response);
@@ -363,7 +422,7 @@ class twino extends p2pCompany {
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
                     break;
                 }
-            case 8:
+            case 11:
                 echo $str;
                 $response = json_decode($str, true);
                 print_r($response);
@@ -379,7 +438,7 @@ class twino extends p2pCompany {
                     echo 'Repeat Case: ' . $this->idForSwitch . SHELL_ENDOFLINE;
                 }
                 break;
-            case 9:
+            case 12:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
@@ -387,7 +446,7 @@ class twino extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();
                 //return $tempArray["global"] = "waiting_for_global";
                 break;
-            case 10:
+            case 13:
                 echo $str;
                 $variables = json_decode($str, true);
                 print_r($variables);
@@ -400,7 +459,7 @@ class twino extends p2pCompany {
         }
     }
 
-     /**
+    /**
      * Get amortization tables of user investments
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
@@ -488,8 +547,7 @@ class twino extends p2pCompany {
                     $this->idForSwitch = 4;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
-                }
-                else {
+                } else {
                     return $this->tempArray;
                     break;
                 }
