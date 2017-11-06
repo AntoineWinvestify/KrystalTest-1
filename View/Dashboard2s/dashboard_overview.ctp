@@ -148,7 +148,7 @@
     }
     th {
         text-align: center;
-        font-weight: bold;
+        font-weight: 500 !important;
         padding-bottom: 4px !important;
     }
     td.right { 
@@ -235,35 +235,35 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title"> <?php// echo round($global['totalVolume'], 2) . " &euro;"; ?></h3>
+                                            <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 01" data-toggle="tooltip" data-placement="top"class="ion ion-ios-information-outline" ></i></small></p>
+                                            <h3 class="title"><?php echo round($global['totalVolume'], 2)  ?> €</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
-                                                        <td class="right"><?php //echo round($global['investedAssets'], 2) . " &euro;"; ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 04" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
+                                                        <td class="right"><?php echo round($global['investedAssets'], 2)  ?> €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
-                                                        <td class="right"><?php //echo round($global['reservedFunds'], 2) . " &euro;"; ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 05" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
+                                                        <td class="right"><?php echo round($global['reservedFunds'], 2)  ?> €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
-                                                        <td class="right"><?php //echo round($global['cash'], 2) . " &euro;"; ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 06" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
+                                                        <td class="right"><?php echo round($global['cash'], 2)  ?> €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
-                                                        <td class="right"><?php echo __('25%')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 07" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
+                                                        <td class="right">4,28%</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
-                                                        <td class="right"><?php //echo round($global['netDeposits'], 2) . " &euro;";?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 08" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
+                                                        <td class="right">39.000,00 €</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Number of Active Investments')?></td>
-                                                        <td class="right"><?php //echo $global['activeInvestment'] ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 09" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
+                                                        <td class="right"><?php echo $global['activeInvestment']  ?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -273,38 +273,38 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Actual Yield')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">12,25%</h3>
+                                            <p class="headerBox"><strong><?php echo __('Actual Yield')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 02" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
+                                            <h3 class="title">9,45%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Annual Total Funds Return')?></td>
-                                                        <td class="right"><?php echo __('12,15%')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 10" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
+                                                        <td class="right"><?php echo __('9,05%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Annual Return Past 12 Months')?></td>
-                                                        <td class="right"><?php echo __('11,33%')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 mths')?></td>
+                                                        <td class="right"><?php echo __('9,45%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Annual Return Past Year')?></td>
-                                                        <td class="right"><?php echo __('9,22%')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 12" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past Year')?></td>
+                                                        <td class="right"><?php echo __('8,90%')?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
                                                         <td class="left">
-                                                            <i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> 
+                                                            <i data-toggle="tooltip" data-placement="top" title="some text to tooltip 13" class="ion ion-ios-information-outline" ></i> 
                                                             <span class="chartIcon" id="netReturn">
-                                                                <?php echo __('Net Return year-to date')?> 
+                                                                <?php echo __('NAR Past 12 mths')?> 
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
-                                                        <td class="right"><?php echo __('995,00 €')?></td>
+                                                        <td class="right"><?php echo __('3.743,82 €')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Net return, past year')?></td>
-                                                        <td class="right"><?php echo __('935,00 €')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 14" class="ion ion-ios-information-outline" ></i> <?php echo __('Net return, past year')?></td>
+                                                        <td class="right"><?php echo __('3.439,10 €')?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -314,35 +314,35 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">8,45%</h3>
+                                            <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 03" class="ion ion-ios-information-outline" ></i></small></p>
+                                            <h3 class="title">2,00%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
-                                                        <td class="right"><?php echo __('91,55%')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 15" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
+                                                        <td class="right"><?php echo __('76,00%')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('8-30 DPD')?></td>
-                                                        <td class="right"><?php echo __('2,99%')?></td>
+                                                        <td class="right"><?php echo __('9,00%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('31-61 DPD')?></td>
-                                                        <td class="right"><?php echo __('2,25%')?></td>
+                                                        <td class="left"><?php echo __('31-60 DPD')?></td>
+                                                        <td class="right"><?php echo __('6,00%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('60-90 DPD')?></td>
-                                                        <td class="right"><?php echo __('1,99%')?></td>
+                                                        <td class="left"><?php echo __('61-90 DPD')?></td>
+                                                        <td class="right"><?php echo __('7,00%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('90 - DPD')?></td>
-                                                        <td class="right"><?php echo __('1,22%')?></td>
+                                                        <td class="left"><?php echo __('Default (> 90 DPD)')?></td>
+                                                        <td class="right"><?php echo __('2,00%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
-                                                        <td class="right"><?php echo __('3.678,00 €')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 16" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
+                                                        <td class="right"><?php echo __('869,11 €')?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -356,7 +356,7 @@
                                     <canvas id="birdsChart" class="center-block" width="400" align="center"></canvas>  
                                 </div>
                             </div>
-                        </div>                    
+                        </div>                                         
                     </div>
                 </div>
             </div>
@@ -379,30 +379,30 @@
                         <thead>
                             <tr>
                                 <th><?php echo __('Lending Company')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Las cantidades seran convertidas a euros" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Las cantidades seran convertidas a euros" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to platform')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de text" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 17" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 18" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 19" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to platform')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="tooltip 20" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 21" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
                             </tr>
                         </thead>
                         <tbody>
                            <?php //Here go pfp data
-                            //foreach($individualInfoArray as $individualInfo){ 
-                                //$total = round(bcadd(bcadd($individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'], $individualInfo['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], 16), $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 16), 2);
+                            foreach($individualInfoArray as $individualInfo){ 
+                                $total = round($individualInfo['Userinvestmentdata']['userinvestmentdata_totalVolume'], 2);
                                 ?>
                             <tr>
-                                <td class="logo" href='getDashboard2SinglePfpData' id="<?php //echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
-                                    <img id="logo<?php //echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php //echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php //echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
+                                <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
+                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
                                 </td>
                                 
-                                <td><?php //echo $total . " &euro;"?></td>
-                                <td><?php //echo $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] . " &euro;"?></td>
-                                <td><?php //echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2) . " %"?></td>
+                                <td><?php echo $total . " &euro;"?></td>
+                                <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2) . " &euro;"?></td>
+                                <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . " %"?></td>
                                 <td>12,11</td>
                                 <td>63,22%</td>
                             </tr>
-                            <?php //} ?>
+                            <?php } ?>
                         </tbody>
                     </table>
                 </div>

@@ -41,7 +41,7 @@ class Dashboard2sController extends AppController {
 
     var $name = 'Dashboard2s';
     var $helpers = array('Html', 'Js');
-    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount","Investment");
+    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Investment");
 
     function beforeFilter() {
 
@@ -73,25 +73,24 @@ class Dashboard2sController extends AppController {
         $filterConditions = array('userinvestmentdata_investorIdentity' => $investorReference, 'linkedaccount_id' => $linkedAccount);
         $dataResult = $this->Userinvestmentdata->getData($filterConditions);
         $dataResult['logo'] = $logo;
-        $dataResult['name'] = $name;      
-        
+        $dataResult['name'] = $name;
+
         //Get loan, Active -> Yes // Defaulted -> ¿? // 
         $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_ACTIVE_LOAN));
         $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_DEFAULTED_LOAN));
-      
+
         //Debug
-        /*echo 1;
-        echo "ACTIVE" . HTML_ENDOFLINE;
-        print_r($activeInvestments);
-        echo HTML_ENDOFLINE . "DEFAULTED" . HTML_ENDOFLINE;
-        print_r($defaultedInvestments);*/
-        
+        /* echo 1;
+          echo "ACTIVE" . HTML_ENDOFLINE;
+          print_r($activeInvestments);
+          echo HTML_ENDOFLINE . "DEFAULTED" . HTML_ENDOFLINE;
+          print_r($defaultedInvestments); */
+
         //Set result
         $result = array(true, $dataResult);
         $this->set('companyInvestmentDetails', $result);
         $this->set('activeInvestments', $activeInvestments);
         $this->set('defaultedInvestments', $defaultedInvestments);
-        
     }
 
     /**
@@ -103,50 +102,54 @@ class Dashboard2sController extends AppController {
         $this->Company = ClassRegistry::init('Company');
         //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
         $investorIdentityId = $this->Session->read('Auth.User.Investor.id');
-        
+
         //Get investment data from db
         $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorIdentityId);
-
+        //print_r($allInvestment);
         //Get global data
-        $global['totalVolume'] = 0; // totalVolume = investedAssets + reservedFunds + cash
+        $global['totalVolume'] = 0;
         $global['investedAssets'] = 0;
         $global['reservedFunds'] = 0;
         $global['cash'] = 0;
         $global['activeInvestment'] = 0;
-        $global['netDeposits'] = 0;
-        /*foreach ($allInvestment as $globalKey => $individualPfpData) {
+        //$global['netDeposits'] = 0; 
+        foreach ($allInvestment as $globalKey => $individualPfpData) {
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
-                if ($key == "userinvestmentdata_activeInInvestments") { //Get global active in investment
-                    $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
-                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                }
-                if ($key == "userinvestmentdata_myWallet") { //Get global wallet
-                    $global['cash'] = bcadd($global['cash'], $individualData, 16);
-                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                }
-                if ($key == "userinvestmentdata_reservedFunds") { //Get global reserved funds
-                    $global['reservedFunds'] = bcadd($global['reservedFunds'], $individualData, 16);
-                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                }
-                if ($key == "userinvestmentdata_investments") { //Get global active investmnent
-                    $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
-                }
-                if ($key == "id") {
-                    $cashFlowData = $this->Globalcashflowdata->getData(array('userinvestmentdata_id' => $individualData), array('globalcashflowdata_platformDeposit'));
-                    $global['netDeposits'] = bcadd($global['netDeposits'], $cashFlowData[0]['Globalcashflowdata']['globalcashflowdata_platformDeposit'], 16);
-                }
-                if ($key == "linkedaccount_id") {
-                    //Get the pfp id of the linked acount
-                    $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData), array('company_id'));
-                    $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
-                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
-                    //Get pfp logo and name
-                    $pfpOtherData = $this->Company->getData(array('id' => $pfpId), array("company_logoGUID", "company_name"));
-                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
-                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
+                switch ($key) {
+                    case "linkedaccount_id":
+                        //Get the pfp id of the linked acount
+                        $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData), array('company_id'));
+                        $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
+                        $allInvestment[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
+                        //Get pfp logo and name
+                        $pfpOtherData = $this->Company->getData(array('id' => $pfpId), array("company_logoGUID", "company_name"));
+                        $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
+                        $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
+                        $this->Investment->getDefaultedByOutstanding($individualData);
+                        break;
+                    case "userinvestmentdata_totalVolume":
+                        //Get global total volume
+                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
+                        break;
+                    case "userinvestmentdata_investedAssets":
+                        //Get global  active in invesment
+                        $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
+                        break;
+                    case "userinvestmentdata_reservedAssets":
+                        //Get global reserved funds
+                        $global['reservedFunds'] = bcadd($global['reservedFunds'], $individualData, 16);
+                        break;
+                    case "userinvestmentdata_cashInPlatform":
+                        //Get global wallet
+                        $global['cash'] = bcadd($global['cash'], $individualData, 16);
+                        break;
+                    case "userinvestmentdata_numberActiveInvestments":
+                        //get global active invesment:
+                        $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
+                        break;
                 }
             }
-        }*/
+        }
 
         //Set global data
         $this->set('global', $global);

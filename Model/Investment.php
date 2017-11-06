@@ -1,48 +1,46 @@
 <?php
+
 /**
-// +-----------------------------------------------------------------------+
-// | Copyright (C) 2017, https://www.winvestify.com                        |
-// +-----------------------------------------------------------------------+
-// | This file is free software; you can redistribute it and/or modify     |
-// | it under the terms of the GNU General Public License as published by  |
-// | the Free Software Foundation; either version 2 of the License, or     |
-// | (at your option) any later version.                                   |
-// | This file is distributed in the hope that it will be useful           |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
-// | GNU General Public License for more details.                          |
-// +-----------------------------------------------------------------------+
-// | Author: Antoine de Poorter                                            |
-// +-----------------------------------------------------------------------+
-*
-*
-* @author Antoine de Poorter
-* @version 0.1
-* @date 2017-10-18
-* @package
-*
+  // +-----------------------------------------------------------------------+
+  // | Copyright (C) 2017, https://www.winvestify.com                        |
+  // +-----------------------------------------------------------------------+
+  // | This file is free software; you can redistribute it and/or modify     |
+  // | it under the terms of the GNU General Public License as published by  |
+  // | the Free Software Foundation; either version 2 of the License, or     |
+  // | (at your option) any later version.                                   |
+  // | This file is distributed in the hope that it will be useful           |
+  // | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+  // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
+  // | GNU General Public License for more details.                          |
+  // +-----------------------------------------------------------------------+
+  // | Author: Antoine de Poorter                                            |
+  // +-----------------------------------------------------------------------+
+ *
+ *
+ * @author Antoine de Poorter
+ * @version 0.1
+ * @date 2017-10-18
+ * @package
+ *
 
 
-holds the logic of an individual investment
+  holds the logic of an individual investment
 
-2017-10-18		version 0.1
-initial version
-
-
-
-
-
-Pending:
+  2017-10-18		version 0.1
+  initial version
 
 
 
-*/
 
-class Investment extends AppModel
-{
+
+  Pending:
+
+
+
+ */
+class Investment extends AppModel {
+
     var $name = 'Investment';
-
-    
     public $hasMany = array(
         'Payment' => array(
             'className' => 'Payment',
@@ -61,23 +59,16 @@ class Investment extends AppModel
             'foreignKey' => 'investment_id',
             'fields' => '',
             'order' => '',
-        ),       
-        
-        
+        ),
     );
 
-/**
-*	Apparently can contain any type field which is used in a field. It does NOT necessarily
-*	have to map to a existing field in the database. Very useful for automatic checks
-*	provided by framework
-*/
-var $validate = array(
-
-);
-
-
-
-
+    /**
+     * 	Apparently can contain any type field which is used in a field. It does NOT necessarily
+     * 	have to map to a existing field in the database. Very useful for automatic checks
+     * 	provided by framework
+     */
+    var $validate = array(
+    );
 
     /**
      *
@@ -96,23 +87,21 @@ var $validate = array(
             $data = array('investment_id' => $investmentId, 'status' => WIN_ERROR_PAYMENTTOTALS_LAST);
             $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
             $this->Paymenttotal->create();
-            if ($this->Paymenttotal->save($data, $validation = true)) { 
+            if ($this->Paymenttotal->save($data, $validation = true)) {
                 $result[0] = true;
                 $result[1] = $investmentId;
-            } 
-            else {
+            } else {
                 $result[0] = false;
                 $result[1] = $this->Paymenttotal->validationErrors;
                 $this->delete($investmentId);
             }
-        } 
-        else {                     // error occurred while trying to save the Investment data
+        } else {                     // error occurred while trying to save the Investment data
             $result[0] = false;
             $result[1] = $this->validationErrors;
         }
-        return $result;         
+        return $result;
     }
-    
+
     public function getInvestmentIdByLoanId($loanIds) {
         $fields = array('Investment.investment_loanReference', 'Investment.id');
         $conditions = array('investment_loanReference' => $loanIds);
@@ -123,15 +112,105 @@ var $validate = array(
         return $investmentIds;
     }
 
+    /**
+     * Get defaulted investment of a linked account
+     * 
+     * @param Int $linkedaacount Link account id 
+     * @return array Defaulted inversions of a linked account with the defaulted days
+     */
+    public function getDefaulted($linkedaacount) {
+
+        $today = date("Y-m-d");
+
+        //Get defaulted investment and days
+        $defaultedInvestments = $this->find("all", array(
+            "fields" => array("investment_outstandingPrincipal", "investment_nextPaymentDate", "investment_statusOfLoan"),
+            "conditions" => array("linkedaccount_id" => $linkedaacount, "investment_nextPaymentDate < " => $today, "investment_statusOfLoan" => 2),
+            "recursive" => -1,
+        ));
+
+        foreach ($defaultedInvestments as $key => $defaultedInvestment) {
+            //echo strtotime($today) . HTML_ENDOFLINE;
+            //echo strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) . HTML_ENDOFLINE;
+            $defaultedInvestments[$key]['Investment']['defaultedTime'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
+        }
 
 
+        return $defaultedInvestments;
+    }
 
+    /**
+     * Get defaulted percent with the Outstanding principal.
+     * 
+     * @param Int $linkedaacount Link account id 
+     */
+    public function getDefaultedByOutstanding($linkedaacount) {
+
+        //Get total outstanding principal
+        $outstandings = $this->find("all", array(
+            "fields" => array("investment_outstandingPrincipal"),
+            "conditions" => array("linkedaccount_id" => $linkedaacount, "investment_statusOfLoan" => 2),
+            "recursive" => -1,
+        ));
+
+        $totalOutstanding = 0;
+        foreach ($outstandings AS $outstanding) {
+            $totalOutstanding = $totalOutstanding + $outstanding['Investment']['investment_outstandingPrincipal'];
+        }
+
+        $defaultedInvestments = $this->getDefaulted($linkedaacount);
+        $defaultedRange = $this->setDefaultedRange($defaultedInvestments, $totalOutstanding);
+        print_r($defaultedRange);
+    }
+
+    /**
+     * Get defaulted percent range.
+     * 
+     * @param array $defaultedInvestments Defaulted investment.
+     * @param int $outstanding Outstanding principal
+     */
+    public function setDefaultedRange($defaultedInvestments, $outstanding) {
+
+        $range = array();
+        $value = array();
+
+        foreach ($defaultedInvestments as $defaultedInvestment) {
+            switch ($defaultedInvestment['Investment']['defaultedTime']) {
+                case ($defaultedInvestment['Investment']['defaultedTime'] > 90):
+                    $value[">90"] = $value[">90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range[">90"] = ($value[">90"] / $outstanding) * 100;
+                    break;
+                case ($defaultedInvestment['Investment']['defaultedTime'] > 60):
+                    $value[">60"] = $value[">60"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range[">60"] = ($value[">60"] / $outstanding) * 100;
+
+                    break;
+                case ($defaultedInvestment['Investment']['defaultedTime'] > 30):
+                    $value[">30"] = $value[">30"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range[">30"] = ($value[">30"] / $outstanding) * 100;
+
+                    break;
+                case ($defaultedInvestment['Investment']['defaultedTime'] > 7):
+                    $value[">7"] = $value[">7"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range[">7"] = ($value[">7"] / $outstanding) * 100;
+
+                    break;
+                case ($defaultedInvestment['Investment']['defaultedTime'] > 0):
+                    $value[">0"] = $value[">0"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range[">0"] = ($value[">0"] / $outstanding) * 100;
+                    break;
+            }
+        }
+
+        return $range;
+    }
 
     /*
      * 
      * Update the corresponding fields in the paymenttotal table 
      * 
      */
+
     function afterSave1($created, $options = array()) {
         if (!empty($this->data['Investor']['investor_tempCode'])) {    // A confirmation code has been generated
             $event = new CakeEvent('confirmationCodeGenerated', $this, array('id' => $this->id,
@@ -190,8 +269,5 @@ var $validate = array(
             $this->data['Investor']['investor_telephone'] = str_replace(' ', '', $this->data['Investor']['investor_telephone']);
         }
     }
-
-
-
 
 }
