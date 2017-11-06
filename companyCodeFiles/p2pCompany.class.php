@@ -90,25 +90,6 @@ use Browser\Casper;
 
 //require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
 class p2pCompany {
-    /* const DAY = 1;
-      const MONTH = 2;
-      const YEAR_CUARTER = 3;
-      const HOUR = 4; */
-
-// type of financial product
-    /* const PAGARE = 1;
-      const LOAN = 2;
-      const FINANCING = 3; */
-// http message type for method "getCompanyWebpage"
-    /* const GET = 1; // GET a webpage
-      const POST = 2; // POST some parameters, typically used for login procedure
-      const PUT = 3; // Not implemented yet)
-      const DELETE = 4; // DELETE a resource on the server typically used for logging out
-      const OPTIONS = 5; // Not implemented yet)
-      const TRACE = 6; // Not implemented yet)
-      const CONNECT = 7; // Not implemented yet)
-      const HEAD = 8; // Not implemented yet) */
-
     //Variable to use in this method
     // MarketplacesController
 
@@ -165,6 +146,8 @@ class p2pCompany {
     protected $companyName;
     protected $userReference;
     protected $linkAccountId;
+    protected $dateInit;
+    protected $dateFinish;
     //Variables for casperjs
     protected $casperObject;
     //Variables for amortization tables
@@ -172,7 +155,7 @@ class p2pCompany {
     
     protected $valuesTransaction;
     protected $valuesInvestment;  
-    protected $valuesamortizationTable;     
+    protected $valuesAmortizationTable;     
 
     /**
      *
@@ -1410,7 +1393,7 @@ class p2pCompany {
      * @return string It is the path that will contain the files
      */
     public function getFolderPFPFile() {
-        $date = date("Ymd");
+        $date = date("Ymd", strtotime($this->dateFinish-1));
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $path = $this->userReference . DS . $date . DS . $this->linkAccountId . DS . $this->companyName ;
@@ -2515,8 +2498,23 @@ class p2pCompany {
         $this->maxLoans = count($this->loanIds);
     }
 
-    
-    
+    function getDateInit() {
+        return $this->dateInit;
+    }
+
+    function getDateFinish() {
+        return $this->dateFinish;
+    }
+
+    function setDateInit($dateInit) {
+        $this->dateInit = $dateInit;
+    }
+
+    function setDateFinish($dateFinish) {
+        $this->dateFinish = $dateFinish;
+    }
+
+        
     
 
     
@@ -2679,9 +2677,6 @@ class p2pCompany {
      *                   false  An error has occurred during the processing 
      */ 
     public function amortizationTableAnalyzed(array $table) {
-        
-  
-        
         return ;
     }    
   
@@ -2713,7 +2708,7 @@ class p2pCompany {
      * 
      */    
     public function getParserConfigAmortizationTableFile() {
-        return $this->valuesAmortization;
+        return $this->valuesAmortizationTable;
     }  
     
     

@@ -82,6 +82,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], WIN_DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
+            $this->newComp[$i]->setDateFinal($data["date"]);
             $this->newComp[$i]->generateCookiesFile();
             $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
             $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company

@@ -17,7 +17,7 @@ msgstr ""
 #: View/Errors/error400.ctp:22
 #: View/Errors/error500.ctp:22
 #: View/Errors/missing_action.ctp:22
-#: View/Layouts/default.ctp:25
+#: View/Layouts/default.ctp:45
 msgid "Error"
 msgstr ""
 
@@ -26,7 +26,7 @@ msgid "Oops, this page is not available on our servers."
 msgstr ""
 
 #: View/Errors/error400.ctp:24
-#: View/Layouts/default.ctp:27
+#: View/Layouts/default.ctp:47
 msgid "The requested address %s was not found on this server."
 msgstr ""
 

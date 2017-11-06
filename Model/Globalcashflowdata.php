@@ -71,22 +71,23 @@ var $validate = array(
         $data = array();
         $prefix = "globalcashflowdata";
         $totalPrefix = "globalcashflowdatatotal";  
- 
+ echo "kk";
         foreach ($this->data['Globalcashflowdata'] as $globalcashflowKey => $value) {
             if ($globalcashflowKey == "userinvestmentdata_id") {
                 $userinvestmentdataId = $value;
                 break;
             }         
         }
-
+echo "AA";
         $this->Globalcashflowdatatotal = ClassRegistry::init('Globalcashflowdatatotal');
          
         // get the *latest* globalcashflowdatatotal table
-        $latestValuesGlobalCashflowdata = $this->Globalcashflowdata->find("first",array(
+        $latestValuesGlobalCashflowdata = $this->find("first",array(
                                                         'conditions' => array('userinvestmentdata_id' => $userinvestmentdataId),
                                                         'order' => array('Globalcashflowdata.id DESC'),
                                                          ));
-        $this->Globalcashflowdata->create();
+echo "bb";
+        $this->create();
         foreach ($this->data['Globalcashflowdata'] as $globalCashflowKey => $value) {
             $globalCashflowKeyNames = explode("_", $globalCashflowKey);
 
@@ -97,7 +98,8 @@ var $validate = array(
                     }
                 }
             } 
-        }    
+        } 
+echo "cc";
         $data ['userinvestmentdata_id'] = $userinvestmentdataId;
         $this->Globalcashflowdatatotal->save($data, $validate = true); 
     }  

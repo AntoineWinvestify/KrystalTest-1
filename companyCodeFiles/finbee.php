@@ -25,13 +25,17 @@
  * 2017-08-25
  * Created
  * 
- * 2017-03-11
- * Header added in amortization tables.
+ * 2017-10-24 version_0.2
+ * Integration of parsing amortization tables with Gearman and fileparser
+ *
  * 
+ * 2017-03-11 version 0.3
+ * Header added in amortization tables.
  */
 
 /**
  * Contains the code required for accessing the website of "Finbee".
+ * Parser AmortizationTables                                            [OK, tested]
  * function calculateLoanCost()						[Not OK]
  * function collectCompanyMarketplaceData()				[Not OK]
  * function companyUserLogin()						[OK, tested]
@@ -41,42 +45,75 @@
  */
 class finbee extends p2pCompany {
 
-    protected $transactionConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
+    protected $valuesAmortizationTable = [
+            1 =>  [
+                [
+                    "type" => "amortizationtable_capitalAndInterestPayment",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            2 => [
+                [
+                    "type" => "amortizationtable_capitalRepayment",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            3 => [
+                [
+                    "type" => "amortizationtable_interest",                      // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            4 => [
+                [
+                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "Y-M-D",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ]
+        ];
+    
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('OffsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
 
-    /*    NOT YET READY
-      protected $investmentConfigParms = array ('OffsetStart' => 1,
-      'offsetEnd'     => 0,
-      'separatorChar' => ";",
-      'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-      );
-
-     */
-
+    protected $amortizationConfigParms = array ('OffsetStart' => 0,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+     
+    
+    
     function __construct() {
         $this->i = 0;
         parent::__construct();
 // Do whatever is needed for this subsclass
-    }
-
-    public function getParserConfigTransactionFile() {
-        return $this->$valuesFinbeeTransaction;
-    }
-
-    public function getParserConfigInvestmentFile() {
-        return $this->$valuesFinbeeInvestment;
-    }
-
-    public function getParserConfigAmortizationTableFile() {
-        return $this->$valuesFinbeeAmortization;
     }
 
     /**
@@ -85,7 +122,7 @@ class finbee extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return 
      */
-    function collectUserGlobalFilesParallel($str) {
+    function collectUserGlobalFilesParallel($str = null) {
         switch ($this->idForSwitch) {
             //LOGIN
             case 0:

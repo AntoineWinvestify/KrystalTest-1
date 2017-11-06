@@ -44,8 +44,8 @@ class PreprocessClientShell extends GearmanClientShell {
 
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
-        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
-        //$resultQueue[] = $this->Queue->getNextFromQueue(FIFO);
+        //$pendingJobs = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
+        //$pendingJobs[] = $this->Queue->getNextFromQueue(FIFO);
         
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
@@ -57,27 +57,27 @@ class PreprocessClientShell extends GearmanClientShell {
         $this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $resultQueue  = $this->checkJobs(WIN_QUEUE_STATUS_START_PREPROCESS, $jobsInParallel);
-            print_r($resultQueue);
-            if (!empty($resultQueue)) {
+            $pendingJobs  = $this->checkJobs(WIN_QUEUE_STATUS_START_PREPROCESS, $jobsInParallel);
+            print_r($pendingJobs);
+            if (!empty($pendingJobs)) {
                 $linkedaccountsResults = [];
-                foreach ($resultQueue as $result) {
-                    $queueInfo = json_decode($result['Queue']['queue_info'], true);
-                    $this->queueInfo[$result['Queue']['id']] = $queueInfo;
-                    $resultInvestor = $this->Investor->find("first", array('conditions' =>
-                        array('Investor.investor_identity' => $result['Queue']['queue_userReference']),
+                foreach ($pendingJobs as $job) {
+                    $queueInfo = json_decode($job['Queue']['queue_info'], true);
+                    $this->queueInfo[$job['Queue']['id']] = $queueInfo;
+                    $jobInvestor = $this->Investor->find("first", array('conditions' =>
+                        array('Investor.investor_identity' => $job['Queue']['queue_userReference']),
                         'fields' => 'id',
                         'recursive' => -1,
                     ));
-                    print_r($resultInvestor);
-                    $investorId = $resultInvestor['Investor']['id'];
+                    print_r($jobInvestor);
+                    $investorId = $jobInvestor['Investor']['id'];
                     $filterConditions = array(  'investor_id' => $investorId,
                                                 'company_id' => 10
                                             );
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     echo "linkAccount \n";
                     print_r($linkedaccountsResults);
-                    //$linkedaccountsResults[$result['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+                    //$linkedaccountsResults[$job['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
                 
                 $userLinkedaccounts = [];
@@ -88,7 +88,7 @@ class PreprocessClientShell extends GearmanClientShell {
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
                         $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                         //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
-                        $this->userLinkaccountIds[$resultQueue[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
+                        $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
                         $i++;
                     }
                 }
@@ -98,8 +98,8 @@ class PreprocessClientShell extends GearmanClientShell {
                 foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
                     foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
                         $data["companies"] = $linkedaccountsByType;
-                        $data["queue_userReference"] = $resultQueue[$key]['Queue']['queue_userReference'];
-                        $data["queue_id"] = $resultQueue[$key]['Queue']['id'];
+                        $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
+                        $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
                         print_r($data["companies"]);
                         echo "\n";
                         echo "userReference ". $data["queue_userReference"];
@@ -110,15 +110,15 @@ class PreprocessClientShell extends GearmanClientShell {
                         echo "\n";
                         echo $key2;
                         echo "\n aquiiiiiiiiiiiiiii";
-                        $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2 . ".-;" . $resultQueue[$key]['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2 . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
                     }
                 }
 
                 $this->GearmanClient->runTasks();
                 
-                $this->verifiedStatus(WIN_QUEUE_STATUS_START_COLLECTING_DATA, "Data succcessfully downloaded");
-                unset($resultQueue);
-                unset($resultInvestor);
+                $this->verifiedStatus(WIN_QUEUE_STATUS_START_COLLECTING_DATA, "Data succcessfully downloaded", WIN_QUEUE_STATUS_START_PREPROCESS, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
+                unset($pendingJobs);
+                unset($jobInvestor);
                 unset($linkedaccountsResults); 
                 unset($linkedaccountsResults);        
                 unset($userLinkedaccounts);
