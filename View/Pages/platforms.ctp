@@ -716,13 +716,13 @@
                                         </div>
                                         <div class="input_platforms">
                                             <strong><?php echo __('Investment Guarantee')?></strong><br/>
-                                            <?php echo __('Yes') ?>
+                                            <?php echo __('Colateral') ?>
                                         </div>
                                     </div>
                                     <div class="divmiddle">
                                         <div class="input_platforms">
                                             <strong><?php echo __('Cross-border')?></strong><br/>
-                                            <?php echo __('Colateral') ?>
+                                            <?php echo __('Yes') ?>
                                         </div>
                                         <div class="input_platforms">
                                             <strong><?php echo __('Minimum Investment')?></strong><br/>
