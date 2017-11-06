@@ -115,17 +115,17 @@ class Investment extends AppModel {
     /**
      * Get defaulted investment of a linked account
      * 
-     * @param Int $linkedaacount Link account id 
+     * @param Int $linkedaaccount Link account id 
      * @return array Defaulted inversions of a linked account with the defaulted days
      */
-    public function getDefaulted($linkedaacount) {
+    public function getDefaulted($linkedaccount) {
 
         $today = date("Y-m-d");
 
         //Get defaulted investment and days
         $defaultedInvestments = $this->find("all", array(
             "fields" => array("investment_outstandingPrincipal", "investment_nextPaymentDate", "investment_statusOfLoan"),
-            "conditions" => array("linkedaccount_id" => $linkedaacount, "investment_nextPaymentDate < " => $today, "investment_statusOfLoan" => 2),
+            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_nextPaymentDate < " => $today, "investment_statusOfLoan" => 2),
             "recursive" => -1,
         ));
 
@@ -142,14 +142,14 @@ class Investment extends AppModel {
     /**
      * Get defaulted percent with the Outstanding principal.
      * 
-     * @param Int $linkedaacount Link account id 
+     * @param Int $linkedaaccount Link account id 
      */
-    public function getDefaultedByOutstanding($linkedaacount) {
+    public function getDefaultedByOutstanding($linkedaccount) {
 
         //Get total outstanding principal
         $outstandings = $this->find("all", array(
             "fields" => array("investment_outstandingPrincipal"),
-            "conditions" => array("linkedaccount_id" => $linkedaacount, "investment_statusOfLoan" => 2),
+            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_statusOfLoan" => 2),
             "recursive" => -1,
         ));
 
@@ -158,9 +158,9 @@ class Investment extends AppModel {
             $totalOutstanding = $totalOutstanding + $outstanding['Investment']['investment_outstandingPrincipal'];
         }
 
-        $defaultedInvestments = $this->getDefaulted($linkedaacount);
-        $defaultedRange = $this->setDefaultedRange($defaultedInvestments, $totalOutstanding);
-        print_r($defaultedRange);
+        $defaultedInvestments = $this->getDefaulted($linkedaccount);
+        $defaultedRange = $this->getDefaultedRange($defaultedInvestments, $totalOutstanding);
+        //print_r($defaultedRange);
     }
 
     /**
@@ -169,7 +169,7 @@ class Investment extends AppModel {
      * @param array $defaultedInvestments Defaulted investment.
      * @param int $outstanding Outstanding principal
      */
-    public function setDefaultedRange($defaultedInvestments, $outstanding) {
+    public function getDefaultedRange($defaultedInvestments, $outstanding) {
 
         $range = array();
         $value = array();
@@ -178,26 +178,26 @@ class Investment extends AppModel {
             switch ($defaultedInvestment['Investment']['defaultedTime']) {
                 case ($defaultedInvestment['Investment']['defaultedTime'] > 90):
                     $value[">90"] = $value[">90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range[">90"] = ($value[">90"] / $outstanding) * 100;
+                    $range[">90"] = round(($value[">90"] / $outstanding) * 100, 2);
                     break;
                 case ($defaultedInvestment['Investment']['defaultedTime'] > 60):
-                    $value[">60"] = $value[">60"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range[">60"] = ($value[">60"] / $outstanding) * 100;
+                    $value["61-90"] = $value["61-90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range["61-90"] = round(($value["61-90"] / $outstanding) * 100, 2);
 
                     break;
                 case ($defaultedInvestment['Investment']['defaultedTime'] > 30):
-                    $value[">30"] = $value[">30"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range[">30"] = ($value[">30"] / $outstanding) * 100;
+                    $value["31-60"] = $value["31-60"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range["31-60"] = round(($value["31-60"] / $outstanding) * 100, 2);
 
                     break;
                 case ($defaultedInvestment['Investment']['defaultedTime'] > 7):
-                    $value[">7"] = $value[">7"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range[">7"] = ($value[">7"] / $outstanding) * 100;
+                    $value["8-30"] = $value["8-30"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range["8-30"] = round(($value["8-30"] / $outstanding) * 100, 2);
 
                     break;
                 case ($defaultedInvestment['Investment']['defaultedTime'] > 0):
-                    $value[">0"] = $value[">0"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range[">0"] = ($value[">0"] / $outstanding) * 100;
+                    $value["0-7"] = $value["0-7"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range["0-7"] = round(($value["0-7"] / $outstanding) * 100, 2);
                     break;
             }
         }
