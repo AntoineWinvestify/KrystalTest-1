@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-11-06 09:13+0100\n"
+"PO-Revision-Date: 2017-11-03 15:21+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -835,7 +835,7 @@ msgid "Investor Data"
 msgstr "Datos de Inversor"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:280;322;364;407;446;488;539;580;624;666;707;740;767;801;830
-#: View/Pages/platforms.ctp:187;433;524;563;605;644;683;725;764;803
+#: View/Pages/platforms.ctp:187;433;524;563;605;644;683;719;764;803
 #: View/Users/register_panel_d.ctp:76
 msgid "Yes"
 msgstr "Sí"
@@ -1548,11 +1548,15 @@ msgstr "Política de Cookies"
 
 #: View/Elements/publicfooter.ctp:55
 msgid ""
-"Create, strengthen and improve relations between Investors and P2P Lending "
-"platforms"
+"Our mission is to help investors minimize the risks of investing in the P2P "
+"Lending market\n"
+"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand increase their earnings. We "
+"support continuous, global growth of a dynamic crowdlending market,\n"
+"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tboth by market size and investors"
 msgstr ""
-"Winvestify busca reforzar y crear nuevas relaciones entre la comunidad de "
-"inversores y las propias Plataformas de Financiación Participativa"
+"Nacemos con el propósito de ayudar a los inversores a minimizar su riesgo y "
+"aumentar su rentabilidad. Favorecemos que el mercado de Crowdlending siga "
+"creciendo y gane más adeptos"
 
 #: View/Emails/html/admin.ctp:21
 msgid "A new user has registered"
@@ -2063,18 +2067,18 @@ msgid ""
 "Make wise fractional investments in several loans across different P2P "
 "Platforms"
 msgstr ""
-"Haz pequeñas inversiones en muchos préstamos de varias plataformas de "
+"Haga pequeñas inversiones en muchos préstamos de varias plataformas de "
 "Crowdlending"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:288
 msgid "Diversify your investments"
-msgstr "Diversifica tus inversiones"
+msgstr "Diversifique sus inversiones"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:289
 msgid ""
 "Spread your money over many loans to reduce the risk of your investment."
 msgstr ""
-"Distribuye tu dinero en muchos préstamos para minimizar el riesgo de tus "
+"Distribuya su dinero en muchos préstamos para minimizar el riesgo de sus "
 "inversiones."
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:299
@@ -2639,27 +2643,27 @@ msgstr ""
 msgid "aceptar su política de privacidad y sus términos  y condiciones de uso "
 msgstr ""
 
-#: View/Pages/faq.ctp:49
+#: View/Pages/FAQ.ctp:49
 msgid "Frequently Asked Questions"
 msgstr "Preguntas Frecuentes"
 
-#: View/Pages/faq.ctp:54
+#: View/Pages/FAQ.ctp:54
 msgid "Sobre Winvestify"
 msgstr ""
 
-#: View/Pages/faq.ctp:55
+#: View/Pages/FAQ.ctp:55
 msgid "Seguridad y privacidad"
 msgstr ""
 
-#: View/Pages/faq.ctp:56
+#: View/Pages/FAQ.ctp:56
 msgid "Tu cuenta"
 msgstr ""
 
-#: View/Pages/faq.ctp:61
+#: View/Pages/FAQ.ctp:61
 msgid "¿Qué es Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:63
+#: View/Pages/FAQ.ctp:63
 msgid ""
 "Winvestify es una herramienta para la gestión de inversiones multiplataforma "
 "mediante Crowdlending. Podrás conectar con las principales Plataformas de "
@@ -2667,34 +2671,34 @@ msgid ""
 "todas tus inversiones en tiempo real."
 msgstr ""
 
-#: View/Pages/faq.ctp:65
+#: View/Pages/FAQ.ctp:65
 msgid "¿Para qué sirve Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:67
+#: View/Pages/FAQ.ctp:67
 msgid ""
 "El objetivo de Winvestify es que puedas sacar el máximo partido a tu dinero:"
 msgstr ""
 
-#: View/Pages/faq.ctp:68
+#: View/Pages/FAQ.ctp:68
 msgid ""
 "Te ayuda a entender, gestionar de un modo más eficiente y preciso la "
 "información de  tus inversiones para que puedas potenciar tu rentabilidad, "
 "canalizar mayor volumen de inversión con menor riesgo."
 msgstr ""
 
-#: View/Pages/faq.ctp:69
+#: View/Pages/FAQ.ctp:69
 msgid ""
 "Te da más poder porque te ayuda a entender mejor como operan todas tus "
 "plataformas ya que estandarizamos toda la información de un sencillo y "
 "funcional"
 msgstr ""
 
-#: View/Pages/faq.ctp:71
+#: View/Pages/FAQ.ctp:71
 msgid "¿Cuál es el Objetivo de Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:73
+#: View/Pages/FAQ.ctp:73
 msgid ""
 "Winvestify se ha creado para crear y reforzar nuevas relaciones entre la  "
 "actual comunidad de inversores y las propias Plataformas de Financiación "
@@ -2702,11 +2706,11 @@ msgid ""
 "complemento necesarios entre ambos actores"
 msgstr ""
 
-#: View/Pages/faq.ctp:75
+#: View/Pages/FAQ.ctp:75
 msgid "¿Necesito agregar una plataforma para utilizar Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:77
+#: View/Pages/FAQ.ctp:77
 msgid ""
 "Para sacarle el máximo partido a tus inversiones es imprescindible agregar "
 "una plataforma. De esta manera podrás estandarizar y gestionar toda tu "
@@ -2714,29 +2718,29 @@ msgid ""
 "cuentas."
 msgstr ""
 
-#: View/Pages/faq.ctp:79
+#: View/Pages/FAQ.ctp:79
 msgid "¿Puedo solicitar financiación a través de Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:81
+#: View/Pages/FAQ.ctp:81
 msgid ""
 "No. Winvestify solo muestra los proyectos invertibles que ofrecen las "
 "principales Plataformas de Financiación Participativa. Por lo tanto te "
 "recomendamos que lo solicite a través de ellas. "
 msgstr ""
 
-#: View/Pages/faq.ctp:83
+#: View/Pages/FAQ.ctp:83
 msgid "¿Cómo gana dinero Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:85
+#: View/Pages/FAQ.ctp:85
 msgid ""
 "La forma de generar ingresos se debe el análisis estadístico de la "
 "información disociada, acuerdos con Plataformas de Financiación "
 "Participativa y otros partners."
 msgstr ""
 
-#: View/Pages/faq.ctp:86
+#: View/Pages/FAQ.ctp:86
 msgid ""
 "Winvestify analiza los servicios existentes del mercado que pueden ser "
 "mejorables para los inversores y ayuda a las actuales Plataformas de "
@@ -2744,64 +2748,64 @@ msgid ""
 "de inversores."
 msgstr ""
 
-#: View/Pages/faq.ctp:92
+#: View/Pages/FAQ.ctp:92
 msgid "¿Qué necesito para crearme una cuenta en Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:93
+#: View/Pages/FAQ.ctp:93
 msgid ""
 "Para crear una cuenta de usuario en Winvestify es necesario un correo "
 "electrónico, teléfono móvil y una contraseña."
 msgstr ""
 
-#: View/Pages/faq.ctp:94
+#: View/Pages/FAQ.ctp:94
 msgid "¿Desde Winvestify puedo cambiar la clave de acceso de mis plataformas?"
 msgstr ""
 
-#: View/Pages/faq.ctp:95
+#: View/Pages/FAQ.ctp:95
 msgid ""
 "En Winvestify no puedes cambiar la clave de acceso de tus cuentas asociadas, "
 "para realizar esta tarea siempre tendrás que realizarlo en la plataforma "
 "donde tengas operativa tu cuenta de inversor."
 msgstr ""
 
-#: View/Pages/faq.ctp:96
+#: View/Pages/FAQ.ctp:96
 msgid "¿Qué ocurre si cambio la clave de acceso de mi plataforma?"
 msgstr ""
 
-#: View/Pages/faq.ctp:97
+#: View/Pages/FAQ.ctp:97
 msgid ""
 "Si cambias la clave de acceso de tu plataforma, debes actualizar esa "
 "información en Winvestify para seguir visualizando tu información "
 "actualizada."
 msgstr ""
 
-#: View/Pages/faq.ctp:98
+#: View/Pages/FAQ.ctp:98
 msgid "Tengo problemas al  agregar  mis plataformas, ¿Qué puedo hacer?"
 msgstr ""
 
-#: View/Pages/faq.ctp:100
+#: View/Pages/FAQ.ctp:100
 msgid ""
 "A veces cuando agregamos tus plataformas de financiación participativa nos "
 "encontramos con problemas que no podemos solucionar en el momento. "
 msgstr ""
 
-#: View/Pages/faq.ctp:101
+#: View/Pages/FAQ.ctp:101
 msgid ""
 "Si no consigues agregar alguna plataforma por favor escríbenos a "
 "info@winvestify.com o accede a nuestro "
 msgstr ""
 
-#: View/Pages/faq.ctp:101
+#: View/Pages/FAQ.ctp:101
 msgid "formulario de contacto"
 msgstr ""
 
-#: View/Pages/faq.ctp:103
+#: View/Pages/FAQ.ctp:103
 msgid ""
 "¿Por qué no aparecen todas las Plataformas de Fiananciación Participativa?"
 msgstr ""
 
-#: View/Pages/faq.ctp:104
+#: View/Pages/FAQ.ctp:104
 msgid ""
 "Las principales plataformas de financiación participativa ya están "
 "incorporadas a Winvestify. No obstante, estamos trabajando en incluir las "
@@ -2809,22 +2813,22 @@ msgid ""
 "la que no encuentras para darle prioridad."
 msgstr ""
 
-#: View/Pages/faq.ctp:105
+#: View/Pages/FAQ.ctp:105
 msgid "¿Cómo actualizo una plataforma?"
 msgstr ""
 
-#: View/Pages/faq.ctp:106
+#: View/Pages/FAQ.ctp:106
 msgid ""
 "Las cuentas se actualizan para tu comodidad todas las semanas y en "
 "inversores profesionales y acrediatados todas las noches. De esta manera "
 "cuando accedes por la mañana a tu información lo tienes todo al día."
 msgstr ""
 
-#: View/Pages/faq.ctp:111
+#: View/Pages/FAQ.ctp:111
 msgid "¿Cómo se tratan mis datos en Winvestify? ¿Es seguro?"
 msgstr ""
 
-#: View/Pages/faq.ctp:113
+#: View/Pages/FAQ.ctp:113
 msgid ""
 "La seguridad está garantizada. Para Winvestify su comunidad de inversores es "
 "lo más valioso y por tanto aplicamos todas la medidas técnicas para proteger "
@@ -2836,18 +2840,18 @@ msgid ""
 "disponer de todos los componentes de la misma."
 msgstr ""
 
-#: View/Pages/faq.ctp:114
+#: View/Pages/FAQ.ctp:114
 msgid ""
 "Para más detalle, ponemos a tu disposición nuestra política de protección de "
 "datos para que puedas consultarla y resolver cualquier duda que te haya "
 "quedado."
 msgstr ""
 
-#: View/Pages/faq.ctp:116
+#: View/Pages/FAQ.ctp:116
 msgid "¿Puede hacer Winvestify operaciones con mis credenciales?"
 msgstr ""
 
-#: View/Pages/faq.ctp:117
+#: View/Pages/FAQ.ctp:117
 msgid ""
 "No. En Winvestify no podemos realizar operaciones entre cuentas, por ello, "
 "las claves que te pedimos son  exclusivamente para la lectura de tu "
@@ -2856,11 +2860,11 @@ msgid ""
 "desde nuestro portal para mayor seguridad."
 msgstr ""
 
-#: View/Pages/faq.ctp:118
+#: View/Pages/FAQ.ctp:118
 msgid "¿Si entra un Hacker, cuál es mi riesgo?"
 msgstr ""
 
-#: View/Pages/faq.ctp:119
+#: View/Pages/FAQ.ctp:119
 msgid ""
 "Toda la información de tus inversiones se almacena en entornos distintos al "
 "de las claves de lectura de acceso, por lo que no se relacionan estos "
@@ -2872,11 +2876,11 @@ msgid ""
 "seguridad."
 msgstr ""
 
-#: View/Pages/faq.ctp:120
+#: View/Pages/FAQ.ctp:120
 msgid "¿Cómo elimino mi cuenta de Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:121
+#: View/Pages/FAQ.ctp:121
 msgid ""
 "En la página de inicio, en la sección \"Contáctanos\" podrá darse de baja "
 "rellenado el formulario de contacto especificándolo. Una vez enviada tu "
@@ -2884,73 +2888,73 @@ msgid ""
 "serán eliminados. Si quieres que te ayudemos escríbenos a info@winvestify.com"
 msgstr ""
 
-#: View/Pages/faq.ctp:122
+#: View/Pages/FAQ.ctp:122
 msgid "¿Para entrar en Winvestify que usuario y contraseña debo usar?"
 msgstr ""
 
-#: View/Pages/faq.ctp:123
+#: View/Pages/FAQ.ctp:123
 msgid ""
 "Para acceder a  tu cuenta de Winvestify, deberá indtruducir las credenciales "
 "que con las que se dio de alta. Es recomendable el uso de una contraseña "
 "distinta al restos de tus cuentas asociadas."
 msgstr ""
 
-#: View/Pages/faq.ctp:124
+#: View/Pages/FAQ.ctp:124
 msgid "¿Puedo cambiar mi dirección de correo electrónico?"
 msgstr ""
 
-#: View/Pages/faq.ctp:126
+#: View/Pages/FAQ.ctp:126
 msgid ""
 "Si. Para cambiar algún dato de su credencial debe rellenar el formulario de "
 "contacto y especificar que quiere cambiar su correo electrónico."
 msgstr ""
 
-#: View/Pages/faq.ctp:127
+#: View/Pages/FAQ.ctp:127
 msgid "Puede acceder al formulario de contacto haciendo click "
 msgstr ""
 
-#: View/Pages/faq.ctp:127
+#: View/Pages/FAQ.ctp:127
 msgid "aquí"
 msgstr ""
 
-#: View/Pages/faq.ctp:129
+#: View/Pages/FAQ.ctp:129
 msgid "¿Cómo puedo cambiar mi contraseña en Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:130
+#: View/Pages/FAQ.ctp:130
 msgid ""
 "Para cambiar su contraseña en Winvestify debe hacer el log-in y una vez en "
 "nuestra web dirigirse a datos personales y cambiar la contraseña. Deberá "
 "rellenar todos los campos obligatorios."
 msgstr ""
 
-#: View/Pages/faq.ctp:131
+#: View/Pages/FAQ.ctp:131
 msgid "¿Cómo puedo modificar los datos de mi perfil?"
 msgstr ""
 
-#: View/Pages/faq.ctp:132
+#: View/Pages/FAQ.ctp:132
 msgid ""
 "Debe dirigirse a la parte del menú situado en su lateral izquierdo y hacer "
 "clic en ‘Datos personales’, ahí podrá actualizar todos sus datos excepto el "
 "teléfono."
 msgstr ""
 
-#: View/Pages/faq.ctp:133
+#: View/Pages/FAQ.ctp:133
 msgid "¿Cómo puedo cerrar sesión en Winvestify?"
 msgstr ""
 
-#: View/Pages/faq.ctp:134
+#: View/Pages/FAQ.ctp:134
 msgid ""
 "Seleccione el icono de usuario en la parte superior derecha y pulse en "
 "\"Salir\". En caso, de que su cuenta se quede  inactiva durante un tiempo "
 "prolongado,  la sesión  caducará automáticamente."
 msgstr ""
 
-#: View/Pages/faq.ctp:144
+#: View/Pages/FAQ.ctp:144
 msgid "Drop us a line and we'll be delighted to help you"
 msgstr "Escríbenos por cualquier incidencia y te ayudaremos encantados"
 
-#: View/Pages/faq.ctp:145 View/Pages/investors.ctp:112
+#: View/Pages/FAQ.ctp:145 View/Pages/investors.ctp:112
 msgid "Contact Us"
 msgstr "Contáctanos"
 
@@ -3091,7 +3095,7 @@ msgstr ""
 msgid "Mortgage Loan"
 msgstr "Préstamo hipotecario"
 
-#: View/Pages/platforms.ctp:719
+#: View/Pages/platforms.ctp:725
 msgid "Colateral"
 msgstr ""
 
@@ -3610,17 +3614,6 @@ msgstr ""
 "Formato incorrecto. Su contraseña debe tener un mínimo de 8 caracteres, "
 "contener caracteres menusculas y mayusculas y un número\n"
 " "
-
-#~ msgid ""
-#~ "Our mission is to help investors minimize the risks of investing in the "
-#~ "P2P Lending market\n"
-#~ "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand increase their earnings. We "
-#~ "support continuous, global growth of a dynamic crowdlending market,\n"
-#~ "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tboth by market size and investors"
-#~ msgstr ""
-#~ "Nacemos con el propósito de ayudar a los inversores a minimizar su riesgo "
-#~ "y aumentar su rentabilidad. Favorecemos que el mercado de Crowdlending "
-#~ "siga creciendo y gane más adeptos"
 
 #~ msgid "You linked your account of platform "
 #~ msgstr "Ha enlazado su cuenta de la plataforma"
