@@ -28,7 +28,7 @@
 								"ita" => "Italiano"
 								);
 	
-	$usedLanguage = $this->requestAction('users/readUsedLanguage');				// read language from Cookie
+	$usedLanguage = $this->requestAction('readUsedLanguage');				// read language from Cookie
 	
 	$languageCount = count($supportedLanguages);	
 	$tempArray = array($usedLanguage => $supportedLanguages[$usedLanguage]);
@@ -46,7 +46,7 @@
 	foreach ($listSupportedLanguages as $key=>$language) {
 ?>
 		<li>
-			<a class="flag-language" href="/users/changeDisplayLanguage" id="<?php echo $key?>">
+			<a class="flag-language" href="/changeDisplayLanguage" id="<?php echo $key?>">
 				<img src="/img/flags/<?php echo $key?>.png"/>
 				&nbsp;<?php echo $language?>
 			</a>
