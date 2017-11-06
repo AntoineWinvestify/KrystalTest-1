@@ -39,7 +39,9 @@
  *
  * 2017-09-29 version_0.7
  * Integration of downloading amortization tables with Gearman
- *
+ * 
+ * 2017-03-11 Version_0.8
+ * Download all investment in function getPfpFiles
  */
 
 /**

@@ -24,6 +24,10 @@
  * 
  * 2017-08-25
  * Created
+ * 
+ * 2017-03-11
+ * Header added in amortization tables.
+ * 
  */
 
 /**
