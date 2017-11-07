@@ -236,7 +236,7 @@ $this->resetTestEnvironment();      // Temporary function
 // CHECK THE FILTERCONDITION for status
         $filterConditions = array(
                                 'linkedaccount_id' => $linkedaccount_id,
-                               //     "investment_status" => ,
+                                    "investment_statusOfloan" => WIN_LOANSTATUS_ACTIVE,
                                 );
 
 	$investmentListResult = $this->Investment->find("all", array( "recursive" => -1,
@@ -346,122 +346,114 @@ echo "---------> ANALYZING NEW LOAN\n";
                             $this->variablesConfig[$transactionDataKey]['state'] = WIN_FLOWDATA_VARIABLE_DONE;  // Mark done
                         } 
                     }              
-            print_r($database);
-            unset($database);
-            unset($investmentId);      
-            unset($variablesConfigStatus);
                 }
 // Now start consolidating the results, these are to be stored in the investment table (variable part)
 // check if variable is already defined: loading of data in investment and payment, globalcashflowdata
 
-                                    $internalVariableToHandle = array(12,17,47,34,45,44,36,46,66,67,43);  
+                $internalVariableToHandle = array(12,17,47,34,45,44,36,46,66,67,43);  
 
-                                    foreach ($internalVariableToHandle as $item) {
-                                        if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17] 
-                       //                     print_r($this->variablesConfig[$item]);
-                                            $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
-                                            $functionToCall = $this->variablesConfig[$item]['function'];
-                                            $database[$varName[0]][$varName[1]] =  $this->$functionToCall($database);
-                                            $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                
-                                        }                     
-                                    }
-// Now start consolidating the results, these are to be stored in the investment table (variable part)
-// check if variable is already defined:
+                foreach ($internalVariableToHandle as $item) {
+                    if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17] 
+    //                     print_r($this->variablesConfig[$item]);
+                        $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                        $functionToCall = $this->variablesConfig[$item]['function'];
+                        $database[$varName[0]][$varName[1]] =  $this->$functionToCall($database);
+                        $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                
+                    }                     
+                }
+    // Now start consolidating the results, these are to be stored in the investment table (variable part)
+    // check if variable is already defined:
 
-                                    $database['investment']['linkedaccount_id'] = $linkedaccountId;
-                                    if ($newLoan == YES) {
-                                        print_r($database['investment']);
-                                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";    
-                                        $resultCreate = $this->Investment->createInvestment($database['investment']);
+                $database['investment']['linkedaccount_id'] = $linkedaccountId;
+                if ($newLoan == YES) {
+                    print_r($database['investment']);
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";    
+                    $resultCreate = $this->Investment->createInvestment($database['investment']);
 
-                                        if ($resultCreate[0]) {
-                                            $investmentId = $resultCreate[1];
-                                            echo "Saving new loan in with investmentId = $investmentId, Done\n";
-                                            $database['investment']['id'] = $resultCreate[1];
-                                        }
-                                        else {
-                                            if (Configure::read('debug')) {
-                                               echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
-                                            }
-                                        }
+                    if ($resultCreate[0]) {
+                        $investmentId = $resultCreate[1];
+                        echo "Saving new loan in with investmentId = $investmentId, Done\n";
+                        $database['investment']['id'] = $resultCreate[1];
+                    }
+                    else {
+                        if (Configure::read('debug')) {
+                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
+                        }
+                    }
 
-                                    }
-                                    else {
-                                        $database['investment']['id'] = $investmentId;
-                                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing new data to already existing investment ... ";                 
-                                        $result = $this->Investment->save($database['investment']);
-                                        if ($result) {
-                                            echo "Saving existing loan with investmentId = $investmentId, Done\n";
-                                        }
-                                        else {
-                                            if (Configure::read('debug')) {
-                                               echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
-                                            }
-                                        }                        
-                                    }
+                }
+                else {
+                    $database['investment']['id'] = $investmentId;
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing new data to already existing investment ... ";                 
+                    $result = $this->Investment->save($database['investment']);
+                    if ($result) {
+                        echo "Saving existing loan with investmentId = $investmentId, Done\n";
+                    }
+                    else {
+                        if (Configure::read('debug')) {
+                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
+                        }
+                    }                        
+                }
 
-                                    if (!empty($database['payment'])) {  // NOT NEEDED
-                                        echo "PAYMENT DATA IS \n";
-                                        print_r($database['payment']);
-                                        $this->Payment = ClassRegistry::init('Payment');
-                                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";            
-                                        $database['payment']['investment_id'] = $investmentId;
-                                        $database['payment']['date'] = $dateKey;
-                                        $this->Payment->create();            
-                                        if ($this->Payment->save($database['payment'], $validate = true)) {
-                                            echo "===> SAVING FOLLOWING PAYMENT DATA:";
-                                            print_r($database['payment']);
-                                            echo "Done\n";
-                                        }
-                                        else {
-                                            if (Configure::read('debug')) {
-                                               echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId']  . "\n";
-                                            }
-                                        }
-                                    }
+                if (!empty($database['payment'])) {  // NOT NEEDED
+//                    echo "PAYMENT DATA IS \n";
+//                    print_r($database['payment']);
+                    $this->Payment = ClassRegistry::init('Payment');
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";            
+                    $database['payment']['investment_id'] = $investmentId;
+                    $database['payment']['date'] = $dateKey;
+                    $this->Payment->create();            
+                    if ($this->Payment->save($database['payment'], $validate = true)) {
+//                        echo "===> SAVING FOLLOWING PAYMENT DATA:";
+//                        print_r($database['payment']);
+                        echo "Done\n";
+                    }
+                    else {
+                        if (Configure::read('debug')) {
+                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId']  . "\n";
+                        }
+                    }
+                }
 
-                        // Consolidate the data on platform level      
-                //                    $this->consolidatePlatformData($database);
-                                    if (!empty($database['userinvestmentdata'])) {  // NOT NEEDED
-                                        $database['userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
-                                        $database['userinvestmentdata']['date'] = $dateKey;
-                                        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-                                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
-                                        $this->Userinvestmentdata->create();            
-                                        if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
-                                            echo "Done\n";
-                                            $userInvestmentDataId = $this->Userinvestmentdata->id;
-                                        }
-                                        else {
-                                            if (Configure::read('debug')) {
-                                               echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
-                                            }
-                                        } 
-                                    }
+    // Consolidate the data on platform level      
+    //                    $this->consolidatePlatformData($database);
+                if (!empty($database['userinvestmentdata'])) {  // NOT NEEDED
+                    $database['userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+                    $database['userinvestmentdata']['date'] = $dateKey;
+                    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
+                    $this->Userinvestmentdata->create();            
+                    if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
+                        echo "Done\n";
+                        $userInvestmentDataId = $this->Userinvestmentdata->id;
+                    }
+                    else {
+                        if (Configure::read('debug')) {
+                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+                        }
+                    } 
+                }
 
-                                    if (!empty($database['globalcashflowdata'])) {               
-                                        $database['globalcashflowdata']['userinvestmentdata_id'] = $linkedaccountId;
-                                        $database['globalcashflowdata']['date'] = $dateKey;
-                                        $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-                                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
-                                        $this->Globalcashflowdata->create();            
-                                        if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
-                                            echo "Done\n";
-                                        }
-                                        else {
-                                            if (Configure::read('debug')) {
-                                               echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
-                                            }
-                                        }
-                                    }
-                    
-                 
-            
+                if (!empty($database['globalcashflowdata'])) {               
+                    $database['globalcashflowdata']['userinvestmentdata_id'] = $linkedaccountId;
+                    $database['globalcashflowdata']['date'] = $dateKey;
+                    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
+                    $this->Globalcashflowdata->create();            
+                    if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
+                        echo "Done\n";
+                    }
+                    else {
+                        if (Configure::read('debug')) {
+                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
+                        }
+                    }
+                }
             print_r($database);
             unset($database);
             unset($investmentId);      
             unset($variablesConfigStatus);
-           
             }
         }
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n"; 
