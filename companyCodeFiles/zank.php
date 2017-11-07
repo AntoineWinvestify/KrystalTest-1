@@ -177,7 +177,7 @@ class zank extends p2pCompany {
                 ]                                           // This is an "empty variable name". So "type" is
             ], 
             "D" =>  [
-                "name" => "investment_loanOriginator"
+                "name" => "investment_originalDuration"
             ],
             "E" => [
                 [
@@ -189,7 +189,6 @@ class zank extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ],
-                //MORE THINKING, CONSULT WITH Antoine
                 [
                     "type" => "investment_loanType",                                      // 
                     "inputData" => [                                                   // Get the "original" Mintos concept, which is used later on
@@ -198,36 +197,18 @@ class zank extends p2pCompany {
                             ],
                     "functionName" => "extractDataFromString",
                 ],
+                [
+                    "type" => "investment_currency",                        // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ],
                 "callback" => [
                     [
                         "type" => "investment_loanType",
                         "functionName" => "translateLoanType"
                     ]    
                 ]
-            ], 
-            /*"F" => [// NOT FINISHED YET
-                [
-                    "name" => "dummy_cuarter",                                      // Winvestify standardized name   OK
-                    "inputData" => [                                                    // List of all concepts that the platform can generate
-                                                                                        // format ["concept string platform", "concept string Winvestify"]
-                                "input3" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
-                                            1 => ["Investment principal increase" => "Primary_market_investment"],
-                                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
-                                            3 => ["Investment principal repayment" => "Capital_repayment"],    //OK
-                                            4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
-                                            5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
-                                            6 => ["Interest income" => "Regular_gross_interest_income"],       //
-                                            7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
-                                            8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
-                                            9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
-                                            10 => ["Discount/premium for secondary market" => "Income_secondary_market"],   // For seller
-                                            11 => ["Discount/premium for secondary market" => "Cost_secondary_market"],     // for buyer
-                                            ] 
-                            ],
-                    "functionName" => "getTransactionDetail",
-                ]
             ],
-            "G" => [
+            /*"G" => [
                 [
                     "name" => "amount",                                            // This is an "empty variable name". So "type" is
                     "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
@@ -237,35 +218,22 @@ class zank extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ]
-            ],
-            "G" => [
+            ],*/
+            "I" => [
                 [
-                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
+                    "type" => "investment_commissionPaid",                                            // This is an "empty variable name". So "type" is
                     "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
                                 "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
                                 "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
-                ],
-            ],
-            "H" => [
-                [
-                    "type" => "investment.currency",                                    // Winvestify standardized name  OK
-                    "functionName" => "getCurrency",
-                ]
-            ],
-            "G" =>  [
-                [
-                    "type" => "investment.nextPaymentAmount",                           // Winvestify standardized name
-                    "inputData" => [
-				"input2" => ".",
-                                "input3" => ",",
-                                "input4" => 2
+                                "input4" => 4
                                 ],
                     "functionName" => "getAmount",
                 ]
-            ],*/
+            ],
+            ///CHANGEEEE WITH REAL VALUE
+            "J" =>  [
+                "name" => "investment_originalLoanState"
+            ]
         ];
 
     protected $amortizationConfigParms = array ('OffsetStart' => 1,
