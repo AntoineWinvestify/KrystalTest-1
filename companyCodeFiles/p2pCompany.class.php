@@ -1625,7 +1625,7 @@ class p2pCompany {
     /**
      * 
      * 
-     * @param array $structure 
+     * @param array $structure in db
      * @param string $tag elements to compare
      * @param Dom $nodeToClone node that contains the element to compare
      * @param string $attribute attribute of the element to compare
@@ -1641,7 +1641,7 @@ class p2pCompany {
         $type = false; //Error type
         
         if($structure){
-            
+            //echo $structure['Structure']['structure_html'];
             $newStructure = new DOMDocument;  //Get the old structure in db
             $newStructure->loadHTML($structure['Structure']['structure_html']);
             $newStructure->preserveWhiteSpace = false;
@@ -1659,6 +1659,7 @@ class p2pCompany {
             if($containerData){
                 if($containerData['attribute'] && $containerData['attrValue']){
                     $nodeToClone = $this->getElements($containerData['dom'], $containerData['tag'], $containerData['attribute'], $containerData['attrValue'])[0];
+                    print_r($nodeToClone); 
                 } else {
                     $nodeToClone = $containerData['dom']->getElementsByTagName($containerData['tag'])[0];
                 }
@@ -1673,7 +1674,9 @@ class p2pCompany {
              }else{
                 $originalStructure = $this->getElements($saveStructure, $tag, $attribute, $attrValue);
             }
-            
+            /*echo $trsNewStructure[$node1Index]->nodeValue;
+            echo "SEPARO" . HTML_ENDOFLINE;
+            echo $originalStructure[$node2Index]->nodeValue;*/
             $structureRevision = $this->structureRevision($trsNewStructure[$node1Index], $originalStructure[$node2Index]);
 
             echo 'structure: ' . $structureRevision . '<br>';
