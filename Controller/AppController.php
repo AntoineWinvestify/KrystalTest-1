@@ -843,42 +843,4 @@ Configure::write('debug', 2);
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
     }
-    
-    /**
-    *
-    *	Changes the display language for the user
-    *
-    *	@param 		string 	$language	ISO string for language 
-    *	@return 	boolean	true
-    *
-    */
-    function changeDisplayLanguage() {
-
-            if (! $this->request->is('ajax')) {
-                    throw new
-                            FatalErrorException(__('You cannot access this page directly'));
-            }
-
-            $this->layout = 'ajax';
-            $this->disableCache();
-
-            $newLanguage = $_REQUEST['id'];			// two letter language code	
-
-            $this->Cookie->write('p2pManager',	array('language' => $newLanguage));						// values are stored encrypted
-            $this->Session->write('Config.language', $newLanguage);
-    }
-    
-    /**
-    *
-    *	returns the language as defined in a cookie of the user, or "".
-    *
-    */
-    public function readUsedLanguage() {
-        if ($this->request->is('requested')) {
-                    if (empty($this->Cookie->read('p2pManager.language') == true)) {
-                            return "en";
-                    }
-                    return $this->Cookie->read('p2pManager.language');
-            }
-    }
 }

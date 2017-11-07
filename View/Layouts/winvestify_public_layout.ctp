@@ -157,7 +157,7 @@
                                 </a>
                             </li>
                             <li class="dropdown" style="margin-top:0px; display:inline-block">
-                                <?php echo $this->element('languageWidget') ?>
+                                <?php //echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
                         </ul>
