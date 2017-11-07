@@ -42,6 +42,19 @@
  * parallelization                                                      [OK, tested]
  */
 class finbee extends p2pCompany {
+    
+    protected $valuesTransaction = [
+        "A" => [
+            [
+                "type" => "date", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "Y-M-D",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        
+    ];
 
     protected $valuesAmortizationTable = [
             1 =>  [
