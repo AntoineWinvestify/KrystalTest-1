@@ -875,18 +875,24 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
 
     /**
      * Search for a something within a string, starting after $search
-     * and ending when $seperator is found
+     * and ending when $separator is found
      *
-     * @param string    $input
-     * @param string    $search
+     * @param string    $input      It is the string to which we search the information
+     * @param string    $search     The character to search
      * @param string    $separator   The separator character
-     * @return string   $extractedString
+     * @return string   $extractedString    The value we were looking for
      *
      */
     private function extractDataFromString($input, $search, $separator ) {
         $position = stripos($input, $search) + strlen($search);
-        $substrings = explode($separator, substr($input, $position));
-        return $substrings[0];
+        if (empty($separator)) {
+            $value = substr($input, $position);
+        } 
+        else {
+            $substrings = explode($separator, substr($input, $position));
+            $value = $substrings[0];
+        }
+        return $value;
     }
 
     /**
