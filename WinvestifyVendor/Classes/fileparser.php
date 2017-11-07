@@ -374,6 +374,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
+                
+                if ($key == "callback") continue;
+                
                 // check for subindices and construct them
                 if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
