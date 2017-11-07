@@ -60,20 +60,6 @@ class twino extends p2pCompany {
                 "functionName" => "normalizeDate",
             ],
         ],
-        "B" => [
-            [
-                "type" => "purpose", // trick to get the complete cell data as purpose
-                "inputData" => [
-                    "input2" => "", // May contain trailing spaces
-                    "input3" => ",",
-                ],
-                "functionName" => "extractDataFromString",
-            ],
-            [
-                "type" => "loanId", // Winvestify standardized name 
-                "functionName" => "getHash", // An internal loanId is generated based on md5 hash of project name
-            ]
-        ],
         "C" => [
             "name" => "payment",
         ],
