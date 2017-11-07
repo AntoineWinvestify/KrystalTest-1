@@ -92,68 +92,68 @@ class zank extends p2pCompany {
     private $url;
     private $start = 0;
     
-    protected $transactionConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
+    protected $transactionConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                        //        'separatorChar' => ";",
+                                'sortParameter' => array("date","investment_loanId")   // used to "sort" the array and use $sortParameter(s) as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                         //       'separatorChar' => ";",
+                                'sortParameter' => array("investment_loanId")       // used to "sort" the array and use $sortParameter as prime index.
+                                 );
     
     // NOT FINISHED
-   protected $valuesTransaction = [     // All types/names will be defined as associative index in array
-            "A" =>  [
-                [
-                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
-                    "inputData" => [
-				"input2" => "D/M/Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]                                        // Winvestify standardized name
-            ],
-            "B" => [
-                [
-                "name" => "get_detail", // Winvestify standardized name   OK
-                "inputData" => [// List of all concepts that the platform can generate
-                    // format ["concept string platform", "concept string Winvestify"]
-                    "input3" => [
-                        0 => ["ingreso" => "Cash_deposit"],
-                        1 => ["retirado" => "Cash_withdrawal"],
-                        2 => ["inversion" => "Primary_market_investment"],
-                        3 => ["principal" => "Capital_repayment"],
-                        4 => ["intereses" => "Regular_gross_interest_income"],
-                        5 => ["recargo" => "Delayed_interest_income"],
-                        6 => ["promocion" => "Incentive_and_bonus"],
-                        7 => ["comision" => "Commission"],
-                    ]
-                ],
+    
+    protected $valuesTransaction = [
+        "A" =>  [
+            [
+                "type" => "date",                                                  // Winvestify standardized name  OK
+                "inputData" => [
+                            "input2" => "D/M/Y",
+                            ],
+                "functionName" => "normalizeDate",
+            ] 
+        ],
+        "B" => [
+            [
+                "type" => "transactionDetail",                                      // Winvestify standardized name   OK
+                "inputData" => [                                                    // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
+                            "input3" => [
+                                0 => ["ingreso" => "Cash_deposit"],
+                                1 => ["retirado" => "Cash_withdrawal"],
+                                2 => ["inversion" => "Primary_market_investment"],
+                                3 => ["principal" => "Capital_repayment"],
+                                4 => ["intereses" => "Regular_gross_interest_income"],
+                                5 => ["recargo" => "Delayed_interest_income"],
+                                6 => ["promocion" => "Incentive_and_bonus"],
+                                7 => ["comision" => "Commission"],
+                            ]                    
+                        ],
                 "functionName" => "getTransactionDetail",
-            ]                                                 // Winvestify standardized name  OK
-            ],
-            "C" => [
-                [
-                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                                "input4" => 4
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ], 
-            "D" =>  [
-                "type" => "loanId",  
             ]
-        ];
+        ],
+        "C" => [
+            [
+                "type" => "amount",                                            // This is an "empty variable name". So "type" is
+                "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                            "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                            "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                            "input4" => 4
+                            ],
+                "functionName" => "getAmount",
+            ]
+        ], 
+        "D" =>  [
+            "name" => "investment_loanId",  
+        ]
+    ];
 
     // NOT FINISHED
     protected $valuesInvestment = [     // All types/names will be defined as associative index in array
             "A" =>  [
                 [
-                                
                     "type" => "investment_investmentDate",                  // Winvestify standardized name
                     "inputData" => [
 				"input2" => "D.M.Y",
@@ -191,15 +191,21 @@ class zank extends p2pCompany {
                 ],
                 //MORE THINKING, CONSULT WITH Antoine
                 [
-                    "type" => "investment_typeOfInvestment",                                      // 
+                    "type" => "investment_loanType",                                      // 
                     "inputData" => [                                                   // Get the "original" Mintos concept, which is used later on
-                                "input2" => "",                                        // 
-                                "input3" => "Loan ID:",
+                                "input2" => "€",                                        // 
+                                "input3" => "",
                             ],
                     "functionName" => "extractDataFromString",
+                ],
+                "callback" => [
+                    [
+                        "type" => "investment_loanType",
+                        "functionName" => "translateLoanType"
+                    ]    
                 ]
             ], 
-            "F" => [// NOT FINISHED YET
+            /*"F" => [// NOT FINISHED YET
                 [
                     "name" => "dummy_cuarter",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
@@ -259,7 +265,7 @@ class zank extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ]
-            ],
+            ],*/
         ];
 
     protected $amortizationConfigParms = array ('OffsetStart' => 1,
@@ -1731,6 +1737,22 @@ class zank extends p2pCompany {
 
         $structureRevision = $this->verify_dom_structure($node1, $node2);
         return $structureRevision;
+    }
+    
+    /**
+     * Function to translate loan type for Zank file
+     * @param string $inputData It is string to convert to integer
+     * @return int It is the loan type converted to integer
+     */
+    public function translateLoanType($inputData) {
+        $data = WIN_LOANSTATUS_MANUALINVESTMENT;
+        $inputData = strtoupper(trim($inputData));
+        switch ($inputData) {
+            case "AUTO":
+                $data = WIN_LOANSTATUS_AUTOMATEDINVESTMENT;
+                break;
+        }
+        return $data;
     }
 
 }
