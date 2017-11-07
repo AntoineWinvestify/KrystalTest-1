@@ -22,7 +22,7 @@
                 <div class="g-margin-b-20--xs">
                     <?php
                     echo $this->Form->input('name', array('type' => 'text', 
-                                                        'class' => "username form-control blue_noborder4 s-form-v2__input", 
+                                                        'class' => "username form-control blue s-form-v2__input", 
                                                         'placeholder' => __("Your Name"), 
                                                         'label' => false));
                     ?>
@@ -35,7 +35,7 @@
                 <div class="g-margin-b-20--xs">
                     <?php
                     echo $this->Form->input('email', array('type' => 'email', 
-                                                            'class' => "useremail form-control blue_noborder4 s-form-v2__input", 
+                                                            'class' => "useremail form-control blue s-form-v2__input", 
                                                             'placeholder' => __("Your Email"), 
                                                             'label' => false));
                     ?>
@@ -50,7 +50,7 @@
                     echo $this->Form->input('Subject', array(
                                                 'label' => false,
                                                 'options' => $subjectContactForm,
-                                                'class' => 'blue_noborder4 form-control s-form-v2__input'
+                                                'class' => 'blue form-control s-form-v2__input'
                     ));
                     ?>
                 </div>
@@ -61,7 +61,7 @@
                 <label><?php echo __('Message') ?>:</label>
                 <?php
                 echo $this->Form->textarea('text', array(
-                    'class' => "usermsg blue_noborder4 form-control s-form-v2__input", 
+                    'class' => "usermsg blue form-control s-form-v2__input", 
                     'rows' => '8', 
                     'placeholder' => __("Your message"), 
                     'label' => false, 
@@ -82,7 +82,7 @@
                     <div class='col-xs-12 col-sm-8 col-md-8 col-lg-8' style="margin-top: 10px;">
                         <?php 
                             echo $this->Form->input('captcha', array('label' => false, 
-                                                                    'class' => 'blue_noborder4 form-control s-form-v2__input'));
+                                                                    'class' => 'blue form-control s-form-v2__input'));
                         ?>
                     </div>
                 </div>
