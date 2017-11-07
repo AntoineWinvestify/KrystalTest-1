@@ -131,7 +131,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $files = $data['files'];
             // First analyze the transaction file(s)
             $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
-
+            
 // do this first for the transaction file and then for investmentfile(s)
             $fileTypesToCheck = array (0 => WIN_FLOW_TRANSACTION_FILE,
                                        1 => WIN_FLOW_INVESTMENT_FILE,
@@ -192,6 +192,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     else {
                         switch ($actualFileType) {
                             case WIN_FLOW_INVESTMENT_FILE:
+                                $this->callbackInit($tempResult, $parserConfigFile, $companyHandle);
                                 $totalParsingresultInvestments = $tempResult;                                
                                 break;
                             case WIN_FLOW_TRANSACTION_FILE:
@@ -210,6 +211,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         }
 
                         try {
+                            
                             $callBackResult = $companyHandle->fileAnalyzed($approvedFile, $actualFileType, $tempResult);       // Generate callback
                         }
                         catch (Exception $e){
@@ -258,7 +260,63 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 //        print_r($data['tempArray'][885]['parsingResultInvestments']);
         print_r($data['tempArray'][885]['parsingResultTransactions']);
         return json_encode($data);
-
+    }
+    
+    /**
+     * Function to change values depending on callback functions for each company
+     * @param array $tempResult It contains the value to change
+     * @param array $valuesFile It contains the callback functions
+     * @param object $companyHandle It is the company instance
+     * @return It nothing if the callback array is empty
+     */
+    public function callbackInit(&$tempResult, $valuesFile, $companyHandle) {
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
+        } 
+        $callbacks = $this->getCallbackFunction($valuesFile);
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ ;
+            print_r($callbacks);
+        }
+        if (empty($callbacks)) {
+            return;
+        }
+        $newArray = [];
+        $arrayiter = new RecursiveArrayIterator($tempResult);
+        $iteritor = new RecursiveIteratorIterator($arrayiter);
+        
+        foreach ($iteritor as $key => $value) {
+            if (!empty($callbacks[$key])) {
+                $function = $callbacks[$key];
+                $valueConverted =  $companyHandle->$function($value);
+                $currentDepth = $iteritor->getDepth();
+                for ($subDepth = $currentDepth; $subDepth > 0; $subDepth--) {
+                    // Get the current level iterator
+                    $subIterator = $iteritor->getSubIterator($subDepth); 
+                    // If we are on the level we want to change, use the replacements ($value) other wise set the key to the parent iterators value
+                    $subIterator->offsetSet($subIterator->key(), ($subDepth === $currentDepth ? $valueConverted : $iteritor>getSubIterator(($subDepth+1))->getArrayCopy())); 
+                }
+                array_push($newArray, $iteritor->getArrayCopy());
+            }
+        }
+        $tempResult = $newArray;
+    }
+    
+    /**
+     * Function to get callbacks from values of a company
+     * @param array $values The are the transaction or investment values
+     * @return array The callback functions
+     */
+    public function getCallbackFunction($values) {
+        $callbacks = [];
+        foreach ($values as $key => $valueCallback) {
+            if (array_key_exists("callback", $valueCallback)) {   
+                foreach ($valueCallback["callback"] as $value) {
+                    $callbacks[$value["type"]] = $value["functionName"];
+                }
+            }
+        }
+        return $callbacks;
     }
 }
 
