@@ -150,7 +150,7 @@ $this->resetTestEnvironment();      // Temporary function
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                 }
                 $this->GearmanClient->runTasks();
-
+                
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
