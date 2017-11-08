@@ -1651,6 +1651,7 @@ hr.nomargin {
                                 @media (min-width: 1024px) and (max-width: 1200px) {
                                     #features_right {
                                         top: 20px !important;
+                                        left: -120px;
                                     }
                                     #featuresButton {
                                         margin-top: 100px;
@@ -1665,7 +1666,7 @@ hr.nomargin {
                                         left: 50px;
                                     }
                                     #screen {
-                                        left: -170px !important;
+                                        left: -200px !important;
                                         top: 90px;
                                     }
                                 }
