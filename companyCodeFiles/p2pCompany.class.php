@@ -1659,7 +1659,7 @@ class p2pCompany {
             if($containerData){
                 if($containerData['attribute'] && $containerData['attrValue']){
                     $nodeToClone = $this->getElements($containerData['dom'], $containerData['tag'], $containerData['attribute'], $containerData['attrValue'])[0];
-                    print_r($nodeToClone); 
+                    //print_r($nodeToClone); 
                 } else {
                     $nodeToClone = $containerData['dom']->getElementsByTagName($containerData['tag'])[0];
                 }
@@ -1786,7 +1786,7 @@ class p2pCompany {
      * @param array $loanReferenceList loan reference id list that we have in our marketplace
      * @param array $investment single investment that we compare
      */
-    public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
+    public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList, $investment){  
         //print_r($investment);
         //print_r($loanReferenceList);
          foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
