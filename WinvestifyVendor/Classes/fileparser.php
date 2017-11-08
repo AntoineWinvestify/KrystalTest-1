@@ -882,6 +882,25 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             return $result;           
         }     
     }
+    
+    /**
+     * Function to get details of transaction from multiple cells together
+     * @param string $input It is the cell value
+     * @param array $config Winvestify standardized concept
+     * @param array $inputValues Values needed to calculate transaction details
+     * @return array  [0] => Winvestify standardized concept
+     *                [1] => array of parameter, i.e. list of variables in which the result
+     *                         of this function is to be stored. In practice it is normally
+     *                         only 1 variable, but the same value could be replicated in many
+     *                         variables.
+     *                  The variable name is read from "internal variable" $this->transactionDetails.
+     */
+    private function getMultipleInputTransactionDetail($input, $config, ...$inputValues) {
+        foreach ($inputValues as $inputValue) {
+            $input .= " " . $inputValue ;
+        }
+        return $this->getTransactionDetail(trim($input), $config);
+    }
 
     /**
      * Search for a something within a string, starting after $search

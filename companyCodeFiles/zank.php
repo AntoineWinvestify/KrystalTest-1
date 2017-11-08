@@ -120,7 +120,7 @@ class zank extends p2pCompany {
             [
                 "type" => "transactionDetail",                                      // Winvestify standardized name   OK
                 "inputData" => [                                                    // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
-                            "input3" => [
+                            "input2" => [
                                 0 => ["ingreso" => "Cash_deposit"],
                                 1 => ["retirado" => "Cash_withdrawal"],
                                 2 => ["inversion" => "Primary_market_investment"],
