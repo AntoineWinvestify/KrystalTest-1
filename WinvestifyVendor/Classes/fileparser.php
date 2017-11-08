@@ -80,6 +80,29 @@ class Fileparser {
                                     RUB => ["RUB", "₽"],
                                     );
 
+    // dictionary lookup for trying to identify an unknown concept
+    protected $dictionaryWords = array('tax'    => WIN_CONCEPT_TYPE_COST,
+                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
+                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
+                                'payment'       => WIN_CONCEPT_TYPE_COST,
+                                'withdraw'      => WIN_CONCEPT_TYPE_COST,
+                                'back fee'      => WIN_CONCEPT_TYPE_COST,
+                                'back tax'      => WIN_CONCEPT_TYPE_COST,
+                                'cost'          => WIN_CONCEPT_TYPE_COST,
+                                'purchase'      => WIN_CONCEPT_TYPE_COST,
+                                'bid'           => WIN_CONCEPT_TYPE_COST,
+                                'auction'       => WIN_CONCEPT_TYPE_COST,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
+                                'loan'          => WIN_CONCEPT_TYPE_COST,
+                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
+                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'earning'       => WIN_CONCEPT_TYPE_INCOME
+
+                            );   
+    
+    
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
@@ -311,7 +334,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $objPHPExcel = PHPExcel_IOFactory::load($file);
         }
 
-        ini_set('memory_limit','1048M');
+        ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
@@ -336,11 +359,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     private function saveExcelToArray($rowDatas, $values, $totalRows) {
         $tempArray = [];
         $maxRows = count($rowDatas);
+
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $this->config['offsetStart']) {
                 break;
             }
+            echo "unset to happen, value of cell = " . 
+                    print_r($rowDatas[$key][2]);
+            echo "\n";
             unset($rowDatas[$key]);
             $i++;
         }
@@ -349,7 +376,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      
         for ($i = $maxRows; $i > 0; $i--) {
             if (empty($rowDatas[$i]["A"])) {
-//                echo "Deleting some shit, i = " . ($i) . "\n";
                 unset($rowDatas[$i]);
             }
         }   
@@ -547,28 +573,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * also check for the presence of loanId, and + or - sign of field
      */
     private function analyzeUnknownConcept($input, $config = null) {
-
-    //    read the unknown concept
         $result = 0;
-        $dictionaryWords = array('tax'          => WIN_CONCEPT_TYPE_COST,
-                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
-                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
-                                'payment'       => WIN_CONCEPT_TYPE_COST,
-                                'back fee'      => WIN_CONCEPT_TYPE_COST,
-                                'back tax'      => WIN_CONCEPT_TYPE_COST,
-                                'cost'          => WIN_CONCEPT_TYPE_COST,
-                                'purchase'      => WIN_CONCEPT_TYPE_COST,
-                                'bid'           => WIN_CONCEPT_TYPE_COST,
-                                'auction'       => WIN_CONCEPT_TYPE_COST,
-                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
-                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
-                                'loan'          => WIN_CONCEPT_TYPE_COST,
-                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
-                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
-                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
-                                'earning'       => WIN_CONCEPT_TYPE_INCOME
 
-                            );
+        
         foreach ($dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found
@@ -784,7 +791,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             return $result;
         }
         else {
- //           echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
+            echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
         }
     } 
     
@@ -862,7 +869,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             return $result;
         }
         else {
- //           echo "unknown concept, so start doing some Guessing for concept $input\n";  
+            echo "unknown concept, so start doing some Guessing for concept $input\n";  
          // an unknown concept was found, do some intelligent guessing about its meaning
             $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
             

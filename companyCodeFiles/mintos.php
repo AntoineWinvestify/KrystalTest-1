@@ -90,7 +90,7 @@ class mintos extends p2pCompany {
                     "type" => "transactionDetail",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
-                                "input3" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
+                                "input2" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
                                             1 => ["Investment principal increase" => "Primary_market_investment"],
                                             2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
                                             3 => ["Investment principal repayment" => "Capital_repayment"],    //OK
@@ -100,8 +100,8 @@ class mintos extends p2pCompany {
                                             7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
-                                            10 => ["Discount/premium for secondary market" => "Income_secondary_market"],   // For seller
-                                            11 => ["Discount/premium for secondary market" => "Cost_secondary_market"],     // for buyer
+                                            10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
+                                            11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
                                             ]                      
                             ],
                     "functionName" => "getTransactionDetail",
@@ -135,9 +135,9 @@ class mintos extends p2pCompany {
                                             7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
-                                            10 => ["Discount/premium for secondary market" => "Income_secondary_market"],   // For seller
-                                            11 => ["Discount/premium for secondary market" => "Cost_secondary_market"],     // for buyer
-                                            ]                        
+                                            10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
+                                            11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
+                                            ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
                 ],                
@@ -220,7 +220,7 @@ class mintos extends p2pCompany {
              ],
             "J" =>  [
                 [
-                    "type" => "investment_nextPaymentAmount",               // Winvestify standardized name
+                    "type" => "investment_estimatedNextPayment",            // Winvestify standardized name
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ".",
@@ -233,22 +233,18 @@ class mintos extends p2pCompany {
                 "name" => "investment_LTV"                                  // Winvestify standardized name   OK
              ],
             "L" =>  [
-                [
-                    "type" => "investment_nominalInterestRate",             // Winvestify standardized name   OK
-                    "inputData" => [
-				"input2" => "D.M.Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]
+                    "name" => "investment_nominalInterestRate",             // Winvestify standardized name   OK
              ],
             "M" =>  [
-                "name" => "investment_totalInstalments"                     // Winvestify standardized name
+                "name" => "investment_numberOfInstalments"                     // Winvestify standardized name. This is, 
+                                                                            // at time of investing, the number of
+                                                                            // instalments.
              ],
             "N" =>  [
-                "name" => "investment_paidInstalments"                      // Winvestify standardized name
+                "name" => "investment_paidInstalments"                      // Winvestify standardized name OK
                 ],
             "O" =>  [
-                "name" => "investment_loanStatus"                           // Winvestify standardized name
+                "name" => "investment_originalState"                        // Winvestify standardized name
              ],
 
             "P" =>  [
@@ -266,18 +262,25 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ],
                 [
-                    "type" => "investment_paidInstalmentsProgressTwo",      // Winvestify standardized name
+                    "type" => "investment_paidInstalmentsProgress",      // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "#current.investment_paidInstalments",
-                                "input3" => "#current.investment_totalInstalments",
+                                "input3" => "#current.investment_numberOfInstalments",
                                 ],
                     "functionName" => "getProgressString",
                 ],
 
              ],
             "R" =>  [
-                                [
-                    "type" => "investment_investmentDate",                  // Winvestify standardized name
+                [
+                    "type" => "investment_myInvestmentDate",                  // Winvestify standardized name OK
+                    "inputData" => [
+				"input2" => "D.M.Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ],
+                [
+                    "type" => "investment_dateOfPurchase",                  // Winvestify standardized name OK
                     "inputData" => [
 				"input2" => "D.M.Y",
                                 ],
@@ -286,7 +289,7 @@ class mintos extends p2pCompany {
              ],
             "S" =>  [
                 [
-                    "type" => "investment_paymentsDone",                    // Winvestify standardized name  OK
+                    "type" => "investment_capitalRepaymentFromP2P",             // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ".",
@@ -297,7 +300,7 @@ class mintos extends p2pCompany {
              ],
             "T" =>  [
                 [
-                    "type" => "investment_outstandingPrincipal",            // Winvestify standardized name
+                    "type" => "investment_outstandingPrincipalFromP2P",            // Winvestify standardized name OK
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ".",
@@ -405,7 +408,7 @@ class mintos extends p2pCompany {
     ];
     
 
-    protected $valuesExpiredLoan = [                               // We are only interested in the loanId
+    protected $valuesExpiredLoan = [                               // We are only interested in the investment_loanId
         "A" => [
                 "name" => "investment_country"                                  // Winvestify standardized name  OK
              ], 
@@ -415,26 +418,22 @@ class mintos extends p2pCompany {
         // rest of information is NOT required for current implementation
     ];
     
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
+    protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                        //        'separatorChar' => ";",
                                 'sortParameter' => array("date","investment_loanId")   // used to "sort" the array and use $sortParameter(s) as prime index.
                                  );
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
-                                'sortParameter' => array("investment_loanId")       // used to "sort" the array and use $sortParameter as prime index.
+                                 'sortParameter' => array("investment_loanId")       // used to "sort" the array and use $sortParameter as prime index.
                                  );
     protected $amortizationConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"              // used to "sort" the array and use $sortParameter as prime index.
                                  );
   
     protected $expiredLoanConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
                           //      'sortParameter' => "investment_loanId"              // used to "sort" the array and use $sortParameter as prime index.
                                  ); 
      
