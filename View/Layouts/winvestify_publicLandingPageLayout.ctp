@@ -243,7 +243,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div style="font-size: 10px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Premio Mejor Fintech Andaluza')?></div>
+                                    <div style="font-size: 10px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Award for Best Andalusian Fintech')?></div>
                                 </div>
                             </div>
                         </div>
@@ -261,7 +261,7 @@
                         <div class="box-footer no-padding">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div style="font-size: 10px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Finalista Santander Open Challenge')?></div>
+                                    <div style="font-size: 10px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Finalist Santander Open Challenge')?></div>
                                 </div>
                             </div>
                         </div>
@@ -283,30 +283,30 @@
                     <p><?php echo __('The result is that the borrower gets financed at a more competitive price and the investor receives a higher return than other financial products.')?></p>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 50px;">
-                    <p style="font-size: 26px;color:black;font-weight: 500"><?php echo __('The Benefits')?></p>
+                    <p align="center" style="font-size: 26px;color:black;font-weight: 500"><?php echo __('The Benefits')?></p>
                     <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
                         <strong><?php echo __('Risk-adjusted Returns')?></strong><br/>
                         <?php echo __('P2P investments offer average annual returns of between 5% and 12%. P2P can offer stable, predictable, risk-adjusted returns.')?>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"  style="margin-bottom: 15px;">
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"  style="margin-bottom: 25px;">
                         <strong><?php echo __('New Asset Class')?></strong><br/>
                         <?php echo __('P2P providers have innovated by offering an efficient, low-cost method of accessing credit investments.')?>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 25px;">
                         <strong><?php echo __('Alternative Financing Vs Stock Market')?></strong><br/>
                         <?php echo __('The performance of assets are not correlated to stock market volatility. P2P assets are expected to perform better during an economic downturn in comparison to equities or bonds.')?>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"  style="margin-bottom: 15px;">
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"  style="margin-bottom: 25px;">
                         <strong><?php echo __('Income or Growth')?></strong><br/>
                         <?php echo __('Investors often have the choice of taking interest payments as an income, or for these payments to be reinvested, enabling capital growth.')?>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 25px;">
                         <strong><?php echo __('Diversification')?></strong><br/>
-                        <?php echo __('Make wise fractional investments in several loans across different P2P Platforms. Spread your money over many loans to reduce the risk of your investment.')?>
+                        <?php echo __('P2P Lending allows investors to diversify into an alternative asset class. Make wise fractional investments in several loans across different P2P Platforms.')?>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
-                        <strong><?php echo __('Diversification')?></strong><br/>
-                        <?php echo __('Make wise fractional investments in several loans across different P2P Platforms. Spread your money over many loans to reduce the risk of your investment.')?>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 25px;">
+                        <strong><?php echo __('Management')?></strong><br/>
+                        <?php echo __('Winvestify allows investors to connect their data to our dashboard for monitoring key metrics and taking of their investments.')?>
                     </div>
                 </div>
             </div>
