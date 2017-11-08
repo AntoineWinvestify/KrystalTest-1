@@ -1,6 +1,11 @@
 
 <!--========== PAGE CONTENT ==========-->
 <!-- Feedback Form -->
+<style>
+    .s-form-v2__input {
+        text-transform: none;
+    }
+</style>
 <div class="container">
     <div class="g-text-center--xs">
         <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Do you need help?')?></p>
