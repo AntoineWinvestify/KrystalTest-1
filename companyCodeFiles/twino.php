@@ -63,30 +63,6 @@ class twino extends p2pCompany {
         "C" => [
             "name" => "payment",
         ],
-        /*              [
-          "type" => "transactionType",                // Complex format, calling external method
-          "inputData" => [                            // List of all concepts that the platform can generate
-          // format ["concept string platform", "concept string Winvestify"]
-          "input2" => [["Amortización de capital(€)", "Principal_repayment"],
-          ["Intereses brutos(€)", "Regular_interest_income"],
-          ["Retención IRPF(€)", "Tax_income_withholding_tax"],
-          ]
-          ],
-          "functionName" => "getTransactionType",
-          ],
-          [
-          "type" => "transactionDetail",              // Complex format, calling external method
-          "inputData" => [                            // List of all concepts that the platform can generate
-          // format ["concept string platform", "concept string Winvestify"]
-          "input2" => [["Amortización de capital(€)", "Principal_repayment"],
-          ["Intereses brutos(€)", "Regular_interest_income"],
-          ["Retención IRPF(€)", "Tax_income_withholding_tax"],
-          ]
-          ],
-          "functionName" => "getTransactionDetail",
-          ]
-          ],
-         */
         "D" => [// Simply changing name of column to the Winvestify standardized name
             [
                 "type" => "amortization",
@@ -100,39 +76,17 @@ class twino extends p2pCompany {
             ]
         ],
         "E" => [// Simply changing name of column to the Winvestify standardized name
-            [
-                "type" => "interest",
-                "inputData" => [
-                    "input2" => ".", // Thousands seperator, typically "."
-                    "input3" => ",", // Decimal seperator, typically ","
-                    "input4" => 5, // Number of required decimals, typically 5
-                // is ALWAYS the contents of the cell
-                ],
-                "functionName" => "getAmount"
-            ]
+            "name" => "loanId"
         ],
         "F" => [// Simply changing name of column to the Winvestify standardized name
             [
-                "type" => "retencionTax",
-                "inputData" => [
-                    "input2" => ".", // Thousands seperator, typically "."
-                    "input3" => ",", // Decimal seperator, typically ","
-                    "input4" => 5, // Number of required decimals, typically 5
-                // is ALWAYS the contents of the cell
-                ],
-                "functionName" => "getAmount"
-            ]
-        ],
-        "G" => [// Simply changing name of column to the Winvestify standardized name
-            [
-                "type" => "total",
-                "inputData" => [
-                    "input2" => ".", // Thousands seperator, typically "."
-                    "input3" => ",", // Decimal seperator, typically ","
-                    "input4" => 5, // Number of required decimals, typically 5
-                // is ALWAYS the contents of the cell
-                ],
-                "functionName" => "getAmount"
+                "type" => "amount",                                     // This is *mandatory* field which is required for the 
+                "inputData" => [                                        // "transactionDetail"
+                            "input2" => "",                             // and which BY DEFAULT is a Winvestify standardized variable name.
+                            "input3" => ".",                            // and its content is the result of the "getAmount" method
+                            "input4" => 4
+                            ],
+                "functionName" => "getAmount",
             ]
         ]
     ];
