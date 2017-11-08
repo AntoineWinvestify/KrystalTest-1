@@ -376,7 +376,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      
         for ($i = $maxRows; $i > 0; $i--) {
             if (empty($rowDatas[$i]["A"])) {
-//                echo "Deleting some shit, i = " . ($i) . "\n";
                 unset($rowDatas[$i]);
             }
         }   
@@ -698,7 +697,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             if(strpos($input, "E")){
                 $decArray = explode("E", $input);
                 $dec = preg_replace("/[-]/", "", $decArray[1]);
-                echo "AQUI " . $input;
                 $input = strtr($input, array(',' => '.'));    
                 $input = number_format(floatval($input), $dec+2);
  
@@ -784,7 +782,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             return $result;
         }
         else {
- //           echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
+            echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
         }
     } 
     
@@ -862,7 +860,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             return $result;
         }
         else {
- //           echo "unknown concept, so start doing some Guessing for concept $input\n";  
+            echo "unknown concept, so start doing some Guessing for concept $input\n";  
          // an unknown concept was found, do some intelligent guessing about its meaning
             $result = $this->analyzeUnknownConcept($input);          // will return "unknown_income" or unknown_cost"
             

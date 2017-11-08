@@ -18,12 +18,12 @@
 *
 * @author Antoine de Poorter
 * @version 0.1
-* @date 2017-10-18
+* @date 2017-11-08
 * @package
 *
 
 
-2017-10-18		version 0.1
+2017-11-08		version 0.1
 initial version
 
 
@@ -74,10 +74,7 @@ var $validate = array(
         $data = array();
         $paymentPrefix = "payment";
         $paymentTotalPrefix = "paymenttotal";  
-        echo __FUNCTION__ . " " . __LINE__ . "\nPayment data = \n";
-//print_r($this->data['Payment']);
 
-//echo __FUNCTION__ . " " . __LINE__ . " InvestmentId = " . $this->data['Payment']['investment_id'] . " and " . $this->data['Payment']['id'] . " \n";
         $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
          
         // get the *latest* paymenttotal table
@@ -85,12 +82,10 @@ var $validate = array(
                                                         'conditions' => array('investment_id' => $this->data['Payment']['investment_id']),
                                                         'order' => array('Paymenttotal.id DESC'),
                                                          ) );
-//echo "latestValues:\n";
-//        print_r($latestValuesPaymenttotals);
 
         $this->Paymenttotal->create();
     
-// Copy all the 'totalvalue' data of the latest paymenttotal, if it exists
+        // Copy all the 'totalvalue's data of the latest paymenttotal, if it exists
         if (!empty($latestValuesPaymenttotals['Paymenttotal'])) {
             foreach ($latestValuesPaymenttotals['Paymenttotal'] as $paymentTotalsKey => $paymentItem) {
                 $paymentTotalsKeyNames = explode("_", $paymentTotalsKey);
@@ -103,15 +98,17 @@ var $validate = array(
         foreach ($this->data['Payment'] as $paymentKey => $value) {
               // check if the field also exists in table 'paymenttotals'
             $paymentKeyNames = explode("_", $paymentKey);
-            $paymentTotalsKey = $paymentTotalPrefix . "_" . $paymentKeyNames[1];
-            if (!empty($latestValuesPaymenttotals['Paymenttotal'])) {
-                if ($paymentKeyNames[0] == $paymentPrefix) { 
-                    $tempTotals = $latestValuesPaymenttotals['Paymenttotal'][$paymentTotalPrefix . "_" . $paymentKeyNames[1]];
-                    $data [$paymentTotalsKey] = bcadd($value, $tempTotals, 16);
+            if (count($paymentKeyNames) == 2) {         // in order to remove the "Notice Error" message
+                $paymentTotalsKey = $paymentTotalPrefix . "_" . $paymentKeyNames[1];          
+                if (!empty($latestValuesPaymenttotals['Paymenttotal'])) {
+                    if ($paymentKeyNames[0] == $paymentPrefix) { 
+                        $tempTotals = $latestValuesPaymenttotals['Paymenttotal'][$paymentTotalPrefix . "_" . $paymentKeyNames[1]];
+                        $data [$paymentTotalsKey] = bcadd($value, $tempTotals, 16);
+                    }
+                }    
+                else {
+                    $data [$paymentTotalsKey] = $value;
                 }
-            }    
-            else {
-                $data [$paymentTotalsKey] = $value;
             }
         }    
         
@@ -120,9 +117,6 @@ var $validate = array(
         $data['date'] = $this->data['Payment']['date'];
         $data['status'] = WIN_PAYMENTTOTALS_LAST;
         $this->Paymenttotal->save($data, $validate = true); 
-        
-//echo __FUNCTION__ . " " . __LINE__ . " data =  \n"; 
-//print_r($data);         
 
         if (!empty($latestValuesPaymenttotals['Paymenttotal'])) {  // probably NOT necessary to save status
             $this->Paymenttotal->create();

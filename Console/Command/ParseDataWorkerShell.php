@@ -187,6 +187,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
                         $errorInfo = array( "typeOfError"   => "parsingError",
                                             "errorDetails"  => $myParser->getLastError(),
+                                            "errorDetails1" => "approved file " . $approvedFile,
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                          echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
@@ -260,8 +261,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-//        print_r($data['tempArray'][885]['parsingResultInvestments']);
+ //       print_r($data['tempArray'][885]['parsingResultInvestments']);
         print_r($data['tempArray'][885]['parsingResultTransactions']);
+        print_r($data['tempArray'][885]['pfp']);
+ //       print_r($data['tempArray'][885]['userReference']);        
+        print_r($data['tempArray'][885]['error']);
         return json_encode($data);
 
     }
