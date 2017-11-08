@@ -33,8 +33,8 @@
 
 echo $companyInvestmentDetails[0];
 //print_r($companyInvestmentDetails);
-/* echo print_r($activeInvestments) . HTML_ENDOFLINE;
-  echo print_r($defaultedInvestments) . HTML_ENDOFLINE; */
+ //echo print_r($activeInvestments) . HTML_ENDOFLINE;
+  /*echo print_r($defaultedInvestments) . HTML_ENDOFLINE; */
 ?>
 <script>
     $(function () {
@@ -403,7 +403,6 @@ echo $companyInvestmentDetails[0];
                                                         <td dataorder="<?php echo $activeInvestment['Investment']['investment_paymentsDone']/$activeInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $activeInvestment['Investment']['investment_paymentsDone'] . "/" . $activeInvestment['Investment']['investment_numberOfInstalments']?></td>
                                                         <td>Outstanding</td>
                                                         <td>Term</td>
-                                                        <td>Status</td>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>
