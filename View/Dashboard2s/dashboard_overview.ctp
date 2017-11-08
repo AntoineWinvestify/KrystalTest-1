@@ -69,6 +69,7 @@
         });*/
         
         $(document).on("click", ".logo", function(){ 
+            id = $(this).attr("id").split(" ")[0];
             var params = {
                 id : $(this).attr("id"),
                 logo : $("#logo"+id).attr("src"),
@@ -315,30 +316,34 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 03" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">2,00%</h3>
+                                            <h3 class="title"><?php echo $defaultedRange['1-7'] + $defaultedRange['8-30'] + $defaultedRange['31-60'] + $defaultedRange['61-90'] + $defaultedRange['>90'] . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 15" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
-                                                        <td class="right"><?php echo __('76,00%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['current'] . "%"?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="left"><?php echo __('1-7 DPD')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['1-7'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('8-30 DPD')?></td>
-                                                        <td class="right"><?php echo __('9,00%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['8-30'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('31-60 DPD')?></td>
-                                                        <td class="right"><?php echo __('6,00%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['31-60'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('61-90 DPD')?></td>
-                                                        <td class="right"><?php echo __('7,00%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['61-90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Default (> 90 DPD)')?></td>
-                                                        <td class="right"><?php echo __('2,00%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 16" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
@@ -392,8 +397,8 @@
                                 $total = round($individualInfo['Userinvestmentdata']['userinvestmentdata_totalVolume'], 2);
                                 ?>
                             <tr>
-                                <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
-                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
+                                <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id']  .  " " . $individualInfo['Userinvestmentdata']["id"] ?>" >
+                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo'] ?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
                                 </td>
                                 
                                 <td><?php echo $total . " &euro;"?></td>

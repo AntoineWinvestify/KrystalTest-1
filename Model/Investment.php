@@ -160,7 +160,7 @@ class Investment extends AppModel {
 
         $defaultedInvestments = $this->getDefaulted($linkedaccount);
         $defaultedRange = $this->getDefaultedRange($defaultedInvestments, $totalOutstanding);
-        //print_r($defaultedRange);
+        return $defaultedRange;
     }
 
     /**
@@ -171,8 +171,10 @@ class Investment extends AppModel {
      */
     public function getDefaultedRange($defaultedInvestments, $outstanding) {
 
-        $range = array();
+        $range = array(">90" => 0, "61-90" => 0, "31-60" => 0, "8-30" => 0, "1-7" => 0);
         $value = array();
+
+        $range['total'] = $outstanding;
 
         foreach ($defaultedInvestments as $defaultedInvestment) {
             switch ($defaultedInvestment['Investment']['defaultedTime']) {
@@ -193,15 +195,16 @@ class Investment extends AppModel {
                 case ($defaultedInvestment['Investment']['defaultedTime'] > 7):
                     $value["8-30"] = $value["8-30"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range["8-30"] = round(($value["8-30"] / $outstanding) * 100, 2);
-
                     break;
                 case ($defaultedInvestment['Investment']['defaultedTime'] > 0):
-                    $value["0-7"] = $value["0-7"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["0-7"] = round(($value["0-7"] / $outstanding) * 100, 2);
+                    $value["1-7"] = $value["1-7"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range["1-7"] = round(($value["1-7"] / $outstanding) * 100, 2);
                     break;
             }
         }
-
+        //Calculate current
+        $range["current"] = 100 - $range["1-7"] - $range["8-30"] - $range["31-60"] - $range["61-90"] - $range[">90"];
+        //print_r($range);
         return $range;
     }
 

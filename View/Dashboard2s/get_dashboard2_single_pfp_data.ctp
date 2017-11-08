@@ -32,6 +32,7 @@
 //P info
 
 echo $companyInvestmentDetails[0];
+//print_r($companyInvestmentDetails);
 /* echo print_r($activeInvestments) . HTML_ENDOFLINE;
   echo print_r($defaultedInvestments) . HTML_ENDOFLINE; */
 ?>
@@ -174,7 +175,7 @@ echo $companyInvestmentDetails[0];
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <?php $total = round(bcadd(bcadd($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 16), $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'], 16), 2) ?>
+                                            <?php $total = round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_totalVolume'], 2)  ?>
                                             <p class="headerBox"><strong><?php echo __('Total Volume') ?></strong></p>
                                             <h3 class="title"><?php echo $total . " &euro;"; ?></h3>
                                         </div>
@@ -183,15 +184,15 @@ echo $companyInvestmentDetails[0];
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><?php echo __('Invested Assets') ?></td>
-                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_investedAssets'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Reserved Funds') ?></td>
-                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedAssets'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Cash') ?></td>
-                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Cash Drag') ?></td>
@@ -203,7 +204,7 @@ echo $companyInvestmentDetails[0];
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Number of Investments') ?></td>
-                                                        <td class="right"><?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_investments'] ?></td>
+                                                        <td class="right"><?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] ?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -248,31 +249,35 @@ echo $companyInvestmentDetails[0];
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Defaulted') ?></strong></p>
-                                            <h3 class="title">8,45%</h3>
+                                            <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 03" class="ion ion-ios-information-outline" ></i></small></p>
+                                            <h3 class="title"><?php echo $defaultedRange['1-7'] + $defaultedRange['8-30'] + $defaultedRange['31-60'] + $defaultedRange['61-90'] + $defaultedRange['>90'] . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Current') ?></td>
-                                                        <td class="right"><?php echo __('91,55%') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 15" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['current'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('8-30 DPD') ?></td>
-                                                        <td class="right"><?php echo __('2,99%') ?></td>
+                                                        <td class="left"><?php echo __('1-7 DPD')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['1-7'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('31-61 DPD') ?></td>
-                                                        <td class="right"><?php echo __('2,25%') ?></td>
+                                                        <td class="left"><?php echo __('8-30 DPD')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['8-30'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('60-90 DPD') ?></td>
-                                                        <td class="right"><?php echo __('1,99%') ?></td>
+                                                        <td class="left"><?php echo __('31-60 DPD')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['31-60'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('90 - DPD') ?></td>
-                                                        <td class="right"><?php echo __('1,22%') ?></td>
+                                                        <td class="left"><?php echo __('61-90 DPD')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['61-90'] . "%"?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="left"><?php echo __('Default (> 90 DPD)')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Written Off') ?></td>
