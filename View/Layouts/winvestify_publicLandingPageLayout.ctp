@@ -279,7 +279,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="schemaText">
                     <h3 align="center"><?php echo __('What is P2P Lending?')?></h3>
-                    <p><?php echo __('P2P Lending is a model of Alternative Financing, whereby private and professional investors, using Participative Financing Platforms, lend their money in exchange for receiving an interest in accordance with the risk assumed.')?></p>
+                    <p><?php echo __('P2P Lending is a model of Alternative Financing, whereby private and professional investors, using Online Lending Platforms, lend their money in exchange for receiving an interest in accordance with the risk assumed.')?></p>
                     <p><?php echo __('The result is that the borrower gets financed at a more competitive price and the investor receives a higher return than other financial products.')?></p>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 50px;">
@@ -331,12 +331,12 @@
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
                             <img src="/img/man.png" class="center-block imgResponsive" height="75px;"/>
                             <h4 class="g-color--white" align="center"><?php echo __('NORMALIZATION')?></h4>
-                            <p class="g-color--white" align="center"><?php echo __('Winvestify has established universal data formats across all credit verticals, allowing consistent, views of loans purchased across all major lending platforms.')?></p>
+                            <p class="g-color--white" align="center"><?php echo __('Winvestify has established universal data formats across all credit verticals, allowing consistent views of loans purchased across all major lending platforms.')?></p>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
                             <img src="/img/analytics_3.png" class="center-block imgResponsive" height="75px;"/>
                             <h4 class="g-color--white" align="center"><?php echo __('VALIDATION AND TRANSFORMATION')?></h4>
-                            <p class="g-color--white" align="center"><?php echo __('We run platforms-specific data cleaning rules to ensure that our clients always access the highest quality data possible.')?></p>
+                            <p class="g-color--white" align="center"><?php echo __('We run platform-specific data cleaning rules to ensure that our clients always access the highest quality data possible.')?></p>
                         </div>
                     </div>
                 </div>
