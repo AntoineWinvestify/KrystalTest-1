@@ -202,8 +202,7 @@
                 <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
                     <div class="row featuresP" data-wow-duration="1s" data-wow-delay=".1s">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <br/>
-                            <img href="/" src="/img/logo_winvestify/Logo_texto.png" class="center-block imgResponsive" width="40%;"/><br/>
+                            <br><br><br>
                             <span id="headerTitle"><?php echo __('We believe you have the right to get the most out of your investments') ?></span>
                             <span class="headerText"><?php echo __('Find out what is happening to all your investments in an organized and standardized way. Connect with your platforms from Winvestify and get total control of all your accounts.')?></span><br/>
                             <span class="headerText"><?php echo __('We are the leading tool in P2P Lending that helps you manage all your investments in a precise and effective way.')?></span>
@@ -222,7 +221,7 @@
                 <div id="features_left" class="col-lg-1 col-md-12 hidden-sm hidden-xs">
                     <div class="s-mockup-v1" style="position:absolute;">
                         <div id="screen" data-wow-duration=".3" data-wow-delay=".1s">
-                            <iframe width="480" style="position: absolute; top: 50px; left: 170px;" height="255" src="https://www.youtube.com/embed/rGlo2JITu2E" frameborder="0" allowfullscreen></iframe>
+                            <iframe width="480" style="position: absolute; top: 50px; left: 170px;" height="255" src="https://www.youtube.com/embed/rGlo2JITu2E?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
                         </div>
                     </div>
                 </div>
@@ -278,19 +277,37 @@
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 hidden-xs hidden-sm" id="schemaImgDiv">
                     <img src="" class="imgResponsive schemaImg center-block"/>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                    <h3><?php echo __('What is P2P Lending?')?></h3>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="schemaText">
+                    <h3 align="center"><?php echo __('What is P2P Lending?')?></h3>
                     <p><?php echo __('P2P Lending is a model of Alternative Financing, whereby private and professional investors, using Participative Financing Platforms, lend their money in exchange for receiving an interest in accordance with the risk assumed.')?></p>
                     <p><?php echo __('The result is that the borrower gets financed at a more competitive price and the investor receives a higher return than other financial products.')?></p>
-                    <h3><?php echo __('Basic Rules for Investing in P2P Lending')?></h3>
-                    <p>
-                        <strong><?php echo __('Buy fractions of loans')?></strong><br/>
-                        <?php echo __('Make wise fractional investments in several loans across different P2P Platforms')?>
-                    </p>
-                    <p style="margin-bottom: 50px;">
-                        <strong><?php echo __('Diversify your investments')?></strong><br/>
-                        <?php echo __('Spread your money over many loans to reduce the risk of your investment.')?>
-                    </p>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 50px;">
+                    <p style="font-size: 26px;color:black;font-weight: 500"><?php echo __('The Benefits')?></p>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
+                        <strong><?php echo __('Risk-adjusted Returns')?></strong><br/>
+                        <?php echo __('P2P investments offer average annual returns of between 5% and 12%. P2P can offer stable, predictable, risk-adjusted returns.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"  style="margin-bottom: 15px;">
+                        <strong><?php echo __('New Asset Class')?></strong><br/>
+                        <?php echo __('P2P providers have innovated by offering an efficient, low-cost method of accessing credit investments.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
+                        <strong><?php echo __('Alternative Financing Vs Stock Market')?></strong><br/>
+                        <?php echo __('The performance of assets are not correlated to stock market volatility. P2P assets are expected to perform better during an economic downturn in comparison to equities or bonds.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"  style="margin-bottom: 15px;">
+                        <strong><?php echo __('Income or Growth')?></strong><br/>
+                        <?php echo __('Investors often have the choice of taking interest payments as an income, or for these payments to be reinvested, enabling capital growth.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
+                        <strong><?php echo __('Diversification')?></strong><br/>
+                        <?php echo __('Make wise fractional investments in several loans across different P2P Platforms. Spread your money over many loans to reduce the risk of your investment.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
+                        <strong><?php echo __('Diversification')?></strong><br/>
+                        <?php echo __('Make wise fractional investments in several loans across different P2P Platforms. Spread your money over many loans to reduce the risk of your investment.')?>
+                    </div>
                 </div>
             </div>
         </div>
