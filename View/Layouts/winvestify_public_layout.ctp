@@ -55,7 +55,7 @@
                     <div class="navbar-header navbar-right">
                         <ul class="nav pull-left navbar-nav collapse-tablet navGreen">
                             <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
-                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
+                                <?php /*<div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
                                     <div class="row">
                                         <div class="col-sm-offset-1 col-sm-10 col-xs-12" style="margin-top:10px;">
                                             <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
@@ -147,8 +147,12 @@
                                                 </button><br/>
                                             </div>
                                         </div>
+                                        <?php
+                                            $this->Form->end();
+                                        ?>
                                     <!--	</form> -->
                                 </div> <!-- /login -->
+                                */ ?>
                                 <div class="clearfix"></div>
                             </li>
                             <li style="float:left; display:inline-block">

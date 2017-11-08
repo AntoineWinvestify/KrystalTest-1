@@ -162,6 +162,9 @@
                                                 <button type="submit" id="loginBtn" style="margin-top:10px; margin-bottom: 10px;" class="text-uppercase btn"><?php echo __('Send') ?>
                                                 </button><br/>
                                             </div>
+                                            <?php
+                                                $this->Form->end();
+                                            ?>
                                         </div>
                                     <!--	</form> -->
                                 </div> <!-- /login -->

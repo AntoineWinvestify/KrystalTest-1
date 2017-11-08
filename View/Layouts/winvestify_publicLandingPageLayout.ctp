@@ -140,6 +140,9 @@
                                             </div>
                                         </div>
                                     <!--	</form> -->
+                                    <?php
+                                        $this->Form->end();
+                                    ?>
                                 </div> <!-- /login -->
                                 <div class="clearfix"></div>
                             </li>
