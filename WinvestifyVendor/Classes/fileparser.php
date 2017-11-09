@@ -697,54 +697,33 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $input = '0.0';
             $separator = ".";
         }
-        if ($decimalSep == ".") {
-            $seperator = "\.";
-        }
-        else if($decimalSep == 'E'){
-            if(strpos($input, "E") || strpos($input, "e")){
-                if(strpos($input, "-")){
-                    $decArray = explode("E", $input);
-                    $dec = preg_replace("/[-]/", "", $decArray[1]);
-                    $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
-                    echo "AQUI " . $dec2;
-                    $input = strtr($input, array(',' => '.'));    
-                    $input = number_format(floatval($input), $dec + $dec2);
-                } else{
-                    $input = strtr($input, array(',' => '.'));    
-                    $input = number_format(floatval($input), 0);
-                }
+        
+        if(strpos($input, "E") || strpos($input, "e")){
+            if(strpos($input, "-")){
+                $decArray = explode("E", $input);
+                $dec = preg_replace("/[-]/", "", $decArray[1]);
+                $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
+                //echo "AQUI " . $dec2;
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), $dec + $dec2);
+            } else{
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), 0);
             }
             $seperator = ".";
         }
+
+        if ($decimalSep == ".") {
+            $seperator = "\.";
+        }        
         else {                                                              // seperator =>  ","
             $seperator = ",";
         }
+        
         $allowedChars =  "/[^0-9" . $seperator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
         return $normalizedInputFinal;
-
-        
- /*       
-        // determine how many decimals are actually used
-        $position = strpos($input, $decimalSep);
-        $decimalPart = preg_replace('/[^0-9]+/' ,"", substr($input, $position + 1, 100));
-        $numberOfDecimals = strlen($decimalPart);
-
-        $digitsToAdd = $decimals - $numberOfDecimals;
-
-        if ($digitsToAdd <= 0) {
-            $amount = round($normalizedInputFinal, $decimals);
-        }
-        if ($digitsToAdd == 0) {
-            $amount = preg_replace("/[^0-9]/", "", $input);
-        }
-        if ($digitsToAdd > 0) {
-            $amount = preg_replace('/[^0-9]+/', "", $input) . str_pad("", ($decimals - $numberOfDecimals), "0");
-        }
-        return preg_replace('/[^0-9]+/' ,"", $amount);
-  */
-  
     }
     
 
