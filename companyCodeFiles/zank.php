@@ -190,7 +190,7 @@ class zank extends p2pCompany {
                     "functionName" => "getAmount",
                 ],
                 [
-                    "type" => "investment_loanType",                                      // 
+                    "type" => "investment_typeOfInvestment",                                      // 
                     "inputData" => [                                                   // Get the "original" Mintos concept, which is used later on
                                 "input2" => "€",                                        // 
                                 "input3" => "",
@@ -308,7 +308,7 @@ class zank extends p2pCompany {
     
     protected $callbacks = [
         "investment" => [
-            "investment_loanType" => "translateTypeOfInvestment"
+            "investment_typeOfInvestment" => "translateTypeOfInvestment"
         ]
     ];
 
