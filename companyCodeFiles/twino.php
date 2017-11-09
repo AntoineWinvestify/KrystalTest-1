@@ -112,8 +112,8 @@ class twino extends p2pCompany {
 // Not finished
     protected $valuesInvestment = [// All types/names will be defined as associative index in array
 
-        "A" => [
-            "name" => "origin.loan",
+        "A" =>  [
+            "name" => "investment_country"                              // Winvestify standardized name  OK
         ],
         "B" => [
             "name" => "loanId",
@@ -129,16 +129,22 @@ class twino extends p2pCompany {
             ],
         ],
         "D" => [
-            "name" => "riskclass",
+            "name" => "investment_riskRating",
         ],
         "E" => [
-            "name" => "status",
+            "name" => "investment_originalState",
         ],
         "F" => [
             "name" => "investment_nominalInterestRate"
         ],
+        "G" => [
+            "name" => "investment_expectedAnnualYield"
+        ],
         "I" => [
             "name" => "investment_originalDuration"
+        ],
+        "L" => [
+            "name" => "investment_capitalRepaymentFromP2P"
         ],
         "M" => [
             [
@@ -151,6 +157,13 @@ class twino extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
+        //"N" => DON'T TAKE
+        "O" => [
+            "name" => "investment_outstandingPrincipalFromP2P"
+        ],
+        "P" => [
+            "name" => "investment_forSale"
+        ]
         
     ];
 
