@@ -193,9 +193,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         switch ($actualFileType) {
                             case WIN_FLOW_INVESTMENT_FILE:
                                 $this->callbacks = $callbacks["investment"];
-                                $this->callbackInit($tempResult, $parserConfigFile, $companyHandle);
-                                print_r($tempResult);
-                                exit;
+                                $this->callbackInit($tempResult, $companyHandle);
                                 $totalParsingresultInvestments = $tempResult;                                
                                 break;
                             case WIN_FLOW_TRANSACTION_FILE:
@@ -274,11 +272,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     /**
      * Function to change values depending on callback functions for each company
      * @param array $tempResult It contains the value to change
-     * @param array $valuesFile It contains the callback functions
      * @param object $companyHandle It is the company instance
      * @return It nothing if the callback array is empty
      */
-    public function callbackInit(&$tempResult, $valuesFile, $companyHandle) {
+    public function callbackInit(&$tempResult, $companyHandle) {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
         }
@@ -291,7 +288,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (empty($this->callbacks)) {
             return;
         }
-        print_r($this->callbacks);
         $this->companyHandle = $companyHandle;
         array_walk_recursive($tempResult,array($this, 'changeValueIterating'));
     }
