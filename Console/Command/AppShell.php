@@ -117,15 +117,19 @@ class AppShell extends Shell {
         $approvedFileNameList = array();
 // start temp
         $knownFileTypesNames = array (
-            TRANSACTION_FILE => "transaction",
-            INVESTMENT_FILE => "investment",
-//            TRANSACTIONTABLE_FILE =>
-            AMORTIZATION_TABLE_FILE => "amortizationTable",
-//            AMORTIZATION_TABLE_ARRAY =>
-            AMORTIZATION_TABLE_FILE => "amortizationTableList",
-            CONTROL_FILE => "controlVariables"
+            WIN_FLOW_TRANSACTION_FILE => "transaction",
+            WIN_FLOW_EXTENDED_TRANSACTION_FILE => "extendentransaction",
+            WIN_FLOW_INVESTMENT_FILE => "investment",
+//            WIN_FLOW_TRANSACTIONTABLE_FILE =>
+            WIN_FLOW_AMORTIZATION_TABLE_FILE => "amortizationTable",
+//            WIN_FLOW_AMORTIZATION_TABLE_ARRAY =>
+            WIN_FLOW_AMORTIZATION_TABLE_FILE => "amortizationTableList",
+            WIN_FLOW_CONTROL_FILE => "controlVariables",
+            WIN_FLOW_EXPIRED_LOAN_FILE => "expiredLoan"
             );
 
+ 
+        
         $requiredFileType = array();
         foreach ($knownFileTypesNames as $keyKnownFileTypeName => $knownFileTypeName) {
             $temp = $keyKnownFileTypeName & $typeOfFiles;

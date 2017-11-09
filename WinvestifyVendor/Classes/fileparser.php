@@ -80,6 +80,29 @@ class Fileparser {
                                     RUB => ["RUB", "₽"],
                                     );
 
+    // dictionary lookup for trying to identify an unknown concept
+    protected $dictionaryWords = array('tax'    => WIN_CONCEPT_TYPE_COST,
+                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
+                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
+                                'payment'       => WIN_CONCEPT_TYPE_COST,
+                                'withdraw'      => WIN_CONCEPT_TYPE_COST,
+                                'back fee'      => WIN_CONCEPT_TYPE_COST,
+                                'back tax'      => WIN_CONCEPT_TYPE_COST,
+                                'cost'          => WIN_CONCEPT_TYPE_COST,
+                                'purchase'      => WIN_CONCEPT_TYPE_COST,
+                                'bid'           => WIN_CONCEPT_TYPE_COST,
+                                'auction'       => WIN_CONCEPT_TYPE_COST,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
+                                'loan'          => WIN_CONCEPT_TYPE_COST,
+                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
+                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'earning'       => WIN_CONCEPT_TYPE_INCOME
+
+                            );   
+    
+    
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
@@ -297,7 +320,7 @@ class Fileparser {
 echo "INPUT FILE = $file \n";
     $this->filename = $file;
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-print_r($this->config);
+
        // determine first if it a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
@@ -312,7 +335,7 @@ print_r($this->config);
             $objPHPExcel = PHPExcel_IOFactory::load($file);
         }
 
-        ini_set('memory_limit','1048M');
+        ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
@@ -323,7 +346,8 @@ print_r($this->config);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $highestRow);
         return $datas;
     }
-    
+
+
     /**
      * Analyze the received data using the configuration data and store the result
      * in an array
@@ -336,11 +360,15 @@ print_r($this->config);
     private function saveExcelToArray($rowDatas, $values, $totalRows) {
         $tempArray = [];
         $maxRows = count($rowDatas);
+
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $this->config['offsetStart']) {
                 break;
             }
+            echo "unset to happen, value of cell = " . 
+                    print_r($rowDatas[$key][2]);
+            echo "\n";
             unset($rowDatas[$key]);
             $i++;
         }
@@ -349,7 +377,6 @@ print_r($this->config);
      
         for ($i = $maxRows; $i > 0; $i--) {
             if (empty($rowDatas[$i]["A"])) {
-//                echo "Deleting some shit, i = " . ($i) . "\n";
                 unset($rowDatas[$i]);
             }
         }   
@@ -365,8 +392,7 @@ print_r($this->config);
             $i++;
         }  
        
-      
-        
+         
         $i = 0;
         $outOfRange = false;
 
@@ -376,7 +402,7 @@ print_r($this->config);
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 // check for subindices and construct them
-                if (array_key_exists("name", $value)) {      // "name" => .......
+                if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
                     eval($tempString);
@@ -590,28 +616,9 @@ print_r($this->config);
      * also check for the presence of loanId, and + or - sign of field
      */
     private function analyzeUnknownConcept($input, $config = null) {
-
-    //    read the unknown concept
         $result = 0;
-        $dictionaryWords = array('tax'          => WIN_CONCEPT_TYPE_COST,
-                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
-                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
-                                'payment'       => WIN_CONCEPT_TYPE_COST,
-                                'back fee'      => WIN_CONCEPT_TYPE_COST,
-                                'back tax'      => WIN_CONCEPT_TYPE_COST,
-                                'cost'          => WIN_CONCEPT_TYPE_COST,
-                                'purchase'      => WIN_CONCEPT_TYPE_COST,
-                                'bid'           => WIN_CONCEPT_TYPE_COST,
-                                'auction'       => WIN_CONCEPT_TYPE_COST,
-                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
-                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
-                                'loan'          => WIN_CONCEPT_TYPE_COST,
-                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
-                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
-                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
-                                'earning'       => WIN_CONCEPT_TYPE_INCOME
 
-                            );
+        
         foreach ($dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found

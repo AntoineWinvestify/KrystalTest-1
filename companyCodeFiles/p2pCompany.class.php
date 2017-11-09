@@ -155,13 +155,7 @@ class p2pCompany {
     
     protected $valuesTransaction;
     protected $valuesInvestment;  
-    protected $valuesAmortizationTable;
-    protected $originExecution;   
-    protected $valuesTestHeaderTransaction;
-    protected $valuesTestHeaderInvestment;
-    protected $configParamTestTransaction;
-    protected $configParamTestInvestment;
-    
+    protected $valuesAmortizationTable;     
 
     /**
      *
@@ -2380,12 +2374,7 @@ class p2pCompany {
     function setDateFinish($dateFinish) {
         $this->dateFinish = $dateFinish;
     }
-    
-    function setOriginExecution($originExecution) {
-        $this->originExecution = $originExecution;
-    }
 
-    
         
     
 
@@ -2562,6 +2551,18 @@ class p2pCompany {
     public function getParserConfigTransactionFile() {
         return $this->valuesTransaction;
     }
+  
+    
+    /** 
+     * Read extended transaction configuration file
+     *     
+     * @return  array with configuration parameters
+     *              
+     */    
+    public function getParserConfigExtendedTransactionFile() {
+        return $this->valuesExtendedTransaction;
+    }    
+    
     
      /** 
      * Read investment configuration file
@@ -2572,6 +2573,16 @@ class p2pCompany {
     public function getParserConfigInvestmentFile() {
         return $this->valuesInvestment;
     }
+    
+    /** 
+     * Read expiredloan configuration file
+     *     
+     * @return  array with configuration parameters
+     * 
+     */
+    public function getParserConfigExpiredLoanFile() {
+        return $this->valuesExpiredLoan;
+    }   
     
     /** 
      * Read amortizationtable configuration file
@@ -2594,6 +2605,27 @@ class p2pCompany {
         return $this->transactionConfigParms;
     }
 
+    /** 
+     * Read configuration parameters for the extended transaction configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */    
+    public function getParserExtendedTransactionConfigParms() {
+        return $this->extendedTransactionConfigParms;
+    }
+
+    /** 
+     * Read configuration parameters for the expiredLoan configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */             
+    public function getParserExpiredLoanConfigParms() {
+        return $this->expiredLoanConfigParms;
+    }    
+    
+    
     /** 
      * Read configuration parameters for the investment configuration
      *     

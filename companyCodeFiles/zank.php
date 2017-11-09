@@ -353,6 +353,31 @@ class zank extends p2pCompany {
         ]
     ];
 
+  
+    
+    protected $transactionConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */    
+    
+    
+    
     function __construct() {
         parent::__construct();
         $this->i = 0;
