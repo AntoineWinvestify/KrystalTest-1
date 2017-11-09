@@ -130,7 +130,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 //            $data['listOfCurrentActiveLoans'] = array("958187-01", "731064-01", "715891-01", "715544-01");
             // First analyze the transaction file(s)
             $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
-            
+            $callbacks = $companyHandle->getCallbacks();
 // do this first for the transaction file and then for investmentfile(s)
             $fileTypesToCheck = array (0 => WIN_FLOW_TRANSACTION_FILE,
                                        1 => WIN_FLOW_INVESTMENT_FILE,
@@ -192,6 +192,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     else {
                         switch ($actualFileType) {
                             case WIN_FLOW_INVESTMENT_FILE:
+                                $this->callbacks = $callbacks["investment"];
                                 $this->callbackInit($tempResult, $parserConfigFile, $companyHandle);
                                 print_r($tempResult);
                                 exit;
@@ -281,13 +282,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
         }
-        $this->getCallbackFunction($valuesFile);
+        //$this->getCallbackFunction($valuesFile);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ ;
             print_r($this->callbacks);
         }
 
-        if (empty($callbacks)) {
+        if (empty($this->callbacks)) {
             return;
         }
         print_r($this->callbacks);
@@ -306,21 +307,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 $valueConverted =  $this->companyHandle->$callback($item);
                 $item = $valueConverted; // Do This!
            }
-        }
-    }
-    
-    /**
-     * Function to get callbacks from values of a company
-     * @param array $values The are the transaction or investment values
-     * @return array The callback functions
-     */
-    public function getCallbackFunction($values) {
-        foreach ($values as $key => $valueCallback) {
-            if ($key == "callback") {   
-                foreach ($valueCallback as $value) {
-                    $callbacks[$value["type"]] = $value["functionName"];
-                }
-            }
         }
     }
 }
