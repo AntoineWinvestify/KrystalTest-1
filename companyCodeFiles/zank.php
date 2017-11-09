@@ -308,9 +308,7 @@ class zank extends p2pCompany {
     
     protected $callbacks = [
         "investment" => [
-            [
-                "investment_loanType" => "translateTypeOfInvestment"
-            ] 
+            "investment_loanType" => "translateTypeOfInvestment"
         ]
     ];
 
