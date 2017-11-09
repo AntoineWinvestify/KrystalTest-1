@@ -915,14 +915,22 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     private function extractDataFromString($input, $search, $separator ) {
+        echo "input = $input, search = $search, lengnth =  and separator = $separator\n";
+        echo "first strip = " . stripos($input, $search) ."\n";
+        
         $position = stripos($input, $search) + strlen($search);
+        echo "position = $position\n";
         if (empty($separator)) {
             $value = substr($input, $position);
+            echo "empty \n";
         } 
         else {
             $substrings = explode($separator, substr($input, $position));
+            echo "substring\n";
+            print_r($substrings);
             $value = $substrings[0];
         }
+        exit;
         return $value;
     }
 
