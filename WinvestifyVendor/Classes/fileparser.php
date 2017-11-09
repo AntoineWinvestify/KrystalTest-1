@@ -930,7 +930,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             print_r($substrings);
             $value = $substrings[0];
         }
-        exit;
+        //exit;
         return $value;
     }
 
