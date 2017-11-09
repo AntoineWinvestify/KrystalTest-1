@@ -282,6 +282,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             echo __FUNCTION__ . " " . __LINE__ ;
             print_r($callbacks);
         }
+
         if (empty($callbacks)) {
             return;
         }
@@ -304,6 +305,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
         }
         $tempResult = $newArray;
+
     }
     
     /**
@@ -314,8 +316,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     public function getCallbackFunction($values) {
         $callbacks = [];
         foreach ($values as $key => $valueCallback) {
-            if (array_key_exists("callback", $valueCallback)) {   
-                foreach ($valueCallback["callback"] as $value) {
+            if ($key == "callback") {   
+                foreach ($valueCallback as $value) {
                     $callbacks[$value["type"]] = $value["functionName"];
                 }
             }

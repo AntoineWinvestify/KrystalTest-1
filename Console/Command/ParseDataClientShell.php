@@ -60,13 +60,13 @@ public function resetTestEnvironment() {
     $this->Payment = ClassRegistry::init('Payment');
     $this->Payment->deleteAll(array('Payment.id >' => 0), false); 
     
-    echo "Deleting Userinvestmentdata\n"; 
-    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-    $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
+//    echo "Deleting Userinvestmentdata\n"; 
+//    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+//    $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
     
-    echo "Deleting Globalcashflowdata\n"; 
-    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-    $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
+//    echo "Deleting Globalcashflowdata\n"; 
+//    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+//    $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
     
  
     return;

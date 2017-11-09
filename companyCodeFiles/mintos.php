@@ -258,6 +258,17 @@ class mintos extends p2pCompany {
                 "name" => "investment_buyBackGuarantee"                     // Winvestify standardized name  OK
              ],
 
+                "callback" => [
+                    [
+                        "type" => "investment_buyBackGuarantee",
+                        "functionName" => "translateInvestmentBuyBackGuarantee"
+                    ]    
+                ],       
+        
+        
+        
+        
+
             "Q" =>  [
                 [
                     "type" => "investment_myInvestment",                    // Winvestify standardized name   OK
@@ -944,7 +955,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific investment market concept
      * @return int                  Winvestify standardized investment marke concept
      */
-    public function translateinvestmentMarket($inputData) {
+    public function translateInvestmentMarket($inputData) {
         
     }
     
@@ -954,8 +965,15 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific investmentBuyBackGuarantee
      * @return int                  Winvestify standardized investmentBuyBackGuarantee
      */
-    public function translateinvestmentBuyBackGuarantee($inputData) {
-        
+    public function translateInvestmentBuyBackGuarantee($inputData) {
+        $data = WIN_BUYBACKGUARANTEE_NOT_PROVIDED;
+        $inputData = strtoupper(($inputData));
+        switch ($inputData) {
+            case "YES":
+                $data = WIN_BUYBACKGUARANTEE_PROVIDED;
+                break;
+        }
+        return $data;        
     }
         
         

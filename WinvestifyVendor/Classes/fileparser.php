@@ -320,7 +320,7 @@ echo "INPUT FILE = $file \n";
     $this->filename = $file;
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
 
-       // determine first if it a csv, if yes then run command
+       // determine first if it is a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
     //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
@@ -401,7 +401,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 
-                if ($key == "callback") continue;
+                if ($key == "callback") {
+                    continue;
+                }
                 
                 // check for subindices and construct them
                 if (array_key_exists("name", $value)) {     
