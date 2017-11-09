@@ -4,7 +4,7 @@
 class CasesControllerTest extends ControllerTestCase {
 
     public function testDivision() {
-        $expected = "100";
+        $expected = "100.01499350282";
         $actual = $this->testAction("/cases/testDivision");
         $this->assertEquals($expected, $actual[9]['investment']['division']);
     }
@@ -163,11 +163,11 @@ class CasesControllerTest extends ControllerTestCase {
     }
 
     public function testAmount7() { // format 2500,45214€
-        $expected = '0.00000321';
-        $expected2 = '2210000';
+        $expected = array('0.00000321', '2210000',  '0.0002401', '0.0002401');
+
         $actual = $this->testAction("/cases/testAmount7");
-        $this->assertEquals($expected, $actual[6]['investment']['fullLoanAmount']);
-        $this->assertEquals($expected2, $actual[7]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[0], $actual[6]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[1], $actual[7]['investment']['fullLoanAmount']);
     }
 
     public function testExtracData() {
