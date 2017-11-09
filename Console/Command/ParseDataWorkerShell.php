@@ -59,6 +59,8 @@ App::import('Shell','GearmanWorker');
 class ParseDataWorkerShell extends GearmanWorkerShell {
 
  //   var $uses = array();      // No models used
+    protected $callbacks = [];
+    protected $companyHandle;
 
 
     public function main() {
@@ -116,10 +118,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         $platformData = json_decode($job->workload(), true);
 
         foreach ($platformData as $linkedAccountKey => $data) {
-            if ($data['pfp'] <> "mintos") { // TO BE REMOVED           TO BE REMOVED
+            /*if ($data['pfp'] <> "mintos") { // TO BE REMOVED           TO BE REMOVED
                 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
                 continue;
-            }
+            }*/
             
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
@@ -196,6 +198,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         switch ($actualFileType) {
                             case WIN_FLOW_INVESTMENT_FILE:
                                 $this->callbackInit($tempResult, $parserConfigFile, $companyHandle);
+                                print_r($tempResult);
+                                exit;
                                 $totalParsingresultInvestments = $tempResult;                                
                                 break;
                             case WIN_FLOW_TRANSACTION_FILE:
@@ -281,34 +285,32 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     public function callbackInit(&$tempResult, $valuesFile, $companyHandle) {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
-        } 
-        $callbacks = $this->getCallbackFunction($valuesFile);
+        }
+        $this->getCallbackFunction($valuesFile);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ ;
-            print_r($callbacks);
+            print_r($this->callbacks);
         }
-        if (empty($callbacks)) {
+        if (empty($this->callbacks)) {
             return;
         }
-        $newArray = [];
-        $arrayiter = new RecursiveArrayIterator($tempResult);
-        $iteritor = new RecursiveIteratorIterator($arrayiter);
-        
-        foreach ($iteritor as $key => $value) {
-            if (!empty($callbacks[$key])) {
-                $function = $callbacks[$key];
-                $valueConverted =  $companyHandle->$function($value);
-                $currentDepth = $iteritor->getDepth();
-                for ($subDepth = $currentDepth; $subDepth > 0; $subDepth--) {
-                    // Get the current level iterator
-                    $subIterator = $iteritor->getSubIterator($subDepth); 
-                    // If we are on the level we want to change, use the replacements ($value) other wise set the key to the parent iterators value
-                    $subIterator->offsetSet($subIterator->key(), ($subDepth === $currentDepth ? $valueConverted : $iteritor>getSubIterator(($subDepth+1))->getArrayCopy())); 
-                }
-                array_push($newArray, $iteritor->getArrayCopy());
-            }
+        print_r($this->callbacks);
+        $this->companyHandle = $companyHandle;
+        array_walk_recursive($tempResult,array($this, 'changeValueIterating'));
+    }
+    
+    /**
+     * Function to iterate in an array and change the value if needed
+     * @param type $item
+     * @param type $key
+     */
+    public function changeValueIterating(&$item,$key){
+        foreach ($this->callbacks as $callbackKey => $callback) {
+            if($key == $callbackKey){
+                $valueConverted =  $this->companyHandle->$callback($item);
+                $item = $valueConverted; // Do This!
+           }
         }
-        $tempResult = $newArray;
     }
     
     /**
@@ -317,15 +319,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      * @return array The callback functions
      */
     public function getCallbackFunction($values) {
-        $callbacks = [];
         foreach ($values as $key => $valueCallback) {
             if (array_key_exists("callback", $valueCallback)) {   
                 foreach ($valueCallback["callback"] as $value) {
-                    $callbacks[$value["type"]] = $value["functionName"];
+                    $this->callbacks[$value["type"]] = $value["functionName"];
                 }
             }
         }
-        return $callbacks;
     }
 }
 
