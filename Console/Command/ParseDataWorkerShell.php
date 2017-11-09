@@ -116,11 +116,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         $platformData = json_decode($job->workload(), true);
 
         foreach ($platformData as $linkedAccountKey => $data) {
-            if ($data['pfp'] <> "mintos") { // TO BE REMOVED           TO BE REMOVED
-                echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-                continue;
-            }
-            
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
 
@@ -263,11 +258,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
- //       print_r($data['tempArray'][885]['parsingResultInvestments']);
-        print_r($data['tempArray'][885]['parsingResultTransactions']);
-        print_r($data['tempArray'][885]['pfp']);
- //       print_r($data['tempArray'][885]['userReference']);        
-        print_r($data['tempArray'][885]['error']);
+ //       print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+        print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
+        print_r($data['tempArray'][$linkedAccountKey]['pfp']);
+ //       print_r($data['tempArray'][$linkedAccountKey]['userReference']);        
+        print_r($data['tempArray'][$linkedAccountKey]['error']);
         return json_encode($data);
     }
     

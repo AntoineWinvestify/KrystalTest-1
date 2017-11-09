@@ -278,9 +278,6 @@ $this->resetTestEnvironment();      // Temporary function
 echo "dateKey = $dateKey \n";
 // Lets allocate a pair of userinvestmentdata and globalcashlowdata for this calculation period (normally daily)   
             $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
-            $this->Userinvestmentdata->createUserinvestmentdata(array("linkedaccount_id" => $linkedaccountId, 
-                                                                                 "date" => $dateKey));
-            $userInvestmentDataId = $this->Userinvestmentdata->id;               
 
             foreach ($dates as $keyDateTransaction => $dateTransaction) {            // read all *individual* transactions
                 $newLoan = NO;
@@ -679,7 +676,7 @@ $internalVariableToHandle = array();
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
-    public function consolidateInstallmentPaymentProgress() {
+    public function consolidateInstalmentPaymentProgress() {
         $sum = 0;        
         return;
         $listResult = $this->Paymenttotal->find('list', array(

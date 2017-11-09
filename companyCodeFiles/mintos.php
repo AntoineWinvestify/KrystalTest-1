@@ -54,6 +54,13 @@
  * function collectAmortizationTablesParallel()                         [OK, tested]
  * Parser AmortizationTables                                            [OK, tested]
  * parallelization                                                      [OK, tested]
+ * 
+ * 
+ * 
+ * 2017-10-24 version_0.8.1
+ * Introduction of call back functions for translation of company specific concepts to
+ * Winvestify standardized concepts 
+ * 
  */
 class mintos extends p2pCompany {
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
@@ -887,5 +894,70 @@ class mintos extends p2pCompany {
         $this->doCompanyLogoutMultiCurl(null,$logoutUrl); //Logout
 
     }
+    
+    
+    
+    
+    /**
+     * Function to translate the company specific loan type to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan type
+     * @return int                  Winvestify standardized loan type
+     */
+    public function translateLoanType($inputData) {
 
+    }
+    
+    /**
+     * Function to translate the company specific amortization method to the Winvestify standardized
+     * amortization type
+     * @param string $inputData     company specific amortization method
+     * @return int                  Winvestify standardized amortization method
+     */
+    public function translateAmortizationMethod($inputData) {
+
+    }   
+    
+    /**
+     * Function to translate the company specific type of investment to the Winvestify standardized
+     * type of investment
+     * @param string $inputData     company specific type of investment
+     * @return int                  Winvestify standardized type of investment
+     */
+    public function translateTypeOfInvestment($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific payment frequency to the Winvestify standardized
+     * payment frequency
+     * @param string $inputData     company specific payment frequency
+     * @return int                  Winvestify standardized payment frequency
+     */
+    public function translatePaymentFrequency($inputData) {
+        
+    }
+        
+    /**
+     * Function to translate the type of investment market to an to the Winvestify standardized
+     * investment market concept
+     * @param string $inputData     company specific investment market concept
+     * @return int                  Winvestify standardized investment marke concept
+     */
+    public function translateinvestmentMarket($inputData) {
+        
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * investmentBuyBackGuarantee
+     * @param string $inputData     company specific investmentBuyBackGuarantee
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateinvestmentBuyBackGuarantee($inputData) {
+        
+    }
+        
+        
+    
 }
