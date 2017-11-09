@@ -693,11 +693,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
 
+        if(empty($input)){
+            return '0';
+        }
         if ($decimalSep == ".") {
             $seperator = "\.";
         }
         else if($decimalSep == 'E'){
-            if(strpos($input, "E")){
+            if(strpos($input, "E") || strpos($input, "e")){
                 if(strpos($input, "-")){
                     $decArray = explode("E", $input);
                     $dec = preg_replace("/[-]/", "", $decArray[1]);
@@ -813,10 +816,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
         foreach ($this->currencies as $currencyIndex => $currency) {
-            if ($loanCurrency == $currency[0]) {                // check the ISO code
+            if (strpos($loanCurrency, $currency[0])) {                // check the ISO code
               return $currencyIndex;
             }
-            if ($currencySymbol == $currency[1]) {              // check the symbol
+            if (strpos($loanCurrency, $currency[1])) {              // check the symbol
               return $currencyIndex;
             }
         }
