@@ -268,8 +268,11 @@ class loanbook extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
-        $this->j = 0;
+        $this->j = 1;
         $this->loanArray;
+        $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
+            'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
+            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
         $this->UserLoansId = array();
         //$this->loanIdArray = array(472);
         //$this->maxLoans = count($this->loanIdArray);
@@ -1277,15 +1280,16 @@ class loanbook extends p2pCompany {
                 if (empty($this->tempUrl['InvesmentUrl'])) {
                     $this->tempUrl['InvesmentUrl'] = array_shift($this->urlSequence);
                 }
-                $url = $this->tempUrl['InvesmentUrl'] . $this->UserLoansId[$this->j];
+                echo 'LOAN ID' . $this->UserLoansId[$this->j - 1];
+                $url = $this->tempUrl['InvesmentUrl'] . $this->UserLoansId[$this->j - 1];
                 $this->j++;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);
                 break;
             case 8:
                 //echo $str;
-                $this->loanArray[$this->j - 1]['A'] = $this->UserLoansId[$this->j - 1]; //A is loan id
-
+                $this->loanArray[$this->j - 1]['A'] = $this->UserLoansId[$this->j - 2]; //A is loan id
+                
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
@@ -1311,11 +1315,11 @@ class loanbook extends p2pCompany {
                             $str = explode(" ", trim($div->nodeValue));
                             $this->loanArray[$this->j - 1]['E'] = $str[0]; //Loan Rating
                             break;
-                        case 13:
+                        case 12:
                             $this->loanArray[$this->j - 1]['F'] = trim($div->nodeValue); //Initial TAE
                             break;
-                        case 19:
-                            $this->loanArray[$this->j - 1]['G'] = trim($div->nodeValue); //Time left
+                        case 18:
+                            $this->loanArray[$this->j - 1]['G'] = explode(" ", trim($div->nodeValue)[0]); //Time left
                     }
                 }
 
@@ -1349,11 +1353,13 @@ class loanbook extends p2pCompany {
                                 case 15:
                                     $this->loanArray[$this->j - 1]['K'] = trim($td->nodeValue); //Loan start date
                                     break;
-                                case 17:
+                                case 19:
                                     $str = array_values(array_unique(explode(" ", trim($td->nodeValue))));
                                     print_r($str);
-                                    $this->loanArray[$this->j - 1]['K'] = $str[2]; //Duration
+                                    $this->loanArray[$this->j - 1]['M'] = trim($str[2]); //Duration
                                     break;
+                                case 17:
+                                    $this->loanArray[$this->j - 1]['L'] = trim($td->nodeValue);
                                 //case 21 SECTOR
                             }
                         }
