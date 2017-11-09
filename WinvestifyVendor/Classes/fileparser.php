@@ -694,7 +694,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
 
         if(empty($input)){
-            return '0';
+            $input = '0.0';
+            $separator = ".";
         }
         if ($decimalSep == ".") {
             $seperator = "\.";
@@ -815,11 +816,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ");
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
-        foreach ($this->currencies as $currencyIndex => $currency) {
-            if (strpos($loanCurrency, $currency[0])) {                // check the ISO code
+        foreach ($this->currencies as $currencyIndex => $currency) {        
+            if (strpos($loanCurrency, $currency[0]) != false || $currencySymbol == $currency[0]) {                // check the ISO code
               return $currencyIndex;
             }
-            if (strpos($loanCurrency, $currency[1])) {              // check the symbol
+            if (strpos($loanCurrency, $currency[1]) != false || $currencySymbol == $currency[1]) {              // check the symbol
               return $currencyIndex;
             }
         }
