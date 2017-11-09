@@ -35,6 +35,34 @@ class Userinvestmentdata extends AppModel {
             'order' => '',
         ),
     );
+    
+    /**
+     * Get data of the last linked accounts investments of an investor.
+     * @param string $investorIdentityId investor id.
+     * @return array Last Userinvestmentdata rows for the linked accounts
+     */
+    public function getLastInvestment($investorIdentityId) {
+
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+
+        //Get linked accounts id
+        $linkedAccountsId = $this->Linkedaccount->find("all", array("recursive" => -1,
+            "conditions" => array("investor_id" => $investorIdentityId),
+            "fields" => array("id"),
+        ));
+
+        //Get last Userinvestmentdata table row for a linked account id
+        $resultInvestorData = array();
+        foreach ($linkedAccountsId as $linkedAccountId) {
+            $resultInvestorData[] = $this->find("first", array("recursive" => -1,
+                "conditions" => array("linkedaccount_id" => $linkedAccountId['Linkedaccount']['id']),
+                "order" => "created DESC",
+            ));
+        }
+        
+        //print_r($resultInvestorData);
+        return $resultInvestorData;
+    }
 
     /**
      * Get data of all the linked accounts of an investor.

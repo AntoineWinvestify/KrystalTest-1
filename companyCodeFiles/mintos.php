@@ -418,7 +418,7 @@ class mintos extends p2pCompany {
         // rest of information is NOT required for current implementation
     ];
     
-    protected $transactionConfigParms = array ('offsetStart' => 1,
+    protected $transactionConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'sortParameter' => array("date","investment_loanId")   // used to "sort" the array and use $sortParameter(s) as prime index.
                                  );
@@ -656,7 +656,7 @@ class mintos extends p2pCompany {
                 $headers = json_decode($headers, true);
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
-                if ($this->originExecution == QUEUE_ORINGIN_EXECUTION_LINKACCOUNT) {
+                if ($this->originExecution == WIN_QUEUE_ORINGIN_EXECUTION_LINKACCOUNT) {
                     $this->idForSwitch++;
                 }
                 else {
@@ -671,6 +671,19 @@ class mintos extends p2pCompany {
             case 7:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $this->fileName = "expiredLoans" . "." . $this->typeFileInvestment;
+                $url = array_shift($this->urlSequence);
+                $referer = array_shift($this->urlSequence);
+                $credentials = array_shift($this->urlSequence);
+                $headersJson = array_shift($this->urlSequence);
+                $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers are : " . $headers . "\n";
+                }
+                $headers = json_decode($headers, true);
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": headers decode are : " . $headers . "\n";
                 }
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);

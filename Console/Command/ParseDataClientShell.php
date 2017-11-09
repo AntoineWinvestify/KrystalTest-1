@@ -91,7 +91,7 @@ $this->resetTestEnvironment();      // Temporary function
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 2 Client\n";
         }
 
-        $resultQueue = $this->Queue->getUsersByStatus(FIFO, GLOBAL_DATA_DOWNLOADED);
+        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, GLOBAL_DATA_DOWNLOADED);
         $inActivityCounter++;                                       
 
         Configure::load('p2pGestor.php', 'default');
@@ -101,7 +101,7 @@ $this->resetTestEnvironment();      // Temporary function
 
 
         while (true){
-            $pendingJobs = $this->checkJobs(GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
             }
@@ -153,8 +153,6 @@ $this->resetTestEnvironment();      // Temporary function
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                 }
                 $this->GearmanClient->runTasks();
-
-                // ######################################################################################################               
                 
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";

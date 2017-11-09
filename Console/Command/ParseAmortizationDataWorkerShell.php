@@ -87,7 +87,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                     $extensionFile = $this->myParser->getExtensionFile($file);
                 }
                 $this->myParser->setConfig($companyHandle->getParserAmortizationConfigParms());
-                $tempArray[$linkedAccountKey][$loanId] = $this->myParser->analyzeFileAmortization($file, $parserConfig, 'html');
+                $tempArray[$linkedAccountKey][$loanId] = $this->myParser->analyzeFileAmortization($file, $parserConfig, $extensionFile);
                 echo "tempResult" . $loanId . "\n";
                 print_r($tempArray);
             }

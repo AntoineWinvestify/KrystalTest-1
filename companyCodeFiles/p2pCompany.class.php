@@ -155,7 +155,9 @@ class p2pCompany {
     
     protected $valuesTransaction;
     protected $valuesInvestment;  
-    protected $valuesAmortizationTable;     
+    protected $valuesAmortizationTable;
+    
+    protected $originExecution;
 
     /**
      *
@@ -2374,7 +2376,12 @@ class p2pCompany {
     function setDateFinish($dateFinish) {
         $this->dateFinish = $dateFinish;
     }
+    
+    function setOriginExecution($originExecution) {
+        $this->originExecution = $originExecution;
+    }
 
+    
         
     
 
