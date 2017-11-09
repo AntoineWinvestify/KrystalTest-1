@@ -915,7 +915,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     private function extractDataFromString($input, $search, $separator ) {
-        echo "input = $input, search = $search, lengnth =  and separator = $separator\n";
+        echo "input = $input, search = $search, length =  " . strlen($search) . " and separator = $separator\n";
         echo "first strip = " . stripos($input, $search) ."\n";
         
         $position = stripos($input, $search) + strlen($search);

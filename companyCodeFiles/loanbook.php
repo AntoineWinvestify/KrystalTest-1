@@ -100,7 +100,8 @@ class loanbook extends p2pCompany {
                                 5 => ["Retención de intereses (IRPF)" => "Tax_income_withholding_tax"],
                                 6 => ["Compensación por incidencia administrativa" => "Compensation"],
                                 7 => ["Comisión pago por tarjeta" => "Bank_charges"],
-                                8 => ["Participación en pagaré" => "Primary_market_investment"]
+                                8 => ["Participación en pagaré" => "Primary_market_investment"],
+                                9 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
                             ]                    
                         ],
                 "functionName" => "getTransactionDetail",
