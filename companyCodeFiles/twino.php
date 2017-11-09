@@ -66,93 +66,52 @@ class twino extends p2pCompany {
                 "functionName" => "normalizeDate",
             ],
         ],
-        "B" => [
-            [
-                "type" => "purpose", // trick to get the complete cell data as purpose
-                "inputData" => [
-                    "input2" => "", // May contain trailing spaces
-                    "input3" => ",",
-                ],
-                "functionName" => "extractDataFromString",
-            ],
-            [
-                "type" => "loanId", // Winvestify standardized name 
-                "functionName" => "getHash", // An internal loanId is generated based on md5 hash of project name
-            ]
-        ],
         "C" => [
-            "name" => "payment",
+            "name" => "transactionDetail",
         ],
-        /*              [
-          "type" => "transactionType",                // Complex format, calling external method
-          "inputData" => [                            // List of all concepts that the platform can generate
-          // format ["concept string platform", "concept string Winvestify"]
-          "input2" => [["Amortización de capital(€)", "Principal_repayment"],
-          ["Intereses brutos(€)", "Regular_interest_income"],
-          ["Retención IRPF(€)", "Tax_income_withholding_tax"],
-          ]
-          ],
-          "functionName" => "getTransactionType",
-          ],
-          [
-          "type" => "transactionDetail",              // Complex format, calling external method
-          "inputData" => [                            // List of all concepts that the platform can generate
-          // format ["concept string platform", "concept string Winvestify"]
-          "input2" => [["Amortización de capital(€)", "Principal_repayment"],
-          ["Intereses brutos(€)", "Regular_interest_income"],
-          ["Retención IRPF(€)", "Tax_income_withholding_tax"],
-          ]
-          ],
-          "functionName" => "getTransactionDetail",
-          ]
-          ],
-         */
         "D" => [// Simply changing name of column to the Winvestify standardized name
             [
-                "type" => "amortization",
+                "type" => "transactionDetail",
                 "inputData" => [
-                    "input2" => ".", // Thousands seperator, typically "."
-                    "input3" => ",", // Decimal seperator, typically ","
-                    "input4" => 5, // Number of required decimals, typically 5
+                    "input2" => [
+                        0 => ["FUNDING" => "Cash_deposit"],                // OK
+                        1 => ["PRINCIPAL BUY_SHARES" => "Primary_market_investment"],
+                        2 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment"],
+                        3 => ["PRINCIPAL REPAYMENT" => "Capital_repayment"],    //OK
+                        4 => ["PRINCIPAL BUYBACK" => "Principal_buyback"],        // OK    
+                        5 => ["INTEREST BUYBACK" => "Interest_income_buyback"],    // OK
+                        6 => ["INTEREST REPAYMENT" => "Regular_gross_interest_income"],       //
+                        7 => ["INTEREST SCHEDULE" => "Regular_gross_interest_income"],
+                        8 => ["PENALTY REPAYMENT" =>"Late_payment_fee_income"],      // OK                                       
+                        9 => ["INTEREST EXTENSION" => "Incentive_and_bonus"],
+                        10 => ["PRINCIPAL REPURCHASE" => "Principal_buyback"],
+                        11 => ["INTEREST REPURCHASE" => "Interest_income_buyback"],
+                        12 => ["INTEREST EARLY_FULL_REPAYMENT" => "Regular_gross_interest_income"],
+                        13 => ["INTEREST ACCRUED" => "Regular_gross_interest_income"],
+                        //TAKE INTO ACCOUNT THAT IT COULD BE NEGATIVE
+                        //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
+                        14 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_positive"],
+                        15 => ["PRINCIPAL RECOVERY" => "Recoveries"],
+                        16 => ["PRINCIPAL WRITEOFF" => "Write-off"]
+                    ], // Thousands seperator, typically "."
+                    "input3" => "#current.transactionDetail", // Decimal seperator, typically ","
                 // is ALWAYS the contents of the cell
                 ],
-                "functionName" => "getAmount"
+                "functionName" => "getMultipleInputTransactionDetail"
             ]
         ],
         "E" => [// Simply changing name of column to the Winvestify standardized name
-            [
-                "type" => "interest",
-                "inputData" => [
-                    "input2" => ".", // Thousands seperator, typically "."
-                    "input3" => ",", // Decimal seperator, typically ","
-                    "input4" => 5, // Number of required decimals, typically 5
-                // is ALWAYS the contents of the cell
-                ],
-                "functionName" => "getAmount"
-            ]
+            "name" => "investment_loanId"
         ],
         "F" => [// Simply changing name of column to the Winvestify standardized name
             [
-                "type" => "retencionTax",
-                "inputData" => [
-                    "input2" => ".", // Thousands seperator, typically "."
-                    "input3" => ",", // Decimal seperator, typically ","
-                    "input4" => 5, // Number of required decimals, typically 5
-                // is ALWAYS the contents of the cell
-                ],
-                "functionName" => "getAmount"
-            ]
-        ],
-        "G" => [// Simply changing name of column to the Winvestify standardized name
-            [
-                "type" => "total",
-                "inputData" => [
-                    "input2" => ".", // Thousands seperator, typically "."
-                    "input3" => ",", // Decimal seperator, typically ","
-                    "input4" => 5, // Number of required decimals, typically 5
-                // is ALWAYS the contents of the cell
-                ],
-                "functionName" => "getAmount"
+                "type" => "amount",                                     // This is *mandatory* field which is required for the 
+                "inputData" => [                                        // "transactionDetail"
+                            "input2" => "",                             // and which BY DEFAULT is a Winvestify standardized variable name.
+                            "input3" => ".",                            // and its content is the result of the "getAmount" method
+                            "input4" => 4
+                            ],
+                "functionName" => "getAmount",
             ]
         ]
     ];
@@ -233,10 +192,10 @@ class twino extends p2pCompany {
 
       
 
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
+    protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                         //        'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("date","investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
                                  );
  
     protected $investmentConfigParms = array ('OffsetStart' => 1,

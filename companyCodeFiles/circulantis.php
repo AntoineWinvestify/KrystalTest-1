@@ -160,20 +160,20 @@ class circulantis extends p2pCompany {
             "H" => "total"
         ];
        
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
+    protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
  
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
+    protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
 /*    NOT YET READY
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
+    protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.

@@ -16,8 +16,8 @@
  *
  *
  * @author
- * @version
- * @date
+ * @version 0.2
+ * @date 2017-10-27
  * @package
  *
  * This client deals with performing the parsing of the files that have been downloaded
@@ -29,615 +29,60 @@
  * 2017-08-11		version 0.1
  * Basic version
  *
- *
+ * 2017-10-27		version 0.2
+ * client adapted to global Gearman framework
+ * 
+ * 
+ * PENDING:
+ * Adapt to     public function verifiedStatus($status, $message, $restartStatus, $errorStatus) 
+ * use of  createInvestment can be avoided if the investment model has a aftersave and check for create. In that case also create
+ * the paymenttotal table. now here we can use the simple save (with or without the id
+ * add list of finished loans to be sent to the 
  */
 
-
-App::uses('Folder', 'Utility');
-App::uses('File', 'Utility');
-
+    
 App::import('Shell','GearmanClient');
 
-class ParseDataClientShell extends AppShell {
-    public $uses = array('Queue', 'Paymenttotal');
-    
-    protected $GearmanClient;
-    
-    protected $variablesConfig = [
-        // FLOWDATA_VARIABLE_DONE: The system has copied/calculates the variable to the internal queue
-        // FLOWDATA_VARIABLE_NOT_DONE: The system has not (yet) copied the variable to the internal queue
-        // FLOWDATA_VARIABLE_ACCUMULATIVE: The value is accumulative, read original value, add new value and write
-        //                                  for this loan and this readout period
-        // FLOWDATA_VARIABLE_NOT_ACCUMULATIVE: not an accumulative value, simply (over)write the value  
-        
-        2 => [
-                "databaseName" => "investment.investment_loanId", 
-                "internalName" => "investment_loanId",
-                "internalIndex" => 2,
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,                 
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,
-                "function" => ""                      // Only needed in case "complex calculations are required
-            ],
-        3 => [
-                "databaseName" => "investment.investment_debtor", 
-                "internalName" => "investment_debtor",
-                "internalIndex" => 3,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,
-                "function" => ""                                        // Not applicable            
-            ],       
-        4 => [
-                "databaseName" => "investment.investment_country", 
-                "internalName" => "investment_country",  
-                "internalIndex" => 4,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable
-            ],
-        5 => [
-                "databaseName" => "investment.investment_loanType", 
-                "internalName" => "investment_loanType",    
-                "internalIndex" => 5,           
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable            
-            ],  
-        6 => [
-                "databaseName" => "investment.investment_amortizationMethod", 
-                "internalName" => "investment_amortizationMethod", 
-                "internalIndex" => 6,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable          
-            ],
-        7 => [
-                "databaseName" => "investment.investment_market", 
-                "internalName" => "investment_market",        
-                "internalIndex" => 7,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable  
-            ],       
-        8 => [
-                "databaseName" => "investment.investment_loanOriginator", 
-                "internalName" => "investment_loanOriginator",         
-                "internalIndex" => 8,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable 
-            ],
-        9 => [
-                "databaseName" => "investment.investment_buyBackGuarantee", 
-                "internalName" => "investment_buyBackGuarantee", 
-                "internalIndex" => 9,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable            
-            ],
-        10 => [
-                "databaseName" => "investment.investment_currency", 
-                "internalName" => "investment_currency",         
-                "internalIndex" => 10,           
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable   
-            ],
-        11 => [
-                "databaseName" => "investment.investment_typeOfInvestment",        
-                "internalName" => "investment_typeOfInvestment", 
-                "internalIndex" => 11,           
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable  
-            ],   
-        12 => [ //OK-OK
-                "databaseName" => "investment.investment_myInvestment",        
-                "internalName" => "investment_myInvestment", 
-                "internalIndex" => 12,           
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "calculateCapitalRepayment" 
-            ],   
-                
-        13 => [
-                "databaseName" => "investment.investment_myInvestmentDate", 
-                "internalName" => "investment_myInvestmentDate",  
-                "internalIndex" => 13,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "calculateCapitalRepayment"          
-            ], 
-        14 => [
-                "databaseName" => "investment.issueDate", 
-                "internalName" => "investment_issueDate",   
-                "internalIndex" => 14,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable            
-            ],       
-        15 => [
-                "databaseName" => "investment.investment_dueDate", 
-                "internalName" => "investment_dueDate",         
-                "internalIndex" => 15,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""         
-            ],
-        16 => [
-                "databaseName" => "investment.investment_originalDuration", 
-                "internalName" => "investment_originalDuration",    
-                "internalIndex" => 16,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ], 
-        17 => [
-                "databaseName" => "investment.investment_remainingDuration", 
-                "internalName" => "investment_remainingDuration",   
-                "internalIndex" => 17,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "calculateRemainingterm"        
-            ],  
-        18 => [
-                "databaseName" => "investment.investment_paymentFrequency", 
-                "internalName" => "investment_paymentFrequency",    
-                "internalIndex" => 18,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable            
-            ],        
-        19 => [
-                "databaseName" => "investment.investment_fullLoanAmount", 
-                "internalName" => "investment_fullLoanAmount",        
-                "internalIndex" => 19,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""      
-            ],
-        20 => [
-                "databaseName" => "investment.investment_nominalInterestRate", 
-                "internalName" => "investment_nominalInterestRate",     
-                "internalIndex" => 20,           
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable  
-            ], 
-        21 => [
-                "databaseName" => "investment.investment_riskRating", 
-                "internalName" => "investment_riskRating",    
-                "internalIndex" => 21,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable  
-            ], 
-        22 => [
-                "databaseName" => "investment.investment_expectedAnualYield", 
-                "internalName" => "investment_expectedAnualYield",    
-                "internalIndex" => 22,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""      
-            ],  
-        23 => [
-                "databaseName" => "investment.investment_LTV",
-                "internalName" => "investment_LTV",      
-                "internalIndex" => 23,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""                                        // Not applicable
-            ],         
-        24 => [
-                "databaseName" => "investment.investment_originalState", 
-                "internalName" => "investment_originalState",     
-                "internalIndex" => 24,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""        
-            ],
-        25 => [
-                "databaseName" => "investment.investment_dateOfPurchase", 
-                "internalName" => "investment_dateOfPurchase",     
-                "internalIndex" => 25,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""           
-            ],  
-        26 => [    //OK-ok
-                "databaseName" => "investment.investment_secondaryMarketInvestment", 
-                "internalName" => "investment_secondaryMarketInvestment",  
-                "internalIndex" => 26,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""         
-            ],
-        27 => [
-                "databaseName" => "investment.investment_priceInSecondaryMarket", 
-                "internalName" => "investment_priceInSecondaryMarket",     
-                "internalIndex" => 27,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ],  
-        
-                        28 => [ // CHECK
-                                "databaseName" => "investment.investment_forSale",
-                                "internalName" => "investment_forSale",    
-                                "internalIndex" => 28,                            
-                                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                                "function" => ""        
-                            ],
-
-
-        30 => [  // This item is ONLY used to calculate the values of the base elements: PrincipalPayment and InterestPayment
-                "databaseName" => "investment.investment_principalAndInterestPayment",  
-                "internalName" => "investment_principalAndInterestPayment", 
-                "internalIndex" => 30,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => ""  
-            ],
-        31 => [
-                "databaseName" => "investment.investment_instalmentsProgress",
-                "internalName" => "investment_installmentsProgress", 
-                "internalIndex" => 31,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ], 
-        32 => [
-                "databaseName" => "investment.investment_instalmentsPaid",  
-                "internalName" => "investment_instalmentsPaid",    
-                "internalIndex" => 32,               
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ],       
-
-        33 => [
-                "databaseName" => "investment.investment_totalInstalments", 
-                "internalName" => "investment_totalInstalments",     
-                "internalIndex" => 33,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""        
-            ],               
-        34 => [    //OK ok 
-                "databaseName" => "payment.payment_capitalRepayment",  
-                "internalName" => "payment_capitalRepayment",         
-                "internalIndex" => 34,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "calculateCapitalRepayment"           
-            ],  
-
-        35 => [
-                "databaseName" => "investment.investment_partialPrincipalPayment", 
-                "internalName" => "investment_partialPrincipalPayment",  
-                "internalIndex" => 35,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "calculatePartialPrincipalBuyback" 
-            ],       
-        36 => [    //OK ok
-                "databaseName" => "payment.payment_principalBuyback",
-                "internalName" => "payment_principalBuyback",    
-                "internalIndex" => 36,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "calculatePrincipalBuyback"        
-            ],
-        37 => [
-                "databaseName" => "investment.investment_outstandingPrincipal",
-                "internalName" => "investment_outstandingPrincipal", 
-                "internalIndex" => 37,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""           
-            ],
-        38 => [
-                "databaseName" => "investment.investment_receivedRepayment", 
-                "internalName" => "investment_receivedRepayment",
-                "internalIndex" => 38,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""  
-            ],
-        39 => [
-                "databaseName" => "investment.investment_nextPaymentDate", 
-                "internalName" => "investment_nextPaymentDate",
-                "internalIndex" => 39,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ], 
-        40 => [
-                "databaseName" => "investment.investment_nextPayment",
-                "internalName" => "investment_nextPayment",    
-                "internalIndex" => 40,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""           
-            ],
-        41 => [
-                "databaseName" => "investment.investment_interestGrossExpected",  
-                "internalName" => "investment_interestGrossExpected",
-                "internalIndex" => 41,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""      
-            ],       
-        42 => [   
-                "databaseName" => "investment.investment_totalGrossIncome", 
-                "internalName" => "investment_totalGrossIncome", 
-                "internalIndex" => 42,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""        
-            ],
-        43 => [  //OK ok
-                "databaseName" => "payment.payment_regularGrossInterestIncome", 
-                "internalName" => "payment_regularGrossInterestIncome",             
-                "internalIndex" => 43,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "calculateRegularGrossInterestIncome"           
-            ],  
-        44 => [    //OK ok
-                "databaseName" => "payment.payment_interestIncomeBuyback",
-                "internalName" => "payment_interestIncomeBuyback",      
-                "internalIndex" => 44,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "calculateInterestIncomeBuyback"         
-            ],
-        45 => [    //OK ok
-                "databaseName" => "payment.payment_delayedInterestIncome",
-                "internalName" => "payment_delayedInterestPayment",         
-                "internalIndex" => 45,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "calculateDelayedInterestIncome" 
-            ],       
-        46 => [    //OK ok
-                "databaseName" => "payment.payment_delayedInterestIncomeBuyback",
-                "internalName" => "payment_delayedInterestIncomeBuyback",   
-                "internalIndex" => 46,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "calculateDelayedInterestIncomeBuyback"        
-            ],
-        47 => [    //OK ok
-                "databaseName" => "payment.payment_latePaymentFeeIncome",
-                "internalName" => "payment_latePaymentFeeIncome",        
-                "internalIndex" => 47,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "calculateLatePaymentFeeIncome"           
-            ],
-        48 => [
-                "databaseName" => "investment.investment_loanRecoveries", 
-                "internalName" => "investment_recoveries",             
-                "internalIndex" => 48,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => ""  
-            ],
-        49 => [ // TO CHECK WITH LATEST INVESTMENT LIST
-                "databaseName" => "investment.investment_loanIncentivesAndBonus",  
-                "internalName" => "investment_originalDuration",     
-                "internalIndex" => 49,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ], 
-        50 => [
-                "databaseName" => "investment.investment_loanCompensation",  
-                "internalName" => "investment_compensation",        
-                "internalIndex" => 50,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "" 
-            ],       
-        51 => [    //OK
-                "databaseName" => "investment.investment_premiumSecondaryMarket",
-                "internalName" => "investment_premiumSecondaryMarket",  
-                "internalIndex" => 51,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ],                 
-        53 => [
-                "databaseName" => "investment.investment_loanTotalCost",  
-                "internalName" => "investment_totalCost",             
-                "internalIndex" => 53,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""        
-            ],
-        54 => [
-                "databaseName" => "investment.investment_commissionPaid",
-                "internalName" => "investment_commissionPaid",        
-                "internalIndex" => 54,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => ""         
-            ],
-        55 => [
-                "databaseName" => "investment.investment_bankCharges", 
-                "internalName" => "investment_bankCharges",             
-                "internalIndex" => 55,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => ""
-            ],       
-        56 => [
-                "databaseName" => "investmentdata.investmentdata_taxVAT",  
-                "internalName" => "investmentdata_taxVAT",             
-                "internalIndex" => 56,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""        
-            ],
-        57 => [
-                "databaseName" => "investment.investment_incomeWithholdingTax", 
-                "internalName" => "investment_incomeWithholdingTax",             
-                "internalIndex" => 57,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""           
-            ],
-        58 => [
-                "databaseName" => "investment.investment_interestPaymentSecondaryMarketPurchase", 
-                "internalName" => "investment_interestPaymentSecondaryMarketPurchase",        
-                "internalIndex" => 58,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""  
-            ],
-        59 => [
-                "databaseName" => "investment.investment_currencyExchangRateFee", 
-                "internalName" => "investment_originalDuration",     
-                "internalIndex" => 59,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "" 
-            ], 
-        60 => [    //OK
-                "databaseName" => "investment.investment_costSecondaryMarket", 
-                "internalName" => "investment_costSecondaryMarket",  
-                "internalIndex" => 60,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""   
-            ],
-      
-        62 => [
-                "databaseName" => "investment.investment_totalNetIncome",
-                "internalName" => "investment_totalNetIncome",    
-                "internalIndex" => 62,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""        
-            ],
-        63 => [
-                "databaseName" => "investment.investment_paymentStatus", 
-                "internalName" => "investment_paymentStatus",      
-                "internalIndex" => 63,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""           
-            ],  
-        64 => [
-                "databaseName" => "investment.investment_statusOfLoan", 
-                "internalName" => "investment_statusOfLoan",       
-                "internalIndex" => 64,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => ""         
-            ],
-        65 => [
-                "databaseName" => "investment.investment_writtenOff",
-                "internalName" => "investment_writtenOff",        
-                "internalIndex" => 65,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ],       
-        66 => [    //OK--
-                "databaseName" => "globalcashflowdata.globalcashflowdata_platformDeposit", 
-                "internalName" => "globalcashflowdata_platformDeposits",          
-                "internalIndex" => 66,           
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "calculatePlatformDeposit"        
-            ],
-        67 => [   //OK--
-                "databaseName" => "globalcashflowdata.globalcashflowdata_platformWithdrawal",  
-                "internalName" => "globalcashflowdata_platformWithdrawals",        
-                "internalIndex" => 67,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE, 
-                "function" => "calculatePlatformWithdrawal" 
-            ], 
-        68 => [
-                "databaseName" => "payment.payment_currencyFluctuationPositive", 
-                "internalName" => "payment_currencyFluctuationPositive",             
-                "internalIndex" => 68,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => ""  
-            ],
-        69 => [ 
-                "databaseName" => "payment.payment_currencyFluctuationNegative",  
-                "internalName" => "payment_currencyFluctuationNegative",     
-                "internalIndex" => 69,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ], 
-        70 => [
-                "databaseName" => "globalcashflowdata.globalcashflowdata_platformRecoveries",  
-                "internalName" => "globalcashflowdata_platformRecoveries",        
-                "internalIndex" => 70,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "" 
-            ],                 
-        71 => [
-                "databaseName" => "globalcashflowdata.globalcashflowdata_platformIncentivesAndBonus", 
-                "internalName" => "globalcashflowdata_platformIncentivesAndBonus",             
-                "internalIndex" => 71,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => ""  
-            ],
-        72 => [ 
-                "databaseName" => "globalcashflowdata.globalcashflowdata_platformCompensation",  
-                "internalName" => "globalcashflowdata_platformCompensation",     
-                "internalIndex" => 72,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "" 
-            ], 
-        73 => [
-                "databaseName" => "globalcashflowdata.globalcashflowdata_platformTotalCost",  
-                "internalName" => "globalcashflowdata_platformTotalCost",        
-                "internalIndex" => 73,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_ACCUMULATIVE,   
-                "function" => "" 
-            ],        
+class ParseDataClientShell extends GearmanClientShell {
+    public $uses = array('Queue', 'Paymenttotal', 'Investment');
+    protected $variablesConfig;
  
-        ];
-         
     
-    public function startup() {
-        $this->GearmanClient = new GearmanClient();
-    }
-
-    public function help() {
-        $this->out('Gearman Client as a CakePHP Shell');
-    }
-
-    public function main() {
-
-        echo "Nothing\n";
-    }
-
-
-
-
+// Only used for defining a stable testbed definition
+public function resetTestEnvironment() {
+    echo "Deleting Investment\n";  
+    $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
+    
+    echo "Deleting Paymenttotal\n"; 
+    $this->Paymenttotal->deleteAll(array('Paymenttotal.id >' => 0), false);
+    
+    echo "Deleting Payment\n"; 
+    $this->Payment = ClassRegistry::init('Payment');
+    $this->Payment->deleteAll(array('Payment.id >' => 0), false); 
+    
+    echo "Deleting Userinvestmentdata\n"; 
+    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+    $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
+    
+    echo "Deleting Globalcashflowdata\n"; 
+    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+    $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
+    
+ 
+    return;
+}
+    
+    
+    
+    
     public function initDataAnalysisClient() {
-   
+$this->resetTestEnvironment();      // Temporary function         
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask')); 
         
         $this->flowName = "GEARMAN_FLOW2";        
-        $this->fileName = "amortizationtable";
         $inActivityCounter = 0;
         $workerFunction = "parseFileFlow";        
         
@@ -646,16 +91,17 @@ class ParseDataClientShell extends AppShell {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 2 Client\n";
         }
 
-        $resultQueue = $this->Queue->getUsersByStatus(FIFO, GLOBAL_DATA_DOWNLOADED);
-
+        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, GLOBAL_DATA_DOWNLOADED);
         $inActivityCounter++;                                       
 
         Configure::load('p2pGestor.php', 'default');
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
+        Configure::load('internalVariablesConfiguration.php', 'default');
+        $this->variablesConfig = Configure::read('internalVariables');
 
 
         while (true){
-            $pendingJobs = $this->checkJobs(GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
             }
@@ -666,33 +112,40 @@ class ParseDataClientShell extends AppShell {
                 foreach ($pendingJobs as $keyjobs => $job) {
                     $userReference = $job['Queue']['queue_userReference'];
                     $queueId = $job['Queue']['id'];
-                    $directory = Configure::read('dashboard2Files') . $userReference . "/" . date("Ymd",time()) . DS ;
+                    $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
+                    print_r($this->queueInfo);
+                    $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS ;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
-
+                    $i = 0;
                     foreach ($subDir[0] as $subDirectory) {
                         $tempName = explode("/", $subDirectory);
                         $linkedAccountId = $tempName[count($tempName) - 1];
                         $dirs = new Folder($subDirectory);
                         $allFiles = $dirs->findRecursive();
- 
+                        if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
+                            continue;
+                        }
                         $tempPfpName = explode("/", $allFiles[0]);
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
+                        $this->userLinkaccountIds[$job['Queue']['id']][$i] = $linkedAccountId;
+                        $i++;
                         echo "pfp = " . $pfp . "\n";
-                        $files = $this->readFilteredFiles($allFiles,  TRANSACTION_FILE + INVESTMENT_FILE);
+                        $files = $this->readFilteredFiles($allFiles, WIN_FLOW_EXPIRED_LOAN_FILE + WIN_FLOW_TRANSACTION_FILE + 
+                                                                    WIN_FLOW_INVESTMENT_FILE + WIN_FLOW_EXTENDED_TRANSACTION_FILE);
                         $listOfActiveLoans = $this->getListActiveLoans($linkedAccountId);
-                        $params[$linkedAccountId] = array('queue_id' => $job['Queue']['id'],
+                        print_r($listOfActiveLoans);
+
+                        $params[$linkedAccountId] = array(
                                                         'pfp' => $pfp,
                                                         'listOfCurrentActiveLoans' => $listOfActiveLoans,
                                                         'userReference' => $job['Queue']['queue_userReference'],
                                                         'files' => $files);
                     }
                     debug($params);
-                    
-                 //   $response[] = $this->GearmanClient->addTask("parseFileFlow", json_encode($params));
+
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" . 
                             $workerFunction . ".-;" . $job['Queue']['queue_userReference']);
-                   
 
                 }
 
@@ -701,54 +154,56 @@ class ParseDataClientShell extends AppShell {
                 }
                 $this->GearmanClient->runTasks();
 
-
+                // ######################################################################################################               
                 
-
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
-                $result = json_decode($this->workerResult, true);
                 
-                foreach ($result as $platformKey => $platformResult) {
-                    if (Configure::read('debug')) {
-                        echo __FUNCTION__ . " " . __LINE__ . ": " . "platformkey = $platformKey\n";
-                    }
-                    // First check for application level errors
-                    // if an error is found then all the files related to the actions are to be
-// deleted including the directory structure.
-                    if (!empty($platformResult['error'])) {         // report error
-                        $this->Applicationerror = ClassRegistry::init('applicationerror');
-                        $this->Applicationerror->saveAppError("ERROR ", json_encode($platformResult['error']), 0, 0, 0);
-                        // Delete all files for this user for this regular update
-                        // break
-                        continue;
-                    }
-                    $userReference = $platformResult['userReference'];
-                    $queueId = $platformResult['queue_id'];
-                    $baseDirectory = Configure::read('dashboard2Files') . $userReference . "/" . date("Ymd",time()) . DS ;
-                    $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
+                foreach($this->tempArray as $queueIdKey => $result) {
+                    foreach ($result as $platformKey => $platformResult) {
 
-                    $mapResult = $this->mapData($platformResult);
-
-                    if (!empty($platformResult['newLoans'])) {
-                        $fileHandle = new File($baseDirectory .'loanIds.json', true, 0644);
-                        if ($fileHandle) {
-                            if ($fileHandle->append(json_encode($platformResult['newLoans']), true)) {
-                                $fileHandle->close();
-                                echo "File " .  $baseDirectory . "loanIds.json written\n";
-                            }
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "platformkey = $platformKey\n";
                         }
-                        $newState = DATA_EXTRACTED;
+                        // First check for application level errors
+                        // if an error is found then all the files related to the actions are to be
+    // deleted including the directory structure.
+                        if (!empty($platformResult['error'])) {         // report error
+                            $this->Applicationerror = ClassRegistry::init('applicationerror');
+                            $this->Applicationerror->saveAppError("ERROR ", json_encode($platformResult['error']), 0, 0, 0);
+                            // Delete all files for this user for this regular update
+                            
+                            // break
+                            continue;
+                        }
+                        $userReference = $platformResult['userReference'];
+                        $baseDirectory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS ;
+                        $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
+// Add the status per PFP, 0 or 1
+                        $mapResult = $this->mapData($platformResult);
+
+                        if (!empty($platformResult['newLoans'])) {
+                            $fileHandle = new File($baseDirectory .'loanIds.json', true, 0644);
+                            if ($fileHandle) {
+                                if ($fileHandle->write(json_encode($platformResult['newLoans']), "w", true)) {
+                                    $fileHandle->close();
+                                    echo "File " .  $baseDirectory . "loanIds.json written\n";
+                                }
+                            }
+                            $newFlowState = DATA_EXTRACTED;
+                        }
+                        else {
+                            $newFlowState = AMORTIZATION_TABLES_DOWNLOADED;
+                        }
                     }
-                    else {
-                        $newState = AMORTIZATION_TABLES_DOWNLOADED;
-                    }
-                    $this->Queue->id = $queueId;
-                    $this->Queue->save(array('queue_status' => $newState,
-                                             'queue_info' => json_encode($platformResult['newLoans']),
-                                            ), $validate = true
-                                        );
-                }
+                    $this->queueInfo[$queueIdKey]["loanIds"] = $platformResult['newLoans']; // store the list of loan Ids in DB, for FLOW3B
+                    $this->Queue->id = $queueIdKey; 
+                    $this->Queue->save(array('queue_status' => $newFlowState,
+                                         'queue_info' => json_encode($this->queueInfo[$queueIdKey]),
+                                        ), $validate = true
+                                    );                   
+                }               
                 break;
             }
             else {
@@ -770,7 +225,7 @@ class ParseDataClientShell extends AppShell {
 
 
     /**
-     * Get the list of all active investments for a PFP as identified by the
+     * Get the list of all active investments for a P2P as identified by the
      * linkedaccount identifier.
      *
      * @param int $linkedaccount_id    linkedaccount reference
@@ -779,11 +234,9 @@ class ParseDataClientShell extends AppShell {
      */
     public function getListActiveLoans($linkedaccount_id) {
         $this->Investment = ClassRegistry::init('Investment');
-
-// CHECK THE FILTERCONDITION for status
         $filterConditions = array(
                                 'linkedaccount_id' => $linkedaccount_id,
-                               //     "investment_status" => -1,
+                                    "investment_statusOfloan" => WIN_LOANSTATUS_ACTIVE,
                                 );
 
 	$investmentListResult = $this->Investment->find("all", array( "recursive" => -1,
@@ -795,38 +248,7 @@ class ParseDataClientShell extends AppShell {
         return $list;
     }
 
-
-
-    public function verifyFailTask(GearmanTask $task) {
-        $data = $task->data();
-        $this->workerResult = $task->data();
-        echo __METHOD__ . " " . __LINE__ . "\n";
-        echo "ID Unique: " . $task->unique() . "\n";
-        echo "Fail: {$m}" . GEARMAN_WORK_FAIL . "\n";
-    }
-
-    public function verifyExceptionTask (GearmanTask $task) {
-        $data = $task->data();
-        $this->workerResult = $task->data();
-        echo __METHOD__ . " " . __LINE__ .  "\n";
-        echo "ID Unique: " . $task->unique() . "\n";
-        echo "Exception: {$m} " . GEARMAN_WORK_EXCEPTION . "\n";
-        //return GEARMAN_WORK_EXCEPTION;
-    }
-
-    public function verifyCompleteTask (GearmanTask $task) {
-        echo __METHOD__ . " " . __LINE__ . "\n";
-        $data = explode(".-;", $task->unique());
-        $this->workerResult = $task->data();
-        echo "ID Unique: " . $task->unique() . "\n";
-        echo "JOB COMPLETE: ";
-  //              $task->jobHandle() . ", " . $task->data() . "\n";
-        echo GEARMAN_SUCCESS;
-
-    }
-
-
-
+ 
 
     /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values" 
@@ -841,213 +263,154 @@ class ParseDataClientShell extends AppShell {
      *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData (&$platformData) {
-    echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting with mapping process\n";    
-    
+        $investmentId = NULL;
         $variables = array();
         $linkedaccountId = $platformData['linkedaccountId'];
+        $userReference = $platformData['userReference'];
+        
+        echo "new loans are:";
+        print_r($platformData['newLoans']);
+    
+        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, per day
+            if (empty($dateKey)) {      // There is an empty index, WHY?
+               continue;
+            }
+echo "dateKey = $dateKey \n";
+// Lets allocate a pair of userinvestmentdata and globalcashlowdata for this calculation period (normally daily)   
+            $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
+            $this->Userinvestmentdata->createUserinvestmentdata(array("linkedaccount_id" => $linkedaccountId, 
+                                                                                 "date" => $dateKey));
+            $userInvestmentDataId = $this->Userinvestmentdata->id;               
 
-
-        foreach ($platformData['parsingResultTransactions'] as $dateKey => $date) { // these are all transactions, per day
-            echo "dateKey = $dateKey\n";
-            foreach ($date as $keyDateTransaction => $dateTransaction) {            // read transactions
-  //              echo "keyDateTransaction = $keyDateTransaction \n";
+            foreach ($dates as $keyDateTransaction => $dateTransaction) {            // read all *individual* transactions
+                $newLoan = NO;
+                echo "keyDateTransaction = $keyDateTransaction \n";
+echo "---------> ANALYZING NEW LOAN\n";
                 if (in_array($keyDateTransaction, $platformData['newLoans'])) {          // check if loanId is new 
-                    echo "Loading the data of a new loan\n";
-                   // if (array_key_exists( $newLoan, $platformData['parsingResultInvestments'])) {  // this is a new loan and we have some info
+                    echo "Store the data of a new loan in the shadow db table\n";
                     // check all the data in the analyzed investment table
-                        foreach ($platformData['parsingResultInvestments'][$keyDateTransaction] as $investmentDataKey => $investmentData) {
-     //                       echo "investmentDataKey = $investmentDataKey\n";
-                            $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
-                            if (!empty($tempResult))  {    
-                                $dataInformation = explode (".",$tempResult['databaseName'] );
-                                $dbTable = $dataInformation[0];
-                                $database[$dbTable][$investmentDataKey] = $investmentData;
-                                $this->variablesConfig[$investmentDataKey]['state'] = FLOWDATA_VARIABLE_DONE;   // Mark done
-                            }
-                        }  
-                  //  }                     
+                    foreach ($platformData['parsingResultInvestments'][$keyDateTransaction] as $investmentDataKey => $investmentData) {
+                        $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
+
+                        if (!empty($tempResult))  {    
+                            $dataInformation = explode (".",$tempResult['databaseName'] );
+                            $dbTable = $dataInformation[0];
+                            $database[$dbTable][$investmentDataKey] = $investmentData;
+                            $this->variablesConfig[$investmentDataKey]['state'] = WIN_FLOWDATA_VARIABLE_DONE;   // Mark done
+                            $newLoan = YES;
+                        }
+                    }
+               
                 }
                 else { // existing loan
-                    echo "This is an existing loan\n";
+                    // get the investment_id of the existing loan
+                         //     public function getData($filter = null, $field = null, $order = null, $limit = null)
+                    $filterConditions = array("investment_loanId" => $keyDateTransaction, 
+                                       "linkedaccount_id" => $linkedaccountId);
+//print_r($filterConditions);
+                    $tempInvestmentId = $this->Investment->getData($filterConditions, array("id")); 
+                    $investmentId = $tempInvestmentId[0]['Investment']['id'];
+                    $database['investment']['id'] = $investmentId;
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Existing Loan.. Id of the existing loan $investmentId\n ";   
                 }
-                // load all the transaction data
 
-                foreach ($dateTransaction as $transactionKey => $transactionData) { 
-    //                echo "transactionKey = $transactionKey \n";
+                // load all the transaction data
+                foreach ($dateTransaction as $transactionKey => $transactionData) {
+ //                   echo "---> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = $transactionData\n";
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // 0,1,2
-     //                   echo "transactionDataKey = $transactionDataKey \n";
 
                         if ($transactionDataKey == "internalName") {        // dirty trick to keep it simple
                              $transactionDataKey = $transaction; 
                         }
-
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
 
                         if (!empty($tempResult))  { 
+  //                          print_r($tempResult);
+                            echo "Daniel\n";
                             unset($result);
                             $functionToCall = $tempResult['function'];
-
+echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transactionDataKey = $transactionDataKey\n";
                             $dataInformation = explode (".", $tempResult['databaseName'] );
                             $dbTable = $dataInformation[0];
                             if (!empty($functionToCall)) {
                                 $result = $this->$functionToCall($transactionData, $database);
 
-                                if ($tempResult['charAcc'] == FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                                if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
                                 }
                                 else {
-                                     $database[$dbTable][$transactionDataKey] = $result;  
+                                    $database[$dbTable][$transactionDataKey] = $result;  
                                 }
                             }
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
-                            $this->variablesConfig[$transactionDataKey]['state'] = FLOWDATA_VARIABLE_DONE;  // Mark done
+                            echo "ANTOINE changing state of $transactionDataKey [index = " .  $tempResult['internalIndex'] . "] to DONE\n";
+                            $this->variablesConfig[$tempResult['internalIndex']]['state'] = WIN_FLOWDATA_VARIABLE_DONE;  // Mark done
+                            print_r($this->variablesConfig[$tempResult['internalIndex']]);
+                            echo $this->variablesConfig[$tempResult['internalIndex']]['databaseName'];
                         } 
-                     }
-                }   
-
-                 
-echo "Total = " . count($this->variablesConfig) . "\n";
+                    }              
+                }
 // Now start consolidating the results, these are to be stored in the investment table (variable part)
-// check if variable is already defined:
-/*
- *         17 => [
-                "databaseName" => "investment.investment_remainingDuration", 
-                "internalName" => "investment_remainingDuration",   
-                "internalIndex" => 17,            
-                "state" => FLOWDATA_VARIABLE_NOT_DONE,
-                "charAcc" => FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
-                "function" => "calculateRemainingterm"        
-            ],
- */
-// Calculate var 17:
+// check if variable is already defined: loading of data in investment and payment, globalcashflowdata
 
-                $variableToHandle = array(17,47,34,45,44,36,46,66,67,43);  
-                
-                foreach ($variableToHandle as $item) {
-                    if ($this->variablesConfig[$item]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17] 
-                        print_r($this->variablesConfig[$item]);
+     //           $internalVariableToHandle = array(17,47,34,45,44,36,46,66,67,43);  
+$internalVariableToHandle = array();
+                foreach ($internalVariableToHandle as $keyItem => $item) {
+   //                 print_r($this->variablesConfig[$item]);
+                    if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17]          
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
+                        echo "We are calling a function: $functionToCall and index = $keyItem\n";
                         $database[$varName[0]][$varName[1]] =  $this->$functionToCall($database);
-                        $this->variablesConfig[$item]['state'] = FLOWDATA_VARIABLE_DONE;                
+                        $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                
                     }                     
-                    
                 }
-              
  
-            
-echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";             
-print_r($database); 
-            } 
-        }
+    // Now start consolidating the results, these are to be stored in the investment table (variable part)
+    // check if variable is already defined:
 
-
- echo "Total = " . count($this->variablesConfig) . "\n";
-// Now start consolidating the results, these are to be stored in the investment table (variable part)
- // check if variable is already defined:
- 
-
-            
-/*            
- // these are the total values per PFP           
-            
-            if ($this->variablesConfig[30]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
-                $varName = $this->variablesConfig[30]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidatePrincipalAndInterestPayment($database);
-                $this->variablesConfig[30]['state'] = FLOWDATA_VARIABLE_DONE;                 
-            }           
-
-            if ($this->variablesConfig[31]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // installmentPaymentProgress [31]
-                $varName = $this->variablesConfig[31]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateInstallmentPaymentProgress($database);
-                $this->variablesConfig[31]['state'] = FLOWDATA_VARIABLE_DONE;                   
-            }
-
-            if ($this->variablesConfig[34]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // capital repayment (34)
-                $varName = $this->variablesConfig[34]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateCapitalRepayment($database);
-                $this->variablesConfig[34]['state'] = FLOWDATA_VARIABLE_DONE;                 
-            }  
-
-            if ($this->variablesConfig[35]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
-                $varName = $this->variablesConfig[35]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidatePartialPrincipalPayment($database);
-                $this->variablesConfig[35]['state'] = FLOWDATA_VARIABLE_DONE;                 
-            } 
-            
-            if ($this->variablesConfig[37]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
-                $varName = $this->variablesConfig[37]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
-                $this->variablesConfig[37]['state'] = FLOWDATA_VARIABLE_DONE;                
-            }
-          
-            if ($this->variablesConfig[38]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
-                $varName = $this->variablesConfig[38]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateReceivedPrepayments($database);
-                $this->variablesConfig[38]['state'] = FLOWDATA_VARIABLE_DONE;                 
-            } 
-            
-            if ($this->variablesConfig[42]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // total gross income (42
-                $varName = $this->variablesConfig[42]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateTotalGrossIncome($database);
-                $this->variablesConfig[42]['state'] = FLOWDATA_VARIABLE_DONE;                 
-            } 
-            
-            if ($this->variablesConfig[43]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // interest gross income (43)
-                $varName = $this->variablesConfig[43]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateInterestgrossIncome($database);
-                $this->variablesConfig[43]['state'] = FLOWDATA_VARIABLE_DONE;                    
-            }
-            
-            if ($this->variablesConfig[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
-                $varName = $this->variablesConfig[53]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
-                $this->variablesConfig[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
-            }  
-            
-            if ($this->variablesConfig[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
-                $varName = $this->variablesConfig[53]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateNextPaymentDate($database);
-                $this->variablesConfig[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
-            }  
-            
-            if ($this->variablesConfig[53]['state'] == FLOWDATA_VARIABLE_NOT_DONE) {   // estimated next payment (40)
-                $varName = $this->variablesConfig[53]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateEstimatedNextPayment($database);
-                $this->variablesConfig[53]['state'] = FLOWDATA_VARIABLE_DONE;                 
-            }  
-            
- */           
-//$database['payment']['investment_id'] = 98;
-echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";             
-print_r($database);      
-// write all relevant tables
-// else read the investment_id from the database and use it while saving data to payment, paymenttotals,...
-
-            if (!empty($database['investment'])) {
-                $this->Investment = ClassRegistry::init('Investment');
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";                 
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
-                $resultCreate = $this->Investment->createNewInvestment($database['investment']);
-                if ($resultCreate[0]) {
-                    $investmentId = $resultCreate[1];
-                    echo "Saving new loan with investmentId = $investmentId, Done\n";
+                if ($newLoan == YES) {
+                    print_r($database['investment']);
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";    
+                    $resultCreate = $this->Investment->createInvestment($database['investment']);
+
+                    if ($resultCreate[0]) {
+                        $investmentId = $resultCreate[1];
+                        echo "Saving new loan in with investmentId = $investmentId, Done\n";
+                        $database['investment']['id'] = $resultCreate[1];
+                    }
+                    else {
+                        if (Configure::read('debug')) {
+                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
+                        }
+                    }
+
                 }
                 else {
-                    if (Configure::read('debug')) {
-                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
+                    $database['investment']['id'] = $investmentId;
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing new data to already existing investment ... ";                 
+                    $result = $this->Investment->save($database['investment']);
+                    if ($result) {
+                        echo "Saving existing loan with investmentId = $investmentId, Done\n";
                     }
+                    else {
+                        if (Configure::read('debug')) {
+                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
+                        }
+                    }                        
                 }
-            }
-          
-            if (!empty($database['payment'])) {
+
                 $this->Payment = ClassRegistry::init('Payment');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";            
                 $database['payment']['investment_id'] = $investmentId;
+                $database['payment']['date'] = $dateKey;
                 $this->Payment->create();            
                 if ($this->Payment->save($database['payment'], $validate = true)) {
+//                        echo "===> SAVING FOLLOWING PAYMENT DATA:";
+//                        print_r($database['payment']);
                     echo "Done\n";
                 }
                 else {
@@ -1055,71 +418,79 @@ print_r($database);
                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId']  . "\n";
                     }
                 }
-            }
 
-            if (!empty($database['globalcashflowdata'])) {               
-                $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
-                $this->Globalcashflowdata->create();            
-                if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
-                    echo "Done\n";
-                }
-                else {
-                    if (Configure::read('debug')) {
-                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
-                    }
-                }
-            }
-                    
-// Consolidate the data on platform level      
-            $this->consolidatePlatformData($database);
-            if (!empty($database['userinvestmentdata'])) {            
+                $database['userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+                $database['userinvestmentdata']['date'] = $dateKey;
+                $database['userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
+                echo "USERREFERENCE = $userReference\n";
                 $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
                 $this->Userinvestmentdata->create();            
                 if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
-                    echo "Done\n";
+                    
+                    $userInvestmentDataId = $this->Userinvestmentdata->id;
+                    echo "Done, id = $userInvestmentDataId\n";
                 }
                 else {
                     if (Configure::read('debug')) {
                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
                     }
-                }  
-            }           
-           
-        unset($database);
-        unset($variablesConfigStatus);
-        
-     echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2 for an investment\n";      
-     
+                } 
+
+                if (!empty($database['globalcashflowdata'])) {               
+                    $database['globalcashflowdata']['userinvestmentdata_id'] = $linkedaccountId;
+                    $database['globalcashflowdata']['date'] = $dateKey;
+                    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
+                    $this->Globalcashflowdata->create();            
+                    if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
+                        echo "Done\n";
+                    }
+                    else {
+                        if (Configure::read('debug')) {
+                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
+                        }
+                    }
+                }
+                print_r($database);
+                unset($database);
+                unset($investmentId);      
+                unset($variablesConfigStatus);
+                foreach ($this->variablesConfig as $variablesKey => $item) {
+                    $this->variablesConfig[$variablesKey]['state'] = WIN_FLOWDATA_VARIABLE_NOT_DONE;
+                }
+            }
+        }
+    echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n"; 
+    
     return;   
     }
-   
  
+    
     /*
      * 
      *  Consolidates all the basic variables that are required on platformlevel.
      *
     */ 
     public function consolidatePlatformData(&$database) {    
-  echo "FxF";     
-        $database['userinvestmentdata']['userinvestmentdata_capitalRepaymentcapitalRepayment'] = $this->consolidateCapitalRepayment();
-  echo "FtF";
-        $database['userinvestmentdata']['userinvestmentdata_partialPrincipalRepayment'] = $this->consolidatePartialPrincipalRepayment();
-   echo "FccFgF";
-        $database['userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] = $this->consolidateOutstandingPrincipal();
-  echo "FFgF";
-        $database['userinvestmentdata']['userinvestmentdata_receivedPrepayments'] = $this->consolidateReceivedPrepayments();
-  echo "FtytyFgF";
-        $database['userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $this->consolidateTotalGrossIncome();
-  echo "FhF";
-        $database['userinvestmentdata']['userinvestmentdata_interestgrossIncome'] = $this->consolidateInterestgrossIncome();
-  echo "FFF";
-        $database['userinvestmentdata']['userinvestmentdata_totalCost'] = $this->consolidateTotalCost();
-   echo "FpF";
+        return;
+        echo "FxF";     
+            $database['userinvestmentdata']['userinvestmentdata_capitalRepayment'] = $this->consolidateCapitalRepayment();
+        echo "FtF";
+            $database['userinvestmentdata']['userinvestmentdata_partialPrincipalRepayment'] = $this->consolidatePartialPrincipalRepayment();
+        echo "FccFgF";
+            $database['userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] = $this->consolidateOutstandingPrincipal();
+        echo "FFgF";
+            $database['userinvestmentdata']['userinvestmentdata_receivedPrepayments'] = $this->consolidateReceivedPrepayment();
+        echo "FtytyFgF";
+            $database['userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $this->consolidateTotalGrossIncome();
+        echo "FhF";
+            $database['userinvestmentdata']['userinvestmentdata_interestgrossIncome'] = $this->consolidateInterestgrossIncome();
+        echo "FFF";
+    //        $database['userinvestmentdata']['userinvestmentdata_totalCost'] = $this->consolidateTotalCost();
     }
     
-    
+     
     
     
    
@@ -1131,9 +502,10 @@ print_r($database);
      * 
     */ 
     public function consolidateCapitalRepayment() {
+        $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
                                             'fields' => array('Paymenttotal.paymenttotal_capitalRepayment'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
     
         foreach ($listResult as $item) {
@@ -1149,9 +521,10 @@ print_r($database);
      *  @return string      the string representation of a large integer
     */ 
     public function consolidatePartialPrincipalRepayment() {
+        $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('Paymenttotal.partialPrincipalRepayment'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            'fields' => array('paymenttotal_partialPrincipalRepayment'),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
 
         foreach ($listResult as $item) {
@@ -1168,9 +541,10 @@ print_r($database);
      *  @return string      the string representation of a large integer
     */ 
     public function consolidateOutstandingPrincipal() {
+        $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('Paymenttotal.outstandingPrincipal'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            'fields' => array('paymenttotal_outstandingPrincipal'),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
         
         foreach ($listResult as $item) {
@@ -1185,10 +559,12 @@ print_r($database);
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
-    public function consolidateReceivedPrepayments() {
+    public function consolidateReceivedPrepayment() {
+        $sum = 0;        
+        return;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('User.username'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            'fields' => array('paymenttotal_receivedPrepayment'),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
          
         foreach ($listResult as $item) {
@@ -1204,9 +580,11 @@ print_r($database);
      *  @return string      the string representation of a large integer
     */ 
     public function consolidateTotalGrossIncome() {
+        $sum = 0;        
+        return;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('User.username'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            'fields' => array('paymenttotal_totalGrossIncome'),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
            
         foreach ($listResult as $item) {
@@ -1222,9 +600,11 @@ print_r($database);
      *  @return string      the string representation of a large integer
     */ 
     public function consolidateInterestgrossIncome() {
+        $sum = 0;        
+        return;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('User.username'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            'fields' => array('paymenttotal_interestgrossIncome'),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
                
         foreach ($listResult as $item) {
@@ -1233,16 +613,18 @@ print_r($database);
         return $sum;
     }
     
-    /* 
+    /* NOT YET
      *  Get the amount which corresponds to the "TotalCost" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
     public function consolidateTotalCost() {
+        $sum = 0;        
+        return;
         $listResult = $this->Paymenttotal->find('list', array(
-                                            'fields' => array('User.username'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            'fields' => array('paymenttotal_totalCost'),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
         
         foreach ($listResult as $item) {
@@ -1251,16 +633,18 @@ print_r($database);
         return $sum;
     }
     
-    /* 
+    /* NOT YET
      *  Get the amount which corresponds to the "NextPaymentDate" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
     public function consolidateNextPaymentDate() {
+        $sum = 0;        
+        return;
         $listResult = $this->Paymenttotal->find('list', array(
                                             'fields' => array('User.username'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
 
         foreach ($listResult as $item) {
@@ -1269,16 +653,18 @@ print_r($database);
         return $sum;
     }
     
-    /* 
+    /* NOT YET
      *  Get the amount which corresponds to the "EstimatedNextPayment" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
     public function consolidateEstimatedNextPayment() {
+        $sum = 0;        
+        return;
         $listResult = $this->Paymenttotal->find('list', array(
                                             'fields' => array('User.username'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
 
         foreach ($listResult as $item) {
@@ -1287,16 +673,18 @@ print_r($database);
         return $sum;
     }  
     
-    /* 
+    /* NOT YET
      *  Get the amount which corresponds to the "InstallmentPaymentProgress" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
     public function consolidateInstallmentPaymentProgress() {
+        $sum = 0;        
+        return;
         $listResult = $this->Paymenttotal->find('list', array(
                                             'fields' => array('User.username'),
-                                            "conditions" => array("status" => WIN_ERROR_PAYMENTTOTALS_LAST),
+                                            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
                                         ));
         
         foreach ($listResult as $item) {
@@ -1304,16 +692,32 @@ print_r($database);
         }
         return $sum;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
+    
+    /* 
+     *  Get the amount which corresponds to the "Primary_market_investment" concept, which is a new investment
+     *  @param  $transactionData    array      array with the current transaction data
+     *  @param  $resultData         array       array of shadow database with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     * 12
+    */              
+    public function calculateMyInvestment(&$transactionData, &$resultData) {
+        echo "-------------------->  AAAAAAAA\n";
+        print_r($transactionData);
+        $resultData['payment']['payment_myInvestment'] = $transactionData['amount'];        // THIS IS A HARDCODED RULE
+//        print_r($resultData);
+//        echo "END OF CALCULATEMYINVESTMENT\n";
+        return $transactionData['amount']; 
+       
+    }  
+        public function calculateMyInvestmentFromPayment(&$transactionData, &$resultData) {
+        echo "----------------->  BBBBBBBBB\n";
+        print_r($transactionData);
+   
+        return $transactionData['investment']['investment_myInvestment']; 
+       
+    } 
+    
     /* 
      *  Get the amount which corresponds to the "late payment fee" concept
      *  @param  array       array with the current transaction data
@@ -1335,10 +739,10 @@ print_r($database);
      * 47
     */              
     public function calculateLatePaymentFeeIncome(&$transactionData, &$resultData) {
-       return $transactionData['amount']; 
+        
+        return $transactionData['amount']; 
     }
 
-    
     /* 
      *  Get the amount which corresponds to the "capitalRepayment Winvestify Format" concept
      *  @param  array       array with the current transaction data
@@ -1349,7 +753,6 @@ print_r($database);
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
     }
- 
     
     /* 
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
@@ -1362,7 +765,6 @@ print_r($database);
         return $transactionData['amount']; 
     }
 
-    
     /* 
      *  Get the amount which corresponds to the "InterestIncomeBuyback" concept
      *  @param  array       array with the current transaction data
@@ -1374,7 +776,6 @@ print_r($database);
         return $transactionData['amount']; 
     }
 
-
     /* 
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
      *  @param  array       array with the current transaction data
@@ -1385,8 +786,7 @@ print_r($database);
     public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
     }   
-    
-    
+  
     /* 
      *  Get the amount which corresponds to the "DelayedInterestIncomeBuyback" concept
      *  @param  array       array with the current transaction data
@@ -1398,7 +798,6 @@ print_r($database);
         return $transactionData['amount']; 
     }
  
-    
     /* 
      *  Get the amount which corresponds to the "PlatformDeposit" concept
      *  @param  array       array with the current transaction data
@@ -1409,8 +808,7 @@ print_r($database);
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
     }   
-    
-    
+
     /* 
      *  Get the amount which corresponds to the "Platformwithdrawal" concept
      *  @param  array       array with the current transaction data
@@ -1421,9 +819,6 @@ print_r($database);
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
     } 
-    
-   
-    
     
     /* 
      * 
@@ -1436,9 +831,7 @@ print_r($database);
         return $transactionData['amount']; 
     }   
         
-  
-
-    /**
+     /**
      * checks if an element with value $element exists in a two dimensional array
      * @param type $element
      * @param type $array
@@ -1461,41 +854,75 @@ print_r($database);
     }
 
 
-
-    /**
-     * 
-     * get the name of a variable??
-     * 
-     * @param type $var
-     * @return type
-     */
-    function var_name(&$var) {
-       foreach ($GLOBALS as $k => $v) {
-           $global_vars[$k] = $v;
-       }
-
-       // save the variable's original value
-       $saved_var = $var;
-
-       // modify the variable whose name we want to find
-       $var = !$var;
-
-       // compare the defined variables before and after the modification
-       $diff = array_keys(array_diff_assoc($global_vars, $GLOBALS));
-
-       // restore the variable's original value
-       $var = $saved_var;
-
-       // return the name of the modified variable
-       return $diff[0];
-    }
-    /*
-     * Thanks for posting your solution. It works for variables with "global" scope. To use var_name() 
-     * with variables defined within a function you would have to scan the array returned by get_defined_vars() 
-     * instead of $GLOBALS. Would be great to have a class with objects that know their own name. E.g. $a1 = new varNameClass(); with 
-     * a method: $a1->getName() returning the string 'a1'.
-     */
-
-
-
 }
+            
+/*            
+ // these are the total values per PFP           
+            
+            if ($this->variablesConfig[30]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
+                $varName = $this->variablesConfig[30]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidatePrincipalAndInterestPayment($database);
+                $this->variablesConfig[30]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                 
+            }           
+
+            if ($this->variablesConfig[31]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // installmentPaymentProgress [31]
+                $varName = $this->variablesConfig[31]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateInstallmentPaymentProgress($database);
+                $this->variablesConfig[31]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                   
+            }
+
+            if ($this->variablesConfig[34]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // capital repayment (34)
+                $varName = $this->variablesConfig[34]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateCapitalRepayment($database);
+                $this->variablesConfig[34]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                 
+            }  
+
+            if ($this->variablesConfig[35]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
+                $varName = $this->variablesConfig[35]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidatePartialPrincipalPayment($database);
+                $this->variablesConfig[35]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                 
+            } 
+            
+            if ($this->variablesConfig[37]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
+                $varName = $this->variablesConfig[37]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
+                $this->variablesConfig[37]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                
+            }
+          
+            if ($this->variablesConfig[38]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
+                $varName = $this->variablesConfig[38]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateReceivedPrepayments($database);
+                $this->variablesConfig[38]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                 
+            } 
+            
+            if ($this->variablesConfig[42]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total gross income (42
+                $varName = $this->variablesConfig[42]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateTotalGrossIncome($database);
+                $this->variablesConfig[42]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                 
+            } 
+            
+            if ($this->variablesConfig[43]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // interest gross income (43)
+                $varName = $this->variablesConfig[43]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateInterestgrossIncome($database);
+                $this->variablesConfig[43]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                    
+            }
+            
+            if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
+                $varName = $this->variablesConfig[53]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
+                $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                 
+            }  
+            
+            if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
+                $varName = $this->variablesConfig[53]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateNextPaymentDate($database);
+                $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                 
+            }  
+            
+            if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // estimated next payment (40)
+                $varName = $this->variablesConfig[53]['databaseName'];
+                $database[$varName[0]][$varName[1]] =  $this->consolidateEstimatedNextPayment($database);
+                $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                 
+            }  
+            
+ */

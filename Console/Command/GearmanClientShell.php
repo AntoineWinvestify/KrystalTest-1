@@ -57,6 +57,11 @@ class GearmanClientShell extends AppShell {
     /**
      * Function to catch a fail on a Gearman Worker
      * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
+     *          $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
+     *                  $data[0] It is the queueId of the task
+     *                  $data[1] It is the function name on the Gearman Worker
+     *                  $data[2] It is the userReference        
+     * 
      */
     public function verifyFailTask(GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -77,6 +82,10 @@ class GearmanClientShell extends AppShell {
     /**
      * Function to catch a exception on a Gearman Worker
      * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
+     *          $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
+     *                  $data[0] It is the queueId of the task
+     *                  $data[1] It is the function name on the Gearman Worker
+     *                  $data[2] It is the userReference  
      */
     public function verifyExceptionTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -98,6 +107,14 @@ class GearmanClientShell extends AppShell {
     /**
      * Function that runs after a task was complete on the Gearman Worker
      * @param GearmanTask $task It is a Gearman::Client's representation of a task done.
+     *          string $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
+     *                  $data[0] It is the queueId of the task
+     *                  $data[1] It is the function name on the Gearman Worker
+     *                  $data[2] It is the userReference  
+     *          string $task->data Returns data being returned for a task by a worker
+     *                  $data["statusCollect"] It is the status of the request by linkaccount Id
+     *                  $data["errors"] If the statusCollect is 0, the error is saved on it
+     *                  $data["tempArray"] The information to save on database by linkaccount id
      */
     public function verifyCompleteTask (GearmanTask $task) {
         $data = explode(".-;", $task->unique());
@@ -134,7 +151,8 @@ class GearmanClientShell extends AppShell {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $flow = constant("WIN_ERROR_" . $this->flowName);
-        $path = $this->userReference[$queueId] . DS . $this->date . DS . $linkAccountId;
+        $date = date("Ymd", strtotime($this->date-1));
+        $path = $this->userReference[$queueId] . DS . $date . DS . $linkAccountId;
         print_r($this->userReference);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
@@ -154,7 +172,7 @@ class GearmanClientShell extends AppShell {
         return $delete;
     }
     
-    /**
+     /**
      * Function to verify that the collection of data was successful on all the 
      * workers per company and per user, if a company failed, the function will delete it.
      * If a massive fail occurs, the function will delete all the folders
@@ -164,29 +182,31 @@ class GearmanClientShell extends AppShell {
     public function consolidationResult($userResult, $queueId) {
         $statusProcess = true;
         $globalDestruction = false;
-        unset($this->queueInfo[$queueId]['companiesInProcess']);
+        unset($this->queueInfo[$queueId]['companiesInFlow']);
         foreach ($userResult as $linkaccountId => $result) {
             if ($linkaccountId == 'global') {
                 $globalDestruction = true;
                 break;
             }
             if (!$result) {
-                $statusProcess = false;
+                //$statusProcess = false;
                 $this->deleteFolderByDateAndLinkaccountId($queueId, $linkaccountId); //1 = $todaydate
                 $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
                 $this->gearmanErrors[$queueId][$linkaccountId]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
                 $this->gearmanErrors[$queueId][$linkaccountId]['detailedErrorInformation'] = "ERROR on " . $this->flowName
                         . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId]['subtypeErrorId'] ;
                 print_r($this->gearmanErrors);
-                $this->queueInfo[$queueId]['companiesInProcess'][] = $linkaccountId; 
                 $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId]);
+                $this->requeueFailedCompany($queueId, $linkaccountId);
+                continue;
             }
+            $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
         }
         
         if ($globalDestruction) {
             foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
                 $this->deleteFolderByDateAndLinkaccountId($queueId, $userLinkaccountId);
-                $this->queueInfo[$queueId]['companiesInProcess'][] = $userLinkaccountId;
+                $this->queueInfo[$queueId]['companiesInFlow'][] = $userLinkaccountId;
             }
             $statusProcess = false;
         }
@@ -203,7 +223,8 @@ class GearmanClientShell extends AppShell {
     public function verifyCompanyFolderExist($userReference, $linkaccountId, $fileName = null) {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $userReference . DS . $this->date . DS . $linkaccountId;
+        $date = date("Ymd", strtotime($this->date-1));
+        $path = $userReference . DS . $date . DS . $linkaccountId;
         print_r($path);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
@@ -225,7 +246,7 @@ class GearmanClientShell extends AppShell {
     
     
     /**
-     * checks to see if jobs are waiting in the queue for processing
+     * Checks to see if jobs are waiting in the queue for processing
      * 
      * @param int $presentStatus    status of job to be located
      * @param int $newStatus        status to change to when pulling job out of queue 
@@ -270,32 +291,52 @@ class GearmanClientShell extends AppShell {
     }
     
     /**
-     * Function to verify that the job was successful
+     * Function to verify that the job was successful per user and per company
      * @param int $status It is the Id of the next queue status
      * @param string $message It is the message to show on console
      * @param int $restartStatus It is the Id of the queue if something fail
      * @param int $errorStatus It is the Id of the queue if the error repeats and it is irrecoverable
      */
-    public function verifiedStatus($status, $message, $restartStatus, $errorStatus) {
+    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {
         foreach ($this->userResult as $queueId => $userResult) {
-            $statusProcess = $this->consolidationResult($userResult, $queueId);
+            $globalDestruction = false;
+            unset($this->queueInfo[$queueId]['companiesInFlow']);
+            foreach ($userResult as $linkaccountId => $result) {
+                if ($linkaccountId == 'global') {
+                    $globalDestruction = true;
+                    break;
+                }
+                if (!$result) {
+                    $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
+                    continue;
+                }
+                $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
+            }
+            if ($globalDestruction) {
+                foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
+                    $this->deleteFolderByDateAndLinkaccountId($queueId, $userLinkaccountId);
+                    $this->queueInfo[$queueId]['companiesInProcess'][] = $userLinkaccountId;
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
+                }
+            }
+            //$statusProcess = $this->consolidationResult($userResult, $queueId);
             $this->Queue->id = $queueId;
-            if ($statusProcess) {
+            if (!$globalDestruction) {
                 $newState = $status;
                 $this->queueInfo[$queueId]['numberTries'] = 0;
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
                 }
-            } else {
-                $newState = $restartStatus;
-                echo "There was an error downloading data";
-                if (empty($this->queueInfo[$queueId]['numberTries'])) {
-                    $this->queueInfo[$queueId]['numberTries'] = 1;
-                } else if ($this->queueInfo[$queueId]['numberTries'] == 1) {
-                    $this->queueInfo[$queueId]['numberTries'] = 2;
-                } else {
-                    $newState = $errorStatus; //UNRECOVERED_ERROR_ENCOUNTERED;
-                }
+            } 
+            else {
+                $data = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
+                $newState = $data["newStatus"];
+                $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
             }
             $this->Queue->save(array(
                     'queue_status' => $newState,
@@ -303,5 +344,55 @@ class GearmanClientShell extends AppShell {
                 ),
                 $validate = true);
         }
+    }
+    
+    /**
+     * Function to requeue a company when fails to collect the data or parse the information
+     * @param int $queueId It is the queueId of the request
+     * @param int $linkaccountId It is the linkaccountId of the company to requeue
+     * @param int $restartStatus It is the status to which we must put if the request is to be restarted
+     * @param int $errorStatus It is the status to which we must put if the request fails
+     * @param int $numberOfCompanies It is the number of companies in the actual flow
+     */
+    public function requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, $numberOfCompanies) {
+        $this->deleteFolderByDateAndLinkaccountId($queueId, $linkaccountId); //1 = $todaydate
+        $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+        $this->gearmanErrors[$queueId][$linkaccountId]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+        $this->gearmanErrors[$queueId][$linkaccountId]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId]['subtypeErrorId'] ;
+        print_r($this->gearmanErrors);
+        $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId]);
+        $data = [];
+        $newData = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
+        $data["numberTries"] = $newData["numberTries"];
+        $data["companiesInFlow"][0] = $linkaccountId;
+        $userReference = $this->userReference[$queueId];
+        $data["date"] = $this->queueInfo[$queueId]["date"];
+        $newQueueId = null;
+        if ($numberOfCompanies == 1) {
+            $newQueueId = $queueId;
+        }
+        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"], $newQueueId);
+    }
+    
+    /**
+     * Function to get the status we must put on the queue request if it failed
+     * @param int $queueId It is the queueId of the request
+     * @param int $restartStatus It is the status to which we must put if the request is to be restarted
+     * @param int $errorStatus It is the status to which we must put if the request fails
+     */
+    public function getFailStatus($queueId, $restartStatus, $errorStatus) {
+        $data["newStatus"] = $restartStatus;
+        echo "There was an error downloading data";
+        if (empty($this->queueInfo[$queueId]['numberTries'])) {
+            $data["numberTries"] = 1;
+        } 
+        else if ($this->queueInfo[$queueId]['numberTries'] == 1) {
+            $data['numberTries'] = 2;
+        } 
+        else {
+            $data["newStatus"] = $errorStatus; //UNRECOVERED_ERROR_ENCOUNTERED;
+        }
+        return $data;
     }
 }

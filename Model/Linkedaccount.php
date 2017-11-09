@@ -103,6 +103,11 @@ class Linkedaccount extends AppModel {
         return $linkedaccountResults;
     }
 
+    /**
+     * Returns an array of the companies id depending on the filter Conditions
+     * @param array $filterConditions
+     * @return array Each company id
+     */
     public function getLinkedaccountIdList($filterConditions) {
 
         $linkedaccountResults = $this->find("all", $params = array('recursive' => -1,
@@ -165,6 +170,13 @@ class Linkedaccount extends AppModel {
         return $results;
     } 
     
+    /**
+     * Callback function
+     * Add a new request on queue for the company that was linked from a user
+     * @param boolean $created
+     * @param array $option
+     * @return boolean
+     */
     public function afterSave($created, $option = array()) {
         if ($created) {
             $this->Investor = ClassRegistry::init('Investor');
@@ -173,6 +185,7 @@ class Linkedaccount extends AppModel {
             $linkaccountId = $this->id;
             $investorId = $this->data['Linkedaccount']['investor_id'];
             $data["companiesInFlow"][0] = $linkaccountId;
+            $data["originExecution"] = WIN_QUEUE_ORINGIN_EXECUTION_LINKACCOUNT;
             $userReference =  $this->Investor->getInvestorIdentityByInvestorId($investorId);
             $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data));
             return $result;

@@ -64,7 +64,18 @@ class Paymenttotal extends AppModel
      * 
      */
     function afterSave1($created, $options = array()) {  
-
+/*
+ * 
+ * here I should ad the contents of the paymenttotals table to the 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+        
+        
         print_r($this->data['Paymenttotal']);
     }       
         
