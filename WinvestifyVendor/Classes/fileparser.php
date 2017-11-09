@@ -959,7 +959,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return string   $extractedString    The value we were looking for
      *
      */
-    private function extractDataFromString($input, $search, $separator ) {
+    private function extractDataFromString($input, $search, $separator = null ) {
         $position = stripos($input, $search) + strlen($search);
         if (empty($separator)) {
             $value = substr($input, $position);

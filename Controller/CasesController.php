@@ -24,7 +24,7 @@ class CasesController extends AppController {
         $this->Security->requireAuth();
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
-            'testAmount6', 'testAmount7', 'testExtracData', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData"
+            'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData"
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'transaction.xlsx';
@@ -997,6 +997,43 @@ class CasesController extends AppController {
         return $tempResult;
     }
 
+    public function testExtracData2() {
+        $parserConfig = [
+            "B" => [
+                "name" => "investment.investment_loanId"
+            ],
+            "Y" => [
+                [
+                    "type" => "investment.test", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "a",
+                        "input3" => ";",
+                    ],
+                    "functionName" => "extractDataFromString",
+                ]
+            ],
+        ];
+
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+        Configure::load('p2pGestor.php', 'default');
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
+
+        $myParser = new Fileparser();
+        $myParser->setConfig(array(
+            'sortParameter' => "investment.investment_loanId",
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'sortParameter' => array()
+        ));
+        $myParser->getConfig();
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        print_r($tempResult);
+        return $tempResult;
+    }
+    
+    
     public function testHash() {
         $parserConfig = [
             "B" => [
