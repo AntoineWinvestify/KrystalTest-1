@@ -205,8 +205,8 @@ class zank extends p2pCompany {
         "F" => [
             "name" => "investment_capitalRepaymentFromP2P"
         ],
-        /*"G" => DON'T TAKE*/
-        /* "H" => DON'T TAKE*/
+        /*"G" => DON'T TAKE, ASK ANTOINE*/
+        /* "H" => DON'T TAKE, ASK ANTOINE*/
         "I" => [
             [
                 "type" => "investment_commissionPaid",                                            // This is an "empty variable name". So "type" is
