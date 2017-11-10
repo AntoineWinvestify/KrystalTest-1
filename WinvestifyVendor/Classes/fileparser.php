@@ -305,6 +305,33 @@ class Fileparser {
     function __construct() {
         echo "starting parser\n";
     }
+    
+    /**
+     * Function to analyze a file depending on its extension
+     * @param string $filePath FQDN of the file to analyze
+     * @param array  $parserConfig Array that contains the configuration data of a specific "document"
+     * @param string $extension It is the extension of the file
+     * @return array $parsedData
+     *         false in case an error occurred
+     */
+    public function analyzeFile($file, $configuration, $extension) {
+        
+        switch($extension) {
+            case "xlsx":
+                $tempArray = $this->analyzeFileExcelX($file, $configuration);
+                break;
+            case "csv":
+                $tempArray;
+                break;
+            case "json":
+                $tempArray = $this->analyzeFileJson($file, $configuration);
+                break;
+            case "html":
+                $tempArray = $this->analyzeFileHtml($file, $configuration);
+                break;
+        }
+        return $tempArray;
+    }
 
 
 
@@ -315,14 +342,14 @@ class Fileparser {
      *  @return array           $parsedData
      *          false in case an error occurred
      */
-    public function analyzeFile($file, $configuration) {
+    public function analyzeFileExcel($file, $configuration) {
 echo "INPUT FILE = $file \n";
     $this->filename = $file;
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
 
        // determine first if it is a csv, if yes then run command
-        $fileNameChunks = explode(DS, $file);
-        if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
+        //$fileNameChunks = explode(DS, $file);
+        /*if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
     //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
             $inputFileType = 'CSV';
             $objReader = PHPExcel_IOFactory::createReader($inputFileType);
@@ -330,9 +357,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $objPHPExcel = $objReader->load($file);
             //execute command php has a function for this which works on a string
         }
-        else {      // xls/xlsx file
-            $objPHPExcel = PHPExcel_IOFactory::load($file);
-        }
+        else { */     // xls/xlsx file
+        $objPHPExcel = PHPExcel_IOFactory::load($file);
+        //}
 
         ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
@@ -344,6 +371,19 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         return $datas;
+    }
+    
+    /**
+     * Starts the process of analyzing the file and returns the results as an array
+     *  @param  FILE            FQDN of the file to analyze
+     *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
+     *  @return array           $parsedData
+     *          false in case an error occurred
+     */
+    public function analyzeFileJson($file, $configuration) {
+        $fileString = file_get_contents($file);
+        $data = json_decode($fileString, true);
+        return $this->saveExcelToArray($data, $configuration, $this->config["offsetStart"]);
     }
 
 
@@ -983,7 +1023,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         
         switch($extension) {
             case "html":
-                $tempArray = $this->getHtmlData($filePath, $parserConfig);
+                $tempArray = $this->analyzeFileHtml($filePath, $parserConfig);
                 break;
         }
         return $tempArray;
@@ -991,12 +1031,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to analyze a html file to get its content
-     * @param string $filePath It is the path to the file
+     * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @return array $parsedData
      *         false in case an error occurred
      */
-    public function getHtmlData($filePath, $parserConfig) {
+    public function analyzeFileHtml($filePath, $parserConfig) {
         $dom = new DOMDocument();
         $dom->loadHTMLFile($filePath);
         $trs = $dom->getElementsByTagName('tr');
