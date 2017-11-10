@@ -140,9 +140,12 @@ class twino extends p2pCompany {
         "G" => [
             "name" => "investment_expectedAnnualYield"
         ],
+        //"H" => ASK ANTOINE Remaining Term
         "I" => [
             "name" => "investment_originalDuration"
         ],
+        //"J" => ASK ANTOINE Extended
+        //"K" => IT IS NEXT PAYMENT, ASK ANTOINE IF IT NEEDED TO TAKE 
         "L" => [
             "name" => "investment_capitalRepaymentFromP2P"
         ],
@@ -157,7 +160,7 @@ class twino extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
-        //"N" => DON'T TAKE
+        //"N" => ASK ANTOINE Interest income
         "O" => [
             "name" => "investment_outstandingPrincipalFromP2P"
         ],
