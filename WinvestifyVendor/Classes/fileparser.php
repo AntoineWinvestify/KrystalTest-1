@@ -972,19 +972,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to get the extension of a file
-     * @param string $filePath It is the path to the file
-     * @return string It is the extension of the file
-     */
-    public function getExtensionFile($filePath) {
-        $file = new File($filePath, false);
-        $extension = $file->ext();
-        return $extension;
-    }
-    
-    /**
      * Function to analyze a file depending on its extension
-     * @param string $filePath It is the path to the file
+     * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @param string $extension It is the extension of the file
      * @return array $parsedData
