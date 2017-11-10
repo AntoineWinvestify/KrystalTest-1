@@ -131,8 +131,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
             // First analyze the transaction file(s)
             $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
-            
-// Do this first for the transaction file and then for investmentfile(s)
+            $callbacks = $companyHandle->getCallbacks();
+// do this first for the transaction file and then for investmentfile(s)
             $fileTypesToCheck = array (0 => WIN_FLOW_TRANSACTION_FILE,
                                        1 => WIN_FLOW_INVESTMENT_FILE,
                                        2 => WIN_FLOW_EXTENDED_TRANSACTION_FILE,     // So we cover Finanzarel
@@ -193,7 +193,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     else {
                         switch ($actualFileType) {
                             case WIN_FLOW_INVESTMENT_FILE:
-                                $this->callbackInit($tempResult, $parserConfigFile, $companyHandle);
+                                $this->callbacks = $callbacks["investment"];
+                                $this->callbackInit($tempResult, $companyHandle);
+                                print_r($tempResult);
+                                exit;
                                 $totalParsingresultInvestments = $tempResult;                                
                                 break;
                             case WIN_FLOW_TRANSACTION_FILE:
@@ -268,15 +271,14 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     /**
      * Function to change values depending on callback functions for each company
      * @param array $tempResult It contains the value to change
-     * @param array $valuesFile It contains the callback functions
      * @param object $companyHandle It is the company instance
      * @return It nothing if the callback array is empty
      */
-    public function callbackInit(&$tempResult, $valuesFile, $companyHandle) {
+    public function callbackInit(&$tempResult, $companyHandle) {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
         }
-        $this->getCallbackFunction($valuesFile);
+        //$this->getCallbackFunction($valuesFile);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ ;
             print_r($this->callbacks);
@@ -285,7 +287,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (empty($this->callbacks)) {
             return;
         }
-        print_r($this->callbacks);
         $this->companyHandle = $companyHandle;
         array_walk_recursive($tempResult,array($this, 'changeValueIterating'));
     }
@@ -301,21 +302,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 $valueConverted =  $this->companyHandle->$callback($item);
                 $item = $valueConverted; // Do This!
            }
-        }
-    }
-    
-    /**
-     * Function to get callbacks from values of a company
-     * @param array $values The are the transaction or investment values
-     * @return array The callback functions
-     */
-    public function getCallbackFunction($values) {
-        foreach ($values as $key => $valueCallback) {
-            if ($key == "callback") {   
-                foreach ($valueCallback as $value) {
-                    $this->callbacks[$value["type"]] = $value["functionName"];
-                }
-            }
         }
     }
 }

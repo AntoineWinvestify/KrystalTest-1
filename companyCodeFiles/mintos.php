@@ -260,18 +260,7 @@ class mintos extends p2pCompany {
 
             "P" =>  [
                 "name" => "investment_buyBackGuarantee"                     // Winvestify standardized name  OK
-             ],
-
-                "callback" => [
-                    [
-                        "type" => "investment_buyBackGuarantee",
-                        "functionName" => "translateInvestmentBuyBackGuarantee"
-                    ]    
-                ],       
-        
-        
-        
-        
+             ],    
 
             "Q" =>  [
                 [
@@ -458,7 +447,14 @@ class mintos extends p2pCompany {
                                 'offsetEnd'     => 0,
                           //      'sortParameter' => "investment_loanId"              // used to "sort" the array and use $sortParameter as prime index.
                                  ); 
-     
+    
+    protected $callbacks = [
+        "investment" => [
+            "investment_loanType" => "translateLoanType",
+            "investment_amortizationMethod" => "translateAmortizationMethod",
+            "investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee'
+        ]
+    ];
      
 
     function __construct() {

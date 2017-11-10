@@ -156,7 +156,7 @@ class p2pCompany {
     protected $valuesTransaction;
     protected $valuesInvestment;  
     protected $valuesAmortizationTable;
-    
+    protected $callbacks;
     protected $originExecution;
 
     /**
@@ -1114,23 +1114,24 @@ class p2pCompany {
     }
 
     /**
-     *   This requires a permanent solution. Some PFPs have as format 1,000,345€ and 1.000.345€ and 1 000 345 € (LENDIX) dpending
+     *   This requires a permanent solution. Some PFPs have as format 1,000,345€ and 1.000.345€ and 1 000 345 € (LENDIX) depending
      * on the selected language.
      * The second parameter is a quick fix for arboribus
      * 	Extracts the amount as an integer from n input string
      *       
      * 	@param 		string	$inputValue in string format like 1,23€ -> 123 and 10.400€ -> 1040000 and 12.235,66€ -> 1223566
+     *  @param          string  $separator Added separator in case the platform is different from English standard
      * 	@return 	int		$outputValue in €cents
      * 	
      */
-    function getMonetaryValue($inputValue, $separating = null) {
+    function getMonetaryValue($inputValue, $separator = null) {
 
-        if (empty($separating)) {
-            $separating = ',';
+        if (empty($separator)) {
+            $separator = ',';
         }
         $tempValue = trim(preg_replace('/\D/', '', $inputValue));
 
-        if (stripos($inputValue, $separating) === false) {
+        if (stripos($inputValue, $separator) === false) {
             return $tempValue * 100;
         }
         return $tempValue * 1;
@@ -2392,8 +2393,11 @@ class p2pCompany {
         $this->originExecution = $originExecution;
     }
 
-    
-        
+    function getCallbacks() {
+        return $this->callbacks;
+    }
+
+            
     
 
     
