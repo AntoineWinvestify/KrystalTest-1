@@ -60,13 +60,13 @@ public function resetTestEnvironment() {
     $this->Payment = ClassRegistry::init('Payment');
     $this->Payment->deleteAll(array('Payment.id >' => 0), false); 
     
-    echo "Deleting Userinvestmentdata\n"; 
-    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-    $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
+//    echo "Deleting Userinvestmentdata\n"; 
+//    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+//    $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
     
-    echo "Deleting Globalcashflowdata\n"; 
-    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-    $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
+//    echo "Deleting Globalcashflowdata\n"; 
+//    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+//    $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
     
  
     return;
@@ -191,10 +191,10 @@ $this->resetTestEnvironment();      // Temporary function
                                     echo "File " .  $baseDirectory . "loanIds.json written\n";
                                 }
                             }
-                            $newFlowState = DATA_EXTRACTED;
+                            $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
                         }
                         else {
-                            $newFlowState = AMORTIZATION_TABLES_DOWNLOADED;
+                            $newFlowState = WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED;
                         }
                     }
                     $this->queueInfo[$queueIdKey]["loanIds"] = $platformResult['newLoans']; // store the list of loan Ids in DB, for FLOW3B
@@ -264,24 +264,26 @@ $this->resetTestEnvironment();      // Temporary function
      */
     public function mapData (&$platformData) {
         $investmentId = NULL;
-        $variables = array();
         $linkedaccountId = $platformData['linkedaccountId'];
         $userReference = $platformData['userReference'];
         
         echo "new loans are:";
         print_r($platformData['newLoans']);
-    
-        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, per day
-            if (empty($dateKey)) {      // There is an empty index, WHY?
-               continue;
-            }
+        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
+        $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata'); 
+        
+        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 // Lets allocate a pair of userinvestmentdata and globalcashlowdata for this calculation period (normally daily)   
-            $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
-            $this->Userinvestmentdata->createUserinvestmentdata(array("linkedaccount_id" => $linkedaccountId, 
-                                                                                 "date" => $dateKey));
-            $userInvestmentDataId = $this->Userinvestmentdata->id;               
+            unset ($database);              // Start with a clean shadow database
+            
+            $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+            $database = $this->getLatestTotals("Userinvestmentdata", $filterConditions);       
 
+            $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+            $database['Userinvestmentdata']['investorIdentity'] = $userReference;
+            print_r($database);            
+//exit;
             foreach ($dates as $keyDateTransaction => $dateTransaction) {            // read all *individual* transactions
                 $newLoan = NO;
                 echo "keyDateTransaction = $keyDateTransaction \n";
@@ -300,10 +302,8 @@ echo "---------> ANALYZING NEW LOAN\n";
                             $newLoan = YES;
                         }
                     }
-               
                 }
-                else { // existing loan
-                    // get the investment_id of the existing loan
+                else { // get the investment_id of the existing loan
                          //     public function getData($filter = null, $field = null, $order = null, $limit = null)
                     $filterConditions = array("investment_loanId" => $keyDateTransaction, 
                                        "linkedaccount_id" => $linkedaccountId);
@@ -325,8 +325,6 @@ echo "---------> ANALYZING NEW LOAN\n";
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
 
                         if (!empty($tempResult))  { 
-  //                          print_r($tempResult);
-                            echo "Daniel\n";
                             unset($result);
                             $functionToCall = $tempResult['function'];
 echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transactionDataKey = $transactionDataKey\n";
@@ -345,7 +343,7 @@ echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transacti
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
-                            echo "ANTOINE changing state of $transactionDataKey [index = " .  $tempResult['internalIndex'] . "] to DONE\n";
+                            echo "------>  changing state of $transactionDataKey [index = " .  $tempResult['internalIndex'] . "] to DONE\n";
                             $this->variablesConfig[$tempResult['internalIndex']]['state'] = WIN_FLOWDATA_VARIABLE_DONE;  // Mark done
                             print_r($this->variablesConfig[$tempResult['internalIndex']]);
                             echo $this->variablesConfig[$tempResult['internalIndex']]['databaseName'];
@@ -418,51 +416,48 @@ $internalVariableToHandle = array();
                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId']  . "\n";
                     }
                 }
-
-                $database['userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
-                $database['userinvestmentdata']['date'] = $dateKey;
-                $database['userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
-                echo "USERREFERENCE = $userReference\n";
-                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
-                $this->Userinvestmentdata->create();            
-                if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
-                    
-                    $userInvestmentDataId = $this->Userinvestmentdata->id;
-                    echo "Done, id = $userInvestmentDataId\n";
+                unset($investmentId);      
+            }
+                        
+            $database['userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+            $database['userinvestmentdata']['date'] = $dateKey;
+            $database['userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
+            $this->Userinvestmentdata->create();            
+            if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
+                $userInvestmentDataId = $this->Userinvestmentdata->id;
+                echo "Done, id = $userInvestmentDataId\n";
+            }
+            else {
+                if (Configure::read('debug')) {
+                   echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+                }
+            }             
+            
+            if (!empty($database['globalcashflowdata'])) {               
+                $database['globalcashflowdata']['userinvestmentdata_id'] = $userInvestmentDataId;
+                $database['globalcashflowdata']['date'] = $dateKey;
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
+                $this->Globalcashflowdata->create();            
+                if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
+                    echo "Done\n";
                 }
                 else {
                     if (Configure::read('debug')) {
-                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
                     }
-                } 
-
-                if (!empty($database['globalcashflowdata'])) {               
-                    $database['globalcashflowdata']['userinvestmentdata_id'] = $linkedaccountId;
-                    $database['globalcashflowdata']['date'] = $dateKey;
-                    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
-                    $this->Globalcashflowdata->create();            
-                    if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
-                        echo "Done\n";
-                    }
-                    else {
-                        if (Configure::read('debug')) {
-                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
-                        }
-                    }
-                }
-                print_r($database);
-                unset($database);
-                unset($investmentId);      
-                unset($variablesConfigStatus);
-                foreach ($this->variablesConfig as $variablesKey => $item) {
-                    $this->variablesConfig[$variablesKey]['state'] = WIN_FLOWDATA_VARIABLE_NOT_DONE;
                 }
             }
+            // reset the relevant variables before going to next date
+            unset($variablesConfigStatus);
+            foreach ($this->variablesConfig as $variablesKey => $item) {
+                $this->variablesConfig[$variablesKey]['state'] = WIN_FLOWDATA_VARIABLE_NOT_DONE;
+            }
+            print_r($database);
+            unset($database);          
+ 
         }
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n"; 
-    
     return;   
     }
  
@@ -679,7 +674,7 @@ $internalVariableToHandle = array();
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
-    public function consolidateInstallmentPaymentProgress() {
+    public function consolidateInstalmentPaymentProgress() {
         $sum = 0;        
         return;
         $listResult = $this->Paymenttotal->find('list', array(
@@ -853,6 +848,40 @@ $internalVariableToHandle = array();
         return false;
     }
 
+    
+    
+    
+     /**
+     * Gets the latest (=last entry in DB) data of a model table
+     * @param string    $model
+     * @param array     $filterConditions
+     * 
+     * @return array with data
+     *          or false of $elements does not exist in two dimensional array
+     */
+    public function getLatestTotals($model, $filterConditions) {                         
+
+        $temp = $this->$model->find("first", array('conditions' => $filterConditions,
+                                                                    'order' => array($model .'.id' => 'desc'), 
+                                                                    'recursive' => -1
+                                                                     ));
+        print_r($temp);
+        
+        foreach ($temp[$model] as $key => $item) {
+            $keyName = explode("_", $key);
+            if (strtoupper($model) <> strtoupper($keyName[0])) {
+                unset($temp[$model][$key]);
+            }
+        }
+        return $temp;
+    }
+    
+    
+    
+    
+    
+    
+    
 
 }
             
