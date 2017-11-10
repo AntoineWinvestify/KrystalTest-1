@@ -132,9 +132,30 @@ class loanbook extends p2pCompany {
         "B" => [
             "name" => "investment_debtor",                           // Winvestify standardized name  OK
         ],
+        "C" => [
+            [
+                "type" => "investment_fullLoanAmount",                                            // This is an "empty variable name". So "type" is
+                "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']   
+                    "input2" => "",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                    "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                    "input4" => 2
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        //"D" SPEAK WITH ANTOINE 
         "E" => [
             "name" => "investment_riskRating",
         ],  
+        "F" => [
+            [
+                "type" => "investment_expectAnnualYield",                    // Winvestify standardized name   OK
+                "functionName" => "getPercentage",
+            ]     
+        ],
+        "G" => [
+            //tiME LEFT, HOW TO TAKE
+        ],
         "H" => [
             "type" => "investment_typeOfInvestment"
         ],
