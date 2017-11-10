@@ -138,6 +138,28 @@ echo $companyInvestmentDetails[0];
         position: absolute;
         margin-left: 80px;
     }
+    .tooltip.top .tooltip-inner {
+        border: 1px solid #87e14b;
+        border-radius: 0px;
+        background-color: rgba(255,255,255,1);
+        color: black;
+        text-align: center;
+        padding: 8px 12px;
+        -webkit-box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15);
+        -moz-box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15);
+        box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15); 
+    }
+    .tooltip.top .tooltip-arrow {
+        background: white;
+        border: 1px solid #87e14b;
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-right: none;
+        border-bottom: none;
+        position: absolute;
+        transform: rotate3d(0, 0, 1, -135deg);
+    }
 </style>
 <div class="dashboardOverview">
     <div class="row" id="overview">
@@ -167,7 +189,7 @@ echo $companyInvestmentDetails[0];
                     <div class="tab-content">
                         <div class="tab-pane active" id="<?php echo $companyInvestmentDetails[1]['name'] ?>Tab">
                             <div class="row">
-                                <div class="col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
+                                <div class="col-xs-12 col-sm-12 col-md-2 col-md-offset-5 col-lg-2 col-lg-offset-5">
                                     <img src="<?php echo $companyInvestmentDetails[1]['logo'] ?>" class="img-responsive center-block"/>
                                 </div>
                             </div>
@@ -176,34 +198,34 @@ echo $companyInvestmentDetails[0];
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <?php $total = round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_totalVolume'], 2)  ?>
-                                            <p class="headerBox"><strong><?php echo __('Total Volume') ?></strong></p>
+                                            <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 01" data-toggle="tooltip" data-placement="top"class="ion ion-ios-information-outline" ></i></small></p>
                                             <h3 class="title"><?php echo $total . " &euro;"; ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Invested Assets') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 04" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
                                                         <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_investedAssets'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Reserved Funds') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 05" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
                                                         <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedAssets'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Cash') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 06" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
                                                         <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Cash Drag') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 07" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
                                                         <td class="right"><?php echo __('25%') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Net Deposits') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 08" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
                                                         <td class="right"><?php echo __('13.000,00 €') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Number of Investments') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 09" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
                                                         <td class="right"><?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] ?></td>
                                                     </tr>
                                                 </tbody>
@@ -214,31 +236,37 @@ echo $companyInvestmentDetails[0];
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Actual Yield') ?></strong></p>
+                                            <p class="headerBox"><strong><?php echo __('Actual Yield')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 02" data-toggle="tooltip" data-placement="top" title="some text to tooltip" class="ion ion-ios-information-outline" ></i></small></p>
                                             <h3 class="title">12,25%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Return Past 12 Months') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 10" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
                                                         <td class="right"><?php echo __('12,15%') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Return Year to date') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 mths')?></td>
                                                         <td class="right"><?php echo __('11,33%') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Return Past Months') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 12" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past Year')?></td>
                                                         <td class="right"><?php echo __('9,22%') ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
-                                                        <td class="left"><a class="chartIcon" id="netReturn" href="#"><?php echo __('Net Return') ?> <i class="ion ion-arrow-graph-up-right" style="color:black"></i></a></td>
+                                                        <td class="left">
+                                                            <i data-toggle="tooltip" data-placement="top" title="some text to tooltip 13" class="ion ion-ios-information-outline" ></i> 
+                                                            <span class="chartIcon" id="netReturn">
+                                                                <?php echo __('NAR Past 12 mths')?> 
+                                                                <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
+                                                            </span>
+                                                        </td>
                                                         <td class="right"><?php echo __('995,00 €') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Net Return Past Months') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 14" class="ion ion-ios-information-outline" ></i> <?php echo __('Net return, past year')?></td>
                                                         <td class="right"><?php echo __('935,00 €') ?></td>
                                                     </tr>
                                                 </tbody>
@@ -280,7 +308,7 @@ echo $companyInvestmentDetails[0];
                                                         <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><?php echo __('Written Off') ?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 16" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
                                                         <td class="right"><?php echo __('3.678,00 €') ?></td>
                                                     </tr>
                                                 </tbody>
@@ -333,10 +361,10 @@ echo $companyInvestmentDetails[0];
                                                     <th><?php echo __('Date') ?></th>
                                                     <th><?php echo __('Amount') ?></th>
                                                     <th><?php echo __('Interest') ?></th>
-                                                    <th><?php echo __('Progress') ?></th>
-                                                    <th><?php echo __('Outstanding Principal') ?></th>
-                                                    <th><?php echo __('Term') ?></th>
-                                                    <th><?php echo __('Status') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 17" class="ion ion-ios-information-outline" ></i> <?php echo __('Progress') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 18" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 19" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 20" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
