@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-11-10 08:37+0100\n"
+"PO-Revision-Date: 2017-11-10 12:08+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -2126,7 +2126,7 @@ msgstr ""
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:308
 msgid "Management"
-msgstr "Equipo Directivo"
+msgstr "Gestión de datos"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:309
 msgid ""
