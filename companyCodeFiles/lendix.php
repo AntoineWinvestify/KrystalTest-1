@@ -125,28 +125,28 @@ class lendix extends p2pCompany {
             $dom->preserveWhiteSpace = false;
             $divs = $this->getElements($dom, "li", "class", "card clickable project");
 
-           foreach ($divs as $key2 => $div2) {
-              echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
-              } //Debug
+            foreach ($divs as $key2 => $div2) {
+                echo "key2 = $key2, and value = " . $div2->nodeValue . "<br>";
+            } //Debug
 
             if ($totalArray !== false) {
                 foreach ($divs as $key => $div) {
 
 
                     if ($offset == 0 && $key == 0) { //Compare structures, only compare the first element                      
-                        $structureRevision = $this->htmlRevision($structure,'li',null,null,null,array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
-                        if($structureRevision[1]){
+                        $structureRevision = $this->htmlRevision($structure, 'li', null, null, null, array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'), 1, 0);
+                        if ($structureRevision[1]) {
                             $totalArray = false; //Stop reading in error
                             $reading = false;
                             break;
-                        }      
+                        }
                     }
 
 
                     $projectDivs = $this->getElements($div, "div");
                     foreach ($projectDivs as $key11 => $div11) {
-                      echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
-                      }  //Debug
+                        echo "key11 = $key11, and value = " . $projectDivs[$key11]->nodeValue . " ,and attr = " . $projectDivs[$key11]->getAttribute('title') . "<br>";
+                    }  //Debug
 
                     $tempArray['marketplace_rating'] = trim($projectDivs[6]->nodeValue);
                     $tempArray['marketplace_name'] = trim($projectDivs[0]->nodeValue);
@@ -158,10 +158,9 @@ class lendix extends p2pCompany {
                     /*                     * **************************************************** */
 
                     if (count($projectDivs) >= 25) {
-                        if(strpos($projectDivs[12]->getAttribute('title') == '100%')){
+                        if (strpos($projectDivs[12]->getAttribute('title') == '100%')) {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;
-                        }
-                        else{
+                        } else {
                             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
                         }
                         $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
@@ -171,10 +170,9 @@ class lendix extends p2pCompany {
                         $tempArray['marketplace_sector'] = trim($projectDivs[20]->nodeValue);
                     }
                     if (count($projectDivs) <= 24) { //if we dont have country ( $projectDivs[9]), the array positions displace, we need to fix them.(Index -2)
-                        if(strpos($projectDivs[10]->getAttribute('title') == '100%')){
+                        if (strpos($projectDivs[10]->getAttribute('title') == '100%')) {
                             $tempArray['marketplace_subscriptionProgress'] = 10000;
-                        }
-                        else{
+                        } else {
                             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[10]->getAttribute('title'));
                         }
                         $tempArray['marketplace_purpose'] = trim($projectDivs[19]->nodeValue);
@@ -264,12 +262,12 @@ class lendix extends p2pCompany {
             foreach ($divs as $key => $div) {
 
                 if ($offset == 0 && $key == 0) { //Compare structures, only compare the first element
-                    $structureRevision = $this->htmlRevision($structure,'li',null,null,null,array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
-                    if($structureRevision[1]){
+                    $structureRevision = $this->htmlRevision($structure, 'li', null, null, null, array('dom' => $dom, 'tag' => 'ul', 'attribute' => 'class', 'attrValue' => 'projects'));
+                    if ($structureRevision[1]) {
                         $totalArray = false; //Stop reading in error
                         $offset = false;
                         break;
-                    }           
+                    }
                 }
 
 
@@ -292,9 +290,9 @@ class lendix extends p2pCompany {
 
                 if (count($projectDivs) >= 27) {
 
-                    if($projectDivs[12]->getAttribute('title'))
-                    $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
-                    
+                    if ($projectDivs[12]->getAttribute('title'))
+                        $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($projectDivs[12]->getAttribute('title'));
+
                     $tempArray['marketplace_purpose'] = trim($projectDivs[21]->nodeValue);
                     $tempArray['marketplace_amount'] = $this->getMonetaryValue($projectDivs[16]->nodeValue);
                     $tempArray['marketplace_country'] = strtoupper(trim($projectDivs[9]->nodeValue));
@@ -552,10 +550,16 @@ class lendix extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
 
+        $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'small-spacer'),
+        ));
+
         $node1 = $this->cleanDom($node1, array(
+             array('typeSearch' => 'element', 'tag' => 'a'), //buttons can be different
             array('typeSearch' => 'element', 'tag' => 'div'), //the div class contains the rating
             array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
+
 
 
         $node2 = $this->cleanDom($node2, array(
@@ -564,10 +568,16 @@ class lendix extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
 
-        $node2 = $this->cleanDom($node2, array(//the div class contains the rating
+        $node2 = $this->cleanDomTag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'small-spacer'),
+        ));
+
+        $node2 = $this->cleanDom($node2, array(
+             array('typeSearch' => 'element', 'tag' => 'a'), //buttons can be different
             array('typeSearch' => 'element', 'tag' => 'div'), //the div class contains the rating
             array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
+
 
 
 
