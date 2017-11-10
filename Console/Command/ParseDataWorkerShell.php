@@ -178,7 +178,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     unset($errorInfo);
                     print_r($configParameters);         
                     $myParser->setConfig($configParameters);
-                    $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
+                    $extensionFile = $this->getExtensionFile($approvedFile);
+                    $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile, $extensionFile);     // if successfull analysis, result is an array with loanId's as index
 
                     echo "Dealing with file $approvedFile\n";
                     if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
