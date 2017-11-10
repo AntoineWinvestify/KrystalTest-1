@@ -228,6 +228,7 @@ echo $companyInvestmentDetails[0];
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 09" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
                                                         <td class="right"><?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] ?></td>
                                                     </tr>
+                                                    <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -247,11 +248,11 @@ echo $companyInvestmentDetails[0];
                                                         <td class="right"><?php echo __('12,15%') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 mths')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
                                                         <td class="right"><?php echo __('11,33%') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 12" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past Year')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 12" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR, past year')?></td>
                                                         <td class="right"><?php echo __('9,22%') ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
@@ -259,16 +260,17 @@ echo $companyInvestmentDetails[0];
                                                         <td class="left">
                                                             <i data-toggle="tooltip" data-placement="top" title="some text to tooltip 13" class="ion ion-ios-information-outline" ></i> 
                                                             <span class="chartIcon" id="netReturn">
-                                                                <?php echo __('NAR Past 12 mths')?> 
+                                                                <?php echo __('Net Return')?> 
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
                                                         <td class="right"><?php echo __('995,00 €') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 14" class="ion ion-ios-information-outline" ></i> <?php echo __('Net return, past year')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 14" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year')?></td>
                                                         <td class="right"><?php echo __('935,00 €') ?></td>
                                                     </tr>
+                                                    <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -317,6 +319,11 @@ echo $companyInvestmentDetails[0];
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div align="right"><small><strong><?php echo __('Last Update:')?></strong> 13:23</small></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -358,9 +365,9 @@ echo $companyInvestmentDetails[0];
                                             <thead>
                                                 <tr>
                                                     <th><?php echo __('Loan ID') ?></th>
-                                                    <th><?php echo __('Date') ?></th>
-                                                    <th><?php echo __('Amount') ?></th>
-                                                    <th><?php echo __('Interest') ?></th>
+                                                    <th><?php echo __('Investment Date') ?></th>
+                                                    <th><?php echo __('Investment') ?></th>
+                                                    <th><?php echo __('Interest Rate') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 17" class="ion ion-ios-information-outline" ></i> <?php echo __('Progress') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 18" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 19" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
@@ -412,13 +419,14 @@ echo $companyInvestmentDetails[0];
                                         <table id="activeInvestmentTable" class="investmentDetails table striped display" width="100%" cellspacing="0" data-page-length='25'>
                                             <thead>
                                                 <tr>
-                                                    <th><?php echo __('Loan Id') ?></th>
+                                                    <th><?php echo __('Loan ID') ?></th>
                                                     <th><?php echo __('Investment Date') ?></th>
-                                                    <th><?php echo __('My Investment') ?></th>
+                                                    <th><?php echo __('Investment') ?></th>
                                                     <th><?php echo __('Interest Rate') ?></th>
-                                                    <th><?php echo __('Installment Progress') ?></th>
-                                                    <th><?php echo __('Outstadning Principal') ?></th>
-                                                    <th><?php echo __('Term') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 17" class="ion ion-ios-information-outline" ></i> <?php echo __('Progress') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 18" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 19" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 20" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>

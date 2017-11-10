@@ -96,7 +96,7 @@
         <?php //Bootstrap tooltips ?>
         $('[data-toggle="tooltip"]').tooltip();
         
-        var birdsCanvas = document.getElementById("birdsChart");
+        /*var birdsCanvas = document.getElementById("birdsChart");
 
         var birdsData = {
           labels: ["Spring", "Summer", "Fall", "Winter"],
@@ -124,7 +124,32 @@
           type: 'polarArea',
           data: birdsData,
           options: chartOptions
+        });*/
+    
+        var ctx = document.getElementById('birdsChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ["jan","feb", "mar", "apr","may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"],
+            datasets: [{
+              label: 'Net Return',
+              data: [20, 10, 40, 100, 33, 87, 56, 98, 45, 17, 26, 38],
+              borderColor: ["rgba(0, 230, 77, 1)"],
+              borderWidth: 2,
+              fill: false,
+              scales: {
+                  yAxes: [{
+                          ticks: {
+                              beginAtZero: true,
+                              min: 0
+                          }
+                  }]
+              }
+            }]
+          }
         });
+    
+    
     });
     
     function successAjax(result){
@@ -186,7 +211,7 @@
     }
     span.active {
         font-weight: bold;
-        color: #87e14b;
+        color: #00e64d;
     }
     .tooltip.top .tooltip-inner {
         border: 1px solid #87e14b;
@@ -266,6 +291,7 @@
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 09" data-toggle="tooltip" data-placement="top" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
                                                         <td class="right"><?php echo $global['activeInvestment']  ?></td>
                                                     </tr>
+                                                    <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -285,11 +311,11 @@
                                                         <td class="right"><?php echo __('9,05%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 mths')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
                                                         <td class="right"><?php echo __('9,45%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 12" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past Year')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 12" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR, past year')?></td>
                                                         <td class="right"><?php echo __('8,90%')?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
@@ -297,16 +323,17 @@
                                                         <td class="left">
                                                             <i data-toggle="tooltip" data-placement="top" title="some text to tooltip 13" class="ion ion-ios-information-outline" ></i> 
                                                             <span class="chartIcon" id="netReturn">
-                                                                <?php echo __('NAR Past 12 mths')?> 
+                                                                <?php echo __('Net Return')?> 
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
                                                         <td class="right"><?php echo __('3.743,82 €')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 14" class="ion ion-ios-information-outline" ></i> <?php echo __('Net return, past year')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 14" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year')?></td>
                                                         <td class="right"><?php echo __('3.439,10 €')?></td>
                                                     </tr>
+                                                    <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -353,12 +380,16 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div align="right"><small><strong><?php echo __('Last Update:')?></strong> 13:23</small></div>
                                 </div>
                             </div>
                             <div class="row" style="display:none;" id="chart_netReturn">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
                                     <canvas id="birdsChart" class="center-block" width="400" align="center"></canvas>  
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div align="right"><small><strong><?php echo __('Last Update:')?></strong> 13:23</small></div>
                                 </div>
                             </div>
                         </div>                                         
