@@ -161,9 +161,22 @@ class AppShell extends Shell {
      * @return string It is the extension of the file
      */
     public function getExtensionFile($filePath) {
-        $file = new File($filePath, false);
+        $file = pathinfo($filePath);
         $extension = $file->ext();
         return $extension;
+    }
+    
+    /**
+     * Function to get the loanId from the file name of one amortization table
+     * @param string $filePath It is the path to the file
+     * @return string It is the loanId
+     */
+    public function getLoanIdFromFile($filePath) {
+        $file = new File($filePath, false);
+        $name = $file->name();
+        $nameSplit = explode("_", $name);
+        $loanId = $nameSplit[1];
+        return $loanId;
     }
         
         

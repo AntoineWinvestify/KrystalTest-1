@@ -999,19 +999,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to get the loanId from the file name of one amortization table
-     * @param string $filePath It is the path to the file
-     * @return string It is the loanId
-     */
-    public function getLoanIdFromFile($filePath) {
-        $file = new File($filePath, false);
-        $name = $file->name();
-        $nameSplit = explode("_", $name);
-        $loanId = $nameSplit[1];
-        return $loanId;
-    }
-    
-    /**
      * Function to analyze a file depending on its extension
      * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
