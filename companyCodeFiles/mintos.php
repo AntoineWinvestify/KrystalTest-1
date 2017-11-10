@@ -935,18 +935,19 @@ class mintos extends p2pCompany {
                 $type = WIN_TYPEOFLOAN_PERSONAL;
                 break;
             case "Short-Term Loan":
-                $type = WIN_TYPEOFLOAN_UNKNOWN;
+                $type = WIN_TYPEOFLOAN_SHORTTERM;
                 break;
             case "Agricultural Loan":
-                $type = WIN_TYPEOFLOAN_UNKNOWN;
+                $type = WIN_TYPEOFLOAN_AGRICULTURAL;
                 break;
             case "Invoice Financing":
                 $type = WIN_TYPEOFLOAN_INVOICETRADING;
                 break;
             case "Pawnbroking Loan":
-                $type = WIN_TYPEOFLOAN_UNKNOWN;
+                $type = WIN_TYPEOFLOAN_PAWNBROKING;
                 break;
         }
+        return $type;
     }
     
     /**
@@ -956,7 +957,22 @@ class mintos extends p2pCompany {
      * @return int                  Winvestify standardized amortization method
      */
     public function translateAmortizationMethod($inputData) {
-
+        $type = WIN_AMORTIZATIONMETHOD_UNKNOWN;
+        switch ($inputData){
+            case "Full":
+                $type = WIN_AMORTIZATIONMETHOD_FULL;
+                break;
+            case "Partial":    
+                $type = WIN_AMORTIZATIONMETHOD_PARTIAL;
+                break;
+            case "Interest-only":
+                $type = WIN_AMORTIZATIONMETHOD_INTERESTONLY;
+                break;
+            case "Bullet":
+                $type = WIN_AMORTIZATIONMETHOD_BULLET;
+                break;
+        }
+        return $type;
     }   
     
     /**
