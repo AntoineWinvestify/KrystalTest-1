@@ -81,7 +81,8 @@ class mintos extends p2pCompany {
                     "type" => "investment_loanId",                                     // Winvestify standardized name   OK
                     "inputData" => [                                                   // trick to get the complete cell data as purpose
                                 "input2" => "Loan ID: ",                               // May contain trailing spaces
-                                "input3" => ",",
+                                "input3" => "",
+                                "input4" => 1                                          // 'input3' is mandatory. If not found then return "global_xxxxxx"
                             ],
                     "functionName" => "extractDataFromString",
                 ],
@@ -89,7 +90,8 @@ class mintos extends p2pCompany {
                     "type" => "original_concept",                                      // 
                     "inputData" => [                                                   // Get the "original" Mintos concept, which is used later on
                                 "input2" => "",                                        // 
-                                "input3" => "Loan ID:",
+                                "input3" => "Loan ID: ",
+                                "input4" => 0                                          // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "extractDataFromString",
                 ],
@@ -967,7 +969,7 @@ class mintos extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         $data = WIN_BUYBACKGUARANTEE_NOT_PROVIDED;
-        $inputData = strtoupper(($inputData));
+        $inputData = strtoupper($inputData);
         switch ($inputData) {
             case "YES":
                 $data = WIN_BUYBACKGUARANTEE_PROVIDED;

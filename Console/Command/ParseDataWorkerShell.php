@@ -52,6 +52,7 @@
  * TO BE DONE:
  * CHECK THE STRUCTURE OF A XLS/XLSX/CSV FILE BY CHECKING THE NAMES OF THE HEADERS.
  * detecting "unknown concept"
+ * The callbacks are ONLY for new loans, NOT for ALL loans
  *
  */
 App::import('Shell','GearmanWorker');
@@ -127,11 +128,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
             print_r($data);
             $files = $data['files'];
-//            $data['listOfCurrentActiveLoans'] = array("958187-01", "731064-01", "715891-01", "715544-01");
+
             // First analyze the transaction file(s)
             $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             
-// do this first for the transaction file and then for investmentfile(s)
+// Do this first for the transaction file and then for investmentfile(s)
             $fileTypesToCheck = array (0 => WIN_FLOW_TRANSACTION_FILE,
                                        1 => WIN_FLOW_INVESTMENT_FILE,
                                        2 => WIN_FLOW_EXTENDED_TRANSACTION_FILE,     // So we cover Finanzarel
@@ -193,8 +194,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         switch ($actualFileType) {
                             case WIN_FLOW_INVESTMENT_FILE:
                                 $this->callbackInit($tempResult, $parserConfigFile, $companyHandle);
-                                print_r($tempResult);
-                                exit;
                                 $totalParsingresultInvestments = $tempResult;                                
                                 break;
                             case WIN_FLOW_TRANSACTION_FILE:
@@ -235,11 +234,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['pfp'] = $platform;
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
             
-//            echo "Expired loans = \n";
-//            print_r($listOfExpiredLoans);
-//            echo "listOfCurrentActiveloans = ";
-//            print_r($data['listOfCurrentActiveLoans']);
-// check if we have new loans for this claculation period. Only collect the amortization tables of loans that have not already finished         
+// check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
             $iteriter = new RecursiveIteratorIterator($arrayiter);
             foreach ($iteriter as $key => $value) {
@@ -262,10 +257,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
- //       print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+ //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
         print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
         print_r($data['tempArray'][$linkedAccountKey]['pfp']);
- //       print_r($data['tempArray'][$linkedAccountKey]['userReference']);        
+ //     print_r($data['tempArray'][$linkedAccountKey]['userReference']);        
         print_r($data['tempArray'][$linkedAccountKey]['error']);
         return json_encode($data);
     }
@@ -287,7 +282,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             print_r($this->callbacks);
         }
 
-        if (empty($callbacks)) {
+        if (empty($this->callbacks)) {
             return;
         }
         print_r($this->callbacks);
@@ -318,7 +313,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         foreach ($values as $key => $valueCallback) {
             if ($key == "callback") {   
                 foreach ($valueCallback as $value) {
-                    $callbacks[$value["type"]] = $value["functionName"];
+                    $this->callbacks[$value["type"]] = $value["functionName"];
                 }
             }
         }
