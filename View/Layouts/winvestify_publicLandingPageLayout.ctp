@@ -179,7 +179,7 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul style="margin-top:0px;" class="dropdown-menu">
-                                    <li><a href="/pages/aboutUs "><?php echo __('Our history') ?></a></li>
+                                    <li><a href="/pages/aboutUs "><?php //echo __('Our history') ?></a></li>
                                     <li><a href="/pages/team"><?php echo __('Our team') ?></a></li>
                                 </ul>
                             </li>
