@@ -29,9 +29,10 @@
   2017-10-18		version 0.1
   initial version
 
-
-
-
+  2017-11-06		version 0.2
+    getDefaulted                [Tested local, OK]
+    getDefaultedByOutstanding   [Tested local, OK]
+    getDefaultedRange           [Tested local, OK]
 
   Pending:
 

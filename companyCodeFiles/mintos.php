@@ -920,7 +920,33 @@ class mintos extends p2pCompany {
      * @return int                  Winvestify standardized loan type
      */
     public function translateLoanType($inputData) {
-
+        $type = WIN_TYPEOFLOAN_UNKNOWN;
+        switch ($inputData){
+            case "Mortgage Loan":
+                $type = WIN_TYPEOFLOAN_MORTGAGE;
+                break;
+            case "Business Loan":
+                $type = WIN_TYPEOFLOAN_BUSINESSLOAN;
+                break;
+            case "Car Loan":
+                $type = WIN_TYPEOFLOAN_CARLOAN;
+                break;
+            case "Personal Loan":
+                $type = WIN_TYPEOFLOAN_PERSONAL;
+                break;
+            case "Short-Term Loan":
+                $type = WIN_TYPEOFLOAN_UNKNOWN;
+                break;
+            case "Agricultural Loan":
+                $type = WIN_TYPEOFLOAN_UNKNOWN;
+                break;
+            case "Invoice Financing":
+                $type = WIN_TYPEOFLOAN_INVOICETRADING;
+                break;
+            case "Pawnbroking Loan":
+                $type = WIN_TYPEOFLOAN_UNKNOWN;
+                break;
+        }
     }
     
     /**

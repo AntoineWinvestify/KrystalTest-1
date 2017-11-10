@@ -35,6 +35,10 @@
  * 
  * [2017-10-27] version 0.4
  * Moved from test to dasboard2s
+ * 
+ * [2017-11-09] version 0.5
+ * New db adaptation
+ * 
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>

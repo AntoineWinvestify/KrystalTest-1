@@ -28,6 +28,10 @@
  * 2017-10-26       Version 0.3
  * dashboardOverview moved from test [Tested local, OK]
  * 
+ * 2017-11-09
+ * calculateGlobalDefaulted [Tested local, OK]
+ * 
+ * 
 
   Pending:
 
@@ -213,7 +217,7 @@ class Dashboard2sController extends AppController {
             }
         }
              
-        $globalRange["current"] = 100 - $globalRange["1-7"] - $globalRange["8-30"] -$globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"];
+        $globalRange["current"] = abs(round(100 - $globalRange["1-7"] - $globalRange["8-30"] -$globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"], 2));
         return $globalRange;
     }
 

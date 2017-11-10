@@ -1,4 +1,4 @@
-º<?php
+<?php
 
 /**
  * +-----------------------------------------------------------------------------+
@@ -82,10 +82,7 @@ class Userinvestmentdata extends AppModel {
         return $resultInvestorData;
     }
     
-    
-    
-    
-    
+       
    /**
      *NOT FINISHED: does Globalcashflowdatatotal really need to exist?? or only Globalcashflowdata?
      * creates a new 'investment' table and also links the 'paymenttotal' database table
@@ -129,18 +126,5 @@ class Userinvestmentdata extends AppModel {
             'conditions' => $conditions
         ));
         return $investmentIds;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    }       
 }

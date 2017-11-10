@@ -42,7 +42,10 @@
  * E format in getAmount fixed. Format example: 2,31E-6.
  * Minor fixes.
  * 
- * 2017-11-10           version 0.4
+ * 2017-11-09           Version 0.4
+ * Amount and currency bug fixing.
+ * 
+ * 2017-11-10           version 0.5
  * Updated function extractDataFromString with an extra parameter
  * 
  * 
