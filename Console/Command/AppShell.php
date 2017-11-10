@@ -154,6 +154,17 @@ class AppShell extends Shell {
     private function tryErrorOnGearman() {
         //fake code
     }
+    
+    /**
+     * Function to get the extension of a file
+     * @param string $filePath FQDN of the file to analyze
+     * @return string It is the extension of the file
+     */
+    public function getExtensionFile($filePath) {
+        $file = new File($filePath, false);
+        $extension = $file->ext();
+        return $extension;
+    }
         
         
 }
