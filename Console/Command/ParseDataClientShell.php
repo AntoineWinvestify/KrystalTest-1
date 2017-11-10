@@ -271,7 +271,7 @@ $this->resetTestEnvironment();      // Temporary function
         print_r($platformData['newLoans']);
       
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
-  //      $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata'); 
+        $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata'); 
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
@@ -295,6 +295,43 @@ echo "dateKey = $dateKey \n";
             foreach ($dates as $keyDateTransaction => $dateTransaction) {            // read all *individual* transactions
                 $newLoan = NO;
                 echo "keyDateTransaction = $keyDateTransaction \n";
+                print_r($dateTransaction);
+// special procedure for platform related transactions, i.e. when we don't have a real loanId                
+                $keyDateTransactionNames = explode("_", $keyDateTransaction);
+                if ($keyDateTransactionNames[0] == "global") {
+echo "---------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA\n";
+                    // cycle through all individual fields of the transaction record
+                    foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // 0,1,2
+                        if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
+                             $transactionDataKey = $transaction; 
+                        }
+                        $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
+
+                        if (!empty($tempResult))  { 
+                            unset($result);
+                            $functionToCall = $tempResult['function'];
+
+                            $dataInformation = explode (".", $tempResult['databaseName'] );
+                            $dbTable = $dataInformation[0];
+                            if (!empty($functionToCall)) {
+                                $result = $this->$functionToCall($dateTransaction, $database);
+
+                                if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                                    $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
+                                }
+                                else {
+                                    $database[$dbTable][$transactionDataKey] = $result;  
+                                }
+                            }
+                            else {
+                                $database[$dbTable][$transactionDataKey] = $transaction;
+                            }
+                            echo $this->variablesConfig[$tempResult['internalIndex']]['databaseName'];
+                        } 
+                    }                     
+                    continue;
+                }
+
 echo "---------> ANALYZING NEXT LOAN\n";
                 if (in_array($keyDateTransaction, $platformData['newLoans'])) {          // check if loanId is new 
                     echo "Storing the data of a NEW loan in the shadow db table\n";
@@ -447,6 +484,8 @@ $internalVariableToHandle = array();
                 }
             }
             print_r($database);
+            echo "exiting";
+            exit;
         }
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n"; 
     return;   
@@ -792,7 +831,7 @@ $internalVariableToHandle = array();
      * 66
     */
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
-        return $transactionData['amount']; 
+        return $transactionData[0]['amount']; 
     }   
 
     /* 
@@ -803,7 +842,7 @@ $internalVariableToHandle = array();
      * 67
     */
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
-        return $transactionData['amount']; 
+        return $transactionData[0]['amount']; 
     } 
     
     /* 

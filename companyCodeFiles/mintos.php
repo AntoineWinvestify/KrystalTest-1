@@ -111,6 +111,7 @@ class mintos extends p2pCompany {
                                             9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
                                             10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
                                             11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
+                                            12 => ["Client withdrawal" => "Cash_withdrawal"]
                                             ]                      
                             ],
                     "functionName" => "getTransactionDetail",
@@ -146,6 +147,7 @@ class mintos extends p2pCompany {
                                             9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
                                             10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
                                             11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
+                                            12 => ["Client withdrawal" => "Cash_withdrawal"]
                                             ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
