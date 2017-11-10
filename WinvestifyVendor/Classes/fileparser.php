@@ -558,6 +558,35 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     private function divisionInPercentage($input, $divident, $divisor, $precision)  {
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
     }
+    
+    /**
+     *
+     * 	Extracts the percentage as an integer from an input string
+     *
+     * 	@param 		string	$inputPercentage in string format like 5,4% or 5,43% or 5%. Note that 1,23% generates 123 and 33% -> 3300
+     * 															5,5% TAE -> 550
+     * 															7,02% -> 702
+     *                                                                                                                   	8,5 % -> 850
+     * º                                                            format like 'This is a string 54%' -> 5400
+     * 	@return 	int		$outputPercentage
+     * 	
+     */
+    function getPercentage($inputPercentage) {
+        
+        $progress = trim(preg_replace('/\D/', ' ', $inputPercentage));
+        $tempValues = explode(" ", $progress);
+
+        if (strlen($tempValues[1]) == 1) {
+            $tempValues[1] = $tempValues[1] * 10;
+        }
+
+        $outputPercentage = $tempValues[0] * 100 + $tempValues[1];
+        if ($inputPercentage < 0) {
+            return -$outputPercentage;
+        } else {
+            return $outputPercentage;
+        }
+    }
 
 
     /**
