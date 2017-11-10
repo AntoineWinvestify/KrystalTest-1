@@ -296,6 +296,7 @@ echo "dateKey = $dateKey \n";
                 $newLoan = NO;
                 echo "keyDateTransaction = $keyDateTransaction \n";
                 print_r($dateTransaction);
+
 // special procedure for platform related transactions, i.e. when we don't have a real loanId                
                 $keyDateTransactionNames = explode("_", $keyDateTransaction);
                 if ($keyDateTransactionNames[0] == "global") {
@@ -446,8 +447,6 @@ $internalVariableToHandle = array();
                 $database['payment']['date'] = $dateKey;
                 $this->Payment->create();            
                 if ($this->Payment->save($database['payment'], $validate = true)) {
-//                        echo "===> SAVING FOLLOWING PAYMENT DATA:";
-//                        print_r($database['payment']);
                     echo "Done\n";
                 }
                 else {
@@ -484,8 +483,6 @@ $internalVariableToHandle = array();
                 }
             }
             print_r($database);
-            echo "exiting";
-            exit;
         }
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n"; 
     return;   
@@ -823,7 +820,7 @@ $internalVariableToHandle = array();
         return $transactionData['amount']; 
     }
  
-    /* 
+    /* DONE
      *  Get the amount which corresponds to the "PlatformDeposit" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -834,7 +831,7 @@ $internalVariableToHandle = array();
         return $transactionData[0]['amount']; 
     }   
 
-    /* 
+    /* DONE
      *  Get the amount which corresponds to the "Platformwithdrawal" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
