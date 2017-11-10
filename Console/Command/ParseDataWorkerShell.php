@@ -240,7 +240,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             foreach ($iteriter as $key => $value) {
                 if ($key == "investment_loanId"){
                     if (in_array($value, $data['listOfCurrentActiveLoans']) == false) {         // Check if new investments have appeared
+                        $loanIdstructure = explode("_", $value);
+                        if ($loanIdstructure[0] == "global") {
+                            continue;
+                        }
                         if (in_array($value, $listOfExpiredLoans) == false){
+                            
                             $newLoans[] = $value;
                         }
                     }
