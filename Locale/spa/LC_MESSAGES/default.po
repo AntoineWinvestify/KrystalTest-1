@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-11-10 12:08+0100\n"
+"PO-Revision-Date: 2017-11-10 13:12+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -2023,11 +2023,11 @@ msgstr "Crear cuenta"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:246
 msgid "Award for Best Andalusian Fintech"
-msgstr ""
+msgstr "Premio a la Mejor Fintech Andaluza"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:264
 msgid "Finalist Santander Open Challenge"
-msgstr ""
+msgstr "Finalista Santander Open Challenge"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:281
 msgid "What is P2P Lending?"

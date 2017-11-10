@@ -40,9 +40,9 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-10 col-sm-offset-1 col-lg-10 col-lg-offset-1" style="min-height: 600px;">
             <div class="row">
-                <h2 class="g-color--primary"><?php echo __('Dashboard')?></h2>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6"><img src="/img/screenshots/dashboard.png" class="imgResponsive investorsImg center-block"/></div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <h2 class="g-color--primary"><?php echo __('Dashboard')?></h2>
                     <h4><?php echo __('Más Información, Más Control')?></h4>
                     <p>Para que sepa a qué ritmo inviertes y donde pierdes dinero</p>
                     <ul>
