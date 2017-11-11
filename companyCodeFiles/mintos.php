@@ -368,8 +368,18 @@ class mintos extends p2pCompany {
                 [
                     "type" => "investment_currency",                        // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
+                ],
+                [
+                    "type" => "investment_statusOfLoan",                   // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => 2,                             // set to "ACTIVE"
+                                ],
+                    "functionName" => "getDefaultValue",
                 ]
              ],
+        
+        
+        
         ];
 
     protected $valuesAmortizationTable = [

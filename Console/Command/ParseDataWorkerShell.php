@@ -265,8 +265,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
  //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
         print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
         print_r($data['tempArray'][$linkedAccountKey]['pfp']);
- //     print_r($data['tempArray'][$linkedAccountKey]['userReference']);        
-        print_r($data['tempArray'][$linkedAccountKey]['error']);
+ //     print_r($data['tempArray'][$linkedAccountKey]['error']);
+ //       print_r($data);
         return json_encode($data);
     }
     

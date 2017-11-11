@@ -16,8 +16,8 @@
  * 
  * 
  * @author
- * @version 0.3
- * @date  2017-10-26
+ * @version 0.5
+ * @date  2017-11-11
  * @package
  *
  *
@@ -45,6 +45,10 @@
  * 2017-11-10           version 0.4
  * Updated function extractDataFromString with an extra parameter
  * 
+ * 
+ * 2017-11-11           version 0.5
+ * Function getDefaultValue was added
+ *  
  * 
  * 
  * 
@@ -952,7 +956,29 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
 
 
-    private function multiexplode ($delimiters,$string) {
+    
+    /**
+     *
+     * Reads a default value from the config file
+     *
+     * @param string    $input          cell data [Not used]
+     * @param array     $defaultValue   The value to be returned
+     *
+     */
+    private function getDefaultValue($input, $defaultValue) {
+        return $defaultValue;
+    }    
+    
+    
+  
+    /**
+     * Function to get the loanId from the file name of one amortization table
+     * @param array $delimiters     array with all the delimiter characters
+     * @param string                input string
+     *  
+     * @return array 
+     */    
+    private function multiexplode ($delimiters, $string) {
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $launch = explode($delimiters[0], $ready);
         return $launch;
