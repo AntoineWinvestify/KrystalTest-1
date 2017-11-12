@@ -168,16 +168,16 @@ class Fileparser {
                 "type" => "payment_regularGrossInterestIncome"           
                 ],
             10 => [
-                "detail" => "Delayed_interest_income",
+                "detail" => "Delayed_interest_income_buyback",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "payment_delayedInterestPayment"          
+                "type" => "payment_delayedInterestIncomeBuyback"          
                 ],
             11 => [ 
-                "detail" => "Late_payment_fee_income",
+                "detail" => "Late_payment_fee_income_buyback",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "payment_latePaymentFeeIncome"                  
+                "type" => "payment_latePaymentFeeIncomeBuyback"                  
                 ],
             12 => [
                 "detail" => "Interest_income_buyback",
@@ -186,10 +186,10 @@ class Fileparser {
                 "type" => "payment_interestIncomeBuyback"                 
                 ],
             13 => [
-                "detail" => "Delayed_interest_income_buyback",
+                "detail" => "Delayed_interest_income",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "payment_delayedInterestIncomeBuyback"           
+                "type" => "payment_delayedInterestIncome"           
                 ],
             14 => [
                 "detail" => "Incentives_and_bonus",
@@ -232,7 +232,7 @@ class Fileparser {
                 "detail" => "Bank_charges",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept21"
+                "type" => "globalcashflowdata_bankCharges"
                 ],
             22 => [
                 "detail" => "Cost_secondary_market",

@@ -106,12 +106,13 @@ class mintos extends p2pCompany {
                                             4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
                                             5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
                                             6 => ["Interest income" => "Regular_gross_interest_income"],       //
-                                            7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
+                                            7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
-                                            9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
+                                            9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
                                             10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
                                             11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Client withdrawal" => "Cash_withdrawal"]
+                                            12 => ["Client withdrawal" => "Cash_withdrawal"],
+                                            13 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS
                                             ]                      
                             ],
                     "functionName" => "getTransactionDetail",
@@ -142,12 +143,13 @@ class mintos extends p2pCompany {
                                             4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
                                             5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
                                             6 => ["Interest income" => "Regular_gross_interest_income"],       //
-                                            7 => ["Delayed interest income" => "Delayed_interest_income"],     // OK
+                                            7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
-                                            9 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],  // OK
+                                            9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
                                             10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
                                             11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Client withdrawal" => "Cash_withdrawal"]
+                                            12 => ["Client withdrawal" => "Cash_withdrawal"],
+                                            13 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS
                                             ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
