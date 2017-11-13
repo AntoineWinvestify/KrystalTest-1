@@ -626,8 +626,9 @@ class ecrowdinvest extends p2pCompany {
      */
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY ECROWDINVEST DURING LOGIN PROCESS
-          $credentials['_csrf_token'] = "XXXXX";
+          FIELDS USED BY Ecrowd DURING LOGIN PROCESS
+          $credentials['signin']	 = 'Login';
+          $credentials['csrf'] = "XXXXX";
          */
 
         //First we need get the $csrf token
@@ -650,12 +651,13 @@ class ecrowdinvest extends p2pCompany {
             }
         }
 
-        //print_r($credentials);
+        $str = $this->doCompanyLogin($credentials);
 
-        $str = $this->doCompanyLogin($credentials); //do login
-
-
-        $dom = new DOMDocument;  //Check if works
+// Check if user actually has entered the portal of the company.
+// by means of checking of 2 unique identifiers of the portal
+// This should be done by checking a field in the Webpage (button, link etc)
+// and the email of the user (if aplicable)
+        $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
         // echo $str;

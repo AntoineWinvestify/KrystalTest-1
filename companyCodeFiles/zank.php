@@ -201,12 +201,6 @@ class zank extends p2pCompany {
                     "type" => "investment_currency",                        // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
                 ],
-                "callback" => [
-                    [
-                        "type" => "investment_loanType",
-                        "functionName" => "translateLoanType"
-                    ]    
-                ]
             ],
             /*"G" => [
                 [
@@ -223,7 +217,7 @@ class zank extends p2pCompany {
                 [
                     "type" => "investment_commissionPaid",                                            // This is an "empty variable name". So "type" is
                     "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input2" => "",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
                                 "input3" => ",",                                        // and its content is the result of the "getAmount" method
                                 "input4" => 4
                                 ],
@@ -309,6 +303,12 @@ class zank extends p2pCompany {
         ],
         8 => [
             "name" => "amortizationtable_paymentStatus"
+        ]
+    ];
+    
+    protected $callbacks = [
+        "investment" => [
+            "investment_loanType" => "translateTypeOfInvestment"
         ]
     ];
 
@@ -1730,7 +1730,7 @@ class zank extends p2pCompany {
      * @param string $inputData It is string to convert to integer
      * @return int It is the loan type converted to integer
      */
-    public function translateLoanType($inputData) {
+    public function translateTypeOfInvestment($inputData) {
         $data = WIN_LOANSTATUS_MANUALINVESTMENT;
         $inputData = strtoupper(trim($inputData));
         switch ($inputData) {

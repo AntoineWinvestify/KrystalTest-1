@@ -133,7 +133,25 @@ class twino extends p2pCompany {
         ],
         "E" => [
             "name" => "status",
-        ]
+        ],
+        "F" => [
+            "name" => "investment_nominalInterestRate"
+        ],
+        "I" => [
+            "name" => "investment_originalDuration"
+        ],
+        "M" => [
+            [
+                "type" => "investment_myInvestment",                    // Winvestify standardized name   OK
+                "inputData" => [
+                            "input2" => "",
+                            "input3" => ".",
+                            "input4" => 4
+                            ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        
     ];
 
     protected $valuesAmortizationTable = [
