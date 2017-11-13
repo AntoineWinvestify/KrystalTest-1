@@ -183,9 +183,6 @@ class mintos extends p2pCompany {
                                 ],               
                 "functionName" => "getCountry",
                 ],
-                [
-                 "name" => "investment_tempCountry"
-                ]
              ],
             "B" =>  [
                 "name" => "investment_loanId"                               // Winvestify standardized name  OK
