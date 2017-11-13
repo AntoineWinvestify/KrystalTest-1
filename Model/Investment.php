@@ -120,7 +120,7 @@ var $validate = array(
 
         //Get defaulted investment and days
         $defaultedInvestments = $this->find("all", array(
-            "fields" => array("investment_outstandingPrincipal", "investment_nextPaymentDate", "investment_statusOfLoan"),
+            "fields" => array("id", "investment_loanId", "investment_outstandingPrincipal", "investment_nextPaymentDate", "investment_statusOfLoan"),
             "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_nextPaymentDate < " => $today, "investment_statusOfLoan" => 2),
             "recursive" => -1,
         ));
@@ -128,10 +128,12 @@ var $validate = array(
         foreach ($defaultedInvestments as $key => $defaultedInvestment) {
             //echo strtotime($today) . HTML_ENDOFLINE;
             //echo strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) . HTML_ENDOFLINE;
-            $defaultedInvestments[$key]['Investment']['defaultedTime'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
+            $defaultedInvestments[$key]['Investment']['investment_defaultedDays'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
         }
 
-
+        $this->saveMany($defaultedInvestments);
+        
+       // print_r($defaultedInvestments);
         return $defaultedInvestments;
     }
 

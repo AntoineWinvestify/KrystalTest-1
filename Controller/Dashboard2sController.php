@@ -63,6 +63,8 @@ class Dashboard2sController extends AppController {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
+        echo 1;
+        $executionStartTime = microtime(true);
 
         //Request data
         $idArray = explode(" ", $this->request->data['id']);
@@ -90,6 +92,9 @@ class Dashboard2sController extends AppController {
         //$this->set('defaultedInvestments', $defaultedInvestments);
         //Get and set range
         $this->set('defaultedRange', $this->Investment->getDefaultedByOutstanding($linkedAccount));
+        
+        $executionEndTime = microtime(true);
+        echo $executionEndTime - $executionStartTime;
     }
 
     /**
@@ -97,6 +102,7 @@ class Dashboard2sController extends AppController {
      */
     function dashboardOverview() {
 
+        $executionStartTime = microtime(true);
         $this->layout = 'azarus_private_layout';
         $this->Company = ClassRegistry::init('Company');
         //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
@@ -157,6 +163,9 @@ class Dashboard2sController extends AppController {
         //Get and Set defaulted range
         $defaultedRange = $this->calculateGlobalDefaulted();
         $this->set('defaultedRange', $defaultedRange);
+        
+        $executionEndTime = microtime(true);
+        echo $executionEndTime - $executionStartTime;
     }
 
     /**
