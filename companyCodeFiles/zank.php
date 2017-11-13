@@ -496,7 +496,7 @@ class zank extends p2pCompany {
                 foreach ($divs as $div) {
                     switch ($index) {
                         case 0:
-                            $tempArray['marketplace_numberOfInvestors'] = strtoupper($div->nodeValue);
+                            $tempArray['marketplace_numberOfInvestors'] = preg_replace("/[^0-9]/","",strtoupper($div->nodeValue));
                             break;
                         case 1:
                             if (stristr(trim($div->nodeValue), "%") == true) {
@@ -624,37 +624,44 @@ class zank extends p2pCompany {
             $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');
             foreach ($container as $div) {
                 $subdivs = $div->getElementsByTagName('div');
-                /* foreach($subdivs as $subkey => $subdiv){
-                  echo 'Div: ' . HTML_ENDOFLINE;
-                  echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
-                  } */
-                $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
-                $tempArray['marketplace_loanReference'] = $loanId;
-                //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
-                $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
-                $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
-                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
-                $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
-                $status = $tempArray['marketplace_statusLiteral'];
-                if ($status == 'Completado') {
-                    $tempArray['marketplace_status'] = PERCENT;
-                    $tempArray['marketplace_subscriptionProgress'] = 10000;
-                } else if ($status == 'Amortizado' || $status == 'Retrasado') {
-                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
-                    $tempArray['marketplace_subscriptionProgress'] = 10000;
-                } else if (strpos($status, 'mortiza') != false) {
-                    $tempArray['marketplace_status'] = CONFIRMED;
-                    $tempArray['marketplace_subscriptionProgress'] = 10000;
-                } else if ($status == 'Publicado') {
-                    $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;
-                }
-
-                $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;
-                $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;
-
-                echo $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
-                $tds = $subdivs[126]->getElementsByTagName('td');
-                $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+               /*foreach($subdivs as $subkey => $subdiv){
+                    echo 'Div: ' . HTML_ENDOFLINE;
+                    echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
+                }*/             
+                    $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
+                    $tempArray['marketplace_loanReference'] = $loanId;
+                    //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
+                    $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
+                    $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
+                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
+                    $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
+                    $status = $tempArray['marketplace_statusLiteral'];
+                    if($status == 'Completado'){   
+                        $tempArray['marketplace_status'] = PERCENT;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;
+                    }
+                    else if($status == 'Amortizado' || $status == 'Retrasado' ){
+                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000; 
+                    } 
+                    else if(strpos($status, 'mortiza') != false){
+                        $tempArray['marketplace_status'] = CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;       
+                    }
+                    else if($status == 'Publicado'){   
+                        $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;     
+                    }
+                    else if($status == 'Cancelado'){
+                        $tempArray['marketplace_subscriptionProgress'] = 0;
+                        $tempArray['marketplace_status'] = REJECTED;
+                    }
+                    
+                    $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
+                    $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
+                    
+                    echo  $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
+                    $tds =  $subdivs[126]->getElementsByTagName('td');
+                    $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
