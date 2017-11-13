@@ -63,7 +63,7 @@ class Dashboard2sController extends AppController {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
-        echo 1;
+        //echo 1;
         $executionStartTime = microtime(true);
 
         //Request data
@@ -94,7 +94,7 @@ class Dashboard2sController extends AppController {
         $this->set('defaultedRange', $this->Investment->getDefaultedByOutstanding($linkedAccount));
         
         $executionEndTime = microtime(true);
-        echo $executionEndTime - $executionStartTime;
+        //echo $executionEndTime - $executionStartTime;
     }
 
     /**
@@ -165,7 +165,7 @@ class Dashboard2sController extends AppController {
         $this->set('defaultedRange', $defaultedRange);
         
         $executionEndTime = microtime(true);
-        echo $executionEndTime - $executionStartTime;
+        //echo $executionEndTime - $executionStartTime;
     }
 
     /**
