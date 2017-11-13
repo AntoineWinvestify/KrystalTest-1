@@ -1324,9 +1324,12 @@ class p2pCompany {
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
                 . " " . $type_sequence
                 . " " . $error_request;
+        $company = "marketplace";
         $position = stripos($file, 'companyCodeFiles');
-        $substring = substr($file, $position+17);
-        $company = explode(".", $substring)[0];
+        if ($position !== false) {
+            $substring = substr($file, $position+17);
+            $company = explode(".", $substring)[0];
+        }
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         $this->marketplaces->Applicationerror->saveAppError('ERROR: Userinvestmentdata','Error detected in PFP id: ' .  $company . ',' . $errorDetailed, $line, $file, 'Userinvestmentdata');
