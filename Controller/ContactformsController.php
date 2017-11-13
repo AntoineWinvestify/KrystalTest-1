@@ -98,9 +98,4 @@ class ContactformsController extends AppController {
             }
         }
     }
-    
-    function login() {
-        $this->layout = 'winvestify_login';
-    }
-
 }

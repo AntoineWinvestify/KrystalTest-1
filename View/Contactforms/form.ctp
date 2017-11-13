@@ -1,9 +1,14 @@
 
 <!--========== PAGE CONTENT ==========-->
 <!-- Feedback Form -->
+<style>
+    .s-form-v2__input {
+        text-transform: none;
+    }
+</style>
 <div class="container">
     <div class="g-text-center--xs">
-        <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Contacto') ?></p>
+        <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs"><?php echo __('Do you need help?')?></p>
     </div>
     <?php
     echo $this->Form->create('ContactForm', array('default' => false));
@@ -12,6 +17,7 @@
         <div class="row">
             <div id="reporting"></div>
             <div class="col-sm-8 col-sm-offset-2 g-margin-b-20--xs g-margin-b-0--md">
+                <h4 align="left"><?php echo __('If you have any questions or are missing something, please contact our customer service')?></h4>
                 <div id="overlay">
                     <div id="spinner">  
                     </div>
@@ -21,7 +27,7 @@
                 <div class="g-margin-b-20--xs">
                     <?php
                     echo $this->Form->input('name', array('type' => 'text', 
-                                                        'class' => "username form-control blue s-form-v2__input", 
+                                                        'class' => "username form-control blue_noborder4 s-form-v2__input", 
                                                         'placeholder' => __("Your Name"), 
                                                         'label' => false));
                     ?>
@@ -34,7 +40,7 @@
                 <div class="g-margin-b-20--xs">
                     <?php
                     echo $this->Form->input('email', array('type' => 'email', 
-                                                            'class' => "useremail form-control blue s-form-v2__input", 
+                                                            'class' => "useremail form-control blue_noborder4 s-form-v2__input", 
                                                             'placeholder' => __("Your Email"), 
                                                             'label' => false));
                     ?>
@@ -49,7 +55,7 @@
                     echo $this->Form->input('Subject', array(
                                                 'label' => false,
                                                 'options' => $subjectContactForm,
-                                                'class' => 'blue form-control s-form-v2__input'
+                                                'class' => 'blue_noborder4 form-control s-form-v2__input'
                     ));
                     ?>
                 </div>
@@ -60,8 +66,7 @@
                 <label><?php echo __('Message') ?>:</label>
                 <?php
                 echo $this->Form->textarea('text', array(
-                    'style' => "border-radius: 25px !important;", 
-                    'class' => "usermsg blue form-control s-form-v2__input", 
+                    'class' => "usermsg blue_noborder4 form-control s-form-v2__input", 
                     'rows' => '8', 
                     'placeholder' => __("Your message"), 
                     'label' => false, 
@@ -82,7 +87,7 @@
                     <div class='col-xs-12 col-sm-8 col-md-8 col-lg-8' style="margin-top: 10px;">
                         <?php 
                             echo $this->Form->input('captcha', array('label' => false, 
-                                                                    'class' => 'blue form-control s-form-v2__input'));
+                                                                    'class' => 'blue_noborder4 form-control s-form-v2__input'));
                         ?>
                     </div>
                 </div>
@@ -118,7 +123,8 @@
     
 
     $(document).ready(function () {
-        $("#send").click(function () {
+        $("#send").click(function (event) {
+            event.preventDefault();
             contactForm();
         });
         $(document).bind('DOMSubtreeModified',function(){
