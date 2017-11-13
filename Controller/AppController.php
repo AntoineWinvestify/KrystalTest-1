@@ -224,7 +224,8 @@ class AppController extends Controller {
             'general' => __('General'),
             'billing' => __('Billing Dept'),
             'improvement' => __('Functional Improvement'),
-            'feature' => __('New Feature'));
+            'feature' => __('New Feature'),
+            'unsubscribe' => __('Unsubscribe Account'));
         $this->set('subjectContactForm', $subjectContactForm);
 
         //$this->documentTypes = array ('dni_front' => 1, 'dni_back' => 2, 'iban' => 3, 'cif' => 4);
@@ -612,5 +613,4 @@ Configure::write('debug', 2);
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
     }
-
 }
