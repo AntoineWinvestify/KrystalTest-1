@@ -452,7 +452,7 @@ class mintos extends p2pCompany {
         "investment" => [
             "investment_loanType" => "translateLoanType",
             "investment_amortizationMethod" => "translateAmortizationMethod",
-            "investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee'
+            //"investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee'
         ]
     ];
      
@@ -917,29 +917,30 @@ class mintos extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
+        $inputData = strtoupper($inputData);
         switch ($inputData){
-            case "Mortgage Loan":
+            case "MORTGAGE LOAN":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
                 break;
-            case "Business Loan":
+            case "BUSINESS LOAN":
                 $type = WIN_TYPEOFLOAN_BUSINESSLOAN;
                 break;
-            case "Car Loan":
+            case "CAR LOAN":
                 $type = WIN_TYPEOFLOAN_CARLOAN;
                 break;
-            case "Personal Loan":
+            case "PERSONAL LOAN":
                 $type = WIN_TYPEOFLOAN_PERSONAL;
                 break;
-            case "Short-Term Loan":
+            case "SHORT-TERM LOAN":
                 $type = WIN_TYPEOFLOAN_SHORTTERM;
                 break;
-            case "Agricultural Loan":
+            case "AGRICULTURAL LOAN":
                 $type = WIN_TYPEOFLOAN_AGRICULTURAL;
                 break;
-            case "Invoice Financing":
+            case "INVOICE FINANCING":
                 $type = WIN_TYPEOFLOAN_INVOICETRADING;
                 break;
-            case "Pawnbroking Loan":
+            case "PAWNBROKING LOAN":
                 $type = WIN_TYPEOFLOAN_PAWNBROKING;
                 break;
         }
@@ -954,17 +955,18 @@ class mintos extends p2pCompany {
      */
     public function translateAmortizationMethod($inputData) {
         $type = WIN_AMORTIZATIONMETHOD_UNKNOWN;
+        $inputData = strtoupper($inputData);
         switch ($inputData){
-            case "Full":
+            case "FULL":
                 $type = WIN_AMORTIZATIONMETHOD_FULL;
                 break;
-            case "Partial":    
+            case "PARTIAL":    
                 $type = WIN_AMORTIZATIONMETHOD_PARTIAL;
                 break;
-            case "Interest-only":
+            case "INTEREST-ONLY":
                 $type = WIN_AMORTIZATIONMETHOD_INTERESTONLY;
                 break;
-            case "Bullet":
+            case "BULLET":
                 $type = WIN_AMORTIZATIONMETHOD_BULLET;
                 break;
         }
@@ -977,7 +979,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific type of investment
      * @return int                  Winvestify standardized type of investment
      */
-    public function translateTypeOfInvestment($inputData) {
+    public function translateTypeOfInvestment($inputData) { //We don't have this in mintos
 
     }
     
@@ -987,7 +989,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific payment frequency
      * @return int                  Winvestify standardized payment frequency
      */
-    public function translatePaymentFrequency($inputData) {
+    public function translatePaymentFrequency($inputData) {  //We don't have this in mintos
         
     }
         
@@ -997,7 +999,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific investment market concept
      * @return int                  Winvestify standardized investment marke concept
      */
-    public function translateInvestmentMarket($inputData) {
+    public function translateInvestmentMarket($inputData) {  //We don't have this in mintos
         
     }
     
