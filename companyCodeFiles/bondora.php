@@ -523,8 +523,8 @@ class bondora extends p2pCompany {
                         if (!$this->hasElements) {
                             return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                         }
-                        $this->tempUrl['downloadInvesment'] = $urls[0]->getAttribute('href');
-                        $this->tempUrl['deleteInvesment'] = $urls[1]->getAttribute('href');
+                        $this->tempUrl['downloadInvestment'] = $urls[0]->getAttribute('href');
+                        $this->tempUrl['deleteInvestment'] = $urls[1]->getAttribute('href');
                         $searchInvesmnet = true;
                         break;
                     }
@@ -696,7 +696,7 @@ class bondora extends p2pCompany {
 
                 print_r($this->tempUrl);
 
-                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
+                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvestment'];
                 $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, null, false, null, $fileName);
@@ -746,7 +746,7 @@ class bondora extends p2pCompany {
 
 
 
-                //$url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvesment'];
+                //$url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvestment'];
                 //echo "delete: " . $url . SHELL_ENDOFLINE;
                 $this->idForSwitch++;
                 //$this->headers = array("__RequestVerificationToken: " . $this->deleteToken, ":Type: POST", 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive', "content-length: 0", "Retry-After: 120");

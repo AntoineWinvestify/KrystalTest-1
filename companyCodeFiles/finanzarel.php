@@ -352,6 +352,7 @@ class finanzarel extends p2pCompany {
         
         switch ($this->idForSwitch) { 
             case 0:
+                $this->baseUrl = array_shift($this->urlSequence);
                 echo $this->idForSwitch . HTML_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -460,7 +461,7 @@ class finanzarel extends p2pCompany {
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($controlVariablesArray[5]);
                 $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($controlVariablesArray[2]);
                 $this->tempArray['global']['amortization'] = $this->getMonetaryValue($controlVariablesArray[11]);
-                $this->tempArray['InversionNetaComprometida'] = $this->getMonetaryValue($controlVariablesArray[6]);
+                $this->tempArray['reservedFunds'] = $this->getMonetaryValue($controlVariablesArray[6]); //They call it "Inversion neta comprometida"
                 
                 print_r($this->tempArray);
                 //Get the request to download the file
@@ -497,7 +498,6 @@ class finanzarel extends p2pCompany {
                 //$fileType = 'csv';
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:{$credential_p_flow_step_id}:{$credential_p_instance}';
-                $this->baseUrl = 'marketplace.finanzarel.com';
                 //How we get fix Finanzarel
                 //https://chrismckee.co.uk/curl-http-417-expectation-failed/
                 //https://stackoverflow.com/questions/3755786/php-curl-post-request-and-error-417
