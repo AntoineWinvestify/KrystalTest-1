@@ -29,7 +29,7 @@
 class viainvest extends p2pCompany {
 
     
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
+    protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.

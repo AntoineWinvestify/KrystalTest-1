@@ -155,7 +155,9 @@ class p2pCompany {
     
     protected $valuesTransaction;
     protected $valuesInvestment;  
-    protected $valuesAmortizationTable;     
+    protected $valuesAmortizationTable;
+    protected $callbacks;
+    protected $originExecution;
 
     /**
      *
@@ -1112,23 +1114,24 @@ class p2pCompany {
     }
 
     /**
-     *   This requires a permanent solution. Some PFPs have as format 1,000,345€ and 1.000.345€ and 1 000 345 € (LENDIX) dpending
+     *   This requires a permanent solution. Some PFPs have as format 1,000,345€ and 1.000.345€ and 1 000 345 € (LENDIX) depending
      * on the selected language.
      * The second parameter is a quick fix for arboribus
      * 	Extracts the amount as an integer from n input string
      *       
      * 	@param 		string	$inputValue in string format like 1,23€ -> 123 and 10.400€ -> 1040000 and 12.235,66€ -> 1223566
+     *  @param          string  $separator Added separator in case the platform is different from English standard
      * 	@return 	int		$outputValue in €cents
      * 	
      */
-    function getMonetaryValue($inputValue, $separating = null) {
+    function getMonetaryValue($inputValue, $separator = null) {
 
-        if (empty($separating)) {
-            $separating = ',';
+        if (empty($separator)) {
+            $separator = ',';
         }
         $tempValue = trim(preg_replace('/\D/', '', $inputValue));
 
-        if (stripos($inputValue, $separating) === false) {
+        if (stripos($inputValue, $separator) === false) {
             return $tempValue * 100;
         }
         return $tempValue * 1;
@@ -1622,134 +1625,6 @@ class p2pCompany {
                     . chr(125); // "}"
             return $uuid;
         }
-    }
-
-    /**
-     * Function to convert an Spreadsheet to array with PHPExcel
-     * @param string $nameSpreadsheet It is the name of the spreadsheet
-     * @param string $folderSpreadsheet It is the folder where the spreadsheet is
-     */
-    function convertExcelToArray($nameSpreadsheet, $folderSpreadsheet) {
-        if (empty($nameSpreadsheet)) {
-            $nameSpreadsheet = "mintos.xlsx";
-        }
-        if (empty($folderSpreadsheet)) {
-            $folderSpreadsheet = "/var/www/html/cake_branch/";
-        }
-
-
-        $objPHPExcel = PHPExcel_IOFactory::load($folderSpreadsheet . $nameSpreadsheet);
-        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-        /* $loadedSheetNames = $objPHPExcel->getSheetNames();
-          foreach ($loadedSheetNames as $sheetIndex => $loadedSheetName) {
-          echo '<b>Worksheet #', $sheetIndex, ' -> ', $loadedSheetName, ' (Raw)</b><br />';
-          $objPHPExcel->setActiveSheetIndexByName($loadedSheetName);
-          $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, false, false, true);
-          //var_dump($sheetData);
-          echo '<br />';
-          } */
-        $values = [
-            "A" => "TransactionId",
-            "B" => "date",
-            "C" => [
-                [
-                    "name" => "interest",
-                    "regex" => "Interest income"
-                ],
-                [
-                    "name" => "repayment",
-                    "regex" => "Investment principal repayment"
-                ],
-                [
-                    "type" => "loanId",
-                    "regex" => "Loan ID",
-                    "initPos" => 9,
-                    "finalPos" => null
-                ]
-            ],
-            "D" => "turnover",
-            "E" => "balance",
-            "F" => "currency"
-        ];
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values);
-        var_dump($datas);
-    }
-
-    /**
-     * Function to convert an Spreadsheet to array with PHPExcel by parts
-     * @param int $chunkInit
-     * @param int $chunkSize
-     * @param string $inputFileType
-     * @param type $values
-     */
-    function convertExcelByParts($chunkInit, $chunkSize, $inputFileType, $values) {
-        if (empty($inputFileType)) {
-            $inputFileType = "Excel2007";
-        }
-        if (empty($chunkInit)) {
-            $chunkInit = 1;
-        }
-        if (empty($chunkSize)) {
-            $chunkSize = 500;
-        }
-        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-
-        /**  Create a new Instance of our Read Filter  * */
-        $chunkFilter = new readFilterWinvestify();
-        /**  Tell the Read Filter, the limits on which rows we want to read this iteration  * */
-        $chunkFilter->setRows($chunkInit, $chunkSize);
-        /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  * */
-        $objReader->setReadFilter($chunkFilter);
-
-        $objPHPExcel = $objReader->load("/var/www/html/cake_branch/mintos.xlsx");
-        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-        $datas = $this->saveExcelArrayToTemp($sheetData, $values);
-        var_dump($datas);
-    }
-
-    /**
-     * Function to convert from an array with PHPExcel structure to a more manipulable structure
-     * @param array $rowDatas It is the array with PHPExcel structure
-     * @param array $values They are the variables that will have the new array structure
-     * @return array $tempArray It is the array with the new structure
-     */
-    function saveExcelArrayToTemp($rowDatas, $values) {
-        $i = 0;
-        $tempArray = [];
-        foreach ($rowDatas as $rowData) {
-            foreach ($values as $key => $value) {
-                if (is_array($value)) {
-                    $tempArray[$i] = $this->getValueExcelFromArray($rowData[$key], $value);
-                } else {
-                    $tempArray[$i][$value] = $rowData[$key];
-                }
-            }
-            $i++;
-        }
-        return $tempArray;
-    }
-
-    /**
-     * Function to take more values from cell that could be more than one type of variable
-     * @param string $rowData It is the cell  
-     * @param array $values It is the possible results that can be on the cell
-     * @return array $tempArray with all the data inserted
-     */
-    function getValueFromDynamicCell($rowData, $values) {
-        foreach ($values as $key => $value) {
-            $pos = $this->getPosInit($rowData, $value["regex"]);
-            //$pos = strpos($rowData, $value["regex"]);
-            if ($pos !== false) {
-                // " found after position X
-                //$tempArray["loanId"] = substr($value, $pos + $variable["initPos"], $variable["finalPos"]);
-                if (!empty($value["name"])) {
-                    $tempArray["type"] = $value["name"];
-                } else {
-                    $tempArray[$value["type"]] = $this->getValueBySubstring($rowData, $value, $pos);
-                }
-            }
-        }
-        return $tempArray;
     }
 
     /**
@@ -2506,8 +2381,16 @@ class p2pCompany {
     function setDateFinish($dateFinish) {
         $this->dateFinish = $dateFinish;
     }
+    
+    function setOriginExecution($originExecution) {
+        $this->originExecution = $originExecution;
+    }
 
-        
+    function getCallbacks() {
+        return $this->callbacks;
+    }
+
+            
     
 
     
@@ -2683,6 +2566,18 @@ class p2pCompany {
     public function getParserConfigTransactionFile() {
         return $this->valuesTransaction;
     }
+  
+    
+    /** 
+     * Read extended transaction configuration file
+     *     
+     * @return  array with configuration parameters
+     *              
+     */    
+    public function getParserConfigExtendedTransactionFile() {
+        return $this->valuesExtendedTransaction;
+    }    
+    
     
      /** 
      * Read investment configuration file
@@ -2693,6 +2588,16 @@ class p2pCompany {
     public function getParserConfigInvestmentFile() {
         return $this->valuesInvestment;
     }
+    
+    /** 
+     * Read expiredloan configuration file
+     *     
+     * @return  array with configuration parameters
+     * 
+     */
+    public function getParserConfigExpiredLoanFile() {
+        return $this->valuesExpiredLoan;
+    }   
     
     /** 
      * Read amortizationtable configuration file
@@ -2715,6 +2620,27 @@ class p2pCompany {
         return $this->transactionConfigParms;
     }
 
+    /** 
+     * Read configuration parameters for the extended transaction configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */    
+    public function getParserExtendedTransactionConfigParms() {
+        return $this->extendedTransactionConfigParms;
+    }
+
+    /** 
+     * Read configuration parameters for the expiredLoan configuration
+     *     
+     * @return  array with configuration parameters
+     * 
+     */             
+    public function getParserExpiredLoanConfigParms() {
+        return $this->expiredLoanConfigParms;
+    }    
+    
+    
     /** 
      * Read configuration parameters for the investment configuration
      *     
@@ -2830,13 +2756,6 @@ FRAGMENT
         //http://docs.casperjs.org/en/latest/modules/casper.html#download
     }
     
-    
-    
-    
-    
-    
-
-
 }
 ?>
 

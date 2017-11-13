@@ -42,6 +42,19 @@
  * parallelization                                                      [OK, tested]
  */
 class finbee extends p2pCompany {
+    
+    protected $valuesTransaction = [
+        "A" => [
+            [
+                "type" => "date", // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "Y-M-D",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        
+    ];
 
     protected $valuesAmortizationTable = [
             1 =>  [
@@ -88,13 +101,13 @@ class finbee extends p2pCompany {
             ]
         ];
     
-    protected $transactionConfigParms = array ('OffsetStart' => 1,
+    protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
  
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
+    protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
@@ -396,7 +409,19 @@ class finbee extends p2pCompany {
         }
     }
 
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    
+    /**
+     *
+     * 	Checks if the user can login to its portal. Typically used for linking a company account
+     * 	to our account
+     * 	
+     * 	@param string	$user		username
+     * 	@param string	$password	password
+     * 	@return	boolean	true: 		user has successfully logged in.
+     * 			false: 		user could not log in
+     * 	
+     */
+    function companyUserLogin($user = "", $password = "") {
         /*
           FIELDS USED BY finbee DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";

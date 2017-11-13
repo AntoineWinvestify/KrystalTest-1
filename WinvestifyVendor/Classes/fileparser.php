@@ -80,6 +80,29 @@ class Fileparser {
                                     RUB => ["RUB", "₽"],
                                     );
 
+    // dictionary lookup for trying to identify an unknown concept
+    protected $dictionaryWords = array('tax'    => WIN_CONCEPT_TYPE_COST,
+                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
+                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
+                                'payment'       => WIN_CONCEPT_TYPE_COST,
+                                'withdraw'      => WIN_CONCEPT_TYPE_COST,
+                                'back fee'      => WIN_CONCEPT_TYPE_COST,
+                                'back tax'      => WIN_CONCEPT_TYPE_COST,
+                                'cost'          => WIN_CONCEPT_TYPE_COST,
+                                'purchase'      => WIN_CONCEPT_TYPE_COST,
+                                'bid'           => WIN_CONCEPT_TYPE_COST,
+                                'auction'       => WIN_CONCEPT_TYPE_COST,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
+                                'loan'          => WIN_CONCEPT_TYPE_COST,
+                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
+                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
+                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
+                                'earning'       => WIN_CONCEPT_TYPE_INCOME
+
+                            );   
+    
+    
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
@@ -296,8 +319,8 @@ class Fileparser {
 echo "INPUT FILE = $file \n";
     $this->filename = $file;
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-print_r($this->config);
-       // determine first if it a csv, if yes then run command
+
+       // determine first if it is a csv, if yes then run command
         $fileNameChunks = explode(DS, $file);
         if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
     //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
@@ -311,7 +334,7 @@ print_r($this->config);
             $objPHPExcel = PHPExcel_IOFactory::load($file);
         }
 
-        ini_set('memory_limit','1048M');
+        ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
@@ -336,11 +359,15 @@ print_r($this->config);
     private function saveExcelToArray($rowDatas, $values, $totalRows) {
         $tempArray = [];
         $maxRows = count($rowDatas);
+
         $i = 0;
         foreach ($rowDatas as $key => $rowData) {
             if ($i == $this->config['offsetStart']) {
                 break;
             }
+            echo "unset to happen, value of cell = " . 
+                    print_r($rowDatas[$key][2]);
+            echo "\n";
             unset($rowDatas[$key]);
             $i++;
         }
@@ -349,7 +376,6 @@ print_r($this->config);
      
         for ($i = $maxRows; $i > 0; $i--) {
             if (empty($rowDatas[$i]["A"])) {
-//                echo "Deleting some shit, i = " . ($i) . "\n";
                 unset($rowDatas[$i]);
             }
         }   
@@ -365,8 +391,7 @@ print_r($this->config);
             $i++;
         }  
        
-      
-        
+         
         $i = 0;
         $outOfRange = false;
 
@@ -375,8 +400,13 @@ print_r($this->config);
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
+                
+                if ($key == "callback") {
+                    continue;
+                }
+                
                 // check for subindices and construct them
-                if (array_key_exists("name", $value)) {      // "name" => .......
+                if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
                     eval($tempString);
@@ -545,28 +575,9 @@ print_r($this->config);
      * also check for the presence of loanId, and + or - sign of field
      */
     private function analyzeUnknownConcept($input, $config = null) {
-
-    //    read the unknown concept
         $result = 0;
-        $dictionaryWords = array('tax'          => WIN_CONCEPT_TYPE_COST,
-                                'instalment'    => WIN_CONCEPT_TYPE_INCOME,
-                                'installment'   => WIN_CONCEPT_TYPE_INCOME,
-                                'payment'       => WIN_CONCEPT_TYPE_COST,
-                                'back fee'      => WIN_CONCEPT_TYPE_COST,
-                                'back tax'      => WIN_CONCEPT_TYPE_COST,
-                                'cost'          => WIN_CONCEPT_TYPE_COST,
-                                'purchase'      => WIN_CONCEPT_TYPE_COST,
-                                'bid'           => WIN_CONCEPT_TYPE_COST,
-                                'auction'       => WIN_CONCEPT_TYPE_COST,
-                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
-                                'swap'          => WIN_CONCEPT_TYPE_INCOME,
-                                'loan'          => WIN_CONCEPT_TYPE_COST,
-                                'buy'           => WIN_CONCEPT_TYPE_INCOME,
-                                'sell'          => WIN_CONCEPT_TYPE_INCOME,
-                                'sale'          => WIN_CONCEPT_TYPE_INCOME,
-                                'earning'       => WIN_CONCEPT_TYPE_INCOME
 
-                            );
+        
         foreach ($dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found
@@ -689,12 +700,17 @@ print_r($this->config);
         }
         else if($decimalSep == 'E'){
             if(strpos($input, "E")){
-                $decArray = explode("E", $input);
-                $dec = preg_replace("/[-]/", "", $decArray[1]);
-                echo "AQUI " . $input;
-                $input = strtr($input, array(',' => '.'));    
-                $input = number_format(floatval($input), $dec+2);
- 
+                if(strpos($input, "-")){
+                    $decArray = explode("E", $input);
+                    $dec = preg_replace("/[-]/", "", $decArray[1]);
+                    $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
+                    echo "AQUI " . $dec2;
+                    $input = strtr($input, array(',' => '.'));    
+                    $input = number_format(floatval($input), $dec + $dec2);
+                } else{
+                    $input = strtr($input, array(',' => '.'));    
+                    $input = number_format(floatval($input), 0);
+                }
             }
             $seperator = ".";
         }
@@ -795,7 +811,7 @@ print_r($this->config);
      */
     private function getCurrency($loanCurrency) {
 
-        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ");
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
         foreach ($this->currencies as $currencyIndex => $currency) {
@@ -868,21 +884,54 @@ print_r($this->config);
             return $result;           
         }     
     }
+    
+    /**
+     * Function to get details of transaction from multiple cells together
+     * @param string $input It is the cell value
+     * @param array $config Winvestify standardized concept
+     * @param array $inputValues Values needed to calculate transaction details
+     * @return array  [0] => Winvestify standardized concept
+     *                [1] => array of parameter, i.e. list of variables in which the result
+     *                         of this function is to be stored. In practice it is normally
+     *                         only 1 variable, but the same value could be replicated in many
+     *                         variables.
+     *                  The variable name is read from "internal variable" $this->transactionDetails.
+     */
+    private function getMultipleInputTransactionDetail($input, $config, ...$inputValues) {
+        foreach ($inputValues as $inputValue) {
+            $input .= " " . $inputValue ;
+        }
+        return $this->getTransactionDetail(trim($input), $config);
+    }
 
     /**
      * Search for a something within a string, starting after $search
-     * and ending when $seperator is found
+     * and ending when $separator is found
      *
-     * @param string    $input
-     * @param string    $search
+     * @param string    $input      It is the string to which we search the information
+     * @param string    $search     The character to search
      * @param string    $separator   The separator character
-     * @return string   $extractedString
+     * @return string   $extractedString    The value we were looking for
      *
      */
     private function extractDataFromString($input, $search, $separator ) {
+        echo "input = $input, search = $search, length =  " . strlen($search) . " and separator = $separator\n";
+        echo "first strip = " . stripos($input, $search) ."\n";
+        
         $position = stripos($input, $search) + strlen($search);
-        $substrings = explode($separator, substr($input, $position));
-        return $substrings[0];
+        echo "position = $position\n";
+        if (empty($separator)) {
+            $value = substr($input, $position);
+            echo "empty \n";
+        } 
+        else {
+            $substrings = explode($separator, substr($input, $position));
+            echo "substring\n";
+            print_r($substrings);
+            $value = $substrings[0];
+        }
+        //exit;
+        return $value;
     }
 
     /**

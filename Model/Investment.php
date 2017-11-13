@@ -75,10 +75,6 @@ var $validate = array(
 
 );
 
-
-
-
-
     /**
      *
      * creates a new 'investment' table and also links the 'paymenttotal' database table
@@ -89,23 +85,15 @@ var $validate = array(
      *                                 id if array[0] = true
      * 			
      */
-    public function createNewInvestment($investmentdata) {
+    public function createInvestment($investmentdata) {
+        $result = array();
         $this->create();
         if ($this->save($investmentdata, $validation = true)) {   // OK
             $investmentId = $this->id;
-            $data = array('investment_id' => $investmentId, 'status' => WIN_ERROR_PAYMENTTOTALS_LAST);
-            $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
-            $this->Paymenttotal->create();
-            if ($this->Paymenttotal->save($data, $validation = true)) { 
-                $result[0] = true;
-                $result[1] = $investmentId;
-            } 
-            else {
-                $result[0] = false;
-                $result[1] = $this->Paymenttotal->validationErrors;
-                $this->delete($investmentId);
-            }
+            $result[0] = true;
+            $result[1] = $investmentId;
         } 
+ 
         else {                     // error occurred while trying to save the Investment data
             $result[0] = false;
             $result[1] = $this->validationErrors;
@@ -123,31 +111,13 @@ var $validate = array(
         return $investmentIds;
     }
 
-
-
-
-
     /*
      * 
      * Update the corresponding fields in the paymenttotal table 
      * 
      */
     function afterSave1($created, $options = array()) {
-        if (!empty($this->data['Investor']['investor_tempCode'])) {    // A confirmation code has been generated
-            $event = new CakeEvent('confirmationCodeGenerated', $this, array('id' => $this->id,
-                'investor' => $this->data[$this->alias],
-            ));
-            $this->getEventManager()->dispatch($event);
-        }
 
-        if (!empty($this->data['Investor']['investor_accountStatus'])) {  // A user has succesfully and completely registered
-            if (($this->data['Investor']['investor_accountStatus'] & QUESTIONAIRE_FILLED_OUT) == QUESTIONAIRE_FILLED_OUT) {
-                $event = new CakeEvent('newUserCreated', $this, array('id' => $this->id,
-                    'investor' => $this->data[$this->alias],
-                ));
-                $this->getEventManager()->dispatch($event);
-            }
-        }
     }
 
     /**
@@ -158,20 +128,7 @@ var $validate = array(
      */
     public function afterFind1($results, $primary = false) {
 
-        foreach ($results as $key => $val) {
-            if (isset($val['Investor']['investor_dateOfBirth'])) {
-                $results[$key]['Investor']['investor_dateOfBirth'] = $this->formatDateAfterFind(
-                        $val['Investor']['investor_dateOfBirth']);
-            }
-        }
-        return $results;
 
-        foreach ($results as $key => $val) {
-            if (isset($val['Ocr']['investor_iban'])) {
-                $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
-                        $val['Ocr']['investor_iban']);
-            }
-        }
         return $results;
     }
 
@@ -182,13 +139,6 @@ var $validate = array(
      */
     function beforeSave1($created, $options = array()) {
 
-// Store telephone number without spaces
-        if (!empty($this->data['Investor']['investor_dateOfBirth'])) {
-            $this->data['Investor']['investor_dateOfBirth'] = $this->formatDateBeforeSave($this->data['Investor']['investor_dateOfBirth']);
-        }
-        if (!empty($this->data['Investor']['investor_telephone'])) {
-            $this->data['Investor']['investor_telephone'] = str_replace(' ', '', $this->data['Investor']['investor_telephone']);
-        }
     }
 
 

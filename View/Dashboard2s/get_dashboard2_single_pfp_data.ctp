@@ -1,21 +1,28 @@
 <?php
 /**
- *
- *
- * Returns the investment data of a company for the Dashboard page as a JSON object
- *
- * @author Antoine de Poorter
+ * +--------------------------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                                              |
+ * +--------------------------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify                          |
+ * | it under the terms of the GNU General Public License as published by                       |
+ * | the Free Software Foundation; either version 2 of the License, or                          |
+ * | (at your option) any later version.                                                        |
+ * | This file is distributed in the hope that it will be useful                                |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of                             |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                               |
+ * | GNU General Public License for more details.                                               |
+ * +--------------------------------------------------------------------------------------------+
+ * 
+ * @author
  * @version 0.2
- * @date 2017-01-25
+ * @date 2017-08-02
  * @package
-
-
-
-  2016-12-19		version 0.1
-
-  2017-01-25		version 0.2
-  fields that represent money and percentage are divided by 100 to show the "real and correct" value		[OK]
-  added icon for status																					[OK]
+ * 
+ * DASHBOARD 2.0 - Dashboard overview individual data.
+ * 
+ * 2017-10-25 version 0.1
+ * Return the view with individual info of the pfp
+ * 																				[OK]
 
 
 
@@ -25,15 +32,16 @@
 //P info
 
 echo $companyInvestmentDetails[0];
-/*echo json_encode($companyInvestmentDetails[1]);*/
+/* echo print_r($activeInvestments) . HTML_ENDOFLINE;
+  echo print_r($defaultedInvestments) . HTML_ENDOFLINE; */
 ?>
 <script>
     $(function () {
 
         $("#defaultedInvestmentTable").DataTable();
-        $("#allInvestmentTable").DataTable();
+        $("#activeInvestmentTable").DataTable();
 
-<?php //Tooltip clicks  ?>
+<?php //Tooltip clicks   ?>
         $(".logo").hover(function () {
             id = $(this).attr("id");
             $("#showBtn").toggle();
@@ -166,24 +174,24 @@ echo $companyInvestmentDetails[0];
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <?php $total = $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'] + $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'] + $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'] ?>
+                                            <?php $total = round(bcadd(bcadd($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 16), $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'], 16), 2) ?>
                                             <p class="headerBox"><strong><?php echo __('Total Volume') ?></strong></p>
-                                            <h3 class="title"><?php echo number_format((float) $total / 100, 2, ',', '') . " &euro;"; ?></h3>
+                                            <h3 class="title"><?php echo $total . " &euro;"; ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><?php echo __('Invested Assets') ?></td>
-                                                        <td class="right"><?php echo number_format((float) $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'] / 100, 2, ',', '') . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Reserved Funds') ?></td>
-                                                        <td class="right"><?php echo number_format((float) $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'] / 100, 2, ',', '') . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Cash') ?></td>
-                                                        <td class="right"><?php echo number_format((float) $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'] / 100, 2, ',', '') . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_myWallet'], 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><?php echo __('Cash Drag') ?></td>
@@ -298,8 +306,8 @@ echo $companyInvestmentDetails[0];
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#allInvestments" id="allTab" data-toggle="tab">
-                                        All
+                                    <a href="#activeInvestments" id="activeTab" data-toggle="tab">
+                                        Active
                                         <div class="ripple-container"></div>
                                     </a>
                                 </li>
@@ -316,50 +324,84 @@ echo $companyInvestmentDetails[0];
                                         <table id="defaultedInvestmentTable" class="investmentDetails table striped display" width="100%" cellspacing="0" data-page-length='25'>
                                             <thead>
                                                 <tr>
-                                                    <th><?php echo __('Name') ?></th>
-                                                    <th><?php echo __('Purpose') ?></th>
+                                                    <th><?php echo __('Loan Id') ?></th>
+                                                    <th><?php echo __('Investment Date') ?></th>
+                                                    <th><?php echo __('My Investment') ?></th>
                                                     <th><?php echo __('Interest Rate') ?></th>
-                                                    <th><?php echo __('Duration') ?></th>
-                                                    <th><?php echo __('Rating') ?></th>
-                                                    <th><?php echo __('Progress') ?></th>
-                                                    <th><?php echo __('Amount') ?></th>
-                                                    <th><?php echo __('Action') ?></th>
+                                                    <th><?php echo __('Installment Progress') ?></th>
+                                                    <th><?php echo __('Outstadning Principal') ?></th>
+                                                    <th><?php echo __('Term') ?></th>
+                                                    <th><?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>aaaa</td>
-                                                    <td>aaaa</td>
-                                                    <td>aaaa</td>
-                                                    <td>aaaa</td>
-                                                    <td>aaaa</td>
-                                                    <td>aaaa</td>
-                                                    <td>aaaa</td>
-                                                    <td>aaaa</td>
-                                                </tr>
+                                                <?php foreach($defaultedInvestments as $defaultedInvestment) { ?>
+                                                    <tr>
+                                                        <td><?php echo $defaultedInvestment['Investment']['investment_loanId'] ?></td>
+                                                        <td><?php echo $defaultedInvestment['Investment']['investment_investmentDate'] ?></td>
+                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_investment'], 2) . " &euro;"; ?></td>
+                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_nominalInterestRate']/100, 2) . " %" ?></td>
+                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_paymentsDone']/$defaultedInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $defaultedInvestment['Investment']['investment_paymentsDone'] . "/" . $defaultedInvestment['Investment']['investment_numberOfInstalments']?></td>
+                                                        <td>Outstanding</td>
+                                                        <td>Term</td>
+                                                        <td><?php /*
+                                                        switch ($defaultedInvestment['Investment']['']){
+                                                            case 2:
+                                                                echo "1-7 days delay";
+                                                                break;
+                                                            case 3:
+                                                                echo "8-30 days delay";
+                                                                break;
+                                                            case 4:
+                                                                echo "31-60 days delay";
+                                                                break;
+                                                            case 5:
+                                                                echo "61-90 days delay";
+                                                                break;
+                                                            case 6:
+                                                                echo "91+ days delay";
+                                                                break;
+                                                        }*/ ?>
+                                                        </td>
+
+                                                    </tr>
+                                                <?php } ?>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane" id="allTab">
+                        <div class="tab-pane" id="activeTab">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
-                                        <table id="allInvestmentTable" class="investmentDetails table striped display" width="100%" cellspacing="0" data-page-length='25'>
+                                        <table id="activeInvestmentTable" class="investmentDetails table striped display" width="100%" cellspacing="0" data-page-length='25'>
                                             <thead>
                                                 <tr>
-                                                    <th><?php echo __('Name') ?></th>
-                                                    <th><?php echo __('Purpose') ?></th>
+                                                    <th><?php echo __('Loan Id') ?></th>
+                                                    <th><?php echo __('Investment Date') ?></th>
+                                                    <th><?php echo __('My Investment') ?></th>
                                                     <th><?php echo __('Interest Rate') ?></th>
-                                                    <th><?php echo __('Duration') ?></th>
-                                                    <th><?php echo __('Rating') ?></th>
-                                                    <th><?php echo __('Progress') ?></th>
-                                                    <th><?php echo __('Amount') ?></th>
-                                                    <th><?php echo __('Action') ?></th>
+                                                    <th><?php echo __('Installment Progress') ?></th>
+                                                    <th><?php echo __('Outstadning Principal') ?></th>
+                                                    <th><?php echo __('Term') ?></th>
                                                 </tr>
                                             </thead>
+                                            <tbody>
+                                                <?php foreach($activeInvestments as $activeInvestment) { ?>
+                                                    <tr>
+                                                        <td><?php echo $activeInvestment['Investment']['investment_loanId'] ?></td>
+                                                        <td><?php echo $activeInvestment['Investment']['investment_investmentDate'] ?></td>
+                                                        <td dataorder="<?php echo $activeInvestment['Investment']['investment_investment'] ?>"><?php echo round($activeInvestment['Investment']['investment_investment'], 2) . " &euro;"; ?></td>
+                                                        <td dataorder="<?php echo $activeInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($activeInvestment['Investment']['investment_nominalInterestRate']) . " %" ?></td>
+                                                        <td dataorder="<?php echo $activeInvestment['Investment']['investment_paymentsDone']/$activeInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $activeInvestment['Investment']['investment_paymentsDone'] . "/" . $activeInvestment['Investment']['investment_numberOfInstalments']?></td>
+                                                        <td>Outstanding</td>
+                                                        <td>Term</td>
+                                                        <td>Status</td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
