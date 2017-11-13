@@ -120,7 +120,7 @@ class twino extends p2pCompany {
         ],
         "C" => [
             [
-                "type" => "origin.date", // Winvestify standardized name 
+                "type" => "investment_investmentDate", // Winvestify standardized name 
                 "inputData" => [
                     "input2" => "m/d/Y", // Input parameters. The first parameter
                 // is ALWAYS the contents of the cell
