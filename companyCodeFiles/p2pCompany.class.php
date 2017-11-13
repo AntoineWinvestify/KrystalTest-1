@@ -1591,11 +1591,14 @@ class p2pCompany {
         $errorDetailed = "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
                 . ". The queueId is " . $this->queueId['Queue']['id']
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
-                . " ERROR Userinvestmentdata: detected in PFP id: " .  $this->companyName
-                . "$newLine Error type " . WIN_ERROR_USER_INVESTMENT_DATA
-                . " " . $typeSequence
-                . " " . $errorRequest;
-        $this->tempArray['global']['error'] = $errorDetailed;
+                . " " . $type_sequence
+                . " " . $error_request;
+        $company = "marketplace";
+        $position = stripos($file, 'companyCodeFiles');
+        if ($position !== false) {
+            $substring = substr($file, $position+17);
+            $company = explode(".", $substring)[0];
+        }
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
         $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, WIN_ERROR_USER_INVESTMENT_DATA);
@@ -2081,7 +2084,7 @@ class p2pCompany {
     /**
      * 
      * 
-     * @param array $structure 
+     * @param array $structure in db
      * @param string $tag elements to compare
      * @param Dom $nodeToClone node that contains the element to compare
      * @param string $attribute attribute of the element to compare
@@ -2114,6 +2117,7 @@ class p2pCompany {
             if ($containerData) {
                 if ($containerData['attribute'] && $containerData['attrValue']) {
                     $nodeToClone = $this->getElements($containerData['dom'], $containerData['tag'], $containerData['attribute'], $containerData['attrValue'])[0];
+                    //print_r($nodeToClone); 
                 } else {
                     $nodeToClone = $containerData['dom']->getElementsByTagName($containerData['tag'])[0];
                 }
