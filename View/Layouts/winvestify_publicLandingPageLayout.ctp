@@ -3,7 +3,8 @@
     <head>  
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="description" content="">
+        <meta name="description" content="<?php echo __('Winvestify is a platform that integrates the management of all your investments in P2P Lending platforms in one global dashboard')?>">
+        <meta name="keywords" content="<?php echo __('Investor, Peer to Peer Lending, P2P Lending, Yield, Invest, Interest, High return on investment, dashboard, high ROI, personal loan')?>">
         <title>Winvestify</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -33,15 +34,9 @@
         }
         ?>
         <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
-        <script type="text/javascript" src="/js/accounting.min.js"></script>       
         <link rel="icon" href="/img/logo_winvestify/Logo_favicon.png">
     </head>
     <body>
-        <div id="enlargeImg" style="display:none;">
-            <img id="largeImg" src="" alt="">
-                <button id="btnCloseLargeImg" type="button" class="close" data-dismiss="modal" aria-hidden="true"><?php echo __('CLOSE')?> &times;</button>
-            </img>
-        </div>
         <?php echo $this->Html->script(array('local')); ?>
         <!--========== HEADER ==========-->
         <header class="s-header js__header-sticky js__header-overlay">
@@ -50,11 +45,11 @@
                 <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header navbar-right">
-                        <ul class="nav pull-left navbar-nav collapse-tablet">
+                        <ul class="nav pull-left navbar-nav collapse-tablet navGreen">
                             <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
                                 <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
                                     <div class="row">
-                                        <div class="col-sm-offset-1 col-sm-10 col-xs-12" style="margin-top:10px;">
+                                        <div class="col-sm-offset-1 col-sm-10 col-xs-offset-1 col-xs-10" style="margin-top:10px;">
                                             <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
                                             ?>
                                             <?php
@@ -85,7 +80,7 @@
                                             if (!empty($authMsg)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue center-block userNameLogin" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder4 center-block userNameLogin" . ' ' . $errorClass;
                                             ?>
                                             
                                             <div>
@@ -109,7 +104,7 @@
                                             if (!empty($authMsg)) {
                                                 $errorClass = "redBorder";
                                             }
-                                            $class = "form-control blue center-block passwordLogin" . ' ' . $errorClass;
+                                            $class = "form-control blue_noborder4 center-block passwordLogin" . ' ' . $errorClass;
                                             ?>		
                                             <div style="margin-top:30px">
                                                 <label><?php echo __('Password')?></label>
@@ -145,6 +140,9 @@
                                             </div>
                                         </div>
                                     <!--	</form> -->
+                                    <?php
+                                        $this->Form->end();
+                                    ?>
                                 </div> <!-- /login -->
                                 <div class="clearfix"></div>
                             </li>
@@ -153,7 +151,7 @@
                                     <?php echo __('Register')?>
                                 </a>
                             </li>
-                            <li class="dropdown" style="margin-top:-3px; display:inline-block">
+                            <li class="dropdown" style="margin-top:0px; display:inline-block">
                                 <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
@@ -167,16 +165,25 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="visible-xs-block clearfix"></div>
                     <div class="collapse navbar-collapse" id="principal_navbar">
-                        <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right navGreen">
                             <li style="float:left"><a href="http://www.facebook.com/winvestify/"><small><i class="g-padding-r-5--xs ti-facebook"></i></small></a></li>
                             <li style="float:left"><a href="https://www.linkedin.com/company-beta/11000640/"><small><i class="g-padding-r-5--xs ti-linkedin"></i></small></a></li>
                             <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
                         </ul>
-                        <ul class="nav navbar-nav navbar-left">
-                            <li><a href="#mark_features"><?php echo __('Features') ?></a></li>
-                            <li><a href="#mark_ftb"><?php echo __('Investor Toolbox') ?></a></li>
-                            <li><a href="#mark_platforms"><?php echo __('Platforms') ?></a></li>
-                            <li><a href="#mark_statistics"><?php echo __('Statistics') ?></a></li>
+                        <ul class="nav navbar-nav navbar-left navGreen">
+                            <li><a href="/pages/investors"><?php echo __('Investors') ?></a></li>
+                            <li><a href="/pages/platforms"><?php echo __('Platforms') ?></a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle"style="cursor: pointer;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <?php echo __('About Winvestify')?>
+                                    <span class="caret"></span>
+                                </a>
+                                <ul style="margin-top:0px;" class="dropdown-menu">
+                                    <li><a href="/pages/aboutUs "><?php //echo __('Our history') ?></a></li>
+                                    <li><a href="/pages/team"><?php echo __('Our team') ?></a></li>
+                                </ul>
+                            </li>
+                            <li><a href="/pages/faq"><?php echo __('FAQ') ?></a></li>
                             <li><a href="/Contactforms/form"><?php echo __('Contact') ?></a></li>
                         </ul>
                     </div><!-- /.navbar-collapse -->
@@ -186,231 +193,167 @@
         </header>
 
         <!--========== END HEADER ==========-->
-
         <!--========== PAGE CONTENT ==========-->
         <!-- Toolbox -->
         <a name="mark_ftb"></a>
         <div class="js__parallax-window" id="parallaxFeatures" style="background: url(/megaKit/img/1920x1080/03.jpg) 50% 0 no-repeat fixed;">
-            <div class="container g-text-center--xs g-padding-y-80--xs g-padding-y-125--sm">
-                <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
-                    <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white"><?php echo __('Investor ToolBox Manager') ?></h2>      
-                </div>
-                <br/><br/>
-            </div>
-        </div>
-        <!-- End ftp -->
-        <!-- Mockup -->
-        <div class="container_features row">
-            <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-offset-2 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
-                <p class="featuresP" data-wow-duration="1s" data-wow-delay=".1s"><?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?></p>
-                <div class="row" id="featuresButton">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <a class="center-block" style="text-align: center;" href="/users/registerPanel">
-                            <button class="btn btn-lg" id="registerButton" type="button">
-                                <?php echo __('Register NOW') ?>
-                            </button>
-                        </a>
+            <!-- Mockup -->
+            <div class="container_features row">
+                <div id="features_right" class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12">
+                    <div class="row featuresP" data-wow-duration="1s" data-wow-delay=".1s">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <br><br><br>
+                            <span id="headerTitle"><?php echo __('We believe you have the right to get the most out of your investments') ?></span>
+                            <span class="headerText"><?php echo __('Find out what is happening to all your investments in an organized and standardized way. Connect with your platforms from Winvestify and get total control of all your accounts.')?></span><br/>
+                            <span class="headerText"><?php echo __('We are the leading tool in P2P Lending that helps you manage all your investments in a precise and effective way.')?></span>
+                        </div>
+                    </div>
+                    <div class="row" id="featuresButton">
+                        <div class="col-lg-offset-1 col-lg-6 col-md-10 col-sm-offset-1 col-sm-11 col-xs-offset-1 col-xs-12"><br/>
+                            <a class="center-block" style="text-align: center;" href="/users/registerPanel">
+                                <button class="btn btn-lg btnGeneral pull-left" type="button">
+                                    <?php echo __('Open account') ?>
+                                </button>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="features_left" class="col-lg-1 col-md-12 col-sm-12 hidden-xs">
-                <div class="s-mockup-v1" style="position:absolute;">
-                    <div id="screen" data-wow-duration=".3" data-wow-delay=".1s">
-                        <div class="screen_mark">
-                            <ul class="nopad">
-                                <li><img id="imgDashboard" src="/megaKit/img/mockups/ss_dashboard.png" style="cursor:pointer;" class="liElement"/></li>
-                                <li><img id="imgMarketplace" src="/megaKit/img/mockups/ss_marketplace.png" style="cursor:pointer;" class="liElement"/></li>
-                                <li><img id="imgLinkedAccounts" src="/megaKit/img/mockups/ss_linkaccounts.png" style="cursor:pointer;" class="liElement"/></li>
-                                <li><img id="imgUserData" src="/megaKit/img/mockups/ss_userdata.png" style="cursor:pointer;" class="liElement"/></li>
-                            </ul>
+                <div id="features_left" class="col-lg-1 col-md-12 hidden-sm hidden-xs">
+                    <div class="s-mockup-v1" style="position:absolute;">
+                        <div id="screen" data-wow-duration=".3" data-wow-delay=".1s">
+                            <iframe width="480" style="position: absolute; top: 50px; left: 170px;" height="255" src="https://www.youtube.com/embed/rGlo2JITu2E?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!-- End Mockup -->
-        <!-- Features -->
-        <div class="reestructure"></div>
-        
-        <a name="mark_features"></a>
-        <div id="js__scroll-to-section" class="container" style="margin-top: 75px;">
-            <div id="featuresPadding" class="row g-margin-b-60--xs g-margin-b-70--md">
-                <div class="col-sm-4 g-margin-b-60--xs g-margin-b-0--md">
-                    <div class="clearfix">
-                        <div class="g-media__body g-padding-x-20--xs">
-                            <p style="text-align:center"><i class="g-font-size-80--xs g-color--primary ion-person-stalker"></i></p>
-                            <h3 class="g-font-size-18--xs" style="text-align:center"><?php echo __('Register') ?></h3>
-                            <p class="g-margin-b-0--xs" style="text-align:center"><?php echo __('Use our platform for free and enjoy all the benefits') ?></p>
+        <!-- Prizes -->
+        <div id="prizes" class="row">
+            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1">
+                <div class="col-xs-12 col-sm-12 col-sm-5 col-sm-offset-1 col-lg-5 col-md-offset-1 col-lg-offset-1">
+                    <div class="box box-widget1 widget-user-2 boxPrize">
+                        <div class="widget-user-header">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <img src="/img/logo/BBVA.png" class="center-block imgResponsive" height="50px;"/>
+                                </div>
+                            </div>
                         </div>
-
-                    </div>
-                </div>
-                <div class="col-sm-4 g-margin-b-60--xs g-margin-b-0--md">
-                    <div class="clearfix">
-                        <div class="g-media__body g-padding-x-20--xs">
-                            <p style="text-align:center"><i class="g-font-size-80--xs g-color--primary ion-link"></i></p>
-                            <h3 class="g-font-size-18--xs" style="text-align:center"><?php echo __('Link your accounts') ?></h3>
-                            <p class="g-margin-b-0--xs" style="text-align:center"><?php echo __('Connect to the principal alternative financing plataforms') ?></p>
+                        <div class="box-footer no-padding">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div style="font-size: 10px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Award for Best Andalusian Fintech')?></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <div class="clearfix">
-                        <div class="g-media__body g-padding-x-20--xs">
-                            <p style="text-align:center"><i class="g-font-size-80--xs g-color--primary ion-ios-settings-strong"></i></p>
-                            <h3 class="g-font-size-18--xs" style="text-align:center"><?php echo __('Manage your investments') ?></h3>
-                            <p class="g-margin-b-0--xs" style="text-align:center"><?php echo __('Your investments are completely organized, all automatically') ?></p>
+                <div class="col-xs-12 col-sm-12 col-sm-5 col-lg-5">
+                    <div class="box box-widget1 widget-user-2 boxPrize">
+                        <div class="widget-user-header">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <img src="/img/logo/santander.jpg" class="center-block imgResponsive" height="50px;"/>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="g-text-center--xs g-margin-b-100--xs">
-                <p id="pDescription" style="text-align:center" class="g-font-size-18--xs">
-                    <strong>
-                        <?php echo __('Centralize all your investment accounts and connect to the major Crowdlending and Invoice Trading platforms
-							  from a single portal. Our tool lets you organize and manage all your investments more efficiently. 
-						At the same time you can access all investment oportunities in real time and have a truly global view of the Crowdlending market') ?>
-                    </strong>
-                </p>
-            </div>
-            <!-- // end row  -->
-        </div>
-        <!-- End Features -->
-             
-        <!-- Statistics -->
-        <?php
-        foreach ($globalResults as $result) {
-            $global['totalAmount'] = $global['totalAmount'] + $result['TotalInvestmentAmountAvailableInCompany'];
-            $global['totalOptions'] = $global['totalOptions'] + $result['TotalInvestmentOptionsAvailableInCompany'];
-            $global['totalPreInvested'] = $global['totalPreInvested'] + $result['TotalAmountPreInvestedInCompany'];
-        }
-        $tempvalue1 = (int) ($global['totalPreInvested'] / 100 );
-        $tempvalue2 = (int) ($global['totalAmount'] / 100 );
-        ?>
-
-        <script type="text/javascript">
-            var optionsAccounting = {
-                symbol: " &euro;",
-                decimal: ",",
-                thousand: ".",
-                precision: 0,
-                format: "%v%s"
-            };
-
-            temp1 = accounting.formatMoney(<?php echo $tempvalue1 ?>, optionsAccounting);
-            $(".value1").append(temp1);
-            temp2 = accounting.formatMoney(<?php echo $tempvalue2 ?>, optionsAccounting);
-            $(".value2").append(temp2);
-        </script>
-
-        <a name="mark_statistics"></a>
-        <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/06.jpg) 50% 0 no-repeat fixed;">
-            <div class="container g-padding-y-80--xs g-padding-y-125--sm">
-                <div class="row">
-
-                
-                
-                
-                <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
-                    <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white center-block"><?php echo __('Our Global Market Place ') ?></h2>      
-                </div>                
-
-                
-                
-                
-                
-                
-                    <div id="counter1" class="col-md-4 col-xs-6 g-full-width--xs g-margin-b-70--xs g-margin-b-0--sm">
-                        <div class="g-text-center--xs">
-                            <span class="g-display-block--xs g-font-size-60--xs g-color--white g-margin-b-10--xs js__counter value1">
-                                <script>document.writeln(temp1);</script>
-                            </span>
-                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
-                            <h4 class="g-font-size-18--xs g-color--white">
-                                <?php echo __('Amount Invested') ?>
-                            </h4>
-                        </div>
-                    </div>
-                    
-                    <div id="counter2" class="col-md-offset-1 col-md-3 col-xs-6 g-full-width--xs g-margin-b-70--xs g-margin-b-0--lg">
-                        <div class="g-text-center--xs">
-                            <span class="g-display-block--xs g-font-size-60--xs g-color--white g-margin-b-10--xs js__counter">
-                                <?php echo $global['totalOptions'] ?>
-                            </span>
-                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
-                            <h4 class="g-font-size-18--xs g-color--white">
-                                <?php echo __('Open investments') ?>
-                            </h4>
-                        </div>
-                    </div>
-                    
-                    <div id="counter3" class="col-md-4 col-xs-6 g-full-width--xs">
-                        <div class="g-text-center--xs">
-                            <div class="g-margin-b-10--xs">
-                                <span class="g-display-inline-block--xs g-font-size-60--xs g-color--white js__counter">
-                                    <script>document.writeln(temp2);</script>
-                                </span>
-                            </div>
-                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
-                            <h4 class="g-font-size-18--xs g-color--white">
-                                <?php echo __('Total Investment') ?>
-                            </h4>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-        <!-- End Statistics-->
-        
-        <!-- Platforms -->
-        <a name="mark_platforms"></a>
-        <div class="g-bg-color--sky-lighttt">
-            <div class="g-container--md g-padding-y-40--xs g-padding-y-125--sm">
-                <h3 class="g-color--primary" style="text-align:center"><?php echo __('A SMALL STEP FOR YOU, BUT A BIG STEP FOR YOUR INVESTMENTS') ?></h3>
-                <p style="text-align:center" style="margin: 20px 0px;"><?php echo __('Winvestify connects to the principal <strong>Invoice
-				Trading</strong> and <strong>Crowdlending</strong> platforms of Spain in a simple and secure way');?>
-                </p>
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="row">
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Zank.png" alt="Zank">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/Comunitae.png" alt="Comunitae">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Arboribus.png" alt="Arboribus">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/LoanBook.png" alt="Loanbook">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Colectual.png" alt="Colectual">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/MyTripleA.png" alt="MyTripleA">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Ecrowd.png" alt="EcrowdInvest">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Lendix.png" alt="Lendix">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Growly.png" alt="Growly">
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
-                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Circulantis.png" alt="Circulantis">
+                        <div class="box-footer no-padding">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div style="font-size: 10px;text-align: center; font-weight: bold; margin-top: 10px;"><?php echo __('Finalist Santander Open Challenge')?></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- End Platforms -->
-        
+        <!-- /Prizes -->
+        <!-- Schema -->
+        <div id="schema" class="row">
+            <hr class="specialHr" width="90%">
+            <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 hidden-xs hidden-sm" id="schemaImgDiv">
+                    <img src="" class="imgResponsive schemaImg center-block"/>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="schemaText">
+                    <h3 align="center"><?php echo __('What is P2P Lending?')?></h3>
+                    <p><?php echo __('P2P Lending is a model of Alternative Financing, whereby private and professional investors, using Online Lending Platforms, lend their money in exchange for receiving an interest in accordance with the risk assumed.')?></p>
+                    <p><?php echo __('The result is that the borrower gets financed at a more competitive price and the investor receives a higher return than other financial products.')?></p>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 50px;">
+                    <p align="center" style="font-size: 26px;color:black;font-weight: 500"><?php echo __('The Benefits')?></p>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 15px;">
+                        <strong><?php echo __('Risk-adjusted Returns')?></strong><br/>
+                        <?php echo __('P2P investments offer average annual returns of between 5% and 12%. P2P can offer stable, predictable, risk-adjusted returns.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"  style="margin-bottom: 25px;">
+                        <strong><?php echo __('New Asset Class')?></strong><br/>
+                        <?php echo __('P2P providers have innovated by offering an efficient, low-cost method of accessing credit investments.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 25px;">
+                        <strong><?php echo __('Alternative Financing Vs Stock Market')?></strong><br/>
+                        <?php echo __('The performance of assets are not correlated to stock market volatility. P2P assets are expected to perform better during an economic downturn in comparison to equities or bonds.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4"  style="margin-bottom: 25px;">
+                        <strong><?php echo __('Income or Growth')?></strong><br/>
+                        <?php echo __('Investors often have the choice of taking interest payments as an income, or for these payments to be reinvested, enabling capital growth.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 25px;">
+                        <strong><?php echo __('Diversification')?></strong><br/>
+                        <?php echo __('P2P Lending allows investors to diversify into an alternative asset class. Make wise fractional investments in several loans across different P2P Platforms.')?>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="margin-bottom: 25px;">
+                        <strong><?php echo __('Management')?></strong><br/>
+                        <?php echo __('Winvestify allows investors to connect their data to our dashboard for monitoring key metrics and taking of their investments.')?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /schema -->
+        <!-- Info -->
+        <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/07.jpg) 50% 0 no-repeat fixed;">
+            <div class="g-container--sm g-text-center--xs" style="padding: 80px 0px 0px 0px;">
+                <div>
+                    <p class="text-uppercase g-font-size-14--xs g-font-weight--700 g-color--white-opacity g-letter-spacing--2"><?php echo __('TECHNOLOGY SOLUTIONS FOR THE PROFESSIONAL INVESTOR')?></p>
+                    <h2 class="g-font-size-32--xs g-font-size-36--md g-color--white"><?php echo __('All your portfolio and market data. Standardized.')?></h2>
+                </div>
+            </div>
+            <div class="row" style="padding: 0px 0px 50px 0px;">
+                <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <img src="/img/analytics_4.png" class="center-block imgResponsive" height="75px;"/>
+                            <h4 class="g-color--white" align="center"><?php echo __('PORTFOLIO DATA')?></h4>
+                            <p class="g-color--white" align="center"><?php echo __('Winvestify has direct, automated feeds from all major European online lenders, allowing us to display, in real-time, your loan portfolio.')?></p>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <img src="/img/man.png" class="center-block imgResponsive" height="75px;"/>
+                            <h4 class="g-color--white" align="center"><?php echo __('NORMALIZATION')?></h4>
+                            <p class="g-color--white" align="center"><?php echo __('Winvestify has established universal data formats across all credit verticals, allowing consistent views of loans purchased across all major lending platforms.')?></p>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
+                            <img src="/img/analytics_3.png" class="center-block imgResponsive" height="75px;"/>
+                            <h4 class="g-color--white" align="center"><?php echo __('VALIDATION AND TRANSFORMATION')?></h4>
+                            <p class="g-color--white" align="center"><?php echo __('We run platform-specific data cleaning rules to ensure that our clients always access the highest quality data possible.')?></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2" style="padding: 50px 10px">
+                <div class="g-text-center--xs">
+                    <p class="text-uppercase g-font-size-32--xs g-font-weight--700 g-color--primary g-letter-spacing--2 g-margin-b-25--xs" style="padding: 0px 5px"><?php echo __("Join us. It's easy") ?></p>
+                </div>
+                <h4 align="center" style="padding: 0px 10px 20px 10px;"><?php echo __('Open an account and explore all the connected platforms.')?><br/><?php echo __('We make it easy for you to access the main Lending platforms with "One Click Registration"')?></h4>
+                <a href="/users/registerPanel">
+                    <button class="btn btn-lg btn1CR center-block"><?php echo __('Open account')?></button>
+                </a>
+            </div>
+        </div>
+        <!-- /Info -->
         <!-- Popup -->
         <div id="popUp" class="g-box-shadow__bluegreen-v1 wow fadeInLeft" data-wow-duration="5" data-wow-delay=".1s" style="position:fixed;">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -464,6 +407,8 @@
         <script type="text/javascript">
             function successLanguage(data) {
                 location.reload(true);
+                var id = $(".flagvalue").attr("id");
+                $(".schemaImg").attr("src", "/img/landingpage/schema_" + id + ".png");
             }
 
             function sendLocationDataSuccess(data) {
@@ -502,20 +447,17 @@
                 $(document).on("click", ".closePopUp", function () {
                     $("#popUp").css("display", "none");
                 });
-                //dismiss enlargeImg
-                $(document).on("click", "#btnCloseLargeImg", function () {
-                    $("#enlargeImg").css("display", "none");
-                });
                 //fadeout popup
                 fadeOutElement("#popUp", 15000);
-                
-                //navbar collapse on clicking element
-                $(document).on("click", '.nav li a', function(){
-                    $('.navbar-collapse').collapse('hide');
-                });
-                
+
                 //navbar not collapsing on #loginDropdown
                 $(document).on("click", "#loginDropdown", function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                });
+                
+                //navbar not collapsing on #aboutDropdown
+                $(document).on("click", ".nav li a.collapseNav", function(event) {
                     event.preventDefault();
                     event.stopPropagation();
                 });
@@ -523,77 +465,23 @@
                 //navbar collapse on clicking outside navbar
                 $(document).on("click", function(){
                     $('.navbar-collapse').collapse('hide');
+                    $('ul.nav li.dropdown').find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400); //hide loginDropdown
                 });
-                
-                //Screenshots Slider + Text Slider
-                <?php 
-                      /*
-                       *  El slider de imágenes funciona desplazando los elementos la cantidad de pxs que ocupa cada una de las imágenes.
-                       *  En caso de que se quiera cambiar la configuración, hay que modificar el width inferior para que  se ajuste al
-                       *      ancho de la imagen correspondiente.
-                       * 
-                       *  El slider de textos funciona insertando el texto que se corresponde con la imagen del slider, quedando así asociados
-                       *      los elementos entre sí.
-                       *
-                       */ 
-                ?>
-		var self = this;
-		var slider = $("#screen");
-		var holder = slider.find(".screen_mark ul");
-		var current = 0;
-		var limit = slider.find("li").length;
-		var width = 356;
-		var t;
 
-		$("img.liElement").css({"cursor": "pointer"}).click(function(){
-			self.move(current+1);
-		});
-
-		this.move = function(to) {
-			current = to >= limit ? 0 : to;
-			to = current * -width;
-			holder.animate({left: to+"px"});
-			
-			clearTimeout(t);
-			t = setTimeout(function(){
-				self.move(current+1);
-                                $(".featuresP").hide();
-                                $(".featuresP").html(sliderText[current]);
-                                $(".featuresP").fadeIn("slow");
-			}, 7000);
-		};
-		self.move(0);
-                var sliderText = ["<?php echo __('DASHBOARD<br/>All your investments are shown on one single page') ?>", 
-                                  "<?php echo __('MARKETPLACE<br/>Our global marketplace contains all the investment opportunities in real time') ?>", 
-                                  "<?php echo __('LINKED ACCOUNTS PANEL<br/>Incorporate all your Investment Accounts in our linked accounts panel') ?>", 
-                                  "<?php echo __('PERSONAL DATA PANEL<br/>Access to your personal data is simple, secure and fast') ?>"
-                                 ];
+                if ($(window).width() > 1023) {
+                    //Dropdown menu hover
+                    $('ul.nav li.dropdown').hover(function() {
+                      $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
+                      }, function() {
+                      $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
+                    });
+                }
                 
-                //enlarge img
-                $(document).on("click", ".liElement", function() {
-                    imgID = $(this).attr("id");
-                    switch(imgID){
-                        case 'imgDashboard':
-                            $("#largeImg").attr("src", "/megaKit/img/mockups/large_dashboard.png");
-                            $("#largeImg").attr("alt", "Dashboard Screenshot");
-                            break;
-                        case 'imgMarketplace':
-                            $("#largeImg").attr("src", "/megaKit/img/mockups/large_marketplace.png");
-                            $("#largeImg").attr("alt", "Marketplace Screenshot");
-                            break;
-                        case 'imgLinkAccounts':
-                            $("#largeImg").attr("src", "/megaKit/img/mockups/large_linkaccounts.png");
-                            $("#largeImg").attr("alt", "Link Accounts Screenshot");
-                            break;
-                        case 'imgUserData':
-                            $("#largeImg").attr("src", "/megaKit/img/mockups/large_userdata.png");
-                            $("#largeImg").attr("alt", "User Data Screenshot");
-                            break;
-                        }
-                    $("#enlargeImg").css("display", "block");
-                });
+                //Initial schemaImg
+                var id = $(".flagvalue").attr("id");
+                $(".schemaImg").attr("src", "/img/landingpage/schema_" + id + ".png");
             });
-            
+
         </script>
         <!--========== END JAVASCRIPTS ==========-->
     </body>

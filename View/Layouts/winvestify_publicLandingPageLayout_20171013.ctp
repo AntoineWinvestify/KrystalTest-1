@@ -33,6 +33,7 @@
         }
         ?>
         <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
+        <script type="text/javascript" src="/js/accounting.min.js"></script>       
         <link rel="icon" href="/img/logo_winvestify/Logo_favicon.png">
     </head>
     <body>
@@ -275,7 +276,141 @@
             <!-- // end row  -->
         </div>
         <!-- End Features -->
+             
+        <!-- Statistics -->
+        <?php
+        foreach ($globalResults as $result) {
+            $global['totalAmount'] = $global['totalAmount'] + $result['TotalInvestmentAmountAvailableInCompany'];
+            $global['totalOptions'] = $global['totalOptions'] + $result['TotalInvestmentOptionsAvailableInCompany'];
+            $global['totalPreInvested'] = $global['totalPreInvested'] + $result['TotalAmountPreInvestedInCompany'];
+        }
+        $tempvalue1 = (int) ($global['totalPreInvested'] / 100 );
+        $tempvalue2 = (int) ($global['totalAmount'] / 100 );
+        ?>
 
+        <script type="text/javascript">
+            var optionsAccounting = {
+                symbol: " &euro;",
+                decimal: ",",
+                thousand: ".",
+                precision: 0,
+                format: "%v%s"
+            };
+
+            temp1 = accounting.formatMoney(<?php echo $tempvalue1 ?>, optionsAccounting);
+            $(".value1").append(temp1);
+            temp2 = accounting.formatMoney(<?php echo $tempvalue2 ?>, optionsAccounting);
+            $(".value2").append(temp2);
+        </script>
+
+        <a name="mark_statistics"></a>
+        <div class="js__parallax-window" style="background: url(/megaKit/img/1920x1080/06.jpg) 50% 0 no-repeat fixed;">
+            <div class="container g-padding-y-80--xs g-padding-y-125--sm">
+                <div class="row">
+
+                
+                
+                
+                <div class="g-margin-b-80--xs" style="margin-top: -50px !important;">
+                    <h2 style="padding-bottom: 10px;" class="g-font-size-30--xs g-font-size-40--sm g-font-size-50--md g-color--white center-block"><?php echo __('Our Global Market Place ') ?></h2>      
+                </div>                
+
+                
+                
+                
+                
+                
+                    <div id="counter1" class="col-md-4 col-xs-6 g-full-width--xs g-margin-b-70--xs g-margin-b-0--sm">
+                        <div class="g-text-center--xs">
+                            <span class="g-display-block--xs g-font-size-60--xs g-color--white g-margin-b-10--xs js__counter value1">
+                                <script>document.writeln(temp1);</script>
+                            </span>
+                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
+                            <h4 class="g-font-size-18--xs g-color--white">
+                                <?php echo __('Amount Invested') ?>
+                            </h4>
+                        </div>
+                    </div>
+                    
+                    <div id="counter2" class="col-md-offset-1 col-md-3 col-xs-6 g-full-width--xs g-margin-b-70--xs g-margin-b-0--lg">
+                        <div class="g-text-center--xs">
+                            <span class="g-display-block--xs g-font-size-60--xs g-color--white g-margin-b-10--xs js__counter">
+                                <?php echo $global['totalOptions'] ?>
+                            </span>
+                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
+                            <h4 class="g-font-size-18--xs g-color--white">
+                                <?php echo __('Open investments') ?>
+                            </h4>
+                        </div>
+                    </div>
+                    
+                    <div id="counter3" class="col-md-4 col-xs-6 g-full-width--xs">
+                        <div class="g-text-center--xs">
+                            <div class="g-margin-b-10--xs">
+                                <span class="g-display-inline-block--xs g-font-size-60--xs g-color--white js__counter">
+                                    <script>document.writeln(temp2);</script>
+                                </span>
+                            </div>
+                            <div class="center-block g-hor-divider__solid--white g-width-40--xs g-margin-b-25--xs"></div>
+                            <h4 class="g-font-size-18--xs g-color--white">
+                                <?php echo __('Total Investment') ?>
+                            </h4>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <!-- End Statistics-->
+        
+        <!-- Platforms -->
+        <a name="mark_platforms"></a>
+        <div class="g-bg-color--sky-lighttt">
+            <div class="g-container--md g-padding-y-40--xs g-padding-y-125--sm">
+                <h3 class="g-color--primary" style="text-align:center"><?php echo __('A SMALL STEP FOR YOU, BUT A BIG STEP FOR YOUR INVESTMENTS') ?></h3>
+                <p style="text-align:center" style="margin: 20px 0px;"><?php echo __('Winvestify connects to the principal <strong>Invoice
+				Trading</strong> and <strong>Crowdlending</strong> platforms of Spain in a simple and secure way');?>
+                </p>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Zank.png" alt="Zank">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/Comunitae.png" alt="Comunitae">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Arboribus.png" alt="Arboribus">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/LoanBook.png" alt="Loanbook">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Colectual.png" alt="Colectual">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".4s" src="/img/logo/MyTripleA.png" alt="MyTripleA">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".6s" src="/img/logo/Ecrowd.png" alt="EcrowdInvest">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Lendix.png" alt="Lendix">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".2s" src="/img/logo/Growly.png" alt="Growly">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-5 col-sm-offset-1 col-xs-12">
+                                <img class="s-clients-v1 wow fadeIn" data-wow-duration=".3" data-wow-delay=".8s" src="/img/logo/Circulantis.png" alt="Circulantis">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Platforms -->
+        
         <!-- Popup -->
         <div id="popUp" class="g-box-shadow__bluegreen-v1 wow fadeInLeft" data-wow-duration="5" data-wow-delay=".1s" style="position:fixed;">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
