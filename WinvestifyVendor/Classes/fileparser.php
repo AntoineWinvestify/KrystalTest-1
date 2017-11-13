@@ -318,10 +318,10 @@ class Fileparser {
         
         switch($extension) {
             case "xlsx":
-                $tempArray = $this->analyzeFileExcelX($file, $configuration);
+                $tempArray = $this->analyzeFileExcel($file, $configuration);
                 break;
             case "csv":
-                $tempArray;
+                $tempArray = $this->analyzeFileCSV($file, $configuration);
                 break;
             case "json":
                 $tempArray = $this->analyzeFileJson($file, $configuration);
@@ -368,6 +368,22 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
 
 
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        return $datas;
+    }
+    
+    public function analyzeFileCSV($file, $configuration) {
+        //$command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
+        $inputFileType = 'CSV';
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objReader->setDelimiter($this->Config['separatorChar']);
+        $objPHPExcel = $objReader->load($file);
+        ini_set('memory_limit','2048M');
+        $sheet = $objPHPExcel->getActiveSheet();
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+        echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         return $datas;
