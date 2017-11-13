@@ -343,7 +343,7 @@ insted of the types of platforms.
 												if (array_key_exists('username', $validationResult)) {
 													$errorClass = "redBorder";
 												}
-												$class = "form-control blue center-block userName". ' ' . $errorClass;
+												$class = "form-control blue_noborder4 center-block userName". ' ' . $errorClass;
 												echo $this->Form->input('username',array("label"	=> false,
 																					"placeholder"	=> "Email",
 																					"class" 		=> $class,
@@ -376,7 +376,7 @@ insted of the types of platforms.
 												if (array_key_exists('password', $validationResult)) {
 													$errorClass = "redBorder";
 												}
-												$class = "form-control blue center-block password1". ' ' . $errorClass;
+												$class = "form-control blue_noborder4 center-block password1". ' ' . $errorClass;
 								
 												echo $this->Form->input('password1',array("label"		=> false,
 																						"placeholder"	=> __("Password"),
@@ -406,7 +406,7 @@ insted of the types of platforms.
 												if (array_key_exists('password', $validationResult)) {
 													$errorClass = "redBorder";
 												}	
-												$class = "form-control blue center-block password2". ' ' . $errorClass;
+												$class = "form-control blue_noborder4 center-block password2". ' ' . $errorClass;
 								
 												echo $this->Form->input('password2',array("label"		=> false,
 																						"placeholder"	=> __("Repeat Password"),
@@ -437,7 +437,7 @@ insted of the types of platforms.
                                                 ?>
                                                 </small>
                                             </div>
-                                            <div class="form-control blue">
+                                            <div class="form-control blue_noborder4">
 												<?php
 													$errorClass = "";
 													if (array_key_exists('investor_telephone', $validationResult)) {
@@ -472,7 +472,7 @@ insted of the types of platforms.
                                             <label>
                                                 <input name="privacyPolicy" id="ContentPlaceHolder_registerPrivacyPolicy" class="registerPrivacyPolicy" type="checkbox"/>
 													<?php echo __('I accept') ?>&nbsp;<a href="/pages/termsOfService" target="_blank">&nbsp;<?php echo __('the terms of service') ?>
-                                                </a><?php echo __(' and the ') ?><a href="/pages/privacyPolicy" target="_blank"><?php echo __('privacy policy') ?></a>   
+                                                </a>&nbsp;<?php echo __('and the') ?>&nbsp;<a href="/pages/privacyPolicy" target="_blank"><?php echo __('privacy policy') ?></a>   
                                             </label>
                                         </div>
                                         <div class="errorInputMessage ErrorPrivacyPolicy col-xs-offset-1">
