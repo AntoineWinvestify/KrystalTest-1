@@ -127,12 +127,13 @@ class ParseDataClientShell extends GearmanClientShell {
                         echo "pfp = " . $pfp . "\n";
                         $files = $this->readFilteredFiles($allFiles, WIN_FLOW_EXPIRED_LOAN_FILE + WIN_FLOW_TRANSACTION_FILE +
                                 WIN_FLOW_INVESTMENT_FILE + WIN_FLOW_EXTENDED_TRANSACTION_FILE);
-                        $listOfActiveLoans = $this->getListActiveLoans($linkedAccountId);
-                        print_r($listOfActiveLoans);
-
+                        $listOfActiveInvestments = $this->getListActiveLoans($linkedAccountId);
+                        print_r($listOfActiveInvestments);
+                        
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
-                            'listOfCurrentActiveLoans' => $listOfActiveLoans,
+                            'activeInvestments' => count($listOfActiveInvestments),
+                            'listOfCurrentActiveLoans' => $listOfActiveInvestments,
                             'userReference' => $job['Queue']['queue_userReference'],
                             'files' => $files);
                     }
@@ -145,6 +146,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                 }
+
                 $this->GearmanClient->runTasks();
 
                 // ######################################################################################################
@@ -184,6 +186,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             $newFlowState = WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED;
                         }
                     }
+                    
                     $this->queueInfo[$queueIdKey]["loanIds"] = $platformResult['newLoans']; // store the list of loan Ids in DB, for FLOW3B
                     $this->Queue->id = $queueIdKey;
                     $this->Queue->save(array('queue_status' => $newFlowState,
@@ -247,10 +250,8 @@ class ParseDataClientShell extends GearmanClientShell {
     public function mapData(&$platformData) {
         $investmentId = NULL;
         $linkedaccountId = $platformData['linkedaccountId'];
-        $userReference = $platformData['userReference'];
-
-        echo "new loans are:";
-        print_r($platformData['newLoans']);
+        $userReference = $platformData['userReference']; 
+        $controlVariableActiveInvestments = $platformData['activeInvestments'];
 
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
@@ -317,7 +318,8 @@ class ParseDataClientShell extends GearmanClientShell {
                         unset($platformData['newLoans'][$arrayIndex]);
                     }
                     echo "Storing the data of a NEW loan in the shadow db table\n";
-
+                    $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
+                    
 //print_r($platformData['parsingResultInvestments'][$keyDateTransaction]);
                     // check all the data in the analyzed investment table
                     foreach ($platformData['parsingResultInvestments'][$keyDateTransaction] as $investmentDataKey => $investmentData) {
@@ -481,8 +483,21 @@ class ParseDataClientShell extends GearmanClientShell {
             echo "printing global data for the date = $dateKey\n";
             print_r($database['Userinvestmentdata']);
             print_r($database['globalcashflowdata']);
+            
+            
         }
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
+        // The following is only done once per readout period independent of period covers one day, 1 week or if
+        // it is a "link account" action
+        // We also have to reduce the total values with the amounts of the investments that we finished TODAY, as (normally)
+        // all loan related amounts are for active investments only
+        // 
+        // determine which loans have terminated
+        // loop through all of them and subtracts amounts from total values
+        echo "Start consolidating the platform data, using the control variables\n";
+        $this->consolidateControlVariables($file);
+        echo "Consolidation Phase 2, checking control variables\n";
+        $this->consolidatePlatformData();
         return;
     }
 
@@ -492,13 +507,55 @@ class ParseDataClientShell extends GearmanClientShell {
      *
      */
 
+    
+    
+    /**
+     * CHECKING OF THE CONTROL VARIABLES WITH CALCULATED VARIABLES
+     * 
+     * 
+     */
+    public function consolidateControlVariables($externalControlVariables) {
+        // Calculate the values of the control variables /or read them from DB
+       /*
+     *  the variables are :
+        *    $this->tempArray['InversionNetaComprometida']
+        * Also keep in mind WHEN the control variables are read. I should count all investment uptil that moment
+        * which could be at the morning when the flow is executing. The collected data up until midnight is stored in
+        * xls files.
+        * example: Nov 20, 01.40 => reading of files and controlvariables. We assume that the P2P will provides us in the
+        * xls file the information up until that moment (01.40) We will only store investments for Nov 19. 
+        * variables are 'activeInvestments'
+        *               'outstandingPrincipal'
+        *               'myWallet'
+        */
+        $result = false;
+        foreach ($externalControlVariables as $variableKey => $variable) {
+             switch ($variableKey) {
+                case WIN_CONTROLVARIABLE_WALLET:
+
+                    break;
+                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
+
+                    break;
+                case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT;
+
+                    break;
+
+            }
+        }  
+        return $result;
+        // If approved, write the new values to DB
+    }
+    
+    
+    
     public function consolidatePlatformData(&$database) {
-/*
- * 
- * here I SHOULD call the functions that do the simple calculations. 
- * 
- * 
- */
+    /*
+     * 
+     * here I SHOULD call the functions that do the simple calculations. 
+     * 
+     * 
+     */
         echo "FxF";
         $database['userinvestmentdata']['userinvestmentdata_capitalRepayment'] = $this->consolidateCapitalRepayment();  // 38
         echo "FtF";

@@ -176,7 +176,16 @@ class mintos extends p2pCompany {
 
     protected $valuesInvestment = [
             "A" =>  [
-                "name" => "investment_country"                              // Winvestify standardized name  OK
+                [
+                "type" => "investment_country",                              // Winvestify standardized name  OK
+                "inputData" => [
+				"input2" => "",
+                                ],               
+                "functionName" => "getCountry",
+                ],
+                [
+                 "name" => "investment_tempCountry"
+                ]
              ],
             "B" =>  [
                 "name" => "investment_loanId"                               // Winvestify standardized name  OK
