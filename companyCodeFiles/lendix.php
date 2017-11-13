@@ -541,10 +541,16 @@ class lendix extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
 
+        $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'small-spacer'),
+        ));
+
         $node1 = $this->cleanDom($node1, array(
+             array('typeSearch' => 'element', 'tag' => 'a'), //buttons can be different
             array('typeSearch' => 'element', 'tag' => 'div'), //the div class contains the rating
             array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
+
 
         $node1 = $this->cleanDomTag($node1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'small-spacer'),
@@ -559,7 +565,12 @@ class lendix extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'div'),
                 ), array('srcset', 'src', 'alt', 'href', 'style', 'title', 'height'));
 
-        $node2 = $this->cleanDom($node2, array(//the div class contains the rating
+        $node2 = $this->cleanDomTag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'small-spacer'),
+        ));
+
+        $node2 = $this->cleanDom($node2, array(
+             array('typeSearch' => 'element', 'tag' => 'a'), //buttons can be different
             array('typeSearch' => 'element', 'tag' => 'div'), //the div class contains the rating
             array('typeSearch' => 'element', 'tag' => 'li'), //the li class contains the status
                 ), array('class'));
@@ -568,6 +579,7 @@ class lendix extends p2pCompany {
             array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'small-spacer'),
             array('typeSearch' => 'tagElement', 'tag' => 'a', 'attr' => 'class', 'value' => 'cta button'),
         ));
+
 
 
 
