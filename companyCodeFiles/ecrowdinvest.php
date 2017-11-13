@@ -245,7 +245,9 @@ class ecrowdinvest extends p2pCompany {
      * @param Array $structure
      * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) { //ecrown doesnt have pagination
+    function collectCompanyMarketplaceData($companyBackup, $structure) { //ecrowd doesnt have pagination
+        
+        
         $readController = 0;
         $investmentController = false;
 
@@ -257,7 +259,7 @@ class ecrowdinvest extends p2pCompany {
         $dom->preserveWhiteSpace = false;
         $tag = 'div';
         $attribute = 'class';
-        $value = 'col-xs-12 col-md-4 col-sm-4 projectwidget';
+        $value = 'panel panel-default';
         $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
 
 
@@ -304,6 +306,7 @@ class ecrowdinvest extends p2pCompany {
             list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($ps[7]->nodeValue);
             $tempArray['marketplace_numberOfInvestors'] = $value2;
             $tempArray['marketplace_status'] = trim($hs[0]->nodeValue);
+            $timeLeft = trim($hs[0]->nodeValue);
             list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($timeLeft);
             $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage(intval($progress[0]->getAttribute('aria-valuenow')));
             $tempArray['marketplace_loanReference'] = preg_replace('/\D/', '', $as[0]->getAttribute('id'));
@@ -318,16 +321,20 @@ class ecrowdinvest extends p2pCompany {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
                     $tempArray['marketplace_status'] = PERCENT;
                 }
-                foreach ($companyBackup as $inversionBackup) { //if completed and same status that in backup
-                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                foreach ($companyBackup as $inversionBackup) { //if completed and same status that is in backup
+                    if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] === $tempArray['marketplace_status']) {
+                        echo HTML_ENDOFLINE . $tempArray['marketplace_loanReference'] . HTML_ENDOFLINE;
+                        print_r($inversionBackup);
                         $readController++;
                         $investmentController = true;
                     }
                 }
             } else if ($tempArray['marketplace_status'] == 'En estudio') {
                 $tempArray['marketplace_statusLiteral'] = 'En estudio';
+                $tempArray['marketplace_status'] = null;
             } else {
                 $tempArray['marketplace_statusLiteral'] = 'En proceso';
+                $tempArray['marketplace_status'] = null;
             }
 
 
@@ -339,9 +346,10 @@ class ecrowdinvest extends p2pCompany {
                 $this->print_r2($totalArray);
                 unset($tempArray);
             }
-
-            if ($readController > 6) {  //If we find more than two completed investment existing in the backpup, stop reading
+            echo $readController;
+            if ($readController > 50) {  //If we find more than 25 completed investment existing in the backpup, stop reading
                 echo 'Stop reading';
+                echo $readController;
                 break;
             }
         }
@@ -642,12 +650,13 @@ class ecrowdinvest extends p2pCompany {
             }
         }
 
-        //print_r($credentials);
+        $str = $this->doCompanyLogin($credentials);
 
-        $str = $this->doCompanyLogin($credentials); //do login
-
-
-        $dom = new DOMDocument;  //Check if works
+// Check if user actually has entered the portal of the company.
+// by means of checking of 2 unique identifiers of the portal
+// This should be done by checking a field in the Webpage (button, link etc)
+// and the email of the user (if aplicable)
+        $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
         // echo $str;

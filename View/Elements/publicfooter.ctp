@@ -30,7 +30,7 @@ Pending:
                         <div class="col-sm-2 g-margin-b-20--xs g-margin-b-0--md footerLinks">
                             <ul class="list-unstyled g-ul-li-tb-5--xs g-margin-b-0--xs">
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="http://www.winvestify.com"><?php echo __('Home') ?></a></li>
-                                <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/aboutUs"><?php echo __('About Us') ?></a></li>
+                                <li><a class="g-font-size-15--xs g-color--white-opacity" href="/pages/aboutUs"><?php echo __('About winvestify') ?></a></li>
                                 <li><a class="g-font-size-15--xs g-color--white-opacity" href="/Contactforms/form"><?php echo __('Contact') ?></a></li>
                             </ul>
                         </div>
@@ -52,10 +52,7 @@ Pending:
                             <h3 class="g-font-size-18--xs g-color--white">
 								<img src="/img/logo_winvestify/Logo_texto.png" class="responsiveImg" style="text-align: center; margin-top:-20px; max-width:200px;"/>
                             </h3>
-                            <p class="g-color--white-opacity"><?php echo __('Our mission is to help investors minimize the risks of investing in the crowdlending market
-																			and increase their earnings. We support continuous, global growth of a dynamic crowdlending market,
-																			both by market size and investors');
-																			?>
+                            <p class="g-color--white-opacity"><?php echo __('Create, strengthen and improve relations between Investors and P2P Lending platforms');?>
 																
 							</p>
                         </div>
