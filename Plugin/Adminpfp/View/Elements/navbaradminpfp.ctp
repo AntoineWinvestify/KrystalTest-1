@@ -26,7 +26,7 @@
         <div class="container-fluid">
             <div class="collapse navbar-collapse" id="principal_navbar">
                 <ul class="nav navbar-nav navbar-right">
-                    <li style="float:left"><a href="/"><small><i class="g-padding-r-5--xs ti-home"></i></small></a></li>
+                    <li><a href="/"><img src="/img/logo_winvestify/Logo_favicon.png" class="center-block hidden-xs hidden-sm" width="85%"/></a></li>
                     <li style="float:left"><a href="http://www.facebook.com/winvestify/"><small><i class="g-padding-r-5--xs ti-facebook"></i></small></a></li>
                     <li style="float:left"><a href="https://www.linkedin.com/company-beta/11000640/"><small><i class="g-padding-r-5--xs ti-linkedin"></i></small></a></li>
                     <li style="float:left"><a href="https://twitter.com/Winvestify"><small><i class="g-padding-r-5--xs ti-twitter"></i></small></a></li>
