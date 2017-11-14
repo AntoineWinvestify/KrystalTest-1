@@ -110,13 +110,23 @@ class finbee extends p2pCompany {
     protected $investmentConfigParms = array('offsetStart' => 1,
         'offsetEnd' => 0,
         //'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+        'sortParameter' => "investment_loanId",   // used to "sort" the array and use $sortParameter as prime index.
+        'sheetNames' => [
+            ['Active Loans'],
+            ['Active Loan Slices'],
+            ['Completed Loans'],
+            ['Completed Loan Parts'],
+            ['Sold Loan Parts'],
+            ['Bought Loan Parts'],
+            ['SM Transactions']
+        ]
     );
     
-    protected $amortizationConfigParms = array('OffsetStart' => 0,
+    protected $amortizationConfigParms = array('offsetStart' => 0,
         'offsetEnd' => 0,
         //'separatorChar' => ";",
         'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+        
     );
 
     function __construct() {
