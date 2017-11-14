@@ -35,6 +35,9 @@
  * 
  * [2017-10-27] version 0.4
  * Moved from test to dasboard2s
+ * 
+ * [2017-11-13] version 0.5
+ * Added Google Analytics
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -43,39 +46,74 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 
 <script>
+    <?php /* Google Analytics for Dashboard 2.0 - Overview */?>
+    
+    function ga_company(idCompany, nameCompany) {
+        console.log("ga 'send' 'event' 'Dashboard2'  'company' " + idCompany + nameCompany);
+        if (typeof ga === 'function') { 
+            ga('send', 'event', 'Dashboard2', 'company', idCompany + nameCompany);
+        }
+    }
+    
+    function ga_1CR(counter1CR) {
+        console.log("ga 'send' 'event' 'Dashboard2'  '1CR' " + counter1CR);
+        if (typeof ga === 'function') { 
+            ga('send', 'event', 'Dashboard2', '1CR', counter1CR);
+        }
+    }
+    
+    function ga_linkAccount(counterLinkAccount) {
+        console.log("ga 'send' 'event' 'Dashboard2'  'linkAccount' " + counterLinkAccount);
+        if (typeof ga === 'function') { 
+            ga('send', 'event', 'Dashboard2', 'linkAccount', counterLinkAccount);
+        }
+    }
+    
+    function ga_chart(idChart) {
+        console.log("ga 'send' 'event' 'Dashboard2'  'chart' " + idChart);
+        if (typeof ga === 'function') { 
+            ga('send', 'event', 'Dashboard2', 'chart', idChart);
+        }
+    }
+    
     $(function (){
         //Click on Account Linking btn
         $(document).on("click", "#btnAccountLinking", function(){
+            var counterLinkAccount = 0;
+            ga_linkAccount(counterLinkAccount);
             window.location.replace('/investors/readLinkedAccounts');
         });
         
         $(document).on("click", "#btnAccountLinkingB", function(){
-            $("#btnAccountLinkingB").hide();
-            $("#keyIndividualPlatforms").show();
+            var counterLinkAccount = <?php echo count($individualInfoArray); ?>;
+            ga_linkAccount(counterLinkAccount);
+            window.location.replace('/investors/readLinkedAccounts');
         });
         
-        /*$(document).on("click", "[data-toggle='tab']", function(){
-            $("#btnMyInvestments").hide();
-            $("#btnAccountLinkingB").hide();
-            $("#dashboardMyInvestments").show();
-            $("#keyIndividualPlatforms").hide();
-        });*/
+        //Click on 1CR btn
+        $(document).on("click", "#btn1CR", function(){
+            var counter1CR = 0;
+            ga_1CR(counter1CR);
+            window.location.replace('/investors/readLinkedAccounts');
+        });
         
-       /* $(document).on("click", "#globalOverviewTab", function(){
-            $("#btnMyInvestments").show();
-            $("#btnAccountLinkingB").show();
-            $("#dashboardMyInvestments").hide();
-            $("#keyIndividualPlatforms").hide();
-        });*/
+        $(document).on("click", "#btn1CRB", function(){
+            var counter1CR = 1;
+            ga_1CR(counter1CR);
+            window.location.replace('/investors/readLinkedAccounts');
+        });
         
         $(document).on("click", ".logo", function(){ 
+            var id = $(this).attr("id");
+            var name = $("#logo"+id).attr("alt");
             var params = {
-                id : $(this).attr("id"),
+                id : id,
                 logo : $("#logo"+id).attr("src"),
                 name : $("#logo"+id).attr("alt"),
             };
             var data = jQuery.param(params);
             link = $(this).attr("href");
+            ga_company(id, name);
             getServerData(link, data, successAjax, errorAjax);
                
         });
@@ -91,6 +129,7 @@
             id = $(this).attr("id");
             $("#chart_" + id).slideToggle("slow");
             $(this).toggleClass("active");
+            ga_chart(id);
         });
         <?php //Bootstrap tooltips ?>
         $('[data-toggle="tooltip"]').tooltip();
@@ -110,7 +149,7 @@
             borderColor: "rgba(255, 255, 255, 0.8)"
           }]
         };
-
+        <?php /*Charts*/ ?>
         var chartOptions = {
           startAngle: -Math.PI / 4,
           animation: {
@@ -128,7 +167,7 @@
     
     function successAjax(result){
        // alert("ok " + result);
-       $(".dashboarGlobaldOverview").fadeOut();
+       $(".dashboardGlobalOverview").fadeOut();
        $(".ajaxResponse").html(result);
        
     }
@@ -210,7 +249,7 @@
         transform: rotate3d(0, 0, 1, -135deg);
     }
 </style>
-<div class="dashboarGlobaldOverview">
+<div class="dashboardGlobalOverview">
     <div class="row" id="overview">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card card-nav-tabs">
@@ -262,7 +301,7 @@
                                                         <td class="right"><?php echo round($global['netDeposits'], 2) . " &euro;";?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Number of individual loans or assets that you currently own. The higher the sum, the better diversified your portfolio is')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Number of Active Investments')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Number of individual loans or assets that you currently own. The higher the sum, the better diversified your portfolio is')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
                                                         <td class="right"><?php echo $global['activeInvestment'] ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
@@ -375,7 +414,8 @@
     <?php if(count($individualInfoArray) == 0) {?>
     <div class="row" id="btnAL">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <input type='button' id="btnAccountLinkingB" class='btn btn-default btnDefault pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
+            <input type='button' id="btnAccountLinking" class='btn btn-default btnDefault pull-right' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
+            <input type='button' id="btn1CR" class='btn btn-default btnDefault pull-left' name='1CR' value='<?php echo __('Go to One Click Registration')?>' />
         </div>
     </div> <?php } else {?>
     <div class="row" id="keyIndividualPlatforms">
@@ -403,7 +443,7 @@
                                 ?>
                             <tr>
                                 <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
-                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
+                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo pfpValue" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
                                 </td>
                                 
                                 <td><?php echo $total . " &euro;"?></td>
@@ -417,8 +457,8 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    <input type='button' id="btnAccountLinking" class='btn btn-default btnDefault pull-left' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
-                    <input type='button' id="btnStart" class='btn btn-default btnDefault pull-right' name='accountLinking' value='<?php echo __('Go to One Click Registration')?>' />
+                    <input type='button' id="btnAccountLinkingB" class='btn btn-default btnDefault pull-left' name='accountLinkingB' value='<?php echo __('Go to Account Linking')?>' />
+                    <input type='button' id="btn1CRB" class='btn btn-default btnDefault pull-right' name='1CRB' value='<?php echo __('Go to One Click Registration')?>' />
                     <br/><br/>
                 </div>
             </div>
