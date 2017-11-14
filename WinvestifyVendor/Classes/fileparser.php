@@ -589,7 +589,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $result = 0;
 
         
-        foreach ($dictionaryWords as $wordKey => $word) {
+        foreach ($this->dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found
                 $result = $word;
@@ -705,34 +705,35 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
-
-        if(empty($input)){
-            $input = '0.0';
-            $separator = ".";
-        }
-        
-        if(strpos($input, "E") || strpos($input, "e")){
-            if(strpos($input, "-")){
-                $decArray = explode("E", $input);
-                $dec = preg_replace("/[-]/", "", $decArray[1]);
-                $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
-                //echo "AQUI " . $dec2;
-                $input = strtr($input, array(',' => '.'));    
-                $input = number_format(floatval($input), $dec + $dec2);
-            } else{
-                $input = strtr($input, array(',' => '.'));    
-                $input = number_format(floatval($input), 0);
-            }
-            $seperator = ".";
-        }
-
         if ($decimalSep == ".") {
             $seperator = "\.";
         }        
         else {                                                              // seperator =>  ","
             $seperator = ",";
         }
-        
+        if(empty($input) || $input == 0 && ($input <! 0 && $input >! 0)){ // decimals like 0,0045 are true in $input == 0
+            $input = "0.0";
+            $seperator = "\.";
+        }
+        if(strpos($input, "E") || strpos($input, "e")){
+            if(strpos($input, "E")){
+                $char = "E";
+            } else {
+                $char = "e";
+            }
+            
+            if(strpos($input, "-")){              
+                $decArray = explode($char, $input);
+                $dec = preg_replace("/[-]/", "", $decArray[1]);
+                $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), $dec + $dec2);
+            } else{
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), 0);
+            }
+            $seperator = "\.";
+        }       
         $allowedChars =  "/[^0-9" . $seperator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
