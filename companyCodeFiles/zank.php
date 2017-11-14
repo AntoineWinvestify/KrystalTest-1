@@ -1732,7 +1732,7 @@ class zank extends p2pCompany {
      */
     public function translateTypeOfInvestment($inputData) {
         $data = WIN_LOANSTATUS_MANUALINVESTMENT;
-        $inputData = strtoupper(trim($inputData));
+        $inputData = strtoupper($inputData);
         switch ($inputData) {
             case "AUTO":
                 $data = WIN_LOANSTATUS_AUTOMATEDINVESTMENT;

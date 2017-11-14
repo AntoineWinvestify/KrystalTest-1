@@ -258,7 +258,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, PER day
             echo "dateKey = $dateKey \n";
-// Lets allocate a pair of userinvestmentdata and globalcashlowdata for this calculation period (normally daily)
+// Lets allocate a userinvestmentdata for this calculation period (normally daily)
             // reset the relevant variables before going to next date
             unset($database);              // Start with a clean shadow database
             foreach ($this->variablesConfig as $variablesKey => $item) {
@@ -514,36 +514,54 @@ class ParseDataClientShell extends GearmanClientShell {
      * 
      * 
      */
-    public function consolidateControlVariables($externalControlVariables) {
+    public function consolidateControlVariables($externalControlVariables, $internalControlVariables) {
         // Calculate the values of the control variables /or read them from DB
        /*
      *  the variables are :
-        *    $this->tempArray['InversionNetaComprometida']
         * Also keep in mind WHEN the control variables are read. I should count all investment uptil that moment
         * which could be at the morning when the flow is executing. The collected data up until midnight is stored in
         * xls files.
-        * example: Nov 20, 01.40 => reading of files and controlvariables. We assume that the P2P will provides us in the
-        * xls file the information up until that moment (01.40) We will only store investments for Nov 19. 
-        * variables are 'activeInvestments'
-        *               'outstandingPrincipal'
-        *               'myWallet'
+        *  @param  array       array with the calculated control variables for today's readout
+        *  @param  array       array with the control variables as provided by platform
+        *  @return boolean     
+        * 
         */
         $result = false;
+        $error = true;
         foreach ($externalControlVariables as $variableKey => $variable) {
              switch ($variableKey) {
-                case WIN_CONTROLVARIABLE_WALLET:
-
+                case WIN_CONTROLVARIABLE_MYWALLET:
+                    if ($internalControlVariables['myWallet'] == $externalControlVariables) {
+                        
+                    }
+                    else {
+                        $error = true;
+                    }
                     break;
                 case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
-
+                    if ($internalControlVariables['outstandingPrincipal'] == $externalControlVariables) {
+                    
+                    }
+                    else {
+                        $error = true;
+                    }
                     break;
-                case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT;
-
+                case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT:
+                    if ($internalControlVariables['activeInvestments'] == $externalControlVariables) {
+                        
+                    }
+                    else {
+                        $error = true;
+                    }
                     break;
-
-            }
+            }  
         }  
-        return $result;
+        if ($error == true) {
+            return $result;
+        }
+        else {
+            //generate application error
+        }
         // If approved, write the new values to DB
     }
     
@@ -629,10 +647,10 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     /* var 38
-     *  Get the amount which corresponds to the "ReceivedPrepayments" concept
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     * Get the amount which corresponds to the "ReceivedPrepayments" concept
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
      */
 
     public function calculateReceivedRepayment(&$transactionData, &$resultData) {
@@ -661,10 +679,10 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     /*
-     *  Get the amount which corresponds to the "TotalGrossIncome" concept
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     * Get the amount which corresponds to the "TotalGrossIncome" concept
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
      */
 
     public function xxxconsolidateTotalGrossIncome() {
@@ -682,10 +700,10 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     /*
-     *  Get the amount which corresponds to the "InterestgrossIncome" concept
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     * Get the amount which corresponds to the "InterestgrossIncome" concept
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
      */
 
     public function consolidateInterestgrossIncome() {
@@ -703,10 +721,10 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     /* NOT YET
-     *  Get the amount which corresponds to the "TotalLoanCost" concept CHECK
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     * Get the amount which corresponds to the "TotalLoanCost" concept CHECK
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
      */
 
     public function calculateTotalLoanCost(&$transactionData, &$resultData) {
@@ -739,10 +757,10 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     /* NOT YET
-     *  Get the amount which corresponds to the "NextPaymentDate" concept
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     * Get the amount which corresponds to the "NextPaymentDate" concept
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
      */
 
     public function consolidateNextPaymentDate() {
@@ -751,10 +769,10 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     /* NOT YET
-     *  Get the amount which corresponds to the "EstimatedNextPayment" concept
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     * Get the amount which corresponds to the "EstimatedNextPayment" concept
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
      */
 
     public function consolidateEstimatedNextPayment() {
@@ -763,18 +781,11 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
 
-
-
-
-
-
-
-
     /* NOT YET  chewck if the index is investment or payment
-     *  Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
      */
 
     public function calculateTotalNetIncome(&$transactionData, &$resultData) {

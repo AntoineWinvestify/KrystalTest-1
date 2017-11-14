@@ -83,11 +83,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId']['userReference']
      *      $data['linkedAccountId']['queue_id']
      *      $data['linkedAccountId']['pfp']
-     *      $data['linkedAccountId']['requestOrigin']               => as a result of an account linking or a regular readout
-     *      $data['linkedAccountId']['files'][filename1']           => array of filenames, FQDN's
+     *      $data['linkedAccountId']['listOfCurrentActiveLoans']    => list of all active loans BEFORE this analysis     
+     *      $data['linkedAccountId']['files'][filename1']           => Array of filenames, FQDN's
      *      $data['linkedAccountId']['files'][filename2']
      *                                        ... ... ...
-     *      $data['linkedAccountId']['listOfCurrentActiveLoans']    => list of all active loans BEFORE this analysis
+
      *
 
      * @return array queue_id, userReference, linkedaccount_id, exception error
@@ -96,7 +96,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *           array     analyse    convert internal array to external format using definitions of configuration file
      *                      true  analysis done with success
      *                      array with all errorData related to occurred error
-     *
+     * 
      *      $data['linkedAccountId']['userReference']
      *      $data['linkedAccountId']['queue_id']
      *      $data['linkedAccountId']['pfp']
@@ -169,8 +169,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing File with expired Loans\n";
                         } 
-                        $parserConfigFile = $companyHandle->getParserConfigExpiredLoanFile();
-                        $configParameters = $companyHandle->getParserExpiredLoanConfigParms();
+                        $parserConfigFile = $companyHandle->getParserConfigExpiredLoanFile(); 
+                        $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
       
@@ -204,10 +204,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                                 $totalParsingresultTransactions = $tempResult;
                                 break;
                             case WIN_FLOW_EXPIRED_LOAN_FILE:
+                                $this->callbacks = $callbacks["expiredLoan"];
+                                $this->callbackInit($tempResult, $companyHandle);
+                                $totalParsingresultExpiredLoans = $tempResult;                                  
                                 unset($listOfExpiredLoans);
-                                foreach ($tempResult as $expiredloankey => $item) {
-                                    $listOfExpiredLoans[] = $expiredloankey;
-                                }
+      //                          foreach ($tempResult as $expiredloankey => $item) {
+      //                              $listOfExpiredLoans[] = $expiredloankey;
+      //                          }
                                 break;                            
                         }
 
@@ -236,6 +239,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
             
+            
+            
+ // THIS DEPENDS ON THE WORK DONE BY ANTONIO (SUPPORT OF VARIOUS SHEETS OF XLS FILE           &$investmentList,  
+            $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans,
+                                                                                                                $totalParsingresultTransactions);              
+           
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
             $iteriter = new RecursiveIteratorIterator($arrayiter);
@@ -264,14 +273,16 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-//     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+//      print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
         print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
         print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
  //     print_r($data['tempArray'][$linkedAccountKey]['error']);
- //       print_r($data);
+ //     print_r($data);
+ 
         return json_encode($data);
-    }
-    
+    }       
+        
+      
     /**
      * Function to change values depending on callback functions for each company
      * @param array $tempResult It contains the value to change
@@ -303,11 +314,116 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     public function changeValueIterating(&$item,$key){
         foreach ($this->callbacks as $callbackKey => $callback) {
             if($key == $callbackKey){
-                $valueConverted =  $this->companyHandle->$callback($item);
+                $valueConverted =  $this->companyHandle->$callback(trim($item));
                 $item = $valueConverted; // Do This!
            }
         }
     }
+    
+    
+    
+    
+    
+    /* NOT YET
+     * Determine the list of investments that have finished TODAY, i.e. that have
+     * outstandingPrincipal = 0.
+     * The simple fact that a loanId exists in the $expiredLoans is enough to decide that the loan
+     * actually has finished.
+     *  
+     * @param  array        $investmentList => not used
+     * @param  array        $expiredLoans   list of Id,s that have terminated
+     * @param  array        $parsingResultTransactions
+     * @return array        list of investment ids that finished since the last readout period 
+     */   
+    public function getListofFinishedInvestmentsA(&$investmentList, &$expiredLoans, &$parsingResultTransactions) {
+        $finishedInvestments = array();
+        
+        $activeTransactions = $this->getLoanIdsActiveTransactions($parsingResultTransactions);
+        print_r($activeTransactions);
+
+        foreach ($activeTransactions as $activeTransaction) {
+            if (array_key_exists ($activeTransaction, $expiredLoans)) {
+                $finishedInvestments[] = $activeTransaction;
+            }
+        }
+        return $finishedInvestments;
+    }    
+    
+    /* NOT YET
+     * Determine the list of investments that have finished TODAY, i.e. that have
+     * outstandingPrincipal = 0.
+     * Check the list of investments for the loanID's and check if the outstandingPrincipal = 0.
+     *      
+     * @param  array        $investmentList
+     * @param  array        $expiredLoans   list of Id,s that have terminated => not used due to unavailability 
+     * @param  array        $parsingResultTransactions
+     * @return array        list of investment ids that finished since the last readout period
+     * 
+     * This function is not tested yet, waiting for Antonio para terminar lo de las hojasde un xls and checking 
+     * 
+     */   
+    public function getListofFinishedInvestmentsB(&$investmentList, &$expiredLoans, &$parsingResultTransactions) {
+        $finishedInvestments = array();
+        
+        $activeTransactions = $this->getLoanIdsActiveTransactions($parsingResultTransactions);
+        print_r($activeTransactions);
+        
+/*
+        [1691352-01] => Array
+                (
+                    [0] => Array
+                        (
+                            [transaction_transactionId] => 197424741
+                            [date] => 2017-10-17
+                            [investment_loanId] => 1691352-01
+                            [original_concept] => Investment principal increase 
+                            [internalName] => investment_myInvestment
+                            [amount] => 36.01
+                            [transaction_balance] => 42.999158907555
+                            [currency] => 1
+                        )
+
+                )
+
+*/  
+    
+        foreach ($activeTransactions as $activeTransaction) {
+            if ($investmentList[$activeTransaction][0]['investment_stateOfLoan'] == WIN_LOANSTATUS_FINISHED) { // NOT CORRECT AS WE DON'T HAVE ACCESS TO investment_stateOfLoan
+                $finishedInvestments[] = $activeTransaction;            // Add to list of finished investments
+            }
+        }
+        return $finishedInvestments;
+    }    
+    
+    
+    /**
+     * 
+     * get the loanIds obtained during the parsing of the transactions
+     * @param array $tempResult It contains the value to change
+     * @param object $companyHandle It is the company instance
+     * @return It nothing if the callback array is empty
+     * 
+     */        
+    public function getLoanIdsActiveTransactions(&$parsingResultTransactions) {
+        $listExpiredInvestments = array();
+        foreach ($parsingResultTransactions as $dateTransactions) {
+            $loans = array_keys($dateTransactions);
+            foreach ($loans as $loanKey => $loan){
+                $position = stripos($loan, "global_");
+                if ($position !== false ) {
+                    unset ($loans[$loanKey]);
+                }
+            }
+            $listExpiredInvestments = array_merge($listExpiredInvestments, $loans);  
+        } 
+        return($listExpiredInvestments);
+    }   
+         
+    
+    
+    
+    
+    
 }
 
 
