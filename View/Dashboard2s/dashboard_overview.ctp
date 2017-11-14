@@ -92,28 +92,28 @@
         
         //Click on 1CR btn
         $(document).on("click", "#btn1CR", function(){
-            var counter1CR = 0;
+            counter1CR = 0;
             ga_1CR(counter1CR);
-            window.location.replace('/investors/readLinkedAccounts');
+            window.location.replace('/ocrs/ocrInvestorView');
         });
         
         $(document).on("click", "#btn1CRB", function(){
-            var counter1CR = 1;
+            counter1CR = 1;
             ga_1CR(counter1CR);
-            window.location.replace('/investors/readLinkedAccounts');
+            window.location.replace('/ocrs/ocrInvestorView');
         });
         
         $(document).on("click", ".logo", function(){ 
             var id = $(this).attr("id");
             var name = $("#logo"+id).attr("alt");
+            ga_company(id, name);
             var params = {
                 id : id,
                 logo : $("#logo"+id).attr("src"),
-                name : $("#logo"+id).attr("alt"),
+                name : name,
             };
             var data = jQuery.param(params);
             link = $(this).attr("href");
-            ga_company(id, name);
             getServerData(link, data, successAjax, errorAjax);
                
         });
