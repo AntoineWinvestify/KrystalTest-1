@@ -132,18 +132,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
 // do this first for the transaction file and then for investmentfile(s)
-            $fileTypesToCheck = array (0 => WIN_FLOW_TRANSACTION_FILE,
-                                       1 => WIN_FLOW_INVESTMENT_FILE,
-                                       2 => WIN_FLOW_EXTENDED_TRANSACTION_FILE,     // So we cover Finanzarel
-                                       3 => WIN_FLOW_EXPIRED_LOAN_FILE              // If this file exists, we avoid collecting "old amortization tables"
-                                        );                     
-
-            foreach ($fileTypesToCheck as $actualFileType) {
-                $approvedFiles = $this->readFilteredFiles($files, $actualFileType);
-                switch ($actualFileType) {
+            foreach ($files as $fileTypeKey => $filesByType) {
+                switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction File\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction Files \n";
                         }
                         $parserConfigFile = $companyHandle->getParserConfigTransactionFile();
                         $configParameters = $companyHandle->getParserTransactionConfigParms();
@@ -151,7 +144,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         
                     case WIN_FLOW_INVESTMENT_FILE:
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment File\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment Files \n";
                         }
                         $parserConfigFile = $companyHandle->getParserConfigInvestmentFile(); 
                         $configParameters = $companyHandle->getParserInvestmentConfigParms();
@@ -159,19 +152,78 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         
                     case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Extended Transaction File\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Extended Transaction Files \n";
                         } 
                         $parserConfigFile = $companyHandle->getParserConfigExtendedTransactionFile();
                         $configParameters = $companyHandle->getParserExtendedTransactionConfigParms();
                         break; 
                     case WIN_FLOW_EXPIRED_LOAN_FILE:
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing File with expired Loans\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Files with expired Loans\n";
                         } 
                         $parserConfigFile = $companyHandle->getParserConfigExpiredLoanFile();
                         $configParameters = $companyHandle->getParserExpiredLoanConfigParms();
                         break;                        
                 }
+                $i = 0;
+                foreach ($filesByType as $file) {
+                    foreach ($configParameters['sheetNames'] as $key => $sheetName) {
+                        unset($errorInfo);
+                        print_r($configParameters);         
+                        $myParser->setConfig($configParameters);
+                        $extensionFile = $this->getExtensionFile($approvedFile);
+                        $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile, $extensionFile);     // if successfull analysis, result is an array with loanId's as index
+
+                        echo "Dealing with file $approvedFile\n";
+                        if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
+                            $errorInfo = array( "typeOfError"   => "parsingError",
+                                                "errorDetails"  => $myParser->getLastError(),
+                                                "errorDetails1" => "approved file " . $approvedFile,
+                                                );
+                            $returnData[$linkedAccountKey]['error'][] = $errorInfo;
+                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
+                        }
+                        else {
+                            switch ($actualFileType) {
+                                case WIN_FLOW_INVESTMENT_FILE:
+                                    $this->callbacks = $callbacks["investment"];
+                                    $this->callbackInit($tempResult, $companyHandle);
+                                    $totalParsingresultInvestments = $tempResult;                                
+                                    break;
+                                case WIN_FLOW_TRANSACTION_FILE:
+                                    $totalParsingresultTransactions = $tempResult;
+                                    break;                            
+                                case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
+                                    $totalParsingresultTransactions = $tempResult;
+                                    break;
+                                case WIN_FLOW_EXPIRED_LOAN_FILE:
+                                    unset($listOfExpiredLoans);
+                                    foreach ($tempResult as $expiredloankey => $item) {
+                                        $listOfExpiredLoans[] = $expiredloankey;
+                                    }
+                                    break;                            
+                            }
+
+                            try {
+
+                                $callBackResult = $companyHandle->fileAnalyzed($approvedFile, $actualFileType, $tempResult);       // Generate callback
+                            }
+                            catch (Exception $e){
+                                $errorInfo = array( "typeOfError"   => "callBackExceptionError",
+                                                    "callBackResultCode" => $callBackResult,
+                                                    "exceptionResult"   => $e,
+                                                    "fileName"      => $fileName,
+                                                    "typeOfFile"    => $typeOfFile,
+                                                    "fileContents"  => json_encode($file,$fileContent)
+                                                    );
+                                $returnData[$linkedAccountKey]['error'][] = $errorInfo;
+                            }
+                        }
+                    }
+                }
+            }              
+
+            /*foreach ($fileTypesToCheck as $actualFileType) {
       
                 $tempResult = array();
                 foreach ($approvedFiles as $approvedFile) {
@@ -227,7 +279,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         }
                     }
                 } 
-            }
+            }*/
 
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
