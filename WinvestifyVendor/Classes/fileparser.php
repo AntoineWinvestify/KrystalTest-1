@@ -965,10 +965,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to get details of transaction from multiple cells together
-     * @param string $input It is the cell value
+     * Function to get details of transaction but when it is needed to get the content from
+     * multiples columns of the file
+     * @param string $input It is the column value
      * @param array $config Winvestify standardized concept
-     * @param array $inputValues Values needed to calculate transaction details
+     * @param array $inputValues Values needed to calculate transaction details from other columns
      * @return array  [0] => Winvestify standardized concept
      *                [1] => array of parameter, i.e. list of variables in which the result
      *                         of this function is to be stored. In practice it is normally
