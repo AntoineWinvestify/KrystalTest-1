@@ -366,8 +366,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             if ($i == $this->config['offsetStart']) {
                 break;
             }
-            echo "unset to happen, value of cell = " . 
-                    print_r($rowDatas[$key][2]);
+            //echo "unset to happen, value of cell = " . print_r($rowDatas[$key][2]);
             echo "\n";
             unset($rowDatas[$key]);
             $i++;
@@ -560,6 +559,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *           DivisionInPercentage(12,27,1)   => 44.4
      */
     private function divisionInPercentage($input, $divident, $divisor, $precision)  {
+        if($divisor == 0){
+            return 0;
+        }
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
     }
 
@@ -738,31 +740,30 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
-        
+        echo "CANTIDAD: " . $input . HTML_ENDOFLINE;
         if(empty($input) || $input == 0){
             $input = "0.0";
             $seperator = ".";
         }
         
-        if ($decimalSep == ".") {
-            $seperator = "\.";
-        }
-        else if($decimalSep == 'E'){
-            if(strpos($input, "E") || strpos($input, "e")){
-                if(strpos($input, "-")){
-                    $decArray = explode("E", $input);
-                    $dec = preg_replace("/[-]/", "", $decArray[1]);
-                    $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
-                    echo "AQUI " . $dec2;
-                    $input = strtr($input, array(',' => '.'));    
-                    $input = number_format(floatval($input), $dec + $dec2);
-                } else{
-                    $input = strtr($input, array(',' => '.'));    
-                    $input = number_format(floatval($input), 0);
-                }
+        if(strpos($input, "E") || strpos($input, "e")){
+            if(strpos($input, "-")){
+                $decArray = explode("E", $input);
+                $dec = preg_replace("/[-]/", "", $decArray[1]);
+                $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
+                echo "AQUI " . $dec2;
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), $dec + $dec2);
+            } else{
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), 0);
             }
             $seperator = ".";
         }
+       
+        if ($decimalSep == ".") {
+            $seperator = "\.";
+        }   
         else {                                                              // seperator =>  ","
             $seperator = ",";
         }

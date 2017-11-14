@@ -117,21 +117,9 @@ class CasesController extends AppController {
         ));
         $myParser->getConfig();
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
-        $count = count($tempResult);
-        $i = 0;
-        $final = array();
-        foreach ($tempResult as $key => $result) {
-            if ($i == 0) {
-                array_push($final, $result);
-            }
-            if ($i == $count - 1) {
-                array_push($final, $result);
-            }
-            $i++;
-        }
         $this->print_r2($tempResult);
-        print_r($final);
-        return $final;
+        //print_r($final);
+        return $tempResult;
     }
 
     public function testParserConfigFormat1() {  //NAME + TYPE
@@ -273,7 +261,6 @@ class CasesController extends AppController {
 
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "LoanAmount",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -710,7 +697,6 @@ class CasesController extends AppController {
                     "inputData" => [
                         "input2" => "",
                         "input3" => ",",
-                        "input4" => 16,
                     ],
                     "functionName" => "getAmount",
                 ]
@@ -1068,9 +1054,6 @@ class CasesController extends AppController {
 
     public function testDivision() {
 
-        $filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'my-investments(1).xlsx';
-        echo $filePath;
-
         $parserConfig = [
             "B" => [
                 "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
@@ -1103,14 +1086,9 @@ class CasesController extends AppController {
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
         require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
 
+        $config = array ( 'offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
         $myParser = new Fileparser();
-        $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
-            'offsetStart' => 1,
-            'offsetEnd' => 0,
-            'sortParameter' => array(),
-        ));
-        $myParser->getConfig();
+        $myParser->setConfig($config);
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
         $this->print_r2($tempResult);
         return $tempResult;
