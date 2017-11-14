@@ -131,8 +131,9 @@ $this->resetTestEnvironment();      // Temporary function
                         $this->userLinkaccountIds[$job['Queue']['id']][$i] = $linkedAccountId;
                         $i++;
                         echo "pfp = " . $pfp . "\n";
-                        $files = $this->readFilteredFiles($allFiles, WIN_FLOW_EXPIRED_LOAN_FILE + WIN_FLOW_TRANSACTION_FILE + 
-                                                                    WIN_FLOW_INVESTMENT_FILE + WIN_FLOW_EXTENDED_TRANSACTION_FILE);
+                        $files[WIN_FLOW_TRANSACTION_FILE] = $dirs->findRecursive(WIN_FLOW_TRANSACTION_FILE . ".*");
+                        $files[WIN_FLOW_INVESTMENT_FILE] = $dirs->findRecursive(WIN_FLOW_INVESTMENT_FILE . ".*");
+                        $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*");
                         $listOfActiveLoans = $this->getListActiveLoans($linkedAccountId);
                         print_r($listOfActiveLoans);
 
