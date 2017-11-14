@@ -254,13 +254,13 @@ public function matchFields($check = array(), $compareField = null) {
      */
     public function getData($filter = null, $field = null, $order = null, $limit = null){
 
+       
         $resultData = $this->find("all", array("recursive" => -1,
             "conditions" => $filter,
             "fields" => $field,
             "order" => $order,
             "limit" => $limit,
         ));
-
         return $resultData;
     }
 

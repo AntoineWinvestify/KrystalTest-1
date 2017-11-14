@@ -29,11 +29,17 @@
  * 2017-10-24 version_0.3
  * Integration of parsing amortization tables with Gearman and fileparser
  * 
- * Parser AmortizationTables                                            [OK, tested]
+ * 2017-03-11 version 0.4
+ * Header added in amortization tables.
+ * 
+ * 2017-06-11 version 0.5
+ * Finalized investment download in getPfpFiles
+ *  
  */
 
 /**
  * Contains the code required for accessing the website of "Twino".
+ * Parser AmortizationTables                                            [OK, tested]
  * function calculateLoanCost()						[Not OK]
  * function collectCompanyMarketplaceData()				[Not OK]
  * function companyUserLogin()						[OK, tested]
@@ -230,7 +236,7 @@ class twino extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-     /**
+    /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account
      * 	to our account
@@ -325,10 +331,11 @@ class twino extends p2pCompany {
                     echo 'twino login ok' . SHELL_ENDOFLINE;
                 }
 
-                //Dowwnload
-                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["CURRENT","EXTENDED","DELAYED","DEFAULTED"]}}';
+                //Download
+                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["CURRENT","EXTENDED","DELAYED","DEFAULTED"]}}'; // ADD ,"REPAID","SOLD","RECOVERED" to download all investment
+                $this->tempUrl['ExportInvestment'] = array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
+                $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['ExportInvestment'], $credentialsFile, true);
                 break;
             case 4:
                 //Download investment
@@ -351,8 +358,9 @@ class twino extends p2pCompany {
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
                     $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                    $this->tempUrl['refererInvestment'] = array_shift($this->urlSequence);
                     $this->idForSwitch++;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
@@ -360,10 +368,59 @@ class twino extends p2pCompany {
                     echo 'Repeat Case: ' . $this->idForSwitch . SHELL_ENDOFLINE;
                 }
                 break;
+
+            //Dowanload finalized investment    
             case 6:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                echo $this->idForSwitch;
+                //Download
+                //$this->controlVariable = true;
+                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["REPAID","SOLD","RECOVERED"]}}'; // ADD ,"REPAID","SOLD","RECOVERED" to download all investment
+                $this->idForSwitch++;
+                $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['ExportInvestment'], $credentialsFile, true);
+                break;
+
+            case 7:
+                //Download investment
+                echo $this->idForSwitch;
+                $response = json_decode($str, true);
+                print_r($response);
+                if ($response['reportReady'] == true) {
+                    echo 'Status true, downloading' . SHELL_ENDOFLINE;
+                    $this->numFileInvestment++;
+                    $fileName = "expiredLoans." . $this->typeFileInvestment;
+                    $this->idForSwitch = 9;
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
+                } else {
+                    $this->controlVariable = false;
+                    $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
+                    $this->idForSwitch = 8;
+                }
+                break;
+
+            case 8:
+                echo $this->idForSwitch . SHELL_ENDOFLINE;
+                $response = json_decode($str, true);
+                print_r($response);
+                if ($response['reportReady'] == true) {
+                    echo 'Status true, downloading' . SHELL_ENDOFLINE;
+                    $this->numFileInvestment++;
+                    $fileName = "expiredLoans." . $this->typeFileInvestment;
+                    $this->idForSwitch++;
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
+                } else {
+                    echo 'Not ready yet' . SHELL_ENDOFLINE;
+                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
+                    $this->idForSwitch = 7;
+                    echo 'Repeat Case: ' . $this->idForSwitch . SHELL_ENDOFLINE;
+                }
+                break;
+
+
+            case 9:
+
                 //Download cash flow
                 $dateInit = date("Y,m,d", strtotime($this->dateInit));
                 $dateFinish = date('Y,m,d',strtotime($this->dateFinish));
@@ -373,7 +430,7 @@ class twino extends p2pCompany {
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
-            case 7:
+            case 10:
                 echo $str;
                 $response = json_decode($str, true);
                 print_r($response);
@@ -390,7 +447,7 @@ class twino extends p2pCompany {
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
                     break;
                 }
-            case 8:
+            case 11:
                 echo $str;
                 $response = json_decode($str, true);
                 print_r($response);
@@ -406,7 +463,7 @@ class twino extends p2pCompany {
                     echo 'Repeat Case: ' . $this->idForSwitch . SHELL_ENDOFLINE;
                 }
                 break;
-            case 9:
+            case 12:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
@@ -414,7 +471,7 @@ class twino extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();
                 //return $tempArray["global"] = "waiting_for_global";
                 break;
-            case 10:
+            case 13:
                 echo $str;
                 $variables = json_decode($str, true);
                 print_r($variables);
@@ -427,7 +484,7 @@ class twino extends p2pCompany {
         }
     }
 
-     /**
+    /**
      * Get amortization tables of user investments
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
@@ -515,14 +572,76 @@ class twino extends p2pCompany {
                     $this->idForSwitch = 4;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
-                }
-                else {
+                } else {
                     return $this->tempArray;
                     break;
                 }
         }
     }
 
+    
+    //WE DON?T HAVE CALLBACKS IN TWINO
+    /**
+     * Function to translate the company specific loan type to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan type
+     * @return int                  Winvestify standardized loan type
+     */
+    public function translateLoanType($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific amortization method to the Winvestify standardized
+     * amortization type
+     * @param string $inputData     company specific amortization method
+     * @return int                  Winvestify standardized amortization method
+     */
+    public function translateAmortizationMethod($inputData) {
+
+    }   
+    
+    /**
+     * Function to translate the company specific type of investment to the Winvestify standardized
+     * type of investment
+     * @param string $inputData     company specific type of investment
+     * @return int                  Winvestify standardized type of investment
+     */
+    public function translateTypeOfInvestment($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific payment frequency to the Winvestify standardized
+     * payment frequency
+     * @param string $inputData     company specific payment frequency
+     * @return int                  Winvestify standardized payment frequency
+     */
+    public function translatePaymentFrequency($inputData) {
+        
+    }
+        
+    /**
+     * Function to translate the type of investment market to an to the Winvestify standardized
+     * investment market concept
+     * @param string $inputData     company specific investment market concept
+     * @return int                  Winvestify standardized investment marke concept
+     */
+    public function translateInvestmentMarket($inputData) {
+        
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * investmentBuyBackGuarantee
+     * @param string $inputData     company specific investmentBuyBackGuarantee
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateInvestmentBuyBackGuarantee($inputData) {
+        
+    }
+    
+    
     /**
      *
      * 	Logout of user from the company portal.

@@ -1,4 +1,4 @@
-º<?php
+<?php
 
 /**
  * +-----------------------------------------------------------------------------+
@@ -50,16 +50,20 @@ class Userinvestmentdata extends AppModel {
             "conditions" => array("investor_id" => $investorIdentityId),
             "fields" => array("id"),
         ));
-
+        
+        //print_r($linkedAccountsId);
+        
         //Get last Userinvestmentdata table row for a linked account id
         $resultInvestorData = array();
         foreach ($linkedAccountsId as $linkedAccountId) {
+            //echo $linkedAccountId['Linkedaccount']['id'];
             $resultInvestorData[] = $this->find("first", array("recursive" => -1,
                 "conditions" => array("linkedaccount_id" => $linkedAccountId['Linkedaccount']['id']),
+                "fields" => array("*"),
                 "order" => "created DESC",
             ));
+            
         }
-        
         //print_r($resultInvestorData);
         return $resultInvestorData;
     }
@@ -78,10 +82,7 @@ class Userinvestmentdata extends AppModel {
         return $resultInvestorData;
     }
     
-    
-    
-    
-    
+       
    /**
      *NOT FINISHED: does Globalcashflowdatatotal really need to exist?? or only Globalcashflowdata?
      * creates a new 'investment' table and also links the 'paymenttotal' database table
@@ -125,18 +126,5 @@ class Userinvestmentdata extends AppModel {
             'conditions' => $conditions
         ));
         return $investmentIds;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    }       
 }

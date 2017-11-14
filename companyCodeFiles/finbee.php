@@ -25,15 +25,17 @@
  * 2017-08-25
  * Created
  * 
- * 
  * 2017-10-24 version_0.2
  * Integration of parsing amortization tables with Gearman and fileparser
+ *
  * 
- * Parser AmortizationTables                                            [OK, tested]
+ * 2017-03-11 version 0.3
+ * Header added in amortization tables.
  */
 
 /**
  * Contains the code required for accessing the website of "Finbee".
+ * Parser AmortizationTables                                            [OK, tested]
  * function calculateLoanCost()						[Not OK]
  * function collectCompanyMarketplaceData()				[Not OK]
  * function companyUserLogin()						[OK, tested]
@@ -127,7 +129,7 @@ class finbee extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-     /**
+    /**
      * Download investment, cash flow files and control variables
      * 
      * @param string $str It is the web converted to string of the company.
@@ -387,12 +389,24 @@ class finbee extends p2pCompany {
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
                 foreach ($tables as $table) {
+
+                    if ($table->getAttribute('class') == 'table mb-none table-no-more') {
+                        $trs = $dom->getElementsByTagName('tr');
+                        $AmortizationHeaderTable = new DOMDocument();
+                        $cloneHeader = $trs[0]->cloneNode(TRUE); //Clene the table
+                        //$header = $AmortizationHeaderTable->importNode($cloneHeader);
+                        /*$AmortizationHeaderTable->appendChild($AmortizationHeaderTable->importNode($cloneHeader, TRUE));
+                        $AmortizationHeaderTableString = $AmortizationHeaderTable->saveHTML();*/
+                        echo $AmortizationHeaderTableString;
+                    }
+
                     if ($table->getAttribute('class') == 'table table-striped table-no-more') {
                         $AmortizationTable = new DOMDocument();
+                        $table->appendChild($cloneHeader);
                         $clone = $table->cloneNode(TRUE); //Clene the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
-                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
+                        $this->tempArray[$this->loanIds[$this->i - 1]] =  $AmortizationTableString;
                         echo $AmortizationTableString;
                     }
                 }
@@ -409,7 +423,6 @@ class finbee extends p2pCompany {
         }
     }
 
-    
     /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account
@@ -501,6 +514,66 @@ class finbee extends p2pCompany {
 
         $str = $this->doCompanyLogout();
         return true;
+    }
+    
+    /**
+     * Function to translate the company specific loan type to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan type
+     * @return int                  Winvestify standardized loan type
+     */
+    public function translateLoanType($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific amortization method to the Winvestify standardized
+     * amortization type
+     * @param string $inputData     company specific amortization method
+     * @return int                  Winvestify standardized amortization method
+     */
+    public function translateAmortizationMethod($inputData) {
+
+    }   
+    
+    /**
+     * Function to translate the company specific type of investment to the Winvestify standardized
+     * type of investment
+     * @param string $inputData     company specific type of investment
+     * @return int                  Winvestify standardized type of investment
+     */
+    public function translateTypeOfInvestment($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific payment frequency to the Winvestify standardized
+     * payment frequency
+     * @param string $inputData     company specific payment frequency
+     * @return int                  Winvestify standardized payment frequency
+     */
+    public function translatePaymentFrequency($inputData) {
+        
+    }
+        
+    /**
+     * Function to translate the type of investment market to an to the Winvestify standardized
+     * investment market concept
+     * @param string $inputData     company specific investment market concept
+     * @return int                  Winvestify standardized investment marke concept
+     */
+    public function translateInvestmentMarket($inputData) {
+        
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * investmentBuyBackGuarantee
+     * @param string $inputData     company specific investmentBuyBackGuarantee
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateInvestmentBuyBackGuarantee($inputData) {
+        
     }
 
 }

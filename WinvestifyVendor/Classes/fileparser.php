@@ -42,6 +42,14 @@
  * E format in getAmount fixed. Format example: 2,31E-6.
  * Minor fixes.
  * 
+ * 2017-11-09           Version 0.4
+ * Amount and currency bug fixing.
+ * 
+ * 2017-11-10           version 0.5
+ * Updated function extractDataFromString with an extra parameter
+ * 
+ * 
+ * 
  * 
  * Pending:
  * chunking, csv file check
@@ -396,7 +404,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $outOfRange = false;
 
         foreach ($rowDatas as $rowData) {
-//            echo __FUNCTION__ . " " . __LINE__ . " MEMORY USAGE = " . memory_get_usage (false)  . "\n"; 
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
@@ -462,7 +469,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                     }
                 }
             }
-//echo __FUNCTION__ . " " . __LINE__ . " MEMORY USAGE = " . memory_get_usage (false)  . "\n"; 
+
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:
@@ -516,6 +523,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *           DivisionInPercentage(12,27,1)   => 44.4
      */
     private function divisionInPercentage($input, $divident, $divisor, $precision)  {
+        if($divisor == 0 || ($divisor <! 0 && $divisor >! 0)){
+            return 0;
+        }
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
     }
 
@@ -563,6 +573,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         return($this->config);
     }
 
+    
     /**
      * Analyze and determine the (preliminary) scope of an undefined payment concept.
      * The algorithm uses a combination of a dictionary search and checking of transaction data
@@ -572,13 +583,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string
      *
      * @return string
-     * also check for the presence of loanId, and + or - sign of field
+     *
      */
     private function analyzeUnknownConcept($input, $config = null) {
         $result = 0;
 
         
-        foreach ($dictionaryWords as $wordKey => $word) {
+        foreach ($this->dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found
                 $result = $word;
@@ -670,7 +681,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
 	return $val;
     }
 
-    /**  STILL TO DO (scientific) exponential notation
+    /** 
      * 
      * This function uses the bcmath package of PHP.
      * Format is converted to internal format, which is using the "." as a decimal separator, and
@@ -694,55 +705,39 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
-
         if ($decimalSep == ".") {
             $seperator = "\.";
-        }
-        else if($decimalSep == 'E'){
-            if(strpos($input, "E")){
-                if(strpos($input, "-")){
-                    $decArray = explode("E", $input);
-                    $dec = preg_replace("/[-]/", "", $decArray[1]);
-                    $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
-                    echo "AQUI " . $dec2;
-                    $input = strtr($input, array(',' => '.'));    
-                    $input = number_format(floatval($input), $dec + $dec2);
-                } else{
-                    $input = strtr($input, array(',' => '.'));    
-                    $input = number_format(floatval($input), 0);
-                }
-            }
-            $seperator = ".";
-        }
+        }        
         else {                                                              // seperator =>  ","
             $seperator = ",";
         }
+        if(empty($input) || $input == 0 && ($input <! 0 && $input >! 0)){ // decimals like 0,0045 are true in $input == 0
+            $input = "0.0";
+            $seperator = "\.";
+        }
+        if(strpos($input, "E") || strpos($input, "e")){
+            if(strpos($input, "E")){
+                $char = "E";
+            } else {
+                $char = "e";
+            }
+            
+            if(strpos($input, "-")){              
+                $decArray = explode($char, $input);
+                $dec = preg_replace("/[-]/", "", $decArray[1]);
+                $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), $dec + $dec2);
+            } else{
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), 0);
+            }
+            $seperator = "\.";
+        }       
         $allowedChars =  "/[^0-9" . $seperator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
         return $normalizedInputFinal;
-
-        
- /*       
-        // determine how many decimals are actually used
-        $position = strpos($input, $decimalSep);
-        $decimalPart = preg_replace('/[^0-9]+/' ,"", substr($input, $position + 1, 100));
-        $numberOfDecimals = strlen($decimalPart);
-
-        $digitsToAdd = $decimals - $numberOfDecimals;
-
-        if ($digitsToAdd <= 0) {
-            $amount = round($normalizedInputFinal, $decimals);
-        }
-        if ($digitsToAdd == 0) {
-            $amount = preg_replace("/[^0-9]/", "", $input);
-        }
-        if ($digitsToAdd > 0) {
-            $amount = preg_replace('/[^0-9]+/', "", $input) . str_pad("", ($decimals - $numberOfDecimals), "0");
-        }
-        return preg_replace('/[^0-9]+/' ,"", $amount);
-  */
-  
     }
     
 
@@ -751,7 +746,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * Determines the 'transactiondetail' based on a translationtable (=$config) and the sign of the amount ( positive or negative).
      * Note that the amount must already have been calculated before executing this function
      *
-     * @param string   $input
+     * @param string    $input
+     * @param string    $originalConcept
+     * @param array     $config             Translation table
      * @return array    [0] => Winvestify standardized concept
      *                  [1] => array of parameter, i.e. list of variables in which the result
      *                         of this function is to be stored. In practice it is normally
@@ -759,8 +756,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *                         variables.
      *                  The variable name is read from "internal variable" $this->transactionDetails.
      */   
-    private function getComplexTransactionDetail($input, $originalConceptMintos, $config) {
-
+    private function getComplexTransactionDetail($input, $originalConcept, $config) {
         $position = strpos($input, "-");
         
         if ($position !== false) {      // contains - sign 
@@ -769,13 +765,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         else {
             $type = WIN_CONCEPT_TYPE_INCOME;
         }
-
         $found = NO;        
         foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
             foreach ($this->transactionDetails as $key => $detail) {  
-                $position = strpos($originalConceptMintos, $configItemKey );
+                $position = strpos($originalConcept, $configItemKey );
                 if ($position !== false) {
                     if ($detail['detail'] == $configItem){
                         if ($type == $detail['transactionType']) {
@@ -793,7 +788,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             return $result;
         }
         else {
-            echo "unknown concept for complex, so start doing some guessing for concept $originalConceptMintos\n";  
+            echo "unknown concept [$input] for complex, so start doing some guessing for concept $originalConcept\n";  
         }
     } 
     
@@ -814,11 +809,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ");
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
-        foreach ($this->currencies as $currencyIndex => $currency) {
-            if ($loanCurrency == $currency[0]) {                // check the ISO code
+        foreach ($this->currencies as $currencyIndex => $currency) {        
+            if (strpos($loanCurrency, $currency[0]) != false || $currencySymbol == $currency[0]) {                // check the ISO code
               return $currencyIndex;
             }
-            if ($currencySymbol == $currency[1]) {              // check the symbol
+            if (strpos($loanCurrency, $currency[1]) != false || $currencySymbol == $currency[1]) {              // check the symbol
               return $currencyIndex;
             }
         }
@@ -905,33 +900,44 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
 
     /**
-     * Search for a something within a string, starting after $search
+     * Search for a something within a string, starting AFTER $search
      * and ending when $separator is found
+     * If $search == "" then $extractedString starts from beginning of $input.
+     * If $separator = "" then $extractedString contains the $input starting from $search to end
      *
      * @param string    $input      It is the string to which we search the information
-     * @param string    $search     The character to search
-     * @param string    $separator   The separator character
+     * @param string    $search     The character to search. 
+     * @param string    $separator  The separator character
+     * @param int       $mandatory  Indicates if it is mandatory that $search exists. If it does not exist 
+     *                              then the function will return a string of format "global_xxxxxx" with 
+     *                              xxxxxx being a random number
      * @return string   $extractedString    The value we were looking for
      *
      */
-    private function extractDataFromString($input, $search, $separator ) {
-        echo "input = $input, search = $search, length =  " . strlen($search) . " and separator = $separator\n";
-        echo "first strip = " . stripos($input, $search) ."\n";
-        
-        $position = stripos($input, $search) + strlen($search);
-        echo "position = $position\n";
-        if (empty($separator)) {
-            $value = substr($input, $position);
-            echo "empty \n";
-        } 
-        else {
-            $substrings = explode($separator, substr($input, $position));
-            echo "substring\n";
-            print_r($substrings);
-            $value = $substrings[0];
+    private function extractDataFromString($input, $search, $separator, $mandatory = 0) {
+
+        $position = stripos($input, $search);
+        if ($position !== false) {  // == TRUE
+            $start = $position;
+            $length = strlen($search);
         }
-        //exit;
-        return $value;
+        else { // FALSE
+            $start = 0;
+            $length = 0;
+            
+            if ($mandatory == 1){    
+                return "global_" . mt_rand();
+            }
+        }       
+
+        $position1 = stripos($input, $separator);
+        if ($position1 !== false) {  // == TRUE
+            $length1 = $position1;
+        }
+        else { // FALSE
+            $length1 = 100;                 // ficticious value
+        }       
+        return substr($input, $start+$length, $length1) ;
     }
 
     /**
@@ -961,7 +967,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     private function multiexplode ($delimiters,$string) {
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $launch = explode($delimiters[0], $ready);
-        return  $launch;
+        return $launch;
     }
     
     /**
@@ -1107,5 +1113,4 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
         return $tempArray;
     }
-
 }

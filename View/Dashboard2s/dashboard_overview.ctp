@@ -36,8 +36,13 @@
  * [2017-10-27] version 0.4
  * Moved from test to dasboard2s
  * 
- * [2017-11-13] version 0.5
+ * [2017-11-09] version 0.5
+ * New db adaptation
+ * 
+ * [2017-11-13] version 0.6
  * Added Google Analytics
+
+ * 
  */
 ?>
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -104,14 +109,14 @@
         });
         
         $(document).on("click", ".logo", function(){ 
-            var id = $(this).attr("id");
-            var name = $("#logo"+id).attr("alt");
-            ga_company(id, name);
+            name = $("#logo"+id).attr("alt");
+            id = $(this).attr("id");
             var params = {
                 id : id,
                 logo : $("#logo"+id).attr("src"),
                 name : name,
             };
+            ga_company(id, name);
             var data = jQuery.param(params);
             link = $(this).attr("href");
             getServerData(link, data, successAjax, errorAjax);
@@ -187,7 +192,7 @@
     }
     th {
         text-align: center;
-        font-weight: bold;
+        font-weight: 500 !important;
         padding-bottom: 4px !important;
     }
     td.right { 
@@ -340,7 +345,7 @@
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
-                                                        <td class="right"><?php echo __('995,00 €')?></td>
+                                                        <td class="right"><?php echo __('3.743,82 €')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year')?></td>
@@ -363,27 +368,27 @@
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have no payment delays at all')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
-                                                        <td class="right"><?php echo __('91,55%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['current'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 16')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('1-7 DPD')?></td>
-                                                        <td class="right"><?php echo __('2,99%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['1-7'] . "%"?></td>                                                    
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 17')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('8-30 DPD')?></td>
-                                                        <td class="right"><?php echo __('2,99%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['8-30'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 18')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-61 DPD')?></td>
-                                                        <td class="right"><?php echo __('2,25%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['31-60'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 19')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('60-90 DPD')?></td>
-                                                        <td class="right"><?php echo __('1,99%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['61-90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 20')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('90 - DPD')?></td>
-                                                        <td class="right"><?php echo __('1,22%')?></td>
+                                                        <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
@@ -439,16 +444,16 @@
                         <tbody>
                            <?php //Here go pfp data
                             foreach($individualInfoArray as $individualInfo){ 
-                                $total = round(bcadd(bcadd($individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'], $individualInfo['Userinvestmentdata']['userinvestmentdata_activeInInvestments'], 16), $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedFunds'], 16), 2);
+                                $total = round($individualInfo['Userinvestmentdata']['userinvestmentdata_totalVolume'], 2);
                                 ?>
                             <tr>
-                                <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>">
-                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo']?>" class="img-responsive center-block platformLogo pfpValue" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
+                                <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id']  .  " " . $individualInfo['Userinvestmentdata']["id"] ?>" >
+                                    <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo'] ?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
                                 </td>
                                 
                                 <td><?php echo $total . " &euro;"?></td>
-                                <td><?php echo $individualInfo['Userinvestmentdata']['userinvestmentdata_myWallet'] . " &euro;"?></td>
-                                <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2) . " %"?></td>
+                                <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2) . " &euro;"?></td>
+                                <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . " %"?></td>
                                 <td>12,11</td>
                                 <td>63,22%</td>
                             </tr>
