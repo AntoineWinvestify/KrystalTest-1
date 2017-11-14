@@ -161,7 +161,15 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected, $actual[0]['investment']['test']);
         $this->assertEquals($expected2, $actual[1]['investment']['test']);
     }
-
+   
+    public function testExtracData2() {
+        $expected = 'n for the revival of the next generation of solar cells that can function in a hostile environment$';
+        $expected2 = 'bcdetheabcde';
+        $actual = $this->testAction("/cases/testExtracData2");
+        $this->assertEquals($expected, $actual[0]['investment']['test']);
+        $this->assertEquals($expected2, $actual[1]['investment']['test']);
+    }
+    
     public function testHash() { //hash (Lithuania)
         $expected = 'd9051e0b77f8bb5521389618e70e2ada';
         $actual = $this->testAction("/cases/testHash");
@@ -196,10 +204,21 @@ class CasesControllerTest extends ControllerTestCase {
         $actual = $this->testAction("/cases/testHtmlData");
         $this->assertEquals($expected, $actual[0]);
     }
+    
+    public function  testDefault(){
+        $expected = 2;
+        $actual = $this->testAction("/cases/testDefault");
+        foreach ($actual as $testDefault){
+            $this->assertEquals($expected, $testDefault['investment_statusOfLoan']);
+        }
+    }
 
-    public function tearDown() {
+
+        public function tearDown() {
         parent::tearDown();
         unset($this->Hello);
     }
+    
+    
 
 }

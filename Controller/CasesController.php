@@ -1,9 +1,18 @@
 <?php
 
-App::uses('AppController', 'Controller');
+    App::uses('AppController', 'Controller');
+    App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+    App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+    Configure::load('p2pGestor.php', 'default');
+    $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+    require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
 
 class CasesController extends AppController {
 
+    
+    
+    
+    
     public function main() {
         $this->out('Hello world.');
 
@@ -24,7 +33,8 @@ class CasesController extends AppController {
         $this->Security->requireAuth();
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
-            'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData"
+            'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData",
+            'testDefault',
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'transaction.xlsx';
@@ -46,12 +56,6 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
@@ -69,12 +73,6 @@ class CasesController extends AppController {
      * Get & Set config testing
      */
     public function testParserConfig() {
-
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
 
         $myParser = new Fileparser();
         $myParser->setConfig(array(
@@ -101,12 +99,6 @@ class CasesController extends AppController {
                 "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
             ],
         ];
-
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
 
         $myParser = new Fileparser();
         $myParser->setConfig(array(
@@ -138,12 +130,6 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
@@ -166,12 +152,6 @@ class CasesController extends AppController {
                 "name" => "Country"
             ],
         ];
-
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
 
         $myParser = new Fileparser();
         $myParser->setConfig(array(
@@ -210,12 +190,6 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.priceInSecondaryMarket",
@@ -252,12 +226,6 @@ class CasesController extends AppController {
                 ]
             ],
         ];
-
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
 
         $myParser = new Fileparser();
         $myParser->setConfig(array(
@@ -296,12 +264,6 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
@@ -328,12 +290,6 @@ class CasesController extends AppController {
                     "functionName" => "normalizeDate",]
             ],
         ];
-
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
 
         $myParser = new Fileparser();
         $myParser->setConfig(array(
@@ -363,12 +319,6 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
@@ -396,13 +346,7 @@ class CasesController extends AppController {
                     "functionName" => "normalizeDate",]
             ],
         ];
-
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
+        
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
@@ -431,15 +375,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -465,15 +402,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -499,15 +429,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -533,15 +456,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -567,15 +483,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -601,15 +510,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -635,15 +537,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -667,15 +562,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -703,15 +591,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -739,15 +620,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -777,15 +651,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -813,15 +680,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -846,15 +706,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -893,12 +746,6 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $config = array ( 'offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
         $myParser = new Fileparser();
         $myParser->setConfig($config);
@@ -933,15 +780,8 @@ class CasesController extends AppController {
             ]
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -982,15 +822,8 @@ class CasesController extends AppController {
             ],
         ];
 
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
-
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "Trasaction.TransactionID",
             'offsetStart' => 1,
             'offsetEnd' => 0,
             'sortParameter' => array()
@@ -1002,11 +835,7 @@ class CasesController extends AppController {
     }
 
     public function testHtmlData() {
-        //$filePath = DS . "var" . DS . "www" . DS . "html" . DS . "cakephp" . DS . "app" . DS . "files" . DS . "investors" . DS . "39048098ab409be490A" . DS . "20171004" . DS . "682" . DS . "twino" . DS . "amortizationtable_629331.html";
-       /* echo $filePath;
-        $file = fopen($filePath, 'r+');
-        print_r($file);
-        echo fgets($file);*/
+
         $parserConfig = [
             3 => [
                 [
@@ -1054,17 +883,37 @@ class CasesController extends AppController {
                 "name" => "amortizationtable_paymentStatus"
             ]
         ];
-
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
         
         $myParser = new Fileparser();
 
         $result = $myParser->getHtmlData($this->amortizationPath, $parserConfig);
         $this->print_r2($result);
+    }
+    
+    
+    public function testDefault() {
+
+        $parserConfig = [
+            "B" => [
+                "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
+            ],
+            "G" => [
+                [
+                    "type" => "investment_statusOfLoan",                   // Winvestify standardized name  OK
+                    "inputData" => [
+                                "input2" => 2,                             // set to "ACTIVE"
+                                ],
+                    "functionName" => "getDefaultValue",
+                ]
+            ],
+        ];
+
+        $config = array ( 'offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
+        $myParser = new Fileparser();
+        $myParser->setConfig($config);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $this->print_r2($tempResult);
+        return $tempResult;
     }
 
 }

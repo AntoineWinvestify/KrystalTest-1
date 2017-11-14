@@ -966,7 +966,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     private function extractDataFromString($input, $search, $separator, $mandatory = 0) {
-
         $position = stripos($input, $search);
         if ($position !== false) {  // == TRUE
             $start = $position;
@@ -986,9 +985,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $length1 = $position1;
         }
         else { // FALSE
-            $length1 = 100;                 // ficticious value
+            $length1 = 150;                 // ficticious value
         }       
-        return substr($input, $start+$length, $length1) ;
+        $start = $start + $length;
+        $finish = $length1 - $start;
+        return substr($input, $start, $finish) ;
     }
 
     /**
