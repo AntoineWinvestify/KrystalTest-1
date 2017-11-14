@@ -626,8 +626,9 @@ class ecrowdinvest extends p2pCompany {
      */
     function companyUserLogin($user = "", $password = "", $options = array()) {
         /*
-          FIELDS USED BY ECROWDINVEST DURING LOGIN PROCESS
-          $credentials['_csrf_token'] = "XXXXX";
+          FIELDS USED BY Ecrowd DURING LOGIN PROCESS
+          $credentials['signin']	 = 'Login';
+          $credentials['csrf'] = "XXXXX";
          */
 
         //First we need get the $csrf token

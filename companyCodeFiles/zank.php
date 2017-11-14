@@ -201,12 +201,6 @@ class zank extends p2pCompany {
                     "type" => "investment_currency",                        // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
                 ],
-                "callback" => [
-                    [
-                        "type" => "investment_loanType",
-                        "functionName" => "translateLoanType"
-                    ]    
-                ]
             ],
             /*"G" => [
                 [
@@ -223,7 +217,7 @@ class zank extends p2pCompany {
                 [
                     "type" => "investment_commissionPaid",                                            // This is an "empty variable name". So "type" is
                     "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input2" => "",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
                                 "input3" => ",",                                        // and its content is the result of the "getAmount" method
                                 "input4" => 4
                                 ],
@@ -309,6 +303,12 @@ class zank extends p2pCompany {
         ],
         8 => [
             "name" => "amortizationtable_paymentStatus"
+        ]
+    ];
+    
+    protected $callbacks = [
+        "investment" => [
+            "investment_loanType" => "translateTypeOfInvestment"
         ]
     ];
 
@@ -625,37 +625,44 @@ class zank extends p2pCompany {
             $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');
             foreach ($container as $div) {
                 $subdivs = $div->getElementsByTagName('div');
-                /* foreach($subdivs as $subkey => $subdiv){
-                  echo 'Div: ' . HTML_ENDOFLINE;
-                  echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
-                  } */
-                $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
-                $tempArray['marketplace_loanReference'] = $loanId;
-                //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
-                $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
-                $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
-                list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
-                $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
-                $status = $tempArray['marketplace_statusLiteral'];
-                if ($status == 'Completado') {
-                    $tempArray['marketplace_status'] = PERCENT;
-                    $tempArray['marketplace_subscriptionProgress'] = 10000;
-                } else if ($status == 'Amortizado' || $status == 'Retrasado') {
-                    $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
-                    $tempArray['marketplace_subscriptionProgress'] = 10000;
-                } else if (strpos($status, 'mortiza') != false) {
-                    $tempArray['marketplace_status'] = CONFIRMED;
-                    $tempArray['marketplace_subscriptionProgress'] = 10000;
-                } else if ($status == 'Publicado') {
-                    $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;
-                }
-
-                $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;
-                $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;
-
-                echo $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
-                $tds = $subdivs[126]->getElementsByTagName('td');
-                $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+               /*foreach($subdivs as $subkey => $subdiv){
+                    echo 'Div: ' . HTML_ENDOFLINE;
+                    echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
+                }*/             
+                    $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
+                    $tempArray['marketplace_loanReference'] = $loanId;
+                    //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
+                    $tempArray['marketplace_rating'] = trim($subdivs[31]->nodeValue);
+                    $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[35]->nodeValue);
+                    list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue(trim($subdivs[23]->nodeValue));
+                    $tempArray['marketplace_statusLiteral'] = trim($subdivs[15]->nodeValue);
+                    $status = $tempArray['marketplace_statusLiteral'];
+                    if($status == 'Completado'){   
+                        $tempArray['marketplace_status'] = PERCENT;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;
+                    }
+                    else if($status == 'Amortizado' || $status == 'Retrasado' ){
+                        $tempArray['marketplace_status'] = BEFORE_CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000; 
+                    } 
+                    else if(strpos($status, 'mortiza') != false){
+                        $tempArray['marketplace_status'] = CONFIRMED;
+                        $tempArray['marketplace_subscriptionProgress'] = 10000;       
+                    }
+                    else if($status == 'Publicado'){   
+                        $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;     
+                    }
+                    else if($status == 'Cancelado'){
+                        $tempArray['marketplace_subscriptionProgress'] = 0;
+                        $tempArray['marketplace_status'] = REJECTED;
+                    }
+                    
+                    $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;                  
+                    $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;  
+                    
+                    echo  $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
+                    $tds =  $subdivs[126]->getElementsByTagName('td');
+                    $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
@@ -1724,7 +1731,7 @@ class zank extends p2pCompany {
      * @param string $inputData It is string to convert to integer
      * @return int It is the loan type converted to integer
      */
-    public function translateLoanType($inputData) {
+    public function translateTypeOfInvestment($inputData) {
         $data = WIN_LOANSTATUS_MANUALINVESTMENT;
         $inputData = strtoupper(trim($inputData));
         switch ($inputData) {

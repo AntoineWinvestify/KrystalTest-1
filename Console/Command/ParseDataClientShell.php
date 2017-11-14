@@ -60,13 +60,13 @@ public function resetTestEnvironment() {
     $this->Payment = ClassRegistry::init('Payment');
     $this->Payment->deleteAll(array('Payment.id >' => 0), false); 
     
-    echo "Deleting Userinvestmentdata\n"; 
-    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-    $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
+//    echo "Deleting Userinvestmentdata\n"; 
+//    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+//    $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
     
-    echo "Deleting Globalcashflowdata\n"; 
-    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-    $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
+//    echo "Deleting Globalcashflowdata\n"; 
+//    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+//    $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
     
  
     return;
@@ -153,6 +153,8 @@ $this->resetTestEnvironment();      // Temporary function
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                 }
                 $this->GearmanClient->runTasks();
+
+                // ######################################################################################################               
                 
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
@@ -160,10 +162,6 @@ $this->resetTestEnvironment();      // Temporary function
                 
                 foreach($this->tempArray as $queueIdKey => $result) {
                     foreach ($result as $platformKey => $platformResult) {
-
-                        if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "platformkey = $platformKey\n";
-                        }
                         // First check for application level errors
                         // if an error is found then all the files related to the actions are to be
     // deleted including the directory structure.
@@ -171,7 +169,6 @@ $this->resetTestEnvironment();      // Temporary function
                             $this->Applicationerror = ClassRegistry::init('applicationerror');
                             $this->Applicationerror->saveAppError("ERROR ", json_encode($platformResult['error']), 0, 0, 0);
                             // Delete all files for this user for this regular update
-                            
                             // break
                             continue;
                         }
@@ -189,10 +186,10 @@ $this->resetTestEnvironment();      // Temporary function
                                     echo "File " .  $baseDirectory . "loanIds.json written\n";
                                 }
                             }
-                            $newFlowState = DATA_EXTRACTED;
+                            $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
                         }
                         else {
-                            $newFlowState = AMORTIZATION_TABLES_DOWNLOADED;
+                            $newFlowState = WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED;
                         }
                     }
                     $this->queueInfo[$queueIdKey]["loanIds"] = $platformResult['newLoans']; // store the list of loan Ids in DB, for FLOW3B
@@ -262,30 +259,84 @@ $this->resetTestEnvironment();      // Temporary function
      */
     public function mapData (&$platformData) {
         $investmentId = NULL;
-        $variables = array();
         $linkedaccountId = $platformData['linkedaccountId'];
         $userReference = $platformData['userReference'];
         
         echo "new loans are:";
         print_r($platformData['newLoans']);
-    
-        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, per day
-            if (empty($dateKey)) {      // There is an empty index, WHY?
-               continue;
-            }
+      
+        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
+        $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata'); 
+
+        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 // Lets allocate a pair of userinvestmentdata and globalcashlowdata for this calculation period (normally daily)   
-            $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
-            $this->Userinvestmentdata->createUserinvestmentdata(array("linkedaccount_id" => $linkedaccountId, 
-                                                                                 "date" => $dateKey));
-            $userInvestmentDataId = $this->Userinvestmentdata->id;               
+
+            // reset the relevant variables before going to next date            
+            unset ($database);              // Start with a clean shadow database
+            foreach ($this->variablesConfig as $variablesKey => $item) {
+                $this->variablesConfig[$variablesKey]['state'] = WIN_FLOWDATA_VARIABLE_NOT_DONE;
+            }
+
+            $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+            $database = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
+            
+            $this->Userinvestmentdata->create();  
+            $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+            $database['Userinvestmentdata']['investorIdentity'] = $userReference;
+            $database['Userinvestmentdata']['date'] = $dateKey;
 
             foreach ($dates as $keyDateTransaction => $dateTransaction) {            // read all *individual* transactions
                 $newLoan = NO;
-                echo "keyDateTransaction = $keyDateTransaction \n";
-echo "---------> ANALYZING NEW LOAN\n";
+                echo "\nkeyDateTransaction = $keyDateTransaction \n";
+        //        print_r($dateTransaction);
+
+// special procedure for platform related transactions, i.e. when we don't have a real loanId                
+                $keyDateTransactionNames = explode("_", $keyDateTransaction);
+                if ($keyDateTransactionNames[0] == "global") {
+echo "---------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA\n";
+                    // cycle through all individual fields of the transaction record
+                    foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // 0,1,2
+                        if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
+                             $transactionDataKey = $transaction; 
+                        }
+                        $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
+
+                        if (!empty($tempResult))  { 
+                            unset($result);
+                            $functionToCall = $tempResult['function'];
+
+                            $dataInformation = explode (".", $tempResult['databaseName'] );
+                            $dbTable = $dataInformation[0];
+                            if (!empty($functionToCall)) {
+                                $result = $this->$functionToCall($dateTransaction, $database);
+
+                                if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                                    $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
+                                }
+                                else {
+                                    $database[$dbTable][$transactionDataKey] = $result;  
+                                }
+                            }
+                            else {
+                                $database[$dbTable][$transactionDataKey] = $transaction;
+                            }
+                            echo $this->variablesConfig[$tempResult['internalIndex']]['databaseName'];
+                        } 
+                    }                     
+                    continue;
+                }
+
+echo "---------> ANALYZING NEXT LOAN\n";
                 if (in_array($keyDateTransaction, $platformData['newLoans'])) {          // check if loanId is new 
-                    echo "Store the data of a new loan in the shadow db table\n";
+                    $arrayIndex = array_search ($keyDateTransaction , $platformData['newLoans']);
+                    if ($arrayIndex !== false) {        // Deleting the array from new loans list
+                        unset ($platformData['newLoans'][$arrayIndex]);
+                    }
+                    echo "Storing the data of a NEW loan in the shadow db table\n";
+
+//print_r($platformData['parsingResultInvestments'][$keyDateTransaction]);
+
                     // check all the data in the analyzed investment table
                     foreach ($platformData['parsingResultInvestments'][$keyDateTransaction] as $investmentDataKey => $investmentData) {
                         $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
@@ -298,18 +349,14 @@ echo "---------> ANALYZING NEW LOAN\n";
                             $newLoan = YES;
                         }
                     }
-               
                 }
-                else { // existing loan
-                    // get the investment_id of the existing loan
-                         //     public function getData($filter = null, $field = null, $order = null, $limit = null)
+                else { // get the investment_id of the existing loan
                     $filterConditions = array("investment_loanId" => $keyDateTransaction, 
                                        "linkedaccount_id" => $linkedaccountId);
-//print_r($filterConditions);
                     $tempInvestmentId = $this->Investment->getData($filterConditions, array("id")); 
                     $investmentId = $tempInvestmentId[0]['Investment']['id'];
                     $database['investment']['id'] = $investmentId;
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Existing Loan.. Id of the existing loan $investmentId\n ";   
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "EXISTING Loan.. Id of the existing loan $investmentId\n ";   
                 }
 
                 // load all the transaction data
@@ -317,14 +364,12 @@ echo "---------> ANALYZING NEW LOAN\n";
  //                   echo "---> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = $transactionData\n";
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // 0,1,2
 
-                        if ($transactionDataKey == "internalName") {        // dirty trick to keep it simple
+                        if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                              $transactionDataKey = $transaction; 
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
 
                         if (!empty($tempResult))  { 
-  //                          print_r($tempResult);
-                            echo "Daniel\n";
                             unset($result);
                             $functionToCall = $tempResult['function'];
 echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transactionDataKey = $transactionDataKey\n";
@@ -343,9 +388,9 @@ echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transacti
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
-                            echo "ANTOINE changing state of $transactionDataKey [index = " .  $tempResult['internalIndex'] . "] to DONE\n";
+                            echo "------>  changing state of $transactionDataKey [index = " .  $tempResult['internalIndex'] . "] to DONE\n";
                             $this->variablesConfig[$tempResult['internalIndex']]['state'] = WIN_FLOWDATA_VARIABLE_DONE;  // Mark done
-                            print_r($this->variablesConfig[$tempResult['internalIndex']]);
+ //                           print_r($this->variablesConfig[$tempResult['internalIndex']]);
                             echo $this->variablesConfig[$tempResult['internalIndex']]['databaseName'];
                         } 
                     }              
@@ -360,14 +405,11 @@ $internalVariableToHandle = array();
                     if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17]          
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
-                        echo "We are calling a function: $functionToCall and index = $keyItem\n";
+                        echo "Calling the function: $functionToCall and index = $keyItem\n";
                         $database[$varName[0]][$varName[1]] =  $this->$functionToCall($database);
                         $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                
                     }                     
                 }
- 
-    // Now start consolidating the results, these are to be stored in the investment table (variable part)
-    // check if variable is already defined:
 
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
                 if ($newLoan == YES) {
@@ -377,7 +419,7 @@ $internalVariableToHandle = array();
 
                     if ($resultCreate[0]) {
                         $investmentId = $resultCreate[1];
-                        echo "Saving new loan in with investmentId = $investmentId, Done\n";
+                        echo "Saving NEW loan with investmentId = $investmentId, Done\n";
                         $database['investment']['id'] = $resultCreate[1];
                     }
                     else {
@@ -385,11 +427,10 @@ $internalVariableToHandle = array();
                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId']  . "\n";
                         }
                     }
-
                 }
                 else {
                     $database['investment']['id'] = $investmentId;
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing new data to already existing investment ... ";                 
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing NEW data to already existing investment ... ";                 
                     $result = $this->Investment->save($database['investment']);
                     if ($result) {
                         echo "Saving existing loan with investmentId = $investmentId, Done\n";
@@ -407,8 +448,6 @@ $internalVariableToHandle = array();
                 $database['payment']['date'] = $dateKey;
                 $this->Payment->create();            
                 if ($this->Payment->save($database['payment'], $validate = true)) {
-//                        echo "===> SAVING FOLLOWING PAYMENT DATA:";
-//                        print_r($database['payment']);
                     echo "Done\n";
                 }
                 else {
@@ -416,51 +455,62 @@ $internalVariableToHandle = array();
                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId']  . "\n";
                     }
                 }
-
-                $database['userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
-                $database['userinvestmentdata']['date'] = $dateKey;
-                $database['userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
-                echo "USERREFERENCE = $userReference\n";
-                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
-                $this->Userinvestmentdata->create();            
-                if ($this->Userinvestmentdata->save($database['userinvestmentdata'], $validate = true)) {
-                    
-                    $userInvestmentDataId = $this->Userinvestmentdata->id;
-                    echo "Done, id = $userInvestmentDataId\n";
+                echo "printing relevant part of database\n";
+                print_r($database['investment']);
+                print_r($database['payment']);
+                unset($investmentId);  
+                unset($database['investment']);
+                unset($database['payment']);
+                
+            }
+ 
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for date = $dateKey\n";     
+            $internalVariableToHandle = array(20000);
+            foreach ($internalVariableToHandle as $keyItem => $item) {
+                if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17]          
+                    $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                    $functionToCall = $this->variablesConfig[$item]['function'];
+                    echo "Calling the function: $functionToCall and index = $keyItem\n";
+                    $database[$varName[0]][$varName[1]] =  $this->$functionToCall($database);
+                    echo "inputs are " . $varName[0] . " and" . $varName[1] . "\n";
+                    echo $database[$varName[0]][$varName[1]];
+                    $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;                
+                }                     
+            }             
+            
+            
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";            
+            if ($this->Userinvestmentdata->save($database['Userinvestmentdata'], $validate = true)) {
+                $userInvestmentDataId = $this->Userinvestmentdata->id;
+                echo "Done, id = $userInvestmentDataId\n";
+                $database['Userinvestmentdata']['id'] = $userInvestmentDataId;
+            }
+            else {
+                if (Configure::read('debug')) {
+                   echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+                }
+            }             
+            
+            if (!empty($database['globalcashflowdata'])) {               
+                $database['globalcashflowdata']['userinvestmentdata_id'] = $userInvestmentDataId;
+                $database['globalcashflowdata']['date'] = $dateKey;
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
+                $this->Globalcashflowdata->create();            
+                if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
+                    echo "Done\n";
                 }
                 else {
                     if (Configure::read('debug')) {
-                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId']  . "\n";
+                       echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
                     }
-                } 
-
-                if (!empty($database['globalcashflowdata'])) {               
-                    $database['globalcashflowdata']['userinvestmentdata_id'] = $linkedaccountId;
-                    $database['globalcashflowdata']['date'] = $dateKey;
-                    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";            
-                    $this->Globalcashflowdata->create();            
-                    if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
-                        echo "Done\n";
-                    }
-                    else {
-                        if (Configure::read('debug')) {
-                           echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId']  . "\n";
-                        }
-                    }
-                }
-                print_r($database);
-                unset($database);
-                unset($investmentId);      
-                unset($variablesConfigStatus);
-                foreach ($this->variablesConfig as $variablesKey => $item) {
-                    $this->variablesConfig[$variablesKey]['state'] = WIN_FLOWDATA_VARIABLE_NOT_DONE;
                 }
             }
-        }
+            echo "printing global data for the date = $dateKey\n";
+            print_r($database['Userinvestmentdata']);
+            print_r($database['globalcashflowdata']);    
+  
+        }   
     echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n"; 
-    
     return;   
     }
  
@@ -677,7 +727,7 @@ $internalVariableToHandle = array();
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
     */ 
-    public function consolidateInstallmentPaymentProgress() {
+    public function consolidateInstalmentPaymentProgress() {
         $sum = 0;        
         return;
         $listResult = $this->Paymenttotal->find('list', array(
@@ -700,8 +750,8 @@ $internalVariableToHandle = array();
      * 12
     */              
     public function calculateMyInvestment(&$transactionData, &$resultData) {
-        echo "-------------------->  AAAAAAAA\n";
-        print_r($transactionData);
+ //       echo "-------------------->  AAAAAAAA\n";
+ //       print_r($transactionData);
         $resultData['payment']['payment_myInvestment'] = $transactionData['amount'];        // THIS IS A HARDCODED RULE
 //        print_r($resultData);
 //        echo "END OF CALCULATEMYINVESTMENT\n";
@@ -796,7 +846,7 @@ $internalVariableToHandle = array();
         return $transactionData['amount']; 
     }
  
-    /* 
+    /* DONE
      *  Get the amount which corresponds to the "PlatformDeposit" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -804,10 +854,10 @@ $internalVariableToHandle = array();
      * 66
     */
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
-        return $transactionData['amount']; 
+        return $transactionData[0]['amount']; 
     }   
 
-    /* 
+    /* DONE
      *  Get the amount which corresponds to the "Platformwithdrawal" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -815,7 +865,7 @@ $internalVariableToHandle = array();
      * 67
     */
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
-        return $transactionData['amount']; 
+        return $transactionData[0]['amount']; 
     } 
     
     /* 
@@ -828,7 +878,29 @@ $internalVariableToHandle = array();
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount']; 
     }   
+    
+
+    /* 
+     * Calculates the number of active investments. This function SHOULD be the very last function to execute
+     * and will execute only once
+     *
+     *  @param  array       array with the current transaction data [NOT USED]
+     *  @param  array       array with all data so far calculated and to be written to DB [NOT USED]
+     *  @return string
+     * 20000
+    */
+    public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
+        echo "ANTOINE....";
+        $filterConditions = array('Investment.investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE);
+        $activeInvestments = $this->Investment->find('count', array(
+                                   'conditions' => $filterConditions ));
         
+        echo "DDDDDDD activeInvestments = $activeInvestments\n";
+        return $activeInvestments; 
+    }
+ 
+
+    
      /**
      * checks if an element with value $element exists in a two dimensional array
      * @param type $element
@@ -851,6 +923,43 @@ $internalVariableToHandle = array();
         return false;
     }
 
+    
+    
+    
+     /**
+     * Gets the latest (=last entry in DB) data of a model table
+     * @param string    $model
+     * @param array     $filterConditions
+     * 
+     * @return array with data
+     *          or false if $elements do not exist in two dimensional array
+     */
+    public function getLatestTotals($model, $filterConditions) {                         
+
+        $temp = $this->$model->find("first", array('conditions' => $filterConditions,
+                                                                    'order' => array($model .'.id' => 'desc'), 
+                                                                    'recursive' => -1
+                                                                     ));
+
+        if (empty($temp)) {
+            return false;
+        }
+        
+        foreach ($temp[$model] as $key => $item) {
+            $keyName = explode("_", $key);
+            if (strtoupper($model) <> strtoupper($keyName[0])) {
+                unset($temp[$model][$key]);
+            }
+        }
+        return $temp;
+    }
+    
+    
+    
+    
+    
+    
+    
 
 }
             

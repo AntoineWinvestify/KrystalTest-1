@@ -162,9 +162,8 @@ class bondora extends p2pCompany {
                          //       'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
-/*   NOT YET READY
     protected $amortizationConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
+                                'offsetEnd'     => 1,
                          //       'separatorChar' => ";",
                                 //'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );  

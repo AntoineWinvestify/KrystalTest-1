@@ -132,11 +132,11 @@ class GearmanClientShell extends AppShell {
         if (!empty($dataWorker['tempArray'])) {
             $this->tempArray[$data[0]] = $dataWorker['tempArray'];
         }
-        
-        print_r($this->userResult);
-        print_r($this->userReference);
+
+//        print_r($this->userResult);
+//        print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
-        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
+//        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
     }
     
