@@ -297,7 +297,16 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
         $tempResult = [];
         foreach ($filesByType as $file) {
-            
+            foreach ($configParameters['sheetNames'] as $key => $sheetNames) {
+                if (count($sheetNames) > 1) {
+                    //if multiple files, we need an offset and offsetEnd individual
+                    //An array is necessary 
+                    $this->getMultipleSheetData();
+                }
+                else {
+                    $this->getSimpleFileData($file, $parserConfigFile, $configParameters);
+                }
+            }
         }
         return $tempResult;
     }
@@ -317,7 +326,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempResult;
     }
     
-    public function getMultipleSheetData() {
+    public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
         foreach ($configParameters['sheetNames'] as $key => $sheetName) {
             print_r($configParameters);         
             $this->myParser->setConfig($configParameters);
