@@ -523,6 +523,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *           DivisionInPercentage(12,27,1)   => 44.4
      */
     private function divisionInPercentage($input, $divident, $divisor, $precision)  {
+        if($divisor == 0 || ($divisor <! 0 && $divisor >! 0)){
+            return 0;
+        }
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
     }
 
