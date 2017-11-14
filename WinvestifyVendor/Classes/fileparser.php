@@ -1158,9 +1158,16 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         return $tempArray;
     }
     
+    /**
+     * Documentantion needed
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader04.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader16.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader17.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader18.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader19.php
+     */
     public function analyzeFileByName() {
-        
-        
+        $inputFileType = PHPExcel_IOFactory::identify($inputFileName);
     }
 
 }
