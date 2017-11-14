@@ -112,13 +112,17 @@ class finbee extends p2pCompany {
         //'separatorChar' => ";",
         'sortParameter' => "investment_loanId",   // used to "sort" the array and use $sortParameter as prime index.
         'sheetNames' => [
-            ['Active Loans'],
-            ['Active Loan Slices'],
-            ['Completed Loans'],
-            ['Completed Loan Parts'],
-            ['Sold Loan Parts'],
-            ['Bought Loan Parts'],
-            ['SM Transactions']
+            0 => [
+                ['Active Loans'],
+                ['Active Loan Slices'],
+                ['Completed Loans'],
+                ['Completed Loan Parts'],
+                ['Sold Loan Parts'],
+                ['Bought Loan Parts']
+            ],
+            1 => [
+                ['SM Transactions']
+            ]
         ]
     );
     
