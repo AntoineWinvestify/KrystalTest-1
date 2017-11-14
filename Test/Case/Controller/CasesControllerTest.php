@@ -4,7 +4,7 @@
 class CasesControllerTest extends ControllerTestCase {
 
     public function testDivision() {
-        $expected = "100.01499350282";
+        $expected = "100";
         $actual = $this->testAction("/cases/testDivision");
         $this->assertEquals($expected, $actual[9]['investment']['division']);
     }
@@ -127,48 +127,32 @@ class CasesControllerTest extends ControllerTestCase {
     }
 
     public function testAmount1() { // format 0,00453
-        $expected = '0.00453';
+        $expected = array('0.00454', '2400.5548', '2400.000995', '2545.442424', '2566.8778433868774', '2500.45214', "0.0");
         $actual = $this->testAction("/cases/testAmount1");
-        $this->assertEquals($expected, $actual[0]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[0], $actual[0]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[1], $actual[1]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[2], $actual[2]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[3], $actual[3]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[4], $actual[4]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[5], $actual[5]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[6], $actual[14]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[6], $actual[15]['investment']['fullLoanAmount']);
     }
 
     public function testAmount2() { // format 2.400,5548
-        $expected = '2400.5548';
+        $expected = array("0.00000321", "2210000", "0.0002401", "24000", "0.0024", "0.0024");
         $actual = $this->testAction("/cases/testAmount2");
-        $this->assertEquals($expected, $actual[1]['investment']['fullLoanAmount']);
-    }
-
-    public function testAmount3() { // format €24005,000995
-        $expected = '2400.000995';
-        $actual = $this->testAction("/cases/testAmount3");
-        $this->assertEquals($expected, $actual[2]['investment']['fullLoanAmount']);
-    }
-
-    public function testAmount4() {  // format €2.545,442424
-        $expected = '2545.442424';
-        $actual = $this->testAction("/cases/testAmount4");
-        $this->assertEquals($expected, $actual[3]['investment']['fullLoanAmount']);
-    }
-
-    public function testAmount5() { // format 2.566,8778433868774
-        $expected = '2566.8778433868774';
-        $actual = $this->testAction("/cases/testAmount5");
-        $this->assertEquals($expected, $actual[4]['investment']['fullLoanAmount']);
-    }
-
-    public function testAmount6() { // format 2500,45214€
-        $expected = '2500.45214';
-        $actual = $this->testAction("/cases/testAmount6");
-        $this->assertEquals($expected, $actual[5]['investment']['fullLoanAmount']);
-    }
-
-    public function testAmount7() { // format 2500,45214€
-        $expected = array('0.00000321', '2210000',  '0.0002401', '0.0002401');
-
-        $actual = $this->testAction("/cases/testAmount7");
         $this->assertEquals($expected[0], $actual[6]['investment']['fullLoanAmount']);
         $this->assertEquals($expected[1], $actual[7]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[2], $actual[8]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[2], $actual[9]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[3], $actual[10]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[3], $actual[11]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[4], $actual[12]['investment']['fullLoanAmount']);
+        $this->assertEquals($expected[4], $actual[13]['investment']['fullLoanAmount']);
     }
+
+
 
     public function testExtracData() {
         $expected = 'n for th';
