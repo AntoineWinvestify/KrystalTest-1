@@ -167,14 +167,14 @@ class loanbook extends p2pCompany {
     protected $valuesAmortizationTable = [
         
         2 => [
-                [
-                    "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
-                    "inputData" => [
-				"input2" => "D-M-Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]
-            ],
+            [
+                "type" => "amortizationtable_scheduledDate",                         // Winvestify standardized name   OK
+                "inputData" => [
+                            "input2" => "D-M-Y",
+                            ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
         3 => [
             "name" => "amortizationtable_paymentStatus"
         ],
