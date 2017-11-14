@@ -56,6 +56,13 @@
  *
  */
 class Fileparser {
+    
+    protected $inputFileType = [
+        "xls" => 'Excel5',
+        "xlsx" => 'Excel2007',
+        
+    ];
+    
     protected $config = array ('offsetStart' => 0,
                             'offsetEnd'     => 0,
                             'separatorChar' => ";",
@@ -308,8 +315,8 @@ class Fileparser {
     
     /**
      * Function to analyze a file depending on its extension
-     * @param string $filePath FQDN of the file to analyze
-     * @param array  $parserConfig Array that contains the configuration data of a specific "document"
+     * @param string $file FQDN of the file to analyze
+     * @param array  $configuration Array that contains the configuration data of a specific "document"
      * @param string $extension It is the extension of the file
      * @return array $parsedData
      *         false in case an error occurred
@@ -344,22 +351,9 @@ class Fileparser {
      */
     public function analyzeFileExcel($file, $configuration) {
 echo "INPUT FILE = $file \n";
-    $this->filename = $file;
-echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-
-       // determine first if it is a csv, if yes then run command
-        //$fileNameChunks = explode(DS, $file);
-        /*if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
-    //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
-            $inputFileType = 'CSV';
-            $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-            $objReader->setDelimiter($this->Config['separatorChar']);
-            $objPHPExcel = $objReader->load($file);
-            //execute command php has a function for this which works on a string
-        }
-        else { */     // xls/xlsx file
+        $this->filename = $file;
+echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n";
         $objPHPExcel = PHPExcel_IOFactory::load($file);
-        //}
 
         ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
@@ -1161,6 +1155,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $i++;
         }
         return $tempArray;
+    }
+    
+    public function analyzeFileByName() {
+        
+        
     }
 
 }
