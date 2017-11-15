@@ -141,32 +141,27 @@
         
         var birdsCanvas = document.getElementById("birdsChart");
 
-        var birdsData = {
-          labels: ["Spring", "Summer", "Fall", "Winter"],
-          datasets: [{
-            data: [20, 10, 40, 30],
-            backgroundColor: [
-              "rgba(255, 0, 0, 0.6)",
-              "rgba(0, 255,200, 0.6)",
-              "rgba(200, 0, 200, 0.6)",
-              "rgba(0, 255, 0, 0.6)"
-            ],
-            borderColor: "rgba(255, 255, 255, 0.8)"
-          }]
-        };
-        <?php /*Charts*/ ?>
-        var chartOptions = {
-          startAngle: -Math.PI / 4,
-          animation: {
-            animateRotate: true
-          },
-          responsive: false
-        };
-
         var polarAreaChart = new Chart(birdsCanvas, {
-          type: 'polarArea',
-          data: birdsData,
-          options: chartOptions
+            type: "line",
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [{
+                    label: "netReturn",
+                    fill: false,
+                    data: [20, 10, 40, 30, 100, 45, 87, 94, 12, 57, 33, 82],
+                    borderColor: "rgba(0, 230, 77, 1)",
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
         });
     });
     
@@ -229,7 +224,7 @@
     }
     span.active {
         font-weight: bold;
-        color: #87e14b;
+        color: rgb(0, 230, 77);
     }
     .tooltip.top .tooltip-inner {
         border: 1px solid #87e14b;
@@ -453,7 +448,7 @@
                                 
                                 <td><?php echo $total . " &euro;"?></td>
                                 <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2) . " &euro;"?></td>
-                                <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . " %"?></td>
+                                <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
                                 <td>12,11</td>
                                 <td>63,22%</td>
                             </tr>
