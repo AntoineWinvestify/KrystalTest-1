@@ -47,7 +47,7 @@
                     <div class="navbar-header navbar-right">
                         <ul class="nav pull-left navbar-nav collapse-tablet navGreen">
                             <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a id="liLink" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
-                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left" style="cursor:auto;">
+                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left" style="cursor:auto;z-index: 1">
                                     <div class="row">
                                         <div class="col-sm-offset-1 col-sm-10 col-xs-offset-1 col-xs-10" style="margin-top:10px;">
                                             <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
@@ -135,7 +135,7 @@
 
                                             <div class="pull-right"> 
                                                 <?php /*<a href="#" class="center-block"><?php echo __('Forgot your password?')  ?></a>*/?>
-                                                <button type="submit" id="loginBtn" style="margin-top:10px; margin-bottom: 10px;" class="text-uppercase btn"><?php echo __('Send') ?>
+                                                <button type="submit" id="loginBtn" style="margin-top:10px; margin-bottom: 10px;z-index:10" class="text-uppercase btn"><?php echo __('Send') ?>
                                                 </button><br/>
                                             </div>
                                         </div>
@@ -451,7 +451,10 @@
                 fadeOutElement("#popUp", 15000);
 
                 //disable clicking on #loginDropdown
-                $("#loginDropdown").click(false);
+                $("#loginDropdown").on("click", function(event) {
+                    event.preventDefault;
+                    event.stopPropagation();
+                });
                 
                 //navbar collapse on clicking outside navbar
                 $(document).on("click", function(){
