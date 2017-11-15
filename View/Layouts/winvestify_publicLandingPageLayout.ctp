@@ -46,8 +46,8 @@
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header navbar-right">
                         <ul class="nav pull-left navbar-nav collapse-tablet navGreen">
-                            <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
-                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
+                            <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a id="liLink" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
+                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left" style="cursor:auto;">
                                     <div class="row">
                                         <div class="col-sm-offset-1 col-sm-10 col-xs-offset-1 col-xs-10" style="margin-top:10px;">
                                             <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
@@ -450,30 +450,19 @@
                 //fadeout popup
                 fadeOutElement("#popUp", 15000);
 
-                //navbar not collapsing on #loginDropdown
-                $(document).on("click", "#loginDropdown", function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                });
-                
-                //navbar not collapsing on #aboutDropdown
-                $(document).on("click", ".nav li a.collapseNav", function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                });
+                //disable clicking on #loginDropdown
+                $("#loginDropdown").click(false);
                 
                 //navbar collapse on clicking outside navbar
                 $(document).on("click", function(){
                     $('.navbar-collapse').collapse('hide');
-                    $('ul.nav li.dropdown').find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400); //hide loginDropdown
+                    $('#loginDropdown').hide(); //hide loginDropdown
                 });
 
                 if ($(window).width() > 1023) {
-                    //Dropdown menu hover
-                    $('ul.nav li.dropdown').hover(function() {
-                      $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
-                      }, function() {
-                      $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
+                    //Dropdown menu click
+                    $("ul.nav li.dropdown").on("click", function() {
+                      $(this).find('.dropdown-menu').stop(true, true).fadeToggle(400);
                     });
                 }
                 
