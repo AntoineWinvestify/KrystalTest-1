@@ -1420,14 +1420,14 @@ class zank extends p2pCompany {
                                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
                             case 1:
-                                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($p->nodeValue);
+                                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
                             case 2:
                                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
-                            case 4:
+                            /*case 4:
                                 $this->tempArray['global']['yield'] = $this->getPercentage($p->nodeValue);
-                                break;
+                                break;*/
                         }
                         $index++;
                     }

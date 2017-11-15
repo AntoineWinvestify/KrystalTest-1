@@ -783,7 +783,7 @@ class bondora extends p2pCompany {
                   echo $key . " is " . $td->nodeValue;
                   } */
 
-                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($tds[14]->nodeValue);  //Capital vivo
+                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($tds[14]->nodeValue);  //Capital vivo
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($tds[2]->nodeValue); //My wallet
 
                 $spans = $dom->getElementsByTagName('span');

@@ -732,7 +732,7 @@ class mintos extends p2pCompany {
                     foreach($tds as $key => $td){
                         //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["myWallet"] = $this->getMonetaryValue($tds[1]->nodeValue);
-                        $tempArray["global"]["activeInInvestments"] = $this->getMonetaryValue($tds[23]->nodeValue);
+                        $tempArray["global"]["outstandingPrincipal"] = $this->getMonetaryValue($tds[23]->nodeValue);
                         $tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
 
 

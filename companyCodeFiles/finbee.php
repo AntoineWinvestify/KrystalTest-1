@@ -259,7 +259,9 @@ class finbee extends p2pCompany {
                 }
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                $headersJson = '["accept-language: en-US,en;q=0.8"]';
+                $headers = json_decode($headersJson,true);
+                $this->getPFPFileMulticurl($url, false, false, $headers, $fileName);
                 break;
             case 8:
                 if (!$this->verifyFileIsCorrect()) {
