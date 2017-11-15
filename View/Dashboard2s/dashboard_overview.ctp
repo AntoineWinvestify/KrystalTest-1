@@ -60,17 +60,17 @@
         }
     }
     
-    function ga_1CR(counter1CR) {
+    function ga_1CR(counter1Click) {
         if (typeof ga === 'function') { 
-            console.log("ga 'send' 'event' 'Dashboard2'  '1CR' " + counter1CR);
-            ga('send', 'event', 'Dashboard2', '1CR', counter1CR);
+            console.log("ga 'send' 'event' 'Dashboard2'  '1CR' " + counter1Click);
+            ga('send', 'event', 'Dashboard2', '1CR', counter1Click);
         }
     }
     
-    function ga_linkAccount(counterLinkAccount) {
+    function ga_linkAccount(counterLA) {
         if (typeof ga === 'function') { 
-            console.log("ga 'send' 'event' 'Dashboard2'  'linkAccount' " + counterLinkAccount);
-            ga('send', 'event', 'Dashboard2', 'linkAccount', counterLinkAccount);
+            console.log("ga 'send' 'event' 'Dashboard2'  'linkAccount' " + counterLA);
+            ga('send', 'event', 'Dashboard2', 'linkAccount', counterLA);
         }
     }
     
@@ -84,13 +84,13 @@
     $(function (){
         //Click on Account Linking btn
         $(document).on("click", "#btnAccountLinking", function(){
-            var counterLinkAccount = 0;
+            counterLinkAccount = 0;
             ga_linkAccount(counterLinkAccount);
             window.location.replace('/investors/readLinkedAccounts');
         });
         
         $(document).on("click", "#btnAccountLinkingB", function(){
-            var counterLinkAccount = <?php echo count($individualInfoArray); ?>;
+            counterLinkAccount = <?php echo count($individualInfoArray); ?>;
             ga_linkAccount(counterLinkAccount);
             window.location.replace('/investors/readLinkedAccounts');
         });
@@ -108,6 +108,7 @@
             window.location.replace('/ocrs/ocrInvestorView');
         });
         
+        //Click on platform logo
         $(document).on("click", ".logo", function(){ 
             name = $("#logo"+id).attr("alt");
             id = $(this).attr("id");
