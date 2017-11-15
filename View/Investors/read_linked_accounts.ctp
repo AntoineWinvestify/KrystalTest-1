@@ -361,7 +361,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                             <!-- /.row -->
                             <div class="row" id="linkAccountTooltip" style="display:none">
                                 <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-                                    <small><?php echo __('Los datos de acceso se corresponden con la plataforma a enlazar');?></small>
+                                    <small><?php echo __('The credentials of the platform you like to link to your Dashboard');?></small>
                                 </div>
                             </div>
                             <div class="errorInputMessage ErrorUserName col-xs-offset-1">
