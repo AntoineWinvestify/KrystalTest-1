@@ -435,23 +435,25 @@ class mintos extends p2pCompany {
         "B" => [
                 "name" => "investment_loanId"                                   // Winvestify standardized name  OK
              ],
+/*        
         "H" =>  [
             [
-                "type" => "investment_remainingPrincipal",                      // Winvestify standardized name 
+                "type" => "investment_remainingPrincipal",                      // Winvestify standardized name [remainder of TOTAL loan?
                 "inputData" => [
                             "input2" => "",
                             "input3" => ".",
                             "input4" => 16
                             ],
                 "functionName" => "getAmount",
-            ]
-         ],        
+            ]           
+         ],
+*/        
         "M" => [
                 "name" => "investment_stateOfLoan"                              // Winvestify standardized name  OK
              ],       
         "R" =>  [
             [
-                "type" => "investment_outstandingPrincipal",                      // Winvestify standardized name  
+                "type" => "investment_outstandingPrincipal",                    // Winvestify standardized name OK 
                 "inputData" => [
                             "input2" => "",
                             "input3" => ".",
@@ -467,10 +469,10 @@ class mintos extends p2pCompany {
     
       protected $callbacks = [
         "investment" => [
-            "investment_buyBackGuarantee" => " translateInvestmentBuyBackGuarantee"
+            "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee"
         ],
-        "investment" => [
-            "investment_buyBackGuarantee" => " translateInvestmentBuyBackGuarantee"
+        "expiredLoan" => [
+            "investment_stateOfLoan" => "translateOriginalLoanState"
         ]
     ];  
     

@@ -104,6 +104,35 @@ class AppShell extends Shell {
     }
 
 
+    
+    /**
+     * checks if an element with value $element exists in a two dimensional array
+     * @param type $element
+     * @param type $array
+     *
+     * @return array with data
+     *          or false of $elements does not exist in two dimensional array
+     */
+    public function in_multiarray($element, $array) {
+        while (current($array) !== false) {
+            if (current($array) == $element) {
+                return true;
+            } elseif (is_array(current($array))) {
+                if ($this->in_multiarray($element, current($array))) {
+                    return(current($array));
+                }
+            }
+            next($array);
+        }
+        return false;
+    }    
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * Read the names in a list of files (FDQN) that fulfill the $typeOfFiles bitmap
