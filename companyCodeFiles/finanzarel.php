@@ -460,7 +460,7 @@ class finanzarel extends p2pCompany {
                 
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($controlVariablesArray[5]);
                 $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($controlVariablesArray[2]);
-                $this->tempArray['global']['amortization'] = $this->getMonetaryValue($controlVariablesArray[11]);
+                $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($controlVariablesArray[11]);
                 $this->tempArray['reservedFunds'] = $this->getMonetaryValue($controlVariablesArray[6]); //They call it "Inversion neta comprometida"
                 
                 print_r($this->tempArray);

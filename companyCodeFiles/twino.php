@@ -227,6 +227,11 @@ class twino extends p2pCompany {
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );  
     
+    protected $callbacks = [
+        "investment" => [
+            "status" => "translateLoanStatus"
+        ]
+    ];
     
     function __construct() {
         parent::__construct();
@@ -476,7 +481,7 @@ class twino extends p2pCompany {
                 $variables = json_decode($str, true);
                 print_r($variables);
 
-                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
+                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($variables['investmentBalance']); //My wallet
                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($variables['interest']); //Interest
 
@@ -580,7 +585,45 @@ class twino extends p2pCompany {
     }
 
     
-    //WE DON?T HAVE CALLBACKS IN TWINO
+
+    /**
+     * Function to translate the company specific loan status to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan status
+     * @return int                  Winvestify standardized loan status
+     */    
+    public function translateLoanStatus($inputData){
+        $status = WIN_LOANSTATUS_UNKNOWN;
+        $inputData = strtoupper(trim($inputData));
+         switch ($inputData) {
+            case "CURRENT":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "EXTENDED/BUYBACK":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "DELAYED":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "DEFAULTED":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "SOLD":
+                $data = WIN_LOANSTATUS_FINISHED;
+                break;    
+            case "REPAID":
+                $data = WIN_LOANSTATUS_FINISHED;
+                break;
+            case "RECOVERED":
+                $data = WIN_LOANSTATUS_FINISHED;
+                break;
+            
+        }
+        return $data;
+    }
+    
+    
+    
     /**
      * Function to translate the company specific loan type to the Winvestify standardized
      * loan type

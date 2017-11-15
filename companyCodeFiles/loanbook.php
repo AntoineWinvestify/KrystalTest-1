@@ -814,7 +814,7 @@ class loanbook extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                $this->tempArray['global']['profitibility'] = $this->getPercentage(trim($spans[0]->nodeValue));
+                //$this->tempArray['global']['profitibility'] = $this->getPercentage(trim($spans[0]->nodeValue));
 
                 $globals = $this->getElements($dom, "div", "id", "lb_cartera_data_1");
                 if (!$this->hasElements) {
@@ -825,7 +825,7 @@ class loanbook extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($spans[0]->nodeValue);
+                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($spans[0]->nodeValue);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
                 break;
