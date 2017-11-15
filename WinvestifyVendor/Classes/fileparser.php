@@ -42,7 +42,10 @@
  * E format in getAmount fixed. Format example: 2,31E-6.
  * Minor fixes.
  * 
- * 2017-11-10           version 0.4
+ * 2017-11-09           Version 0.4
+ * Amount and currency bug fixing.
+ * 
+ * 2017-11-10           version 0.5
  * Updated function extractDataFromString with an extra parameter
  * 
  * 
@@ -770,6 +773,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *           DivisionInPercentage(12,27,1)   => 44.4
      */
     private function divisionInPercentage($input, $divident, $divisor, $precision)  {
+        if($divisor == 0 || ($divisor <! 0 && $divisor >! 0)){
+            return 0;
+        }
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
     }
 
@@ -856,7 +862,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $result = 0;
 
         
-        foreach ($dictionaryWords as $wordKey => $word) {
+        foreach ($this->dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found
                 $result = $word;
@@ -972,29 +978,35 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
-
         if ($decimalSep == ".") {
             $seperator = "\.";
-        }
-        else if($decimalSep == 'E'){
-            if(strpos($input, "E")){
-                if(strpos($input, "-")){
-                    $decArray = explode("E", $input);
-                    $dec = preg_replace("/[-]/", "", $decArray[1]);
-                    $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
-                    echo "AQUI " . $dec2;
-                    $input = strtr($input, array(',' => '.'));    
-                    $input = number_format(floatval($input), $dec + $dec2);
-                } else{
-                    $input = strtr($input, array(',' => '.'));    
-                    $input = number_format(floatval($input), 0);
-                }
-            }
-            $seperator = ".";
-        }
+        }        
         else {                                                              // seperator =>  ","
             $seperator = ",";
         }
+        if(empty($input) || $input == 0 && ($input <! 0 && $input >! 0)){ // decimals like 0,0045 are true in $input == 0
+            $input = "0.0";
+            $seperator = "\.";
+        }
+        if(strpos($input, "E") || strpos($input, "e")){
+            if(strpos($input, "E")){
+                $char = "E";
+            } else {
+                $char = "e";
+            }
+            
+            if(strpos($input, "-")){              
+                $decArray = explode($char, $input);
+                $dec = preg_replace("/[-]/", "", $decArray[1]);
+                $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), $dec + $dec2);
+            } else{
+                $input = strtr($input, array(',' => '.'));    
+                $input = number_format(floatval($input), 0);
+            }
+            $seperator = "\.";
+        }       
         $allowedChars =  "/[^0-9" . $seperator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
@@ -1070,11 +1082,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ");
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
-        foreach ($this->currencies as $currencyIndex => $currency) {
-            if ($loanCurrency == $currency[0]) {                // check the ISO code
+        foreach ($this->currencies as $currencyIndex => $currency) {        
+            if (strpos($loanCurrency, $currency[0]) != false || $currencySymbol == $currency[0]) {                // check the ISO code
               return $currencyIndex;
             }
-            if ($currencySymbol == $currency[1]) {              // check the symbol
+            if (strpos($loanCurrency, $currency[1]) != false || $currencySymbol == $currency[1]) {              // check the symbol
               return $currencyIndex;
             }
         }

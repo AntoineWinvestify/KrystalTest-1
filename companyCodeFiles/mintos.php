@@ -43,6 +43,8 @@
  * 2017-10-24 version_0.8
  * Integration of parsing amortization tables with Gearman and fileparser
  *
+ * 2017-03-11 Version_0.9
+ * Download all investment in function getPfpFiles
  */
 
 /**
@@ -496,7 +498,14 @@ class mintos extends p2pCompany {
                                 'offsetEnd'     => 0,
                                 'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  ); 
-     
+    
+    protected $callbacks = [
+        "investment" => [
+            "investment_loanType" => "translateLoanType",
+            "investment_amortizationMethod" => "translateAmortizationMethod",
+            //"investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee'
+        ]
+    ];
      
 
     function __construct() {
@@ -958,7 +967,35 @@ class mintos extends p2pCompany {
      * @return int                  Winvestify standardized loan type
      */
     public function translateLoanType($inputData) {
-
+        $type = WIN_TYPEOFLOAN_UNKNOWN;
+        $inputData = strtoupper($inputData);
+        switch ($inputData){
+            case "MORTGAGE LOAN":
+                $type = WIN_TYPEOFLOAN_MORTGAGE;
+                break;
+            case "BUSINESS LOAN":
+                $type = WIN_TYPEOFLOAN_BUSINESSLOAN;
+                break;
+            case "CAR LOAN":
+                $type = WIN_TYPEOFLOAN_CARLOAN;
+                break;
+            case "PERSONAL LOAN":
+                $type = WIN_TYPEOFLOAN_PERSONAL;
+                break;
+            case "SHORT-TERM LOAN":
+                $type = WIN_TYPEOFLOAN_SHORTTERM;
+                break;
+            case "AGRICULTURAL LOAN":
+                $type = WIN_TYPEOFLOAN_AGRICULTURAL;
+                break;
+            case "INVOICE FINANCING":
+                $type = WIN_TYPEOFLOAN_INVOICETRADING;
+                break;
+            case "PAWNBROKING LOAN":
+                $type = WIN_TYPEOFLOAN_PAWNBROKING;
+                break;
+        }
+        return $type;
     }
     
     /**
@@ -968,7 +1005,23 @@ class mintos extends p2pCompany {
      * @return int                  Winvestify standardized amortization method
      */
     public function translateAmortizationMethod($inputData) {
-
+        $type = WIN_AMORTIZATIONMETHOD_UNKNOWN;
+        $inputData = strtoupper($inputData);
+        switch ($inputData){
+            case "FULL":
+                $type = WIN_AMORTIZATIONMETHOD_FULL;
+                break;
+            case "PARTIAL":    
+                $type = WIN_AMORTIZATIONMETHOD_PARTIAL;
+                break;
+            case "INTEREST-ONLY":
+                $type = WIN_AMORTIZATIONMETHOD_INTERESTONLY;
+                break;
+            case "BULLET":
+                $type = WIN_AMORTIZATIONMETHOD_BULLET;
+                break;
+        }
+        return $type;
     }   
     
     /**
@@ -977,7 +1030,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific type of investment
      * @return int                  Winvestify standardized type of investment
      */
-    public function translateTypeOfInvestment($inputData) {
+    public function translateTypeOfInvestment($inputData) { //We don't have this in mintos
 
     }
     
@@ -987,7 +1040,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific payment frequency
      * @return int                  Winvestify standardized payment frequency
      */
-    public function translatePaymentFrequency($inputData) {
+    public function translatePaymentFrequency($inputData) {  //We don't have this in mintos
         
     }
         
@@ -997,7 +1050,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific investment market concept
      * @return int                  Winvestify standardized investment marke concept
      */
-    public function translateInvestmentMarket($inputData) {
+    public function translateInvestmentMarket($inputData) {  //We don't have this in mintos
         
     }
     

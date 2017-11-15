@@ -94,10 +94,11 @@ class ParseDataClientShell extends GearmanClientShell {
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
-
+        
 
         while (true) {
             $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
+            print_r($pendingJobs);
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
             }
@@ -106,6 +107,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
                 }
                 foreach ($pendingJobs as $keyjobs => $job) {
+                    
                     $userReference = $job['Queue']['queue_userReference'];
                     $queueId = $job['Queue']['id'];
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
@@ -113,7 +115,9 @@ class ParseDataClientShell extends GearmanClientShell {
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
+                    print_r($subDir);
                     $i = 0;
+
                     foreach ($subDir[0] as $subDirectory) {
                         $tempName = explode("/", $subDirectory);
                         $linkedAccountId = $tempName[count($tempName) - 1];
