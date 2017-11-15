@@ -138,7 +138,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             foreach ($files as $fileTypeKey => $filesByType) {
                 switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
-                        continue 2;
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction Files \n";
                         }
@@ -171,7 +170,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 }
                 
                 if (count($filesByType) === 1) {
-                    $tempResult = $this->getSimpleFileData($filesByType, $parserConfigFile, $configParameters);
+                    $tempResult = $this->getSimpleFileData($filesByType[0], $parserConfigFile, $configParameters);
                 } 
                 else if (count($filesByType) > 1) {
                     $tempResult = $this->getMultipleFilesData($filesByType, $parserConfigFile, $configParameters);
@@ -185,9 +184,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
                             $totalParsingresultTransactions = $tempResult;
+                            print_r($totalParsingresultTransactions);
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
-                            $totalParsingresultTransactions = $tempResult;
+                        //    $totalParsingresultTransactions = $tempResult;
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
@@ -196,7 +196,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             }
                             break;                            
                     }
-
+/*
                     try {
 
                         $callBackResult = $companyHandle->fileAnalyzed($approvedFile, $actualFileType, $tempResult);       // Generate callback
@@ -211,6 +211,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                     }
+ */
                 }
                 else {               // error occurred while analyzing a file. Report it back to Client
                     $returnData[$linkedAccountKey]['error'][] = $tempResult['error'];
@@ -228,8 +229,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             
             
  // THIS DEPENDS ON THE WORK DONE BY ANTONIO (SUPPORT OF VARIOUS SHEETS OF XLS FILE           &$investmentList,  
-            $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans,
-                                                                                                                $totalParsingresultTransactions);              
+            $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
            
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
@@ -402,7 +402,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     }
     
     public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
-        echo "Dealing with file $file\n";     
+        echo __LINE__ . "Dealing with file $file\n";     
         if (!empty($configParameters['offsetStart'])) {
             $tempResult = $this->getSimpleSheetData($file, $parserConfigFile, $configParameters);
         }

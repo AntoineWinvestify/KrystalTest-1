@@ -31,18 +31,14 @@ class UserDataShell extends AppShell {
 
     }    
     
-  
-
-    
-    
-    
-    
-    
-    
+   
    /*
     * The control variables are calculated for each "DAY", but the checking is only done for the date of the readout.
     * This means that if a reading period covers a week, the checking SHOULD be done only for the last calculation (= last day)
-    * 
+    * The structure of both arrays is:
+    *               'myWallet'
+    *               'outstandingPrincipal'
+    *               'activeInvestments'
     * @param  array       array with the calculated control variables for today's readout
     * @param  array       array with the control variables as provided by platform
     * @return boolean     
@@ -290,24 +286,6 @@ class UserDataShell extends AppShell {
         return $sum;
     }
 
-
-    /* NOT YET  chewck if the index is investment or payment
-     * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
-     * @return string      the string representation of a large integer
-     */
-    public function calculateTotalNetIncome(&$transactionData, &$resultData) {
-        if (empty($resultData['investment']['investment_loanTotalCost'])) {
-            $resultData['investment_loanTotalCost'] = 0.0;
-        }
-        if (empty($resultData['investment']['investment_totalGrossIncome'])) {
-            $resultData['investment_totalGrossIncome'] = 0.0;
-        }        
-        $result = bcsub($resultData['investment_totalGrossIncome'],$resultData['investment_loanTotalCost'], 16);
-        return $result;
-        
-    }
 
 
 
@@ -574,9 +552,6 @@ class UserDataShell extends AppShell {
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
-     * $internalControlVariables['myWallet'] == $externalControlVariables)
-$internalControlVariables['outstandingPrincipal'] == $externalControlVariables)
-$internalControlVariables['activeInvestments'] == $externalControlVariables) 
      */
     public function calculateTotalNetIncome(&$transactionData, &$resultData) {
         if (empty($resultData['investment']['investment_loanTotalCost'])) {
@@ -587,18 +562,51 @@ $internalControlVariables['activeInvestments'] == $externalControlVariables)
         }        
         $result = bcsub($resultData['investment_totalGrossIncome'],$resultData['investment_loanTotalCost'], 16);
         return $result;
-   
-        
-        
-        
-        
     }    
     
 
 
+
+    /*
+     * Get the amount which corresponds to the "InterestgrossIncome" concept
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
+     */
+    public function calculateMyWallet() {
+        $sum = 0;
+        return;
+        $listResult = $this->Paymenttotal->find('list', array(
+            'fields' => array('paymenttotal_interestgrossIncome'),
+            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
+        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
     
-    
-    
+        /*
+     * Get the amount which corresponds to the "InterestgrossIncome" concept
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
+     */
+    public function calculateTotalOutstandingPrincipal() {
+        $sum = 0;
+        return;
+        $listResult = $this->Paymenttotal->find('list', array(
+            'fields' => array('paymenttotal_interestgrossIncome'),
+            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
+        ));
+
+        foreach ($listResult as $item) {
+            $sum = bcadd($sum, $item, 16);
+        }
+        return $sum;
+    }
+   
     
     
 }
@@ -675,8 +683,6 @@ $internalControlVariables['activeInvestments'] == $externalControlVariables)
  */
     
     
-
-
         
 
 ?>

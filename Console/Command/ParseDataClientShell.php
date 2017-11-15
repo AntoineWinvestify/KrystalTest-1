@@ -115,7 +115,6 @@ class ParseDataClientShell extends GearmanClientShell {
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
-                    print_r($subDir);
                     $i = 0;
 
                     foreach ($subDir[0] as $subDirectory) {
@@ -134,8 +133,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $files[WIN_FLOW_TRANSACTION_FILE] = $dirs->findRecursive(WIN_FLOW_TRANSACTION_FILE . ".*", true);
                         $files[WIN_FLOW_INVESTMENT_FILE] = $dirs->findRecursive(WIN_FLOW_INVESTMENT_FILE . ".*", true);
                         $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
-                        $listOfActiveLoans = $this->getListActiveLoans($linkedAccountId);
-                        print_r($listOfActiveLoans);
+                        $listOfActiveInvestments = $this->getListActiveInvestments($linkedAccountId);
 
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
@@ -226,7 +224,7 @@ class ParseDataClientShell extends GearmanClientShell {
      * @return array
      *
      */
-    public function getListActiveLoans($linkedaccount_id) {
+    public function getListActiveInvestments($linkedaccount_id) {
         $this->Investment = ClassRegistry::init('Investment');
         $filterConditions = array(
             'linkedaccount_id' => $linkedaccount_id,

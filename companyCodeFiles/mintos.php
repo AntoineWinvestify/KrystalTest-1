@@ -471,14 +471,16 @@ class mintos extends p2pCompany {
     
       protected $callbacks = [
         "investment" => [
-            "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee"
+            "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
+            "investment_loanType" => "translateLoanType",
+            "investment_amortizationMethod" => "translateAmortizationMethod",            
         ],
         "expiredLoan" => [
             "investment_stateOfLoan" => "translateOriginalLoanState"
         ]
     ];  
     
-    
+ 
     
     protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -499,13 +501,7 @@ class mintos extends p2pCompany {
                                 'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  ); 
     
-    protected $callbacks = [
-        "investment" => [
-            "investment_loanType" => "translateLoanType",
-            "investment_amortizationMethod" => "translateAmortizationMethod",
-            //"investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee'
-        ]
-    ];
+
      
 
     function __construct() {
