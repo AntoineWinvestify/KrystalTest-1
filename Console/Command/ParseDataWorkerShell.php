@@ -108,7 +108,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      */
      
     public function parseFileFlow($job) {
-        
+        //for debugging error purpose
+        $this->job = $job;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data received from Client\n";
         }        
@@ -136,6 +137,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             foreach ($files as $fileTypeKey => $filesByType) {
                 switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
+                        continue 2;
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction Files \n";
                         }
@@ -173,7 +175,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 else if (count($filesByType) > 1) {
                     $tempResult = $this->getMultipleFilesData($filesByType, $parserConfigFile, $configParameters);
                 }
-                
+                exit;
                 if (empty($tempResult['error'])) {
                     switch ($fileTypeKey) {
                         case WIN_FLOW_INVESTMENT_FILE:
@@ -295,8 +297,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     }
     
     public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
-        echo "Dealing with file $file\n";
-        print_r($configParameters);         
+        echo "Dealing with file $file\n";     
         if (!empty($configParameters['offsetStart'])) {
             $tempResult = $this->getSimpleSheetData($file, $parserConfigFile, $configParameters);
         }
@@ -311,7 +312,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         $i = 0;
         foreach ($filesByType as $file) {
             if (!empty($configParameters[$i]['offsetStart'])) {
-                $tempResult[] = $this->getSimpleFileData($file, $parserConfigFile[$i], $configParameters[$i]);
+                $tempResult[] = $this->getSimpleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
             }
             else {
                 //if multiple files, we need an offset and offsetEnd individual
@@ -325,7 +326,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     
     public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
         $this->myParser->setConfig($configParameters);
-        $tempResult = $this->myParser->analyzeFile($file, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
+        $extension = $this->getExtensionFile($file);
+        $tempResult = $this->myParser->analyzeFile($file, $parserConfigFile, $extension);     // if successfull analysis, result is an array with loanId's as index
         if (empty($tempResult)) {
             $tempResult['error'] = array( 
                 "typeOfError"   => "parsingError",
@@ -336,8 +338,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     }
     
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
-        foreach ($configParameters as $key => $individualConfigParameters) {
-            print_r($individualConfigParameters);         
+        foreach ($configParameters as $key => $individualConfigParameters) {       
             $this->myParser->setConfig($individualConfigParameters);
             $tempResult[] = $this->myParser->analyzeFileBySheetName($file, $parserConfigFile[$key]);     // if successfull analysis, result is an array with loanId's as index
             if (empty($tempResult)) {
