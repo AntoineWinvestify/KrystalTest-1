@@ -57,12 +57,6 @@
  */
 class Fileparser {
     
-    protected $inputFileType = [
-        "xls" => 'Excel5',
-        "xlsx" => 'Excel2007',
-        
-    ];
-    
     protected $config = array ('offsetStart' => 0,
                             'offsetEnd'     => 0,
                             'separatorChar' => ";",
@@ -402,6 +396,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * in an array
      *
      * @param string $rowDatas  the excel data in an array.
+     * @param string $values    The values from which we take the data
      * @param int $totalRows    last row written, we need it for offsetEnd.
      * @return array $temparray the data after the parsing process.
      *
@@ -1166,8 +1161,22 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader18.php
      * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader19.php
      */
-    public function analyzeFileByName() {
-        $inputFileType = PHPExcel_IOFactory::identify($inputFileName);
+    public function analyzeFileBySheetName($file, $configuration) {
+        $inputFileType = PHPExcel_IOFactory::identify($file);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $worksheetNames = $objReader->listWorksheetNames($file);
+        $datas = "";
+        if (in_array($this->config['sheetName'], $worksheetNames)) {
+            $objReader->setLoadSheetsOnly($this->config['sheetName']); 
+            $objPHPExcel = $objReader->load($file);
+            $sheet = $objPHPExcel->getActiveSheet();
+            $highestRow = $sheet->getHighestRow();
+            $highestColumn = $sheet->getHighestColumn();
+            echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+            $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        }
+        return $datas;
     }
 
 }
