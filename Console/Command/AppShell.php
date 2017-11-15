@@ -160,8 +160,8 @@ class AppShell extends Shell {
      * @param string $filePath FQDN of the file to analyze
      * @return string It is the extension of the file
      */
-    public function getExtensionFile($filePath) {
-        $file = pathinfo($filePath);
+    public function getExtensionFile($file) {
+        $file = new File($file);
         $extension = $file->ext();
         return $extension;
     }
