@@ -54,29 +54,29 @@
     <?php /* Google Analytics for Dashboard 2.0 - Overview */?>
     
     function ga_company(idCompany, nameCompany) {
-        console.log("ga 'send' 'event' 'Dashboard2'  'company' " + idCompany + nameCompany);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'Dashboard2'  'company' " + idCompany + nameCompany);
             ga('send', 'event', 'Dashboard2', 'company', idCompany + nameCompany);
         }
     }
     
     function ga_1CR(counter1CR) {
-        console.log("ga 'send' 'event' 'Dashboard2'  '1CR' " + counter1CR);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'Dashboard2'  '1CR' " + counter1CR);
             ga('send', 'event', 'Dashboard2', '1CR', counter1CR);
         }
     }
     
     function ga_linkAccount(counterLinkAccount) {
-        console.log("ga 'send' 'event' 'Dashboard2'  'linkAccount' " + counterLinkAccount);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'Dashboard2'  'linkAccount' " + counterLinkAccount);
             ga('send', 'event', 'Dashboard2', 'linkAccount', counterLinkAccount);
         }
     }
     
     function ga_chart(idChart) {
-        console.log("ga 'send' 'event' 'Dashboard2'  'chart' " + idChart);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'Dashboard2'  'chart' " + idChart);
             ga('send', 'event', 'Dashboard2', 'chart', idChart);
         }
     }

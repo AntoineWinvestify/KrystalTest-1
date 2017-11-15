@@ -41,15 +41,15 @@ echo $companyInvestmentDetails[0];
     <?php /* Google Analytics for Dashboard 2.0 - Company */?>
     
     function ga_allInvestments() {
-        console.log("ga 'send' 'event' 'company'  'allInvestment' ");
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'company'  'allInvestment' ");
             ga('send', 'event', 'company', 'allInvestment');
         }
     }
     
     function ga_companyChart(idChart, companyName) {
-        console.log("ga 'send' 'event' 'company'  'chart' " + idChart + companyName);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'company'  'chart' " + idChart + companyName);
             ga('send', 'event', 'company', 'chart', idChart + companyName);
         }
     }
@@ -73,7 +73,7 @@ echo $companyInvestmentDetails[0];
             ga_companyChart(id, company);
         });
         
-        $(document).on("click", "#allInvestments", function () {
+        $(document).on("click", "#activeTab", function () {
             ga_allInvestments();
         });
 
