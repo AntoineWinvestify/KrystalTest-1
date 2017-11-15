@@ -179,7 +179,7 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul style="margin-top:0px;" class="dropdown-menu">
-                                    <li><a href="/pages/aboutUs "><?php //echo __('Our history') ?></a></li>
+                                    <?php /*<li><a href="/pages/aboutUs"><?php echo __('Our history') ?></a></li> */?>
                                     <li><a href="/pages/team"><?php echo __('Our team') ?></a></li>
                                 </ul>
                             </li>
@@ -349,7 +349,7 @@
                 </div>
                 <h4 align="center" style="padding: 0px 10px 20px 10px;"><?php echo __('Open an account and explore all the connected platforms.')?><br/><?php echo __('We make it easy for you to access the main Lending platforms with "One Click Registration"')?></h4>
                 <a href="/users/registerPanel">
-                    <button class="btn btn-lg btn1CR center-block"><?php echo __('Open account')?></button>
+                    <button class="btn btn-lg btn1CR center-block" type="button"><?php echo __('Open account')?></button>
                 </a>
             </div>
         </div>
