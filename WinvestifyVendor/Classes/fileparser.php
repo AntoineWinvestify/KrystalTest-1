@@ -353,9 +353,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
-        echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
-
-
+        //In the future to clean empty cells
+        //https://stackoverflow.com/questions/24936905/phpexcel-finding-first-column-with-blank-cell
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         return $datas;
