@@ -937,7 +937,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         else { // FALSE
             $length1 = 100;                 // ficticious value
         }       
-        return substr($input, $start+$length, $length1) ;
+        $start = $start + $length;
+        $finish = $length1 - $start;
+        return substr($input, $start, $finish) ;
     }
 
     /**
