@@ -175,7 +175,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 else if (count($filesByType) > 1) {
                     $tempResult = $this->getMultipleFilesData($filesByType, $parserConfigFile, $configParameters);
                 }
-                exit;
                 if (empty($tempResult['error'])) {
                     switch ($fileTypeKey) {
                         case WIN_FLOW_INVESTMENT_FILE:
@@ -335,6 +334,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 "errorDetails1" => "approved file " . $file,
             );
         }
+        return $tempResult;
     }
     
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
