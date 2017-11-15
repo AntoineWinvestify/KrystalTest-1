@@ -277,15 +277,15 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             return;
         }
         $this->companyHandle = $companyHandle;
-        array_walk_recursive($tempResult,array($this, 'changeValueIterating'));
+        array_walk_recursive($tempResult,array($this, 'changeValueIteratingCallback'));
     }
     
     /**
-     * Function to iterate in an array and change the value if needed
+     * Function to iterate in an array when callback is called and change the value if needed
      * @param type $item
      * @param type $key
      */
-    public function changeValueIterating(&$item,$key){
+    public function changeValueIteratingCallback(&$item,$key){
         foreach ($this->callbacks as $callbackKey => $callback) {
             if($key == $callbackKey){
                 $valueConverted =  $this->companyHandle->$callback($item);
@@ -294,26 +294,36 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         }
     }
     
-    public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
-        $tempResult = [];
-        foreach ($filesByType as $file) {
-            foreach ($configParameters['sheetNames'] as $key => $sheetNames) {
-                if (count($sheetNames) > 1) {
-                    //if multiple files, we need an offset and offsetEnd individual
-                    //An array is necessary 
-                    $this->getMultipleSheetData();
-                }
-                else {
-                    $this->getSimpleFileData($file, $parserConfigFile, $configParameters);
-                }
-            }
+    public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
+        echo "Dealing with file $file\n";
+        print_r($configParameters);         
+        if (!empty($configParameters['offsetStart'])) {
+            $tempResult = $this->getSimpleSheetData($file, $parserConfigFile, $configParameters);
+        }
+        else {
+            $tempResult = $this->getMultipleSheetData($file, $parserConfigFile, $configParameters);
         }
         return $tempResult;
     }
     
-    public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
-        echo "Dealing with file $file\n";
-        print_r($configParameters);         
+    public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
+        $tempResult = [];
+        $i = 0;
+        foreach ($filesByType as $file) {
+            if (!empty($configParameters[$i]['offsetStart'])) {
+                $tempResult[] = $this->getSimpleFileData($file, $parserConfigFile[$i], $configParameters[$i]);
+            }
+            else {
+                //if multiple files, we need an offset and offsetEnd individual
+                //An array is necessary 
+                $tempResult[] = $this->getMultipleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+            }
+            $i++;
+        }
+        return $tempResult;
+    }
+    
+    public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
         $this->myParser->setConfig($configParameters);
         $tempResult = $this->myParser->analyzeFile($file, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
         if (empty($tempResult)) {
@@ -323,24 +333,27 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 "errorDetails1" => "approved file " . $file,
             );
         }
-        return $tempResult;
     }
     
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
-        foreach ($configParameters['sheetNames'] as $key => $sheetName) {
-            print_r($configParameters);         
-            $this->myParser->setConfig($configParameters);
-            $tempResult[] = $this->myParser->analyzeFile($file, $parserConfigFile[$i], $extensionFile);     // if successfull analysis, result is an array with loanId's as index
-            $i++;
+        foreach ($configParameters as $key => $individualConfigParameters) {
+            print_r($individualConfigParameters);         
+            $this->myParser->setConfig($individualConfigParameters);
+            $tempResult[] = $this->myParser->analyzeFileBySheetName($file, $parserConfigFile[$key]);     // if successfull analysis, result is an array with loanId's as index
             if (empty($tempResult)) {
                 $tempResult['error'] = array( 
                     "typeOfError"   => "parsingError",
                     "errorDetails"  => $this->myParser->getLastError(),
                     "errorDetails1" => "approved file " . $file,
                 );
-                break 2;
+                break;
             }
         }
+        $this->resultOrdering($tempResult, $orderParam);
+    }
+    
+    public function resultOrdering($tempResult, $orderParam) {
+        
     }
     
 }
