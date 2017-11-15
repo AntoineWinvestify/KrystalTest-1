@@ -92,6 +92,9 @@ class finbee extends p2pCompany {
         1 => [
             "A" => [
                 "name" => "investment_loanId"
+            ],
+            "E" => [
+                "name" => "investment_debtor"
             ]
         ]
     ];
