@@ -21,45 +21,34 @@
  */
 
 class UserDataShell extends AppShell {
-    //put your code here
-    
-
-    
- //   protected $flowName;
-//    protected $tempArray = [];
-    
+   
     public $uses = array('Userinvestmentdata', 'Investment');    
-    
- 
-    
-    
-    
+   
     /**
      * Constructor of the class
      */
     function __construct() {
-        echo "starting Userdata class\n";
+
     }    
     
   
-   
-    /**
-     * CHECKING OF THE CONTROL VARIABLES WITH CALCULATED VARIABLES
-     * 
-     * 
-     */
-    public function consolidateControlVariables($externalControlVariables, $internalControlVariables) {
-        // Calculate the values of the control variables /or read them from DB
-       /*
-     *  the variables are :
-        * Also keep in mind WHEN the control variables are read. I should count all investment uptil that moment
-        * which could be at the morning when the flow is executing. The collected data up until midnight is stored in
-        * xls files.
-        *  @param  array       array with the calculated control variables for today's readout
-        *  @param  array       array with the control variables as provided by platform
-        *  @return boolean     
-        * 
-        */
+
+    
+    
+    
+    
+    
+    
+   /*
+    * The control variables are calculated for each "DAY", but the checking is only done for the date of the readout.
+    * This means that if a reading period covers a week, the checking SHOULD be done only for the last calculation (= last day)
+    * 
+    * @param  array       array with the calculated control variables for today's readout
+    * @param  array       array with the control variables as provided by platform
+    * @return boolean     
+    * 
+    */
+    public function consolidateControlVariables($externalControlVariables, $internalControlVariables) {        
         $result = false;
         $error = true;
         foreach ($externalControlVariables as $variableKey => $variable) {
@@ -102,12 +91,6 @@ class UserDataShell extends AppShell {
     
     
     public function consolidatePlatformData(&$database) {
-    /*
-     * 
-     * here I SHOULD call the functions that do the simple calculations. 
-     * 
-     * 
-     */
         echo "FxF";
         $database['userinvestmentdata']['userinvestmentdata_capitalRepayment'] = $this->consolidateCapitalRepayment();  // 38
         echo "FtF";
@@ -134,7 +117,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-
     public function consolidatePartialPrincipalRepayment() {
         $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
@@ -155,7 +137,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
         $result = "0.0";
 
@@ -186,7 +167,6 @@ class UserDataShell extends AppShell {
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
-
     public function calculateReceivedRepayment(&$transactionData, &$resultData) {
         $result = 0.0;
         if (!empty($resultData['payment']['payment_capitalRepayment'])) {
@@ -218,7 +198,6 @@ class UserDataShell extends AppShell {
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
-
     public function xxxconsolidateTotalGrossIncome() {
         $sum = 0;
         return;
@@ -239,7 +218,6 @@ class UserDataShell extends AppShell {
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
-
     public function consolidateInterestgrossIncome() {
         $sum = 0;
         return;
@@ -260,7 +238,6 @@ class UserDataShell extends AppShell {
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
-
     public function calculateTotalLoanCost(&$transactionData, &$resultData) {
         $result = "0.0";
         
@@ -296,7 +273,6 @@ class UserDataShell extends AppShell {
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
-
     public function consolidateNextPaymentDate() {
         $sum = 0;
         return $sum;
@@ -321,7 +297,6 @@ class UserDataShell extends AppShell {
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
-
     public function calculateTotalNetIncome(&$transactionData, &$resultData) {
         if (empty($resultData['investment']['investment_loanTotalCost'])) {
             $resultData['investment_loanTotalCost'] = 0.0;
@@ -343,7 +318,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-
     public function calculateTotalGrossIncome(&$transactionData, &$resultData) {
         $result = 0.0;
         
@@ -424,7 +398,6 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      * 17
      */
-
     public function calculateRemainingTerm(&$transactionData, &$resultData) {
         return 44332211;
         return $transactionData['amount'];
@@ -438,7 +411,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 47
      */
-
     public function calculateLatePaymentFeeIncome(&$transactionData, &$resultData) {
 
         return $transactionData['amount'];
@@ -451,7 +423,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 34
      */
-
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -463,7 +434,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 45
      */
-
     public function calculateDelayedInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -475,7 +445,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 44
      */
-
     public function calculateInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -487,7 +456,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 36
      */
-
     public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -499,7 +467,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 46
      */
-
     public function calculateDelayedInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -511,7 +478,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 66
      */
-
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
         return $transactionData[0]['amount'];
     }
@@ -523,7 +489,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 67
      */
-
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
         return $transactionData[0]['amount'];
     }
@@ -534,7 +499,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 43
      */
-
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -548,7 +512,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 20000
      */
-
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
         $filterConditions = array('Investment.investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE);
         $activeInvestments = $this->Investment->find('count', array(
@@ -563,7 +526,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 55
      */
-
     public function calculatePlatformBankCharges(&$transactionData, &$resultData) {
         return $transactionData[0]['amount'];
     }
@@ -598,6 +560,47 @@ class UserDataShell extends AppShell {
         return $temp;
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /* NOT YET  chewck if the index is investment or payment
+     * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB
+     * @return string      the string representation of a large integer
+     * $internalControlVariables['myWallet'] == $externalControlVariables)
+$internalControlVariables['outstandingPrincipal'] == $externalControlVariables)
+$internalControlVariables['activeInvestments'] == $externalControlVariables) 
+     */
+    public function calculateTotalNetIncome(&$transactionData, &$resultData) {
+        if (empty($resultData['investment']['investment_loanTotalCost'])) {
+            $resultData['investment_loanTotalCost'] = 0.0;
+        }
+        if (empty($resultData['investment']['investment_totalGrossIncome'])) {
+            $resultData['investment_totalGrossIncome'] = 0.0;
+        }        
+        $result = bcsub($resultData['investment_totalGrossIncome'],$resultData['investment_loanTotalCost'], 16);
+        return $result;
+   
+        
+        
+        
+        
+    }    
+    
+
+
+    
+    
+    
+    
+    
 }
 
 /*

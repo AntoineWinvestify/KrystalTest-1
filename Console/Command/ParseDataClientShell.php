@@ -299,7 +299,6 @@ class ParseDataClientShell extends GearmanClientShell {
                             $dbTable = $dataInformation[0];
                             if (!empty($functionToCall)) {
                                 $result = $calculationClassHandle->$functionToCall($transactionData, $database);
-//                                $result = $this->$functionToCall($dateTransaction, $database);
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
                                 } else {
@@ -392,7 +391,6 @@ class ParseDataClientShell extends GearmanClientShell {
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
                         echo "Calling the function: $functionToCall and index = $keyItem\n";
-//                        $database[$varName[0]][$varName[1]] = $this->$functionToCall($database);
                         $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);
                         $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
                     }
@@ -453,7 +451,6 @@ class ParseDataClientShell extends GearmanClientShell {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
                     echo "Calling the function: $functionToCall and index = $keyItem\n";
-//                    $database[$varName[0]][$varName[1]] = $this->$functionToCall($database);
                     $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
 
                     echo "inputs are " . $varName[0] . " and" . $varName[1] . "\n";
@@ -494,7 +491,7 @@ class ParseDataClientShell extends GearmanClientShell {
             
         }
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
-        // The following is only done once per readout period independent if period covers one day, 1 week or if
+        // The following is done only once per readout period independent if period covers one day, 1 week or if
         // it is a "link account" action
         // We also have to reduce the total values with the amounts of the investments that we finished TODAY, as (normally)
         // all loan related amounts are for active investments only
@@ -502,13 +499,10 @@ class ParseDataClientShell extends GearmanClientShell {
         // determine which loans have terminated
         // loop through all of them and subtracts amounts from total values
         echo "Start consolidating the platform data, using the control variables\n";
-        $this->consolidateControlVariables($file);
+        $calculationClassHandle->consolidateControlVariables($file);
         echo "Consolidation Phase 2, checking control variables\n";
-        $this->consolidatePlatformData();
+        $calculationClassHandle->consolidatePlatformData();
         return;
     }
-
-
-
 
 }
