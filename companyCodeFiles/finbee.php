@@ -528,6 +528,7 @@ class finbee extends p2pCompany {
 
     }
     
+    
     /**
      * Function to translate the company specific amortization method to the Winvestify standardized
      * amortization type

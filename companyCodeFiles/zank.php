@@ -308,7 +308,8 @@ class zank extends p2pCompany {
     
     protected $callbacks = [
         "investment" => [
-            "investment_loanType" => "translateTypeOfInvestment"
+            "investment_loanType" => "translateTypeOfInvestment",
+            "investment_originalLoanState" => "translateLoanStatus"
         ]
     ];
 
@@ -1736,6 +1737,38 @@ class zank extends p2pCompany {
         switch ($inputData) {
             case "AUTO":
                 $data = WIN_LOANSTATUS_AUTOMATEDINVESTMENT;
+                break;
+        }
+        return $data;
+    }
+    
+     /**
+     * Function to translate the company specific loan status to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan status
+     * @return int                  Winvestify standardized loan status
+     */ 
+    public function translateLoanStatus($inputData){
+        $status = WIN_LOANSTATUS_UNKNOWN;
+        $inputData = strtoupper(trim($inputData));
+         switch ($inputData) {
+            case "PUBLICADO":
+                $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                break;
+            case "CANCELADO":
+                $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                break;
+            case "COMPLETADO":
+                $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                break;
+            case "RETRASADO":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "AMORTIZACIÓN":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;    
+            case "AMORTIZADO":
+                $data = WIN_LOANSTATUS_FINISHED;
                 break;
         }
         return $data;
