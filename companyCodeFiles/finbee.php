@@ -57,6 +57,49 @@ class finbee extends p2pCompany {
         ],
         
     ];
+    
+    protected $valuesInvestment = [
+        0 => [
+            [
+                "B" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "C" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "B" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "C" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "E" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "F" => [
+                    "name" => "investment_debtor"
+                ]
+            ]
+        ],
+        1 => [
+            "A" => [
+                "name" => "investment_loanId"
+            ],
+            "E" => [
+                "name" => "investment_debtor"
+            ]
+        ]
+    ];
 
     protected $valuesAmortizationTable = [
             1 =>  [
@@ -103,26 +146,73 @@ class finbee extends p2pCompany {
             ]
         ];
     
-    protected $transactionConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
- 
-    protected $investmentConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+    protected $transactionConfigParms = array('offsetStart' => 1,
+        'offsetEnd' => 0,
+        //'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
+    
+    protected $investmentConfigParms = [
+        0 => [
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Active Loans'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Active Loan Slices'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Completed Loans'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Completed Loan Parts'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Sold Loan Parts'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Bought Loan Parts'
+            ]
+        ],
+        1 => [
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            //'separatorChar' => ";",
+            'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+            //'sheetName' => 'Bought Loan Parts'
+        ]
+    ];
+    
+    protected $amortizationConfigParms = array('offsetStart' => 0,
+        'offsetEnd' => 0,
+        //'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+        
+    );
 
-    protected $amortizationConfigParms = array ('OffsetStart' => 0,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );      
-     
-    
-    
     function __construct() {
         $this->i = 0;
         parent::__construct();

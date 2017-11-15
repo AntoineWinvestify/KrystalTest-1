@@ -118,15 +118,15 @@ class twino extends p2pCompany {
 // Not finished
     protected $valuesInvestment = [// All types/names will be defined as associative index in array
 
-        "A" => [
-            "name" => "origin.loan",
+        "A" =>  [
+            "name" => "investment_country"                              // Winvestify standardized name  OK
         ],
         "B" => [
             "name" => "loanId",
         ],
         "C" => [
             [
-                "type" => "origin.date", // Winvestify standardized name 
+                "type" => "investment_investmentDate", // Winvestify standardized name 
                 "inputData" => [
                     "input2" => "m/d/Y", // Input parameters. The first parameter
                 // is ALWAYS the contents of the cell
@@ -135,16 +135,25 @@ class twino extends p2pCompany {
             ],
         ],
         "D" => [
-            "name" => "riskclass",
+            "name" => "investment_riskRating",
         ],
         "E" => [
-            "name" => "status",
+            "name" => "investment_originalState",
         ],
         "F" => [
             "name" => "investment_nominalInterestRate"
         ],
+        "G" => [
+            "name" => "investment_expectedAnnualYield"
+        ],
+        //"H" => ASK ANTOINE Remaining Term
         "I" => [
             "name" => "investment_originalDuration"
+        ],
+        //"J" => ASK ANTOINE Extended
+        //"K" => IT IS NEXT PAYMENT, ASK ANTOINE IF IT NEEDED TO TAKE 
+        "L" => [
+            "name" => "investment_capitalRepaymentFromP2P"
         ],
         "M" => [
             [
@@ -157,6 +166,13 @@ class twino extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
+        //"N" => ASK ANTOINE Interest income
+        "O" => [
+            "name" => "investment_outstandingPrincipalFromP2P"
+        ],
+        "P" => [
+            "name" => "investment_forSale"
+        ]
         
     ];
 

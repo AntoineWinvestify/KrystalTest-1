@@ -62,6 +62,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
  //   var $uses = array();      // No models used
     protected $callbacks = [];
     protected $companyHandle;
+    protected $myParser;
 
 
     public function main() {
@@ -108,7 +109,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      */
      
     public function parseFileFlow($job) {
-        
+        //for debugging error purpose
+        $this->job = $job;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data received from Client\n";
         }        
@@ -130,21 +132,15 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $files = $data['files'];
 
             // First analyze the transaction file(s)
-            $myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
+            $this->myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
 // do this first for the transaction file and then for investmentfile(s)
-            $fileTypesToCheck = array (0 => WIN_FLOW_TRANSACTION_FILE,
-                                       1 => WIN_FLOW_INVESTMENT_FILE,
-                                       2 => WIN_FLOW_EXTENDED_TRANSACTION_FILE,     // So we cover Finanzarel
-                                       3 => WIN_FLOW_EXPIRED_LOAN_FILE              // If this file exists, we avoid collecting "old amortization tables"
-                                        );                     
-
-            foreach ($fileTypesToCheck as $actualFileType) {
-                $approvedFiles = $this->readFilteredFiles($files, $actualFileType);
-                switch ($actualFileType) {
+            foreach ($files as $fileTypeKey => $filesByType) {
+                switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
+                        continue 2;
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction File\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Transaction Files \n";
                         }
                         $parserConfigFile = $companyHandle->getParserConfigTransactionFile();
                         $configParameters = $companyHandle->getParserTransactionConfigParms();
@@ -152,7 +148,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         
                     case WIN_FLOW_INVESTMENT_FILE:
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment File\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Investment Files \n";
                         }
                         $parserConfigFile = $companyHandle->getParserConfigInvestmentFile(); 
                         $configParameters = $companyHandle->getParserInvestmentConfigParms();
@@ -160,76 +156,66 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         
                     case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Extended Transaction File\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Extended Transaction Files \n";
                         } 
                         $parserConfigFile = $companyHandle->getParserConfigExtendedTransactionFile();
                         $configParameters = $companyHandle->getParserExtendedTransactionConfigParms();
                         break; 
                     case WIN_FLOW_EXPIRED_LOAN_FILE:
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing File with expired Loans\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Files with expired Loans\n";
                         } 
                         $parserConfigFile = $companyHandle->getParserConfigExpiredLoanFile(); 
                         $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
-      
-                $tempResult = array();
-                foreach ($approvedFiles as $approvedFile) {
-                    unset($errorInfo);
-                    print_r($configParameters);         
-                    $myParser->setConfig($configParameters);
-                    $tempResult = $myParser->analyzeFile($approvedFile, $parserConfigFile);     // if successfull analysis, result is an array with loanId's as index
+                
+                if (count($filesByType) === 1) {
+                    $tempResult = $this->getSimpleFileData($filesByType, $parserConfigFile, $configParameters);
+                } 
+                else if (count($filesByType) > 1) {
+                    $tempResult = $this->getMultipleFilesData($filesByType, $parserConfigFile, $configParameters);
+                }
+                if (empty($tempResult['error'])) {
+                    switch ($fileTypeKey) {
+                        case WIN_FLOW_INVESTMENT_FILE:
+                            $this->callbacks = $callbacks["investment"];
+                            $this->callbackInit($tempResult, $companyHandle);
+                            $totalParsingresultInvestments = $tempResult;                                
+                            break;
+                        case WIN_FLOW_TRANSACTION_FILE:
+                            $totalParsingresultTransactions = $tempResult;
+                            break;                            
+                        case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
+                            $totalParsingresultTransactions = $tempResult;
+                            break;
+                        case WIN_FLOW_EXPIRED_LOAN_FILE:
+                            unset($listOfExpiredLoans);
+                            foreach ($tempResult as $expiredloankey => $item) {
+                                $listOfExpiredLoans[] = $expiredloankey;
+                            }
+                            break;                            
+                    }
 
-                    echo "Dealing with file $approvedFile\n";
-                    if (empty($tempResult)) {                // error occurred while analyzing a file. Report it back to Client
-                        $errorInfo = array( "typeOfError"   => "parsingError",
-                                            "errorDetails"  => $myParser->getLastError(),
-                                            "errorDetails1" => "approved file " . $approvedFile,
+                    try {
+
+                        $callBackResult = $companyHandle->fileAnalyzed($approvedFile, $actualFileType, $tempResult);       // Generate callback
+                    }
+                    catch (Exception $e){
+                        $errorInfo = array( "typeOfError"   => "callBackExceptionError",
+                                            "callBackResultCode" => $callBackResult,
+                                            "exceptionResult"   => $e,
+                                            "fileName"      => $fileName,
+                                            "typeOfFile"    => $typeOfFile,
+                                            "fileContents"  => json_encode($file,$fileContent)
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
-                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
                     }
-                    else {
-                        switch ($actualFileType) {
-                            case WIN_FLOW_INVESTMENT_FILE:
-                                $this->callbacks = $callbacks["investment"];
-                                $this->callbackInit($tempResult, $companyHandle);
-                                $totalParsingresultInvestments = $tempResult;                                
-                                break;
-                            case WIN_FLOW_TRANSACTION_FILE:
-                                $totalParsingresultTransactions = $tempResult;
-                                break;                            
-                            case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
-                                $totalParsingresultTransactions = $tempResult;
-                                break;
-                            case WIN_FLOW_EXPIRED_LOAN_FILE:
-                                $this->callbacks = $callbacks["expiredLoan"];
-                                $this->callbackInit($tempResult, $companyHandle);
-                                $totalParsingresultExpiredLoans = $tempResult;                                  
-                                unset($listOfExpiredLoans);
-      //                          foreach ($tempResult as $expiredloankey => $item) {
-      //                              $listOfExpiredLoans[] = $expiredloankey;
-      //                          }
-                                break;                            
-                        }
-
-                        try {
-                            
-                            $callBackResult = $companyHandle->fileAnalyzed($approvedFile, $actualFileType, $tempResult);       // Generate callback
-                        }
-                        catch (Exception $e){
-                            $errorInfo = array( "typeOfError"   => "callBackExceptionError",
-                                                "callBackResultCode" => $callBackResult,
-                                                "exceptionResult"   => $e,
-                                                "fileName"      => $fileName,
-                                                "typeOfFile"    => $typeOfFile,
-                                                "fileContents"  => json_encode($file,$fileContent)
-                                                );
-                            $returnData[$linkedAccountKey]['error'][] = $errorInfo;
-                        }
-                    }
-                } 
+                }
+                else {               // error occurred while analyzing a file. Report it back to Client
+                    $returnData[$linkedAccountKey]['error'][] = $tempResult['error'];
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
+                }
             }
 
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
@@ -303,15 +289,15 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             return;
         }
         $this->companyHandle = $companyHandle;
-        array_walk_recursive($tempResult,array($this, 'changeValueIterating'));
+        array_walk_recursive($tempResult,array($this, 'changeValueIteratingCallback'));
     }
     
     /**
-     * Function to iterate in an array and change the value if needed
+     * Function to iterate in an array when callback is called and change the value if needed
      * @param type $item
      * @param type $key
      */
-    public function changeValueIterating(&$item,$key){
+    public function changeValueIteratingCallback(&$item,$key){
         foreach ($this->callbacks as $callbackKey => $callback) {
             if($key == $callbackKey){
                 $valueConverted =  $this->companyHandle->$callback(trim($item));
@@ -319,10 +305,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
            }
         }
     }
-    
-    
-    
-    
     
     /* NOT YET
      * Determine the list of investments that have finished TODAY, i.e. that have
@@ -417,12 +399,69 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $listExpiredInvestments = array_merge($listExpiredInvestments, $loans);  
         } 
         return($listExpiredInvestments);
-    }   
-         
+    }
     
+    public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
+        echo "Dealing with file $file\n";     
+        if (!empty($configParameters['offsetStart'])) {
+            $tempResult = $this->getSimpleSheetData($file, $parserConfigFile, $configParameters);
+        }
+        else {
+            $tempResult = $this->getMultipleSheetData($file, $parserConfigFile, $configParameters);
+        }
+        return $tempResult;
+    }
     
+    public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
+        $tempResult = [];
+        $i = 0;
+        foreach ($filesByType as $file) {
+            if (!empty($configParameters[$i]['offsetStart'])) {
+                $tempResult[] = $this->getSimpleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+            }
+            else {
+                //if multiple files, we need an offset and offsetEnd individual
+                //An array is necessary 
+                $tempResult[] = $this->getMultipleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+            }
+            $i++;
+        }
+        return $tempResult;
+    }
     
+    public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
+        $this->myParser->setConfig($configParameters);
+        $extension = $this->getExtensionFile($file);
+        $tempResult = $this->myParser->analyzeFile($file, $parserConfigFile, $extension);     // if successfull analysis, result is an array with loanId's as index
+        if (empty($tempResult)) {
+            $tempResult['error'] = array( 
+                "typeOfError"   => "parsingError",
+                "errorDetails"  => $this->myParser->getLastError(),
+                "errorDetails1" => "approved file " . $file,
+            );
+        }
+        return $tempResult;
+    }
     
+    public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
+        foreach ($configParameters as $key => $individualConfigParameters) {       
+            $this->myParser->setConfig($individualConfigParameters);
+            $tempResult[] = $this->myParser->analyzeFileBySheetName($file, $parserConfigFile[$key]);     // if successfull analysis, result is an array with loanId's as index
+            if (empty($tempResult)) {
+                $tempResult['error'] = array( 
+                    "typeOfError"   => "parsingError",
+                    "errorDetails"  => $this->myParser->getLastError(),
+                    "errorDetails1" => "approved file " . $file,
+                );
+                break;
+            }
+        }
+        $this->resultOrdering($tempResult, $orderParam);
+    }
+    
+    public function resultOrdering($tempResult, $orderParam) {
+        
+    }
     
 }
 

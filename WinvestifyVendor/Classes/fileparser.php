@@ -68,6 +68,7 @@
  *
  */
 class Fileparser {
+    
     protected $config = array ('offsetStart' => 0,
                             'offsetEnd'     => 0,
                             'separatorChar' => ";",
@@ -567,6 +568,33 @@ protected $countries = [
     function __construct() {
         echo "starting parser\n";
     }
+    
+    /**
+     * Function to analyze a file depending on its extension
+     * @param string $file FQDN of the file to analyze
+     * @param array  $configuration Array that contains the configuration data of a specific "document"
+     * @param string $extension It is the extension of the file
+     * @return array $parsedData
+     *         false in case an error occurred
+     */
+    public function analyzeFile($file, $configuration, $extension) {
+        
+        switch($extension) {
+            case "xlsx":
+                $tempArray = $this->analyzeFileExcel($file, $configuration);
+                break;
+            case "csv":
+                $tempArray = $this->analyzeFileCSV($file, $configuration);
+                break;
+            case "json":
+                $tempArray = $this->analyzeFileJson($file, $configuration);
+                break;
+            case "html":
+                $tempArray = $this->analyzeFileHtml($file, $configuration);
+                break;
+        }
+        return $tempArray;
+    }
 
 
 
@@ -577,35 +605,50 @@ protected $countries = [
      *  @return array           $parsedData
      *          false in case an error occurred
      */
-    public function analyzeFile($file, $configuration) {
+    public function analyzeFileExcel($file, $configuration) {
 echo "INPUT FILE = $file \n";
-    $this->filename = $file;
-echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-
-       // determine first if it is a csv, if yes then run command
-        $fileNameChunks = explode(DS, $file);
-        if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
-    //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
-            $inputFileType = 'CSV';
-            $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-            $objReader->setDelimiter($this->Config['separatorChar']);
-            $objPHPExcel = $objReader->load($file);
-            //execute command php has a function for this which works on a string
-        }
-        else {      // xls/xlsx file
-            $objPHPExcel = PHPExcel_IOFactory::load($file);
-        }
+        $this->filename = $file;
+echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n";
+        $objPHPExcel = PHPExcel_IOFactory::load($file);
 
         ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
-        echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
-
-
+        //In the future to clean empty cells
+        //https://stackoverflow.com/questions/24936905/phpexcel-finding-first-column-with-blank-cell
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         return $datas;
+    }
+    
+    public function analyzeFileCSV($file, $configuration) {
+        //$command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
+        $inputFileType = 'CSV';
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objReader->setDelimiter($this->Config['separatorChar']);
+        $objPHPExcel = $objReader->load($file);
+        ini_set('memory_limit','2048M');
+        $sheet = $objPHPExcel->getActiveSheet();
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+        echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        return $datas;
+    }
+    
+    /**
+     * Starts the process of analyzing the file and returns the results as an array
+     *  @param  FILE            FQDN of the file to analyze
+     *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
+     *  @return array           $parsedData
+     *          false in case an error occurred
+     */
+    public function analyzeFileJson($file, $configuration) {
+        $fileString = file_get_contents($file);
+        $data = json_decode($fileString, true);
+        return $this->saveExcelToArray($data, $configuration, $this->config["offsetStart"]);
     }
 
 
@@ -614,6 +657,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * in an array
      *
      * @param string $rowDatas  the excel data in an array.
+     * @param string $values    The values from which we take the data
      * @param int $totalRows    last row written, we need it for offsetEnd.
      * @return array $temparray the data after the parsing process.
      *
@@ -777,6 +821,35 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             return 0;
         }
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
+    }
+    
+    /**
+     *
+     * 	Extracts the percentage as an integer from an input string
+     *
+     * 	@param 		string	$inputPercentage in string format like 5,4% or 5,43% or 5%. Note that 1,23% generates 123 and 33% -> 3300
+     * 															5,5% TAE -> 550
+     * 															7,02% -> 702
+     *                                                                                                                   	8,5 % -> 850
+     * º                                                            format like 'This is a string 54%' -> 5400
+     * 	@return 	int		$outputPercentage
+     * 	
+     */
+    function getPercentage($inputPercentage) {
+        
+        $progress = trim(preg_replace('/\D/', ' ', $inputPercentage));
+        $tempValues = explode(" ", $progress);
+
+        if (strlen($tempValues[1]) == 1) {
+            $tempValues[1] = $tempValues[1] * 10;
+        }
+
+        $outputPercentage = $tempValues[0] * 100 + $tempValues[1];
+        if ($inputPercentage < 0) {
+            return -$outputPercentage;
+        } else {
+            return $outputPercentage;
+        }
     }
 
 
@@ -1154,10 +1227,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to get details of transaction from multiple cells together
-     * @param string $input It is the cell value
+     * Function to get details of transaction but when it is needed to get the content from
+     * multiples columns of the file
+     * @param string $input It is the column value
      * @param array $config Winvestify standardized concept
-     * @param array $inputValues Values needed to calculate transaction details
+     * @param array $inputValues Values needed to calculate transaction details from other columns
      * @return array  [0] => Winvestify standardized concept
      *                [1] => array of parameter, i.e. list of variables in which the result
      *                         of this function is to be stored. In practice it is normally
@@ -1268,32 +1342,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to get the loanId from the file name of one amortization table
-     * @param string $filePath It is the path to the file
-     * @return string It is the loanId
-     */
-    public function getLoanIdFromFile($filePath) {
-        $file = new File($filePath, false);
-        $name = $file->name();
-        $nameSplit = explode("_", $name);
-        $loanId = $nameSplit[1];
-        return $loanId;
-    }
-    
-    /**
-     * Function to get the extension of a file
-     * @param string $filePath It is the path to the file
-     * @return string It is the extension of the file
-     */
-    public function getExtensionFile($filePath) {
-        $file = new File($filePath, false);
-        $extension = $file->ext();
-        return $extension;
-    }
-    
-    /**
      * Function to analyze a file depending on its extension
-     * @param string $filePath It is the path to the file
+     * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @param string $extension It is the extension of the file
      * @return array $parsedData
@@ -1303,7 +1353,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         
         switch($extension) {
             case "html":
-                $tempArray = $this->getHtmlData($filePath, $parserConfig);
+                $tempArray = $this->analyzeFileHtml($filePath, $parserConfig);
                 break;
         }
         return $tempArray;
@@ -1311,12 +1361,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to analyze a html file to get its content
-     * @param string $filePath It is the path to the file
+     * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @return array $parsedData
      *         false in case an error occurred
      */
-    public function getHtmlData($filePath, $parserConfig) {
+    public function analyzeFileHtml($filePath, $parserConfig) {
         $dom = new DOMDocument();
         $dom->loadHTMLFile($filePath);
         $trs = $dom->getElementsByTagName('tr');
@@ -1410,4 +1460,31 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
         return $tempArray;
     }
+    
+    /**
+     * Documentantion needed
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader04.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader16.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader17.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader18.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader19.php
+     */
+    public function analyzeFileBySheetName($file, $configuration) {
+        $inputFileType = PHPExcel_IOFactory::identify($file);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $worksheetNames = $objReader->listWorksheetNames($file);
+        $datas = "";
+        if (in_array($this->config['sheetName'], $worksheetNames)) {
+            $objReader->setLoadSheetsOnly($this->config['sheetName']); 
+            $objPHPExcel = $objReader->load($file);
+            $sheet = $objPHPExcel->getActiveSheet();
+            $highestRow = $sheet->getHighestRow();
+            $highestColumn = $sheet->getHighestColumn();
+            echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+            $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        }
+        return $datas;
+    }
+
 }

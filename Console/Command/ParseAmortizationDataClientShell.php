@@ -43,7 +43,6 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->flowName = "GEARMAN_FLOW3B";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-        $this->fileName = "amortizationtable";
         $workerFunction = "collectamortizationtablesFileFlow";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
@@ -92,7 +91,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         }
                         $dirs = new Folder($subDirectory);
                         $nameCompany = $dirs->findRecursive();
-                        $allFiles = $dirs->findRecursive($this->fileName . ".*");
+                        $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
                         $tempPfpName = explode("/", $nameCompany[0]);
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
                         echo "pfp = " . $pfp . "\n";
