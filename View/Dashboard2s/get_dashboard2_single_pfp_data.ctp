@@ -227,6 +227,7 @@ echo $companyInvestmentDetails[0];
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Number of individual loans or assets that you currently own. The higher the sum, the better diversified your portfolio is')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
                                                         <td class="right"><?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] ?></td>
                                                     </tr>
+                                                    <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -268,6 +269,7 @@ echo $companyInvestmentDetails[0];
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year')?></td>
                                                         <td class="right"><?php echo __('935,00 €') ?></td>
                                                     </tr>
+                                                    <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>

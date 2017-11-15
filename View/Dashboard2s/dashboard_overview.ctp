@@ -132,7 +132,7 @@
         <?php //Chart invoke ?>
         $(document).on("click", ".chartIcon", function() {
             id = $(this).attr("id");
-            $("#chart_" + id).slideToggle("slow");
+            $("#chart_" + id).slideToggle();
             $(this).toggleClass("active");
             ga_chart(id);
         });
