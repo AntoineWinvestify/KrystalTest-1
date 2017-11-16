@@ -184,7 +184,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
                             $totalParsingresultTransactions = $tempResult;
-                            print_r($totalParsingresultTransactions);
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         //    $totalParsingresultTransactions = $tempResult;
