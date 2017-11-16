@@ -1487,13 +1487,26 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         return $datas;
     }
     
-     public function joinDataCells($input, $joinSeparator, ...$inputValues) {
+    /**
+     * Function to join values together
+     * @param string $input
+     * @param string $joinSeparator
+     * @param array $inputValues
+     * @return string
+     */
+    public function joinDataCells($input, $joinSeparator, ...$inputValues) {
         foreach ($inputValues as $inputValue) {
             $input .= $joinSeparator . $inputValue;
         }
         return $input;
     }
     
+    /**
+     * Function to clean a string of unnecessary characters
+     * @param string $input cell data
+     * @param array $charactersToClean Array of chars to clean
+     * @return string Cleaned value to be returned
+     */
     public function cleanStringInput($input, ...$charactersToClean) {
         $input = str_replace($charactersToClean, "", $input);
         return $input;
