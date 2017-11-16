@@ -309,7 +309,7 @@ Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuenta
     /* DIV 1: Selected platforms */
     ?>
                 <div id="sel" style="display: none;">
-                    <h4 class="header1CR"><?php echo __('Sus plataformas seleccionadas:') ?></h4>
+                    <h4 class="header1CR"><?php echo __('Your selected platforms:') ?></h4>
 
                     <div id="investorSelection" class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -381,12 +381,12 @@ Para mejorar su experiencia como inversor, recomendamos linkear todas sus cuenta
                   </div>
                   <hr class="nomargin" width="100%"/> */ ?>
     <?php /* Div 3: Platforms Selection */ ?>
-                <h4 class="header1CR"><?php echo __('Seleccione las plataformas en las que registrarse:') ?></h4>
+                <h4 class="header1CR"><?php echo __('Select the platforms to register:') ?></h4>
                 <div id="platformSelection" class="row">
                     <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                         <p>
-                    <?php echo __("Para poder seleccionar cualquiera de las plataformas, es necesario "); ?>
-                            <strong><?php echo __("aceptar su política de privacidad y sus términos  y condiciones de uso ") ?></strong>
+                    <?php echo __("Para poder seleccionar cualquiera de las plataformas, es necesario"); ?>
+                            &nbsp;<strong><?php echo __("accept their privacy policy and terms and conditions") ?></strong>
                         </p>
                     </div>
     <?php
