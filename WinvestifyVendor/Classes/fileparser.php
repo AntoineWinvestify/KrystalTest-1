@@ -768,7 +768,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             switch ($countSortParameters) {
                 case 1:
                     $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
-                    $tempArray[$sortParam1] = $tempArray[$i];
+                    $tempArray[$sortParam1][] = $tempArray[$i];
                     unset($tempArray[$i]); 
                 break; 
             
