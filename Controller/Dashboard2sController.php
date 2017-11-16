@@ -151,6 +151,10 @@ class Dashboard2sController extends AppController {
                     case "userinvestmentdata_numberActiveInvestments":
                         //get global active invesment:
                         $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
+                        break;                             
+                    case "userinvestmentdata_totalNetDeposits": 
+                        //get global net deposits:
+                        $global['netDeposits'] = $global['netDeposits'] + $individualData;
                         break;
                 }
             }
