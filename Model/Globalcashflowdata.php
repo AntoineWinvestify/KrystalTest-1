@@ -64,48 +64,44 @@ var $validate = array(
     /*
      * 
      * Update the corresponding fields in the 'paymenttotal' table 
-     * 
+     * here I should execute the rules for keeping up to date the information of cash in the platform
+     * i.e. 
+     * net deposits (cash in platform) = total deposits - withdrawals
+     * specific rules if fields globalcashflowdata_platformDeposits and globalcashflowdata_platformWithdrawals
      */
-    function afterSaveNOTNEEDED($created, $options = array()) {
+    function afterSave($created, $options = array()) {
 
-        $data = array();
-        $prefix = "globalcashflowdata";
-        $totalPrefix = "globalcashflowdatatotal";  
- echo "kk";
-        foreach ($this->data['Globalcashflowdata'] as $globalcashflowKey => $value) {
-            if ($globalcashflowKey == "userinvestmentdata_id") {
-                $userinvestmentdataId = $value;
-                break;
-            }         
-        }
-echo "AA investmentdataId = $userinvestmentdataId\n";
-        $this->Globalcashflowdatatotal = ClassRegistry::init('Globalcashflowdatatotal');
-         
-        // get the *latest* globalcashflowdatatotal table
-        $latestValuesGlobalCashflowdata = $this->find("first",array(
-                                                        'conditions' => array('userinvestmentdata_id' => $userinvestmentdataId),
-                                                        'order' => array('Globalcashflowdata.id DESC'),
-                                                         ));
-echo "bb";
-print_r($latestValuesGlobalCashflowdata);
-echo "Bb\n";
-        $this->create();
-        foreach ($this->data['Globalcashflowdata'] as $globalCashflowKey => $value) {
-            $globalCashflowKeyNames = explode("_", $globalCashflowKey);
+     
+        if ($created) {		// TRUE, when a new database record is created
+            $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+            $userInvestmentdataId = $this->data['Globalcashflowdata']['userinvestmentdata_id'];
 
-            if ($globalCashflowKeyNames[0] == $prefix) {   // check if the field exists in table paymenttotals
-                foreach ($latestValuesGlobalCashflowdata['Globalcashflowdata'] as $globalCashflowTotalKey => $globalcashflowItem) {
-                    if ($globalCashflowTotalKey === $totalPrefix . "_" . $globalCashflowKeyNames[1]) {
-                        $data[$globalCashflowTotalKey] = bcadd($globalcashflowItem, $value, 16);
-                    }
-                }
+            $latestUserInvestmentData = $this->Userinvestmentdata->find("first",array(
+                                                            'conditions' => array('id' => $userInvestmentdataId),
+                                                            'order' => array('id DESC'),
+                                                            'recursive' => -1
+                                                             ));        
+
+            if ($latestUserInvestmentData['Userinvestmentdata']['userinvestmentdata_totalNetDeposits'] == NULL ) {
+                $originalNetDeposits = "0.0";
+            }
+            else {
+                $originalNetDeposits = $latestUserInvestmentData['Userinvestmentdata']['userinvestmentdata_totalNetDeposits'];
+            }
+
+            $newNetDeposits = bcadd($originalNetDeposits, $this->data['Globalcashflowdata']['globalcashflowdata_platformDeposits'], 16 );
+            $newNetDeposits = bcsub($newNetDeposits, $this->data['Globalcashflowdata']['globalcashflowdata_platformWithdrawals'], 16);
+
+            $this->Userinvestmentdata->clear();
+            $temp = array('userinvestmentdata_totalNetDeposits' => $newNetDeposits,
+                            'id' => $userInvestmentdataId
+                        );
+            
+            if (!$this->Userinvestmentdata->save($temp, $validate = true)) {
+                echo "WRITE OCCURED IN USERINVESTMENTDATA"; 
             } 
-        }
-        
-echo "cc id 0 " . $this->id ."\n";
-    
-        $data ['userinvestmentdata_id'] = $userinvestmentdataId;
-        $this->Globalcashflowdatatotal->save($data, $validate = true); 
+ 	}
     }  
-
+    
+    
 }

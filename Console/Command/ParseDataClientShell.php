@@ -113,8 +113,10 @@ class ParseDataClientShell extends GearmanClientShell {
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
                     print_r($this->queueInfo);
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
+ print_r($directory);
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
+           print_r($subDir);
                     $i = 0;
 
                     foreach ($subDir[0] as $subDirectory) {
@@ -297,11 +299,12 @@ class ParseDataClientShell extends GearmanClientShell {
                         if (!empty($tempResult)) {
                             unset($result);
                             $functionToCall = $tempResult['function'];
-
                             $dataInformation = explode(".", $tempResult['databaseName']);
                             $dbTable = $dataInformation[0];
                             if (!empty($functionToCall)) {
-                                $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+                                $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
+                                echo "result=  $result ";
+                                print_r($dateTransaction);
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
                                 } else {
@@ -311,6 +314,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
                             echo $this->variablesConfig[$tempResult['internalIndex']]['databaseName'];
+                            print_r($database[$dbTable]);
                         }
                     }
                     continue;
@@ -401,7 +405,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
                 if ($newLoan == YES) {
-                    print_r($database['investment']);
+ //                   print_r($database['investment']);
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                     $resultCreate = $this->Investment->createInvestment($database['investment']);
 
@@ -478,6 +482,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 $database['globalcashflowdata']['userinvestmentdata_id'] = $userInvestmentDataId;
                 $database['globalcashflowdata']['date'] = $dateKey;
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";
+print_r( $database['globalcashflowdata']);                
                 $this->Globalcashflowdata->create();
                 if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
                     echo "Done\n";
@@ -486,6 +491,8 @@ class ParseDataClientShell extends GearmanClientShell {
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId'] . "\n";
                     }
                 }
+                echo "Exiting 494\n";
+                exit;
             }
             echo "printing global data for the date = $dateKey\n";
             print_r($database['Userinvestmentdata']);
