@@ -214,7 +214,13 @@ class finbee extends p2pCompany {
     );
     
     protected $investmentConfigParms = [
+        "fileConfigParam" => [
+            "sortParameter" => "investment_debtor"
+        ],
         0 => [
+            "sheetConfigParam" => [
+                "sortParameter" => "investment_debtor"
+            ],
             [
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
