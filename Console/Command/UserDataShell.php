@@ -457,7 +457,7 @@ class UserDataShell extends AppShell {
      * 66
      */
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
-        return $transactionData[0]['amount'];
+        return $transactionData['amount'];
     }
 
     /* DONE
@@ -468,7 +468,7 @@ class UserDataShell extends AppShell {
      * 67
      */
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
-        return $transactionData[0]['amount'];
+        return $transactionData['amount'];
     }
 
     /*
@@ -587,8 +587,13 @@ class UserDataShell extends AppShell {
         return $sum;
     }
     
-        /*
-     * Get the amount which corresponds to the "InterestgrossIncome" concept
+    /*
+     * 
+     * 
+     * 
+     * Get the amount which corresponds to the "totalOutstandingPrincipal" concept
+     * for the controlVariables check
+     * 
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer

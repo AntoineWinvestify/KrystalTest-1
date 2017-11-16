@@ -297,11 +297,12 @@ class ParseDataClientShell extends GearmanClientShell {
                         if (!empty($tempResult)) {
                             unset($result);
                             $functionToCall = $tempResult['function'];
-
                             $dataInformation = explode(".", $tempResult['databaseName']);
                             $dbTable = $dataInformation[0];
                             if (!empty($functionToCall)) {
-                                $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+                                $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
+                                echo "result=  $result ";
+                                print_r($dateTransaction);
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
                                 } else {
@@ -311,6 +312,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
                             echo $this->variablesConfig[$tempResult['internalIndex']]['databaseName'];
+                            print_r($database[$dbTable]);
                         }
                     }
                     continue;
@@ -401,7 +403,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
                 if ($newLoan == YES) {
-                    print_r($database['investment']);
+ //                   print_r($database['investment']);
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                     $resultCreate = $this->Investment->createInvestment($database['investment']);
 
@@ -478,6 +480,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 $database['globalcashflowdata']['userinvestmentdata_id'] = $userInvestmentDataId;
                 $database['globalcashflowdata']['date'] = $dateKey;
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";
+print_r( $database['globalcashflowdata']);                
                 $this->Globalcashflowdata->create();
                 if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
                     echo "Done\n";
