@@ -31,6 +31,9 @@
  * 
  * 2017-03-11 version 0.3
  * Header added in amortization tables.
+ * 
+ * 2017-16-11 version 0.4
+ * Header added in amortization tables header fix. 
  */
 
 /**
@@ -485,17 +488,13 @@ class finbee extends p2pCompany {
                     if ($table->getAttribute('class') == 'table mb-none table-no-more') {
                         $trs = $dom->getElementsByTagName('tr');
                         $AmortizationHeaderTable = new DOMDocument();
-                        $cloneHeader = $trs[0]->cloneNode(TRUE); //Clene the table
-                        //$header = $AmortizationHeaderTable->importNode($cloneHeader);
-                        /*$AmortizationHeaderTable->appendChild($AmortizationHeaderTable->importNode($cloneHeader, TRUE));
-                        $AmortizationHeaderTableString = $AmortizationHeaderTable->saveHTML();*/
-                        echo $AmortizationHeaderTableString;
+                        $cloneHeader = $trs[0]->cloneNode(TRUE); //Clone the table header
                     }
 
                     if ($table->getAttribute('class') == 'table table-striped table-no-more') {
                         $AmortizationTable = new DOMDocument();
-                        $table->appendChild($cloneHeader);
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $table->appendChild($cloneHeader); //Add header to the table
+                        $clone = $table->cloneNode(TRUE); //Clone the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] =  $AmortizationTableString;
