@@ -41,7 +41,10 @@
  * 
  * [2017-11-13] version 0.6
  * Added Google Analytics
-
+ * 
+ * [2017-11-16] version 0.7
+ * Defaulted percent fix
+ * Undefined logo and name in single pfp data javascript fixed.
  * 
  */
 ?>
@@ -110,10 +113,10 @@
         
         //Click on platform logo
         $(document).on("click", ".logo", function(){ 
+            id = $(this).attr("id").split(" ")[0];
             name = $("#logo"+id).attr("alt");
-            id = $(this).attr("id");
             var params = {
-                id : id,
+                id : $(this).attr("id"),
                 logo : $("#logo"+id).attr("src"),
                 name : name,
             };
@@ -357,7 +360,7 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Percentage of your total invested assets that are in status Default, i.e. more than 90 days overdue')?>" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">8,45%</h3>
+                                            <h3 class="title"><?php echo $defaultedRange['>90'] . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
