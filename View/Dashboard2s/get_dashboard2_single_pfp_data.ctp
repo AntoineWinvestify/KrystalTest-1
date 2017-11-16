@@ -367,7 +367,6 @@ echo $companyInvestmentDetails[0];
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 27')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Installment Progress') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 28')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
-                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 30')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -379,27 +378,7 @@ echo $companyInvestmentDetails[0];
                                                         <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_nominalInterestRate'], 2) . "%" ?></td>
                                                         <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_paymentsDone']/$defaultedInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $defaultedInvestment['Investment']['investment_paymentsDone'] . "/" . $defaultedInvestment['Investment']['investment_numberOfInstalments']?></td>
                                                         <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_outstandingPrincipal']?>"><?php echo round($defaultedInvestment['Investment']['investment_outstandingPrincipal'], 2) . " &euro;"; ?></td>
-                                                        <td>Term</td>
-                                                        <td><?php
-                                                        switch ($defaultedInvestment['Investment']['investment_defaultedDays']){
-                                                            case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 90):
-                                                                echo "91+ days delay";
-                                                                break;
-                                                            case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 60):
-                                                                echo "61-90 days delay";
-                                                                break;
-                                                            case($defaultedInvestment['Investment']['investment_defaultedDays'] > 30):
-                                                                echo "31-60 days delay";
-                                                                break;
-                                                            case($defaultedInvestment['Investment']['investment_defaultedDays'] > 7):
-                                                                echo "8-30 days delay";
-                                                                break;             
-                                                            case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 0):
-                                                                echo "1-7 days delay";
-                                                                break;
-                                                        } ?>
-                                                        </td>
-
+                                                        <td><?php echo $defaultedInvestment['Investment']['investment_nextPaymentDate']; ?></td>                                                       
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>
@@ -434,8 +413,28 @@ echo $companyInvestmentDetails[0];
                                                         <td dataorder="<?php echo $activeInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($activeInvestment['Investment']['investment_nominalInterestRate']) . "%" ?></td>
                                                         <td dataorder="<?php echo $activeInvestment['Investment']['investment_paymentsDone']/$activeInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $activeInvestment['Investment']['investment_paymentsDone'] . "/" . $activeInvestment['Investment']['investment_numberOfInstalments']?></td>
                                                         <td dataorder="<?php echo $activeInvestment['Investment']['investment_outstandingPrincipal']?>"><?php echo round($activeInvestment['Investment']['investment_outstandingPrincipal'], 2) . " &euro;"; ?></td>
-                                                        <td>Term</td>
-                                                        <td> status </td>
+                                                        <td><?php echo $activeInvestments['Investment']['investment_nextPaymentDate']; ?></td>
+                                                        <td> <?php
+                                                        switch ($activeInvestment['Investment']['investment_defaultedDays']){
+                                                            case ($activeInvestment['Investment']['investment_defaultedDays'] > 90):
+                                                                echo __("91+ days delay");
+                                                                break;
+                                                            case ($activeInvestment['Investment']['investment_defaultedDays'] > 60):
+                                                                echo __("61-90 days delay");
+                                                                break;
+                                                            case($activeInvestment['Investment']['investment_defaultedDays'] > 30):
+                                                                echo __("31-60 days delay");
+                                                                break;
+                                                            case($activeInvestment['Investment']['investment_defaultedDays'] > 7):
+                                                                echo __("8-30 days delay");
+                                                                break;             
+                                                            case ($activeInvestment['Investment']['investment_defaultedDays'] > 0):
+                                                                echo __("1-7 days delay");
+                                                                break;
+                                                            default:
+                                                                echo __("Current");
+                                                                break;
+                                                        } ?></td>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>
