@@ -1493,5 +1493,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
         return $input;
     }
+    
+    public function cleanStringInput($input, ...$charactersToClean) {
+        $input = str_replace($charactersToClean, "", $input);
+        return $input;
+    }
 
 }
