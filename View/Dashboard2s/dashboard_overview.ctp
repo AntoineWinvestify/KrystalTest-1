@@ -44,6 +44,7 @@
  * 
  * [2017-11-16] version 0.7
  * Defaulted percent fix
+ * Undefined logo and name in single pfp data javascript fixed.
  * 
  */
 ?>
@@ -111,10 +112,10 @@
         });
         
         $(document).on("click", ".logo", function(){ 
+            id = $(this).attr("id").split(" ")[0];
             name = $("#logo"+id).attr("alt");
-            id = $(this).attr("id");
             var params = {
-                id : id,
+                id : $(this).attr("id"),
                 logo : $("#logo"+id).attr("src"),
                 name : name,
             };
