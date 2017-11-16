@@ -41,15 +41,15 @@ echo $companyInvestmentDetails[0];
     <?php /* Google Analytics for Dashboard 2.0 - Company */?>
     
     function ga_allInvestments() {
-        console.log("ga 'send' 'event' 'company'  'allInvestment' ");
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'company'  'allInvestment' ");
             ga('send', 'event', 'company', 'allInvestment');
         }
     }
     
     function ga_companyChart(idChart, companyName) {
-        console.log("ga 'send' 'event' 'company'  'chart' " + idChart + companyName);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'company'  'chart' " + idChart + companyName);
             ga('send', 'event', 'company', 'chart', idChart + companyName);
         }
     }
@@ -73,7 +73,7 @@ echo $companyInvestmentDetails[0];
             ga_companyChart(id, company);
         });
         
-        $(document).on("click", "#allInvestments", function () {
+        $(document).on("click", "#activeTab", function () {
             ga_allInvestments();
         });
 
@@ -169,7 +169,7 @@ echo $companyInvestmentDetails[0];
                         <div class="nav-tabs-wrapper">
                             <ul class="nav nav-tabs" data-tabs="tabs">
                                 <li>
-                                    <a id="backOverview" href="#">
+                                    <a id="backOverview">
                                         Global Overview
                                         <div class="ripple-container"></div>
                                     </a>
@@ -220,7 +220,7 @@ echo $companyInvestmentDetails[0];
                                                         <td class="right"><?php echo __('25%') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawls from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawals from this platform')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
                                                         <td class="right"><?php echo __('13.000,00 €') ?></td>
                                                     </tr>
                                                     <tr>
@@ -247,7 +247,7 @@ echo $companyInvestmentDetails[0];
                                                         <td class="right"><?php echo __('12,15%') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 Mths')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
                                                         <td class="right"><?php echo __('11,33%') ?></td>
                                                     </tr>
                                                     <tr>
@@ -297,15 +297,15 @@ echo $companyInvestmentDetails[0];
                                                         <td class="right"><?php echo $defaultedRange['8-30'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 18')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-61 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 18')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-60 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['31-60'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 19')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('60-90 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 19')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('61-90 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['61-90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 20')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('90 - DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 20')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('91 - DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
@@ -364,7 +364,7 @@ echo $companyInvestmentDetails[0];
                                                     <th><?php echo __('Interest Rate') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 27')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Installment Progress') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 28')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
-                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Term') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 30')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
@@ -419,7 +419,7 @@ echo $companyInvestmentDetails[0];
                                                     <th><?php echo __('Interest Rate') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 27')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Installment Progress') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 28')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
-                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Term') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 30')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
