@@ -1509,7 +1509,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */
     public function cleanStringInput($input, ...$charactersToClean) {
         $input = str_replace($charactersToClean, "", $input);
-        return $input;
+        return trim($input);
     }
 
 }
