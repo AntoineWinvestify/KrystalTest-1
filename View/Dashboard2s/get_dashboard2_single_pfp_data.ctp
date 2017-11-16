@@ -25,12 +25,13 @@
  * 																				[OK]
  * [2017-11-14] version 0.2
  * Added Google Analytics
-
-
+ * 
+ * [2017-11-16] version 0.3
+ * Defaulted percent fix
+ * Data table fix
+ * 
  */
-?>
-<?php
-//P info
+
 
 echo $companyInvestmentDetails[0];
 //print_r($companyInvestmentDetails);
@@ -279,7 +280,7 @@ echo $companyInvestmentDetails[0];
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Percentage of your total invested assets that are in status Default, i.e. more than 90 days overdue')?>" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title"><?php echo $defaultedRange['1-7'] + $defaultedRange['8-30'] + $defaultedRange['31-60'] + $defaultedRange['61-90'] + $defaultedRange['>90'] . "%"?></h3>
+                                            <h3 class="title"><?php echo /*$defaultedRange['1-7'] + $defaultedRange['8-30'] + $defaultedRange['31-60'] + $defaultedRange['61-90'] +*/ $defaultedRange['>90'] . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
@@ -433,6 +434,7 @@ echo $companyInvestmentDetails[0];
                                                         <td dataorder="<?php echo $activeInvestment['Investment']['investment_paymentsDone']/$activeInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $activeInvestment['Investment']['investment_paymentsDone'] . "/" . $activeInvestment['Investment']['investment_numberOfInstalments']?></td>
                                                         <td>Outstanding</td>
                                                         <td>Term</td>
+                                                        <td> status </td>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>
