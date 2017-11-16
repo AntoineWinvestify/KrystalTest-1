@@ -236,7 +236,7 @@ class Fileparser {
                 "detail" => "Bank_charges",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept21"
+                "type" => "globalcashflowdata_bankCharges"
                 ],
             22 => [
                 "detail" => "Cost_secondary_market",
@@ -768,7 +768,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             switch ($countSortParameters) {
                 case 1:
                     $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
-                    $tempArray[$sortParam1] = $tempArray[$i];
+                    $tempArray[$sortParam1][] = $tempArray[$i];
                     unset($tempArray[$i]); 
                 break; 
             

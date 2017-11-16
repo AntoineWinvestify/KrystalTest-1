@@ -122,6 +122,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
+            $controlVariableFile = $data['controlVariableFile'];
             $companyHandle = $this->companyClass($data['pfp']);
 
             if (Configure::read('debug')) {
@@ -184,7 +185,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
                             $totalParsingresultTransactions = $tempResult;
-                            print_r($totalParsingresultTransactions);
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         //    $totalParsingresultTransactions = $tempResult;
@@ -225,6 +225,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['pfp'] = $platform;
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
+            $returnData[$linkedAccountKey]['controlVariableFile'] = $controlVariableFile; 
             
             
             
@@ -242,7 +243,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             continue;
                         }
                         if (in_array($value, $listOfExpiredLoans) == false){
-                            
                             $newLoans[] = $value;
                         }
                     }
@@ -250,10 +250,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
             
             $newLoans = array_unique($newLoans);
-            echo "New loans are\n";
-            print_r($newLoans);
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
+            
+            echo "New loans are\n";
+            print_r($returnData[$linkedAccountKey]['newLoans']); 
         }
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
@@ -262,6 +263,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 //      print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
         print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
         print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
+        print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
  //     print_r($data['tempArray'][$linkedAccountKey]['error']);
  //     print_r($data);
  

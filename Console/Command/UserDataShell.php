@@ -32,61 +32,54 @@ class UserDataShell extends AppShell {
     }    
     
    
-   /*
+   /*not finished yet
     * The control variables are calculated for each "DAY", but the checking is only done for the date of the readout.
     * This means that if a reading period covers a week, the checking SHOULD be done only for the last calculation (= last day)
     * The structure of both arrays is:
-    *               'myWallet'
-    *               'outstandingPrincipal'
-    *               'activeInvestments'
+    *     controlVariable['myWallet']
+    *                    ['outstandingPrincipal']
+    *                    ['activeInvestments']
+    * 
     * @param  array       array with the calculated control variables for today's readout
     * @param  array       array with the control variables as provided by platform
-    * @return boolean     
+    * @return boolean     true / false
     * 
     */
-    public function consolidateControlVariables($externalControlVariables, $internalControlVariables) {        
+    public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {        
         $result = false;
         $error = true;
         foreach ($externalControlVariables as $variableKey => $variable) {
-             switch ($variableKey) {
+            switch ($variableKey) {
                 case WIN_CONTROLVARIABLE_MYWALLET:
-                    if ($internalControlVariables['myWallet'] == $externalControlVariables) {
-                        
-                    }
-                    else {
+                    if ($internalControlVariables['myWallet'] <> $externalControlVariables) {
                         $error = true;
                     }
                     break;
                 case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
-                    if ($internalControlVariables['outstandingPrincipal'] == $externalControlVariables) {
-                    
-                    }
-                    else {
+                    if ($internalControlVariables['outstandingPrincipal'] <> $externalControlVariables) {
                         $error = true;
                     }
                     break;
                 case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT:
-                    if ($internalControlVariables['activeInvestments'] == $externalControlVariables) {
-                        
-                    }
-                    else {
+                    if ($internalControlVariables['activeInvestments'] <> $externalControlVariables) {
                         $error = true;
                     }
                     break;
             }  
         }  
         if ($error == true) {
-            return $result;
+            return false;
         }
         else {
             //generate application error
+            return true;
         }
-        // If approved, write the new values to DB
     }
     
     
     
     public function consolidatePlatformData(&$database) {
+        return;
         echo "FxF";
         $database['userinvestmentdata']['userinvestmentdata_capitalRepayment'] = $this->consolidateCapitalRepayment();  // 38
         echo "FtF";
@@ -164,7 +157,7 @@ class UserDataShell extends AppShell {
      * @return string      the string representation of a large integer
      */
     public function calculateReceivedRepayment(&$transactionData, &$resultData) {
-        $result = 0.0;
+        $result = '0.0';
         if (!empty($resultData['payment']['payment_capitalRepayment'])) {
             $result = bcadd($result,$resultData['payment']['payment_capitalRepayment'], 16);   
         }
@@ -177,7 +170,7 @@ class UserDataShell extends AppShell {
         if (!empty($resultData['investment']['investment_priceInSecondaryMarket'])) {  // read from db
             $result = bcadd($result,$resultData['investment']['investment_priceInSecondaryMarket'], 16);  
         } 
-        $result1 = 0.0;
+        $result1 = '0.0';
         if (!empty($resultData['investment']['investment_myInvestment'])) {  // read from db
             $result1 = bcadd($result1,$resultData['investment']['investment_myInvestment'], 16);  
         }        
@@ -297,7 +290,7 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
     public function calculateTotalGrossIncome(&$transactionData, &$resultData) {
-        $result = 0.0;
+        $result = '0.0';
         
         if (!empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
             $result = bcadd($resultData['payment_regularGrossInterestIncome'],$result, 16);
@@ -505,7 +498,7 @@ class UserDataShell extends AppShell {
      * 55
      */
     public function calculatePlatformBankCharges(&$transactionData, &$resultData) {
-        return $transactionData[0]['amount'];
+        return $transactionData['amount'];
     }
 
 
