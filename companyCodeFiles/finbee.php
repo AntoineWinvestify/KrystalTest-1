@@ -111,8 +111,19 @@ class finbee extends p2pCompany {
     protected $valuesInvestment = [
         0 => [
             [
+                "A" => [
+                    "name" => "investment_purpose"
+                ],
                 "B" => [
-                    "name" => "investment_debtor"
+                    ["name" => "investment_debtor"],
+                    [
+                        "type" => "investment_loanId",
+                        "inputData" => [
+                            "input2" => "",
+                            "input3" => "#current.investment_purpose"
+                        ],
+                        "functionName" => "getAmount",
+                    ]
                 ]
             ],
             [
