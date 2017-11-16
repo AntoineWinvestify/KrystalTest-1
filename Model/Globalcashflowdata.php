@@ -71,8 +71,7 @@ var $validate = array(
      */
     function afterSave($created, $options = array()) {
 
-     
-        if ($created) {		// TRUE, when a new database record is created
+        if ($created) {		
             $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
             $userInvestmentdataId = $this->data['Globalcashflowdata']['userinvestmentdata_id'];
 

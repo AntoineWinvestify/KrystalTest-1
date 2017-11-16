@@ -113,10 +113,8 @@ class ParseDataClientShell extends GearmanClientShell {
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
                     print_r($this->queueInfo);
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
- print_r($directory);
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
-           print_r($subDir);
                     $i = 0;
 
                     foreach ($subDir[0] as $subDirectory) {
@@ -491,8 +489,6 @@ print_r( $database['globalcashflowdata']);
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId'] . "\n";
                     }
                 }
-                echo "Exiting 494\n";
-                exit;
             }
             echo "printing global data for the date = $dateKey\n";
             print_r($database['Userinvestmentdata']);
