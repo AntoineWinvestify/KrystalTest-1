@@ -1486,5 +1486,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
         return $datas;
     }
+    
+     public function joinDataCells($input, $joinSeparator, ...$inputValues) {
+        foreach ($inputValues as $inputValue) {
+            $input .= $joinSeparator . $inputValue;
+        }
+        return $input;
+    }
 
 }
