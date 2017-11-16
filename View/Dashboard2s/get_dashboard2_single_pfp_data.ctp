@@ -25,31 +25,32 @@
  * 																				[OK]
  * [2017-11-14] version 0.2
  * Added Google Analytics
-
-
+ * 
+ * [2017-11-16] version 0.3
+ * Defaulted percent fix
+ * Data table fix
+ * 
  */
-?>
-<?php
-//P info
+
 
 echo $companyInvestmentDetails[0];
 //print_r($companyInvestmentDetails);
- //echo print_r($activeInvestments) . HTML_ENDOFLINE;
-  /*echo print_r($defaultedInvestments) . HTML_ENDOFLINE; */
+//echo print_r($activeInvestments) . HTML_ENDOFLINE;
+//echo print_r($defaultedInvestments) . HTML_ENDOFLINE;
 ?>
 <script>
     <?php /* Google Analytics for Dashboard 2.0 - Company */?>
     
     function ga_allInvestments() {
-        console.log("ga 'send' 'event' 'company'  'allInvestment' ");
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'company'  'allInvestment' ");
             ga('send', 'event', 'company', 'allInvestment');
         }
     }
     
     function ga_companyChart(idChart, companyName) {
-        console.log("ga 'send' 'event' 'company'  'chart' " + idChart + companyName);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'company'  'chart' " + idChart + companyName);
             ga('send', 'event', 'company', 'chart', idChart + companyName);
         }
     }
@@ -73,7 +74,7 @@ echo $companyInvestmentDetails[0];
             ga_companyChart(id, company);
         });
         
-        $(document).on("click", "#allInvestments", function () {
+        $(document).on("click", "#activeTab", function () {
             ga_allInvestments();
         });
 
@@ -169,7 +170,7 @@ echo $companyInvestmentDetails[0];
                         <div class="nav-tabs-wrapper">
                             <ul class="nav nav-tabs" data-tabs="tabs">
                                 <li>
-                                    <a id="backOverview" href="#">
+                                    <a id="backOverview">
                                         Global Overview
                                         <div class="ripple-container"></div>
                                     </a>
@@ -221,7 +222,8 @@ echo $companyInvestmentDetails[0];
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawls from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
-                                                        <td class="right"><?php echo __('13.000,00 €') ?></td>
+                                                        <td class="right"><?php echo round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_totalNetDeposits'], 2) . " &euro;";?></td>
+
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Number of individual loans or assets that you currently own. The higher the sum, the better diversified your portfolio is')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
@@ -247,7 +249,7 @@ echo $companyInvestmentDetails[0];
                                                         <td class="right"><?php echo __('12,15%') ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 Mths')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
                                                         <td class="right"><?php echo __('11,33%') ?></td>
                                                     </tr>
                                                     <tr>
@@ -279,7 +281,7 @@ echo $companyInvestmentDetails[0];
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Percentage of your total invested assets that are in status Default, i.e. more than 90 days overdue')?>" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title"><?php echo $defaultedRange['1-7'] + $defaultedRange['8-30'] + $defaultedRange['31-60'] + $defaultedRange['61-90'] + $defaultedRange['>90'] . "%"?></h3>
+                                            <h3 class="title"><?php echo /*$defaultedRange['1-7'] + $defaultedRange['8-30'] + $defaultedRange['31-60'] + $defaultedRange['61-90'] +*/ $defaultedRange['>90'] . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
@@ -297,15 +299,15 @@ echo $companyInvestmentDetails[0];
                                                         <td class="right"><?php echo $defaultedRange['8-30'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 18')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-61 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 18')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-60 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['31-60'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 19')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('60-90 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 19')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('61-90 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['61-90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 20')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('90 - DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 20')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('91 - DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
@@ -364,7 +366,7 @@ echo $companyInvestmentDetails[0];
                                                     <th><?php echo __('Interest Rate') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 27')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Installment Progress') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 28')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
-                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Term') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 30')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
@@ -372,30 +374,30 @@ echo $companyInvestmentDetails[0];
                                                 <?php foreach($defaultedInvestments as $defaultedInvestment) { ?>
                                                     <tr>
                                                         <td><?php echo $defaultedInvestment['Investment']['investment_loanId'] ?></td>
-                                                        <td><?php echo $defaultedInvestment['Investment']['investment_investmentDate'] ?></td>
-                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_investment'], 2) . " &euro;"; ?></td>
-                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_nominalInterestRate']/100, 2) . "%" ?></td>
+                                                        <td><?php echo $defaultedInvestment['Investment']['investment_my_InvestmentDate'] ?></td>
+                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_myInvestment'], 2) . " &euro;"; ?></td>
+                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_nominalInterestRate'], 2) . "%" ?></td>
                                                         <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_paymentsDone']/$defaultedInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $defaultedInvestment['Investment']['investment_paymentsDone'] . "/" . $defaultedInvestment['Investment']['investment_numberOfInstalments']?></td>
-                                                        <td>Outstanding</td>
+                                                        <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_outstandingPrincipal']?>"><?php echo round($defaultedInvestment['Investment']['investment_outstandingPrincipal'], 2) . " &euro;"; ?></td>
                                                         <td>Term</td>
-                                                        <td><?php /*
-                                                        switch ($defaultedInvestment['Investment']['']){
-                                                            case 2:
-                                                                echo "1-7 days delay";
-                                                                break;
-                                                            case 3:
-                                                                echo "8-30 days delay";
-                                                                break;
-                                                            case 4:
-                                                                echo "31-60 days delay";
-                                                                break;
-                                                            case 5:
-                                                                echo "61-90 days delay";
-                                                                break;
-                                                            case 6:
+                                                        <td><?php
+                                                        switch ($defaultedInvestment['Investment']['investment_defaultedDays']){
+                                                            case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 90):
                                                                 echo "91+ days delay";
                                                                 break;
-                                                        }*/ ?>
+                                                            case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 60):
+                                                                echo "61-90 days delay";
+                                                                break;
+                                                            case($defaultedInvestment['Investment']['investment_defaultedDays'] > 30):
+                                                                echo "31-60 days delay";
+                                                                break;
+                                                            case($defaultedInvestment['Investment']['investment_defaultedDays'] > 7):
+                                                                echo "8-30 days delay";
+                                                                break;             
+                                                            case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 0):
+                                                                echo "1-7 days delay";
+                                                                break;
+                                                        } ?>
                                                         </td>
 
                                                     </tr>
@@ -419,7 +421,7 @@ echo $companyInvestmentDetails[0];
                                                     <th><?php echo __('Interest Rate') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 27')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Installment Progress') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 28')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
-                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Term') ?></th>
+                                                    <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
                                                     <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 30')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                                                 </tr>
                                             </thead>
@@ -427,12 +429,13 @@ echo $companyInvestmentDetails[0];
                                                 <?php foreach($activeInvestments as $activeInvestment) { ?>
                                                     <tr>
                                                         <td><?php echo $activeInvestment['Investment']['investment_loanId'] ?></td>
-                                                        <td><?php echo $activeInvestment['Investment']['investment_investmentDate'] ?></td>
-                                                        <td dataorder="<?php echo $activeInvestment['Investment']['investment_investment'] ?>"><?php echo round($activeInvestment['Investment']['investment_investment'], 2) . " &euro;"; ?></td>
+                                                        <td><?php echo $activeInvestment['Investment']['investment_my_InvestmentDate'] ?></td>
+                                                        <td dataorder="<?php echo $activeInvestment['Investment']['investment_investment'] ?>"><?php echo round($activeInvestment['Investment']['investment_myInvestment'], 2) . " &euro;"; ?></td>
                                                         <td dataorder="<?php echo $activeInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($activeInvestment['Investment']['investment_nominalInterestRate']) . "%" ?></td>
                                                         <td dataorder="<?php echo $activeInvestment['Investment']['investment_paymentsDone']/$activeInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $activeInvestment['Investment']['investment_paymentsDone'] . "/" . $activeInvestment['Investment']['investment_numberOfInstalments']?></td>
-                                                        <td>Outstanding</td>
+                                                        <td dataorder="<?php echo $activeInvestment['Investment']['investment_outstandingPrincipal']?>"><?php echo round($activeInvestment['Investment']['investment_outstandingPrincipal'], 2) . " &euro;"; ?></td>
                                                         <td>Term</td>
+                                                        <td> status </td>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>

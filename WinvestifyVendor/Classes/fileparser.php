@@ -45,15 +45,19 @@
  * 2017-11-09           Version 0.4
  * Amount and currency bug fixing.
  * 
+ * 
  * 2017-11-10           version 0.5
  * Updated function extractDataFromString with an extra parameter
  * 
  * 
- * 2017-11-11           version 0.5
+ * 2017-11-11           version 0.6
  * Functions getDefaultValue and getCountry added
  *  
- * 
- * 
+ * 2017-11-14           version 0.7
+ * Functions fixes
+ * extractDataFromString
+ * getAmount
+ * getCurrency
  * 
  * Pending:
  * chunking, csv file check

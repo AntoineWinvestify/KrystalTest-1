@@ -41,7 +41,10 @@
  * 
  * [2017-11-13] version 0.6
  * Added Google Analytics
-
+ * 
+ * [2017-11-16] version 0.7
+ * Defaulted percent fix
+ * Undefined logo and name in single pfp data javascript fixed.
  * 
  */
 ?>
@@ -54,29 +57,29 @@
     <?php /* Google Analytics for Dashboard 2.0 - Overview */?>
     
     function ga_company(idCompany, nameCompany) {
-        console.log("ga 'send' 'event' 'Dashboard2'  'company' " + idCompany + nameCompany);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'Dashboard2'  'company' " + idCompany + nameCompany);
             ga('send', 'event', 'Dashboard2', 'company', idCompany + nameCompany);
         }
     }
     
-    function ga_1CR(counter1CR) {
-        console.log("ga 'send' 'event' 'Dashboard2'  '1CR' " + counter1CR);
+    function ga_1CR(counter1Click) {
         if (typeof ga === 'function') { 
-            ga('send', 'event', 'Dashboard2', '1CR', counter1CR);
+            console.log("ga 'send' 'event' 'Dashboard2'  '1CR' " + counter1Click);
+            ga('send', 'event', 'Dashboard2', '1CR', counter1Click);
         }
     }
     
-    function ga_linkAccount(counterLinkAccount) {
-        console.log("ga 'send' 'event' 'Dashboard2'  'linkAccount' " + counterLinkAccount);
+    function ga_linkAccount(counterLA) {
         if (typeof ga === 'function') { 
-            ga('send', 'event', 'Dashboard2', 'linkAccount', counterLinkAccount);
+            console.log("ga 'send' 'event' 'Dashboard2'  'linkAccount' " + counterLA);
+            ga('send', 'event', 'Dashboard2', 'linkAccount', counterLA);
         }
     }
     
     function ga_chart(idChart) {
-        console.log("ga 'send' 'event' 'Dashboard2'  'chart' " + idChart);
         if (typeof ga === 'function') { 
+            console.log("ga 'send' 'event' 'Dashboard2'  'chart' " + idChart);
             ga('send', 'event', 'Dashboard2', 'chart', idChart);
         }
     }
@@ -84,13 +87,13 @@
     $(function (){
         //Click on Account Linking btn
         $(document).on("click", "#btnAccountLinking", function(){
-            var counterLinkAccount = 0;
+            counterLinkAccount = 0;
             ga_linkAccount(counterLinkAccount);
             window.location.replace('/investors/readLinkedAccounts');
         });
         
         $(document).on("click", "#btnAccountLinkingB", function(){
-            var counterLinkAccount = <?php echo count($individualInfoArray); ?>;
+            counterLinkAccount = <?php echo count($individualInfoArray); ?>;
             ga_linkAccount(counterLinkAccount);
             window.location.replace('/investors/readLinkedAccounts');
         });
@@ -108,11 +111,12 @@
             window.location.replace('/ocrs/ocrInvestorView');
         });
         
+        //Click on platform logo
         $(document).on("click", ".logo", function(){ 
+            id = $(this).attr("id").split(" ")[0];
             name = $("#logo"+id).attr("alt");
-            id = $(this).attr("id");
             var params = {
-                id : id,
+                id : $(this).attr("id"),
                 logo : $("#logo"+id).attr("src"),
                 name : name,
             };
@@ -297,7 +301,7 @@
                                                         <td class="right"><?php echo __('25%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawls from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawals from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
                                                         <td class="right"><?php echo round($global['netDeposits'], 2) . " &euro;";?></td>
                                                     </tr>
                                                     <tr>
@@ -324,7 +328,7 @@
                                                         <td class="right"><?php echo __('12,15%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Past 12 Mths')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 11" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
                                                         <td class="right"><?php echo __('11,33%')?></td>
                                                     </tr>
                                                     <tr>
@@ -356,7 +360,7 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><strong><?php echo __('Defaulted')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Percentage of your total invested assets that are in status Default, i.e. more than 90 days overdue')?>" class="ion ion-ios-information-outline" ></i></small></p>
-                                            <h3 class="title">8,45%</h3>
+                                            <h3 class="title"><?php echo $defaultedRange['>90'] . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
@@ -374,15 +378,15 @@
                                                         <td class="right"><?php echo $defaultedRange['8-30'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 18')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-61 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 18')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-60 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['31-60'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 19')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('60-90 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 19')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('61-90 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['61-90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 20')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('90 - DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 20')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('91 - DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
@@ -431,7 +435,7 @@
                                 <th><?php echo __('Lending Company')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 22" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 23" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 24" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to platform')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 24" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to Platform')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 25" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
                                 <th><i data-toggle="tooltip" data-placement="top" title="some text to tooltip 26" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
                             </tr>
