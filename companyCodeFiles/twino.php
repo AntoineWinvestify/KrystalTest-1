@@ -112,15 +112,15 @@ class twino extends p2pCompany {
 // Not finished
     protected $valuesInvestment = [// All types/names will be defined as associative index in array
 
-        "A" => [
-            "name" => "origin.loan",
+        "A" =>  [
+            "name" => "investment_country"                              // Winvestify standardized name  OK
         ],
         "B" => [
             "name" => "loanId",
         ],
         "C" => [
             [
-                "type" => "origin.date", // Winvestify standardized name 
+                "type" => "investment_investmentDate", // Winvestify standardized name 
                 "inputData" => [
                     "input2" => "m/d/Y", // Input parameters. The first parameter
                 // is ALWAYS the contents of the cell
@@ -129,16 +129,25 @@ class twino extends p2pCompany {
             ],
         ],
         "D" => [
-            "name" => "riskclass",
+            "name" => "investment_riskRating",
         ],
         "E" => [
-            "name" => "status",
+            "name" => "investment_originalState",
         ],
         "F" => [
             "name" => "investment_nominalInterestRate"
         ],
+        "G" => [
+            "name" => "investment_expectedAnnualYield"
+        ],
+        //"H" => ASK ANTOINE Remaining Term
         "I" => [
             "name" => "investment_originalDuration"
+        ],
+        //"J" => ASK ANTOINE Extended
+        //"K" => IT IS NEXT PAYMENT, ASK ANTOINE IF IT NEEDED TO TAKE 
+        "L" => [
+            "name" => "investment_capitalRepaymentFromP2P"
         ],
         "M" => [
             [
@@ -151,6 +160,13 @@ class twino extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
+        //"N" => ASK ANTOINE Interest income
+        "O" => [
+            "name" => "investment_outstandingPrincipalFromP2P"
+        ],
+        "P" => [
+            "name" => "investment_forSale"
+        ]
         
     ];
 
@@ -221,6 +237,11 @@ class twino extends p2pCompany {
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );  
     
+    protected $callbacks = [
+        "investment" => [
+            "status" => "translateLoanStatus"
+        ]
+    ];
     
     function __construct() {
         parent::__construct();
@@ -419,7 +440,7 @@ class twino extends p2pCompany {
                 $variables = json_decode($str, true);
                 print_r($variables);
 
-                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
+                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($variables['investmentBalance']); //My wallet
                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($variables['interest']); //Interest
 
@@ -523,6 +544,107 @@ class twino extends p2pCompany {
         }
     }
 
+    
+
+    /**
+     * Function to translate the company specific loan status to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan status
+     * @return int                  Winvestify standardized loan status
+     */    
+    public function translateLoanStatus($inputData){
+        $status = WIN_LOANSTATUS_UNKNOWN;
+        $inputData = strtoupper(trim($inputData));
+         switch ($inputData) {
+            case "CURRENT":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "EXTENDED/BUYBACK":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "DELAYED":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "DEFAULTED":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "SOLD":
+                $data = WIN_LOANSTATUS_FINISHED;
+                break;    
+            case "REPAID":
+                $data = WIN_LOANSTATUS_FINISHED;
+                break;
+            case "RECOVERED":
+                $data = WIN_LOANSTATUS_FINISHED;
+                break;
+            
+        }
+        return $data;
+    }
+    
+    
+    
+    /**
+     * Function to translate the company specific loan type to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan type
+     * @return int                  Winvestify standardized loan type
+     */
+    public function translateLoanType($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific amortization method to the Winvestify standardized
+     * amortization type
+     * @param string $inputData     company specific amortization method
+     * @return int                  Winvestify standardized amortization method
+     */
+    public function translateAmortizationMethod($inputData) {
+
+    }   
+    
+    /**
+     * Function to translate the company specific type of investment to the Winvestify standardized
+     * type of investment
+     * @param string $inputData     company specific type of investment
+     * @return int                  Winvestify standardized type of investment
+     */
+    public function translateTypeOfInvestment($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific payment frequency to the Winvestify standardized
+     * payment frequency
+     * @param string $inputData     company specific payment frequency
+     * @return int                  Winvestify standardized payment frequency
+     */
+    public function translatePaymentFrequency($inputData) {
+        
+    }
+        
+    /**
+     * Function to translate the type of investment market to an to the Winvestify standardized
+     * investment market concept
+     * @param string $inputData     company specific investment market concept
+     * @return int                  Winvestify standardized investment marke concept
+     */
+    public function translateInvestmentMarket($inputData) {
+        
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * investmentBuyBackGuarantee
+     * @param string $inputData     company specific investmentBuyBackGuarantee
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateInvestmentBuyBackGuarantee($inputData) {
+        
+    }
+    
+    
     /**
      *
      * 	Logout of user from the company portal.

@@ -523,8 +523,8 @@ class bondora extends p2pCompany {
                         if (!$this->hasElements) {
                             return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                         }
-                        $this->tempUrl['downloadInvesment'] = $urls[0]->getAttribute('href');
-                        $this->tempUrl['deleteInvesment'] = $urls[1]->getAttribute('href');
+                        $this->tempUrl['downloadInvestment'] = $urls[0]->getAttribute('href');
+                        $this->tempUrl['deleteInvestment'] = $urls[1]->getAttribute('href');
                         $searchInvesmnet = true;
                         break;
                     }
@@ -696,7 +696,7 @@ class bondora extends p2pCompany {
 
                 print_r($this->tempUrl);
 
-                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvesment'];
+                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvestment'];
                 $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, null, false, null, $fileName);
@@ -746,7 +746,7 @@ class bondora extends p2pCompany {
 
 
 
-                //$url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvesment'];
+                //$url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['deleteInvestment'];
                 //echo "delete: " . $url . SHELL_ENDOFLINE;
                 $this->idForSwitch++;
                 //$this->headers = array("__RequestVerificationToken: " . $this->deleteToken, ":Type: POST", 'Host: www.bondora.com', 'Accept: */*', 'Accept-Language: en-US,en;q=0.5', 'Accept-Encoding: gzip, deflate, br', 'X-Requested-With: XMLHttpRequest', 'Connection: keep-alive', "content-length: 0", "Retry-After: 120");
@@ -783,7 +783,7 @@ class bondora extends p2pCompany {
                   echo $key . " is " . $td->nodeValue;
                   } */
 
-                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($tds[14]->nodeValue);  //Capital vivo
+                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($tds[14]->nodeValue);  //Capital vivo
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($tds[2]->nodeValue); //My wallet
 
                 $spans = $dom->getElementsByTagName('span');
@@ -927,6 +927,68 @@ class bondora extends p2pCompany {
                     return $this->tempArray;
                 }
         }
+    }
+    
+    
+    //BONDORA DOESNT HAVE CALLBACKS
+    /**
+     * Function to translate the company specific loan type to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan type
+     * @return int                  Winvestify standardized loan type
+     */
+    public function translateLoanType($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific amortization method to the Winvestify standardized
+     * amortization type
+     * @param string $inputData     company specific amortization method
+     * @return int                  Winvestify standardized amortization method
+     */
+    public function translateAmortizationMethod($inputData) {
+
+    }   
+    
+    /**
+     * Function to translate the company specific type of investment to the Winvestify standardized
+     * type of investment
+     * @param string $inputData     company specific type of investment
+     * @return int                  Winvestify standardized type of investment
+     */
+    public function translateTypeOfInvestment($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific payment frequency to the Winvestify standardized
+     * payment frequency
+     * @param string $inputData     company specific payment frequency
+     * @return int                  Winvestify standardized payment frequency
+     */
+    public function translatePaymentFrequency($inputData) {
+        
+    }
+        
+    /**
+     * Function to translate the type of investment market to an to the Winvestify standardized
+     * investment market concept
+     * @param string $inputData     company specific investment market concept
+     * @return int                  Winvestify standardized investment marke concept
+     */
+    public function translateInvestmentMarket($inputData) {
+        
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * investmentBuyBackGuarantee
+     * @param string $inputData     company specific investmentBuyBackGuarantee
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateInvestmentBuyBackGuarantee($inputData) {
+        
     }
 
 }

@@ -152,83 +152,77 @@ class zank extends p2pCompany {
 
     // NOT FINISHED
     protected $valuesInvestment = [     // All types/names will be defined as associative index in array
-            "A" =>  [
-                [
-                    "type" => "investment_investmentDate",                  // Winvestify standardized name
-                    "inputData" => [
-				"input2" => "D.M.Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]                                     // Winvestify standardized name
-            ],
-            "B" => [
-                "name" => "investment_loanId"                        // Winvestify standardized name  OK
-            ],
-                //FIX THIS
-            "C" => [
-                [
-                    "type" => "investment_expectAnnualYield",                    // Winvestify standardized name   OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ",",
-                                "input4" => 4
-                                ],
-                    "functionName" => "getAmount",
-                ]                                           // This is an "empty variable name". So "type" is
-            ], 
-            "D" =>  [
-                "name" => "investment_originalDuration"
-            ],
-            "E" => [
-                [
-                    "type" => "investment_myInvestment",                    // Winvestify standardized name   OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ",",
-                                "input4" => 16
-                                ],
-                    "functionName" => "getAmount",
-                ],
-                [
-                    "type" => "investment_loanType",                                      // 
-                    "inputData" => [                                                   // Get the "original" Mintos concept, which is used later on
-                                "input2" => "€",                                        // 
-                                "input3" => "",
+        "A" =>  [
+            [
+                "type" => "investment_investmentDate",                  // Winvestify standardized name
+                "inputData" => [
+                            "input2" => "D.M.Y",
                             ],
-                    "functionName" => "extractDataFromString",
-                ],
-                [
-                    "type" => "investment_currency",                        // Winvestify standardized name  OK
-                    "functionName" => "getCurrency",
-                ],
+                "functionName" => "normalizeDate",
+            ]                                     // Winvestify standardized name
+        ],
+        "B" => [
+            "name" => "investment_loanId"                        // Winvestify standardized name  OK
+        ],
+            //FIX THIS
+        "C" => [
+            [
+                "type" => "investment_expectAnnualYield",                    // Winvestify standardized name   OK
+                "inputData" => [
+                            "input2" => "",
+                            "input3" => ",",
+                            "input4" => 4
+                            ],
+                "functionName" => "getAmount",
+            ]                                           // This is an "empty variable name". So "type" is
+        ], 
+        "D" =>  [
+            "name" => "investment_originalDuration"
+        ],
+        "E" => [
+            [
+                "type" => "investment_myInvestment",                    // Winvestify standardized name   OK
+                "inputData" => [
+                            "input2" => "",
+                            "input3" => ",",
+                            "input4" => 16
+                            ],
+                "functionName" => "getAmount",
             ],
-            /*"G" => [
-                [
-                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],*/
-            "I" => [
-                [
-                    "type" => "investment_commissionPaid",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => "",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                                "input4" => 4
-                                ],
-                    "functionName" => "getAmount",
-                ]
+            [
+                "type" => "investment_typeOfInvestment",                                      // 
+                "inputData" => [                                                   // Get the "original" Mintos concept, which is used later on
+                            "input2" => "€",                                        // 
+                            "input3" => "",
+                        ],
+                "functionName" => "extractDataFromString",
             ],
-            ///CHANGEEEE WITH REAL VALUE
-            "J" =>  [
-                "name" => "investment_originalLoanState"
+            [
+                "type" => "investment_currency",                        // Winvestify standardized name  OK
+                "functionName" => "getCurrency",
+            ],
+        ],
+        "F" => [
+            "name" => "investment_capitalRepaymentFromP2P"
+        ],
+        /*"G" => DON'T TAKE, ASK ANTOINE*/
+        /* "H" => DON'T TAKE, ASK ANTOINE*/
+        "I" => [
+            [
+                "type" => "investment_commissionPaid",                                            // This is an "empty variable name". So "type" is
+                "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                            "input2" => "",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                            "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                            "input4" => 4
+                            ],
+                "functionName" => "getAmount",
             ]
-        ];
+        ],
+        ///CHANGEEEE WITH REAL VALUE
+        "J" =>  [
+            "name" => "investment_originalLoanState"
+        ]
+    ];
 
     protected $amortizationConfigParms = array ('OffsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -308,7 +302,8 @@ class zank extends p2pCompany {
     
     protected $callbacks = [
         "investment" => [
-            "investment_loanType" => "translateTypeOfInvestment"
+            "investment_loanType" => "translateTypeOfInvestment",
+            "investment_originalLoanState" => "translateLoanStatus"
         ]
     ];
 
@@ -1421,14 +1416,14 @@ class zank extends p2pCompany {
                                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
                             case 1:
-                                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($p->nodeValue);
+                                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
                             case 2:
                                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
-                            case 4:
+                            /*case 4:
                                 $this->tempArray['global']['yield'] = $this->getPercentage($p->nodeValue);
-                                break;
+                                break;*/
                         }
                         $index++;
                     }
@@ -1733,13 +1728,95 @@ class zank extends p2pCompany {
      */
     public function translateTypeOfInvestment($inputData) {
         $data = WIN_LOANSTATUS_MANUALINVESTMENT;
-        $inputData = strtoupper(trim($inputData));
+        $inputData = strtoupper($inputData);
         switch ($inputData) {
             case "AUTO":
                 $data = WIN_LOANSTATUS_AUTOMATEDINVESTMENT;
                 break;
         }
         return $data;
+    }
+    
+     /**
+     * Function to translate the company specific loan status to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan status
+     * @return int                  Winvestify standardized loan status
+     */ 
+    public function translateLoanStatus($inputData){
+        $status = WIN_LOANSTATUS_UNKNOWN;
+        $inputData = strtoupper(trim($inputData));
+         switch ($inputData) {
+            case "PUBLICADO":
+                $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                break;
+            case "CANCELADO":
+                $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                break;
+            case "COMPLETADO":
+                $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                break;
+            case "RETRASADO":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "AMORTIZACIÓN":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;    
+            case "AMORTIZADO":
+                $data = WIN_LOANSTATUS_FINISHED;
+                break;
+        }
+        return $data;
+    }
+    
+    /**
+     * Function to translate the company specific loan type to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan type
+     * @return int                  Winvestify standardized loan type
+     */
+    public function translateLoanType($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific amortization method to the Winvestify standardized
+     * amortization type
+     * @param string $inputData     company specific amortization method
+     * @return int                  Winvestify standardized amortization method
+     */
+    public function translateAmortizationMethod($inputData) {
+
+    }   
+     
+    /**
+     * Function to translate the company specific payment frequency to the Winvestify standardized
+     * payment frequency
+     * @param string $inputData     company specific payment frequency
+     * @return int                  Winvestify standardized payment frequency
+     */
+    public function translatePaymentFrequency($inputData) {
+        
+    }
+        
+    /**
+     * Function to translate the type of investment market to an to the Winvestify standardized
+     * investment market concept
+     * @param string $inputData     company specific investment market concept
+     * @return int                  Winvestify standardized investment marke concept
+     */
+    public function translateInvestmentMarket($inputData) {
+        
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * investmentBuyBackGuarantee
+     * @param string $inputData     company specific investmentBuyBackGuarantee
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateInvestmentBuyBackGuarantee($inputData) {
+        
     }
 
 }

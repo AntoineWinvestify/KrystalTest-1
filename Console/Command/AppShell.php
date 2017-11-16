@@ -104,6 +104,35 @@ class AppShell extends Shell {
     }
 
 
+    
+    /**
+     * checks if an element with value $element exists in a two dimensional array
+     * @param type $element
+     * @param type $array
+     *
+     * @return array with data
+     *          or false of $elements does not exist in two dimensional array
+     */
+    public function in_multiarray($element, $array) {
+        while (current($array) !== false) {
+            if (current($array) == $element) {
+                return true;
+            } elseif (is_array(current($array))) {
+                if ($this->in_multiarray($element, current($array))) {
+                    return(current($array));
+                }
+            }
+            next($array);
+        }
+        return false;
+    }    
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * Read the names in a list of files (FDQN) that fulfill the $typeOfFiles bitmap
@@ -153,6 +182,30 @@ class AppShell extends Shell {
     
     private function tryErrorOnGearman() {
         //fake code
+    }
+    
+    /**
+     * Function to get the extension of a file
+     * @param string $filePath FQDN of the file to analyze
+     * @return string It is the extension of the file
+     */
+    public function getExtensionFile($file) {
+        $file = new File($file);
+        $extension = $file->ext();
+        return $extension;
+    }
+    
+    /**
+     * Function to get the loanId from the file name of one amortization table
+     * @param string $filePath It is the path to the file
+     * @return string It is the loanId
+     */
+    public function getLoanIdFromFile($filePath) {
+        $file = new File($filePath, false);
+        $name = $file->name();
+        $nameSplit = explode("_", $name);
+        $loanId = $nameSplit[1];
+        return $loanId;
     }
         
         

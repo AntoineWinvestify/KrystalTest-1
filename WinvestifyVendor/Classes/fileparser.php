@@ -42,15 +42,22 @@
  * E format in getAmount fixed. Format example: 2,31E-6.
  * Minor fixes.
  * 
- * 2017-11-10           version 0.4
+ * 2017-11-09           Version 0.4
+ * Amount and currency bug fixing.
+ * 
+ * 
+ * 2017-11-10           version 0.5
  * Updated function extractDataFromString with an extra parameter
  * 
  * 
- * 2017-11-11           version 0.5
- * Function getDefaultValue was added
+ * 2017-11-11           version 0.6
+ * Functions getDefaultValue and getCountry added
  *  
- * 
- * 
+ * 2017-11-14           version 0.7
+ * Functions fixes
+ * extractDataFromString
+ * getAmount
+ * getCurrency
  * 
  * Pending:
  * chunking, csv file check
@@ -65,6 +72,7 @@
  *
  */
 class Fileparser {
+    
     protected $config = array ('offsetStart' => 0,
                             'offsetEnd'     => 0,
                             'separatorChar' => ";",
@@ -308,11 +316,288 @@ class Fileparser {
                 ]
         ];
 
+protected $countries = [
+            'AF' => "Afghanistan",
+            'AX' => "Åland Islands",
+            'AL' => "Albania",
+            'DZ' => "Algeria",
+            'AS' => "American Samoa",
+            'AD' => "Andorra",
+            'AX' => "Angola",
+            'AL' => "Anguilla",
+            'AQ' => "Antarctica",
+            'AG' => "Antigua and Barbuda",
+            'AR' => "Argentina",
+            'AM' => "Armenia",
+            'AW' => "Aruba",
+            'AU' => "Australia",
+            'AT' => "Austria",
+            'AZ' => "Azerbaijan",
+            'BS' => "Bahamas",
+            'BH' => "Bahrain",
+            'BD' => "Bangladesh",
+            'BB' => "Barbados",
+            'BY' => "Belarus",
+            'BE' => "Belgium",
+            'BZ' => "Belize",
+            'BJ' => "Benin",
+            'BM' => "Bermuda",
+            'BT' => "Bhutan",
+            'BO' => "Bolivia",
+            'BQ' => "Bonaire, Sint Eustatius and Saba",
+            'BA' => "Bosnia and Herzegovina",
+            'BW' => "Botswana",
+            'BV' => "Bouvet Island",
+            'BR' => "Brazil",
+            'IO' => "British Indian Ocean Territory",
+            'BN' => "Brunei Darussalam",
+            'BG' => "Bulgaria",
+            'BF' => "Burkina Faso",
+            'BI' => "Burundi",
+            'CV' => "Cabo Verde",
+            'KH' => "Cambodia",
+            'CM' => "Cameroon",
+            'CA' => "Canada",
+            'KY' => "Cayman Islands",
+            'CF' => "Central African Republic",
+            'TD' => "Chad",
+            'CL' => "Chile",
+            'CN' => "China",
+            'CX' => "Christmas Island",
+            'CC' => "Cocos (Keeling) Islands",
+            'CO' => "Colombia",
+            'KM' => "Comoros",
+            'CD' => "Democratic Republic of the Congo",
+            'CG' => "Congo",
+            'CK' => "Cook Islands",
+            'CR' => "Costa Rica",
+            'CI' => "Ivory Coast",
+            'HR' => "Croatia",
+            'CU' => "Cuba",
+            'CW' => "Curaçao",
+            'CY' => "Cyprus",
+            'CZ' => "Czechia",
+            'DK' => "Denmark",
+            'DJ' => "Djibouti",
+            'DM' => "Dominica",
+            'DO' => "Dominican Republic",
+            'EC' => "Ecuador",
+            'EG' => "Egypt",
+            'SV' => "El Salvador",
+            'GQ' => "Equatorial Guinea",
+            'ER' => "Eritrea",
+            'EE' => "Estonia",
+            'ET' => "Ethiopia",
+            'FK' => "Falkland Islands",
+            'FO' => "Faroe Islands",
+            'FJ' => "Fiji",
+            'FI' => "Finland",
+            'FR' => "France",
+            'GF' => "French Guiana",
+            'PF' => "French Polynesia",
+            'TF' => "French Southern Territories",
+            'GA' => "Gabon",
+            'GM' => "Gambia",
+            'GE' => "Georgia",
+            'DE' => "Germany",
+            'GH' => "Ghana",
+            'GI' => "Gibraltar",
+            'GR' => "Greece",
+            'GL' => "Greenland",
+            'GD' => "Grenada",
+            'GP' => "Guadeloupe",
+            'GU' => "Guam",
+            'GT' => "Guatemala",
+            'GG' => "Guernsey",
+            'GN' => "Guinea",
+            'GW' => "Guinea-Bissau",
+            'GY' => "Guyana",
+            'HT' => "Haiti",
+            'VA' => "Holy See (Vatican City State)",
+            'HN' => "Honduras",
+            'HK' => "Hong Kong",
+            'HU' => "Hungary",
+            'IS' => "Iceland",
+            'IN' => "India",
+            'ID' => "Indonesia",
+            'IR' => "Iran",
+            'IQ' => "Iraq",
+            'IE' => "Ireland",
+            'IM' => "Isle of Man",
+            'IL' => "Israel",
+            'IT' => "Italy",
+            'JM' => "Jamaica",
+            'JP' => "Japan",
+            'JE' => "Jersey",
+            'JO' => "Jordan",
+            'KZ' => "Kazakhstan",
+            'KE' => "Kenya",
+            'KI' => "Kiribati",
+            'KP' => "Democratic People's Republic of Korea",
+            'KR' => "Republic of Korea",
+            'KW' => "Kuwait",
+            'KG' => "Kyrgyzstan",
+            'LA' => "Lao People's Democratic Republic",
+            'LV' => "Latvia",
+            'LB' => "Lebanon",
+            'LS' => "Lesotho",
+            'LR' => "Liberia",
+            'LY' => "Libya",
+            'LI' => "Liechtenstein",
+            'LT' => "Lithuania",
+            'LU' => "Luxembourg",
+            'MO' => "Macao",
+            'MK' => "Macedonia",
+            'MW' => "Malawi",
+            'MY' => "Malaysia",
+            'MV' => "Maldives",
+            'ML' => "Mali",
+            'MT' => "Malta",
+            'MQ' => "Martinique",
+            'MR' => "Mauritania",
+            'MU' => "Mauritius",
+            'YT' => "Mayotte",
+            'MX' => "Mexico",
+            'FM' => "Micronesia",
+            'MD' => "Moldova",
+            'MC' => "Monaco",
+            'MN' => "Mongolia",
+            'ME' => "Montenegro",
+            'MS' => "Montserrat",
+            'MA' => "Morocco",
+            'MZ' => "Mozambique",
+            'MM' => "Myanmar",
+            'NA' => "Namibia",
+            'NR' => "Nauru",
+            'NP' => "Nepal",
+            'NL' => "Netherlands",
+            'NC' => "New Caledonia",
+            'NZ' => "New Zealand",
+            'NI' => "Nicaragua",
+            'NE' => "Niger",
+            'NG' => "Nigeria",
+            'NU' => "Niue",
+            'NF' => "Norfolk Island",
+            'MP' => "Northern Mariana Islands",
+            'NO' => "Norway",
+            'OM' => "Oman",
+            'PK' => "Pakistan",
+            'PW' => "Palau",
+            'PS' => "State of Palestine",
+            'PA' => "Panama",
+            'PG' => "Papua New Guinea",
+            'PY' => "Paraguay",
+            'PE' => "Peru",
+            'PH' => "Philippines",
+            'PN' => "Pitcairn",
+            'PL' => "Poland",
+            'PT' => "Portugal",
+            'PR' => "Puerto Rico",
+            'QA' => "Qatar",
+            'RE' => "Réunion",
+            'RO' => "Romania",
+            'RU' => "Russian Federation",
+            'RW' => "Rwanda",
+            'BL' => "Saint Barthélemy",
+            'SH' => "Saint Helena, Ascension and Tristan da Cunha",
+            'KN' => "Saint Kitts and Nevis",
+            'LC' => "Saint Lucia",
+            'MF' => "Saint Martin (French part)",
+            'PM' => "Saint Pierre and Miquelon",
+            'VC' => "Saint Vincent and the Grenadines",
+            'WS' => "Samoa",
+            'SM' => "San Marino",
+            'ST' => "Sao Tome and Principe",
+            'SA' => "Saudi Arabia",
+            'SN' => "Senegal",
+            'RS' => "Serbia",
+            'SC' => "Seychelles",
+            'SL' => "Sierra Leone",
+            'SG' => "Singapore",
+            'SX' => "Sint Maarten",
+            'SK' => "Slovakia",
+            'SI' => "Slovenia",
+            'SB' => "Solomon Islands",
+            'SO' => "Somalia",
+            'ZA' => "South Africa",
+            'GS' => "South Georgia and the South Sandwich Islands",
+            'SS' => "South Sudan",
+            'ES' => "Spain",
+            'LK' => "Sri Lanka",
+            'SD' => "Sudan",
+            'SR' => "Suriname",
+            'SJ' => "Svalbard and Jan Mayen",
+            'SZ' => "Swaziland",
+            'SE' => "Sweden",
+            'CH' => "Switzerland",
+            'SY' => "Syrian Arab Republic",
+            'TW' => "Taiwan",
+            'TJ' => "Tajikistan",
+            'TZ' => "Tanzania",
+            'TH' => "Thailand",
+            'TL' => "Timor-Leste",
+            'TG' => "Togo",
+            'TK' => "Tokelau",
+            'TO' => "Tonga",
+            'TT' => "Trinidad and Tobago",
+            'TN' => "Tunisia",
+            'TR' => "Turkey",
+            'TM' => "Turkmenistan",
+            'TC' => "Turks and Caicos Islands",
+            'TV' => "Tuvalu",
+            'UG' => "Uganda",
+            'UA' => "Ukraine",
+            'AE' => "United Arab Emirates",
+            'GB' => "United Kingdom",
+            'US' => "United States",
+            'UM' => "United States Minor Outlying Islands",
+            'UY' => "Uruguay",
+            'UZ' => "Uzbekistan",
+            'VU' => "Vanuatu",
+            'VE' => "Venezuela",
+            'VN' => "Viet Nam",
+            'VI' => "British Virgin Islands",
+            'VI' => "Virgin Islands, U.S.",
+            'WF' => "Wallis and Futuna",
+            'EH' => "Western Sahara",
+            'YE' => "Yemen",
+            'ZM' => "Zambia",
+            'ZW' => "Zimbabwe"
+    ];       
+
+
         private $filename;      // holds name of the file being analyzed
         
         
     function __construct() {
         echo "starting parser\n";
+    }
+    
+    /**
+     * Function to analyze a file depending on its extension
+     * @param string $file FQDN of the file to analyze
+     * @param array  $configuration Array that contains the configuration data of a specific "document"
+     * @param string $extension It is the extension of the file
+     * @return array $parsedData
+     *         false in case an error occurred
+     */
+    public function analyzeFile($file, $configuration, $extension) {
+        
+        switch($extension) {
+            case "xlsx":
+                $tempArray = $this->analyzeFileExcel($file, $configuration);
+                break;
+            case "csv":
+                $tempArray = $this->analyzeFileCSV($file, $configuration);
+                break;
+            case "json":
+                $tempArray = $this->analyzeFileJson($file, $configuration);
+                break;
+            case "html":
+                $tempArray = $this->analyzeFileHtml($file, $configuration);
+                break;
+        }
+        return $tempArray;
     }
 
 
@@ -325,35 +610,50 @@ class Fileparser {
      *  @return array           $parsedData
      *          false in case an error occurred
      */
-    public function analyzeFile($file, $configuration) {
+    public function analyzeFileExcel($file, $configuration) {
 echo "INPUT FILE = $file \n";
-    $this->filename = $file;
-echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n"; 
-
-       // determine first if it is a csv, if yes then run command
-        $fileNameChunks = explode(DS, $file);
-        if (stripos($fileNameChunks[count($fileNameChunks) - 1], "CSV")) {
-    //        $command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
-            $inputFileType = 'CSV';
-            $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-            $objReader->setDelimiter($this->Config['separatorChar']);
-            $objPHPExcel = $objReader->load($file);
-            //execute command php has a function for this which works on a string
-        }
-        else {      // xls/xlsx file
-            $objPHPExcel = PHPExcel_IOFactory::load($file);
-        }
+        $this->filename = $file;
+echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n";
+        $objPHPExcel = PHPExcel_IOFactory::load($file);
 
         ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
-        echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
-
-
+        //In the future to clean empty cells
+        //https://stackoverflow.com/questions/24936905/phpexcel-finding-first-column-with-blank-cell
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $highestRow);
         return $datas;
+    }
+    
+    public function analyzeFileCSV($file, $configuration) {
+        //$command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
+        $inputFileType = 'CSV';
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objReader->setDelimiter($this->Config['separatorChar']);
+        $objPHPExcel = $objReader->load($file);
+        ini_set('memory_limit','2048M');
+        $sheet = $objPHPExcel->getActiveSheet();
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+        echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        return $datas;
+    }
+    
+    /**
+     * Starts the process of analyzing the file and returns the results as an array
+     *  @param  FILE            FQDN of the file to analyze
+     *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
+     *  @return array           $parsedData
+     *          false in case an error occurred
+     */
+    public function analyzeFileJson($file, $configuration) {
+        $fileString = file_get_contents($file);
+        $data = json_decode($fileString, true);
+        return $this->saveExcelToArray($data, $configuration, $this->config["offsetStart"]);
     }
 
 
@@ -362,6 +662,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * in an array
      *
      * @param string $rowDatas  the excel data in an array.
+     * @param string $values    The values from which we take the data
      * @param int $totalRows    last row written, we need it for offsetEnd.
      * @return array $temparray the data after the parsing process.
      *
@@ -408,11 +709,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
                 $currentKey = $i;
-                
-                if ($key == "callback") {
-                    continue;
-                }
-                
+
                 // check for subindices and construct them
                 if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
@@ -574,6 +871,35 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
         return round(($divident * 100 )/$divisor, $precision, PHP_ROUND_HALF_UP);
     }
+    
+    /**
+     *
+     * 	Extracts the percentage as an integer from an input string
+     *
+     * 	@param 		string	$inputPercentage in string format like 5,4% or 5,43% or 5%. Note that 1,23% generates 123 and 33% -> 3300
+     * 															5,5% TAE -> 550
+     * 															7,02% -> 702
+     *                                                                                                                   	8,5 % -> 850
+     * º                                                            format like 'This is a string 54%' -> 5400
+     * 	@return 	int		$outputPercentage
+     * 	
+     */
+    function getPercentage($inputPercentage) {
+        
+        $progress = trim(preg_replace('/\D/', ' ', $inputPercentage));
+        $tempValues = explode(" ", $progress);
+
+        if (strlen($tempValues[1]) == 1) {
+            $tempValues[1] = $tempValues[1] * 10;
+        }
+
+        $outputPercentage = $tempValues[0] * 100 + $tempValues[1];
+        if ($inputPercentage < 0) {
+            return -$outputPercentage;
+        } else {
+            return $outputPercentage;
+        }
+    }
 
 
     /**
@@ -610,8 +936,31 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         return;
     }
 
+    
+    /*
+     * Translate the country name to its corresponding 2 letter ISO code
+     * Example:
+     * "Spain"   => ES
+     * "France"  => FR
+     * 
+     * @param   $input      string of name of country (in english)
+     * @return  $result     2-letter ISO code if country
+     *
+     */
+    public function getCountry($input)  {
+        $result = "XX";                 // unknown country
+        
+        foreach ($this->countries as $countryKey => $country) {
+            if ($country == $input) {
+                $result = $countryKey;
+            break;
+            }
+        }
+        return $result;
+    }
+   
 
-     /**
+    /**
      * Reads the current configuration parameter(s).
      *
      */
@@ -751,10 +1100,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
-
         if ($decimalSep == ".") {
             $seperator = "\.";
-        }   
+        }        
         else {                                                              // seperator =>  ","
             $seperator = ",";
         }
@@ -780,9 +1128,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 $input = number_format(floatval($input), 0);
             }
             $seperator = "\.";
-        }
-       
-
+        }       
         $allowedChars =  "/[^0-9" . $seperator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
@@ -932,10 +1278,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to get details of transaction from multiple cells together
-     * @param string $input It is the cell value
+     * Function to get details of transaction but when it is needed to get the content from
+     * multiples columns of the file
+     * @param string $input It is the column value
      * @param array $config Winvestify standardized concept
-     * @param array $inputValues Values needed to calculate transaction details
+     * @param array $inputValues Values needed to calculate transaction details from other columns
      * @return array  [0] => Winvestify standardized concept
      *                [1] => array of parameter, i.e. list of variables in which the result
      *                         of this function is to be stored. In practice it is normally
@@ -1049,32 +1396,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to get the loanId from the file name of one amortization table
-     * @param string $filePath It is the path to the file
-     * @return string It is the loanId
-     */
-    public function getLoanIdFromFile($filePath) {
-        $file = new File($filePath, false);
-        $name = $file->name();
-        $nameSplit = explode("_", $name);
-        $loanId = $nameSplit[1];
-        return $loanId;
-    }
-    
-    /**
-     * Function to get the extension of a file
-     * @param string $filePath It is the path to the file
-     * @return string It is the extension of the file
-     */
-    public function getExtensionFile($filePath) {
-        $file = new File($filePath, false);
-        $extension = $file->ext();
-        return $extension;
-    }
-    
-    /**
      * Function to analyze a file depending on its extension
-     * @param string $filePath It is the path to the file
+     * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @param string $extension It is the extension of the file
      * @return array $parsedData
@@ -1084,7 +1407,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         
         switch($extension) {
             case "html":
-                $tempArray = $this->getHtmlData($filePath, $parserConfig);
+                $tempArray = $this->analyzeFileHtml($filePath, $parserConfig);
                 break;
         }
         return $tempArray;
@@ -1092,12 +1415,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to analyze a html file to get its content
-     * @param string $filePath It is the path to the file
+     * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @return array $parsedData
      *         false in case an error occurred
      */
-    public function getHtmlData($filePath, $parserConfig) {
+    public function analyzeFileHtml($filePath, $parserConfig) {
         $dom = new DOMDocument();
         $dom->loadHTMLFile($filePath);
         $trs = $dom->getElementsByTagName('tr');
@@ -1191,4 +1514,31 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
         return $tempArray;
     }
+    
+    /**
+     * Documentantion needed
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader04.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader16.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader17.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader18.php
+     * https://github.com/PHPOffice/PHPExcel/blob/1.8/Documentation/Examples/Reader/exampleReader19.php
+     */
+    public function analyzeFileBySheetName($file, $configuration) {
+        $inputFileType = PHPExcel_IOFactory::identify($file);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $worksheetNames = $objReader->listWorksheetNames($file);
+        $datas = "";
+        if (in_array($this->config['sheetName'], $worksheetNames)) {
+            $objReader->setLoadSheetsOnly($this->config['sheetName']); 
+            $objPHPExcel = $objReader->load($file);
+            $sheet = $objPHPExcel->getActiveSheet();
+            $highestRow = $sheet->getHighestRow();
+            $highestColumn = $sheet->getHighestColumn();
+            echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+            $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        }
+        return $datas;
+    }
+
 }

@@ -241,21 +241,9 @@ class finanzarel extends p2pCompany {
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
- 
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
 
-/*    NOT YET READY
-    protected $investmentConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );      
- 
- */
+
+
     
     function __construct() {
         parent::__construct();
@@ -364,6 +352,7 @@ class finanzarel extends p2pCompany {
         
         switch ($this->idForSwitch) { 
             case 0:
+                $this->baseUrl = array_shift($this->urlSequence);
                 echo $this->idForSwitch . HTML_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -471,8 +460,8 @@ class finanzarel extends p2pCompany {
                 
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($controlVariablesArray[5]);
                 $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($controlVariablesArray[2]);
-                $this->tempArray['global']['amortization'] = $this->getMonetaryValue($controlVariablesArray[11]);
-                $this->tempArray['InversionNetaComprometida'] = $this->getMonetaryValue($controlVariablesArray[6]);
+                $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($controlVariablesArray[11]);
+                $this->tempArray['reservedFunds'] = $this->getMonetaryValue($controlVariablesArray[6]); //They call it "Inversion neta comprometida"
                 
                 print_r($this->tempArray);
                 //Get the request to download the file
@@ -509,7 +498,6 @@ class finanzarel extends p2pCompany {
                 //$fileType = 'csv';
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:{$credential_p_flow_step_id}:{$credential_p_instance}';
-                $this->baseUrl = 'marketplace.finanzarel.com';
                 //How we get fix Finanzarel
                 //https://chrismckee.co.uk/curl-http-417-expectation-failed/
                 //https://stackoverflow.com/questions/3755786/php-curl-post-request-and-error-417
@@ -695,6 +683,82 @@ class finanzarel extends p2pCompany {
         //Get logout url
         $this->doCompanyLogoutMultiCurl(); //Logout
 
+    }
+    
+    /**
+     * Function to translate the company specific loan type to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan type
+     * @return int                  Winvestify standardized loan type
+     */
+    public function translateLoanType($inputData) {
+        $type = WIN_TYPEOFLOAN_UNKNOWN;
+         $inputData = strtoupper($inputData);
+        switch ($inputData){
+            case "FACTURA":
+                return WIN_TYPEOFLOAN_PERSONAL;
+                break;
+            case "PAGARÉ":
+                return WIN_TYPEOFLOAN_PAGARE;
+                break;
+            case "PAGARÉ N.O.":
+                return WIN_TYPEOFLOAN_PAGARE;
+                break; 
+            case "CONFIRMING":
+                return WIN_TYPEOFLOAN_CONFIRMING;
+                break;
+        }
+
+    }
+    
+    /**
+     * Function to translate the company specific amortization method to the Winvestify standardized
+     * amortization type
+     * @param string $inputData     company specific amortization method
+     * @return int                  Winvestify standardized amortization method
+     */
+    public function translateAmortizationMethod($inputData) {
+
+    }   
+    
+    /**
+     * Function to translate the company specific type of investment to the Winvestify standardized
+     * type of investment
+     * @param string $inputData     company specific type of investment
+     * @return int                  Winvestify standardized type of investment
+     */
+    public function translateTypeOfInvestment($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific payment frequency to the Winvestify standardized
+     * payment frequency
+     * @param string $inputData     company specific payment frequency
+     * @return int                  Winvestify standardized payment frequency
+     */
+    public function translatePaymentFrequency($inputData) {
+        
+    }
+        
+    /**
+     * Function to translate the type of investment market to an to the Winvestify standardized
+     * investment market concept
+     * @param string $inputData     company specific investment market concept
+     * @return int                  Winvestify standardized investment marke concept
+     */
+    public function translateInvestmentMarket($inputData) {
+        
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * investmentBuyBackGuarantee
+     * @param string $inputData     company specific investmentBuyBackGuarantee
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateInvestmentBuyBackGuarantee($inputData) {
+        
     }
 
 }

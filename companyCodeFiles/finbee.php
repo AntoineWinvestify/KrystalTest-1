@@ -29,7 +29,11 @@
  * 2017-10-24 version_0.2
  * Integration of parsing amortization tables with Gearman and fileparser
  * 
- * Parser AmortizationTables                                            [OK, tested]
+ * 2017-03-11 version 0.3
+ * Header added in amortization tables.
+ * 
+ * 2017-16-11 version 0.4
+ * Header added in amortization tables header fix. 
  */
 
 /**
@@ -54,6 +58,49 @@ class finbee extends p2pCompany {
             ]
         ],
         
+    ];
+    
+    protected $valuesInvestment = [
+        0 => [
+            [
+                "B" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "C" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "B" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "C" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "E" => [
+                    "name" => "investment_debtor"
+                ]
+            ],
+            [
+                "F" => [
+                    "name" => "investment_debtor"
+                ]
+            ]
+        ],
+        1 => [
+            "A" => [
+                "name" => "investment_loanId"
+            ],
+            "E" => [
+                "name" => "investment_debtor"
+            ]
+        ]
     ];
 
     protected $valuesAmortizationTable = [
@@ -101,26 +148,73 @@ class finbee extends p2pCompany {
             ]
         ];
     
-    protected $transactionConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
- 
-    protected $investmentConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+    protected $transactionConfigParms = array('offsetStart' => 1,
+        'offsetEnd' => 0,
+        //'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+    );
+    
+    protected $investmentConfigParms = [
+        0 => [
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Active Loans'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Active Loan Slices'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Completed Loans'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Completed Loan Parts'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Sold Loan Parts'
+            ],
+            [
+                'offsetStart' => 1,
+                'offsetEnd' => 0,
+                //'separatorChar' => ";",
+                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sheetName' => 'Bought Loan Parts'
+            ]
+        ],
+        1 => [
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            //'separatorChar' => ";",
+            'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+            //'sheetName' => 'Bought Loan Parts'
+        ]
+    ];
+    
+    protected $amortizationConfigParms = array('offsetStart' => 0,
+        'offsetEnd' => 0,
+        //'separatorChar' => ";",
+        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+        
+    );
 
-    protected $amortizationConfigParms = array ('OffsetStart' => 0,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );      
-     
-    
-    
     function __construct() {
         $this->i = 0;
         parent::__construct();
@@ -257,7 +351,9 @@ class finbee extends p2pCompany {
                 }
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                $headersJson = '["accept-language: en-US,en;q=0.8"]';
+                $headers = json_decode($headersJson,true);
+                $this->getPFPFileMulticurl($url, false, false, $headers, $fileName);
                 break;
             case 8:
                 if (!$this->verifyFileIsCorrect()) {
@@ -387,9 +483,17 @@ class finbee extends p2pCompany {
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
                 foreach ($tables as $table) {
+
+                    if ($table->getAttribute('class') == 'table mb-none table-no-more') {
+                        $trs = $dom->getElementsByTagName('tr');
+                        $AmortizationHeaderTable = new DOMDocument();
+                        $cloneHeader = $trs[0]->cloneNode(TRUE); //Clone the table header
+                    }
+
                     if ($table->getAttribute('class') == 'table table-striped table-no-more') {
                         $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $table->appendChild($cloneHeader); //Add header to the table
+                        $clone = $table->cloneNode(TRUE); //Clone the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
@@ -501,6 +605,67 @@ class finbee extends p2pCompany {
 
         $str = $this->doCompanyLogout();
         return true;
+    }
+    
+    /**
+     * Function to translate the company specific loan type to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan type
+     * @return int                  Winvestify standardized loan type
+     */
+    public function translateLoanType($inputData) {
+
+    }
+    
+    
+    /**
+     * Function to translate the company specific amortization method to the Winvestify standardized
+     * amortization type
+     * @param string $inputData     company specific amortization method
+     * @return int                  Winvestify standardized amortization method
+     */
+    public function translateAmortizationMethod($inputData) {
+
+    }   
+    
+    /**
+     * Function to translate the company specific type of investment to the Winvestify standardized
+     * type of investment
+     * @param string $inputData     company specific type of investment
+     * @return int                  Winvestify standardized type of investment
+     */
+    public function translateTypeOfInvestment($inputData) {
+
+    }
+    
+    /**
+     * Function to translate the company specific payment frequency to the Winvestify standardized
+     * payment frequency
+     * @param string $inputData     company specific payment frequency
+     * @return int                  Winvestify standardized payment frequency
+     */
+    public function translatePaymentFrequency($inputData) {
+        
+    }
+        
+    /**
+     * Function to translate the type of investment market to an to the Winvestify standardized
+     * investment market concept
+     * @param string $inputData     company specific investment market concept
+     * @return int                  Winvestify standardized investment marke concept
+     */
+    public function translateInvestmentMarket($inputData) {
+        
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * investmentBuyBackGuarantee
+     * @param string $inputData     company specific investmentBuyBackGuarantee
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateInvestmentBuyBackGuarantee($inputData) {
+        
     }
 
 }

@@ -28,6 +28,10 @@
  * 2017-10-26       Version 0.3
  * dashboardOverview moved from test [Tested local, OK]
  * 
+ * 2017-11-09
+ * calculateGlobalDefaulted [Tested local, OK]
+ * 
+ * 
 
   Pending:
 
@@ -59,6 +63,8 @@ class Dashboard2sController extends AppController {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
+        //echo 1;
+        $executionStartTime = microtime(true);
 
         //Request data
         $linkedAccount = $this->request->data['id']; //Link account id
@@ -76,22 +82,18 @@ class Dashboard2sController extends AppController {
         $dataResult['name'] = $name;      
         
         //Get loan, Active -> Yes // Defaulted -> ¿? // 
-        $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_ACTIVE_LOAN));
-        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_DEFAULTED_LOAN));
-      
-        //Debug
-        /*echo 1;
-        echo "ACTIVE" . HTML_ENDOFLINE;
-        print_r($activeInvestments);
-        echo HTML_ENDOFLINE . "DEFAULTED" . HTML_ENDOFLINE;
-        print_r($defaultedInvestments);*/
-        
+        $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
+        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_defaultedDays >" => 0), array("*"));
         //Set result
         $result = array(true, $dataResult);
         $this->set('companyInvestmentDetails', $result);
         $this->set('activeInvestments', $activeInvestments);
         $this->set('defaultedInvestments', $defaultedInvestments);
+        //Get and set range
+        $this->set('defaultedRange', $this->Investment->getDefaultedByOutstanding($linkedAccount));
         
+        $executionEndTime = microtime(true);
+        //echo $executionEndTime - $executionStartTime;
     }
 
     /**
@@ -99,6 +101,7 @@ class Dashboard2sController extends AppController {
      */
     function dashboardOverview() {
 
+        $executionStartTime = microtime(true);
         $this->layout = 'azarus_private_layout';
         $this->Company = ClassRegistry::init('Company');
         //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
@@ -116,34 +119,41 @@ class Dashboard2sController extends AppController {
         $global['netDeposits'] = 0;
         foreach ($allInvestment as $globalKey => $individualPfpData) {
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
-                if ($key == "userinvestmentdata_activeInInvestments") { //Get global active in investment
-                    $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
-                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                }
-                if ($key == "userinvestmentdata_myWallet") { //Get global wallet
-                    $global['cash'] = bcadd($global['cash'], $individualData, 16);
-                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                }
-                if ($key == "userinvestmentdata_reservedFunds") { //Get global reserved funds
-                    $global['reservedFunds'] = bcadd($global['reservedFunds'], $individualData, 16);
-                    $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                }
-                if ($key == "userinvestmentdata_investments") { //Get global active investmnent
-                    $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
-                }
-                if ($key == "id") {
-                    $cashFlowData = $this->Globalcashflowdata->getData(array('userinvestmentdata_id' => $individualData), array('globalcashflowdata_platformDeposit'));
-                    $global['netDeposits'] = bcadd($global['netDeposits'], $cashFlowData[0]['Globalcashflowdata']['globalcashflowdata_platformDeposit'], 16);
-                }
-                if ($key == "linkedaccount_id") {
-                    //Get the pfp id of the linked acount
-                    $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData), array('company_id'));
-                    $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
-                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
-                    //Get pfp logo and name
-                    $pfpOtherData = $this->Company->getData(array('id' => $pfpId), array("company_logoGUID", "company_name"));
-                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
-                    $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
+                switch ($key) {
+                    case "linkedaccount_id":
+                        //Get the pfp id of the linked acount
+                        $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData), array('company_id'));
+                        $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
+                        $allInvestment[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
+                        //Get pfp logo and name
+                        $pfpOtherData = $this->Company->getData(array('id' => $pfpId), array("company_logoGUID", "company_name"));
+                        $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
+                        $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
+                        break;
+                    case "userinvestmentdata_totalVolume":
+                        //Get global total volume
+                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
+                        break;
+                    case "userinvestmentdata_investedAssets":
+                        //Get global  active in invesment
+                        $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
+                        break;
+                    case "userinvestmentdata_reservedAssets":
+                        //Get global reserved funds
+                        $global['reservedFunds'] = bcadd($global['reservedFunds'], $individualData, 16);
+                        break;
+                    case "userinvestmentdata_cashInPlatform":
+                        //Get global wallet
+                        $global['cash'] = bcadd($global['cash'], $individualData, 16);
+                        break;
+                    case "userinvestmentdata_numberActiveInvestments":
+                        //get global active invesment:
+                        $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
+                        break;                             
+                    case "userinvestmentdata_totalNetDeposits": 
+                        //get global net deposits:
+                        $global['netDeposits'] = $global['netDeposits'] + $individualData;
+                        break;
                 }
             }
         }
@@ -152,6 +162,74 @@ class Dashboard2sController extends AppController {
         $this->set('global', $global);
         //Set an array with individual info
         $this->set('individualInfoArray', $allInvestment);
+        //Get and Set defaulted range
+        $defaultedRange = $this->calculateGlobalDefaulted();
+        $this->set('defaultedRange', $defaultedRange);
+        
+        $executionEndTime = microtime(true);
+        //echo $executionEndTime - $executionStartTime;
+    }
+
+    /**
+     * Calculate the global defaulted range of all linked accounts of a investor account
+     * 
+     * @return array Defaulted loans range
+     */
+    public function calculateGlobalDefaulted() {
+
+        $investorId = $investorReference = $this->Session->read('Auth.User.Investor.id');
+        $linkAccountList = $this->Linkedaccount->getData(array('investor_id' => $investorId), array('id'));
+
+        //Get range of each pfp
+        $defaultedRangeArray = array();
+        foreach ($linkAccountList as $linkedAccount) {
+            $defaultedRangeArray[] = $this->Investment->getDefaultedByOutstanding($linkedAccount['Linkedaccount']['id']);
+        }
+
+        //print_r($defaultedRangeArray);
+        //Calculate global outstanding
+        foreach ($defaultedRangeArray as $key => $defaultedRange) {
+            $globalTotal = $globalTotal + $defaultedRange["total"];
+        }
+
+        $globalValue = array();
+        $globalRange = array("1-7" => 0, "8-30" => 0, "31-60" => 0, "61-90" => 0, ">90" => 0);
+
+        //Calculate global range
+        foreach ($defaultedRangeArray as $defaultedRange) {
+            foreach ($defaultedRange as $key => $range) {
+                switch ($key) {
+                    case "1-7":
+                        $value = ($defaultedRange["1-7"] * $defaultedRange["total"]) / 100;
+                        $globalValue["1-7"] = $globalValue["1-7"] + $value;
+                        $globalRange["1-7"] = round(($globalValue["1-7"] / $globalTotal) * 100, 2);
+                        break;
+                    case "8-30":
+                        $value = ($defaultedRange["8-30"] * $defaultedRange["total"]) / 100;
+                        $globalValue["8-30"] = $globalValue["8-30"] + $value;
+                        $globalRange["8-30"] = round(($globalValue["8-30"] / $globalTotal) * 100, 2);
+                        break;
+                    case "31-60":
+                        $value = ($defaultedRange["31-60"] * $defaultedRange["total"]) / 100;
+                        $globalValue["31-60"] = $globalValue["31-60"] + $value;
+                        $globalRange["31-60"] = round(($globalValue["31-60"] / $globalTotal) * 100, 2);
+                        break;
+                    case "61-90":
+                        $value = ($defaultedRange["61-90"] * $defaultedRange["total"]) / 100;
+                        $globalValue["61-90"] = $globalValue["61-90"] + $value;
+                        $globalRange["61-90"] = round(($globalValue["61-90"] / $globalTotal) * 100, 2);
+                        break;
+                    case ">90":
+                        $value = ($defaultedRange[">90"] * $defaultedRange["total"]) / 100;
+                        $globalValue[">90"] = $globalValue[">90"] + $value;
+                        $globalRange[">90"] = round(($globalValue[">90"] / $globalTotal) * 100, 2);
+                        break;
+                }
+            }
+        }
+             
+        $globalRange["current"] = abs(round(100 - $globalRange["1-7"] - $globalRange["8-30"] -$globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"], 2));
+        return $globalRange;
     }
 
 }

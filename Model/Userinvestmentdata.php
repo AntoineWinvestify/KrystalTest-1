@@ -78,10 +78,7 @@ class Userinvestmentdata extends AppModel {
         return $resultInvestorData;
     }
     
-    
-    
-    
-    
+       
    /**
      *NOT FINISHED: does Globalcashflowdatatotal really need to exist?? or only Globalcashflowdata?
      * creates a new 'investment' table and also links the 'paymenttotal' database table
@@ -98,16 +95,16 @@ class Userinvestmentdata extends AppModel {
             $userInvestmentDataId = $this->id;
             $data = array('investment_id' => $userInvestmentDataId, 'status' => WIN_PAYMENTTOTALS_LAST);
             $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-            $this->Globalcashflowdata->create();
-            if ($this->Globalcashflowdata->save($data, $validation = true)) { 
+     //       $this->Globalcashflowdata->create();
+     //       if ($this->Globalcashflowdata->save($data, $validation = true)) { 
                 $result[0] = true;
                 $result[1] = $userInvestmentDataId;
-            } 
-            else {
-                $result[0] = false;
-                $result[1] = $this->Globalcashflowdata->validationErrors;
-                $this->delete($userInvestmentDataId);
-            }
+       //     } 
+         //   else {
+          //      $result[0] = false;
+           //     $result[1] = $this->Globalcashflowdata->validationErrors;
+           //     $this->delete($userInvestmentDataId);
+          //  }
         } 
         else {                     // error occurred while trying to save the Investment data
             $result[0] = false;
@@ -125,18 +122,5 @@ class Userinvestmentdata extends AppModel {
             'conditions' => $conditions
         ));
         return $investmentIds;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    }       
 }
