@@ -55,6 +55,56 @@ class finbee extends p2pCompany {
                 "functionName" => "normalizeDate",
             ]
         ],
+        "B" => [
+            [
+                    "type" => "investment_loanId",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // trick to get the complete cell data as purpose
+                                "input2" => "from ",                        // May contain trailing spaces
+                                "input3" => " for",
+                                "input4" => 0                                  // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                            ],
+                    "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "transactionDetail", // Winvestify standardized name   OK
+                "inputData" => [// List of all concepts that the platform can generate
+                    // format ["concept string platform", "concept string Winvestify"]
+                    "input2" => [
+                        0 => ["Deposit" => "Cash_deposit"], // OK
+                        1 => ["Loan disbursal" => "Primary_market_investment"],
+                        2 => ["Principal repayment from" => "Capital_repayment"], //OK
+                        3 => ["Interest payment from" => "Regular_gross_interest_income"], //
+                        4 => ["Secondary market difference for" => "Income_secondary_market"], // For seller
+                        5 => ["Secondary market difference for" => "Cost_secondary_market"], // for buyer
+                        6 => ["Withdrawal" => "Cash_withdrawal"],
+                        7 => ["Interest payment to" => "Interest_payment_secondary_market_purchase"]
+                    ]
+                ],
+                "functionName" => "getTransactionDetail",
+            ]
+        ],
+        "D" => [
+            [
+                "type" => "amount",                                     // This is *mandatory* field which is required for the 
+                "inputData" => [                                        // "transactionDetail"
+                            "input2" => "",                             // and which BY DEFAULT is a Winvestify standardized variable name.
+                            "input3" => ".",                            // and its content is the result of the "getAmount" method
+                            "input4" => 2
+                            ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        "F" => [
+            [
+                "type" => "transaction_balance",                            // Winvestify standardized name
+                "inputData" => [
+                            "input2" => "",
+                            "input3" => ".",
+                            "input4" => 2
+                            ],
+                "functionName" => "getAmount",
+            ]
+        ],   
         
     ];
     
@@ -149,7 +199,7 @@ class finbee extends p2pCompany {
     protected $transactionConfigParms = array('offsetStart' => 1,
         'offsetEnd' => 0,
         //'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+        'sortParameter' => array("investment_loanId")   // used to "sort" the array and use $sortParameter as prime index.
     );
     
     protected $investmentConfigParms = [
