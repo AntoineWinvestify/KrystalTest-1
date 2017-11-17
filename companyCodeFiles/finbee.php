@@ -284,10 +284,10 @@ class finbee extends p2pCompany {
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
                 //'separatorChar' => ";",
-                'sortParameter' => "investment_loanId",   // used to "sort" the array and use $sortParameter as prime index.
+                'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter as prime index.
                 'sheetName' => 'Active Loan Slices'
             ],
-            [
+            /*[
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
                 //'separatorChar' => ";",
@@ -314,7 +314,7 @@ class finbee extends p2pCompany {
                 //'separatorChar' => ";",
                 'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
                 'sheetName' => 'Bought Loan Parts'
-            ]
+            ]*/
         ],
         1 => [
             'offsetStart' => 1,
