@@ -779,18 +779,21 @@ class mintos extends p2pCompany {
                     foreach($tds as $key => $td){
                         //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["myWallet"] = $this->getMonetaryValue($tds[1]->nodeValue);
-                        $tempArray["global"]["outstandingPrincipal"] = $this->getMonetaryValue($tds[23]->nodeValue);
-                        $tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
+                        $tempArray["global"]["outstandingPrincipal"] = $this->getMonetaryValue($tds[37]->nodeValue);   
+                        //$tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
 
 
                     }
                     $divs = $box->getElementsByTagName('div');
-                    foreach($divs as $key => $div){
+                    /*foreach($divs as $key => $div){
                         //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["profitibility"] = $this->getPercentage($divs[6]->nodeValue);
-                    }
+                    }*/
 
                 }
+                $lis = $boxes[0]->getElementsByTagName('li');
+                $divs = $lis[2]->getElementsByTagName('div');
+                $tempArray["global"]["activeInvestment"] = $divs[2]->nodeValue;
                 print_r($tempArray["global"]);
                 return $tempArray["global"];
         }

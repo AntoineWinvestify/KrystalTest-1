@@ -84,7 +84,7 @@ class Dashboard2sController extends AppController {
 
         //Get loan, Active -> Yes // Defaulted -> ¿? // 
         $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
-        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_defaultedDays >" => 0), array("*"));
+        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_defaultedDays >" => 90), array("*"));
         //Set result
         $result = array(true, $dataResult);
         $this->set('companyInvestmentDetails', $result);

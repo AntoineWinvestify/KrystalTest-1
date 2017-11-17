@@ -1417,7 +1417,7 @@ class zank extends p2pCompany {
                             case 1:
                                 $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
-                            case 2:
+                           /* case 2:
                                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
                                 break;
                             /*case 4:
@@ -1451,7 +1451,23 @@ class zank extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                return $this->tempArray;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break; 
+            case 6: 
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $divs = $dom->getElementsByTagName('div');
+                /*foreach($divs as $key => $div){
+                    if($div->getAttribute('class') == 'panel-body'){
+                        echo " " . $key . "=>" . $div->nodeValue . " ";
+                    }
+                }*/
+                $this->tempArray['global']['activeInvestment'] = $ps[28]->nodeValue;
+                return $this->tempArray; 
         }
     }
 

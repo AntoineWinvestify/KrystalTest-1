@@ -355,6 +355,8 @@ class twino extends p2pCompany {
                 //Download
                 $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["CURRENT","EXTENDED","DELAYED","DEFAULTED"]}}'; // ADD ,"REPAID","SOLD","RECOVERED" to download all investment
                 $this->tempUrl['ExportInvestment'] = array_shift($this->urlSequence);
+                echo  $this->tempUrl['ExportInvestment'];
+                print_r($this->urlSequence);
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['ExportInvestment'], $credentialsFile, true);
                 break;
@@ -499,7 +501,8 @@ class twino extends p2pCompany {
 
                 $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
                 $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($variables['investmentBalance']); //My wallet
-                $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($variables['interest']); //Interest
+                //twino doesnt have number of investments-
+                //$this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($variables['interest']); //Interest
 
                 return $this->tempArray;
         }
