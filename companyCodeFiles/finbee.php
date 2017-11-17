@@ -127,11 +127,10 @@ class finbee extends p2pCompany {
                     [
                         "type" => "investment_loanId",
                         "inputData" => [
-                            "input2" => ";-;",
-                            "input3" => LIFO,
-                            "input4" => "#current.investment_purpose"
+                            "input2" => "",
+                            "input3" => "",
                         ],
-                        "functionName" => "joinDataCells",
+                        "functionName" => "extractDataFromString",
                     ]
                 ],
                 "C"=> [
@@ -165,7 +164,23 @@ class finbee extends p2pCompany {
                     ],
                 ],
                 "C" => [
-                    "name" => "investment_debtor"
+                    [
+                        "type" => "investment_debtor",
+                        "inputData" => [
+                            "input2" => "",
+                            "input3" => "",
+                        ],
+                        "functionName" => "extractDataFromString",
+                        
+                    ],
+                    [
+                        "type" => "investment_loanId",
+                        "inputData" => [
+                            "input2" => "",
+                            "input3" => "",
+                        ],
+                        "functionName" => "extractDataFromString",
+                    ]
                 ],
             ],
             [
@@ -256,20 +271,20 @@ class finbee extends p2pCompany {
         ],
         0 => [
             "sheetConfigParam" => [
-                "sortParameter" => "investment_debtor"
+                "sortParameter" => "investment_loanId"
             ],
             [
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
                 //'separatorChar' => ";",
-                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter as prime index.
                 'sheetName' => 'Active Loans'
             ],
             [
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
                 //'separatorChar' => ";",
-                'sortParameter' => "investment_debtor",   // used to "sort" the array and use $sortParameter as prime index.
+                'sortParameter' => "investment_loanId",   // used to "sort" the array and use $sortParameter as prime index.
                 'sheetName' => 'Active Loan Slices'
             ],
             [
