@@ -118,13 +118,16 @@ class Fileparser {
                                 'earning'       => WIN_CONCEPT_TYPE_INCOME
 
                             );   
-    
+ // Possible lables that can be applied to each concept are:
+ // AM_TABLE        => collect amortization table. This might be a brandnew table or an update of a table for 
+ //                 an already existing loan if a extra participation is bought
+ // LOAN_FINISHED   => The last payment on a loan has happened and the loan is fully repaid and finished
     
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
-                "account" => "CF",
+                "account" => "CF",                                              // Not (yet) used
                 "type" => "globalcashflowdata_platformDeposits"            
                 ],
             2 => [
@@ -137,13 +140,15 @@ class Fileparser {
                 "detail" => "Primary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_myInvestment",                     
+                "type" => "investment_myInvestment",  
+                "labels" => "am_table"
                 ],
             4 => [
                 "detail" => "Secondary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_secondaryMarketInvestment"              
+                "type" => "investment_secondaryMarketInvestment",
+                "labels" => "am_table"
                 ],
             5 => [
                 "detail" => "Capital_repayment",
@@ -831,11 +836,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      * 	Extracts the percentage as an integer from an input string
      *
-     * 	@param 		string	$inputPercentage in string format like 5,4% or 5,43% or 5%. Note that 1,23% generates 123 and 33% -> 3300
-     * 															5,5% TAE -> 550
-     * 															7,02% -> 702
-     *                                                                                                                   	8,5 % -> 850
-     * º                                                            format like 'This is a string 54%' -> 5400
+     * 	@param 		string	$inputPercentage in string format like 5,4% or 5,43% or 5%. 
+     *                          Note that 1,23% generates 123 and 33% -> 3300
+     * 				5,5% TAE -> 550
+     * 				7,02% -> 702
+     *                          8,5 % -> 850
+     *                          format like 'This is a string 54%' -> 5400
+     * 
      * 	@return 	int		$outputPercentage
      * 	
      */
@@ -938,7 +945,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     private function analyzeUnknownConcept($input, $config = null) {
         $result = 0;
 
-        
         foreach ($this->dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found
@@ -1056,16 +1062,16 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
         if ($decimalSep == ".") {
-            $seperator = "\.";
+            $separator = "\.";
         }        
         else {                                                              // seperator =>  ","
-            $seperator = ",";
+            $separator = ",";
         }
-        if(empty($input) || $input == 0 && ($input <! 0 && $input >! 0)){ // decimals like 0,0045 are true in $input == 0
+        if (empty($input) || $input == 0 && ($input <! 0 && $input >! 0)){ // decimals like 0,0045 are true in $input == 0
             $input = "0.0";
-            $seperator = "\.";
+            $separator = "\.";
         }
-        if(strpos($input, "E") || strpos($input, "e")){
+        if (strpos($input, "E") || strpos($input, "e")){
             if(strpos($input, "E")){
                 $char = "E";
             } else {
@@ -1082,9 +1088,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 $input = strtr($input, array(',' => '.'));    
                 $input = number_format(floatval($input), 0);
             }
-            $seperator = "\.";
+            $separator = "\.";
         }       
-        $allowedChars =  "/[^0-9" . $seperator . "]/";
+        $allowedChars =  "/[^0-9" . $separator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
         return $normalizedInputFinal;
@@ -1160,7 +1166,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
         foreach ($this->currencies as $currencyIndex => $currency) {        
-            if (strpos($loanCurrency, $currency[0]) != false || $currencySymbol == $currency[0]) {                // check the ISO code
+            if (strpos($loanCurrency, $currency[0]) != false || $currencySymbol == $currency[0]) {              // check the ISO code
               return $currencyIndex;
             }
             if (strpos($loanCurrency, $currency[1]) != false || $currencySymbol == $currency[1]) {              // check the symbol

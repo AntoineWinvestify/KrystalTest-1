@@ -260,7 +260,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-//      print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+      print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
         print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
         print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
         print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
