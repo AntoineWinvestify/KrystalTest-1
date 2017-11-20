@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-11-03 15:21+0100\n"
+"PO-Revision-Date: 2017-11-10 13:12+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -722,7 +722,7 @@ msgstr ""
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:216;362
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:123
-#: View/Contactforms/form.ctp:97 View/Contactforms/login.ctp:122
+#: View/Contactforms/form.ctp:102
 #: View/Invitation/create_invitation_panel.ctp:244
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:138
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:143
@@ -762,7 +762,7 @@ msgstr "Inversores registrados en su plataforma"
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_checking.ctp:94
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:273;302
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:139
-#: View/Contactforms/form.ctp:21
+#: View/Contactforms/form.ctp:26
 #: View/Investors/edit_user_profile_data.ctp:259;271
 #: View/Investors/read_user_profile_data.ctp:180;192
 #: View/Marketplaces/show_market_place.ctp:214
@@ -797,7 +797,7 @@ msgstr "Teléfono"
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_tallyman.ctp:135
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:142
 #: Plugin/Adminpfp/View/Ocrs/show_tallyman_panel.ctp:209;210
-#: View/Contactforms/form.ctp:34 View/Contactforms/login.ctp:72
+#: View/Contactforms/form.ctp:39
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:88
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:93
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:183
@@ -835,7 +835,7 @@ msgid "Investor Data"
 msgstr "Datos de Inversor"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:280;322;364;407;446;488;539;580;624;666;707;740;767;801;830
-#: View/Pages/platforms.ctp:187;433;524;563;605;644;683;719;764;803
+#: View/Pages/platforms.ctp:187;433;524;563;605;644;683;725;764;803
 #: View/Users/register_panel_d.ctp:76
 msgid "Yes"
 msgstr "Sí"
@@ -1235,7 +1235,7 @@ msgstr "Identificador del préstamo"
 msgid "New Chat"
 msgstr "Chat nuevo"
 
-#: View/Chats/chats_panel.ctp:792 View/Contactforms/form.ctp:47
+#: View/Chats/chats_panel.ctp:792 View/Contactforms/form.ctp:52
 msgid "Subject"
 msgstr "Sujeto"
 
@@ -1261,11 +1261,11 @@ msgstr "Rating"
 msgid "Message sent"
 msgstr "Mensaje enviado"
 
-#: View/Contactforms/form.ctp:6
+#: View/Contactforms/form.ctp:11
 msgid "Do you need help?"
 msgstr "¿Necesitas ayuda?"
 
-#: View/Contactforms/form.ctp:15
+#: View/Contactforms/form.ctp:20
 msgid ""
 "If you have any questions or are missing something, please contact our "
 "customer service"
@@ -1273,71 +1273,49 @@ msgstr ""
 "Si tienes alguna duda o necesitas que te ayudemos a mejorar tu experiencia "
 "ponte en contacto con nuestro equipo de atención al cliente."
 
-#: View/Contactforms/form.ctp:26
+#: View/Contactforms/form.ctp:31
 msgid "Your Name"
 msgstr "Su nombre"
 
-#: View/Contactforms/form.ctp:32
+#: View/Contactforms/form.ctp:37
 msgid "Name not valid"
 msgstr "Nombre no válido"
 
-#: View/Contactforms/form.ctp:39
+#: View/Contactforms/form.ctp:44
 msgid "Your Email"
 msgstr "Su email"
 
-#: View/Contactforms/form.ctp:45
+#: View/Contactforms/form.ctp:50
 msgid "Email not valid"
 msgstr "Email no válido"
 
-#: View/Contactforms/form.ctp:59
+#: View/Contactforms/form.ctp:64
 msgid "Subject not selected"
 msgstr "Asunto no seleccionado"
 
-#: View/Contactforms/form.ctp:61
+#: View/Contactforms/form.ctp:66
 msgid "Message"
 msgstr "Mensaje"
 
-#: View/Contactforms/form.ctp:66
+#: View/Contactforms/form.ctp:71
 msgid "Your message"
 msgstr "Escriba su mensaje aquí"
 
-#: View/Contactforms/form.ctp:72
+#: View/Contactforms/form.ctp:77
 msgid "Message too short"
 msgstr "Mensaje demasiado corto"
 
-#: View/Contactforms/form.ctp:79
+#: View/Contactforms/form.ctp:84
 msgid "Calculate this: "
 msgstr "Calcule esto:"
 
-#: View/Contactforms/form.ctp:80
+#: View/Contactforms/form.ctp:85
 msgid "Enter the result in numbers"
 msgstr "Introduzca el resultado en números"
 
-#: View/Contactforms/form.ctp:91
+#: View/Contactforms/form.ctp:96
 msgid "Invalid result"
 msgstr "Resultado incorrecto"
-
-#: View/Contactforms/login.ctp:71 View/Investors/link_account.ctp:66
-#: View/Investors/read_linked_accounts.ctp:332
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:87
-#: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:92
-#: View/Layouts/winvestify_public_layout.ctp:95
-#: View/Layouts/winvestify_publicjs_layout.ctp:111
-msgid "Username"
-msgstr "Usuario"
-
-#: View/Contactforms/login.ctp:94;95
-#: View/Investors/edit_user_profile_data.ctp:199
-#: View/Investors/read_linked_accounts.ctp:346
-#: View/Investors/read_user_profile_data.ctp:123
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:110;111
-#: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:115;116
-#: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:205
-#: View/Layouts/winvestify_public_layout.ctp:118;119
-#: View/Layouts/winvestify_publicjs_layout.ctp:134;135
-#: View/Users/login_old.ctp:94 View/Users/register_panel_a.ctp:368;382
-msgid "Password"
-msgstr "Contraseña"
 
 #: View/Dashboards/get_dashboard_data.ctp:174;409
 msgid "My Balance"
@@ -1479,7 +1457,8 @@ msgid "Investor Menu"
 msgstr "Inversores"
 
 #: View/Elements/leftnavigationmenu.ctp:69
-msgid "Dashboard 2.0"
+#, fuzzy
+msgid "Dashboard 2.0 TEST"
 msgstr "Dashboard 2.0"
 
 #: View/Elements/leftnavigationmenu.ctp:69
@@ -1493,6 +1472,10 @@ msgstr "Estadísticas"
 #: View/Elements/leftnavigationmenu.ctp:69
 msgid "Initial Panel"
 msgstr "Panel Inicial"
+
+#: View/Elements/leftnavigationmenu.ctp:70
+msgid "Dashboard 2.0"
+msgstr "Dashboard 2.0"
 
 #: View/Elements/progresswizard.ctp:59
 msgid "User Data"
@@ -1519,10 +1502,10 @@ msgid "About winvestify"
 msgstr "Sobre Winvestify"
 
 #: View/Elements/publicfooter.ctp:34
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:184
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:187
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:180
-#: View/Layouts/winvestify_public_layout.ctp:193
-#: View/Layouts/winvestify_publicjs_layout.ctp:209
+#: View/Layouts/winvestify_public_layout.ctp:197
+#: View/Layouts/winvestify_publicjs_layout.ctp:212
 msgid "Contact"
 msgstr "Contáctanos"
 
@@ -1548,15 +1531,11 @@ msgstr "Política de Cookies"
 
 #: View/Elements/publicfooter.ctp:55
 msgid ""
-"Our mission is to help investors minimize the risks of investing in the P2P "
-"Lending market\n"
-"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand increase their earnings. We "
-"support continuous, global growth of a dynamic crowdlending market,\n"
-"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tboth by market size and investors"
+"Create, strengthen and improve relations between Investors and P2P Lending "
+"platforms"
 msgstr ""
-"Nacemos con el propósito de ayudar a los inversores a minimizar su riesgo y "
-"aumentar su rentabilidad. Favorecemos que el mercado de Crowdlending siga "
-"creciendo y gane más adeptos"
+"Winvestify busca reforzar y crear nuevas relaciones entre la comunidad de "
+"inversores y las propias Plataformas de Financiación Participativa"
 
 #: View/Emails/html/admin.ctp:21
 msgid "A new user has registered"
@@ -1725,6 +1704,18 @@ msgstr ""
 msgid "You're data has been successfully modified"
 msgstr "Sus datos han sido actualizados con éxito"
 
+#: View/Investors/edit_user_profile_data.ctp:199
+#: View/Investors/read_linked_accounts.ctp:346
+#: View/Investors/read_user_profile_data.ctp:123
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:110;111
+#: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:115;116
+#: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:205
+#: View/Layouts/winvestify_public_layout.ctp:118;119
+#: View/Layouts/winvestify_publicjs_layout.ctp:134;135
+#: View/Users/login_old.ctp:94 View/Users/register_panel_a.ctp:368;382
+msgid "Password"
+msgstr "Contraseña"
+
 #: View/Investors/edit_user_profile_data.ctp:210
 #: View/Investors/read_user_profile_data.ctp:133
 msgid "New Password"
@@ -1743,6 +1734,15 @@ msgid ""
 msgstr ""
 "Su contraseña debe contener al menos 8 caracteres, letras mayúsculas y "
 "minúsculas, un número y otro símbolo"
+
+#: View/Investors/link_account.ctp:66
+#: View/Investors/read_linked_accounts.ctp:332
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:87
+#: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:92
+#: View/Layouts/winvestify_public_layout.ctp:95
+#: View/Layouts/winvestify_publicjs_layout.ctp:111
+msgid "Username"
+msgstr "Usuario"
 
 #: View/Investors/link_account.ctp:93 View/Investors/linkedaccounts_list.ctp:97
 #: View/Investors/read_linked_accounts.ctp:239
@@ -1952,54 +1952,54 @@ msgstr ""
 "Inversor, Crowdlending, Rentabilidad, P2P Lending, Invertir, Alto "
 "rendimiento, Dashboard, Préstamo personal, Crédito personal"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:148
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:151
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:153;242
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:138;264
-#: View/Layouts/winvestify_public_layout.ctp:156
-#: View/Layouts/winvestify_publicjs_layout.ctp:172 View/Users/login_old.ctp:109
+#: View/Layouts/winvestify_public_layout.ctp:160
+#: View/Layouts/winvestify_publicjs_layout.ctp:175 View/Users/login_old.ctp:109
 msgid "Register"
 msgstr "Regístrese"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:171
-#: View/Layouts/winvestify_public_layout.ctp:180
-#: View/Layouts/winvestify_publicjs_layout.ctp:196
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:174
+#: View/Layouts/winvestify_public_layout.ctp:184
+#: View/Layouts/winvestify_publicjs_layout.ctp:199
 msgid "Investors"
 msgstr "Inversores"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:172
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:175
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:178
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:113
-#: View/Layouts/winvestify_public_layout.ctp:181
-#: View/Layouts/winvestify_publicjs_layout.ctp:197
+#: View/Layouts/winvestify_public_layout.ctp:185
+#: View/Layouts/winvestify_publicjs_layout.ctp:200
 msgid "Platforms"
 msgstr "Plataformas"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:175
-#: View/Layouts/winvestify_public_layout.ctp:184
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:178
+#: View/Layouts/winvestify_public_layout.ctp:188
 msgid "About Winvestify"
 msgstr "Sobre Winvestify"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:179
-#: View/Layouts/winvestify_public_layout.ctp:188 View/Pages/about_us.ctp:24
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:182
+#: View/Layouts/winvestify_public_layout.ctp:192 View/Pages/about_us.ctp:24
 msgid "Our history"
 msgstr "Nuestra historia"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:180
-#: View/Layouts/winvestify_public_layout.ctp:189
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:183
+#: View/Layouts/winvestify_public_layout.ctp:193
 msgid "Our team"
 msgstr "Nuestro equipo"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:183
-#: View/Layouts/winvestify_public_layout.ctp:192
-#: View/Layouts/winvestify_publicjs_layout.ctp:208
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:186
+#: View/Layouts/winvestify_public_layout.ctp:196
+#: View/Layouts/winvestify_publicjs_layout.ctp:211
 msgid "FAQ"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:204
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:206
 msgid "We believe you have the right to get the most out of your investments"
 msgstr "Creemos que tienes derecho a sacar el máximo partido a tus inversiones"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:205
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:207
 msgid ""
 "Find out what is happening to all your investments in an organized and "
 "standardized way. Connect with your platforms from Winvestify and get total "
@@ -2009,7 +2009,7 @@ msgstr ""
 "estandarizado. Conecta con tus plataformas desde Winvestify y obtén el "
 "control total de todas tus cuentas."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:206
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:208
 msgid ""
 "We are the leading tool in P2P Lending that helps you manage all your "
 "investments in a precise and effective way."
@@ -2017,35 +2017,34 @@ msgstr ""
 "Somos la herramienta líder española en Crowdlending que te ayuda a controlar "
 "todas tus inversiones de un modo preciso y eficaz"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:213;332
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:215;352
 msgid "Open account"
 msgstr "Crear cuenta"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:244
-msgid "Premio Mejor Fintech Andaluza"
-msgstr ""
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:246
+msgid "Award for Best Andalusian Fintech"
+msgstr "Premio a la Mejor Fintech Andaluza"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:262
-msgid "Finalista Santander Open Challenge"
-msgstr ""
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:264
+msgid "Finalist Santander Open Challenge"
+msgstr "Finalista Santander Open Challenge"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:279
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:281
 msgid "What is P2P Lending?"
 msgstr "¿Qué es el Crowdlending?"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:280
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:282
 msgid ""
 "P2P Lending is a model of Alternative Financing, whereby private and "
-"professional investors, using Participative Financing Platforms, lend their "
-"money in exchange for receiving an interest in accordance with the risk "
-"assumed."
+"professional investors, using Online Lending Platforms, lend their money in "
+"exchange for receiving an interest in accordance with the risk assumed."
 msgstr ""
 "El Crowdlending es un modelo de Financiación Alternativa, por el cual "
 "inversores particulares y profesionales utilizando Plataformas de "
 "Financiación Participativa prestan su dinero a cambio de recibir un interés "
 "acorde al riesgo asumido."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:281
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:283
 msgid ""
 "The result is that the borrower gets financed at a more competitive price "
 "and the investor receives a higher return than other financial products."
@@ -2054,46 +2053,103 @@ msgstr ""
 "competitivo y el inversor recibe una rentabilidad superior a otros productos "
 "financieros."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:282
-msgid "Basic Rules for Investing in P2P Lending"
-msgstr "Reglas básicas para invertir en Crowdlending"
-
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:284
-msgid "Buy fractions of loans"
-msgstr "Invierta en numerosos préstamos"
-
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:285
-msgid ""
-"Make wise fractional investments in several loans across different P2P "
-"Platforms"
-msgstr ""
-"Haga pequeñas inversiones en muchos préstamos de varias plataformas de "
-"Crowdlending"
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:286
+msgid "The Benefits"
+msgstr "Los Beneficios"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:288
-msgid "Diversify your investments"
-msgstr "Diversifique sus inversiones"
+msgid "Risk-adjusted Returns"
+msgstr "Rentabilidad ajustada al Riesgo"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:289
 msgid ""
-"Spread your money over many loans to reduce the risk of your investment."
+"P2P investments offer average annual returns of between 5% and 12%. P2P can "
+"offer stable, predictable, risk-adjusted returns."
 msgstr ""
-"Distribuya su dinero en muchos préstamos para minimizar el riesgo de sus "
-"inversiones."
+"Las inversiones en Crowdlending ofrecen retornos anuales entorno al 5% y "
+"12%. El Crowdlending puede ofrecer rendimientos estables, predecibles y "
+"ajustados al riesgo."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:299
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:292
+msgid "New Asset Class"
+msgstr "Nuevos Activos Financieros"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:293
+msgid ""
+"P2P providers have innovated by offering an efficient, low-cost method of "
+"accessing credit investments."
+msgstr ""
+"Las plataformas de Crowdlending han desarrollado un método eficiente, "
+"innovador y  de bajo coste para acceder a las inversiones de préstamos "
+"online."
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:296
+msgid "Alternative Financing Vs Stock Market"
+msgstr "Financiación Alternativa frente a La Bolsa"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:297
+msgid ""
+"The performance of assets are not correlated to stock market volatility. P2P "
+"assets are expected to perform better during an economic downturn in "
+"comparison to equities or bonds."
+msgstr ""
+"El rendimiento de estos activos no está correlacionado con la volatilidad "
+"del mercado de valores. La previsión es que durante un perido de recision "
+"económica los activos mediante Crowdlending rindan mejor que otros activos "
+"financieros como las acciones o los bonos."
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:300
+msgid "Income or Growth"
+msgstr "Ingresos o Crecimiento"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:301
+msgid ""
+"Investors often have the choice of taking interest payments as an income, or "
+"for these payments to be reinvested, enabling capital growth."
+msgstr ""
+"Los inversores  tienen la opción de recoger los ingresos obtenidos de sus "
+"inversiones o reinvertirlo para aumentar aun más el rendimiento de su "
+"capital."
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:304
+msgid "Diversification"
+msgstr "Diversificación"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:305
+msgid ""
+"P2P Lending allows investors to diversify into an alternative asset class. "
+"Make wise fractional investments in several loans across different P2P "
+"Platforms."
+msgstr ""
+"El Crowdlending permite a los inversores diversificar. Haz pequeñas "
+"inversiones en muchos préstamos de varias plataformas de Crowdlending."
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:308
+msgid "Management"
+msgstr "Gestión de datos"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:309
+msgid ""
+"Winvestify allows investors to connect their data to our dashboard for "
+"monitoring key metrics and taking of their investments."
+msgstr ""
+"Winvestify permite a los inversores conectar sus datos con nuestro dashboard "
+"para monitorizar las métricas clave y sacar el máximo beneficio a tus "
+"inversiones"
+
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:319
 msgid "TECHNOLOGY SOLUTIONS FOR THE PROFESSIONAL INVESTOR"
 msgstr "SOLUCIONES TECNOLÓGICAS PARA INVERSORES PROFESIONALES"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:300
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:320
 msgid "All your portfolio and market data. Standardized."
 msgstr "Todo tu portfolio y datos de mercado. Estandarizados."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:308
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:328
 msgid "PORTFOLIO DATA"
 msgstr ""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:309
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:329
 msgid ""
 "Winvestify has direct, automated feeds from all major European online "
 "lenders, allowing us to display, in real-time, your loan portfolio."
@@ -2101,14 +2157,14 @@ msgstr ""
 "Winvestify conecta automáticamente con las principales plataformas europeas "
 "de Crowdlending, permitiéndonos mostrar en tiempo real todo tu portfolio."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:313
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:333
 msgid "NORMALIZATION"
 msgstr "NORMALIZACIÓN"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:314
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:334
 msgid ""
 "Winvestify has established universal data formats across all credit "
-"verticals, allowing consistent, views of loans purchased across all major "
+"verticals, allowing consistent views of loans purchased across all major "
 "lending platforms."
 msgstr ""
 "Winvestify ha desarrollado formatos de datos universales en todas las "
@@ -2116,27 +2172,27 @@ msgstr ""
 "préstamos comprados en cualquiera de las principales plataformas de "
 "Crowdlending."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:318
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:338
 msgid "VALIDATION AND TRANSFORMATION"
 msgstr "VALIDACIÓN Y TRANSFORMACIÓN"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:319
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:339
 msgid ""
-"We run platforms-specific data cleaning rules to ensure that our clients "
+"We run platform-specific data cleaning rules to ensure that our clients "
 "always access the highest quality data possible."
 msgstr ""
 "Filtramos los datos específicos de las plataformas garantizando que nuestros "
 "clientes siempre tengan acceso a información de calidad."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:328
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:348
 msgid "Join us. It's easy"
 msgstr "Únete a nosotros. Es sencillo"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:330
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:350
 msgid "Open an account and explore all the connected platforms."
 msgstr "Crea una cuenta y explora todas nuestras plataformas conectadas."
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:330
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:350
 msgid ""
 "We make it easy for you to access the main Lending platforms with \"One "
 "Click Registration\""
@@ -2144,7 +2200,7 @@ msgstr ""
 "Hacemos fácil el registro en las principales plataformas de Crowdlending con "
 "\"One Click Registration\""
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:342
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:362
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:419
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:319
 msgid ""
@@ -2152,13 +2208,13 @@ msgid ""
 "single dashboard"
 msgstr "Accede GRATIS a nuestra plataforma y disfruta de TODAS sus ventajas"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:346
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:366
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:210;423
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:323
 msgid "Register NOW"
 msgstr "Registrarse AHORA"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:378
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:398
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:455
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:498
 msgid ""
@@ -2168,7 +2224,7 @@ msgstr ""
 "Utilizamos cookies para mejorar la experiencia del usuario. Continuar "
 "visitando esta página implica que aceptas nuestro uso de las cookies"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:381
+#: View/Layouts/winvestify_publicLandingPageLayout.ctp:401
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:458
 #: View/Layouts/winvestify_publicLandingPageLayout_20179519.ctp:501
 msgid "Got it!"
@@ -2306,15 +2362,15 @@ msgstr ""
 msgid "Login"
 msgstr "Accede"
 
-#: View/Layouts/winvestify_publicjs_layout.ctp:200
+#: View/Layouts/winvestify_publicjs_layout.ctp:203
 msgid "About Us"
 msgstr "Sobre Winvestify"
 
-#: View/Layouts/winvestify_publicjs_layout.ctp:204
+#: View/Layouts/winvestify_publicjs_layout.ctp:207
 msgid "Nuestra historia"
 msgstr ""
 
-#: View/Layouts/winvestify_publicjs_layout.ctp:205
+#: View/Layouts/winvestify_publicjs_layout.ctp:208
 msgid "Nuestro equipo"
 msgstr ""
 
@@ -2643,27 +2699,27 @@ msgstr ""
 msgid "aceptar su política de privacidad y sus términos  y condiciones de uso "
 msgstr ""
 
-#: View/Pages/FAQ.ctp:49
+#: View/Pages/faq.ctp:49
 msgid "Frequently Asked Questions"
 msgstr "Preguntas Frecuentes"
 
-#: View/Pages/FAQ.ctp:54
+#: View/Pages/faq.ctp:54
 msgid "Sobre Winvestify"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:55
+#: View/Pages/faq.ctp:55
 msgid "Seguridad y privacidad"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:56
+#: View/Pages/faq.ctp:56
 msgid "Tu cuenta"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:61
+#: View/Pages/faq.ctp:61
 msgid "¿Qué es Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:63
+#: View/Pages/faq.ctp:63
 msgid ""
 "Winvestify es una herramienta para la gestión de inversiones multiplataforma "
 "mediante Crowdlending. Podrás conectar con las principales Plataformas de "
@@ -2671,34 +2727,34 @@ msgid ""
 "todas tus inversiones en tiempo real."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:65
+#: View/Pages/faq.ctp:65
 msgid "¿Para qué sirve Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:67
+#: View/Pages/faq.ctp:67
 msgid ""
 "El objetivo de Winvestify es que puedas sacar el máximo partido a tu dinero:"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:68
+#: View/Pages/faq.ctp:68
 msgid ""
 "Te ayuda a entender, gestionar de un modo más eficiente y preciso la "
 "información de  tus inversiones para que puedas potenciar tu rentabilidad, "
 "canalizar mayor volumen de inversión con menor riesgo."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:69
+#: View/Pages/faq.ctp:69
 msgid ""
 "Te da más poder porque te ayuda a entender mejor como operan todas tus "
 "plataformas ya que estandarizamos toda la información de un sencillo y "
 "funcional"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:71
+#: View/Pages/faq.ctp:71
 msgid "¿Cuál es el Objetivo de Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:73
+#: View/Pages/faq.ctp:73
 msgid ""
 "Winvestify se ha creado para crear y reforzar nuevas relaciones entre la  "
 "actual comunidad de inversores y las propias Plataformas de Financiación "
@@ -2706,11 +2762,11 @@ msgid ""
 "complemento necesarios entre ambos actores"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:75
+#: View/Pages/faq.ctp:75
 msgid "¿Necesito agregar una plataforma para utilizar Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:77
+#: View/Pages/faq.ctp:77
 msgid ""
 "Para sacarle el máximo partido a tus inversiones es imprescindible agregar "
 "una plataforma. De esta manera podrás estandarizar y gestionar toda tu "
@@ -2718,29 +2774,29 @@ msgid ""
 "cuentas."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:79
+#: View/Pages/faq.ctp:79
 msgid "¿Puedo solicitar financiación a través de Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:81
+#: View/Pages/faq.ctp:81
 msgid ""
 "No. Winvestify solo muestra los proyectos invertibles que ofrecen las "
 "principales Plataformas de Financiación Participativa. Por lo tanto te "
 "recomendamos que lo solicite a través de ellas. "
 msgstr ""
 
-#: View/Pages/FAQ.ctp:83
+#: View/Pages/faq.ctp:83
 msgid "¿Cómo gana dinero Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:85
+#: View/Pages/faq.ctp:85
 msgid ""
 "La forma de generar ingresos se debe el análisis estadístico de la "
 "información disociada, acuerdos con Plataformas de Financiación "
 "Participativa y otros partners."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:86
+#: View/Pages/faq.ctp:86
 msgid ""
 "Winvestify analiza los servicios existentes del mercado que pueden ser "
 "mejorables para los inversores y ayuda a las actuales Plataformas de "
@@ -2748,64 +2804,64 @@ msgid ""
 "de inversores."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:92
+#: View/Pages/faq.ctp:92
 msgid "¿Qué necesito para crearme una cuenta en Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:93
+#: View/Pages/faq.ctp:93
 msgid ""
 "Para crear una cuenta de usuario en Winvestify es necesario un correo "
 "electrónico, teléfono móvil y una contraseña."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:94
+#: View/Pages/faq.ctp:94
 msgid "¿Desde Winvestify puedo cambiar la clave de acceso de mis plataformas?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:95
+#: View/Pages/faq.ctp:95
 msgid ""
 "En Winvestify no puedes cambiar la clave de acceso de tus cuentas asociadas, "
 "para realizar esta tarea siempre tendrás que realizarlo en la plataforma "
 "donde tengas operativa tu cuenta de inversor."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:96
+#: View/Pages/faq.ctp:96
 msgid "¿Qué ocurre si cambio la clave de acceso de mi plataforma?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:97
+#: View/Pages/faq.ctp:97
 msgid ""
 "Si cambias la clave de acceso de tu plataforma, debes actualizar esa "
 "información en Winvestify para seguir visualizando tu información "
 "actualizada."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:98
+#: View/Pages/faq.ctp:98
 msgid "Tengo problemas al  agregar  mis plataformas, ¿Qué puedo hacer?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:100
+#: View/Pages/faq.ctp:100
 msgid ""
 "A veces cuando agregamos tus plataformas de financiación participativa nos "
 "encontramos con problemas que no podemos solucionar en el momento. "
 msgstr ""
 
-#: View/Pages/FAQ.ctp:101
+#: View/Pages/faq.ctp:101
 msgid ""
 "Si no consigues agregar alguna plataforma por favor escríbenos a "
 "info@winvestify.com o accede a nuestro "
 msgstr ""
 
-#: View/Pages/FAQ.ctp:101
+#: View/Pages/faq.ctp:101
 msgid "formulario de contacto"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:103
+#: View/Pages/faq.ctp:103
 msgid ""
 "¿Por qué no aparecen todas las Plataformas de Fiananciación Participativa?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:104
+#: View/Pages/faq.ctp:104
 msgid ""
 "Las principales plataformas de financiación participativa ya están "
 "incorporadas a Winvestify. No obstante, estamos trabajando en incluir las "
@@ -2813,22 +2869,22 @@ msgid ""
 "la que no encuentras para darle prioridad."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:105
+#: View/Pages/faq.ctp:105
 msgid "¿Cómo actualizo una plataforma?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:106
+#: View/Pages/faq.ctp:106
 msgid ""
 "Las cuentas se actualizan para tu comodidad todas las semanas y en "
 "inversores profesionales y acrediatados todas las noches. De esta manera "
 "cuando accedes por la mañana a tu información lo tienes todo al día."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:111
+#: View/Pages/faq.ctp:111
 msgid "¿Cómo se tratan mis datos en Winvestify? ¿Es seguro?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:113
+#: View/Pages/faq.ctp:113
 msgid ""
 "La seguridad está garantizada. Para Winvestify su comunidad de inversores es "
 "lo más valioso y por tanto aplicamos todas la medidas técnicas para proteger "
@@ -2840,18 +2896,18 @@ msgid ""
 "disponer de todos los componentes de la misma."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:114
+#: View/Pages/faq.ctp:114
 msgid ""
 "Para más detalle, ponemos a tu disposición nuestra política de protección de "
 "datos para que puedas consultarla y resolver cualquier duda que te haya "
 "quedado."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:116
+#: View/Pages/faq.ctp:116
 msgid "¿Puede hacer Winvestify operaciones con mis credenciales?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:117
+#: View/Pages/faq.ctp:117
 msgid ""
 "No. En Winvestify no podemos realizar operaciones entre cuentas, por ello, "
 "las claves que te pedimos son  exclusivamente para la lectura de tu "
@@ -2860,11 +2916,11 @@ msgid ""
 "desde nuestro portal para mayor seguridad."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:118
+#: View/Pages/faq.ctp:118
 msgid "¿Si entra un Hacker, cuál es mi riesgo?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:119
+#: View/Pages/faq.ctp:119
 msgid ""
 "Toda la información de tus inversiones se almacena en entornos distintos al "
 "de las claves de lectura de acceso, por lo que no se relacionan estos "
@@ -2876,11 +2932,11 @@ msgid ""
 "seguridad."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:120
+#: View/Pages/faq.ctp:120
 msgid "¿Cómo elimino mi cuenta de Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:121
+#: View/Pages/faq.ctp:121
 msgid ""
 "En la página de inicio, en la sección \"Contáctanos\" podrá darse de baja "
 "rellenado el formulario de contacto especificándolo. Una vez enviada tu "
@@ -2888,73 +2944,73 @@ msgid ""
 "serán eliminados. Si quieres que te ayudemos escríbenos a info@winvestify.com"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:122
+#: View/Pages/faq.ctp:122
 msgid "¿Para entrar en Winvestify que usuario y contraseña debo usar?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:123
+#: View/Pages/faq.ctp:123
 msgid ""
 "Para acceder a  tu cuenta de Winvestify, deberá indtruducir las credenciales "
 "que con las que se dio de alta. Es recomendable el uso de una contraseña "
 "distinta al restos de tus cuentas asociadas."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:124
+#: View/Pages/faq.ctp:124
 msgid "¿Puedo cambiar mi dirección de correo electrónico?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:126
+#: View/Pages/faq.ctp:126
 msgid ""
 "Si. Para cambiar algún dato de su credencial debe rellenar el formulario de "
 "contacto y especificar que quiere cambiar su correo electrónico."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:127
+#: View/Pages/faq.ctp:127
 msgid "Puede acceder al formulario de contacto haciendo click "
 msgstr ""
 
-#: View/Pages/FAQ.ctp:127
+#: View/Pages/faq.ctp:127
 msgid "aquí"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:129
+#: View/Pages/faq.ctp:129
 msgid "¿Cómo puedo cambiar mi contraseña en Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:130
+#: View/Pages/faq.ctp:130
 msgid ""
 "Para cambiar su contraseña en Winvestify debe hacer el log-in y una vez en "
 "nuestra web dirigirse a datos personales y cambiar la contraseña. Deberá "
 "rellenar todos los campos obligatorios."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:131
+#: View/Pages/faq.ctp:131
 msgid "¿Cómo puedo modificar los datos de mi perfil?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:132
+#: View/Pages/faq.ctp:132
 msgid ""
 "Debe dirigirse a la parte del menú situado en su lateral izquierdo y hacer "
 "clic en ‘Datos personales’, ahí podrá actualizar todos sus datos excepto el "
 "teléfono."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:133
+#: View/Pages/faq.ctp:133
 msgid "¿Cómo puedo cerrar sesión en Winvestify?"
 msgstr ""
 
-#: View/Pages/FAQ.ctp:134
+#: View/Pages/faq.ctp:134
 msgid ""
 "Seleccione el icono de usuario en la parte superior derecha y pulse en "
 "\"Salir\". En caso, de que su cuenta se quede  inactiva durante un tiempo "
 "prolongado,  la sesión  caducará automáticamente."
 msgstr ""
 
-#: View/Pages/FAQ.ctp:144
+#: View/Pages/faq.ctp:144
 msgid "Drop us a line and we'll be delighted to help you"
 msgstr "Escríbenos por cualquier incidencia y te ayudaremos encantados"
 
-#: View/Pages/FAQ.ctp:145 View/Pages/investors.ctp:112
+#: View/Pages/faq.ctp:145 View/Pages/investors.ctp:112
 msgid "Contact Us"
 msgstr "Contáctanos"
 
@@ -3095,7 +3151,7 @@ msgstr ""
 msgid "Mortgage Loan"
 msgstr "Préstamo hipotecario"
 
-#: View/Pages/platforms.ctp:725
+#: View/Pages/platforms.ctp:719
 msgid "Colateral"
 msgstr ""
 
@@ -3614,6 +3670,32 @@ msgstr ""
 "Formato incorrecto. Su contraseña debe tener un mínimo de 8 caracteres, "
 "contener caracteres menusculas y mayusculas y un número\n"
 " "
+
+#~ msgid "Basic Rules for Investing in P2P Lending"
+#~ msgstr "Reglas básicas para invertir en Crowdlending"
+
+#~ msgid "Buy fractions of loans"
+#~ msgstr "Invierta en numerosos préstamos"
+
+#~ msgid "Diversify your investments"
+#~ msgstr "Diversifica tus inversiones"
+
+#~ msgid ""
+#~ "Spread your money over many loans to reduce the risk of your investment."
+#~ msgstr ""
+#~ "Distribuye tu dinero en muchos préstamos para minimizar el riesgo de tus "
+#~ "inversiones."
+
+#~ msgid ""
+#~ "Our mission is to help investors minimize the risks of investing in the "
+#~ "P2P Lending market\n"
+#~ "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tand increase their earnings. We "
+#~ "support continuous, global growth of a dynamic crowdlending market,\n"
+#~ "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tboth by market size and investors"
+#~ msgstr ""
+#~ "Nacemos con el propósito de ayudar a los inversores a minimizar su riesgo "
+#~ "y aumentar su rentabilidad. Favorecemos que el mercado de Crowdlending "
+#~ "siga creciendo y gane más adeptos"
 
 #~ msgid "You linked your account of platform "
 #~ msgstr "Ha enlazado su cuenta de la plataforma"
