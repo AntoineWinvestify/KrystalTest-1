@@ -34,9 +34,21 @@ function errorOverviewAjax(result) {
     //alert("not ok " + result);
 }
 
-function singlePfp() {
+function singlePfpJS() {
     
-    
+    $(document).on("click", "#activeTab", function () {
+        id = $(this).attr("id").split(" ")[0];
+        name = $("#logo" + id).attr("alt");
+        var params = {
+            id: $(this).attr("id"),
+            logo: $("#logo" + id).attr("src"),
+            name: name,
+        };
+        ga_company(id, name);
+        var data = jQuery.param(params);
+        link = $(this).attr("href");
+        getServerData(link, data, successOverviewAjax, errorOverviewAjax);
+    });
     
 
 }

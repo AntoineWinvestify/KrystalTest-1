@@ -336,13 +336,13 @@ echo $companyInvestmentDetails[0];
                         <div class="nav-tabs-wrapper">
                             <ul class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active">
-                                    <a href="#defaultedInvestments" id="defaultedTab" data-toggle="tab">
+                                    <a href="#defaultedInvestments" id="defaultedTab" data-toggle="tab" value="<?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['linkedaccount_id'] ?>">
                                         Defaulted
-                                        <div class="ripple-container"></div>
+                                        <div class="ripple-container" ></div>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#activeInvestments" id="activeTab" data-toggle="tab">
+                                    <a href="#activeInvestments" id="activeTab" data-toggle="tab" value="<?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['linkedaccount_id'] ?>">
                                         Active
                                         <div class="ripple-container"></div>
                                     </a>
