@@ -772,7 +772,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             switch ($countSortParameters) {
                 case 1:
                     $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
-                    $tempArray[$sortParam1] = $tempArray[$i];
+                    $tempArray[$sortParam1][] = $tempArray[$i];
                     unset($tempArray[$i]); 
                 break; 
             
@@ -1489,6 +1489,42 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         }
         return $datas;
+    }
+    
+    /**
+     * Function to join values together
+     * @param string $input
+     * @param string $joinSeparator
+     * @param string $order It could be FIFO or LIFO
+     * @param array $inputValues
+     * @return string
+     */
+    public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {
+        if ($order == FIFO) {
+            foreach ($inputValues as $inputValue) {
+                $input .= $joinSeparator . $inputValue;
+            }
+        }
+        else if ($order == LIFO) {
+            foreach ($inputValues as $inputValue) {
+                $inputNew .= $inputValue . $joinSeparator ;
+            }
+            $inputNew .= $input;
+            $input = $inputNew;
+        }
+        
+        return $input;
+    }
+    
+    /**
+     * Function to clean a string of unnecessary characters
+     * @param string $input cell data
+     * @param array $charactersToClean Array of chars to clean
+     * @return string Cleaned value to be returned
+     */
+    private function cleanStringInput($input, ...$charactersToClean) {
+        $input = str_replace($charactersToClean, "", $input);
+        return trim($input);
     }
 
 }
