@@ -1167,7 +1167,7 @@ class loanbook extends p2pCompany {
                 }
                 foreach ($spans as $span) {
                     if ($span->getAttribute('class') == 'lb_main_menu_bold') {
-                        $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($span->nodeValue);
+                        $this->tempArray['global']['myWallet'] = $span->nodeValue;
                         echo $this->tempArray['global']['myWallet'];
                         break; //myWallet is only the first span
                     }
@@ -1187,7 +1187,7 @@ class loanbook extends p2pCompany {
 
 
                 $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
-                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($outstanding); //$this->getMonetaryValue($spans[0]->nodeValue);
+                $this->tempArray['global']['outstandingPrincipal'] = $outstanding; //$this->getMonetaryValue($spans[0]->nodeValue);
 
 
                 print_r($this->tempArray);
@@ -1196,7 +1196,7 @@ class loanbook extends p2pCompany {
                 $url = array_shift($this->urlSequence);
                 $dateInit = strtotime($this->dateInit);
                 $dateFinish = strtotime($this->dateFinish);
-                $url = strtr($url, array('{$date1}' => $dateInit)); //Date in seconds
+                $url = strtr($url, array('{$date1}' => $dateInit)); //Date in milliseconds from 1970 
                 $url = strtr($url, array('{$date2}' => $dateFinish));
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);

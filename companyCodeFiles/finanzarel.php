@@ -458,8 +458,8 @@ class finanzarel extends p2pCompany {
                 }
                 print_r($controlVariablesArray);
                 
-                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($controlVariablesArray[5]);
-                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($controlVariablesArray[2]);
+                $this->tempArray['global']['myWallet'] = $controlVariablesArray[5];
+                $this->tempArray['global']['outstandingPrincipal'] = $controlVariablesArray[2];
                 //$this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($controlVariablesArray[11]);
                 //Finanzarel doenst have number of investments
                 $this->tempArray['reservedFunds'] = $this->getMonetaryValue($controlVariablesArray[6]); //They call it "Inversion neta comprometida"

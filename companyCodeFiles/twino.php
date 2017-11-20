@@ -429,9 +429,9 @@ class twino extends p2pCompany {
                 print_r($response);
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
-                    $this->numFileInvestment++;
                     $fileName = "expiredLoans." . $this->typeFileInvestment;
                     $this->idForSwitch++;
+                    echo 'downloading in ' . $this->statusDownloadUrl . $response['reportId'] . '/download';
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
@@ -443,12 +443,12 @@ class twino extends p2pCompany {
 
 
             case 9:
-
+                echo 'Preparing cashflow download';
                 //Download cash flow
                 $dateInit = date("Y,m,d", strtotime($this->dateInit));
                 $dateFinish = date('Y,m,d',strtotime($this->dateFinish));
-                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":[{$date1}],"processingDateTo":[{$date2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
-                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $dateInit)); //date must be [year,month.day]
+                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","processingDateFrom":[{$date1}],"processingDateTo":[{$date2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
+                $credentialsFile = strtr($credentialsFile, array('{$date1}' => $dateInit)); //date must be a string with the 'year,month,day' format
                 $credentialsFile = strtr($credentialsFile, array('{$date2}' => $dateFinish));
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
@@ -499,8 +499,8 @@ class twino extends p2pCompany {
                 $variables = json_decode($str, true);
                 print_r($variables);
 
-                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($variables['investments']);  //Capital vivo
-                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($variables['investmentBalance']); //My wallet
+                $this->tempArray['global']['outstandingPrincipal'] = $variables['investments'];  //Capital vivo
+                $this->tempArray['global']['myWallet'] = $variables['investmentBalance']; //My wallet
                 //twino doesnt have number of investments-
                 //$this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($variables['interest']); //Interest
 

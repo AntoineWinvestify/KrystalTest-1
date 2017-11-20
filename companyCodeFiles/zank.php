@@ -1412,10 +1412,10 @@ class zank extends p2pCompany {
                     if ($position !== false) {  // found a kpi
                         switch ($index) {
                             case 0:
-                                $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($p->nodeValue);
+                                $this->tempArray['global']['myWallet'] = $p->nodeValue;
                                 break;
                             case 1:
-                                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($p->nodeValue);
+                                $this->tempArray['global']['outstandingPrincipal'] = $p->nodeValue;
                                 break;
                            /* case 2:
                                 $this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($p->nodeValue);
