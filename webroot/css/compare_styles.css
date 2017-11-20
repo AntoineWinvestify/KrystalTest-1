@@ -1172,7 +1172,7 @@ textarea[name="error"] {
     background: url('/img/landingpage/dashboard_lp.png') no-repeat top left;
     width: 818px;
     height: 470px;
-    top: 45px;
+    top: 40px;
     left: 75px !important;
     margin: auto;
     position: relative;
@@ -1653,24 +1653,32 @@ hr.nomargin {
         }
                                 @media (min-width: 1025px) and (max-width: 1200px) {
                                     #features_right {
-                                        top: 20px !important;
-                                        left: -120px;
+                                        margin-left: 100px !important;
+                                        margin-bottom: -40px;
+                                    }
+                                    .featuresP {
+                                        padding-left: 100px !important;
                                     }
                                     #featuresButton {
                                         margin-top: 100px;
                                         margin-bottom: 40px;
-                                        margin-left: 40px;
+                                        margin-left: 275px;
+                                    }
+                                    .container_features {
+                                        min-height: 900px;
                                     }
                                     .schemaImg {
                                         height: 100%;
-                                        margin-top: -15px;
+                                    }
+                                    #schemaImgDiv {
+                                        height: 400px;
                                     }
                                     .featuresP {
                                         left: 50px;
                                     }
                                     #screen {
-                                        left: -200px !important;
-                                        top: 90px;
+                                        left: 75px !important;
+                                        top: 0px;
                                     }
                                 }
                                 
@@ -2234,4 +2242,28 @@ hr.specialHr:after {
 
 #schemaCreditL {
     top: 400px;
+}
+
+/* Tooltips Bootstrap customization */
+.tooltip.top .tooltip-inner, .tooltip.right .tooltip-inner {
+    border: 1px solid #87e14b;
+    border-radius: 0px;
+    background-color: rgba(255,255,255,1);
+    color: black;
+    text-align: center;
+    padding: 8px 12px;
+    -webkit-box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15);
+    -moz-box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15);
+    box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15); 
+}
+.tooltip.top .tooltip-arrow, .tooltip.right .tooltip-arrow {
+    background: white;
+    border: 1px solid #87e14b;
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-right: none;
+    border-bottom: none;
+    position: absolute;
+    transform: rotate3d(0, 0, 1, -135deg);
 }

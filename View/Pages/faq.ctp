@@ -65,7 +65,7 @@
                             <li id="a1_2" class="questionTitle"><i class="fa fa-circle-o"></i>&nbsp;&nbsp;<?php echo __('¿Para qué sirve Winvestify?')?></li>
                             <div id="answer_a1_2" style="display:none">
                                 <?php echo __('El objetivo de Winvestify es que puedas sacar el máximo partido a tu dinero:')?><br/>
-                                <?php echo __('Te ayuda a entender, gestionar de un modo más eficiente y preciso la información de  tus inversiones para que puedas potenciar tu rentabilidad, canalizar mayor volumen de inversión con menor riesgo.')?><br/>
+                                <?php echo __('Te ayuda a entender, gestionar de un modo más eficiente y preciso la información de  tus inversiones para que puedas potenciar tu rentabilidad y canalizar mayor volumen de inversión con menor riesgo.')?><br/>
                                 <?php echo __('Te da más poder porque te ayuda a entender mejor como operan todas tus plataformas ya que estandarizamos toda la información de un sencillo y funcional')?>
                             </div>
                             <li id="a1_3" class="questionTitle"><i class="fa fa-circle-o"></i>&nbsp;&nbsp;<?php echo __('¿Cuál es el Objetivo de Winvestify?')?></li>
@@ -103,7 +103,7 @@
                             <li id="a2_5" class="questionTitle"><i class="fa fa-circle-o"></i>&nbsp;&nbsp;<?php echo __('¿Por qué no aparecen todas las Plataformas de Fiananciación Participativa?')?></li>
                             <div id="answer_a2_5" style="display:none"><?php echo __('Las principales plataformas de financiación participativa ya están incorporadas a Winvestify. No obstante, estamos trabajando en incluir las demás y nos sería muy útil si nos dijeras en a info@winvestify.com cuál es la que no encuentras para darle prioridad.')?></div>
                             <li id="a2_6" class="questionTitle"><i class="fa fa-circle-o"></i>&nbsp;&nbsp;<?php echo __('¿Cómo actualizo una plataforma?')?></li>
-                            <div id="answer_a2_6" style="display:none"><?php echo __('Las cuentas se actualizan para tu comodidad todas las semanas y en inversores profesionales y acrediatados todas las noches. De esta manera cuando accedes por la mañana a tu información lo tienes todo al día.')?></div>
+                            <div id="answer_a2_6" style="display:none"><?php echo __('Las cuentas se actualizan para tu comodidad todas las semanas y en inversores profesionales y acreditados todas las noches. De esta manera cuando accedes por la mañana a tu información lo tienes todo al día.')?></div>
                         </ul>
                     </div>
                     <div class="tab-pane" id="account">
@@ -120,7 +120,7 @@
                             <li id="a3_4" class="questionTitle"><i class="fa fa-circle-o"></i>&nbsp;&nbsp;<?php echo __('¿Cómo elimino mi cuenta de Winvestify?')?></li>
                             <div id="answer_a3_4" style="display:none"><?php echo __('En la página de inicio, en la sección "Contáctanos" podrá darse de baja rellenado el formulario de contacto especificándolo. Una vez enviada tu petición, nuestro equipo de soporte te notificará la baja y  todos tus datos serán eliminados. Si quieres que te ayudemos escríbenos a info@winvestify.com')?></div>
                             <li id="a3_5" class="questionTitle"><i class="fa fa-circle-o"></i>&nbsp;&nbsp;<?php echo __('¿Para entrar en Winvestify que usuario y contraseña debo usar?')?></li>
-                            <div id="answer_a3_5" style="display:none"><?php echo __('Para acceder a  tu cuenta de Winvestify, deberá indtruducir las credenciales que con las que se dio de alta. Es recomendable el uso de una contraseña distinta al restos de tus cuentas asociadas.')?></div>
+                            <div id="answer_a3_5" style="display:none"><?php echo __('Para acceder a  tu cuenta de Winvestify, deberás introducir las credenciales que con las que se dio de alta. Es recomendable el uso de una contraseña distinta al restos de tus cuentas asociadas.')?></div>
                             <li id="a3_6" class="questionTitle"><i class="fa fa-circle-o"></i>&nbsp;&nbsp;<?php echo __('¿Puedo cambiar mi dirección de correo electrónico?')?></li>
                             <div id="answer_a3_6" style="display:none">
                                 <?php echo __('Si. Para cambiar algún dato de su credencial debe rellenar el formulario de contacto y especificar que quiere cambiar su correo electrónico.')?>
