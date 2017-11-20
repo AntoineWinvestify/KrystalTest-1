@@ -184,7 +184,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
                             $totalParsingresultTransactions = $tempResult;
-                            print_r($totalParsingresultTransactions);
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         //    $totalParsingresultTransactions = $tempResult;
@@ -415,6 +414,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
         $tempResult = [];
         $i = 0;
+        $orderParam = array_shift($configParameters);
         foreach ($filesByType as $file) {
             if (!empty($configParameters[$i]['offsetStart'])) {
                 $tempResult[] = $this->getSimpleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
@@ -426,7 +426,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
             $i++;
         }
-        return $tempResult;
+        $tempResultOrdered = $this->resultOrdering($tempResult, $orderParam);
+        return $tempResultOrdered;
     }
     
     public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
@@ -444,6 +445,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     }
     
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
+        $orderParam = array_shift($configParameters);
         foreach ($configParameters as $key => $individualConfigParameters) {       
             $this->myParser->setConfig($individualConfigParameters);
             $tempResult[] = $this->myParser->analyzeFileBySheetName($file, $parserConfigFile[$key]);     // if successfull analysis, result is an array with loanId's as index
@@ -456,11 +458,26 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 break;
             }
         }
-        $this->resultOrdering($tempResult, $orderParam);
+        $tempResultOrdered = $this->resultOrdering($tempResult, $orderParam);
+        return $tempResultOrdered;
     }
     
-    public function resultOrdering($tempResult, $orderParam) {
-        
+    public function resultOrdering($tempArray, $orderParam) {
+        $countSortParameters = count($this->config['sortParameter']);
+        switch ($countSortParameters) {
+            case 1:
+                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                $tempArray[$sortParam1][] = $tempArray[$i];
+                unset($tempArray[$i]); 
+            break; 
+
+            case 2:
+                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
+                $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];        
+                $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
+                unset($tempArray[$i]);
+            break;               
+        }
     }
     
 }
