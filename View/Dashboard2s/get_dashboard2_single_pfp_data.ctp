@@ -57,8 +57,9 @@ echo $companyInvestmentDetails[0];
     
     $(function () {
 
+        singlePfpJS(); //JS for this view
+
         $("#defaultedInvestmentTable").DataTable();
-        $("#activeInvestmentTable").DataTable();
 
         <?php //Tooltip clicks   ?>
         $(".logo").hover(function () {
@@ -112,9 +113,26 @@ echo $companyInvestmentDetails[0];
         };
 
         var polarAreaChart = new Chart(birdsCanvas, {
-            type: 'polarArea',
-            data: birdsData,
-            options: chartOptions
+            type: "line",
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [{
+                    label: "netReturn",
+                    fill: false,
+                    data: [20, 10, 40, 30, 100, 45, 87, 94, 12, 57, 33, 82],
+                    borderColor: "rgba(0, 230, 77, 1)",
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
         });
     });
 </script>
@@ -336,13 +354,13 @@ echo $companyInvestmentDetails[0];
                         <div class="nav-tabs-wrapper">
                             <ul class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active">
-                                    <a href="#defaultedInvestments" id="defaultedTab" data-toggle="tab" value="<?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['linkedaccount_id'] ?>">
+                                    <a href="getDefaultedLoans" id="defaultedTab" data-toggle="tab" value="<?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['linkedaccount_id'] ?>">
                                         Defaulted
                                         <div class="ripple-container" ></div>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#activeInvestments" id="activeTab" data-toggle="tab" value="<?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['linkedaccount_id'] ?>">
+                                    <a href="getActiveLoans" id="activeTab" data-toggle="tab" value="<?php echo $companyInvestmentDetails[1][0]['Userinvestmentdata']['linkedaccount_id'] ?>">
                                         Active
                                         <div class="ripple-container"></div>
                                     </a>
@@ -352,8 +370,8 @@ echo $companyInvestmentDetails[0];
                     </div>
                 </div>
                 <div class="card-content">
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="defaultedTab">
+                    <div class="loans-table">
+                        <div id="defaultedTab">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
@@ -387,7 +405,7 @@ echo $companyInvestmentDetails[0];
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane" id="activeTab">
+                        <?php /*<div class="tab-pane" id="activeTab">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                                     <div class="table-responsive">  
@@ -442,7 +460,7 @@ echo $companyInvestmentDetails[0];
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>*/ ?>
                     </div>
                 </div>
             </div>

@@ -108,10 +108,35 @@ class Dashboard2sController extends AppController {
             FatalErrorException(__('You cannot access this page directly'));
         }
         
-        $linkedAccount = $this->request->data['linkedAccount']; //Link account id
-        
+        $linkedAccount = $this->request->data['id']; //Link account id
         $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
-        $this->set('activeInvestments', $activeInvestments);
+        
+        if(!empty($activeInvestments)){
+            $this->set('activeInvestments', [1,$activeInvestments]);
+        } else {
+            $this->set('activeInvestments', [1,"Not active loans found"]);
+        }
+    }
+    
+        /**
+     * [AJAX call]
+     * Get defaulted loans of a linked account
+     * @throws FatalErrorException Error when you access winouth ajax
+     */
+    function getDefaultedLoans(){
+        if (!$this->request->is('ajax')) {
+            throw new
+            FatalErrorException(__('You cannot access this page directly'));
+        }
+        
+        $linkedAccount = $this->request->data['id']; //Link account id
+        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_defaultedDays >" => 90), array("*"));
+       
+        if(!empty($defaultedInvestments)){
+            $this->set('defaultedInvestments', [1,$defaultedInvestments]);
+        } else {
+            $this->set('defaultedInvestments', [1,"Not defaulted loans found"]);
+        }
     }
     
     
