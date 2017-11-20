@@ -141,7 +141,7 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
-                "labels" => "am_table"
+                "labels" => "AM_TABLE"
                 ],
             4 => [
                 "detail" => "Secondary_market_investment",

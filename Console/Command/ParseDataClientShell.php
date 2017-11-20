@@ -95,13 +95,15 @@ class ParseDataClientShell extends GearmanClientShell {
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
         
-
         while (true) {
-            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
+        //    $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(3, $jobsInParallel);
             print_r($pendingJobs);
+
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
             }
+
             if (!empty($pendingJobs)) {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
@@ -215,8 +217,9 @@ class ParseDataClientShell extends GearmanClientShell {
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";
-                    exit;
+                   
                 }
+                exit;
             }
         }
     }

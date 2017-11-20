@@ -179,7 +179,14 @@ class mintos extends p2pCompany {
 				"input2" => "#current.internalName",            // copying the "internalName" = Winvestify concept
                                 ],
                     "functionName" => "getDefaultValue",
-                ]
+                ],
+                [
+                    "type" => "conceptlables",                                  // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",       // get Winvestify concept
+                                ],
+                    "functionName" => "getDefaultValue",
+                ]                
              ],
         ];
 
