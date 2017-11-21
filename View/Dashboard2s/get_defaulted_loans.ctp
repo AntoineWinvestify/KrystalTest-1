@@ -30,10 +30,10 @@ echo $defaultedInvestments[0];
                         <?php foreach ($defaultedInvestments[1] as $defaultedInvestment) { ?>
                             <tr>
                                 <td><?php echo $defaultedInvestment['Investment']['investment_loanId'] ?></td>
-                                <td><?php echo $defaultedInvestment['Investment']['investment_my_InvestmentDate'] ?></td>
+                                <td><?php echo $defaultedInvestment['Investment']['investment_myInvestmentDate'] ?></td>
                                 <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_myInvestment'], 2) . " &euro;"; ?></td>
                                 <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_nominalInterestRate'], 2) . "%" ?></td>
-                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_paymentsDone'] / $defaultedInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $defaultedInvestment['Investment']['investment_paymentsDone'] . "/" . $defaultedInvestment['Investment']['investment_numberOfInstalments'] ?></td>
+                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_paidInstalments'] / $defaultedInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $defaultedInvestment['Investment']['investment_paidInstalments'] . "/" . $defaultedInvestment['Investment']['investment_numberOfInstalments'] ?></td>
                                 <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_outstandingPrincipal'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_outstandingPrincipal'], 2) . " &euro;"; ?></td>
                                 <td><?php echo $defaultedInvestment['Investment']['investment_nextPaymentDate']; ?></td>                                                       
                             </tr>

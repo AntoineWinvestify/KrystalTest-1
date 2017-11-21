@@ -31,28 +31,28 @@ echo $activeInvestments[0];
                         <?php foreach ($activeInvestments[1] as $activeInvestment) { ?>
                             <tr>
                                 <td><?php echo $activeInvestment['Investment']['investment_loanId'] ?></td>
-                                <td><?php echo $activeInvestment['Investment']['investment_my_InvestmentDate'] ?></td>
+                                <td><?php echo $activeInvestment['Investment']['investment_myInvestmentDate'] ?></td>
                                 <td dataorder="<?php echo $activeInvestment['Investment']['investment_investment'] ?>"><?php echo round($activeInvestment['Investment']['investment_myInvestment'], 2) . " &euro;"; ?></td>
                                 <td dataorder="<?php echo $activeInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($activeInvestment['Investment']['investment_nominalInterestRate']) . "%" ?></td>
-                                <td dataorder="<?php echo $activeInvestment['Investment']['investment_paymentsDone'] / $activeInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $activeInvestment['Investment']['investment_paymentsDone'] . "/" . $activeInvestment['Investment']['investment_numberOfInstalments'] ?></td>
+                                <td dataorder="<?php echo $activeInvestment['Investment']['investment_paidInstalments'] / $activeInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $activeInvestment['Investment']['investment_paidInstalments'] . "/" . $activeInvestment['Investment']['investment_numberOfInstalments'] ?></td>
                                 <td dataorder="<?php echo $activeInvestment['Investment']['investment_outstandingPrincipal'] ?>"><?php echo round($activeInvestment['Investment']['investment_outstandingPrincipal'], 2) . " &euro;"; ?></td>
                                 <td><?php echo $activeInvestment['Investment']['investment_nextPaymentDate']; ?></td>
                                 <td> <?php
                             switch ($activeInvestment['Investment']['investment_defaultedDays']) {
                                 case ($activeInvestment['Investment']['investment_defaultedDays'] > 90):
-                                    echo __("91+ days delay");
+                                    echo __("91+ DPD");
                                     break;
                                 case ($activeInvestment['Investment']['investment_defaultedDays'] > 60):
-                                    echo __("61-90 days delay");
+                                    echo __("61-90 DPD");
                                     break;
                                 case($activeInvestment['Investment']['investment_defaultedDays'] > 30):
-                                    echo __("31-60 days delay");
+                                    echo __("31-60 DPD");
                                     break;
                                 case($activeInvestment['Investment']['investment_defaultedDays'] > 7):
-                                    echo __("8-30 days delay");
+                                    echo __("8-30 DPD");
                                     break;
                                 case ($activeInvestment['Investment']['investment_defaultedDays'] > 0):
-                                    echo __("1-7 days delay");
+                                    echo __("1-7 DPD");
                                     break;
                                 default:
                                     echo __("Current");
