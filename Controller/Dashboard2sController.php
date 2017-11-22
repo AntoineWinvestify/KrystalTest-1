@@ -234,4 +234,7 @@ class Dashboard2sController extends AppController {
         return $globalRange;
     }
 
+    function showInitialPanel() {
+        $this->layout = 'azarus_private_layout';
+    }
 }
