@@ -360,7 +360,7 @@ class twino extends p2pCompany {
                     echo 'Reading download status: ' . SHELL_ENDOFLINE;
                     $this->statusDownloadUrl = array_shift($this->urlSequence);
                     $this->idForSwitch++;
-                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
+                    $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
                     break;
                 }
                 $this->idForSwitch++;
@@ -388,11 +388,11 @@ class twino extends p2pCompany {
                 //Download cash flow
                 $dateInit = date("Y,m,d", strtotime($this->dateInit));
                 $dateFinish = date('Y,m,d',strtotime($this->dateFinish));
-                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":1141,"processingDateFrom":[{$date1}],"processingDateTo":[{$date2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
+                $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","totalItems":29787, "processingDateFrom":[{$date1}],"processingDateTo":[{$date2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[], "investmentLoanId":null}';
                 $credentialsFile = strtr($credentialsFile, array('{$date1}' => $dateInit)); //date must be [year,month.day]
                 $credentialsFile = strtr($credentialsFile, array('{$date2}' => $dateFinish));
                 $this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
+                $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
             case 7:
                 echo $str;
