@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-11-10 13:12+0100\n"
+"PO-Revision-Date: 2017-11-17 13:58+0100\n"
 "Last-Translator: \n"
 "Language-Team: EMAIL@ADDRESS\n"
 "Language: es\n"
@@ -163,7 +163,6 @@ msgid "Unsubscribe Account"
 msgstr "Darse de baja"
 
 #: Controller/AppController.php:457
-#, fuzzy
 msgid "Country filter"
 msgstr "País"
 
@@ -415,7 +414,6 @@ msgid "Admin"
 msgstr "Administrador"
 
 #: Event/GlobalEmailListener.php:219
-#, fuzzy
 msgid "A new user want to register."
 msgstr "Se ha registrado un nuevo usuario"
 
@@ -448,7 +446,7 @@ msgid ""
 "The system has updated your dashboard data. You can access your dashboard "
 "here"
 msgstr ""
-"El sistema ha actualizado la información de su dashboard. Puedes acceder aquí"
+"El sistema ha actualizado la información de su dashboard. Puede acceder aquí"
 
 #: Model/Investor.php:681
 msgid "Error updating companies status."
@@ -488,7 +486,7 @@ msgstr "Subida fallida"
 
 #: Model/Ocrfile.php:206;210
 msgid "Upload failed. Incorrect type or file too big."
-msgstr "Subida fallida. Tipo incorrect o archivo demasiado grande."
+msgstr "Subida fallida. Tipo incorrecto o archivo demasiado grande."
 
 #: Model/Behavior/PasswordableBehavior.php:380
 msgid "valErrPwdNotMatch"
@@ -516,7 +514,7 @@ msgstr "Salir"
 
 #: Plugin/Admin/View/Elements/leftnavigationmenuwinadmin.ctp:50
 msgid "WINADMIN NAVIGATION"
-msgstr ""
+msgstr "MENU WINADMIN"
 
 #: Plugin/Admin/View/Elements/leftnavigationmenuwinadmin.ctp:115
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:66;68
@@ -533,16 +531,16 @@ msgstr "Chequeo de Inversores"
 #: Plugin/Admin/View/Elements/leftnavigationmenuwinadmin.ctp:125
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:94
 msgid "Update PFP data"
-msgstr ""
+msgstr "Actualizar PFP"
 
 #: Plugin/Admin/View/Elements/leftnavigationmenuwinadmin.ctp:130
 #: Plugin/Admin/View/Files/generate_excel.ctp:313
 msgid "Generate Excel"
-msgstr ""
+msgstr "Generar Excel"
 
 #: Plugin/Admin/View/Elements/leftnavigationmenuwinadmin.ctp:146
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:70
-#: View/Elements/leftnavigationmenu.ctp:68
+#: View/Elements/leftnavigationmenu.ctp:70
 msgid "Logout"
 msgstr "Salir"
 
@@ -595,9 +593,8 @@ msgid "Text about 100% data on excel document"
 msgstr ""
 
 #: Plugin/Admin/View/Files/generate_excel.ctp:133
-#, fuzzy
 msgid "Date range:"
-msgstr "Guardar cambios"
+msgstr "Rango de fechas:"
 
 #: Plugin/Admin/View/Files/generate_excel.ctp:165
 #, fuzzy
@@ -617,7 +614,7 @@ msgstr "Estado"
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:659;689
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_sold_users.ctp:93
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:121;241
-#: View/Investors/edit_user_profile_data.ctp:432;444
+#: View/Investors/edit_user_profile_data.ctp:436;448
 #: View/Investors/read_user_profile_data.ctp:360;371
 #: View/Ocrs/ocr_investor_data_panel.ctp:674;686
 msgid "Country"
@@ -632,9 +629,8 @@ msgid "PFP"
 msgstr ""
 
 #: Plugin/Admin/View/Files/generate_excel.ctp:266
-#, fuzzy
 msgid "Free Search"
-msgstr "Buscar..."
+msgstr "Buscar"
 
 #: Plugin/Admin/View/Layouts/azarus_private_layout.ctp:24
 #: Plugin/Adminpfp/View/Layouts/azarus_private_layout.ctp:26
@@ -696,7 +692,7 @@ msgstr "Documento seleccionado"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:185
 msgid "WinAdmin - Update Bill"
-msgstr ""
+msgstr "Subida de Facturas"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:195;385
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_checking.ctp:78
@@ -714,11 +710,12 @@ msgstr ""
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:214
 msgid "Currency"
-msgstr ""
+msgstr "Moneda"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:215
+#: View/Ocrs/ocr_investor_data_panel.ctp:914
 msgid "Upload file"
-msgstr ""
+msgstr "Subir archivo"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:216;362
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:123
@@ -737,7 +734,7 @@ msgstr "Enviar"
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:260
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_sold_users.ctp:107
 msgid "Number"
-msgstr ""
+msgstr "Número de factura"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_billing_panel.ctp:329
 msgid "The Amount value must be formatted with 2 decimal digits. (Ex: 1111,10)"
@@ -763,7 +760,7 @@ msgstr "Inversores registrados en su plataforma"
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:273;302
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:139
 #: View/Contactforms/form.ctp:26
-#: View/Investors/edit_user_profile_data.ctp:259;271
+#: View/Investors/edit_user_profile_data.ctp:263;275
 #: View/Investors/read_user_profile_data.ctp:180;192
 #: View/Marketplaces/show_market_place.ctp:214
 #: View/Ocrs/ocr_investor_data_panel.ctp:368;379;880
@@ -773,7 +770,7 @@ msgstr "Nombre"
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_checking.ctp:95
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:344
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:140
-#: View/Investors/edit_user_profile_data.ctp:292
+#: View/Investors/edit_user_profile_data.ctp:296
 #: View/Investors/read_user_profile_data.ctp:212
 #: View/Ocrs/ocr_investor_data_panel.ctp:412
 msgid "Surname"
@@ -785,7 +782,7 @@ msgstr "Apellido"
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_tallyman.ctp:158
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:141
 #: Plugin/Adminpfp/View/Ocrs/show_tallyman_panel.ctp:225;226
-#: View/Investors/edit_user_profile_data.ctp:488;501
+#: View/Investors/edit_user_profile_data.ctp:493;506
 #: View/Investors/read_user_profile_data.ctp:420;431
 #: View/Ocrs/ocr_investor_data_panel.ctp:535;548
 msgid "Telephone"
@@ -828,7 +825,7 @@ msgstr "Debe seleccionar en \"Sí\" todos los radio button"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:244
 msgid "Investor Data Checking"
-msgstr ""
+msgstr "Chequeo de datos de inversor"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:268
 msgid "Investor Data"
@@ -847,42 +844,42 @@ msgid "No"
 msgstr "No"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:315
-#: View/Investors/edit_user_profile_data.ctp:281
+#: View/Investors/edit_user_profile_data.ctp:285
 #: View/Investors/read_user_profile_data.ctp:201
 #: View/Ocrs/ocr_investor_data_panel.ctp:401
 msgid "Surname(s)"
 msgstr "Apellido(s)"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:357;386
-#: View/Investors/edit_user_profile_data.ctp:468;479
+#: View/Investors/edit_user_profile_data.ctp:472;484
 #: View/Investors/read_user_profile_data.ctp:398;409
 #: View/Ocrs/ocr_investor_data_panel.ctp:435;446
 msgid "Id"
 msgstr "DNI"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:400;430
-#: View/Investors/edit_user_profile_data.ctp:517;529
+#: View/Investors/edit_user_profile_data.ctp:522;534
 #: View/Investors/read_user_profile_data.ctp:443;455;497
 #: View/Ocrs/ocr_investor_data_panel.ctp:469;481
 msgid "Date of Birth"
 msgstr "Fecha de Nacimiento"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:532;561
-#: View/Investors/edit_user_profile_data.ctp:352;363
+#: View/Investors/edit_user_profile_data.ctp:356;367
 #: View/Investors/read_user_profile_data.ctp:276;287
 #: View/Ocrs/ocr_investor_data_panel.ctp:574;585
 msgid "PostCode"
 msgstr "Código Postal"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:573;602
-#: View/Investors/edit_user_profile_data.ctp:331;342
+#: View/Investors/edit_user_profile_data.ctp:335;346
 #: View/Investors/read_user_profile_data.ctp:255;266
 #: View/Ocrs/ocr_investor_data_panel.ctp:606;617
 msgid "Address"
 msgstr "Dirección"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:617;646
-#: View/Investors/edit_user_profile_data.ctp:372;383
+#: View/Investors/edit_user_profile_data.ctp:376;387
 #: View/Investors/read_user_profile_data.ctp:296;307
 #: View/Ocrs/ocr_investor_data_panel.ctp:641;652
 msgid "City"
@@ -912,7 +909,7 @@ msgid "Investor Uploaded Documents"
 msgstr "Documentos adjuntos"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_investor_data.ctp:849
-#: View/Investors/edit_user_profile_data.ctp:575
+#: View/Investors/edit_user_profile_data.ctp:580
 #: View/Investors/read_user_profile_data.ctp:551
 msgid "Save"
 msgstr "Guardar"
@@ -938,7 +935,6 @@ msgid "Tallyman"
 msgstr ""
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_tallyman.ctp:70
-#, fuzzy
 msgid "Search:"
 msgstr "Buscar..."
 
@@ -950,9 +946,8 @@ msgstr ""
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_tallyman.ctp:86
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_tallyman.ctp:183
 #: Plugin/Adminpfp/View/Ocrs/show_tallyman_panel.ctp:242
-#, fuzzy
 msgid "Search"
-msgstr "Buscar..."
+msgstr "Buscar"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_tallyman.ctp:92
 msgid "Investor Tallyman Profile"
@@ -964,7 +959,7 @@ msgid "Terms of Service"
 msgstr "Términos del servicio y condiciones de uso"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:119
-#: View/Elements/publicfooter.ctp:46 View/Ocrs/company_filter.ctp:24
+#: View/Elements/publicfooter.ctp:47 View/Ocrs/company_filter.ctp:24
 #: View/Ocrs/ocr_investor_platform_selection.ctp:414
 msgid "Privacy Policy"
 msgstr "Politica de Privacidad"
@@ -975,14 +970,12 @@ msgid "Modality"
 msgstr "Modalidad"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:168
-#, fuzzy
 msgid "Terms Of Service URL"
-msgstr "Términos del servicio y condiciones de uso"
+msgstr "URL: Términos del servicio y condiciones de uso"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:195
-#, fuzzy
 msgid "Privacy Policy URL"
-msgstr "Politica de Privacidad"
+msgstr "URL: Política de Privacidad"
 
 #: Plugin/Admin/View/Ocrs/ocr_winadmin_update_pfp_data.ctp:277
 msgid "Update"
@@ -1008,7 +1001,7 @@ msgstr ""
 
 #: Plugin/Admin/View/Users/testmodal.ctp:180
 msgid "This is an action which will be billed to your account."
-msgstr ""
+msgstr "Esta acción será facturada a su cuenta."
 
 #: Plugin/Admin/View/Users/testmodal.ctp:181
 msgid "Thank you"
@@ -1017,7 +1010,6 @@ msgstr ""
 #: Plugin/Admin/View/Users/testmodal.ctp:187
 #: Plugin/Adminpfp/View/Ocrs/chargingconfirmationmodal.ctp:147
 #: View/Ocrs/ocr_investor_confirm_modal.ctp:233
-#, fuzzy
 msgid "Error."
 msgstr "Error"
 
@@ -1026,7 +1018,7 @@ msgid "PFPADMIN NAVIGATION"
 msgstr "MENÚ PFPADMIN"
 
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:60
-#: View/Elements/leftnavigationmenu.ctp:58 View/Pages/investors.ctp:43
+#: View/Elements/leftnavigationmenu.ctp:58 View/Pages/investors.ctp:45
 msgid "Dashboard"
 msgstr "Dashboard"
 
@@ -1042,7 +1034,7 @@ msgstr "Mi Marketplace"
 
 #: Plugin/Adminpfp/View/Elements/leftnavigationmenupfpadmin.ctp:62
 #: View/Elements/leftnavigationmenu.ctp:60
-#: View/Investors/edit_user_profile_data.ctp:175
+#: View/Investors/edit_user_profile_data.ctp:184
 #: View/Investors/user_profile_data_panel.ctp:130
 msgid "Personal Data"
 msgstr "Datos Personales"
@@ -1092,7 +1084,7 @@ msgstr "Descargar"
 
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_tallyman.ctp:92
 msgid "PFPAdmin - Tallyman"
-msgstr ""
+msgstr "Tallyman"
 
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_tallyman.ctp:102
 msgid ""
@@ -1103,7 +1095,7 @@ msgstr ""
 
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:117
 msgid "New users Panel"
-msgstr ""
+msgstr "Panel de Nuevos Usuarios"
 
 #: Plugin/Adminpfp/View/Ocrs/ocr_pfp_users_panel.ctp:127
 msgid ""
@@ -1122,7 +1114,7 @@ msgstr ""
 #: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:235
 msgid ""
 "The amount invested in the platform of AdminPFP/ total invested amount[ in %]"
-msgstr ""
+msgstr "Cantidad invertida en su plataforma / Cantidad total invertida [en %]"
 
 #: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:258
 msgid "% Total cartera"
@@ -1137,16 +1129,20 @@ msgid ""
 "The amount invested in the platformtype of the AdminPFP/total invested "
 "amount in platformtype[ in %]"
 msgstr ""
+"Cantidad invertida en el tipo de plataforma / Cantidad total invertida en el "
+"tipo de plataforma [en %]"
 
 #: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:297
 msgid "Active Investor Platforms"
-msgstr "Inversiones Activas"
+msgstr "Plataformas Activas"
 
 #: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:303
 msgid ""
 "The number of platforms where the user has ACTIVE investments. Investment "
 "MAY have payment delays"
 msgstr ""
+"Número de plataformas donde el usuario tiene inversiones ACTIVAS. Las "
+"inversiones PUEDEN tener retraso de pagos"
 
 #: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:314
 #: View/Investors/user_profile_data_panel.ctp:133
@@ -1155,11 +1151,11 @@ msgstr "Cuentas Enlazadas"
 
 #: Plugin/Adminpfp/View/Ocrs/readtallymandata.ctp:320
 msgid "The number of platforms where the investor has an account"
-msgstr "El número de plataformas en que el inversor tiene cuenta"
+msgstr "Número de plataformas en que el inversor tiene cuenta"
 
 #: Plugin/Adminpfp/View/Ocrs/show_tallyman_panel.ctp:172
 msgid "Tallyman Search Panel"
-msgstr ""
+msgstr "Panel de búsqueda"
 
 #: Plugin/Adminpfp/View/Ocrs/show_tallyman_panel.ctp:182
 msgid "Define at least 2 searchfields"
@@ -1456,24 +1452,23 @@ msgstr "Duración"
 msgid "Investor Menu"
 msgstr "Inversores"
 
-#: View/Elements/leftnavigationmenu.ctp:69
-#, fuzzy
+#: View/Elements/leftnavigationmenu.ctp:68
 msgid "Dashboard 2.0 TEST"
-msgstr "Dashboard 2.0"
+msgstr "Dashboard 2.0 TEST"
 
-#: View/Elements/leftnavigationmenu.ctp:69
+#: View/Elements/leftnavigationmenu.ctp:68
 msgid "Overview"
 msgstr ""
 
-#: View/Elements/leftnavigationmenu.ctp:69
+#: View/Elements/leftnavigationmenu.ctp:68
 msgid "Stats"
 msgstr "Estadísticas"
 
-#: View/Elements/leftnavigationmenu.ctp:69
+#: View/Elements/leftnavigationmenu.ctp:68
 msgid "Initial Panel"
 msgstr "Panel Inicial"
 
-#: View/Elements/leftnavigationmenu.ctp:70
+#: View/Elements/leftnavigationmenu.ctp:69
 msgid "Dashboard 2.0"
 msgstr "Dashboard 2.0"
 
@@ -1498,10 +1493,10 @@ msgid "Home"
 msgstr "Home"
 
 #: View/Elements/publicfooter.ctp:33
-msgid "About winvestify"
-msgstr "Sobre Winvestify"
+msgid "Winvestify Team"
+msgstr "Equipo de Winvestify"
 
-#: View/Elements/publicfooter.ctp:34
+#: View/Elements/publicfooter.ctp:35
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:187
 #: View/Layouts/winvestify_publicLandingPageLayout_20171013.ctp:180
 #: View/Layouts/winvestify_public_layout.ctp:197
@@ -1509,27 +1504,27 @@ msgstr "Sobre Winvestify"
 msgid "Contact"
 msgstr "Contáctanos"
 
-#: View/Elements/publicfooter.ctp:39
+#: View/Elements/publicfooter.ctp:40
 msgid "LinkedIn"
 msgstr "Lin‌kedIn"
 
-#: View/Elements/publicfooter.ctp:40
+#: View/Elements/publicfooter.ctp:41
 msgid "Facebook"
 msgstr "Facebook"
 
-#: View/Elements/publicfooter.ctp:41
+#: View/Elements/publicfooter.ctp:42
 msgid "Twitter"
 msgstr "Twitter"
 
-#: View/Elements/publicfooter.ctp:47
+#: View/Elements/publicfooter.ctp:48
 msgid "Terms &amp; Conditions"
 msgstr "Términos y Condiciones de Uso"
 
-#: View/Elements/publicfooter.ctp:48
+#: View/Elements/publicfooter.ctp:49
 msgid "Cookies Policy"
 msgstr "Política de Cookies"
 
-#: View/Elements/publicfooter.ctp:55
+#: View/Elements/publicfooter.ctp:56
 msgid ""
 "Create, strengthen and improve relations between Investors and P2P Lending "
 "platforms"
@@ -1659,11 +1654,11 @@ msgstr ""
 
 #: View/Emails/html/winadmin_new_user_ocr.ctp:32
 msgid "A new user has requested the use of 1CR."
-msgstr "Se ha registrado un nuevo usuario"
+msgstr "Un nuevo usuario ha utilizado 1CR."
 
 #: View/Investors/accept_conditions_temp_panel.ctp:38
 msgid "Welcome to Winvestify"
-msgstr "Ir a Winvestify"
+msgstr "Bienvenido a Winvestify"
 
 #: View/Investors/accept_conditions_temp_panel.ctp:43
 msgid "What do you like to do?"
@@ -1700,11 +1695,11 @@ msgid ""
 msgstr ""
 "Usuario o Contraseña incorrecto. Compruebe los datos e inténtelo otra vez"
 
-#: View/Investors/edit_user_profile_data.ctp:190
+#: View/Investors/edit_user_profile_data.ctp:199
 msgid "You're data has been successfully modified"
 msgstr "Sus datos han sido actualizados con éxito"
 
-#: View/Investors/edit_user_profile_data.ctp:199
+#: View/Investors/edit_user_profile_data.ctp:208
 #: View/Investors/read_linked_accounts.ctp:346
 #: View/Investors/read_user_profile_data.ctp:123
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:110;111
@@ -1716,24 +1711,30 @@ msgstr "Sus datos han sido actualizados con éxito"
 msgid "Password"
 msgstr "Contraseña"
 
-#: View/Investors/edit_user_profile_data.ctp:210
+#: View/Investors/edit_user_profile_data.ctp:209
+#: View/Users/register_panel_a.ctp:371
+msgid ""
+"Your password should be at least 8 characters long and contain uppercase and "
+"lowercase characters and a number."
+msgstr ""
+"Formato incorrecto. Su contraseña debe contener un mínimo de 8 caracteres, "
+"contener caracteres en minúscula, mayúscula y algún número.\n"
+" "
+
+#: View/Investors/edit_user_profile_data.ctp:219
 #: View/Investors/read_user_profile_data.ctp:133
 msgid "New Password"
 msgstr "Contraseña Nueva"
 
-#: View/Investors/edit_user_profile_data.ctp:219
+#: View/Investors/edit_user_profile_data.ctp:228
 #: View/Investors/read_user_profile_data.ctp:142
 #: View/Users/register_panel_a.ctp:403;412
 msgid "Repeat Password"
 msgstr "Repita contraseña"
 
-#: View/Investors/edit_user_profile_data.ctp:240
-msgid ""
-"Your password should be at least 8 characters long and contain uppercase and "
-"lowercase characters, a number and another symbol"
-msgstr ""
-"Su contraseña debe contener al menos 8 caracteres, letras mayúsculas y "
-"minúsculas, un número y otro símbolo"
+#: View/Investors/edit_user_profile_data.ctp:473
+msgid "(Ex: Identification Card)"
+msgstr "(EJ: DNI)"
 
 #: View/Investors/link_account.ctp:66
 #: View/Investors/read_linked_accounts.ctp:332
@@ -1819,8 +1820,8 @@ msgid "Link this Account"
 msgstr "Enlazar Cuenta"
 
 #: View/Investors/read_linked_accounts.ctp:364
-msgid "Los datos de acceso se corresponden con la plataforma a enlazar"
-msgstr "Los datos de acceso se corresponden con la plataforma a enlazar"
+msgid "The credentials of the platform you like to link to your Dashboard"
+msgstr "Las credenciales de la plataforma que quieres enlazar con tu Dashboard"
 
 #: View/Investors/read_user_profile_data.ctp:153
 msgid "Repeat new Password"
@@ -1979,11 +1980,6 @@ msgstr "Plataformas"
 msgid "About Winvestify"
 msgstr "Sobre Winvestify"
 
-#: View/Layouts/winvestify_publicLandingPageLayout.ctp:182
-#: View/Layouts/winvestify_public_layout.ctp:192 View/Pages/about_us.ctp:24
-msgid "Our history"
-msgstr "Nuestra historia"
-
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:183
 #: View/Layouts/winvestify_public_layout.ctp:193
 msgid "Our team"
@@ -2015,7 +2011,7 @@ msgid ""
 "investments in a precise and effective way."
 msgstr ""
 "Somos la herramienta líder española en Crowdlending que te ayuda a controlar "
-"todas tus inversiones de un modo preciso y eficaz"
+"todas tus inversiones de un modo preciso y eficaz."
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:215;352
 msgid "Open account"
@@ -2094,7 +2090,7 @@ msgid ""
 "comparison to equities or bonds."
 msgstr ""
 "El rendimiento de estos activos no está correlacionado con la volatilidad "
-"del mercado de valores. La previsión es que durante un perido de recision "
+"del mercado de valores. La previsión es que durante un período de recisión "
 "económica los activos mediante Crowdlending rindan mejor que otros activos "
 "financieros como las acciones o los bonos."
 
@@ -2134,7 +2130,7 @@ msgid ""
 "monitoring key metrics and taking of their investments."
 msgstr ""
 "Winvestify permite a los inversores conectar sus datos con nuestro dashboard "
-"para monitorizar las métricas clave y sacar el máximo beneficio a tus "
+"para monitorizar las métricas clave y sacar el máximo beneficio a sus "
 "inversiones"
 
 #: View/Layouts/winvestify_publicLandingPageLayout.ctp:319
@@ -2542,14 +2538,13 @@ msgid "View all"
 msgstr "Ver todas"
 
 #: View/Ocrs/company_filter.ctp:24
-#: View/Ocrs/ocr_investor_platform_selection.ctp:414
-msgid "He leído la "
-msgstr ""
+msgid "I have read and agree"
+msgstr "He leído y acepto la"
 
 #: View/Ocrs/company_filter.ctp:25
 #: View/Ocrs/ocr_investor_platform_selection.ctp:415
-msgid "He leído los "
-msgstr ""
+msgid "I have read and agree "
+msgstr "He leído y acepto los "
 
 #: View/Ocrs/company_filter.ctp:25
 #: View/Ocrs/ocr_investor_platform_selection.ctp:415
@@ -2564,35 +2559,47 @@ msgstr "Seleccionar"
 
 #: View/Ocrs/ocr_completed_process.ctp:59
 msgid ""
+"Congratulations for having successfully completed your registration process "
+"on the selected platforms. As soon as posible, they will contact you to "
+"proceed with the activation of your accounts, providing you the username and "
+"password. Estimated time it's between 24H and 48H."
+msgstr ""
 "Felicidades ha finalizado existosamente todo su proceso de registro en las "
 "plataformas seleccionadas. En breve  se pondrán en contacto con usted para "
 "proceder a la activación de sus cuentas, facilitándole login y contraseña. "
-"El tiempo estimado está comprendido entre 24h y 48h hábiles"
-msgstr ""
+"El tiempo estimado está comprendido entre 24h y 48h hábiles."
 
 #: View/Ocrs/ocr_investor_confirm_modal.ctp:181
 msgid ""
-"Para finalizar con el proceso de alta de sus plataformas, le informarmos que "
+"To complete the registration process of your selected platforms, we will "
+"inform you that Winvestify meets your demand by providing to the requested "
+"platforms all the information and documentation provided by you (name, "
+"surname, DNI / NIE, bank account and other information that may allow us to "
+"identify you as a user). By accepting, you confirm that you have read and "
+"accept the conditions of this service."
+msgstr ""
+"Para finalizar con el proceso de alta de sus plataformas, le informamos que "
 "Winvestify atendiendo a su petición facilitará a las plataformas solicitadas "
 "toda la información y documentación aportada por usted  (nombre, apellidos, "
 "DNI/NIE, cuenta bancaria y otros datos que puedan permitir identificarle "
 "como usuario). Mediante la aceptación de estas condiciones, usted confirma "
 "que ha leído y acepta las condiciones de este servicio."
-msgstr ""
 
 #: View/Ocrs/ocr_investor_confirm_modal.ctp:190
 msgid ""
+"Do you really want to cancel the process? All your data and documentation "
+"will be deleted."
+msgstr ""
 "¿Está seguro de que quiere cancelar el proceso? Todos sus datos almacenados "
 "y documentos serán eliminados."
-msgstr ""
 
 #: View/Ocrs/ocr_investor_confirm_modal.ctp:191
-msgid "Sí, quiero CANCELAR el proceso"
-msgstr ""
+msgid "Yes, I want to CANCEL the process"
+msgstr "Sí, quiero CANCELAR el proceso"
 
 #: View/Ocrs/ocr_investor_confirm_modal.ctp:228
-msgid "Gracias por actualizar los datos erróneos que hemos detectado."
-msgstr ""
+msgid "Thank you for updating the detected incorrect data."
+msgstr "Gracias por actualizar los datos incorrectos."
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:142
 msgid "Your data is incorrect."
@@ -2607,14 +2614,14 @@ msgid "Cant go back"
 msgstr ""
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:351
-msgid ""
-"Para continuar con su proceso de registro debe rellenar las siguientes "
-"casillas:"
+msgid "To continue the registration process you must fill the next form:"
 msgstr ""
+"Para continuar con el proceso de registro debe rellenar el siguiente "
+"formulario:"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:353
-msgid "(Todos los campos son obligatorios)"
-msgstr ""
+msgid "(All fields are required)"
+msgstr "(Todos los campos son obligatorios)"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:744
 msgid "I use my company as investment vehicle"
@@ -2646,11 +2653,11 @@ msgid ""
 msgstr ""
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:856
-msgid "Maximun File Size: 10MB"
+msgid "Maximum File Size: 10MB"
 msgstr "Tamaño máximo de archivo: 10MB"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:857
-msgid "Permitted Formats:"
+msgid "Allowed Formats:"
 msgstr "Formatos permitidos:"
 
 #: View/Ocrs/ocr_investor_data_panel.ctp:882
@@ -2680,24 +2687,32 @@ msgid ""
 msgstr ""
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:312
-msgid "Sus plataformas seleccionadas:"
-msgstr ""
+msgid "Your selected platforms:"
+msgstr "Tus plataformas seleccionadas:"
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:337
 msgid "Go!"
 msgstr "Siguiente"
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:384
-msgid "Seleccione las plataformas en las que registrarse:"
-msgstr ""
+msgid "Select the platforms to register:"
+msgstr "Seleccione las plataformas en las que registrarse:"
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:388
-msgid "Para poder seleccionar cualquiera de las plataformas, es necesario "
-msgstr ""
+msgid "To select any platform, you need to"
+msgstr "Para poder seleccionar cualquiera de las plataformas, es necesario "
 
 #: View/Ocrs/ocr_investor_platform_selection.ctp:389
-msgid "aceptar su política de privacidad y sus términos  y condiciones de uso "
-msgstr ""
+msgid "agree to their privacy policy and terms and conditions"
+msgstr "aceptar su política de privacidad y sus términos  y condiciones de uso"
+
+#: View/Ocrs/ocr_investor_platform_selection.ctp:414
+msgid "I have read and agree the"
+msgstr "He leído y acepto"
+
+#: View/Pages/about_us.ctp:24
+msgid "Our history"
+msgstr "Nuestra historia"
 
 #: View/Pages/faq.ctp:49
 msgid "Frequently Asked Questions"
@@ -3311,6 +3326,14 @@ msgstr ""
 msgid "Eduardo Ibañez"
 msgstr ""
 
+#: View/Pages/team.ctp:149
+msgid "Ana Marín"
+msgstr ""
+
+#: View/Pages/team.ctp:150
+msgid "Costumer Care"
+msgstr ""
+
 #: View/Polls/store_poll_data.ctp:101
 msgid "Your rating has been saved"
 msgstr "Su rating ha sido guardado"
@@ -3403,15 +3426,6 @@ msgstr "¿Ha olvidado su contraseña?"
 #: View/Users/register_panel_a.ctp:333
 msgid "All fields are required"
 msgstr "Todos los campos son obligatorios"
-
-#: View/Users/register_panel_a.ctp:371
-msgid ""
-"Your password should be at least 8 characters long and contain uppercase and "
-"lowercase characters and a number."
-msgstr ""
-"Formato incorrecto. Su contraseña debe contener un mínimo de 8 caracteres, "
-"contener caracteres en minúscula, mayúscula y algún número.\n"
-" "
 
 #: View/Users/register_panel_a.ctp:433
 msgid "Mobile Phone"
@@ -3647,7 +3661,7 @@ msgstr "Email no válido"
 
 #: Model/Ocr.php:validation for field investor_iban
 msgid "The IBAN number is not correct"
-msgstr ""
+msgstr "El IBAN es incorrecto"
 
 #: Model/Ocrfile.php:validation for field bill_number
 msgid "Number validation error"
@@ -3668,8 +3682,20 @@ msgid ""
 "contain uppercase and lowercase characters and a number."
 msgstr ""
 "Formato incorrecto. Su contraseña debe tener un mínimo de 8 caracteres, "
-"contener caracteres menusculas y mayusculas y un número\n"
-" "
+"contener caracteres minúsculas y mayúsculas y un número. "
+
+#~ msgid "About winvestify"
+#~ msgstr "Sobre Winvestify"
+
+#~ msgid ""
+#~ "Your password should be at least 8 characters long and contain uppercase "
+#~ "and lowercase characters, a number and another symbol"
+#~ msgstr ""
+#~ "Su contraseña debe contener al menos 8 caracteres, letras mayúsculas y "
+#~ "minúsculas, un número y otro símbolo"
+
+#~ msgid "Los datos de acceso se corresponden con la plataforma a enlazar"
+#~ msgstr "Los datos de acceso se corresponden con la plataforma a enlazar"
 
 #~ msgid "Basic Rules for Investing in P2P Lending"
 #~ msgstr "Reglas básicas para invertir en Crowdlending"
