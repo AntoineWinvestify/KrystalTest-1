@@ -463,6 +463,20 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         
     }
     
+    function setCallbacks($callbacks) {
+        $this->callbacks = $callbacks;
+    }
+
+    function setCompanyHandle($companyHandle) {
+        $this->companyHandle = $companyHandle;
+    }
+
+    function setMyParser($myParser) {
+        $this->myParser = $myParser;
+    }
+
+
+    
 }
 
 
