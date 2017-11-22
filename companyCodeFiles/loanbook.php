@@ -219,15 +219,15 @@ class loanbook extends p2pCompany {
                         }
                     }
                     $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
-                    /* foreach ($companyBackup as $inversionBackup) { //If completed and already in db, dont save
-                      if ($tempArray['marketplace_subscriptionProgress'] == 10000 && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
-                      $readController++;
-                      $investmentController = true;
-                      } else if ($tempArray['marketplace_subscriptionProgress'] == $inversionBackup['Marketplacebackup']['marketplace_subscriptionProgress'] && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference']) {
-                      unset($tempArray);
-                      continue;
-                      }
-                      } */
+                    foreach ($companyBackup as $inversionBackup) { //If completed and already in db, dont save
+                        if ($tempArray['marketplace_subscriptionProgress'] == 10000 && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                            $readController++;
+                            $investmentController = true;
+                        } else if ($tempArray['marketplace_subscriptionProgress'] == $inversionBackup['Marketplacebackup']['marketplace_subscriptionProgress'] && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference']) {
+                            unset($tempArray);
+                            continue;
+                        }
+                    }
 
 
                     if ($investmentController) { //Don't save a already existing investment
