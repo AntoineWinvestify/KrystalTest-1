@@ -61,18 +61,23 @@ class TestsController extends AppController {
     }
 
     function arrayToExcel(/*$array, $excelName*/) {
-        $array = array(1,2,3,4,5,6,7,8,9,11,12,13,14,15,16);
+        $array = array("market" => 1,"q" => 2,"a" => 3,"s" => 4,"d" => 5,"f" => 6,"e" => 7,"r" => 8,"t" => 9,"y" => 11,"u" => 12,"i" => 13,"o" => 14,"p" => 15,"l" => 16);
         $excelName = "prueba";
+        $keyArray = array();
         App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
         App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 
+        foreach($array as $key => $val){
+            $keyArray[] = $key;
+        }
 
         $filter = null;
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->getProperties()->setTitle($excelName);
 
         $objPHPExcel->setActiveSheetIndex(0)
-            ->fromArray($array, NULL, 'A1');
+            ->fromArray($keyArray, NULL, 'A1')
+            ->fromArray($array, NULL, 'A2');
 
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $excelName . '.xls"');

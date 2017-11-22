@@ -141,7 +141,7 @@ var $validate = array(
     /**
      * Get defaulted percent with the Outstanding principal.
      * 
-     * @param Int $linkedaaccount Link account id 
+     * @param Int $linkedaccount Link account id 
      */
     public function getDefaultedByOutstanding($linkedaccount) {
 
