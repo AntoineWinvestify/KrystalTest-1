@@ -150,12 +150,18 @@ class finbee extends p2pCompany {
                         "functionName" => "getAmount",
                     ]
                 ],
+                "E" => [
+                    "name" => "investment_originalDuration"
+                ],
                 "H" => [
                     "name" => "investment_originalState",
                 ]
                 
             ],
             [
+                "A" => [
+                    "name" => "investment_loanId"
+                ],
                 "B" => [
                     [
                         "type" => "investment_investmentDate", // Winvestify standardized name 
@@ -175,16 +181,44 @@ class finbee extends p2pCompany {
                         ],
                         "functionName" => "extractDataFromString",
                         
-                    ],
-                    [
-                        "type" => "investment_loanId",
-                        "inputData" => [
-                            "input2" => "",
-                            "input3" => "",
-                        ],
-                        "functionName" => "extractDataFromString",
                     ]
                 ],
+                "D" => [
+                    "name" => "investment_originalDuration"
+                ],
+                "E" => [
+                    [
+                        "type" => "investment_nominalInterestRate",                                            // This is an "empty variable name". So "type" is
+                        "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']   
+                            "input2" => "",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                            "input3" => ".",                                        // and its content is the result of the "getAmount" method
+                            "input4" => 2
+                        ],
+                        "functionName" => "getAmount",
+                    ]
+                ],
+                "F" => [
+                    [
+                        "type" => "investment_myInvestment",                        // Winvestify standardized name   OK
+                        "inputData" => [
+                                    "input2" => "",
+                                    "input3" => ".",
+                                    "input4" => 2
+                                    ],
+                        "functionName" => "getAmount",
+                    ]
+                ],
+                "G" => [
+                    [
+                        "type" => "investment_capitalRepaymentFromP2P",                        // Winvestify standardized name   OK
+                        "inputData" => [
+                                    "input2" => "",
+                                    "input3" => ".",
+                                    "input4" => 2
+                                    ],
+                        "functionName" => "getAmount",
+                    ]
+                ]
             ],
             [
                 "B" => [
@@ -280,14 +314,14 @@ class finbee extends p2pCompany {
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
                 //'separatorChar' => ";",
-                'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter as prime index.
+                'sortParameter' => array("investment_debtor"),   // used to "sort" the array and use $sortParameter as prime index.
                 'sheetName' => 'Active Loans'
             ],
             [
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
                 //'separatorChar' => ";",
-                'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter as prime index.
+                'sortParameter' => array("investment_debtor"),   // used to "sort" the array and use $sortParameter as prime index.
                 'sheetName' => 'Active Loan Slices'
             ],
             /*[
