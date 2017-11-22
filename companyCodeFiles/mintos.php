@@ -172,8 +172,22 @@ class mintos extends p2pCompany {
                 [
                     "type" => "currency",                                       // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
-                ]
-            ],
+                ],
+                [
+                    "type" => "testing",                                        // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "#current.internalName",            // copying the "internalName" = Winvestify concept
+                                ],
+                    "functionName" => "getDefaultValue",
+                ],
+                [
+                    "type" => "conceptlables",                                  // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",       // get Winvestify concept
+                                ],
+                    "functionName" => "getDefaultValue",
+                ]                
+             ],
         ];
 
     protected $valuesInvestment = [
@@ -365,7 +379,7 @@ class mintos extends p2pCompany {
                 [
                     "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
                     "inputData" => [
-				"input2" => 2,                                  // set to "ACTIVE"
+				"input2" => "#current.investment_originalState",                                  // set to "ACTIVE"
                                 ],
                     "functionName" => "getDefaultValue",
                 ]
@@ -473,10 +487,11 @@ class mintos extends p2pCompany {
         "investment" => [
             "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
             "investment_loanType" => "translateLoanType",
-            "investment_amortizationMethod" => "translateAmortizationMethod",            
+            "investment_amortizationMethod" => "translateAmortizationMethod",  
+            "investment_statusOfLoan" => "translateOriginalLoanState"
         ],
         "expiredLoan" => [
-            "investment_stateOfLoan" => "translateOriginalLoanState"
+            "investment_originalState" => "translateOriginalLoanState"
         ]
     ];  
     
@@ -489,7 +504,7 @@ class mintos extends p2pCompany {
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                                 'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
                                  );
     protected $amortizationConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -1077,8 +1092,9 @@ class mintos extends p2pCompany {
      * @return int                  Winvestify standardized investmentBuyBackGuarantee
      */
     public function translateOriginalLoanState($inputData) {
+
         switch ($inputData) {
-            case "current":
+            case "Current":
                 $result = WIN_LOANSTATUS_ACTIVE;
                 break;
             case "1-15 Days Late":
@@ -1099,7 +1115,7 @@ class mintos extends p2pCompany {
             case "Finished prematurely": 
                 $result = WIN_LOANSTATUS_FINISHED;
                 break;             
-        }        
+        }   
         return $result; 
     }       
   
