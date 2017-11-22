@@ -1484,7 +1484,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $sheet = $objPHPExcel->getActiveSheet();
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
-            echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+            echo __FILE__ . " " . __LINE__ . " Number of rows = $highestRow and number of Columns = $highestColumn \n";
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
             $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         }
