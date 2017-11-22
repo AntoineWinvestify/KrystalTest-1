@@ -57,20 +57,14 @@ var $validate = array(
 );
 
 
-   /*
-     * **** CALLBACK FUNCTIONS *****
-     */
+
 
     /*
      * 
-     * Update the corresponding fields in the 'paymenttotal' table 
-     * here I should execute the rules for keeping up to date the information of cash in the platform
-     * i.e. 
-     * net deposits (cash in platform) = total deposits - withdrawals
-     * specific rules if fields globalcashflowdata_platformDeposits and globalcashflowdata_platformWithdrawals
      */
     function afterSave($created, $options = array()) {
 
+    // RULE: net desposits => globalcashflowdata_platformDeposits - globalcashflowdata_platformWithdrawals   
         if ($created) {		
             $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
             $userInvestmentdataId = $this->data['Globalcashflowdata']['userinvestmentdata_id'];
@@ -97,10 +91,12 @@ var $validate = array(
                         );
             
             if (!$this->Userinvestmentdata->save($temp, $validate = true)) {
-                echo "WRITE OCCURED IN USERINVESTMENTDATA"; 
+                echo "WRITE ERROR OCCURED IN USERINVESTMENTDATA"; 
             } 
  	}
     }  
+ 
+   
     
     
 }
