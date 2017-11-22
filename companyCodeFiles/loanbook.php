@@ -137,7 +137,7 @@ class loanbook extends p2pCompany {
                     $tempArray['marketplace_country'] = 'ES';
                     $loanData = $loan->getElementsByTagName('div');
                     foreach ($loanData as $index => $datum) {
-                        //echo HTML_ENDOFLINE . $index . " => " . $datum->nodeValue . HTML_ENDOFLINE;
+                        echo HTML_ENDOFLINE . $index . " => " . $datum->nodeValue . HTML_ENDOFLINE;
                         switch ($index) {
                             case 0:
                                 //Rating
@@ -183,22 +183,51 @@ class loanbook extends p2pCompany {
                                     $tempArray['marketplace_statusLiteral'] = 'En proceso';
                                 }
                                 break;
+                            //SECTOR CAN CHANGE POSITION, WE NEED FIND THAT POSITION
+                            case 20:
+                                echo '20 Sector ' . $datum->nodeValue;
+                                $this->conditon20 = false;
+                                if (strpos(trim($datum->nodeValue), 'ector') !== false) {
+                                    $this->conditon20 = true;
+                                }
+                                break;
+                            case 21:
+                                $this->conditon21 = false;
+                                if (strpos(trim($datum->nodeValue), 'ector') !== false) {
+                                    $this->conditon21 = true;
+                                }
+                                if ($this->conditon20) {
+                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                }
+                                break;
                             case 22:
-                                $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                if ($this->conditon21) {
+                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                }
+                                break;
+                            case 24:
+                                $this->conditon24 = false;
+                                if (strpos(trim($datum->nodeValue), 'ector') !== false) {
+                                    $this->conditon24 = true;
+                                }
+                                break;
+                            case 25:
+                                if ($this->conditon24) {
+                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                }
                                 break;
                         }
                     }
-
-                    foreach ($companyBackup as $inversionBackup) { //If completed and already in db, dont save
-                        if ($tempArray['marketplace_subscriptionProgress'] == 10000 && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
-                            $readController++;
-                            $investmentController = true;
-                        } else if ($tempArray['marketplace_subscriptionProgress'] == $inversionBackup['Marketplacebackup']['marketplace_subscriptionProgress'] && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference']) {
-                            unset($tempArray);
-                            continue;
-                        }
-                    }
                     $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
+                    /* foreach ($companyBackup as $inversionBackup) { //If completed and already in db, dont save
+                      if ($tempArray['marketplace_subscriptionProgress'] == 10000 && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
+                      $readController++;
+                      $investmentController = true;
+                      } else if ($tempArray['marketplace_subscriptionProgress'] == $inversionBackup['Marketplacebackup']['marketplace_subscriptionProgress'] && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference']) {
+                      unset($tempArray);
+                      continue;
+                      }
+                      } */
 
 
                     if ($investmentController) { //Don't save a already existing investment
@@ -259,15 +288,18 @@ class loanbook extends p2pCompany {
             $tempArray['marketplace_loanReference'] = $loanId;
 
             $divs = $this->getElements($dom, 'div', 'class', 'row');
-             /*foreach ($divs as $keyDiv => $div) {
-                echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
-             }*/
-            $tempValues = explode(" ", $divs[6]->nodeValue);
-            prin_r($tempValues);
-            $tempArray['marketplace_rating'] = trim($tempValues[0]);
-            $tempArray['marketplace_interestRate'] = $this->getPercentage($tempValues[1]);
-            $tempArray['marketplace_timeLeft'] = trim($tempValues[5]);
+            /* foreach ($divs as $keyDiv => $div) {
+              echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
+              } */
+            $subdivs = $divs[6]->getElementsByTagName('div');
+            /* foreach ($subdivs as $keyDiv => $div) {
+              echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
+              } */
+            $tempArray['marketplace_rating'] = trim($subdivs[0]);
+            $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]);
+            $tempArray['marketplace_timeLeft'] = trim($subdivs[8]);
             $tempArray['marketplace_subscriptionProgress'] = 10000;
+
             $table = $dom->getElementById("table-1");
             $tds = $table->getElementsByTagName('td');
             foreach ($tds as $keyTd => $td) {
