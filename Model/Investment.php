@@ -109,7 +109,7 @@ var $validate = array(
     }
 
     /**
-     * Get defaulted investment of a linked account
+     * Get defaulted investment of a linked account and save delayed days
      * 
      * @param Int $linkedaaccount Link account id 
      * @return array Defaulted inversions of a linked account with the defaulted days
@@ -117,8 +117,9 @@ var $validate = array(
     public function getDefaulted($linkedaccount) {
 
         $today = date("Y-m-d");
-
-        //Get defaulted investment and days
+        /*************************************/
+        /* Get defaulted investment and days */
+        /*************************************/
         $defaultedInvestments = $this->find("all", array(
             "fields" => array("id", "investment_loanId", "investment_outstandingPrincipal", "investment_nextPaymentDate", "investment_statusOfLoan"),
             "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_nextPaymentDate < " => $today, "investment_statusOfLoan" => 2),
@@ -131,7 +132,7 @@ var $validate = array(
             $defaultedInvestments[$key]['Investment']['investment_defaultedDays'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
         }
 
-        $this->saveMany($defaultedInvestments);
+        $this->saveMany($defaultedInvestments); //Save delayed days
         
        // print_r($defaultedInvestments);
         return $defaultedInvestments;
@@ -220,7 +221,7 @@ var $validate = array(
      * 	Format the date
      *
      */
-    public function afterFind1($results, $primary = false) {
+    public function afterFind($results, $primary = false) {
 
 
         return $results;
