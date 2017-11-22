@@ -46,11 +46,17 @@
  * Defaulted percent fix
  * Undefined logo and name in single pfp data javascript fixed.
  * 
+ * [2017-11-16] version 0.8
+ * Ajax moved to js file.
+ * 
+ * 
  */
 ?>
+
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 <script type="text/javascript" src="/js/accounting.min.js"></script>
+<script type="text/javascript" src="/js/view/dashboard.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 
 <script>
@@ -85,6 +91,8 @@
     }
     
     $(function (){
+        overviewDataJS();
+        
         //Click on Account Linking btn
         $(document).on("click", "#btnAccountLinking", function(){
             counterLinkAccount = 0;
@@ -111,21 +119,7 @@
             window.location.replace('/ocrs/ocrInvestorView');
         });
         
-        //Click on platform logo
-        $(document).on("click", ".logo", function(){ 
-            id = $(this).attr("id").split(" ")[0];
-            name = $("#logo"+id).attr("alt");
-            var params = {
-                id : $(this).attr("id"),
-                logo : $("#logo"+id).attr("src"),
-                name : name,
-            };
-            ga_company(id, name);
-            var data = jQuery.param(params);
-            link = $(this).attr("href");
-            getServerData(link, data, successAjax, errorAjax);
-               
-        });
+        
         
         <?php //Tooltip clicks ?>
         $(".logo").hover(function() {
@@ -169,16 +163,7 @@
         });
     });
     
-    function successAjax(result){
-       // alert("ok " + result);
-       $(".dashboardGlobalOverview").fadeOut();
-       $(".ajaxResponse").html(result);
-       
-    }
-    
-    function errorAjax(result){
-         //alert("not ok " + result);
-    }
+   
     
 </script>
 <style>
