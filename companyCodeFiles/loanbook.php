@@ -1194,8 +1194,8 @@ class loanbook extends p2pCompany {
 
                 $this->idForSwitch++;
                 $url = array_shift($this->urlSequence);
-                $dateInit = strtotime($this->dateInit);
-                $dateFinish = strtotime($this->dateFinish);
+                $dateInit = strtotime($this->dateInit) * 1000;
+                $dateFinish = strtotime($this->dateFinish) * 1000;
                 $url = strtr($url, array('{$date1}' => $dateInit)); //Date in milliseconds from 1970 
                 $url = strtr($url, array('{$date2}' => $dateFinish));
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
