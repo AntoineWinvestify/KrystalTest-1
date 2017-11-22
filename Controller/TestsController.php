@@ -57,7 +57,29 @@ class TestsController extends AppController {
 
 
         //$this->Security->requireAuth();
-        // $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview"));
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel"));
+    }
+
+    function arrayToExcel(/*$array, $excelName*/) {
+        $array = array(1,2,3,4,5,6,7,8,9,11,12,13,14,15,16);
+        $excelName = "prueba";
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+
+
+        $filter = null;
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getProperties()->setTitle($excelName);
+
+        $objPHPExcel->setActiveSheetIndex(0)
+            ->fromArray($array, NULL, 'A1');
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $excelName . '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+        exit;
     }
 
     /**
@@ -167,23 +189,22 @@ class TestsController extends AppController {
                 }
                 if ($key == "linkedaccount_id") {
                     //Get the pfp id of the linked acount
-                    $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData),array('company_id'));
+                    $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData), array('company_id'));
                     $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
                     $globalData[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
                     //Get pfp logo and name
-                    $pfpOtherData = $this->Company->getData(array('id' => $pfpId),array("company_logoGUID", "company_name"));
+                    $pfpOtherData = $this->Company->getData(array('id' => $pfpId), array("company_logoGUID", "company_name"));
                     $globalData[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
                     $globalData[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                 }
             }
         }
 
-        
+
         //Set global data
         $this->set('global', $global);
         //Set an array with individual info
         $this->set('individualInfoArray', $globalData);
-        
     }
 
     function dashboardMyInvestments() {
