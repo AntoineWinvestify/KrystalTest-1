@@ -165,6 +165,8 @@ class loanbook extends p2pCompany {
                                 $tempArray['marketplace_amount'] = $this->getMonetaryValue($datum->getElementsByTagName('span')[2]->nodeValue);
                                 //Location
                                 $tempArray['marketplace_requestorLocation'] = trim($datum->getElementsByTagName('span')[3]->nodeValue);
+                                //Loan id 
+                                $tempArray['marketplace_loanReference'] = trim($datum->getElementsByTagName('span')[4]->nodeValue) . " " . $a->getAttribute('data-id');
                                 //Progress
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($datum->getElementsByTagName('span')[5]->nodeValue);
                                 //print_r($tempArray);
@@ -192,11 +194,11 @@ class loanbook extends p2pCompany {
                             $readController++;
                             $investmentController = true;
                         } else if ($tempArray['marketplace_subscriptionProgress'] == $inversionBackup['Marketplacebackup']['marketplace_subscriptionProgress'] && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference']) {
-                            $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                             unset($tempArray);
+                            continue;
                         }
                     }
-
+                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
 
 
                     if ($investmentController) { //Don't save a already existing investment
@@ -249,7 +251,7 @@ class loanbook extends p2pCompany {
         //Read investment info
         foreach ($investmentDeletedList as $loanId) {
             echo "Next Investment Url: " . $url . $loanId . HTML_ENDOFLINE;
-            $str = $this->getCompanyWebpage($url . $loanId);
+            $str = $this->getCompanyWebpage($url . explode(" ", $loanId)[1]);
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             $dom->loadHTML($str);
@@ -257,7 +259,11 @@ class loanbook extends p2pCompany {
             $tempArray['marketplace_loanReference'] = $loanId;
 
             $divs = $this->getElements($dom, 'div', 'class', 'row');
+             /*foreach ($divs as $keyDiv => $div) {
+                echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
+             }*/
             $tempValues = explode(" ", $divs[6]->nodeValue);
+            prin_r($tempValues);
             $tempArray['marketplace_rating'] = trim($tempValues[0]);
             $tempArray['marketplace_interestRate'] = $this->getPercentage($tempValues[1]);
             $tempArray['marketplace_timeLeft'] = trim($tempValues[5]);
