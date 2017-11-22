@@ -55,18 +55,22 @@ $(document).ready(function() {
             //The names are on an array with a tree structure like the database
             //We do this to have the names on the PO file
             $sectorsName = [
-                [__("Dashboard")],
-                [__("Global Marketplace"), __("My Marketplace") ],
-                [__("Personal Data")],
-                [__("Link Account")],
-                [__("One Click Registration")],
-                [__("New Users")],
-                [__("Bills")],
-                [__("Tallyman")],
-                [__("Bills")],
-                [__("Investor Checking")],
-                [__("Dashboard 2.0"), __("Overview"), __("Initial Panel")],
-                [__("Logout")],
+                "Dashboard" => __("Dashboard"),
+                "Global Marketplace" => __("Global Marketplace"),
+                "My Marketplace" => __("My Marketplace"),
+                "Personal Data" => __("Personal Data"),
+                "Link Account" => __("Link Account"),
+                "One Click Registration" => __("One Click Registration"),
+                "New Users" => __("New Users"),
+                "Bills" => __("Bills"),
+                "Tallyman" => __("Tallyman"),
+                "Investor Checking" => __("Investor Checking"),
+                "Dashboard 2.0" => __("Dashboard 2.0"),
+                "Overview" => __("Overview"),
+                "Initial Panel" => __("Initial Panel"),
+                "Logout" => __("Logout")
+                //Bills is repeated
+                //[__("Bills")],
             ];
             
             
@@ -85,11 +89,9 @@ $(document).ready(function() {
                     $sectorActual = $sector["Sector"]["sectors_father"];
                 }
                 if ($sector["Sector"]["sectors_subSectorSequence"] == 1) {
-                    $name_col = $sector["Sector"]["sectors_father"]-1;
-                    $name_row = $sector["Sector"]["sectors_subSectorSequence"]-1;
                     echo "<a href='". __($sector["Sector"]["sectors_licontent"]) . "'>";
                     echo "<i class='". __($sector["Sector"]["sectors_class"])  . "'></i>";
-                    echo "<span>". $sectorsName[$name_col][$name_row] ."</span>";
+                    echo "<span>". $sectorsName[$sector["Sector"]["sectors_name"]] ."</span>";
                     if ($sector["Sector"]["sectors_licontent"] == "#") {
                         $sectorHasChildren = true;
                         ?>
@@ -109,7 +111,7 @@ $(document).ready(function() {
                     $name_row = $sector["Sector"]["sectors_subSectorSequence"]-1;
                     echo "<li><a href='". $sector["Sector"]["sectors_licontent"] . "'>";
                     echo "<i class='". $sector["Sector"]["sectors_class"]  . "'></i>";
-                    echo $sectorsName[$name_col][$name_row];
+                    echo $sectorsName[$sector["Sector"]["sectors_name"]];
                     echo "</a></li>";
                 }
             }
