@@ -129,7 +129,7 @@ var $validate = array(
         foreach ($defaultedInvestments as $key => $defaultedInvestment) {
             //echo strtotime($today) . HTML_ENDOFLINE;
             //echo strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) . HTML_ENDOFLINE;
-            $defaultedInvestments[$key]['Investment']['investment_defaultedDays'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
+            $defaultedInvestments[$key]['Investment']['investment_paymentStatus'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
         }
 
         $this->saveMany($defaultedInvestments); //Save delayed days
@@ -148,7 +148,7 @@ var $validate = array(
         //Get total outstanding principal
         $outstandings = $this->find("all", array(
             "fields" => array("investment_outstandingPrincipal"),
-            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_statusOfLoan" => 2),
+            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE),
             "recursive" => -1,
         ));
 
@@ -176,24 +176,24 @@ var $validate = array(
         $range['total'] = $outstanding;
         //print_r($defaultedInvestments);
         foreach ($defaultedInvestments as $defaultedInvestment) {
-            switch ($defaultedInvestment['Investment']['investment_defaultedDays']) {
+            switch ($defaultedInvestment['Investment']['investment_paymentStatus']) {
                 case ($defaultedInvestment['Investment']['defaultedTime'] > 90):
                     $value[">90"] = $value[">90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range[">90"] = round(($value[">90"] / $outstanding) * 100, 2);
                     break;
-                case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 60):
+                case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 60):
                     $value["61-90"] = $value["61-90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range["61-90"] = round(($value["61-90"] / $outstanding) * 100, 2);
                     break;
-                case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 30):
+                case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 30):
                     $value["31-60"] = $value["31-60"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range["31-60"] = round(($value["31-60"] / $outstanding) * 100, 2);
                     break;
-                case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 7):
+                case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 7):
                     $value["8-30"] = $value["8-30"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range["8-30"] = round(($value["8-30"] / $outstanding) * 100, 2);
                     break;
-                case ($defaultedInvestment['Investment']['investment_defaultedDays'] > 0):
+                case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 0):
                     $value["1-7"] = $value["1-7"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range["1-7"] = round(($value["1-7"] / $outstanding) * 100, 2);
                     break;

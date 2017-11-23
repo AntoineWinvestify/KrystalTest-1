@@ -84,7 +84,7 @@ class Dashboard2sController extends AppController {
 
         // Get loans // 
         //$activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
-        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_defaultedDays >" => 90), array("*"));
+        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90), array("*"));
         //Set result
         $result = array(true, $dataResult);
         $this->set('companyInvestmentDetails', $result);
@@ -130,7 +130,7 @@ class Dashboard2sController extends AppController {
         }
         
         $linkedAccount = $this->request->data['id']; //Link account id
-        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_defaultedDays >" => 90), array("*"));
+        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90), array("*"));
        
         if(!empty($defaultedInvestments)){
             $this->set('defaultedInvestments', [1,$defaultedInvestments]);
@@ -175,21 +175,27 @@ class Dashboard2sController extends AppController {
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                         break;
-                    case "userinvestmentdata_totalVolume":
+                    /*case "userinvestmentdata_totalVolume":
                         //Get global total volume
                         $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                        break;
-                    case "userinvestmentdata_investedAssets":
+                        break;*/
+                    case "userinvestmentdata_outstandingPrincipal":
                         //Get global  active in invesment
                         $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
+                        //Get global total volume
+                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                         break;
                     case "userinvestmentdata_reservedAssets":
                         //Get global reserved funds
                         $global['reservedFunds'] = bcadd($global['reservedFunds'], $individualData, 16);
+                        //Get global total volume
+                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                         break;
                     case "userinvestmentdata_cashInPlatform":
                         //Get global wallet
                         $global['cash'] = bcadd($global['cash'], $individualData, 16);
+                        //Get global total volume
+                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                         break;
                     case "userinvestmentdata_numberActiveInvestments":
                         //get global active invesment:
