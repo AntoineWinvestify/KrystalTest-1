@@ -420,22 +420,6 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
-                            
-                            
-                            
-                            
-
-                     /*       
-                            
-                            $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = 
-                                    $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 
-                                    $database[$dbTable][$transactionDataKey], 
-                                    16);
-                   */
-                       
-                           
-
-
 
                             echo "------>  changing state of $transactionDataKey [index = " . $tempResult['internalIndex'] . "] to DONE\n";
                             $this->variablesConfig[$tempResult['internalIndex']]['state'] = WIN_FLOWDATA_VARIABLE_DONE;  // Mark done
