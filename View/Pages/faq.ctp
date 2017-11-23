@@ -29,6 +29,7 @@
     }
     .questionTitle {
         padding-top: 20px;
+        cursor: pointer;
     }
 </style>
 <script>
