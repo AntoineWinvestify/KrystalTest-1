@@ -52,7 +52,7 @@ $(document).ready(function() {
             </li>
             <?php
             
-            //The names are on an array with a tree structure like the database
+            //The names are on an array base on the sector_name in database
             //We do this to have the names on the PO file
             $sectorsName = [
                 "Dashboard" => __("Dashboard"),
