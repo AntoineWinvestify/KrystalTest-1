@@ -608,8 +608,8 @@ class finanzarel extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
                 break;
-            case 8:
-                                if (!$this->verifyFileIsCorrect()) {
+            case 9:
+                if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 return $this->tempArray;
