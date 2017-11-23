@@ -27,7 +27,7 @@
  */
 class winFormulas {
     
-    protected $formula_A = [
+    protected $variablesFormula_A = [
         "A" => [
             [
                 "type" => "paymenttotal_interestGrossIncome",
@@ -92,5 +92,8 @@ class winFormulas {
         ]
     ];
     
-    
+    protected $configFormula_A = [
+        ["A", "B", "substract"],
+        [""]
+    ];
 }
