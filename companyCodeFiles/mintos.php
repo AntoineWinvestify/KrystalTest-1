@@ -174,18 +174,11 @@ class mintos extends p2pCompany {
                     "functionName" => "getCurrency",
                 ],
                 [
-                    "type" => "testing",                                        // Winvestify standardized name  OK
+                    "type" => "conceptChars",                                   // Winvestify standardized name
                     "inputData" => [
-				"input2" => "#current.internalName",            // copying the "internalName" = Winvestify concept
+				"input2" => "#current.internalName",            // get Winvestify concept
                                 ],
-                    "functionName" => "getDefaultValue",
-                ],
-                [
-                    "type" => "conceptlables",                                  // Winvestify standardized name
-                    "inputData" => [
-				"input2" => "#current.internalName",       // get Winvestify concept
-                                ],
-                    "functionName" => "getDefaultValue",
+                    "functionName" => "getConceptChars",
                 ]                
              ],
         ];
@@ -382,11 +375,16 @@ class mintos extends p2pCompany {
 				"input2" => "#current.investment_originalState",                                  // set to "ACTIVE"
                                 ],
                     "functionName" => "getDefaultValue",
-                ]
-             ],
-        
-        
-        
+                ],
+                [
+                    "type" => "investment_typeOfInvestment",                    // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => 99,                                 // set to "Not provided by P2P
+                                ],
+                    "functionName" => "getDefaultValue",
+                
+                ],
+            ]
         ];
 
     protected $valuesAmortizationTable = [
@@ -1042,7 +1040,7 @@ class mintos extends p2pCompany {
      * @return int                  Winvestify standardized type of investment
      */
     public function translateTypeOfInvestment($inputData) { //We don't have this in mintos
-
+ 
     }
     
     /**
