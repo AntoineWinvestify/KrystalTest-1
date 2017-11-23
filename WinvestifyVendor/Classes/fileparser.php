@@ -590,15 +590,27 @@ protected $countries = [
         
         switch($extension) {
             case "xlsx":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing xlsx file";
+                }
                 $tempArray = $this->analyzeFileExcel($file, $configuration);
                 break;
             case "csv":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing csv file";
+                }
                 $tempArray = $this->analyzeFileCSV($file, $configuration);
                 break;
             case "json":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing json file";
+                }
                 $tempArray = $this->analyzeFileJson($file, $configuration);
                 break;
             case "html":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing html file";
+                }
                 $tempArray = $this->analyzeFileHtml($file, $configuration);
                 break;
         }
