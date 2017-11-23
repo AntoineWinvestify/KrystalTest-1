@@ -177,7 +177,7 @@ var $validate = array(
         //print_r($defaultedInvestments);
         foreach ($defaultedInvestments as $defaultedInvestment) {
             switch ($defaultedInvestment['Investment']['investment_paymentStatus']) {
-                case ($defaultedInvestment['Investment']['defaultedTime'] > 90):
+                case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 90):
                     $value[">90"] = $value[">90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range[">90"] = round(($value[">90"] / $outstanding) * 100, 2);
                     break;

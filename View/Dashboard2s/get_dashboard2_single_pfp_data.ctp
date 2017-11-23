@@ -236,7 +236,7 @@ echo $companyInvestmentDetails[0];
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Total Volume, which is not invested in assets and therefore does not yield any interest currently')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
-                                                        <td class="right"><?php echo __('25%') ?></td>
+                                                        <td class="right"><?php echo round(bcmul(bcdiv($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $total,16), 100, 16), 2, PHP_ROUND_HALF_UP) . '%' ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawls from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
@@ -306,7 +306,7 @@ echo $companyInvestmentDetails[0];
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have no payment delays at all')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
-                                                        <td class="right"><?php echo $defaultedRange['current'] . "%"?></td>
+                                                        <td class="right"><?php echo round($defaultedRange['current'], 2) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 16')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('1-7 DPD')?></td>

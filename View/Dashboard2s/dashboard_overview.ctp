@@ -283,7 +283,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Total Volume, which is not invested in assets and therefore does not yield any interest currently')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
-                                                        <td class="right"><?php echo __('25%')?></td>
+                                                        <td class="right"><?php echo round(bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawals from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
