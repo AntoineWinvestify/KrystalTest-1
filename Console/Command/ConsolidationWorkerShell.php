@@ -62,7 +62,18 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
         $index = 0;
         $i = 0;
-        foreach ($data["companies"] as $linkedaccount) {
+        
+        //Get investor ID by queue_userReference
+        //$investorId = $this->investor->find("userReference");
+        
+        
+        $getFormulas = $this->winFormulas();
+        
+        foreach ($getFormulas as $formula) {
+            
+        }
+        
+        /*foreach ($data["companies"] as $linkedaccount) {
             unset($newComp);
             $index++;
             echo "<br>******** Executing the loop **********<br>";
@@ -87,7 +98,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 }
             }
             
-        }
+        }*/
     }
     /**
      * Function to get a value from the database
@@ -144,6 +155,50 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->config['interestPaidGlobal'] = "newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal";
         $this->config['chargeOffGlobal'] = 'userinvestmentdata.userinvestmentdata_myWallet';*/
     }
+    
+    public function doOperationByType($inputA, $inputB, $type) {
+        
+        switch ($type) {
+            case "add":
+                $result = $this->addTwoValues($inputA, $inputB);
+                break;
+            case "substract":
+                $result = $this->subtractTwoValues($inputA, $inputB);
+                break;
+            case "divide":
+                $result = $this->divideTwoValues($inputA, $inputB);
+                break;
+            case "multiply":
+                $result = $this->multiplyTwoValues($inputA, $inputB);
+                break;
+            case "pow":
+                $result = $this->powTwoValues($inputA, $inputB);
+                break;
+        }
+        return $result;
+    }
+    
+    public function addTwoValues($inputA, $inputB) {
+        return bcadd($inputA, $inputB, 2);
+    }
+    
+    public function subtractTwoValues($inputA, $inputB) {
+        return bcsub($inputA, $inputB, 2);
+    } 
+    
+    public function divideTwoValues($inputA, $inputB) {
+        return bcmul($inputA, $inputB, 2);
+    } 
+    
+    public function multiplyTwoValues($inputA, $inputB) {
+        return bcdiv($inputA, $inputB, 2);
+    } 
+    
+    public function powTwoValues($inputA, $inputB) {
+        return bcpow($inputA, $inputB, 2);
+    } 
+    
+    
     
     
 }
