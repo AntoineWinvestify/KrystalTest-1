@@ -1609,7 +1609,7 @@ hr.nomargin {
         and (max-device-width : 1024px) 
         and (orientation : landscape) {
             #features_right {
-                margin-left: 100px !important;
+                margin-left: 50px !important;
             }
             #featuresButton button {
                 margin-left: 260px;
@@ -1626,7 +1626,7 @@ hr.nomargin {
                 width: 90%;
             }
             #schemaText {
-                margin-top: 100px !important;
+                margin-top: 10px !important;
             }
         }
 
@@ -1666,33 +1666,77 @@ hr.nomargin {
                 float:none;
             }
         }
-                                @media (min-width: 1025px) and (max-width: 1200px) {
+        
+        @media (max-width: 992px) {
+            #parallaxFeatures {
+                min-height: 0px;
+            }
+        }
+                                @media (min-width: 1025px) and (max-width: 1200px) and (orientation : landscape) {
                                     #features_right {
-                                        top: 20px !important;
-                                        left: -120px;
+                                        margin-left: 125px !important;
+                                        margin-bottom: -40px;
+                                    }
+                                    .featuresP {
+                                        padding-left: 100px !important;
                                     }
                                     #featuresButton {
                                         margin-top: 100px;
                                         margin-bottom: 40px;
-                                        margin-left: 40px;
+                                        margin-left: 300px;
+                                    }
+                                    .container_features {
+                                        min-height: 900px;
                                     }
                                     .schemaImg {
                                         height: 100%;
-                                        margin-top: -15px;
+                                    }
+                                    #schemaImgDiv {
+                                        height: 400px;
                                     }
                                     .featuresP {
                                         left: 50px;
                                     }
                                     #screen {
-                                        left: -200px !important;
-                                        top: 90px;
+                                        left: 150px !important;
                                     }
                                 }
                                 
-                                @media (min-width: 1205px) {
+            @media (min-width: 1025px) and (max-width: 1200px) and (orientation : portrait) {
+                #features_right {
+                    margin-left: 100px !important;
+                    margin-bottom: -40px;
+                }
+                .featuresP {
+                    padding-left: 100px !important;
+                }
+                #featuresButton {
+                    margin-top: 100px;
+                    margin-bottom: 40px;
+                    margin-left: 275px;
+                }
+                .container_features {
+                    min-height: 400px;
+                }
+                .schemaImg {
+                    height: 100%;
+                }
+                #schemaImgDiv {
+                    height: 400px;
+                }
+                .featuresP {
+                    left: 50px;
+                }
+                #screen {
+                    left: 75px !important;
+                    top: 0px;
+                }
+            }
+                                
+                                @media (min-width: 1200px) {
                                 #features_right {
                                     top: 20px !important;
-                                    left: 0px;
+                                    left: -100px;
                                 }
                                 #featuresButton {
                                     margin-top: 100px;
@@ -1704,10 +1748,18 @@ hr.nomargin {
                                     margin-top: -15px;
                                 }
                                 #screen {
-                                    margin-left: -100px;
+                                    margin-left: -200px;
+                                    top: 100px;
                                 }
                                 #schemaText {
                                     margin-top: 100px !important;
+                                }
+                                .container_features {
+                                    min-height: 50px;
+                                    margin-bottom: 20px;
+                                }
+                                #parallaxFeatures {
+                                    min-height: 560px;
                                 }
                             }
         
@@ -2286,4 +2338,28 @@ hr.specialHr:after {
 
 #schemaCreditL {
     top: 400px;
+}
+
+/* Tooltips Bootstrap customization */
+.tooltip.top .tooltip-inner, .tooltip.right .tooltip-inner {
+    border: 1px solid #87e14b;
+    border-radius: 0px;
+    background-color: rgba(255,255,255,1);
+    color: black;
+    text-align: center;
+    padding: 8px 12px;
+    -webkit-box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15);
+    -moz-box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15);
+    box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15); 
+}
+.tooltip.top .tooltip-arrow, .tooltip.right .tooltip-arrow {
+    background: white;
+    border: 1px solid #87e14b;
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-right: none;
+    border-bottom: none;
+    position: absolute;
+    transform: rotate3d(0, 0, 1, -135deg);
 }

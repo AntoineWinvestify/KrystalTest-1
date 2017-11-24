@@ -147,6 +147,7 @@ class UserDataShell extends AppShell {
         if (!empty($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result,$resultData['payment']['payment_currencyFluctuationPositive'], 16);   
         } 
+
         return $result;
     }
 
@@ -383,7 +384,6 @@ class UserDataShell extends AppShell {
      * 47
      */
     public function calculateLatePaymentFeeIncome(&$transactionData, &$resultData) {
-
         return $transactionData['amount'];
     }
 
@@ -605,9 +605,55 @@ class UserDataShell extends AppShell {
         return $sum;
     }
    
+ 
     
+    /*
+     *  Get the amount which corresponds to the "cost secondary market" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string
+     * 47
+     */
+    public function calculateCostSecondaryMarket(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }    
+ 
+    
+    
+    /*
+     *  Get the amount which corresponds to the "income secondary market" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string
+     * 47
+     */
+    public function calculateIncomeSecondaryMarket(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }     
+
+
+    /*
+     *  Get the amount which corresponds to the "SecondaryMarketInvestment" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string
+     * 47
+     */
+    public function calculateSecondaryMarketInvestment(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }  
     
 }
+
+
+calculateSecondaryMarketInvestment
+
+
+
+
+
+
+
 
 /*
  // these are the total values per PFP

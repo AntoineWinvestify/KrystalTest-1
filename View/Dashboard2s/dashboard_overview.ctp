@@ -271,19 +271,19 @@
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Total nominal value of all assets held in your linked accounts')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
-                                                        <td class="right"><?php echo round($global['investedAssets'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($global['investedAssets'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The part of Invested Assets, which are dedicated to specific loans that are not yet issued')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
-                                                        <td class="right"><?php echo round($global['reservedFunds'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($global['reservedFunds'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total cash balance on all your linked accounts. You should use this balance to invest in assets to reduce Cash Drag')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
-                                                        <td class="right"><?php echo round($global['cash'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($global['cash'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Total Volume, which is not invested in assets and therefore does not yield any interest currently')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
-                                                        <td class="right"><?php echo __('25%')?></td>
+                                                        <td class="right"><?php echo round(bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawals from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
@@ -428,7 +428,7 @@
                         <tbody>
                            <?php //Here go pfp data
                             foreach($individualInfoArray as $individualInfo){ 
-                                $total = round($individualInfo['Userinvestmentdata']['userinvestmentdata_totalVolume'], 2);
+                                $total = round(bcadd(bcadd($individualInfo['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 16), $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedAssets'], 16) , 2, PHP_ROUND_HALF_UP);
                                 ?>
                             <tr>
                                 <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id']  .  " " . $individualInfo['Userinvestmentdata']["id"] ?>" >
@@ -436,7 +436,7 @@
                                 </td>
                                 
                                 <td><?php echo $total . " &euro;"?></td>
-                                <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2) . " &euro;"?></td>
+                                <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2, PHP_ROUND_HALF_UP) . " &euro;"?></td>
                                 <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
                                 <td>12,11</td>
                                 <td>63,22%</td>

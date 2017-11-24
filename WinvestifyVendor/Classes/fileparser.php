@@ -16,8 +16,8 @@
  * 
  * 
  * @author
- * @version 0.5
- * @date  2017-11-11
+ * @version 0.8
+ * @date  2017-11-20
  * @package
  *
  *
@@ -54,10 +54,16 @@
  * Functions getDefaultValue and getCountry added
  *  
  * 2017-11-14           version 0.7
- * Functions fixes
+ * Function fixes
  * extractDataFromString
  * getAmount
  * getCurrency
+ * 
+ * 2017-11-20           version 0.8
+ * Added a new function "getConceptChars"; 
+ * 
+ * 
+ * 
  * 
  * Pending:
  * chunking, csv file check
@@ -122,7 +128,10 @@ class Fileparser {
  // AM_TABLE        => collect amortization table. This might be a brandnew table or an update of a table for 
  //                 an already existing loan if a extra participation is bought
  // LOAN_FINISHED   => The last payment on a loan has happened and the loan is fully repaid and finished
-    
+ /*
+  * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
+  * array can be done using both "detail" or "type" as search key
+  */   
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
@@ -141,14 +150,14 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
-                "labels" => "AM_TABLE"
+                "chars" => "AM_TABLE"
                 ],
             4 => [
                 "detail" => "Secondary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_secondaryMarketInvestment",
-                "labels" => "am_table"
+                "type" => "payment_secondaryMarketInvestment",
+                "chars" => "AM_TABLE"
                 ],
             5 => [
                 "detail" => "Capital_repayment",
@@ -184,7 +193,7 @@ class Fileparser {
                 "detail" => "Delayed_interest_income",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "payment_delayedInterestPayment"          
+                "type" => "payment_delayedInterestIncome"          
                 ],
             11 => [ 
                 "detail" => "Late_payment_fee_income",
@@ -220,7 +229,7 @@ class Fileparser {
                 "detail" => "Income_secondary_market",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "investment_incomeSecondaryMarket"        
+                "type" => "payment_incomeSecondaryMarket"        
                 ],
             17 => [
                 "detail" => "Currency_fluctuation_positive",
@@ -251,7 +260,7 @@ class Fileparser {
                 "detail" => "Cost_secondary_market",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,                
                 "account" => "PL",
-                "type" => "investment_costSecondaryMarket"
+                "type" => "payment_costSecondaryMarket"
                 ],
             23 => [
                 "detail" => "Interest_payment_secondary_market_purchase",
@@ -1544,5 +1553,34 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $input = str_replace($charactersToClean, "", $input);
         return trim($input);
     }
+    
+    
+    
+   /**
+     *
+     * Reads the characteristics of a concept
+     *
+     * @param string   $input       Not relevant
+     * @param string   $search      Can either be the "detail" or the "type" index of the array "tranactionDetails"
+     * 
+     * @return string  space delimited set of characteristics, 0,1 or more
+     *
+     */
+
+    private function getConceptChars($input, $search) {
+        foreach ($this->transactionDetails as $detail) { 
+            if ($detail['detail'] == $search) {
+                return $detail['chars'];
+            }
+            if ($detail['type'] == $search) {  
+                return $detail['chars'];
+            }
+        }
+        return "";  // empty string, no characteristics found
+    }   
+    
+    
+    
+    
 
 }

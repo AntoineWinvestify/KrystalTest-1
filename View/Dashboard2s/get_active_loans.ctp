@@ -38,20 +38,20 @@ echo $activeInvestments[0];
                                 <td dataorder="<?php echo $activeInvestment['Investment']['investment_outstandingPrincipal'] ?>"><?php echo round($activeInvestment['Investment']['investment_outstandingPrincipal'], 2) . " &euro;"; ?></td>
                                 <td><?php echo $activeInvestment['Investment']['investment_nextPaymentDate']; ?></td>
                                 <td> <?php
-                            switch ($activeInvestment['Investment']['investment_defaultedDays']) {
-                                case ($activeInvestment['Investment']['investment_defaultedDays'] > 90):
+                            switch ($activeInvestment['Investment']['investment_paymentStatus']) {
+                                case ($activeInvestment['Investment']['investment_paymentStatus'] > 90):
                                     echo __("91+ DPD");
                                     break;
-                                case ($activeInvestment['Investment']['investment_defaultedDays'] > 60):
+                                case ($activeInvestment['Investment']['investment_paymentStatus'] > 60):
                                     echo __("61-90 DPD");
                                     break;
-                                case($activeInvestment['Investment']['investment_defaultedDays'] > 30):
+                                case($activeInvestment['Investment']['investment_paymentStatus'] > 30):
                                     echo __("31-60 DPD");
                                     break;
-                                case($activeInvestment['Investment']['investment_defaultedDays'] > 7):
+                                case($activeInvestment['Investment']['investment_paymentStatus'] > 7):
                                     echo __("8-30 DPD");
                                     break;
-                                case ($activeInvestment['Investment']['investment_defaultedDays'] > 0):
+                                case ($activeInvestment['Investment']['investment_paymentStatus'] > 0):
                                     echo __("1-7 DPD");
                                     break;
                                 default:
