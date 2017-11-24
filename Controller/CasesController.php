@@ -1,18 +1,14 @@
 <?php
 
-    App::uses('AppController', 'Controller');
-    App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-    App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-    Configure::load('p2pGestor.php', 'default');
-    $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-    require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
+App::uses('AppController', 'Controller');
+App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+Configure::load('p2pGestor.php', 'default');
+$winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');
 
 class CasesController extends AppController {
 
-    
-    
-    
-    
     public function main() {
         $this->out('Hello world.');
 
@@ -63,7 +59,7 @@ class CasesController extends AppController {
             'offsetEnd' => 0,
             'sortParameter' => array()
         ));
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
 
         print_r($tempResult);
         return $tempResult;
@@ -108,7 +104,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         $this->print_r2($tempResult);
         //print_r($final);
         return $tempResult;
@@ -138,7 +134,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -161,7 +157,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -198,7 +194,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -234,7 +230,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -272,7 +268,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
     }
 
@@ -299,7 +295,7 @@ class CasesController extends AppController {
             'sortParameter' => array("investment_loanId"),
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -327,7 +323,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -346,7 +342,7 @@ class CasesController extends AppController {
                     "functionName" => "normalizeDate",]
             ],
         ];
-        
+
         $myParser = new Fileparser();
         $myParser->setConfig(array(
             'sortParameter' => "investment.investment_loanId",
@@ -355,7 +351,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -382,7 +378,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -409,7 +405,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -436,7 +432,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -463,7 +459,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -490,7 +486,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -517,7 +513,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -544,7 +540,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -569,7 +565,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -598,7 +594,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -627,12 +623,10 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
-
- 
 
     public function testExtracData() {
         $parserConfig = [
@@ -658,7 +652,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -687,12 +681,11 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
-    
-    
+
     public function testHash() {
         $parserConfig = [
             "B" => [
@@ -713,7 +706,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -746,10 +739,10 @@ class CasesController extends AppController {
             ],
         ];
 
-        $config = array ( 'offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
+        $config = array('offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
         $myParser = new Fileparser();
         $myParser->setConfig($config);
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         $this->print_r2($tempResult);
         return $tempResult;
     }
@@ -787,7 +780,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         $this->print_r2($tempResult);
         return $tempResult;
     }
@@ -829,7 +822,7 @@ class CasesController extends AppController {
             'sortParameter' => array()
         ));
         $myParser->getConfig();
-        $tempResult = $myParser->analyzeFile($this->TransactionfilePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->TransactionfilePath, $parserConfig, "xlsx");
         print_r($tempResult);
         return $tempResult;
     }
@@ -883,35 +876,91 @@ class CasesController extends AppController {
                 "name" => "amortizationtable_paymentStatus"
             ]
         ];
-        
+
         $myParser = new Fileparser();
 
-        $result = $myParser->getHtmlData($this->amortizationPath, $parserConfig);
+        $result = $myParser->analyzeFile($this->amortizationPath, $parserConfig, "html");
         $this->print_r2($result);
     }
-    
-    
+
     public function testDefault() {
 
         $parserConfig = [
             "B" => [
-                "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
+                "name" => "investment.investment_loanId"
             ],
             "G" => [
                 [
-                    "type" => "investment_statusOfLoan",                   // Winvestify standardized name  OK
+                    "type" => "investment_statusOfLoan",
                     "inputData" => [
-                                "input2" => 2,                             // set to "ACTIVE"
-                                ],
+                        "input2" => 2,
+                    ],
                     "functionName" => "getDefaultValue",
                 ]
             ],
         ];
 
-        $config = array ( 'offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
+        $config = array('offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
         $myParser = new Fileparser();
         $myParser->setConfig($config);
-        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+        $this->print_r2($tempResult);
+        return $tempResult;
+    }
+
+    public function testCountry() {
+
+        $parserConfig = [
+            "B" => [
+                "name" => "investment.investment_loanId"
+            ],
+            "A" => [
+                [
+                    "type" => "investment_country",
+                    "inputData" => [
+                        "input2" => 2,
+                    ],
+                    "functionName" => "getCountry",
+                ]
+            ],
+        ];
+
+        $config = array('offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
+        $myParser = new Fileparser();
+        $myParser->setConfig($config);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+        $this->print_r2($tempResult);
+        return $tempResult;
+    }
+
+    public function testProgressString() {
+
+        $parserConfig = [
+            "B" => [
+                "name" => "investment.investment_loanId"
+            ],
+            "N" => [
+                "name" => "paymentsReceived",
+            ],
+            "Z" => [
+                "name" => "paymentsTotal",
+            ],
+            "A" => [
+                [
+                    "type" => "progress",
+                    "inputData" => [
+                        "input2" => "#current.paymentsReceived",
+                        "input3" => "#current.paymentsTotal",
+                    ],
+                    "functionName" => "getProgressString",
+                ]
+            ],
+        ];
+
+        $config = array('offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
+        $myParser = new Fileparser();
+        $myParser->setConfig($config);
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         $this->print_r2($tempResult);
         return $tempResult;
     }

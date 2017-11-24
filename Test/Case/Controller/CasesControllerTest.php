@@ -170,8 +170,8 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected2, $actual[1]['investment']['test']);
     }
     
-    public function testHash() { //hash (Lithuania)
-        $expected = 'd9051e0b77f8bb5521389618e70e2ada';
+    public function testHash() { //hash (Latvia)
+        $expected = 'a09f4b2ae67f0a63ab8912047a1a1b55';
         $actual = $this->testAction("/cases/testHash");
         $this->assertEquals($expected, $actual[0]['investment']['hashCoutry']);
     }
@@ -213,6 +213,18 @@ class CasesControllerTest extends ControllerTestCase {
         }
     }
 
+    public function  testCountry(){
+        $expected = array("LV", "XX");
+        $actual = $this->testAction("/cases/testCountry");
+        $this->assertEquals($expected[0], $actual[0]['investment_country']);
+        $this->assertEquals($expected[1], $actual[1]['investment_country']);   
+    }
+    
+     public function  testProgressString(){
+        $expected = "18/50";
+        $actual = $this->testAction("/cases/testProgressString");
+        $this->assertEquals($expected, $actual[0]['progress']);
+    }
 
         public function tearDown() {
         parent::tearDown();
