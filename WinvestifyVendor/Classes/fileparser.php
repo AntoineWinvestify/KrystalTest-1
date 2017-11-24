@@ -156,7 +156,7 @@ class Fileparser {
                 "detail" => "Secondary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_secondaryMarketInvestment",
+                "type" => "payment_secondaryMarketInvestment",
                 "chars" => "AM_TABLE"
                 ],
             5 => [
@@ -193,7 +193,7 @@ class Fileparser {
                 "detail" => "Delayed_interest_income",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "payment_delayedInterestPayment"          
+                "type" => "payment_delayedInterestIncome"          
                 ],
             11 => [ 
                 "detail" => "Late_payment_fee_income",
@@ -229,7 +229,7 @@ class Fileparser {
                 "detail" => "Income_secondary_market",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "investment_incomeSecondaryMarket"        
+                "type" => "payment_incomeSecondaryMarket"        
                 ],
             17 => [
                 "detail" => "Currency_fluctuation_positive",
@@ -260,7 +260,7 @@ class Fileparser {
                 "detail" => "Cost_secondary_market",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,                
                 "account" => "PL",
-                "type" => "investment_costSecondaryMarket"
+                "type" => "payment_costSecondaryMarket"
                 ],
             23 => [
                 "detail" => "Interest_payment_secondary_market_purchase",

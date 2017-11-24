@@ -177,12 +177,13 @@ class ParseDataClientShell extends GearmanClientShell {
                         $baseDirectory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                         $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
 // Add the status per PFP, 0 or 1
-                        $newLoans = $platformResult['newLoans'];
+                        
                         $mapResult = $this->mapData($platformResult);
 
-                        if ($mapResult == true) {  
-                            if (!empty($platformResult['newLoans'])) {
-                                $controlVariableFile =  $platformData['controlVariableFile'];
+                        if ($mapResult == true) { 
+                            $newLoans = $platformResult['newLoans'];
+                            if (!empty($newLoans)) {
+                  //              $controlVariableFile =  $platformData['controlVariableFile'];?
                                 print_r($newLoans);
                                 file_put_contents($baseDirectory . "loanIds.json", json_encode(($newLoans)));
                                 $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
@@ -271,9 +272,9 @@ class ParseDataClientShell extends GearmanClientShell {
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, PER day
             echo "dateKey = $dateKey \n";
-            if ($dateKey == "2017-10-29"){ 
-      //          echo "Exiting";
-      //      exit;
+            if ($dateKey == "2016-10-28"){ 
+                echo "Exiting";
+     //       exit;
             }
 // Lets allocate a userinvestmentdata for this calculation period (normally daily)
             // reset the relevant variables before going to next date
@@ -294,7 +295,22 @@ class ParseDataClientShell extends GearmanClientShell {
 if ($keyDateTransaction <> "1691271-01") {   
  //   echo " Continueing\n ";
  //   continue;
-}                
+} 
+print_r($dateTransaction);
+echo "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n";
+if (isset($dateTransaction[0]['conceptChars'])) {
+    echo "index is set";
+
+if ($dateTransaction[0]['conceptChars'] == "AM_TABLE") {
+    
+    echo "AM_TABLE, adding new entry to 'newLoans'";
+    // If the loanId does not correspond to a brand new loan, then it is a extra participation in an 
+    // exiting loan, so new amortizationtable must be collected
+    $platformData['newLoans'][] =  $dateTransaction[0]['investment_loanId'];
+    print_r($platformData['newLoans']);
+ //  exit;
+    }
+} 
               
                 $newLoan = NO;
                 echo "\nkeyDateTransaction = $keyDateTransaction \n";
@@ -335,10 +351,10 @@ if ($keyDateTransaction <> "1691271-01") {
                 }
  
                 echo "---------> ANALYZING NEXT LOAN\n";
-                if (in_array($keyDateTransaction, $platformData['newLoans'])) {          // check if loanId is new
-                    $arrayIndex = array_search($keyDateTransaction, $platformData['newLoans']);
+                if (in_array($keyDateTransaction, $platformData['workingNewLoans'])) {          // check if loanId is new
+                    $arrayIndex = array_search($keyDateTransaction, $platformData['workingNewLoans']);
                     if ($arrayIndex !== false) {        // Deleting the array from new loans list
-                        unset($platformData['newLoans'][$arrayIndex]);
+                        unset($platformData['workingNewLoans'][$arrayIndex]);
                     }
                     echo "Storing the data of a NEW loan in the shadow db table\n";
                     $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
@@ -376,46 +392,48 @@ if ($keyDateTransaction <> "1691271-01") {
                 }
 
                 // load all the transaction data
+               
                 foreach ($dateTransaction as $transactionKey => $transactionData) {
-                    //                   echo "---> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = $transactionData\n";
+echo "---> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+//print_r($transactionData);
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // 0,1,2
+  //              print_r($transaction);
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-
+  //                          print_r($tempResult);
                         if (!empty($tempResult)) {
                             unset($result);
+
+                            
                             $functionToCall = $tempResult['function'];
                             echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transactionDataKey = $transactionDataKey\n";
                             $dataInformation = explode(".", $tempResult['databaseName']);
                             $dbTable = $dataInformation[0];
+
+                            echo "Execute calculationfunction: $functionToCall\n";
                             if (!empty($functionToCall)) {
                                 $result = $calculationClassHandle->$functionToCall($transactionData, $database);
 
-                                // update the field userinvestmentdata_cashInPlatform                
+                                // update the field userinvestmentdata_cashInPlatform   
                                 $cashflowOperation = $tempResult['cashflowOperation'];
-                    //          $cashflowOperation = "bcadd";
                                 if (!empty($cashflowOperation)) {
-    
 
-                //                echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDataKey . "\n";
+                                echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDataKey . "\n";
                                 echo "================>>  " . $cashflowOperation . " ADDING THE AMOUNT OF " . $result ."\n";
                                 $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = 
                                                 $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 
                                                 $result, 16); 
 echo "#########========> database_cashInPlatform = " .    $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] ."\n";                            
                                 }
-                                
-                                
-                                
+
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
                                 } 
                                 else {
                                     $database[$dbTable][$transactionDataKey] = $result;
                                 }
-  
                             } 
                             else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
@@ -485,6 +503,7 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                 }
                 echo "printing relevant part of database\n";
                 print_r($platformData['newLoans']);
+                print_r($platformData['workingNewLoans']);  // to be deleted after testing
                 print_r($database['investment']);
                 print_r($database['payment']);
                 
