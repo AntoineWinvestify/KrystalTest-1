@@ -348,9 +348,9 @@ if ($result) {
                         <div class="row firstParagraph">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <p><?php
-                                    echo __('Para continuar con su proceso de registro debe rellenar las siguientes casillas:')
+                                    echo __('To continue the registration process you must fill the next form:')
                                     ?>
-                                    <small><?php echo __('(Todos los campos son obligatorios)') ?></small>
+                                    <small><?php echo __('(All fields are required)') ?></small>
                                 </p>
                             </div>
                         </div>
@@ -853,8 +853,8 @@ if ($result) {
                             </div>
                             <div class="row firstParagraph">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <p><?php echo __('Maximun File Size: 10MB'); ?></p>
-                                    <p><?php echo __('Permitted Formats:' . $filesType); ?></p>
+                                    <p><?php echo __('Maximum File Size: 10MB'); ?></p>
+                                    <p><?php echo __('Allowed Formats:' . $filesType); ?></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -911,7 +911,7 @@ if ($result) {
 
                                                         echo $this->Form->create('Files', array('action' => 'upload', 'type' => 'file', 'class' => 'Files', 'id' => 'FileForm' . $filesTable[0]['Ocrfile']['id'], 'class' => 'upload', 'value' => $filesTable[0]['Ocrfile']['id']));
                                                         echo "<span id='" . $file . "' >";
-                                                        echo "<label class='btn labelFile btnRounded btnUploadFile label" . $filesTable[0]['Ocrfile']['id'] . "' for='fileId" . $filesTable[0]['Ocrfile']['id'] . "'><i class='fa fa-upload'></i> Upload file</label>";
+                                                        echo "<label class='btn labelFile btnRounded btnUploadFile label" . $filesTable[0]['Ocrfile']['id'] . "' for='fileId" . $filesTable[0]['Ocrfile']['id'] . "'><i class='fa fa-upload'></i>" . __('Upload file') . "</label>";
                                                         echo "<input type='file' name='data[Files][fileId" . $filesTable[0]['Ocrfile']['id'] . "]' id='fileId" . $filesTable[0]['Ocrfile']['id'] . "' >";
                                                         //echo $this->Form->file("fileId" . $filesTable[0]['Ocrfile']['id']);
                                                         echo $this->Form->hidden('info', array('class' => 'typeFile', 'value' => $filesTable[0]['Ocrfile']['id']));
