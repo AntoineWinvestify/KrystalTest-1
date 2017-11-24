@@ -51,6 +51,7 @@
                         <li>Inversiones agrupadas automáticamente por plataformas</li>
                         <li>Conoce tu nivel de morosidad, comisiones aplicadas y pérdidas</li>
                     </ul>
+                    <img src="/img/landingpage/next.png" class="imgResponsive center-block" alt="next"/>
                 </div>
             </div>
             <div class="row">
@@ -78,6 +79,9 @@
                         <li>Un único formulario de registro para acceder a las principales plataformas</li>
                         <li>Proceso sencillo y seguro</li>
                     </ul>
+                </div>
+                <div>
+                    <img src="/img/landingpage/next.png" class="imgResponsive center-block" alt="next"/>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <img src="/img/screenshots/ocr1.png" class="imgResponsive investorsImg center-block"/>

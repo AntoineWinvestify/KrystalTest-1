@@ -168,6 +168,7 @@ class bondora extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
+
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
@@ -326,7 +327,14 @@ class bondora extends p2pCompany {
                 echo "INPUTS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($inputsValue);
                 echo "ENDS INPUTS VALUE" . SHELL_ENDOFLINE;
+                if (date("d/m/Y", strtotime($this->dateInit)) == '1/1/1970') {
+                    $this->dateInit = '1/1/2009';
+                }
+
                 $dateInit = date("d/m/Y", strtotime($this->dateInit));
+                if ($dateInit == '1/1/1970') {
+                    $dateInit = '1/1/2009';
+                }
                 $dateFinish = date('d/m/Y', strtotime($this->dateFinish));
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
@@ -506,16 +514,20 @@ class bondora extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
-                $date1 = "10/10/2017";
-                $date2 = "16/10/2017";
+                $dateInit = date("d/m/Y", strtotime($this->dateInit));
+                if ($dateInit == '1/1/1970') {
+                    $dateInit = '1/1/2009';
+                }
+                $dateFinish = date('d/m/Y', strtotime($this->dateFinish));
 
                 if (empty($this->tempUrl['generateReport'])) {
                     $this->tempUrl['generateReport'] = array_shift($this->urlSequence); //Get url for generate reports if we dont have it.
                 }
 
                 foreach ($trs as $tr) {
+
                     echo $tr->nodeValue . SHELL_ENDOFLINESHELL_ENDOFLINE;
-                    if (strpos($tr->nodeValue, "Investments list") && strpos($tr->nodeValue, $date1) && strpos($tr->nodeValue, $date2)) { //Search if we have the invesment in the reports
+                    if (strpos($tr->nodeValue, "Investments list") && strpos($tr->nodeValue, $dateInit) && strpos($tr->nodeValue, $dateFinish)) { //Search if we have the invesment in the reports
                         $urls = $tr->getElementsByTagName('a');
                         $this->verifyNodeHasElements($urls);
                         if (!$this->hasElements) {
@@ -536,7 +548,7 @@ class bondora extends p2pCompany {
 
                 foreach ($trs as $tr) {
                     echo $tr->nodeValue . SHELL_ENDOFLINE;
-                    if (strpos($tr->nodeValue, "Account statement") && strpos($tr->nodeValue, $date1) && strpos($tr->nodeValue, $date2)) {
+                    if (strpos($tr->nodeValue, "Account statement") && strpos($tr->nodeValue, $dateInit) && strpos($tr->nodeValue, $dateFinish)) {
                         $urls = $tr->getElementsByTagName('a');
                         $this->verifyNodeHasElements($urls);
                         if (!$this->hasElements) {
@@ -673,7 +685,7 @@ class bondora extends p2pCompany {
 
                 echo "file not found";
 
-                $dom = new DOMDocument;                 
+                $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
@@ -689,8 +701,8 @@ class bondora extends p2pCompany {
                 echo "INPUTS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($inputsValue);
                 echo "ENDS INPUTS VALUE" . SHELL_ENDOFLINE;
-                $date1 = "10/10/2017"; //date("d/m/Y", strtotime($this->dateInit));
-                $date2 = "16/10/2017"; //date('d/m/Y', strtotime($this->dateFinish));
+                $dateInit = date("d/m/Y", strtotime($this->dateInit));
+                $dateFinish = date('d/m/Y', strtotime($this->dateFinish));
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
                     'NewReports[0].ReportType' => 'InvestmentsListV2',
@@ -698,8 +710,8 @@ class bondora extends p2pCompany {
                     "NewReports[0].DateFilterShown" => 'True',
                     "NewReports[0].Selected" => 'true',
                     "NewReports[0].DateFilterSelected" => 'true',
-                    "NewReports[0].StartDate" => $date1, 
-                    "NewReports[0].EndDate" => $date2, 
+                    "NewReports[0].StartDate" => $dateInit,
+                    "NewReports[0].EndDate" => $dateFinish,
                     "NewReports[1].ReportType" => "Repayments",
                     "NewReports[1].DateFilterRequired" => 'False',
                     "NewReports[1].DateFilterShown" => 'True',
@@ -764,8 +776,8 @@ class bondora extends p2pCompany {
                 echo "INPUTS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($inputsValue);
                 echo "ENDS INPUTS VALUE" . SHELL_ENDOFLINE;
-                $date1 = "10/10/2017";
-                $date2 = "16/10/2017";
+                $dateInit = date("d/m/Y", strtotime($this->dateInit));
+                $dateFinish = date('d/m/Y', strtotime($this->dateFinish));
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
                     'NewReports[0].ReportType' => 'InvestmentsListV2',
@@ -798,8 +810,8 @@ class bondora extends p2pCompany {
                     "NewReports[5].DateFilterShown" => 'True',
                     "NewReports[5].Selected" => 'true',
                     "NewReports[5].DateFilterSelected" => 'true',
-                    "NewReports[5].StartDate" => $date1, 
-                    "NewReports[5].EndDate" => $date2,
+                    "NewReports[5].StartDate" => $dateInit,
+                    "NewReports[5].EndDate" => $dateFinish,
                     "NewReports[6].ReportType" => 'IncomeReport',
                     "NewReports[6].DateFilterRequired" => 'True',
                     "NewReports[6].DateFilterShown" => 'True',
