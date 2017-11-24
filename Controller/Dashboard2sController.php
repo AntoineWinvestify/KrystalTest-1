@@ -55,7 +55,7 @@ class Dashboard2sController extends AppController {
     /**
      * [AJAX call]
      * 	Read the data of all active investments that belong to a linked account
-     *
+     * @throws FatalErrorException Error when you access winouth ajax
      */
     function getDashboard2SinglePfpData() {
 
@@ -79,15 +79,15 @@ class Dashboard2sController extends AppController {
         $filterConditions = array('userinvestmentdata_investorIdentity' => $investorReference, 'linkedaccount_id' => $linkedAccount);
         $dataResult = $this->Userinvestmentdata->getData($filterConditions);
         $dataResult['logo'] = $logo;
-        $dataResult['name'] = $name;      
-        
-        //Get loan, Active -> Yes // Defaulted -> ¿? // 
-        $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
-        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_defaultedDays >" => 0), array("*"));
+        $dataResult['name'] = $name;
+
+        // Get loans // 
+        //$activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
+        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90), array("*"));
         //Set result
         $result = array(true, $dataResult);
         $this->set('companyInvestmentDetails', $result);
-        $this->set('activeInvestments', $activeInvestments);
+        //$this->set('activeInvestments', $activeInvestments);
         $this->set('defaultedInvestments', $defaultedInvestments);
         //Get and set range
         $this->set('defaultedRange', $this->Investment->getDefaultedByOutstanding($linkedAccount));
@@ -96,6 +96,49 @@ class Dashboard2sController extends AppController {
         //echo $executionEndTime - $executionStartTime;
     }
 
+    /**
+     * [AJAX call]
+     * Get active loans of a linked account
+     * @throws FatalErrorException Error when you access winouth ajax
+     */
+    function getActiveLoans(){
+        if (!$this->request->is('ajax')) {
+            throw new
+            FatalErrorException(__('You cannot access this page directly'));
+        }
+        
+        $linkedAccount = $this->request->data['id']; //Link account id
+        $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
+        
+        if(!empty($activeInvestments)){
+            $this->set('activeInvestments', [1,$activeInvestments]);
+        } else {
+            $this->set('activeInvestments', [1,"Not active loans found"]);
+        }
+    }
+    
+        /**
+     * [AJAX call]
+     * Get defaulted loans of a linked account
+     * @throws FatalErrorException Error when you access winouth ajax
+     */
+    function getDefaultedLoans(){
+        if (!$this->request->is('ajax')) {
+            throw new
+            FatalErrorException(__('You cannot access this page directly'));
+        }
+        
+        $linkedAccount = $this->request->data['id']; //Link account id
+        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90), array("*"));
+       
+        if(!empty($defaultedInvestments)){
+            $this->set('defaultedInvestments', [1,$defaultedInvestments]);
+        } else {
+            $this->set('defaultedInvestments', [1,"Not defaulted loans found"]);
+        }
+    }
+    
+    
     /**
      * Global dashboard view
      */
@@ -130,21 +173,27 @@ class Dashboard2sController extends AppController {
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                         break;
-                    case "userinvestmentdata_totalVolume":
+                    /*case "userinvestmentdata_totalVolume":
                         //Get global total volume
                         $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                        break;
-                    case "userinvestmentdata_investedAssets":
+                        break;*/
+                    case "userinvestmentdata_outstandingPrincipal":
                         //Get global  active in invesment
                         $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
+                        //Get global total volume
+                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                         break;
                     case "userinvestmentdata_reservedAssets":
                         //Get global reserved funds
                         $global['reservedFunds'] = bcadd($global['reservedFunds'], $individualData, 16);
+                        //Get global total volume
+                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                         break;
                     case "userinvestmentdata_cashInPlatform":
                         //Get global wallet
                         $global['cash'] = bcadd($global['cash'], $individualData, 16);
+                        //Get global total volume
+                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
                         break;
                     case "userinvestmentdata_numberActiveInvestments":
                         //get global active invesment:
@@ -232,4 +281,7 @@ class Dashboard2sController extends AppController {
         return $globalRange;
     }
 
+    function showInitialPanel() {
+        $this->layout = 'azarus_private_layout';
+    }
 }

@@ -87,17 +87,9 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId']['listOfCurrentActiveLoans']    => list of all active loans BEFORE this analysis     
      *      $data['linkedAccountId']['files'][filename1']           => Array of filenames, FQDN's
      *      $data['linkedAccountId']['files'][filename2']
-     *                                        ... ... ...
 
-     *
-
-     * @return array queue_id, userReference, linkedaccount_id, exception error
-     *  The worker provides all error information to the Client
-     *
-     *           array     analyse    convert internal array to external format using definitions of configuration file
-     *                      true  analysis done with success
-     *                      array with all errorData related to occurred error
-     * 
+     * @return array 
+     *  The worker provides all error information to the Client according to the following format:  
      *      $data['linkedAccountId']['userReference']
      *      $data['linkedAccountId']['queue_id']
      *      $data['linkedAccountId']['pfp']
@@ -105,6 +97,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId']['error’]    => optional
      *      $data['linkedAccountId']['parsingResultTransactions'] 
      *      $data['linkedAccountId'][‘parsingResultInvestments'] 
+     *      $data['linkedAccountId']['activeInvestments']
+     *      $data['linkedAccountId']['linkedaccountId']
+     *      $data['linkedAccountId']['controlVariableFile']
+     *      * 
+
      *
      */
      
@@ -122,6 +119,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
+            $controlVariableFile = $data['controlVariableFile'];
             $companyHandle = $this->companyClass($data['pfp']);
 
             if (Configure::read('debug')) {
@@ -184,7 +182,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
                             $totalParsingresultTransactions = $tempResult;
-                            print_r($totalParsingresultTransactions);
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         //    $totalParsingresultTransactions = $tempResult;
@@ -225,6 +222,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['pfp'] = $platform;
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
+            $returnData[$linkedAccountKey]['controlVariableFile'] = $controlVariableFile; 
             
             
             
@@ -242,7 +240,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             continue;
                         }
                         if (in_array($value, $listOfExpiredLoans) == false){
-                            
                             $newLoans[] = $value;
                         }
                     }
@@ -250,18 +247,20 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
             
             $newLoans = array_unique($newLoans);
-            echo "New loans are\n";
-            print_r($newLoans);
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
+            
+            echo "New loans are\n";
+            print_r($returnData[$linkedAccountKey]['newLoans']); 
         }
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-//      print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
-        print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
-        print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
+ //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+       print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
+ //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
+        print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
  //     print_r($data['tempArray'][$linkedAccountKey]['error']);
  //     print_r($data);
  
@@ -415,6 +414,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
         $tempResult = [];
         $i = 0;
+        $orderParam = array_shift($configParameters);
         foreach ($filesByType as $file) {
             if (!empty($configParameters[$i]['offsetStart'])) {
                 $tempResult[] = $this->getSimpleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
@@ -426,7 +426,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
             $i++;
         }
-        return $tempResult;
+        $tempResultOrdered = $this->resultOrdering($tempResult, $orderParam);
+        return $tempResultOrdered;
     }
     
     public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
@@ -444,6 +445,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     }
     
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
+        $orderParam = array_shift($configParameters);
         foreach ($configParameters as $key => $individualConfigParameters) {       
             $this->myParser->setConfig($individualConfigParameters);
             $tempResult[] = $this->myParser->analyzeFileBySheetName($file, $parserConfigFile[$key]);     // if successfull analysis, result is an array with loanId's as index
@@ -456,12 +458,41 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 break;
             }
         }
-        $this->resultOrdering($tempResult, $orderParam);
+        $tempResultOrdered = $this->resultOrdering($tempResult, $orderParam);
+        return $tempResultOrdered;
     }
     
-    public function resultOrdering($tempResult, $orderParam) {
-        
+    public function resultOrdering($tempArray, $orderParam) {
+        $countSortParameters = count($this->config['sortParameter']);
+        switch ($countSortParameters) {
+            case 1:
+                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                $tempArray[$sortParam1][] = $tempArray[$i];
+                unset($tempArray[$i]); 
+            break; 
+
+            case 2:
+                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
+                $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];        
+                $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
+                unset($tempArray[$i]);
+            break;               
+        }
     }
+    
+    function setCallbacks($callbacks) {
+        $this->callbacks = $callbacks;
+    }
+
+    function setCompanyHandle($companyHandle) {
+        $this->companyHandle = $companyHandle;
+    }
+
+    function setMyParser($myParser) {
+        $this->myParser = $myParser;
+    }
+
+
     
 }
 

@@ -46,11 +46,17 @@
  * Defaulted percent fix
  * Undefined logo and name in single pfp data javascript fixed.
  * 
+ * [2017-11-16] version 0.8
+ * Ajax moved to js file.
+ * 
+ * 
  */
 ?>
+
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 <script type="text/javascript" src="/js/accounting.min.js"></script>
+<script type="text/javascript" src="/js/view/dashboard.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 
 <script>
@@ -85,6 +91,8 @@
     }
     
     $(function (){
+        overviewDataJS();
+        
         //Click on Account Linking btn
         $(document).on("click", "#btnAccountLinking", function(){
             counterLinkAccount = 0;
@@ -111,21 +119,7 @@
             window.location.replace('/ocrs/ocrInvestorView');
         });
         
-        //Click on platform logo
-        $(document).on("click", ".logo", function(){ 
-            id = $(this).attr("id").split(" ")[0];
-            name = $("#logo"+id).attr("alt");
-            var params = {
-                id : $(this).attr("id"),
-                logo : $("#logo"+id).attr("src"),
-                name : name,
-            };
-            ga_company(id, name);
-            var data = jQuery.param(params);
-            link = $(this).attr("href");
-            getServerData(link, data, successAjax, errorAjax);
-               
-        });
+        
         
         <?php //Tooltip clicks ?>
         $(".logo").hover(function() {
@@ -169,16 +163,7 @@
         });
     });
     
-    function successAjax(result){
-       // alert("ok " + result);
-       $(".dashboardGlobalOverview").fadeOut();
-       $(".ajaxResponse").html(result);
-       
-    }
-    
-    function errorAjax(result){
-         //alert("not ok " + result);
-    }
+   
     
 </script>
 <style>
@@ -286,19 +271,19 @@
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Total nominal value of all assets held in your linked accounts')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
-                                                        <td class="right"><?php echo round($global['investedAssets'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($global['investedAssets'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The part of Invested Assets, which are dedicated to specific loans that are not yet issued')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
-                                                        <td class="right"><?php echo round($global['reservedFunds'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($global['reservedFunds'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total cash balance on all your linked accounts. You should use this balance to invest in assets to reduce Cash Drag')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
-                                                        <td class="right"><?php echo round($global['cash'], 2) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo round($global['cash'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Total Volume, which is not invested in assets and therefore does not yield any interest currently')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
-                                                        <td class="right"><?php echo __('25%')?></td>
+                                                        <td class="right"><?php echo round(bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawals from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
@@ -443,7 +428,7 @@
                         <tbody>
                            <?php //Here go pfp data
                             foreach($individualInfoArray as $individualInfo){ 
-                                $total = round($individualInfo['Userinvestmentdata']['userinvestmentdata_totalVolume'], 2);
+                                $total = round(bcadd(bcadd($individualInfo['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 16), $individualInfo['Userinvestmentdata']['userinvestmentdata_reservedAssets'], 16) , 2, PHP_ROUND_HALF_UP);
                                 ?>
                             <tr>
                                 <td class="logo" href='getDashboard2SinglePfpData' id="<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id']  .  " " . $individualInfo['Userinvestmentdata']["id"] ?>" >
@@ -451,7 +436,7 @@
                                 </td>
                                 
                                 <td><?php echo $total . " &euro;"?></td>
-                                <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2) . " &euro;"?></td>
+                                <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2, PHP_ROUND_HALF_UP) . " &euro;"?></td>
                                 <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
                                 <td>12,11</td>
                                 <td>63,22%</td>

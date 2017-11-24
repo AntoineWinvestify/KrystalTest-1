@@ -178,7 +178,7 @@
                             <div class="tab-content">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <p align="justify"><?php echo __('Para finalizar con el proceso de alta de sus plataformas, le informarmos que Winvestify atendiendo a su petición facilitará a las plataformas solicitadas toda la información y documentación aportada por usted  (nombre, apellidos, DNI/NIE, cuenta bancaria y otros datos que puedan permitir identificarle como usuario). Mediante la aceptación de estas condiciones, usted confirma que ha leído y acepta las condiciones de este servicio.') ?></p>
+                                        <p align="justify"><?php echo __('To complete the registration process of your selected platforms, we will inform you that Winvestify meets your demand by providing to the requested platforms all the information and documentation provided by you (name, surname, DNI / NIE, bank account and other information that may allow us to identify you as a user). By accepting, you confirm that you have read and accept the conditions of this service.') ?></p>
                                         <ul>
                                             <?php foreach ($companies as $company) { ?>
                                                 <li><?php echo __($company["name"]) ?></li>
@@ -187,8 +187,8 @@
                                     </div>
                                     <div style="display:none;" class="sureMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
-                                            <p class="errorMessage" style="padding: 20px; margin-top: 10px;"><?php echo __('¿Está seguro de que quiere cancelar el proceso? Todos sus datos almacenados y documentos serán eliminados.') ?></p>
-                                            <button id="btnSure" class='btn btn-default center-block' name='sureBtn'><?php echo __('Sí, quiero CANCELAR el proceso') ?></button>
+                                            <p class="errorMessage" style="padding: 20px; margin-top: 10px;"><?php echo __('Do you really want to cancel the process? All your data and documentation will be deleted.') ?></p>
+                                            <button id="btnSure" class='btn btn-default center-block' name='sureBtn'><?php echo __('Yes, I want to CANCEL the process') ?></button>
                                         </div>
                                     </div>
                                 </div>
@@ -225,7 +225,7 @@
                             <div class="tab-content">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <p align="justify"><?php echo __('Gracias por actualizar los datos erróneos que hemos detectado.') ?></p>
+                                        <p align="justify"><?php echo __('Thank you for updating the detected incorrect data.') ?></p>
                                     </div>
                                     <div style="display:none;" class="errorMsg col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                         <div class="feedback errorInputMessage col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 center-block">
