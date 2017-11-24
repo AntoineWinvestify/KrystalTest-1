@@ -26,14 +26,18 @@ App::import('Shell','GearmanWorker');
 /**
  * Description of ConsolidationWorkerShell
  *
- * @author antoiba
  */
 class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     protected $formula = [];
     protected $config = [];
     
-   
+   public function startup() {
+        Configure::load('p2pGestor.php', 'default');
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+        require_once($winvestifyBaseDirectoryClasses . DS . 'winFormulas.php');    
+   }
+    
     /**
      * Function main that init when start the shell class
      */
@@ -62,16 +66,26 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
         $index = 0;
         $i = 0;
-        
+        $this->winFormulas = new WinFormulas();
         //Get investor ID by queue_userReference
         //$investorId = $this->investor->find("userReference");
-        
-        
-        $getFormulas = $this->winFormulas();
-        
-        foreach ($getFormulas as $formula) {
-            
+
+        $formulaByInvestor = $this->getFormulasFromDB();
+        $formulas = [];
+        foreach ($formulasByInvestor as $linkaccountIdKey => $formulas) {
+            foreach ($formulas as $formula) {
+                $formulasByCompany[$linkaccountIdKey]['formula'][] = $this->winFormulas->getFormula($formula['formula']);
+                $formulasByCompany[$linkaccountIdKey]['variablesFormula'][] = $this->winFormulas->getFormulaParams($formula['variables']);
+            }
         }
+        
+        foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
+            foreach ($formulas as $formula) {
+                
+            }
+        }
+        
+        
         
         /*foreach ($data["companies"] as $linkedaccount) {
             unset($newComp);
@@ -155,50 +169,5 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->config['interestPaidGlobal'] = "newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal";
         $this->config['chargeOffGlobal'] = 'userinvestmentdata.userinvestmentdata_myWallet';*/
     }
-    
-    public function doOperationByType($inputA, $inputB, $type) {
-        
-        switch ($type) {
-            case "add":
-                $result = $this->addTwoValues($inputA, $inputB);
-                break;
-            case "substract":
-                $result = $this->subtractTwoValues($inputA, $inputB);
-                break;
-            case "divide":
-                $result = $this->divideTwoValues($inputA, $inputB);
-                break;
-            case "multiply":
-                $result = $this->multiplyTwoValues($inputA, $inputB);
-                break;
-            case "pow":
-                $result = $this->powTwoValues($inputA, $inputB);
-                break;
-        }
-        return $result;
-    }
-    
-    public function addTwoValues($inputA, $inputB) {
-        return bcadd($inputA, $inputB, 2);
-    }
-    
-    public function subtractTwoValues($inputA, $inputB) {
-        return bcsub($inputA, $inputB, 2);
-    } 
-    
-    public function divideTwoValues($inputA, $inputB) {
-        return bcmul($inputA, $inputB, 2);
-    } 
-    
-    public function multiplyTwoValues($inputA, $inputB) {
-        return bcdiv($inputA, $inputB, 2);
-    } 
-    
-    public function powTwoValues($inputA, $inputB) {
-        return bcpow($inputA, $inputB, 2);
-    } 
-    
-    
-    
     
 }
