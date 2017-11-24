@@ -57,7 +57,34 @@ class TestsController extends AppController {
 
 
         //$this->Security->requireAuth();
-        // $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview"));
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel"));
+    }
+
+    function arrayToExcel(/*$array, $excelName*/) {
+        $array = array("market" => 1,"q" => 2,"a" => 3,"s" => 4,"d" => 5,"f" => 6,"e" => 7,"r" => 8,"t" => 9,"y" => 11,"u" => 12,"i" => 13,"o" => 14,"p" => 15,"l" => 16);
+        $excelName = "prueba";
+        $keyArray = array();
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+
+        foreach($array as $key => $val){
+            $keyArray[] = $key;
+        }
+
+        $filter = null;
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getProperties()->setTitle($excelName);
+
+        $objPHPExcel->setActiveSheetIndex(0)
+            ->fromArray($keyArray, NULL, 'A1')
+            ->fromArray($array, NULL, 'A2');
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $excelName . '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+        exit;
     }
 
     /**
@@ -121,81 +148,6 @@ class TestsController extends AppController {
             echo "Nothing found, try again with other data";
             exit;
         }
-    }
-
-    function showInitialPanel() {
-        $this->layout = 'azarus_private_layout';
-    }
-
-    /**
-     * Global dashboard view
-     */
-    function dashboardOverview() {
-        $this->layout = 'azarus_private_layout';
-
-        //Get data from db
-        $investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity');
-        $globalData = $this->Userinvestmentdata->getGlobalData($investorIdentity);
-
-        //Get global data
-        $global['totalVolume'] = 0;
-        $global['investedAssets'] = 0;
-        $global['reservedFunds'] = 0;
-        $global['cash'] = 0;
-        $global['activeInvestment'] = 0;
-        $global['netDeposits'] = 0;
-        foreach ($globalData as $globalKey => $individualPfpData) {
-            foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
-                if ($key == "userinvestmentdata_activeInInvestments") { //Get global active in investment
-                    $global['investedAssets'] = $global['investedAssets'] + $individualData;
-                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
-                }
-                if ($key == "userinvestmentdata_myWallet") { //Get global wallet
-                    $global['cash'] = $global['cash'] + $individualData;
-                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
-                }
-                if ($key == "userinvestmentdata_reservedFunds") { //Get global reserved funds
-                    $global['reservedFunds'] = $global['reservedFunds'] + $individualData;
-                    $global['totalVolume'] = $global['totalVolume'] + $individualData;
-                }
-                if ($key == "userinvestmentdata_investments") { //Get global active investmnent
-                    $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
-                }
-                if ($key == "id") {
-                    $cashFlowData = $this->Globalcashflowdata->getData(array('userinvestmentdata_id' => $individualData), array('globalcashflowdata_platformDeposit'));
-                    $global['netDeposits'] = $global['netDeposits'] + $cashFlowData[0]['Globalcashflowdata']['globalcashflowdata_platformDeposit'];
-                }
-                if ($key == "linkedaccount_id") {
-                    //Get the pfp id of the linked acount
-                    $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData),array('company_id'));
-                    $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
-                    //Get pfp logo and name
-                    $pfpOtherData = $this->Company->getData(array('id' => $pfpId),array("company_logoGUID", "company_name"));
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
-                    $globalData[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
-                }
-            }
-        }
-
-        
-        //Set global data
-        $this->set('global', $global);
-        //Set an array with individual info
-        $this->set('individualInfoArray', $globalData);
-        
-    }
-
-    function dashboardMyInvestments() {
-        $this->layout = 'azarus_private_layout';
-    }
-
-    function dashboardStats() {
-        $this->layout = 'azarus_private_layout';
-    }
-
-    function modal() {
-        $this->layout = 'azarus_private_layout';
     }
 
     function convertPdf() {

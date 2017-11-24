@@ -1499,13 +1499,48 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $sheet = $objPHPExcel->getActiveSheet();
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
-            echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+            echo __FILE__ . " " . __LINE__ . " Number of rows = $highestRow and number of Columns = $highestColumn \n";
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
             $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         }
         return $datas;
     }
     
+    /**
+     * Function to join values together
+     * @param string $input
+     * @param string $joinSeparator
+     * @param string $order It could be FIFO or LIFO
+     * @param array $inputValues
+     * @return string
+     */
+    public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {
+        if ($order == FIFO) {
+            foreach ($inputValues as $inputValue) {
+                $input .= $joinSeparator . $inputValue;
+            }
+        }
+        else if ($order == LIFO) {
+            foreach ($inputValues as $inputValue) {
+                $inputNew .= $inputValue . $joinSeparator ;
+            }
+            $inputNew .= $input;
+            $input = $inputNew;
+        }
+        
+        return $input;
+    }
+    
+    /**
+     * Function to clean a string of unnecessary characters
+     * @param string $input cell data
+     * @param array $charactersToClean Array of chars to clean
+     * @return string Cleaned value to be returned
+     */
+    private function cleanStringInput($input, ...$charactersToClean) {
+        $input = str_replace($charactersToClean, "", $input);
+        return trim($input);
+    }
     
     
     
