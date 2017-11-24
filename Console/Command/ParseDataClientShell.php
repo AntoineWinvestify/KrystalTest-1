@@ -273,7 +273,7 @@ class ParseDataClientShell extends GearmanClientShell {
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, PER day
             echo "dateKey = $dateKey \n";
             if ($dateKey == "2016-10-28"){ 
-                echo "Exiting";
+                echo "Exitting";
      //       exit;
             }
 // Lets allocate a userinvestmentdata for this calculation period (normally daily)
@@ -292,25 +292,20 @@ class ParseDataClientShell extends GearmanClientShell {
             $database['Userinvestmentdata']['date'] = $dateKey;
 
             foreach ($dates as $keyDateTransaction => $dateTransaction) {            // read all *individual* transactions
-if ($keyDateTransaction <> "1691271-01") {   
- //   echo " Continueing\n ";
- //   continue;
-} 
-print_r($dateTransaction);
-echo "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n";
-if (isset($dateTransaction[0]['conceptChars'])) {
-    echo "index is set";
 
-if ($dateTransaction[0]['conceptChars'] == "AM_TABLE") {
-    
-    echo "AM_TABLE, adding new entry to 'newLoans'";
-    // If the loanId does not correspond to a brand new loan, then it is a extra participation in an 
-    // exiting loan, so new amortizationtable must be collected
-    $platformData['newLoans'][] =  $dateTransaction[0]['investment_loanId'];
-    print_r($platformData['newLoans']);
- //  exit;
-    }
+if ($keyDateTransaction == "1691379-01") {   
+    echo " Continueing\n ";
+ //   continue;
+    echo "Exiting\n";
+  //  exit;
 } 
+                if (isset($dateTransaction[0]['conceptChars'])) {                       // To get rid of PHP warning
+                    if ($dateTransaction[0]['conceptChars'] == "AM_TABLE") {
+                    // If the loanId does not correspond to a brand new loan, then it is a extra participation in an 
+                    // exiting loan, so new amortizationtable must be collected
+                        $platformData['newLoans'][] =  $dateTransaction[0]['investment_loanId'];  // or the id for the loan slice....
+                    }
+                } 
               
                 $newLoan = NO;
                 echo "\nkeyDateTransaction = $keyDateTransaction \n";
@@ -334,6 +329,32 @@ if ($dateTransaction[0]['conceptChars'] == "AM_TABLE") {
                             if (!empty($functionToCall)) {
                                 $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
                                 echo "result=  $result ";
+                                
+                                
+                                echo "cashflow Op = " . $tempResult['cashflowOperation'] . "\n";
+                                
+                                
+                                // update the field userinvestmentdata_cashInPlatform   
+                                $cashflowOperation = $tempResult['cashflowOperation'];
+                                if (!empty($cashflowOperation)) {
+
+                                echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDataKey . "\n";
+                                echo "================>>  " . $cashflowOperation . " ADDING THE AMOUNT OF " . $result ."\n";
+                                $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = 
+                                                $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 
+                                                $result, 16); 
+echo "#########========> database_cashInPlatform = " .    $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] ."\n";                            
+                                }                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
                                 print_r($dateTransaction);
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
@@ -372,8 +393,8 @@ if ($dateTransaction[0]['conceptChars'] == "AM_TABLE") {
                             $newLoan = YES;
                         }
                     }
-                } else { // get the investment_id of the existing loan
-                    // check for AM_TABLE and if exists; mark this loan for table download
+                } 
+                else { 
                     $filterConditions = array("investment_loanId" => $keyDateTransaction,
                         "linkedaccount_id" => $linkedaccountId);
                     $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", "investment_myInvestment",
