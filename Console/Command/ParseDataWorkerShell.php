@@ -87,17 +87,9 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId']['listOfCurrentActiveLoans']    => list of all active loans BEFORE this analysis     
      *      $data['linkedAccountId']['files'][filename1']           => Array of filenames, FQDN's
      *      $data['linkedAccountId']['files'][filename2']
-     *                                        ... ... ...
 
-     *
-
-     * @return array queue_id, userReference, linkedaccount_id, exception error
-     *  The worker provides all error information to the Client
-     *
-     *           array     analyse    convert internal array to external format using definitions of configuration file
-     *                      true  analysis done with success
-     *                      array with all errorData related to occurred error
-     * 
+     * @return array 
+     *  The worker provides all error information to the Client according to the following format:  
      *      $data['linkedAccountId']['userReference']
      *      $data['linkedAccountId']['queue_id']
      *      $data['linkedAccountId']['pfp']
@@ -105,6 +97,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId']['error’]    => optional
      *      $data['linkedAccountId']['parsingResultTransactions'] 
      *      $data['linkedAccountId'][‘parsingResultInvestments'] 
+     *      $data['linkedAccountId']['activeInvestments']
+     *      $data['linkedAccountId']['linkedaccountId']
+     *      $data['linkedAccountId']['controlVariableFile']
+     *      * 
+
      *
      */
      
@@ -260,9 +257,9 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-      print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
-        print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
-        print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
+ //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+       print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
+ //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
         print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
  //     print_r($data['tempArray'][$linkedAccountKey]['error']);
  //     print_r($data);
