@@ -198,6 +198,7 @@ public function editUserProfileData() {
      * 	
      */
     function linkAccount() {
+        Configure::write('debug', 2); 
         $error = false;
 
         if (!$this->request->is('ajax')) {

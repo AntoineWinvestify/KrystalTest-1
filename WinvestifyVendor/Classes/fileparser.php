@@ -16,8 +16,8 @@
  * 
  * 
  * @author
- * @version 0.5
- * @date  2017-11-11
+ * @version 0.8
+ * @date  2017-11-20
  * @package
  *
  *
@@ -54,10 +54,16 @@
  * Functions getDefaultValue and getCountry added
  *  
  * 2017-11-14           version 0.7
- * Functions fixes
+ * Function fixes
  * extractDataFromString
  * getAmount
  * getCurrency
+ * 
+ * 2017-11-20           version 0.8
+ * Added a new function "getConceptChars"; 
+ * 
+ * 
+ * 
  * 
  * Pending:
  * chunking, csv file check
@@ -118,13 +124,19 @@ class Fileparser {
                                 'earning'       => WIN_CONCEPT_TYPE_INCOME
 
                             );   
-    
-    
+ // Possible lables that can be applied to each concept are:
+ // AM_TABLE        => collect amortization table. This might be a brandnew table or an update of a table for 
+ //                 an already existing loan if a extra participation is bought
+ // LOAN_FINISHED   => The last payment on a loan has happened and the loan is fully repaid and finished
+ /*
+  * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
+  * array can be done using both "detail" or "type" as search key
+  */   
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
-                "account" => "CF",
+                "account" => "CF",                                              // Not (yet) used
                 "type" => "globalcashflowdata_platformDeposits"            
                 ],
             2 => [
@@ -137,13 +149,15 @@ class Fileparser {
                 "detail" => "Primary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_myInvestment",                     
+                "type" => "investment_myInvestment",  
+                "chars" => "AM_TABLE"
                 ],
             4 => [
                 "detail" => "Secondary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_secondaryMarketInvestment"              
+                "type" => "payment_secondaryMarketInvestment",
+                "chars" => "AM_TABLE"
                 ],
             5 => [
                 "detail" => "Capital_repayment",
@@ -179,7 +193,7 @@ class Fileparser {
                 "detail" => "Delayed_interest_income",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "payment_delayedInterestPayment"          
+                "type" => "payment_delayedInterestIncome"          
                 ],
             11 => [ 
                 "detail" => "Late_payment_fee_income",
@@ -215,7 +229,7 @@ class Fileparser {
                 "detail" => "Income_secondary_market",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "investment_incomeSecondaryMarket"        
+                "type" => "payment_incomeSecondaryMarket"        
                 ],
             17 => [
                 "detail" => "Currency_fluctuation_positive",
@@ -240,13 +254,13 @@ class Fileparser {
                 "detail" => "Bank_charges",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept21"
+                "type" => "globalcashflowdata_bankCharges"
                 ],
             22 => [
                 "detail" => "Cost_secondary_market",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,                
                 "account" => "PL",
-                "type" => "investment_costSecondaryMarket"
+                "type" => "payment_costSecondaryMarket"
                 ],
             23 => [
                 "detail" => "Interest_payment_secondary_market_purchase",
@@ -772,7 +786,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             switch ($countSortParameters) {
                 case 1:
                     $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
-                    $tempArray[$sortParam1] = $tempArray[$i];
+                    $tempArray[$sortParam1][] = $tempArray[$i];
                     unset($tempArray[$i]); 
                 break; 
             
@@ -876,11 +890,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      * 	Extracts the percentage as an integer from an input string
      *
-     * 	@param 		string	$inputPercentage in string format like 5,4% or 5,43% or 5%. Note that 1,23% generates 123 and 33% -> 3300
-     * 															5,5% TAE -> 550
-     * 															7,02% -> 702
-     *                                                                                                                   	8,5 % -> 850
-     * º                                                            format like 'This is a string 54%' -> 5400
+     * 	@param 		string	$inputPercentage in string format like 5,4% or 5,43% or 5%. 
+     *                          Note that 1,23% generates 123 and 33% -> 3300
+     * 				5,5% TAE -> 550
+     * 				7,02% -> 702
+     *                          8,5 % -> 850
+     *                          format like 'This is a string 54%' -> 5400
+     * 
      * 	@return 	int		$outputPercentage
      * 	
      */
@@ -983,7 +999,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     private function analyzeUnknownConcept($input, $config = null) {
         $result = 0;
 
-        
         foreach ($this->dictionaryWords as $wordKey => $word) {
             $position = stripos($input, $wordKey);
             if ($position !== false) {      // A match was found
@@ -1101,16 +1116,16 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */  
     private function getAmount($input, $thousandsSep, $decimalSep, $decimals = null) {
         if ($decimalSep == ".") {
-            $seperator = "\.";
+            $separator = "\.";
         }        
         else {                                                              // seperator =>  ","
-            $seperator = ",";
+            $separator = ",";
         }
-        if(empty($input) || $input == 0 && ($input <! 0 && $input >! 0)){ // decimals like 0,0045 are true in $input == 0
+        if (empty($input) || $input == 0 && ($input <! 0 && $input >! 0)){ // decimals like 0,0045 are true in $input == 0
             $input = "0.0";
-            $seperator = "\.";
+            $separator = "\.";
         }
-        if(strpos($input, "E") || strpos($input, "e")){
+        if (strpos($input, "E") || strpos($input, "e")){
             if(strpos($input, "E")){
                 $char = "E";
             } else {
@@ -1127,9 +1142,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 $input = strtr($input, array(',' => '.'));    
                 $input = number_format(floatval($input), 0);
             }
-            $seperator = "\.";
+            $separator = "\.";
         }       
-        $allowedChars =  "/[^0-9" . $seperator . "]/";
+        $allowedChars =  "/[^0-9" . $separator . "]/";
         $normalizedInput = preg_replace($allowedChars, "", $input);         // only keep digits, and decimal seperator
         $normalizedInputFinal = preg_replace("/,/", ".", $normalizedInput);
         return $normalizedInputFinal;
@@ -1205,7 +1220,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
         foreach ($this->currencies as $currencyIndex => $currency) {        
-            if (strpos($loanCurrency, $currency[0]) != false || $currencySymbol == $currency[0]) {                // check the ISO code
+            if (strpos($loanCurrency, $currency[0]) != false || $currencySymbol == $currency[0]) {              // check the ISO code
               return $currencyIndex;
             }
             if (strpos($loanCurrency, $currency[1]) != false || $currencySymbol == $currency[1]) {              // check the symbol
@@ -1534,11 +1549,76 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $sheet = $objPHPExcel->getActiveSheet();
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
-            echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
+            echo __FILE__ . " " . __LINE__ . " Number of rows = $highestRow and number of Columns = $highestColumn \n";
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
             $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
         }
         return $datas;
     }
+    
+    /**
+     * Function to join values together
+     * @param string $input
+     * @param string $joinSeparator
+     * @param string $order It could be FIFO or LIFO
+     * @param array $inputValues
+     * @return string
+     */
+    public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {
+        if ($order == FIFO) {
+            foreach ($inputValues as $inputValue) {
+                $input .= $joinSeparator . $inputValue;
+            }
+        }
+        else if ($order == LIFO) {
+            foreach ($inputValues as $inputValue) {
+                $inputNew .= $inputValue . $joinSeparator ;
+            }
+            $inputNew .= $input;
+            $input = $inputNew;
+        }
+        
+        return $input;
+    }
+    
+    /**
+     * Function to clean a string of unnecessary characters
+     * @param string $input cell data
+     * @param array $charactersToClean Array of chars to clean
+     * @return string Cleaned value to be returned
+     */
+    private function cleanStringInput($input, ...$charactersToClean) {
+        $input = str_replace($charactersToClean, "", $input);
+        return trim($input);
+    }
+    
+    
+    
+   /**
+     *
+     * Reads the characteristics of a concept
+     *
+     * @param string   $input       Not relevant
+     * @param string   $search      Can either be the "detail" or the "type" index of the array "tranactionDetails"
+     * 
+     * @return string  space delimited set of characteristics, 0,1 or more
+     *
+     */
+
+    private function getConceptChars($input, $search) {
+        foreach ($this->transactionDetails as $detail) { 
+            if ($detail['detail'] == $search) {
+                return $detail['chars'];
+            }
+            if ($detail['type'] == $search) {  
+                return $detail['chars'];
+            }
+        }
+        return "";  // empty string, no characteristics found
+    }   
+    
+    
+    
+    
 
 }

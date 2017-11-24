@@ -835,7 +835,7 @@ class p2pCompany {
         $request = new \cURL\Request();
         
         if(!empty($credentials)) {
-            if ($payload) {
+            if ($payload == true) {
                 $postString = $credentials;
                 $request->getOptions()
                             ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));

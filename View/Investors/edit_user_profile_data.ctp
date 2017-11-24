@@ -106,10 +106,11 @@ $(document).ready(function() {
         }	
     });	
 
-    //tooltip
-    $(document).on("click", "#tooltip", function() {
-            $("#passwordTooltip").toggle();
-    });
+    <?php //Tooltip clicks ?>
+        $(document).on("click", ".tooltipEdit", function() {
+            id = $(this).attr("id");
+            $("#tooltipEdit_" + id).slideToggle(600);
+        });
 
     //telephone
     $('#ContentPlaceHolder_telephone').intlTelInput();
@@ -166,6 +167,14 @@ $(document).ready(function() {
     .togetoverlay .overlay > .fa {
         font-size: 50px;
     }
+    .tooltip.top .tooltip-inner {
+        border: 1px solid #47badf;
+    }
+    .tooltip.top .tooltip-arrow {
+        border: 1px solid #47badf;
+        border-right: none;
+    border-bottom: none;
+    }
 </style>
 <div id="editDatosPersonales">
     <div class="row">
@@ -197,7 +206,7 @@ $(document).ready(function() {
                         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6"> <!-- Password -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_password1" data-placement="auto"><?php echo __('Password')?></label>
-                                <i class="fa fa-exclamation-circle" id="tooltip" style="color:gray"></i>
+                                <i data-container="body" data-toggle="tooltip" data-placement="top" style="color:gray" title="<?php echo __('Your password should be at least 8 characters long and contain uppercase and lowercase characters and a number.')?>" class="fa fa-exclamation-circle" ></i>
             <?php
                     $errorClass = "";
                     if (array_key_exists('password',$userValidationErrors)) {
@@ -233,11 +242,6 @@ $(document).ready(function() {
                                                                     ));
                     ?>										
                             </div>					
-                        </div>
-                    </div>
-                    <div class="row" id="passwordTooltip" style="display:none">
-                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
-                            <small><?php echo __('Your password should be at least 8 characters long and contain uppercase and lowercase characters, a number and another symbol');?></small>
                         </div>
                     </div>
             <?php
@@ -466,6 +470,7 @@ $(document).ready(function() {
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- id -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_dni"><?php echo __('Id')?></label>
+                                <i data-toggle="tooltip" style="color:gray" data-container="body" data-placement="top" title="<?php echo __('(Ex: Identification Card)')?>" class="fa fa-exclamation-circle" ></i>
             <?php
                     $errorClass = "";
                     if (array_key_exists('investor_DNI',$investorValidationErrors)) {
@@ -481,7 +486,7 @@ $(document).ready(function() {
                                                                                                     'value'			=> $resultUserData[0]['Investor']['investor_DNI'],						
                                                                     ));
             ?>
-                            </div>					
+                            </div>
                         </div>
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- telephone -->
                             <div class="form-group">

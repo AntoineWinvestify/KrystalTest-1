@@ -46,8 +46,8 @@
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header navbar-right">
                         <ul class="nav pull-left navbar-nav collapse-tablet navGreen">
-                            <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
-                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left">
+                            <li id="liLogin" style="float:left; display:inline-block" class="dropdown"><a id="liLink" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login <span class="caret"></span></a>
+                                <div id="loginDropdown" class="dropdown-menu dropdown-menu-left" style="cursor:auto;z-index: 1">
                                     <div class="row">
                                         <div class="col-sm-offset-1 col-sm-10 col-xs-offset-1 col-xs-10" style="margin-top:10px;">
                                             <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
@@ -135,7 +135,7 @@
 
                                             <div class="pull-right"> 
                                                 <?php /*<a href="#" class="center-block"><?php echo __('Forgot your password?')  ?></a>*/?>
-                                                <button type="submit" id="loginBtn" style="margin-top:10px; margin-bottom: 10px;" class="text-uppercase btn"><?php echo __('Send') ?>
+                                                <button type="submit" id="loginBtn" style="margin-top:10px; margin-bottom: 10px;z-index:10" class="text-uppercase btn"><?php echo __('Send') ?>
                                                 </button><br/>
                                             </div>
                                         </div>
@@ -179,7 +179,7 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul style="margin-top:0px;" class="dropdown-menu">
-                                    <li><a href="/pages/aboutUs "><?php //echo __('Our history') ?></a></li>
+                                    <?php /*<li><a href="/pages/aboutUs"><?php echo __('Our history') ?></a></li> */?>
                                     <li><a href="/pages/team"><?php echo __('Our team') ?></a></li>
                                 </ul>
                             </li>
@@ -221,7 +221,7 @@
                 <div id="features_left" class="col-lg-1 col-md-12 hidden-sm hidden-xs">
                     <div class="s-mockup-v1" style="position:absolute;">
                         <div id="screen" data-wow-duration=".3" data-wow-delay=".1s">
-                            <iframe width="480" style="position: absolute; top: 50px; left: 170px;" height="255" src="https://www.youtube.com/embed/rGlo2JITu2E?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+                            <iframe width="480" style="position: absolute; top: 52px; left: 170px;" height="255" src="https://www.youtube.com/embed/rGlo2JITu2E?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
                         </div>
                     </div>
                 </div>
@@ -349,7 +349,7 @@
                 </div>
                 <h4 align="center" style="padding: 0px 10px 20px 10px;"><?php echo __('Open an account and explore all the connected platforms.')?><br/><?php echo __('We make it easy for you to access the main Lending platforms with "One Click Registration"')?></h4>
                 <a href="/users/registerPanel">
-                    <button class="btn btn-lg btn1CR center-block"><?php echo __('Open account')?></button>
+                    <button class="btn btn-lg btn1CR center-block" type="button"><?php echo __('Open account')?></button>
                 </a>
             </div>
         </div>
@@ -450,30 +450,22 @@
                 //fadeout popup
                 fadeOutElement("#popUp", 15000);
 
-                //navbar not collapsing on #loginDropdown
-                $(document).on("click", "#loginDropdown", function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                });
-                
-                //navbar not collapsing on #aboutDropdown
-                $(document).on("click", ".nav li a.collapseNav", function(event) {
-                    event.preventDefault();
+                //disable clicking on #loginDropdown
+                $("#loginDropdown").on("click", function(event) {
+                    event.preventDefault;
                     event.stopPropagation();
                 });
                 
                 //navbar collapse on clicking outside navbar
                 $(document).on("click", function(){
                     $('.navbar-collapse').collapse('hide');
-                    $('ul.nav li.dropdown').find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400); //hide loginDropdown
+                    $('#loginDropdown').hide(); //hide loginDropdown
                 });
 
                 if ($(window).width() > 1023) {
-                    //Dropdown menu hover
-                    $('ul.nav li.dropdown').hover(function() {
-                      $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
-                      }, function() {
-                      $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400);
+                    //Dropdown menu click
+                    $("ul.nav li.dropdown").on("click", function() {
+                      $(this).find('.dropdown-menu').stop(true, true).fadeToggle(400);
                     });
                 }
                 

@@ -309,7 +309,7 @@ class loanbook extends p2pCompany {
                     $tempArray['marketplace_country'] = 'ES';
                     $loanData = $loan->getElementsByTagName('div');
                     foreach ($loanData as $index => $datum) {
-                        //echo HTML_ENDOFLINE . $index . " => " . $datum->nodeValue . HTML_ENDOFLINE;
+                        echo HTML_ENDOFLINE . $index . " => " . $datum->nodeValue . HTML_ENDOFLINE;
                         switch ($index) {
                             case 0:
                                 //Rating
@@ -337,6 +337,8 @@ class loanbook extends p2pCompany {
                                 $tempArray['marketplace_amount'] = $this->getMonetaryValue($datum->getElementsByTagName('span')[2]->nodeValue);
                                 //Location
                                 $tempArray['marketplace_requestorLocation'] = trim($datum->getElementsByTagName('span')[3]->nodeValue);
+                                //Loan id 
+                                $tempArray['marketplace_loanReference'] = trim($datum->getElementsByTagName('span')[4]->nodeValue) . " " . $a->getAttribute('data-id');
                                 //Progress
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($datum->getElementsByTagName('span')[5]->nodeValue);
                                 //print_r($tempArray);
@@ -353,22 +355,51 @@ class loanbook extends p2pCompany {
                                     $tempArray['marketplace_statusLiteral'] = 'En proceso';
                                 }
                                 break;
+                            //SECTOR CAN CHANGE POSITION, WE NEED FIND THAT POSITION
+                            case 20:
+                                echo '20 Sector ' . $datum->nodeValue;
+                                $this->conditon20 = false;
+                                if (strpos(trim($datum->nodeValue), 'ector') !== false) {
+                                    $this->conditon20 = true;
+                                }
+                                break;
+                            case 21:
+                                $this->conditon21 = false;
+                                if (strpos(trim($datum->nodeValue), 'ector') !== false) {
+                                    $this->conditon21 = true;
+                                }
+                                if ($this->conditon20) {
+                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                }
+                                break;
                             case 22:
-                                $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                if ($this->conditon21) {
+                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                }
+                                break;
+                            case 24:
+                                $this->conditon24 = false;
+                                if (strpos(trim($datum->nodeValue), 'ector') !== false) {
+                                    $this->conditon24 = true;
+                                }
+                                break;
+                            case 25:
+                                if ($this->conditon24) {
+                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                }
                                 break;
                         }
                     }
-
+                    $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                     foreach ($companyBackup as $inversionBackup) { //If completed and already in db, dont save
                         if ($tempArray['marketplace_subscriptionProgress'] == 10000 && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
                             $readController++;
                             $investmentController = true;
                         } else if ($tempArray['marketplace_subscriptionProgress'] == $inversionBackup['Marketplacebackup']['marketplace_subscriptionProgress'] && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference']) {
-                            $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                             unset($tempArray);
+                            continue;
                         }
                     }
-
 
 
                     if ($investmentController) { //Don't save a already existing investment
@@ -421,7 +452,7 @@ class loanbook extends p2pCompany {
         //Read investment info
         foreach ($investmentDeletedList as $loanId) {
             echo "Next Investment Url: " . $url . $loanId . HTML_ENDOFLINE;
-            $str = $this->getCompanyWebpage($url . $loanId);
+            $str = $this->getCompanyWebpage($url . explode(" ", $loanId)[1]);
             $dom = new DOMDocument;
             $dom->preserveWhiteSpace = false;
             $dom->loadHTML($str);
@@ -429,11 +460,18 @@ class loanbook extends p2pCompany {
             $tempArray['marketplace_loanReference'] = $loanId;
 
             $divs = $this->getElements($dom, 'div', 'class', 'row');
-            $tempValues = explode(" ", $divs[6]->nodeValue);
-            $tempArray['marketplace_rating'] = trim($tempValues[0]);
-            $tempArray['marketplace_interestRate'] = $this->getPercentage($tempValues[1]);
-            $tempArray['marketplace_timeLeft'] = trim($tempValues[5]);
+            /* foreach ($divs as $keyDiv => $div) {
+              echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
+              } */
+            $subdivs = $divs[6]->getElementsByTagName('div');
+            /* foreach ($subdivs as $keyDiv => $div) {
+              echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
+              } */
+            $tempArray['marketplace_rating'] = trim($subdivs[0]);
+            $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]);
+            $tempArray['marketplace_timeLeft'] = trim($subdivs[8]);
             $tempArray['marketplace_subscriptionProgress'] = 10000;
+
             $table = $dom->getElementById("table-1");
             $tds = $table->getElementsByTagName('td');
             foreach ($tds as $keyTd => $td) {
@@ -783,7 +821,7 @@ class loanbook extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
-                $this->tempArray['global']['outstandingPrincipal'] = $this->getMonetaryValue($spans[0]->nodeValue);
+                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($spans[0]->nodeValue);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
                 break;
@@ -1170,7 +1208,7 @@ class loanbook extends p2pCompany {
                 }
                 foreach ($spans as $span) {
                     if ($span->getAttribute('class') == 'lb_main_menu_bold') {
-                        $this->tempArray['global']['myWallet'] = $this->getMonetaryValue($span->nodeValue);
+                        $this->tempArray['global']['myWallet'] = $span->nodeValue;
                         echo $this->tempArray['global']['myWallet'];
                         break; //myWallet is only the first span
                     }
@@ -1190,16 +1228,16 @@ class loanbook extends p2pCompany {
 
 
                 $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
-                $this->tempArray['global']['activeInInvestments'] = $this->getMonetaryValue($outstanding); //$this->getMonetaryValue($spans[0]->nodeValue);
+                $this->tempArray['global']['outstandingPrincipal'] = $outstanding; //$this->getMonetaryValue($spans[0]->nodeValue);
 
 
                 print_r($this->tempArray);
 
                 $this->idForSwitch++;
                 $url = array_shift($this->urlSequence);
-                $dateInit = strtotime($this->dateInit);
-                $dateFinish = strtotime($this->dateFinish);
-                $url = strtr($url, array('{$date1}' => $dateInit)); //Date in seconds
+                $dateInit = strtotime($this->dateInit) * 1000;
+                $dateFinish = strtotime($this->dateFinish) * 1000;
+                $url = strtr($url, array('{$date1}' => $dateInit)); //Date in milliseconds from 1970 
                 $url = strtr($url, array('{$date2}' => $dateFinish));
                 $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->getPFPFileMulticurl($url, false, false, false, $fileName);

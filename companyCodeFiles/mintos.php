@@ -170,8 +170,15 @@ class mintos extends p2pCompany {
                 [
                     "type" => "currency",                                       // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
-                ]
-            ],
+                ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
+                ]                
+             ],
         ];
 
     protected $valuesInvestment = [
@@ -363,14 +370,19 @@ class mintos extends p2pCompany {
                 [
                     "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
                     "inputData" => [
-				"input2" => 2,                                  // set to "ACTIVE"
+				"input2" => "#current.investment_originalState",                                  // set to "ACTIVE"
                                 ],
                     "functionName" => "getDefaultValue",
-                ]
-             ],
-        
-        
-        
+                ],
+                [
+                    "type" => "investment_typeOfInvestment",                    // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => 99,                                 // set to "Not provided by P2P
+                                ],
+                    "functionName" => "getDefaultValue",
+                
+                ],
+            ]
         ];
 
     protected $valuesAmortizationTable = [
@@ -471,10 +483,11 @@ class mintos extends p2pCompany {
         "investment" => [
             "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
             "investment_loanType" => "translateLoanType",
-            "investment_amortizationMethod" => "translateAmortizationMethod",            
+            "investment_amortizationMethod" => "translateAmortizationMethod",  
+            "investment_statusOfLoan" => "translateOriginalLoanState"
         ],
         "expiredLoan" => [
-            "investment_stateOfLoan" => "translateOriginalLoanState"
+            "investment_originalState" => "translateOriginalLoanState"
         ]
     ];  
     
@@ -487,7 +500,7 @@ class mintos extends p2pCompany {
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                                 'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
                                  );
     protected $amortizationConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
@@ -776,19 +789,22 @@ class mintos extends p2pCompany {
                     $tds = $box->getElementsByTagName('td');
                     foreach($tds as $key => $td){
                         //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
-                        $tempArray["global"]["myWallet"] = $this->getMonetaryValue($tds[1]->nodeValue);
-                        $tempArray["global"]["outstandingPrincipal"] = $this->getMonetaryValue($tds[23]->nodeValue);
-                        $tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
+                        $tempArray["global"]["myWallet"] = $tds[1]->nodeValue;
+                        $tempArray["global"]["outstandingPrincipal"] = $tds[37]->nodeValue;   
+                        //$tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
 
 
                     }
                     $divs = $box->getElementsByTagName('div');
-                    foreach($divs as $key => $div){
+                    /*foreach($divs as $key => $div){
                         //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["profitibility"] = $this->getPercentage($divs[6]->nodeValue);
-                    }
+                    }*/
 
                 }
+                $lis = $boxes[0]->getElementsByTagName('li');
+                $divs = $lis[2]->getElementsByTagName('div');
+                $tempArray["global"]["activeInvestment"] = $divs[2]->nodeValue;
                 print_r($tempArray["global"]);
                 return $tempArray["global"];
         }
@@ -1025,7 +1041,7 @@ class mintos extends p2pCompany {
      * @return int                  Winvestify standardized type of investment
      */
     public function translateTypeOfInvestment($inputData) { //We don't have this in mintos
-
+ 
     }
     
     /**
@@ -1072,8 +1088,9 @@ class mintos extends p2pCompany {
      * @return int                  Winvestify standardized investmentBuyBackGuarantee
      */
     public function translateOriginalLoanState($inputData) {
+
         switch ($inputData) {
-            case "current":
+            case "Current":
                 $result = WIN_LOANSTATUS_ACTIVE;
                 break;
             case "1-15 Days Late":
@@ -1094,7 +1111,7 @@ class mintos extends p2pCompany {
             case "Finished prematurely": 
                 $result = WIN_LOANSTATUS_FINISHED;
                 break;             
-        }        
+        }   
         return $result; 
     }       
   
