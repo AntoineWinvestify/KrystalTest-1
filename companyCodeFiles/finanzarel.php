@@ -242,7 +242,12 @@ class finanzarel extends p2pCompany {
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
-
+    /*protected $callbacks = [
+        "investment" => [
+            "investment_loanType" => "translateLoanType",
+            "investment_LoanState" => "translateLoanStatus"
+        ]
+    ];*/
 
     
     function __construct() {
@@ -603,8 +608,8 @@ class finanzarel extends p2pCompany {
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
                 break;
-            case 8:
-                                if (!$this->verifyFileIsCorrect()) {
+            case 9:
+                if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 return $this->tempArray;
@@ -710,6 +715,45 @@ class finanzarel extends p2pCompany {
                 break;
         }
 
+    }
+    
+     /**
+     * Function to translate the company specific loan status to the Winvestify standardized
+     * loan type
+     * @param string $inputData     company specific loan status
+     * @return int                  Winvestify standardized loan status
+     */ 
+    public function translateLoanStatus($inputData){
+        $status = WIN_LOANSTATUS_UNKNOWN;
+        $inputData = strtoupper(trim($inputData));
+         switch ($inputData) {
+            case "PENDIENTE":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "IMPAGADA":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "RETRASADA":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "FALLIDA":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+          /*case "GANADA":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "NO ADJUDICADA":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "SUBASTA RETIRADA":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case "CADUCADA":
+                $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+           */
+        }
+        return $data;
     }
     
     /**
