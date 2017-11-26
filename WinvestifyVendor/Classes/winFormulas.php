@@ -31,6 +31,7 @@ class WinFormulas {
         "A" => [
             [
                 "type" => "userinvestmentdata_totalGrossIncome",
+                "table" => "Userinvestmentdata",
                 "operation" => "add",
                 "dayInit" => "1",
                 "dayFinish" => "367",
@@ -47,6 +48,7 @@ class WinFormulas {
         "B" => [
             [
                 "type" => "userinvestmentdata_outstandingPrincipal",
+                "table" => "userinvestmentdata",
                 //"operation" => "substract",
                 "dayInit" => "1",
                 "dayFinish" => "367",
@@ -93,8 +95,14 @@ class WinFormulas {
     ];
     
     protected $configFormula_A = [
-        ["A", "B", "substract"],
-        [""]
+        ["steps"] => [
+            ["A", "B", "substract"],
+            [""]
+        ],
+        ["type"] => [
+            "type" => "yield"
+        ]
+        
     ];
     
     protected $variablesFormula_B;
@@ -159,6 +167,45 @@ class WinFormulas {
             case "formula_B":
                 return $this->configFormula_B;
         }
+    }
+    
+    public function getSumOfValue($modelName, $value, $dateInit, $dateFinish) {
+        /*$total = $this->RequestedItem->find('all', 
+                    array(
+                        array(
+                            'fields' => array(
+                                'sum(Model.cost * Model.quantity)   AS ctotal'
+                                ), 'conditions'=>array(
+                                        'RequestedItem.purchase_request_id'=>$this->params['named']['po_id']
+                                    )
+                            )
+                        )
+                );
+        
+        $virtualFields = array('total' => 'SUM(Model.cost * Model.quantity)');
+        $total = $this->RequestedItem->find('all', array(array('fields' => array('total'), 'conditions'=>array('RequestedItem.purchase_request_id'=>$this->params['named']['po_id']))));
+        
+        $this->Member->Point->virtualFields['total'] = 'SUM(Point.points)';
+        $totalPoints = $this->Member->Point->find('all', array('fields' => array('total')));*/
+        
+        //get sum of value depending on another field with cakephp
+        //http://discourse.cakephp.org/t/how-to-sum-value-according-to-other-column-value-in-cakephp/1314/3
+        //https://book.cakephp.org/2.0/en/models/virtual-fields.html
+        
+        
+        $model = ClassRegistry::init($modelName);
+        $model->virtualFields = array($value . '_sum' => 'sum('. $value. ')');
+        $sumValue  =  $model->find('list',array(
+                'fields' => array($modelName . 'linkedaccount_id', $value . '_sum'),
+                'conditions' => array(
+                    $modelName .  ".created >=" => $dateInit,
+                    $modelName .  ".created <=" => $dateFinish
+                )
+            )
+        );
+        
+        return $sumValue;
+        
     }
     
 }
