@@ -69,19 +69,31 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->winFormulas = new WinFormulas();
         //Get investor ID by queue_userReference
         //$investorId = $this->investor->find("userReference");
+        
+        Configure::load('internalVariablesConfiguration.php', 'default');
+        $this->variablesConfig = Configure::read('internalVariables');
 
         $formulaByInvestor = $this->getFormulasFromDB();
         $formulas = [];
         foreach ($formulasByInvestor as $linkaccountIdKey => $formulas) {
+            $i = 0;
             foreach ($formulas as $formula) {
-                $formulasByCompany[$linkaccountIdKey]['formula'][] = $this->winFormulas->getFormula($formula['formula']);
-                $formulasByCompany[$linkaccountIdKey]['variablesFormula'][] = $this->winFormulas->getFormulaParams($formula['variables']);
+                $formulasByCompany[$linkaccountIdKey][$i]['formula'] = $this->winFormulas->getFormula($formula['formula']);
+                $formulasByCompany[$linkaccountIdKey][$i]['variablesFormula'] = $this->winFormulas->getFormulaParams($formula['variables']);
+                $i++;
             }
         }
         
         foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
-            foreach ($formulas as $formula) {
-                
+            foreach ($formulas as $key => $formula) {
+                foreach ($formula['variablesFormula'] as $variablesFormula) {
+                    foreach ($variablesFormula as $variableFormula) {
+                        $variableFormula['dateInit'];
+                        $variableFormula['dateFinish'];
+                        
+                        $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type']);
+                    }
+                }
             }
         }
         
