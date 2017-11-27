@@ -33,15 +33,15 @@ class WinFormulas {
                 "type" => "userinvestmentdata_totalGrossIncome",
                 "table" => "Userinvestmentdata",
                 "operation" => "add",
-                "dayInit" => "1",
-                "dayFinish" => "367",
+                "dayInit" => "-1",
+                "dayFinish" => "-367",
                 "intervals" => "inclusive"
             ],
             [
                 "type" => "globalcashflowdata_platformTotalCost",
                 "operation" => "substract",
-                "dayInit" => "1",
-                "dayFinish" => "367",
+                "dayInit" => "-1",
+                "dayFinish" => "-367",
                 "intervals" => "inclusive"
             ]
         ],
@@ -95,14 +95,12 @@ class WinFormulas {
     ];
     
     protected $configFormula_A = [
-        ["steps"] => [
+        "steps" => [
             ["A", "B", "substract"],
-            [""]
         ],
-        ["type"] => [
+        "type" => [
             "type" => "yield"
         ]
-        
     ];
     
     protected $variablesFormula_B;
