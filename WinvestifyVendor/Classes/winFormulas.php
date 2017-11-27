@@ -33,15 +33,16 @@ class WinFormulas {
                 "type" => "userinvestmentdata_totalGrossIncome",
                 "table" => "Userinvestmentdata",
                 "operation" => "add",
-                "dayInit" => "-1",
-                "dayFinish" => "-367",
+                "dateInit" => "-366",
+                "dateFinish" => "-1",
                 "intervals" => "inclusive"
             ],
             [
-                "type" => "globalcashflowdata_platformTotalCost",
+                "type" => "userinvestmentdata_totalLoansCost",
+                "table" => "Userinvestmentdata",
                 "operation" => "substract",
-                "dayInit" => "-1",
-                "dayFinish" => "-367",
+                "dateInit" => "-366",
+                "dateFinish" => "-1",
                 "intervals" => "inclusive"
             ]
         ],
@@ -50,8 +51,8 @@ class WinFormulas {
                 "type" => "userinvestmentdata_outstandingPrincipal",
                 "table" => "userinvestmentdata",
                 //"operation" => "substract",
-                "dayInit" => "1",
-                "dayFinish" => "367",
+                "dateInit" => "-366",
+                "dateFinish" => "-1",
                 "intervals" => "inclusive"
             ],
             /*[
@@ -97,6 +98,7 @@ class WinFormulas {
     protected $configFormula_A = [
         "steps" => [
             ["A", "B", "substract"],
+            [""]
         ],
         "type" => [
             "type" => "yield"
@@ -128,7 +130,7 @@ class WinFormulas {
     }
     
     public function addTwoValues($inputA, $inputB) {
-        return bcadd($inputA, $inputB, 2);
+        return bcadd($inputA, $inputB);
     }
     
     public function subtractTwoValues($inputA, $inputB) {
@@ -167,7 +169,7 @@ class WinFormulas {
         }
     }
     
-    public function getSumOfValue($modelName, $value, $dateInit, $dateFinish) {
+    public function getSumOfValue($modelName, $value, $linkedaccountId, $dateInit, $dateFinish) {
         /*$total = $this->RequestedItem->find('all', 
                     array(
                         array(
@@ -192,16 +194,22 @@ class WinFormulas {
         
         
         $model = ClassRegistry::init($modelName);
+        
+        echo "value is $value \n";
+        echo "dateInit is $dateInit";
+        echo "dateFinish is $dateFinish";
+        
+        
         $model->virtualFields = array($value . '_sum' => 'sum('. $value. ')');
         $sumValue  =  $model->find('list',array(
-                'fields' => array($modelName . 'linkedaccount_id', $value . '_sum'),
+                'fields' => array('linkedaccount_id', $value . '_sum'),
                 'conditions' => array(
-                    $modelName .  ".created >=" => $dateInit,
-                    $modelName .  ".created <=" => $dateFinish
+                    "date >=" => $dateInit,
+                    "date <=" => $dateFinish,
+                    "linkedaccount_id" => $linkedaccountId
                 )
             )
         );
-        
         return $sumValue;
         
     }
