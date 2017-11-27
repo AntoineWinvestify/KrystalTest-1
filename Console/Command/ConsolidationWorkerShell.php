@@ -92,18 +92,22 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
             foreach ($formulas as $key => $formula) {
-                foreach ($formula['variablesFormula'] as $variablesFormula) {
+                foreach ($formula['variablesFormula'] as $variablesKey => $variablesFormula) {
+                    //$formulasValue = [];
+                    $data = null;
                     foreach ($variablesFormula as $variableFormula) {
-                        $dateInit = date("Y-m-d",strtotime($variableFormula['dateInit']));
-                        $dateFinish = date("Y-m-d",strtotime($variableFormula['dateFinish']));
-                        echo "dateInit es $dateInit \n";
-                        echo "dateFinish is $dateFinish \n";
-                        exit;
-                        $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type'], $dateInit, $dateFinish);
+                        $dateInit = date("Y-m-d",strtotime($variableFormula['dateInit'] . " days"));
+                        $dateFinish = date("Y-m-d",strtotime($variableFormula['dateFinish'] . " days"));
+                        $value = $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type'], $linkaccountIdKey, $dateInit, $dateFinish);
+                        $data = $this->winFormulas->doOperationByType($data, $value, $variableFormula['operation']);
                     }
+                    $formulasByCompany[$linkaccountIdKey][$key]['formula']['variables'][$variablesKey] = $data;
                 }
             }
         }
+        
+        print_r($formulasByCompany);
+        exit;
         
         
         
@@ -134,6 +138,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             
         }*/
     }
+    
     /**
      * Function to get a value from the database
      * @param string $var It is a variable with the table and the data that we should take from database
