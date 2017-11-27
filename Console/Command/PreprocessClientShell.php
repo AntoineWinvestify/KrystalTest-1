@@ -96,22 +96,21 @@ class PreprocessClientShell extends GearmanClientShell {
                 //$key is the number of the internal id of the array (0,1,2)
                 //$key2 is type of access to company (multicurl, casper, etc)
                 foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
-                    foreach ($userLinkedaccount as $key2 => $linkedaccountsByType) {
+                    foreach ($userLinkedaccount as $typeAccessKey => $linkedaccountsByType) {
                         $data["companies"] = $linkedaccountsByType;
                         $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
                         $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
                         $data["date"] = $this->date;
-                        print_r($data["companies"]);
-                        echo "\n";
-                        echo "userReference ". $data["queue_userReference"];
-                        echo "\n";
-                        echo "queueId " . $data["queue_id"];
-                        echo "\n";
-                        echo json_encode($data);
-                        echo "\n";
-                        echo $key2;
-                        echo "\n aquiiiiiiiiiiiiiii";
-                        $this->GearmanClient->addTask($key2, json_encode($data), null, $data["queue_id"] . ".-;" . $key2 . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
+                        if (Configure::read('debug')) {
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
+                            print_r($data["companies"]);
+                            echo "userReference ". $data["queue_userReference"] . "\n";
+                            echo "queueId " . $data["queue_id"] . "\n";
+                            echo "Type of access for company" . $typeAccessKey . "\n";
+                            echo "All information \n";
+                            print_r($data);
+                        }
+                        $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
                     }
                 }
 
