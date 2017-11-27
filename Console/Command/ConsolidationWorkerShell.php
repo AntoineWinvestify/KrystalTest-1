@@ -33,6 +33,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     protected $config = [];
     
    public function startup() {
+        parent::startup();
         Configure::load('p2pGestor.php', 'default');
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
         require_once($winvestifyBaseDirectoryClasses . DS . 'winFormulas.php');    
@@ -72,9 +73,14 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
-
-        $formulaByInvestor = $this->getFormulasFromDB();
-        $formulas = [];
+        $formulasByInvestor = [];
+        //Future implementation
+        //$formulaByInvestor = $this->getFormulasFromDB();
+        foreach ($data["companies"] as $key => $company) {
+            $formulasByInvestor[$company][$key]['formula'] = "formula_A";
+            $formulasByInvestor[$company][$key]['variables'] = "formula_A";
+        }
+        
         foreach ($formulasByInvestor as $linkaccountIdKey => $formulas) {
             $i = 0;
             foreach ($formulas as $formula) {
@@ -88,10 +94,12 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             foreach ($formulas as $key => $formula) {
                 foreach ($formula['variablesFormula'] as $variablesFormula) {
                     foreach ($variablesFormula as $variableFormula) {
-                        $variableFormula['dateInit'];
-                        $variableFormula['dateFinish'];
-                        
-                        $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type']);
+                        $dateInit = date("Y-m-d",strtotime($variableFormula['dateInit']));
+                        $dateFinish = date("Y-m-d",strtotime($variableFormula['dateFinish']));
+                        echo "dateInit es $dateInit \n";
+                        echo "dateFinish is $dateFinish \n";
+                        exit;
+                        $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type'], $dateInit, $dateFinish);
                     }
                 }
             }
