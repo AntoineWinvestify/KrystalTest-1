@@ -127,27 +127,34 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
-        $result = "0.0";
-
-        if (!empty($resultData['payment']['payment_capitalRepayment'])) {
+        echo "########  ANTOINE \n"; 
+//        print_r($resultData);
+//        $result = 0.0;
+        $result = $resultData['investment']['investment_outstandingPrincipalOriginal'];
+        if (isset($resultData['investment']['investment_myInvestment'])) {
+            $result = bcadd($result,$resultData['investment']['investment_myInvestment'], 16); 
+        }
+        if (isset($resultData['payment']['payment_secondaryMarketInvestment'])) {
+            $result = bcadd($result,$resultData['payment']['payment_secondaryMarketInvestment'], 16); 
+        }        
+        if (isset($resultData['payment']['payment_capitalRepayment'])) {
             $result = bcsub($result,$resultData['payment']['payment_capitalRepayment'], 16); 
         }
-        if (!empty($resultData['payment']['payment_partialPrincipalRepayment'])) {
+        if (isset($resultData['payment']['payment_partialPrincipalRepayment'])) {
             $result = bcsub($result,$resultData['payment']['payment_partialPrincipalRepayment'], 16); 
         }  
-        if (!empty($resultData['payment']['payment_principalBuyback'])) {
+        if (isset($resultData['payment']['payment_principalBuyback'])) {
             $result = bcsub($result,$resultData['payment']['payment_principalBuyback'], 16); 
         }
-        if (!empty($resultData['investment']['investment_priceInSecondaryMarket'])) { // read from db
+        if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) { // read from db
             $result = bcsub($result,$resultData['investment']['investment_priceInSecondaryMarket'], 16); 
         }
-        if (!empty($resultData['payment']['payment_currencyFluctuationNegative'])) {
+        if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
             $result = bcsub($result,$resultData['payment']['payment_currencyFluctuationNegative'], 16);            
         }  
-        if (!empty($resultData['payment']['payment_currencyFluctuationPositive'])) {
+        if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result,$resultData['payment']['payment_currencyFluctuationPositive'], 16);   
         } 
-
         return $result;
     }
 
@@ -158,24 +165,24 @@ class UserDataShell extends AppShell {
      * @return string      the string representation of a large integer
      */
     public function calculateReceivedRepayment(&$transactionData, &$resultData) {
-        $result = '0.0';
-        if (!empty($resultData['payment']['payment_capitalRepayment'])) {
+        $result = 0.0;
+        if (isset($resultData['payment']['payment_capitalRepayment'])) {
             $result = bcadd($result,$resultData['payment']['payment_capitalRepayment'], 16);   
         }
-        if (!empty($resultData['payment']['payment_partialPrincipalRepayment'])) {
+        if (isset($resultData['payment']['payment_partialPrincipalRepayment'])) {
             $result = bcadd($result,$resultData['payment']['payment_partialPrincipalRepayment'], 16);   
         }
-         if (!empty($resultData['payment']['payment_principalBuyback'])) {
+        if (isset($resultData['payment']['payment_principalBuyback'])) {
             $result = bcadd($result,$resultData['payment']['payment_principalBuyback'], 16);   
         }
-        if (!empty($resultData['investment']['investment_priceInSecondaryMarket'])) {  // read from db
+        if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) {  // read from db
             $result = bcadd($result,$resultData['investment']['investment_priceInSecondaryMarket'], 16);  
         } 
         $result1 = '0.0';
-        if (!empty($resultData['investment']['investment_myInvestment'])) {  // read from db
+        if (isset($resultData['investment']['investment_myInvestment'])) {  // read from db
             $result1 = bcadd($result1,$resultData['investment']['investment_myInvestment'], 16);  
         }        
-        if (!empty($resultData['investment']['investment_secondaryMarketInvestment'])) {  // read from db
+        if (isset($resultData['investment']['investment_secondaryMarketInvestment'])) {  // read from db
             $result1 = bcadd($result1,$resultData['investment']['investment_secondaryMarketInvestment'], 16);  
         }        
         $result1 = bcdiv($result,$result, 16);  
@@ -229,27 +236,27 @@ class UserDataShell extends AppShell {
      * @return string      the string representation of a large integer
      */
     public function calculateTotalLoanCost(&$transactionData, &$resultData) {
-        $result = "0.0";
+        $result = 0.0;
         
-        if (!empty($resultData['payment']['payment_commissionPaid'])) {
+        if (isset($resultData['payment']['payment_commissionPaid'])) {
             $result = bcadd($resultData['payment']['payment_regularGrossInterestIncome'],$result, 16);
         }
-        if (!empty($resultData['globalcashflowdata']['globalcashflowdata_bankCharges'])) {
+        if (isset($resultData['globalcashflowdata']['globalcashflowdata_bankCharges'])) {
             $result = bcadd($resultData['globalcashflowdata']['payment_interestIncomeBuyback'],$result, 16);
         }        
-        if (!empty($resultData['payment']['payment.payment_taxVAT'])) {
+        if (isset($resultData['payment']['payment.payment_taxVAT'])) {
             $result = bcadd($resultData['payment']['payment_delayedInterestIncome'],$result, 16);
         }
-        if (!empty($resultData['payment']['payment.payment_incomeWithholdingTax'])) {
+        if (isset($resultData['payment']['payment.payment_incomeWithholdingTax'])) {
             $result = bcadd($resultData['payment']['payment_delayedInterestIncomeBuyback'],$result, 16);
         } 
-        if (!empty($resultData['payment']['payment.payment_interestPaymentSecondaryMarketPurchase'])) {
+        if (isset($resultData['payment']['payment.payment_interestPaymentSecondaryMarketPurchase'])) {
             $result = bcadd($resultData['payment']['payment_latePaymentFeeIncome'],$result, 16);
         }
-        if (!empty($resultData['investment']['investment_currencyExchangRateFee'])) {
+        if (isset($resultData['investment']['investment_currencyExchangRateFee'])) {
             $result = bcadd($resultData['investment']['investment_currencyExchangRateFee'],$result, 16);
         }       
-        if (!empty($resultData['payment']['payment.payment_costSecondaryMarket'])) {
+        if (isset($resultData['payment']['payment.payment_costSecondaryMarket'])) {
             $result = bcadd($resultData['payment']['payment_costSecondaryMarket'],$result, 16);
         }       
         
@@ -291,33 +298,33 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
     public function calculateTotalGrossIncome(&$transactionData, &$resultData) {
-        $result = '0.0';
+        $result = 0.0;
         
-        if (!empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
+        if (isset($resultData['payment']['payment_regularGrossInterestIncome'])) {
             $result = bcadd($resultData['payment_regularGrossInterestIncome'],$result, 16);
         }
-        if (!empty($resultData['payment']['payment_interestIncomeBuyback'])) {
+        if (isset($resultData['payment']['payment_interestIncomeBuyback'])) {
             $result = bcadd($resultData['payment_interestIncomeBuyback'],$result, 16);
         }        
-        if (!empty($resultData['payment']['payment_delayedInterestIncome'])) {
+        if (isset($resultData['payment']['payment_delayedInterestIncome'])) {
             $result = bcadd($resultData['payment_delayedInterestIncome'],$result, 16);
         }
-        if (!empty($resultData['payment']['payment_delayedInterestIncomeBuyback'])) {
+        if (isset($resultData['payment']['payment_delayedInterestIncomeBuyback'])) {
             $result = bcadd($resultData['payment_delayedInterestIncomeBuyback'],$result, 16);
         } 
-        if (!empty($resultData['payment']['payment_latePaymentFeeIncome'])) {
+        if (isset($resultData['payment']['payment_latePaymentFeeIncome'])) {
             $result = bcadd($resultData['payment_latePaymentFeeIncome'],$result, 16);
         }
-        if (!empty($resultData['payment']['payment_loanRecoveries'])) {
+        if (isset($resultData['payment']['payment_loanRecoveries'])) {
             $result = bcadd($resultData['payment_loanRecoveries'],$result, 16);
         } 
-        if (!empty($resultData['payment']['payment_loanIncentivesAndBonus'])) {
+        if (isset($resultData['payment']['payment_loanIncentivesAndBonus'])) {
             $result = bcadd($resultData['payment_loanIncentivesAndBonus'],$result, 16);
         }
-        if (!empty($resultData['payment']['payment_loanCompensation'])) {
+        if (isset($resultData['payment']['payment_loanCompensation'])) {
             $result = bcadd($resultData['payment_loanCompensation'],$result, 16);
         }
-        if (!empty($resultData['payment']['payment_incomeSecondaryMarket'])) {
+        if (isset($resultData['payment']['payment_incomeSecondaryMarket'])) {
             $result = bcadd($resultData['payment_incomeSecondaryMarket'],$result, 16);
         }  
         return $result;   
@@ -540,10 +547,10 @@ class UserDataShell extends AppShell {
     
     
     
-    /* NOT YET  chewck if the index is investment or payment
+    /* NOT YET  checck if the index is investment or payment
      * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
      * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
+     * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      * @return string      the string representation of a large integer
      */
     public function calculateTotalNetIncome(&$transactionData, &$resultData) {
@@ -563,7 +570,7 @@ class UserDataShell extends AppShell {
     /*
      * Get the amount which corresponds to the "InterestgrossIncome" concept
      * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
+     * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      * @return string      the string representation of a large integer
      */
     public function calculateMyWallet() {
@@ -588,21 +595,16 @@ class UserDataShell extends AppShell {
      * for the controlVariables check
      * 
      * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
+     * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      * @return string      the string representation of a large integer
      */
-    public function calculateTotalOutstandingPrincipal() {
-        $sum = 0;
-        return;
-        $listResult = $this->Paymenttotal->find('list', array(
-            'fields' => array('paymenttotal_interestgrossIncome'),
-            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
-        ));
-
-        foreach ($listResult as $item) {
-            $sum = bcadd($sum, $item, 16);
-        }
-        return $sum;
+    public function calculateTotalOutstandingPrincipal(&$transactionData, &$resultData) {
+  //      echo "CALCULATE TOTAL OUTSTANDING\n";
+//print_r($resultData);       
+        $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'],
+                      $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
+        $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
+        return $result;
     }
    
  
@@ -610,7 +612,7 @@ class UserDataShell extends AppShell {
     /*
      *  Get the amount which corresponds to the "cost secondary market" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
      * 47
      */
@@ -623,7 +625,7 @@ class UserDataShell extends AppShell {
     /*
      *  Get the amount which corresponds to the "income secondary market" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
      * 47
      */
@@ -635,7 +637,7 @@ class UserDataShell extends AppShell {
     /*
      *  Get the amount which corresponds to the "SecondaryMarketInvestment" concept
      *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
      * 47
      */
@@ -644,10 +646,6 @@ class UserDataShell extends AppShell {
     }  
     
 }
-
-
-calculateSecondaryMarketInvestment
-
 
 
 

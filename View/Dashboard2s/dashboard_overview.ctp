@@ -263,7 +263,7 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The sum of Invested Assets and Cash')?>" class="ion ion-ios-information-outline" ></i></small></p>
+                                            <p class="headerBox"><strong><?php echo __('Total Volume')?></strong> <small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The sum of Invested Assets and Cash. Note that due to rounding the visual result might be off with 1 cent. Internally however the system uses many decimals in order to avoid rounding errors ')?>" class="ion ion-ios-information-outline" ></i></small></p>
                                             <h3 class="title"> <?php echo round($global['totalVolume'], 2) . " &euro;"; ?></h3>
                                         </div>
                                         <div class="card-footer">

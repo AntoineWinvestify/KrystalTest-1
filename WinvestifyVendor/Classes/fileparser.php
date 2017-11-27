@@ -125,8 +125,8 @@ class Fileparser {
 
                             );   
  // Possible lables that can be applied to each concept are:
- // AM_TABLE        => collect amortization table. This might be a brandnew table or an update of a table for 
- //                 an already existing loan if a extra participation is bought
+ // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
+ //                 an already existing loan if a extra participation is bought.
  // LOAN_FINISHED   => The last payment on a loan has happened and the loan is fully repaid and finished
  /*
   * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
@@ -135,7 +135,7 @@ class Fileparser {
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,                   // 1 = income, 2 = cost
                 "account" => "CF",                                              // Not (yet) used
                 "type" => "globalcashflowdata_platformDeposits"            
                 ],
