@@ -71,6 +71,9 @@
     .blackImportant {
        color: black !important;
     }
+    .navGreen>li>a:hover, .nav .open>a:hover {
+        border-bottom: none;
+    }
 </style>
 
       <!-- Navbar Right Menu -->
