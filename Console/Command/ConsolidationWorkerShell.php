@@ -98,14 +98,14 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             foreach ($formulas as $key => $formula) {
                 foreach ($formula['variablesFormula'] as $variablesKey => $variablesFormula) {
                     //$formulasValue = [];
-                    $data = null;
+                    $dataFormula = null;
                     foreach ($variablesFormula as $variableFormula) {
                         $dateInit = $this->getDateForSum($variableFormula['dateInit']);
                         $dateFinish = $this->getDateForSum($variableFormula['dateFinish']);
                         $value = $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type'], $linkaccountIdKey, $dateInit, $dateFinish);
-                        $data = $this->winFormulas->doOperationByType($data, current($value), $variableFormula['operation']);
+                        $dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
                     }
-                    $formulasByCompany[$linkaccountIdKey][$key]['formula']['variables'][$variablesKey] = $data;
+                    $formulasByCompany[$linkaccountIdKey][$key]['formula']['variables'][$variablesKey] = $dataFormula;
                 }
             }
         }
@@ -113,42 +113,65 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
             foreach ($formulas as $key => $formula) {
                 print_r($formula);
-                $data = null;
+                $dataFormula = null;
                 foreach ($formula['formula']['steps'] as $stepsKey => $stepsFormula) {
                     $value = $this->getValueFromFormula($stepsFormula, $formula['formula']['variables']);
-                    $data = $this->winFormulas->doOperationByType($data, $value, $stepsFormula[1]);
+                    $dataFormula = $this->winFormulas->doOperationByType($dataFormula, $value, $stepsFormula[1]);
                 }
-                $formulasByCompany[$linkaccountIdKey][$key]['formula']['result']['data'] = $data;
+                $formulasByCompany[$linkaccountIdKey][$key]['formula']['result']['data'] = $dataFormula;
             }
         }
-        //print_r($formulasByCompany);
-        //exit;
-        /*foreach ($data["companies"] as $linkedaccount) {
-            unset($newComp);
-            $index++;
-            echo "<br>******** Executing the loop **********<br>";
-            $companyId = $linkedaccount['Linkedaccount']['company_id'];
-            echo "companyId = $companyId <br>";
-            $companyConditions = array('Company.id' => $companyId);
-            $result = $this->Company->getCompanyDataList($companyConditions);
-            $newComp = $this->companyClass($result[$companyId]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
-            $newComp->defineConfigParms($result[$companyId]);  // Is this really needed??
-            $newComp->setQueueId($data["queue_id"]);
-            $newComp->setCompanyName($result[$companyId]['company_codeFile']);
-            $newComp->setUserReference($data["queue_userReference"]);
-            $newComp->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
-            ///Maybe this is needed 
-            //https://book.cakephp.org/2.0/en/core-utility-libraries/time.html#CakeTime::dayAsSql
-            $formulas = $newComp->getFormulas();
-            foreach ($formulas as $formula) {
-                foreach ($formula['param'] as $param) {
-                    //Info about Variable variable 
-                    //http://php.net/manual/en/language.variables.variable.php
-                    $$param = $this->getValue($param, $linkedaccount['Linkedaccount']['id']);
+        $i = 0;
+        $formulasInvestorTotal[$i]['formula'] = "formula_A";
+        $formulasInvestorTotal[$i]['variables'] = "formula_A";
+        $i++;
+        $formulasInvestorTotal[$i]['formula'] = "formula_A";
+        $formulasInvestorTotal[$i]['variables'] = "formula_B";
+        $i = 0;
+        foreach ($formulasInvestorTotal as $formula) {
+            $formulasTotal[$i]['formula'] = $this->winFormulas->getFormula($formula['formula']);
+            $formulasTotal[$i]['variablesFormula'] = $this->winFormulas->getFormulaParams($formula['variables']);
+            $i++;
+        }
+        
+        foreach ($formulasTotal as $key => $formula) {
+            foreach ($formula['variablesFormula'] as $variablesKey => $variablesFormula) {
+                //$formulasValue = [];
+                $dataFormula = null;
+                foreach ($variablesFormula as $variableFormula) {
+                    $dateInit = $this->getDateForSum($variableFormula['dateInit']);
+                    $dateFinish = $this->getDateForSum($variableFormula['dateFinish']);
+                    $value = $this->winFormulas->getSumOfValueByUserReference($variableFormula['table'], $variableFormula['type'], $data["queue_userReference"], $dateInit, $dateFinish);
+                    $dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
                 }
+                $formulasTotal[$key]['formula']['variables'][$variablesKey] = $dataFormula;
             }
-            
-        }*/
+        }
+        
+        foreach ($formulasTotal as $key => $formula) {
+            $dataFormula = null;
+            foreach ($formula['formula']['steps'] as $stepsKey => $stepsFormula) {
+                $value = $this->getValueFromFormula($stepsFormula, $formula['formula']['variables']);
+                $dataFormula = $this->winFormulas->doOperationByType($dataFormula, $value, $stepsFormula[1]);
+            }
+            $formulasTotal[$key]['formula']['result']['data'] = $dataFormula;
+        }
+        
+        $result = [];
+        
+        foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
+            foreach ($formulas as $key => $formula) {
+                $result[$linkaccountIdKey] = $formula["result"];
+            }
+        }
+        
+        $data['tempArray'] = $result;
+        
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
+        } 
+        
+        return json_encode($data);
     }
     
     /**
