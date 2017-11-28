@@ -62,7 +62,7 @@ class WinFormulas {
             ["A"],
             ["B", "divide"],
             [1, "add"],
-            [12, "pow"],
+            [365, "pow"],
             [1, "substract"]
         ],
         "result" => [
@@ -126,6 +126,20 @@ class WinFormulas {
     ];
     
     protected $configFormula_B = [
+        "steps" => [
+            ["A"],
+            ["B", "divide"],
+            [1, "add"],
+            [365, "pow"],
+            [1, "substract"]
+        ],
+        "result" => [
+            "type" => "userinvestmentdata_netAnualReturnPastYear",
+            "table" => "Userinvestmentdata"
+        ]
+    ];
+    
+    protected $variablesFormula_C = [
         
     ];
     
@@ -231,6 +245,28 @@ class WinFormulas {
                     "date >=" => $dateInit,
                     "date <=" => $dateFinish,
                     "linkedaccount_id" => $linkedaccountId
+                )
+            )
+        );
+        return $sumValue;
+        
+    }
+    
+    public function getSumOfValueByUserReference($modelName, $value, $userReference, $dateInit, $dateFinish) {
+        $model = ClassRegistry::init($modelName);
+        
+        echo "value is $value \n";
+        echo "dateInit is $dateInit";
+        echo "dateFinish is $dateFinish";
+        
+        
+        $model->virtualFields = array($value . '_sum' => 'sum('. $value. ')');
+        $sumValue  =  $model->find('list',array(
+                'fields' => array('userinvestmentdata_investorIdentity', $value . '_sum'),
+                'conditions' => array(
+                    "date >=" => $dateInit,
+                    "date <=" => $dateFinish,
+                    "userinvestmentdata_investorIdentity" => $userReference
                 )
             )
         );
