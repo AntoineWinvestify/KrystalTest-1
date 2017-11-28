@@ -188,7 +188,7 @@ echo $companyInvestmentDetails[0];
                         <div class="nav-tabs-wrapper">
                             <ul class="nav nav-tabs" data-tabs="tabs">
                                 <li>
-                                    <a id="backOverview">
+                                    <a id="backOverview" style="cursor:pointer;">
                                         Global Overview
                                         <div class="ripple-container"></div>
                                     </a>
