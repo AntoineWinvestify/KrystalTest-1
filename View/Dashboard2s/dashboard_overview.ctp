@@ -263,34 +263,34 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The sum of Invested Assets and Cash. Note that due to rounding the visual result might be off with 1 cent. Internally however the system uses many decimals in order to avoid rounding errors')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Total Volume')?></strong></p>
+                                            <p class="headerBox"><small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The sum of Invested Assets and Cash. Note that due to rounding the visual result might be off with 1 cent. Internally however the system uses many decimals in order to avoid rounding errors.')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Total Volume')?></strong></p>
                                             <h3 class="title"> <?php echo round($global['totalVolume'], 2) . " &euro;"; ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Total nominal value of all assets held in your linked accounts')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Total nominal value of all assets held in your linked accounts.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
                                                         <td class="right"><?php echo round($global['investedAssets'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The part of Invested Assets, which are dedicated to specific loans that are not yet issued')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The part of Invested Assets, which are dedicated to specific loans that are not yet issued.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
                                                         <td class="right"><?php echo round($global['reservedFunds'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total cash balance on all your linked accounts. You should use this balance to invest in assets to reduce Cash Drag')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total cash balance on all your linked accounts. You should use this balance to invest in assets to reduce Cash Drag.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
                                                         <td class="right"><?php echo round($global['cash'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Total Volume, which is not invested in assets and therefore does not yield any interest currently')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Total Volume, which is not invested in assets and therefore does not yield any interest currently.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
                                                         <td class="right"><?php echo round(bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawals from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawals from these platforms.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
                                                         <td class="right"><?php echo round($global['netDeposits'], 2) . " &euro;";?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Number of individual loans or assets that you currently own. The higher the sum, the better diversified your portfolio is')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Number of individual loans or assets that you currently own. The higher the sum, the better diversified your portfolio is.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
                                                         <td class="right"><?php echo $global['activeInvestment'] ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
@@ -302,28 +302,28 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Actual Yield')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Actual Yield')?></strong></p>
+                                            <p class="headerBox"><small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Actual Yield.')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Actual Yield')?></strong></p>
                                             <h3 class="title">12,25%</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Net Annual Return - Total Funds')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Net Annual Return - Total Funds.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
                                                         <td class="right"><?php echo __('12,15%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Net Annual Return')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Net Annual Return.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
                                                         <td class="right"><?php echo __('11,33%')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Net Annual Return past year')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR past year')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Net Annual Return past year.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR past year')?></td>
                                                         <td class="right"><?php echo __('9,22%')?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
                                                         <td class="left">
-                                                            <i data-toggle="tooltip" data-placement="top" title="<?php echo __('Net Return')?>" class="ion ion-ios-information-outline" ></i> 
+                                                            <i data-toggle="tooltip" data-placement="top" title="<?php echo __('Net Return.')?>" class="ion ion-ios-information-outline" ></i> 
                                                             <span class="chartIcon" id="netReturn">
                                                                 <?php echo __('Net Return')?> 
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
@@ -332,7 +332,7 @@
                                                         <td class="right"><?php echo __('3.743,82 €')?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year')?></td>
                                                         <td class="right"><?php echo __('935,00 €')?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
@@ -344,38 +344,38 @@
                                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                                     <div class="card card-stats">
                                         <div class="card-content">
-                                            <p class="headerBox"><small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Percentage of your total invested assets that are in status Default, i.e. more than 90 days overdue')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Defaulted')?></strong></p>
+                                            <p class="headerBox"><small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Percentage of your total invested assets that are in status Default, i.e. more than 90 days overdue.')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Defaulted')?></strong></p>
                                             <h3 class="title"><?php echo $defaultedRange['>90'] . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have no payment delays at all')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have no payment delays at all.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
                                                         <td class="right"><?php echo $defaultedRange['current'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 1 and 7 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('1-7 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 1 and 7 days of payment delay.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('1-7 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['1-7'] . "%"?></td>                                                    
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 8 and 30 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('8-30 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 8 and 30 days of payment delay.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('8-30 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['8-30'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 31 and 60 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-60 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 31 and 60 days of payment delay.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-60 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['31-60'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 61 and 90 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('61-90 DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 61 and 90 days of payment delay.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('61-90 DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['61-90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have more than 90 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('91 - DPD')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have more than 90 days of payment delay.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('91 - DPD')?></td>
                                                         <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
+                                                        <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
                                                         <td class="right"><?php echo __('3.678,00 €')?></td>
                                                     </tr>
                                                 </tbody>
@@ -418,11 +418,11 @@
                         <thead>
                             <tr>
                                 <th><?php echo __('Lending Company')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('')?>" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('')?>" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to Platform')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
-                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The sum of Invested Assets and Cash. Note that due to rounding the visual result might be off with 1 cent. Internally however the system uses many decimals in order to avoid rounding errors.')?>" class="ion ion-ios-information-outline"></i> <?php echo __('Total Volume')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total cash balance on all your linked accounts. You should use this balance to invest in assets to reduce Cash Drag.')?>" class="ion ion-ios-information-outline"></i> <?php echo __('Cash')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of the total volume invested in this platform in relationship to your total invested volume.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Explosure to Platform')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Actual Yield.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Actual Yield')?></th>
+                                <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have no payment delays at all.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></th>
                             </tr>
                         </thead>
                         <tbody>
