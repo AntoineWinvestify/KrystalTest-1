@@ -32,7 +32,6 @@ class WinFormulas {
             [
                 "type" => "userinvestmentdata_totalGrossIncome",
                 "table" => "Userinvestmentdata",
-                "operation" => "add",
                 "dateInit" => "-366",
                 "dateFinish" => "-1",
                 "intervals" => "inclusive"
@@ -50,7 +49,7 @@ class WinFormulas {
             [
                 "type" => "userinvestmentdata_outstandingPrincipal",
                 "table" => "userinvestmentdata",
-                //"operation" => "substract",
+                "operation" => "add",
                 "dateInit" => "-366",
                 "dateFinish" => "-1",
                 "intervals" => "inclusive"
@@ -97,11 +96,15 @@ class WinFormulas {
     
     protected $configFormula_A = [
         "steps" => [
-            ["A", "B", "substract"],
-            [""]
+            ["A"],
+            ["B", "divide"],
+            [1, "add"],
+            [12, "pow"],
+            [1, "substract"]
         ],
-        "type" => [
-            "type" => "yield"
+        "result" => [
+            "type" => "userinvestmentdata_netAnualReturnPast12Months",
+            "table" => "Userinvestmentdata"
         ]
     ];
     
@@ -125,28 +128,30 @@ class WinFormulas {
             case "pow":
                 $result = $this->powTwoValues($inputA, $inputB);
                 break;
+            default:
+                $result = $inputB;
         }
         return $result;
     }
     
     public function addTwoValues($inputA, $inputB) {
-        return bcadd($inputA, $inputB);
+        return bcadd($inputA, $inputB, 16);
     }
     
     public function subtractTwoValues($inputA, $inputB) {
-        return bcsub($inputA, $inputB, 2);
+        return bcsub($inputA, $inputB, 16);
     } 
     
     public function divideTwoValues($inputA, $inputB) {
-        return bcmul($inputA, $inputB, 2);
+        return bcdiv($inputA, $inputB, 16);
     } 
     
     public function multiplyTwoValues($inputA, $inputB) {
-        return bcdiv($inputA, $inputB, 2);
+        return bcmul($inputA, $inputB, 16);
     } 
     
     public function powTwoValues($inputA, $inputB) {
-        return bcpow($inputA, $inputB, 2);
+        return bcpow($inputA, $inputB, 16);
     }
     
     public function getFormulaParams($type) {
