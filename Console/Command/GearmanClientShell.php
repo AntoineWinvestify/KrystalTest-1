@@ -256,6 +256,7 @@ class GearmanClientShell extends AppShell {
      */   
     public function checkJobs ($presentStatus, $limit) {
         $userAccess = 0;
+        echo "VVV";
         $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
         return $jobList;
     }    

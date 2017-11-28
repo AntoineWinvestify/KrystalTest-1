@@ -21,8 +21,8 @@ foreach ($company as $company) {
                 <div class="box-footer no-padding">
                     <div class="row">
                         <div class="checkboxDiv col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                            <div class="input_platforms"><input type="checkbox" class="check"> <?php echo __('He leído la ') ?><a href="<?php echo $company['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
-                            <div class="input_platforms"><input type="checkbox" class="check"> <?php echo __('He leído los ') ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
+                            <div class="input_platforms"><input type="checkbox" class="check"> <?php echo __("I have read and agree") ?>&nbsp;<a href="<?php echo $company['Company']['Company_privacityUrl'] ?>"><?php echo __('Privacy Policy') ?></a></div>
+                            <div class="input_platforms"><input type="checkbox" class="check"> <?php echo __("I have read and agree ") ?><a href="<?php echo $company['Company']['Company_termsUrl'] ?>"><?php echo __('Terms and Conditions') ?></a></div>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <!-- by clicking this button it must charge a modal with terms & conditions + Yes/No buttons to CONFIRM the selection -->

@@ -67,6 +67,8 @@ class PreprocessWorkerShell extends GearmanWorkerShell {
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], GENERATE_REPORT_SEQUENCE);
+            $this->newComp[$i]->setDateInit($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']);
+            $this->newComp[$i]->setDateFinish($data["date"]);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
             $this->newComp[$i]->generateCookiesFile();

@@ -38,7 +38,7 @@ function overviewDataJS() {
 
 function singlePfpJS() {
 
-    $(document).on("click", "#activeTab", function () {
+    $(document).on("click", "#activeTab", function (event) {
         event.preventDefault();
         id = $(this).attr("value");
         var params = {
@@ -49,7 +49,7 @@ function singlePfpJS() {
         getServerData(link, data, successLoansAjax, errorLoansAjax);
     });
 
-    $(document).on("click", "#defaultedTab", function () {
+    $(document).on("click", "#defaultedTab", function (event) {
         event.preventDefault();
         id = $(this).attr("value");
         var params = {

@@ -57,13 +57,14 @@ class ParseDataClientShell extends GearmanClientShell {
         echo "Deleting Payment\n";
         $this->Payment = ClassRegistry::init('Payment');
         $this->Payment->deleteAll(array('Payment.id >' => 0), false);
-
-//    echo "Deleting Userinvestmentdata\n";
-//    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-//    $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
-//    echo "Deleting Globalcashflowdata\n";
-//    $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-//    $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
+       
+        echo "Deleting Userinvestmentdata\n";
+        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+        $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
+        
+        echo "Deleting Globalcashflowdata\n";
+        $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+        $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
 
 
         return;
@@ -95,19 +96,19 @@ class ParseDataClientShell extends GearmanClientShell {
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
         
-
         while (true) {
             $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
             print_r($pendingJobs);
+
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
             }
+
             if (!empty($pendingJobs)) {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
                 }
                 foreach ($pendingJobs as $keyjobs => $job) {
-                    
                     $userReference = $job['Queue']['queue_userReference'];
                     $queueId = $job['Queue']['id'];
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
@@ -134,12 +135,13 @@ class ParseDataClientShell extends GearmanClientShell {
                         $files[WIN_FLOW_INVESTMENT_FILE] = $dirs->findRecursive(WIN_FLOW_INVESTMENT_FILE . ".*", true);
                         $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
                         $listOfActiveInvestments = $this->getListActiveInvestments($linkedAccountId);
-
+                        $controlVariableFile = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE. ".*", true);
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
                             'activeInvestments' => count($listOfActiveInvestments),
                             'listOfCurrentActiveLoans' => $listOfActiveInvestments,
                             'userReference' => $job['Queue']['queue_userReference'],
+                            'controlVariableFile' => $controlVariableFile[0],
                             'files' => $files);
                     }
                     debug($params);
@@ -159,7 +161,6 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
-
                 foreach ($this->tempArray as $queueIdKey => $result) {
                     foreach ($result as $platformKey => $platformResult) {
                         // First check for application level errors
@@ -176,23 +177,27 @@ class ParseDataClientShell extends GearmanClientShell {
                         $baseDirectory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                         $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
 // Add the status per PFP, 0 or 1
+                        
                         $mapResult = $this->mapData($platformResult);
 
-                        if (!empty($platformResult['newLoans'])) {
-                            $fileHandle = new File($baseDirectory . 'loanIds.json', true, 0644);
-                            if ($fileHandle) {
-                                if ($fileHandle->write(json_encode($platformResult['newLoans']), "w", true)) {
-                                    $fileHandle->close();
-                                    echo "File " . $baseDirectory . "loanIds.json written\n";
-                                }
+                        if ($mapResult == true) { 
+                            $newLoans = $platformResult['newLoans'];
+                            if (!empty($newLoans)) {
+                  //              $controlVariableFile =  $platformData['controlVariableFile'];?
+                                print_r($newLoans);
+                                file_put_contents($baseDirectory . "loanIds.json", json_encode(($newLoans)));
+                                $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
+                            } 
+                            else {
+                                $newFlowState = WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED;
                             }
-                            $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
-                        } else {
-                            $newFlowState = WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED;
+                        }
+                        else {
+                            echo "ERROR ENCOUNTERED\n"; 
                         }
                     }
                     
-                    $this->queueInfo[$queueIdKey]["loanIds"] = $platformResult['newLoans']; // store the list of loan Ids in DB, for FLOW3B
+                    $this->queueInfo[$queueIdKey]["loanIds"] = $newLoans; // store the list of loan Ids in DB, for FLOW3B
                     $this->Queue->id = $queueIdKey;
                     $this->Queue->save(array('queue_status' => $newFlowState,
                         'queue_info' => json_encode($this->queueInfo[$queueIdKey]),
@@ -200,7 +205,8 @@ class ParseDataClientShell extends GearmanClientShell {
                     );
                 }
                 break;
-            } else {
+            } 
+            else {
                 $inActivityCounter++;
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n";
@@ -210,8 +216,9 @@ class ParseDataClientShell extends GearmanClientShell {
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";
-                    exit;
+                   
                 }
+                exit;
             }
         }
     }
@@ -257,13 +264,18 @@ class ParseDataClientShell extends GearmanClientShell {
         $investmentId = NULL;
         $linkedaccountId = $platformData['linkedaccountId'];
         $userReference = $platformData['userReference']; 
-        $controlVariableActiveInvestments = $platformData['activeInvestments'];
+        $controlVariableFile =  $platformData['controlVariableFile'];                   // Control variables as supplied by P2P
+        $controlVariableActiveInvestments = $platformData['activeInvestments'];         // Our control variable
 
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');       // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) { // these are all the transactions, PER day
             echo "dateKey = $dateKey \n";
+            if ($dateKey == "2016-10-28"){ 
+                echo "Exiting";
+     //       exit;
+            }
 // Lets allocate a userinvestmentdata for this calculation period (normally daily)
             // reset the relevant variables before going to next date
             unset($database);              // Start with a clean shadow database
@@ -276,10 +288,30 @@ class ParseDataClientShell extends GearmanClientShell {
 
             $this->Userinvestmentdata->create();
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
-            $database['Userinvestmentdata']['investorIdentity'] = $userReference;
+            $database['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
             $database['Userinvestmentdata']['date'] = $dateKey;
 
             foreach ($dates as $keyDateTransaction => $dateTransaction) {            // read all *individual* transactions
+if ($keyDateTransaction <> "1691271-01") {   
+ //   echo " Continueing\n ";
+ //   continue;
+} 
+print_r($dateTransaction);
+echo "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n";
+if (isset($dateTransaction[0]['conceptChars'])) {
+    echo "index is set";
+
+if ($dateTransaction[0]['conceptChars'] == "AM_TABLE") {
+    
+    echo "AM_TABLE, adding new entry to 'newLoans'";
+    // If the loanId does not correspond to a brand new loan, then it is a extra participation in an 
+    // exiting loan, so new amortizationtable must be collected
+    $platformData['newLoans'][] =  $dateTransaction[0]['investment_loanId'];
+    print_r($platformData['newLoans']);
+ //  exit;
+    }
+} 
+              
                 $newLoan = NO;
                 echo "\nkeyDateTransaction = $keyDateTransaction \n";
                 //        print_r($dateTransaction);
@@ -312,24 +344,24 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
                             echo $this->variablesConfig[$tempResult['internalIndex']]['databaseName'];
-                            print_r($database[$dbTable]);
+//                            print_r($database[$dbTable]);
                         }
                     }
                     continue;
                 }
-
+ 
                 echo "---------> ANALYZING NEXT LOAN\n";
-                if (in_array($keyDateTransaction, $platformData['newLoans'])) {          // check if loanId is new
-                    $arrayIndex = array_search($keyDateTransaction, $platformData['newLoans']);
+                if (in_array($keyDateTransaction, $platformData['workingNewLoans'])) {          // check if loanId is new
+                    $arrayIndex = array_search($keyDateTransaction, $platformData['workingNewLoans']);
                     if ($arrayIndex !== false) {        // Deleting the array from new loans list
-                        unset($platformData['newLoans'][$arrayIndex]);
+                        unset($platformData['workingNewLoans'][$arrayIndex]);
                     }
                     echo "Storing the data of a NEW loan in the shadow db table\n";
                     $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
                     
-//print_r($platformData['parsingResultInvestments'][$keyDateTransaction]);
                     // check all the data in the analyzed investment table
-                    foreach ($platformData['parsingResultInvestments'][$keyDateTransaction] as $investmentDataKey => $investmentData) {
+                    print_r($platformData['parsingResultInvestments'][$keyDateTransaction][0]);
+                    foreach ($platformData['parsingResultInvestments'][$keyDateTransaction][0] as $investmentDataKey => $investmentData) {
                         $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
 
                         if (!empty($tempResult)) {
@@ -341,44 +373,72 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                     }
                 } else { // get the investment_id of the existing loan
+                    // check for AM_TABLE and if exists; mark this loan for table download
                     $filterConditions = array("investment_loanId" => $keyDateTransaction,
                         "linkedaccount_id" => $linkedaccountId);
-                    $tempInvestmentId = $this->Investment->getData($filterConditions, array("id", "investment_myInvestment",
-                         "investment_priceInSecondaryMarket" , "investment_secondaryMarketInvestment"));
-                    // read some values of the existing loan, like myInvestment [12] and 
-//                      investment_priceInSecondaryMarket and [27] and investment_secondaryMarketInvestment [26]
-                    $investmentId = $tempInvestmentId[0]['Investment']['id'];
+                    $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", "investment_myInvestment",
+                         "investment_priceInSecondaryMarket" , "investment_secondaryMarketInvestment", "investment_outstandingPrincipal"));
+                    // read some values of the existing loan, like myInvestment [12]? and 
+//                      investment_priceInSecondaryMarket and [27] and investment_secondaryMarketInvestment [26], investment_outstandingPrincipal [37]
+                    $investmentId = $tempInvestmentData[0]['Investment']['id'];
+                    // Copy the information to the shadow database, for processing later on
+                    $database['investment']['investment_outstandingPrincipal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
+                    $database['investment']['investment_outstandingPrincipalOriginal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
+                    $database['investment']['investment_priceInSecondaryMarket'] = $tempInvestmentData[0]['Investment']['investment_priceInSecondaryMarket'];
+                    $database['investment']['investment_secondaryMarketInvestment'] = $tempInvestmentData[0]['Investment']['investment_secondaryMarketInvestment'];
+
                     $database['investment']['id'] = $investmentId;
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "EXISTING Loan.. Id of the existing loan $investmentId\n ";
                 }
 
                 // load all the transaction data
+               
                 foreach ($dateTransaction as $transactionKey => $transactionData) {
-                    //                   echo "---> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = $transactionData\n";
+echo "---> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+//print_r($transactionData);
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // 0,1,2
+  //              print_r($transaction);
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-
+  //                          print_r($tempResult);
                         if (!empty($tempResult)) {
                             unset($result);
+
+                            
                             $functionToCall = $tempResult['function'];
                             echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transactionDataKey = $transactionDataKey\n";
                             $dataInformation = explode(".", $tempResult['databaseName']);
                             $dbTable = $dataInformation[0];
+
+                            echo "Execute calculationfunction: $functionToCall\n";
                             if (!empty($functionToCall)) {
-                                
                                 $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+
+                                // update the field userinvestmentdata_cashInPlatform   
+                                $cashflowOperation = $tempResult['cashflowOperation'];
+                                if (!empty($cashflowOperation)) {
+
+                                echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDataKey . "\n";
+                                echo "================>>  " . $cashflowOperation . " ADDING THE AMOUNT OF " . $result ."\n";
+                                $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = 
+                                                $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 
+                                                $result, 16); 
+echo "#########========> database_cashInPlatform = " .    $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] ."\n";                            
+                                }
 
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
-                                } else {
+                                } 
+                                else {
                                     $database[$dbTable][$transactionDataKey] = $result;
                                 }
-                            } else {
+                            } 
+                            else {
                                 $database[$dbTable][$transactionDataKey] = $transaction;
                             }
+
                             echo "------>  changing state of $transactionDataKey [index = " . $tempResult['internalIndex'] . "] to DONE\n";
                             $this->variablesConfig[$tempResult['internalIndex']]['state'] = WIN_FLOWDATA_VARIABLE_DONE;  // Mark done
                             //                           print_r($this->variablesConfig[$tempResult['internalIndex']]);
@@ -386,7 +446,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                     }
                 }
-// Now start consolidating the results, these are to be stored in the investment table (variable part)
+// Now start consolidating the results, these are to be stored in the investment table? (variable part)
 // check if variable is already defined: loading of data in investment and payment, globalcashflowdata
                 //           $internalVariableToHandle = array(17,47,34,45,44,36,46,66,67,43);
                 $internalVariableToHandle = array();
@@ -442,8 +502,16 @@ class ParseDataClientShell extends GearmanClientShell {
                     }
                 }
                 echo "printing relevant part of database\n";
+                print_r($platformData['newLoans']);
+                print_r($platformData['workingNewLoans']);  // to be deleted after testing
                 print_r($database['investment']);
                 print_r($database['payment']);
+                
+                if ($database['investment']['investment_outstandingPrincipal'] == 0) {     // Loan has been completely repaid
+                    $platformOutstandingPrincipal = $platformOutstandingPrincipal - $database['investment']['investment_outstandingPrincipalOriginal'];
+                    $platformNumberOfActiveInvestments = $database['Userinvestmentdata']['numberActiveInvestments'] - 1;
+              //      $controlVariableActiveInvestments;
+                }
                 unset($investmentId);
                 unset($database['investment']);
                 unset($database['payment']);
@@ -464,7 +532,6 @@ class ParseDataClientShell extends GearmanClientShell {
                 }
             }
 
-
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";
             if ($this->Userinvestmentdata->save($database['Userinvestmentdata'], $validate = true)) {
                 $userInvestmentDataId = $this->Userinvestmentdata->id;
@@ -472,7 +539,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 $database['Userinvestmentdata']['id'] = $userInvestmentDataId;
             } else {
                 if (Configure::read('debug')) {
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['userinvestmentdata']['payment_loanId'] . "\n";
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['Userinvestmentdata']['payment_loanId'] . "\n";
                 }
             }
 
@@ -492,10 +559,9 @@ print_r( $database['globalcashflowdata']);
             }
             echo "printing global data for the date = $dateKey\n";
             print_r($database['Userinvestmentdata']);
-            print_r($database['globalcashflowdata']);
-            
-            
+            print_r($database['globalcashflowdata']);         
         }
+        
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
         // The following is done only once per readout period independent if period covers one day, 1 week or if
         // it is a "link account" action
@@ -504,11 +570,36 @@ print_r( $database['globalcashflowdata']);
         // 
         // determine which loans have terminated
         // loop through all of them and subtracts amounts from total values
-        echo "Start consolidating the platform data, using the control variables\n";
-        $calculationClassHandle->consolidateControlVariables($file);
-        echo "Consolidation Phase 2, checking control variables\n";
+        echo "Starting to consolidate the platform data, using the control variables, calculating each variable\n";
+        $internalVariableToHandle = array(10001, 10002, 10003);
+        foreach ($internalVariableToHandle as $keyItem => $item) {
+            if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   
+                $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                $functionToCall = $this->variablesConfig[$item]['function'];
+                echo "Calling the function: $functionToCall and index = $keyItem\n";
+                $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
+                echo "inputs are " . $varName[0] . " and" . $varName[1] . "\n";
+                echo $database[$varName[0]][$varName[1]];
+                $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+            }
+        }
+     
+        $controlVariables['myWallet'] = $database['Userinvestmentdata']['cashInPlatform'];
+        $controlVariables['activeInvestments'] = $platformNumberOfActiveInvestments;
+
+        $fileString = file_get_contents($controlVariableFile);         // must be a json file
+
+        $externalControlVariables = json_decode($fileString, true);     // Read control variables as supplied by p2p 
+        echo "Consolidation Phase 2, checking control variables\n";        
+        print_r($externalControlVariables);
+        $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($controlVariables, $externalControlVariables);
+        if ($controlVariablesCheck == false) {
+            
+            
+        }
+
         $calculationClassHandle->consolidatePlatformData();
-        return;
+        return true;
     }
 
 }

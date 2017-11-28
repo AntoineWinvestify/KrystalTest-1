@@ -100,6 +100,7 @@ class PreprocessClientShell extends GearmanClientShell {
                         $data["companies"] = $linkedaccountsByType;
                         $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
                         $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
+                        $data["date"] = $this->date;
                         print_r($data["companies"]);
                         echo "\n";
                         echo "userReference ". $data["queue_userReference"];

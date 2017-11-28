@@ -146,9 +146,9 @@ public function removeFromQueue($queueReference) {
 */
 public function checkQueue($queueReference) {
 	$result = $this->find("first", array("recursive" => -1,
-										"conditions" => array("queue_userReference" => $queueReference,
-															  "queue_status" 		=> WAITING_FOR_EXECUTION),
-						 ));
+			"conditions" => array("queue_userReference" => $queueReference,
+			"queue_status" 		=> WAITING_FOR_EXECUTION),
+			));
 	if (empty($result)) {
 		return false;
 	}
@@ -180,9 +180,9 @@ public function getNextFromQueue($queuetype) {
 	}
 	
 	$result = $this->find("first", array("conditions"	=> array("queue_type" 	=> $queuetype,
-																 "queue_status" => WAITING_FOR_EXECUTION),
-										 "order" 		=> $order,
-										  "limit" 		=> 1)
+						"queue_status" => WAITING_FOR_EXECUTION),
+						"order" 		=> $order,
+						"limit" 		=> 1)
 						);
 
 	if (empty($result)) {
@@ -219,7 +219,6 @@ public function beforeSave1($options = array()) {
      * @return array It is the queue request
      */
     public function getUsersByStatus($queuetype, $status, $info = null, $limit = null) {
-        
         switch ($queuetype) {
             case FIFO:
                 $order = "Queue.id ASC";
@@ -232,7 +231,7 @@ public function beforeSave1($options = array()) {
         if (empty($status)) {
             $status =  START_COLLECTING;
         }
-        
+        echo "VVV";
         $conditions = [];
         if (empty($limit)) {
             $limit = 100;
@@ -240,17 +239,20 @@ public function beforeSave1($options = array()) {
         if (!empty($info)) {
             $conditions["queue_info"] = $info;
         }
-        $conditions["queue_type"] = $queuetype;
+//        $conditions["queue_type"] = $queuetype;
         $conditions["queue_status"] = $status;
+        print_r($conditions);
         $result = $this->find("all", array(
                     "conditions" => $conditions,
                     "order" => $order,
                     "limit" => $limit
                 ));
-
+echo "FFF";
         if (empty($result)) {
             return;
         }
+        echo "ddddd";
+        print_r($result);
         return $result;
     }
     

@@ -108,8 +108,8 @@ class AppController extends Controller {
             'loginRedirect' => array('controller' => 'marketplaces',
                 'action' => 'showMarketPlace'
             ),
-            'logoutRedirect' => array('controller' => 'marketplaces',
-                'action' => 'getGlobalMarketPlaceData'
+            'logoutRedirect' => array('controller' => 'users',
+                'action' => 'loginRedirect'
             ),
         ),
         'Cookie',

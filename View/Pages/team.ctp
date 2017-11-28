@@ -52,7 +52,7 @@
                             <div id="team_manuel">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Manuel Millán')?></center></span>
                                 <span class="teamPosition"><center><?php echo __('Chief Executive Officer & Cofounder')?></center></span>
-                                <a href="https://www.linkedin.com/in/manuel-mill%C3%A1n-miras-55695195/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
+                                <a href="https://www.linkedin.com/in/manuel-mill%C3%A1n-miras-55695195/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
                         </div>
@@ -65,7 +65,7 @@
                             <div id="team_olena">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Olena Tatarin')?></center></span>
                                 <span class="teamPosition"><center><?php echo __('Chief Financial Officer & Cofounder')?></center></span>
-                                <a href="https://www.linkedin.com/in/olena-tatarin-parashyuk-a25851101/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
+                                <a href="https://www.linkedin.com/in/olena-tatarin-parashyuk-a25851101/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
                         </div>
@@ -78,7 +78,7 @@
                             <div id="team_antoine">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Antoine de Poorter')?></center></span>
                                 <span class="teamPosition"><center><?php echo __('Chief Technology Officer & Cofounder')?></center></span>
-                                <a href="https://www.linkedin.com/in/antoine-de-poorter-9b4aa6114/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
+                                <a href="https://www.linkedin.com/in/antoine-de-poorter-9b4aa6114/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                             <div id="team_klaus">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Klaus Kukovetz')?></center></span>
                                 <span class="teamPosition"><center><?php echo __('International Investor Relations')?></center></span>
-                                <a href="" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
+                                <a href="https://www.linkedin.com/in/kukovetz/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
                         </div>
@@ -109,7 +109,7 @@
                             <div id="team_cris">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Cristina Ortega')?></center></span>
                                 <span class="teamPosition"><center><?php echo __('Software Designer')?></center></span>
-                                <a href="https://www.linkedin.com/in/crisortegadc/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
+                                <a href="https://www.linkedin.com/in/crisortegadc/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
                         </div>
@@ -122,7 +122,7 @@
                             <div id="team_antonio">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Antonio Ibañez')?></center></span>
                                 <span class="teamPosition"><center><?php echo __('Software Designer')?></center></span>
-                                <a href="https://www.linkedin.com/in/antonio-jes%C3%BAs-ib%C3%A1%C3%B1ez-garc%C3%ADa-47107871/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
+                                <a href="https://www.linkedin.com/in/antonio-jes%C3%BAs-ib%C3%A1%C3%B1ez-garc%C3%ADa-47107871/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
                         </div>
@@ -135,25 +135,25 @@
                             <div id="team_eduardo">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Eduardo Ibañez')?></center></span>
                                 <span class="teamPosition"><center><?php echo __('Software Designer')?></center></span>
-                                <a href="https://www.linkedin.com/in/eduardo-iba%C3%B1ez-carmona-565147146/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
+                                <a href="https://www.linkedin.com/in/eduardo-iba%C3%B1ez-carmona-565147146/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
                         </div>
                     </div>
                 </div>
-                <?php /*<div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 teamBox teamBoxana" id="ana">
                             <img src="/img/teamfiles/team_AnaMarin.png" class="img-responsive center-block teamImg"/>
                             <div id="team_ana">
                                 <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Ana Marín')?></center></span>
                                 <span class="teamPosition"><center><?php echo __('Costumer Care')?></center></span>
-                                <a href="https://www.linkedin.com/in/a-m-61a229143/" target="_blank"><button class="btn btn1CR btnRounded center-block"><i class="fa fa-linkedin"></i></button></a>
+                                <a href="https://www.linkedin.com/in/a-m-61a229143/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
                                 <br/>
                             </div>
                         </div>
                     </div>
-                </div>*/?>
+                </div>
             </div>
         </div>
     </div>
