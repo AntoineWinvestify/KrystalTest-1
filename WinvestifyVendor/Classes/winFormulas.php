@@ -53,44 +53,7 @@ class WinFormulas {
                 "dateInit" => "-366",
                 "dateFinish" => "-1",
                 "intervals" => "inclusive"
-            ],
-            /*[
-                "type" => "userinvestmentdata_outstandingPrincipal",
-                //"operation" => "substract",
-                "days" => "367",
-                "intervals" => "exclusive"
-            ],*/
-            /*[
-                "type" => "userinvestmentdata_partialPrincipalRepayment",
-                "operation" => "substract",
-                "days" => "1",
-                "intervals" => "exclusive"
-            ],
-            [
-                "type" => "userinvestmentdata_capitalRepayment",
-                "operation" => "substract",
-                "days" => "1",
-                "intervals" => "exclusive"
-            ],
-            [
-                "type" => "userinvestmentdata_capitalRepayment",
-                "operation" => "substract",
-                "days" => "1",
-                "intervals" => "exclusive"
-            ],
-            [
-                "type" => "userinvestmentdata_capitalRepayment",
-                "operation" => "substract",
-                "days" => "1",
-                "intervals" => "exclusive"
-            ],
-            [
-                "type" => "userinvestmentdata_capitalRepayment",
-                "operation" => "substract",
-                "days" => "1",
-                "intervals" => "exclusive"
-            ],*/
-            
+            ]
         ]
     ];
     
@@ -108,7 +71,63 @@ class WinFormulas {
         ]
     ];
     
-    protected $variablesFormula_B;
+    protected $variablesFormula_B = [
+        "A" => [
+            [
+                "type" => "userinvestmentdata_totalGrossIncome",
+                "table" => "Userinvestmentdata",
+                "dateInit" => [
+                    "year" => -1,
+                    "month" => "1",
+                    "day" => "1"
+                ],
+                "dateFinish" => [
+                    "year" => -1,
+                    "month" => "12",
+                    "day" => "31"
+                ],
+                "intervals" => "inclusive"
+            ],
+            [
+                "type" => "userinvestmentdata_totalLoansCost",
+                "table" => "Userinvestmentdata",
+                "operation" => "substract",
+                "dateInit" => [
+                    "year" => -1,
+                    "month" => "1",
+                    "day" => "1"
+                ],
+                "dateFinish" => [
+                    "year" => -1,
+                    "month" => "12",
+                    "day" => "31"
+                ],
+                "intervals" => "inclusive"
+            ]
+        ],
+        "B" => [
+            [
+                "type" => "userinvestmentdata_outstandingPrincipal",
+                "table" => "userinvestmentdata",
+                "operation" => "add",
+                "dateInit" => [
+                    "year" => -1,
+                    "month" => "1",
+                    "day" => "1"
+                ],
+                "dateFinish" => [
+                    "year" => -1,
+                    "month" => "12",
+                    "day" => "31"
+                ],
+                "intervals" => "inclusive"
+            ]
+        ]
+    ];
+    
+    protected $configFormula_B = [
+        
+    ];
     
     public function doOperationByType($inputA, $inputB, $type) {
         
