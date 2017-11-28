@@ -99,15 +99,23 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                         $dateInit = date("Y-m-d",strtotime($variableFormula['dateInit'] . " days"));
                         $dateFinish = date("Y-m-d",strtotime($variableFormula['dateFinish'] . " days"));
                         $value = $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type'], $linkaccountIdKey, $dateInit, $dateFinish);
-                        $data = $this->winFormulas->doOperationByType($data, $value, $variableFormula['operation']);
+                        $data = $this->winFormulas->doOperationByType($data, current($value), $variableFormula['operation']);
                     }
                     $formulasByCompany[$linkaccountIdKey][$key]['formula']['variables'][$variablesKey] = $data;
                 }
             }
         }
         
-        print_r($formulasByCompany);
-        exit;
+        foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
+            foreach ($formulas as $key => $formula) {
+                print_r($formula);
+                $data = null;
+                foreach ($formula['formula']['steps'] as $stepsKey => $stepsFormula) {
+                    $value = $this->getValueFromFormula($stepsFormula, $formula['formula']['variables']);
+                    $data = $this->winFormulas->doOperationByType($data, $value, $stepsFormula[1]);
+                }
+            }
+        }
         
         
         
@@ -140,26 +148,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     /**
-     * Function to get a value from the database
-     * @param string $var It is a variable with the table and the data that we should take from database
-     * @param iny $linkaccountId It is the linkaccount from which we must take the data
-     * @return array With the data containing the information needed
+     * Function to get the correct value for the Formula
+     * 
      */
-    public function getValue($var, $linkaccountId) {
-        $consult = explode('.', $this->config[$var]);
-        $model;
-        switch($consult[0]) {
-            case "investment": 
-                $model = $this->Invesment;
-                break;
-            case "userinvestmentdata":
-                $model = $this->Userinvestmentdata;
-                break;
-            case "payments":
-                $model = $this->Transaction;
-                break;
+    public function getValueFromFormula($stepsFormula, $formulaVariables) {
+        $data = $stepsFormula[0];
+        if (!is_numeric($stepsFormula[0])) {
+            $data = $formulaVariables[$stepsFormula[0]];
         }
-        return $result;
+        return $data;
     }
     
     /**
