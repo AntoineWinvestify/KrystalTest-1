@@ -81,7 +81,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $formulasByInvestor[$company][$i]['formula'] = "formula_A";
             $formulasByInvestor[$company][$i]['variables'] = "formula_A";
             $i++;
-            $formulasByInvestor[$company][$i]['formula'] = "formula_A";
+            $formulasByInvestor[$company][$i]['formula'] = "formula_B";
             $formulasByInvestor[$company][$i]['variables'] = "formula_B";
         }
         
@@ -161,17 +161,17 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
             foreach ($formulas as $key => $formula) {
-                $result[$linkaccountIdKey] = $formula["result"];
+                $result[$linkaccountIdKey][] = $formula["formula"]["result"];
             }
         }
         
-        $data['tempArray'] = $result;
+        $returnData['tempArray'] = $result;
         
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-        
-        return json_encode($data);
+        print_r($returnData);
+        return json_encode($returnData);
     }
     
     /**
