@@ -1186,7 +1186,23 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
 
 
     /**
-     * get hash of a string
+     * Get a loanId from the transaction file. If no loanId exists, in case of transactions not
+     * related to a loan, the system will generate global loanId of format "global_xxxxxx".
+     *
+     * @param string    $input
+     *
+     */
+    private function generateLoanId($input){
+        if (empty($input)) {
+            return "global_" . mt_rand();
+        }
+        else {
+            return($input);
+        }
+    }
+
+    /**
+     *  Extracts the loanId from the file, and if no loanId exists, a global loanId will be generated.
      *
      * @param string    $input
      * @return string   $extractedString
@@ -1194,8 +1210,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */
     private function getHash($input) {
         return  hash ("md5", $input, false);
-    }
-
+    }    
 
     /**
      *
@@ -1271,7 +1286,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * If $search == "" then $extractedString starts from beginning of $input.
      * If $separator = "" then $extractedString contains the $input starting from $search to end
      *
-     * @param string    $input      It is the string to which we search the information
+     * @param string    $input      It is the string in which we search the information
      * @param string    $search     The character to search. 
      * @param string    $separator  The separator character
      * @param int       $mandatory  Indicates if it is mandatory that $search exists. If it does not exist 

@@ -66,6 +66,9 @@ class ParseDataClientShell extends GearmanClientShell {
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
 
+        echo "Deleting Investmentslice\n";
+        $this->Investmentslice = ClassRegistry::init('Investmentslice');
+        $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
 
         return;
     }
@@ -273,7 +276,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
-if ($dateKey == "2016-10-21"){ 
+if ($dateKey == "2016-10-28"){ 
     echo "Exiting when date = " . $dateKey . "\n";
        exit;
 }
@@ -308,6 +311,9 @@ if ($keyDateTransaction == "1691379-01") {
                     // If the loanId does not correspond to a brand new loan, then it is a extra participation in an 
                     // exiting loan, so new amortizationtable must be collected
                         $platformData['newLoans'][] =  $dateTransaction[0]['investment_loanId'];  // or the id for the loan slice....
+
+                        $database['investment']['investment_sliceIdentifier'] = "XXXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM
+                        
                     }
                 } 
               
@@ -371,6 +377,10 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                     echo "Storing the data of a NEW LOAN in the shadow db table\n";
                     $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
                     
+                    $platformData['newLoans'][]= $transactionData['investmentLoanId'];
+                    $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
+                    $database['investment']['investment_sliceIdentifier'] = "XXXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM
+                                           
                     // check all the data in the analyzed investment table
                     print_r($platformData['parsingResultInvestments'][$keyDateTransaction][0]);
                     foreach ($platformData['parsingResultInvestments'][$keyDateTransaction][0] as $investmentDataKey => $investmentData) {
@@ -424,6 +434,10 @@ echo "Reading the set of initial data of an existing loan:\n";
                
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "---> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+                    if ($transactionData['conceptChars'] == "AM_TABLE") {       // Add loanId so new amortizationtable shall be collected
+                        $platformData['newLoans'][]= $transactionData['investmentLoanId'];
+                        $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
+                    }
 print_r($transactionData);
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // 0,1,2
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
