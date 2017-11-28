@@ -109,6 +109,8 @@ class ConsolidationClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
                 
+                $this->saveConsolidationFields();
+                
                 //$this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 foreach ($this->userResult as $queueId => $userResult) {
                     $date = $this->queueInfo[$queueId]['date'];
@@ -129,6 +131,29 @@ class ConsolidationClientShell extends GearmanClientShell {
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  
                 exit;
+            }
+            $numberOfIteration++;
+        }
+    }
+    
+    /**
+     * Function to save all the amortization tables on DB per user and per linkaccount
+     */
+    public function saveConsolidationFields() {
+        $result = [];
+        foreach ($this->tempArray as $queuekey => $tempArray) {
+            foreach ($tempArray as $linkedaccountId => $tempArrayByCompany) {
+                foreach ($tempArrayByCompany as $key => $formulaValues) {
+                    $model = ClassRegistry::init($formulaValues['table']);
+                    $this->model->saveDataByType($linkedaccountId, $this->date, $formulaValues);
+                }
+            }
+        }
+        $this->model = ClassRegistry::init('Investment');
+        $investmentIds = $this->Investment->getInvestmentIdByLoanId($loanIds);
+        foreach ($this->tempArray as $queuekey => $tempArray) {
+            foreach ($tempArray as $linkaccount => $linkaccountData) {
+                $this->Amortizationtable->saveAmortizationtable($linkaccountData, $investmentIds);
             }
         }
     }
