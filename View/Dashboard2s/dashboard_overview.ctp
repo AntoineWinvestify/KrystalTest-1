@@ -264,30 +264,30 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The sum of Invested Assets and Cash. Note that due to rounding the visual result might be off with 1 cent. Internally however the system uses many decimals in order to avoid rounding errors')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Total Volume')?></strong></p>
-                                            <h3 class="title"> <?php echo round($global['totalVolume'], 2) . " &euro;"; ?></h3>
+                                            <h3 class="title"> <?php echo number_format( round($global['totalVolume'], 2, PHP_ROUND_HALF_UP), 2) . " &euro;"; ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box1Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Total nominal value of all assets held in your linked accounts')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Invested Assets')?></td>
-                                                        <td class="right"><?php echo round($global['investedAssets'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo number_format( round($global['investedAssets'], 2, PHP_ROUND_HALF_UP), 2) . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The part of Invested Assets, which are dedicated to specific loans that are not yet issued')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Reserved Funds')?></td>
-                                                        <td class="right"><?php echo round($global['reservedFunds'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo number_format( round($global['reservedFunds'], 2, PHP_ROUND_HALF_UP), 2)  . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total cash balance on all your linked accounts. You should use this balance to invest in assets to reduce Cash Drag')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash')?></td>
-                                                        <td class="right"><?php echo round($global['cash'], 2, PHP_ROUND_HALF_UP) . " &euro;"; ?></td>
+                                                        <td class="right"><?php echo number_format( round($global['cash'], 2, PHP_ROUND_HALF_UP), 2)  . " &euro;"; ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Total Volume, which is not invested in assets and therefore does not yield any interest currently')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Cash Drag')?></td>
-                                                        <td class="right"><?php echo round(bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
+                                                        <td class="right"><?php echo number_format( round( $global['cashDrag'] , 2, PHP_ROUND_HALF_UP), 2)  . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('All transfers from your bank account to all linked platforms minus the withdrawals from these platforms')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Deposits')?></td>
-                                                        <td class="right"><?php echo round($global['netDeposits'], 2) . " &euro;";?></td>
+                                                        <td class="right"><?php echo number_format( round($global['netDeposits'], 2), 2)  . " &euro;";?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Number of individual loans or assets that you currently own. The higher the sum, the better diversified your portfolio is')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Active Investments')?></td>
@@ -345,34 +345,34 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><small><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Percentage of your total invested assets that are in status Default, i.e. more than 90 days overdue')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Defaulted')?></strong></p>
-                                            <h3 class="title"><?php echo $defaultedRange['>90'] . "%"?></h3>
+                                            <h3 class="title"><?php echo number_format($defaultedRange['>90'], 2) . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box3Table" class="table">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have no payment delays at all')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Current')?></td>
-                                                        <td class="right"><?php echo $defaultedRange['current'] . "%"?></td>
+                                                        <td class="right"><?php echo number_format($defaultedRange['current'], 2) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 1 and 7 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('1-7 DPD')?></td>
-                                                        <td class="right"><?php echo $defaultedRange['1-7'] . "%"?></td>                                                    
+                                                        <td class="right"><?php echo number_format($defaultedRange['1-7'], 2) . "%"?></td>                                                                                                     
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 8 and 30 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('8-30 DPD')?></td>
-                                                        <td class="right"><?php echo $defaultedRange['8-30'] . "%"?></td>
+                                                        <td class="right"><?php echo number_format($defaultedRange['8-30'], 2) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 31 and 60 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('31-60 DPD')?></td>
-                                                        <td class="right"><?php echo $defaultedRange['31-60'] . "%"?></td>
+                                                        <td class="right"><?php echo number_format($defaultedRange['31-60'], 2) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have between 61 and 90 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('61-90 DPD')?></td>
-                                                        <td class="right"><?php echo $defaultedRange['61-90'] . "%"?></td>
+                                                        <td class="right"><?php echo number_format($defaultedRange['61-90'], 2) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The percentage of your Invested Assets that have more than 90 days of payment delays')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('91 - DPD')?></td>
-                                                        <td class="right"><?php echo $defaultedRange['>90'] . "%"?></td>
+                                                        <td class="right"><?php echo number_format($defaultedRange['>90'], 2) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
@@ -435,11 +435,11 @@
                                     <img id="logo<?php echo $individualInfo['Userinvestmentdata']['linkedaccount_id'] ?>" src="/img/logo/<?php echo $individualInfo['Userinvestmentdata']['pfpLogo'] ?>" class="img-responsive center-block platformLogo" alt="<?php echo $individualInfo['Userinvestmentdata']['pfpName']?>"/>
                                 </td>
                                 
-                                <td><?php echo $total . " &euro;"?></td>
-                                <td><?php echo round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2, PHP_ROUND_HALF_UP) . " &euro;"?></td>
-                                <td><?php echo round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP) . "%"?></td>
+                                <td><?php echo number_format($total, 2) . " &euro;"?></td>
+                                <td><?php echo number_format(round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 2, PHP_ROUND_HALF_UP), 2) . " &euro;"?></td>
+                                <td><?php echo number_format(round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP), 2) . "%"?></td>
                                 <td>12,11</td>
-                                <td>63,22%</td>
+                                <td><?php echo number_format(round($individualInfo['Userinvestmentdata']['current'], 2, PHP_ROUND_HALF_UP), 2) . "%"?></td>
                             </tr>
                             <?php } ?>
                         </tbody>
