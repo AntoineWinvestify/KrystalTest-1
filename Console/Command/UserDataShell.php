@@ -128,8 +128,11 @@ class UserDataShell extends AppShell {
      */
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
         echo "########  ANTOINE \n"; 
-//        print_r($resultData);
-//        $result = 0.0;
+
+        if ($transactionData['investment_loanId'] == "1691271-01"    ){ 
+echo "AABBBBA";
+            print_r($resultData);
+        }
         $result = $resultData['investment']['investment_outstandingPrincipalOriginal'];
         if (isset($resultData['investment']['investment_myInvestment'])) {
             $result = bcadd($result,$resultData['investment']['investment_myInvestment'], 16); 

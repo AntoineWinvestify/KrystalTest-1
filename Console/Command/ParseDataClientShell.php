@@ -273,7 +273,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
-if ($dateKey == "2016-10-19"){ 
+if ($dateKey == "2016-10-21"){ 
     echo "Exiting when date = " . $dateKey . "\n";
        exit;
 }
@@ -675,6 +675,7 @@ echo "THE FOLLOWING IS NOT YET NEEDED\n";
         }
 
         $calculationClassHandle->consolidatePlatformData();
+        // remove duplicates from the 'newLoans'
         return true;
     }
 
