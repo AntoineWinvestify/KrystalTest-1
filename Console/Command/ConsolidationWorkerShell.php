@@ -77,8 +77,12 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         //Future implementation
         //$formulaByInvestor = $this->getFormulasFromDB();
         foreach ($data["companies"] as $key => $company) {
-            $formulasByInvestor[$company][$key]['formula'] = "formula_A";
-            $formulasByInvestor[$company][$key]['variables'] = "formula_A";
+            $i = 0;
+            $formulasByInvestor[$company][$i]['formula'] = "formula_A";
+            $formulasByInvestor[$company][$i]['variables'] = "formula_A";
+            $i++;
+            $formulasByInvestor[$company][$i]['formula'] = "formula_A";
+            $formulasByInvestor[$company][$i]['variables'] = "formula_B";
         }
         
         foreach ($formulasByInvestor as $linkaccountIdKey => $formulas) {
@@ -96,8 +100,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                     //$formulasValue = [];
                     $data = null;
                     foreach ($variablesFormula as $variableFormula) {
-                        $dateInit = date("Y-m-d",strtotime($variableFormula['dateInit'] . " days"));
-                        $dateFinish = date("Y-m-d",strtotime($variableFormula['dateFinish'] . " days"));
+                        $dateInit = $this->getDateForSum($variableFormula['dateInit']);
+                        $dateFinish = $this->getDateForSum($variableFormula['dateFinish']);
                         $value = $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type'], $linkaccountIdKey, $dateInit, $dateFinish);
                         $data = $this->winFormulas->doOperationByType($data, current($value), $variableFormula['operation']);
                     }
@@ -105,7 +109,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 }
             }
         }
-        
+
         foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
             foreach ($formulas as $key => $formula) {
                 print_r($formula);
@@ -114,11 +118,11 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                     $value = $this->getValueFromFormula($stepsFormula, $formula['formula']['variables']);
                     $data = $this->winFormulas->doOperationByType($data, $value, $stepsFormula[1]);
                 }
+                $formulasByCompany[$linkaccountIdKey][$key]['formula']['result']['data'] = $data;
             }
         }
-        
-        
-        
+        //print_r($formulasByCompany);
+        //exit;
         /*foreach ($data["companies"] as $linkedaccount) {
             unset($newComp);
             $index++;
@@ -157,6 +161,18 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $data = $formulaVariables[$stepsFormula[0]];
         }
         return $data;
+    }
+    
+    public function getDateForSum($date) {
+        if (is_numeric($date)) {
+            $dataDate = date("Y-m-d",strtotime($date . " days"));
+        }
+        else {
+            $year = date('Y') + $date['year']; // Get current year and subtract 1
+            //$start = mktime(0, 0, 0, 1, 1, $year);
+            $dataDate = date("M-d-Y", mktime(0, 0, 0, $date['month'], $date['day'], $year));
+        }
+        return $dataDate;
     }
     
     /**
