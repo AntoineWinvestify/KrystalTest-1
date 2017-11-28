@@ -1193,7 +1193,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     private function generateLoanId($input){
-        if (empty($input)) {
+        if (empty(trim($input))) {
             return "global_" . mt_rand();
         }
         else {
