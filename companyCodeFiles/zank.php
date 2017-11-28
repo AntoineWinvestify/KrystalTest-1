@@ -146,7 +146,19 @@ class zank extends p2pCompany {
             ]
         ], 
         "D" =>  [
-            "name" => "investment_loanId",  
+            [
+                "type" => "investment_loanId",                              // Winvestify standardized name   OK
+                "inputData" => [                                            // trick to get the complete cell data as purpose
+                            "input2" => "",                        // May contain trailing spaces
+                            "input3" => "",
+                            "input4" => 0                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                        ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "investment_loanId", 
+                "functionName" => "generateLoanId"
+            ]
         ]
     ];
 
