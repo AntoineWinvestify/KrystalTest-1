@@ -21,9 +21,9 @@ echo $defaultedInvestments[0];
                             <th><?php echo __('Investment Date') ?></th>
                             <th><?php echo __('My Investment') ?></th>
                             <th><?php echo __('Interest Rate') ?></th>
-                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 27') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Instalment Progress') ?></th>
-                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 28') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
-                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
+                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('The number of received payments divided by total numer of payments.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Instalment Progress') ?></th>
+                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Unpaid loan amount.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
+                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('Next dapyment date.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,10 +31,10 @@ echo $defaultedInvestments[0];
                             <tr>
                                 <td><?php echo $defaultedInvestment['Investment']['investment_loanId'] ?></td>
                                 <td><?php echo $defaultedInvestment['Investment']['investment_myInvestmentDate'] ?></td>
-                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_myInvestment'], 2) . " &euro;"; ?></td>
-                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_nominalInterestRate'], 2) . "%" ?></td>
-                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_paidInstalments'] / $defaultedInvestment['Investment']['investment_numberOfInstalments'] ?>"><?php echo $defaultedInvestment['Investment']['investment_paidInstalments'] . "/" . $defaultedInvestment['Investment']['investment_numberOfInstalments'] ?></td>
-                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_outstandingPrincipal'] ?>"><?php echo round($defaultedInvestment['Investment']['investment_outstandingPrincipal'], 2) . " &euro;"; ?></td>
+                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo number_format(round($defaultedInvestment['Investment']['investment_myInvestment'], 2), 2) . " &euro;"; ?></td>
+                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo number_format(round($defaultedInvestment['Investment']['investment_nominalInterestRate'], 2), 2) . "%" ?></td>
+                                <td dataorder="<?php echo (int) explode("/", $defaultedInvestment['Investment']['investment_instalmentsProgress'])[0] / (int) explode("/", $defaultedInvestment['Investment']['investment_instalmentsProgress'])[1] ?>"><?php echo $defaultedInvestment['Investment']['investment_instalmentsProgress'] ?></td>
+                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_outstandingPrincipal'] ?>"><?php echo number_format(round($defaultedInvestment['Investment']['investment_outstandingPrincipal'], 2), 2) . " &euro;"; ?></td>
                                 <td><?php echo $defaultedInvestment['Investment']['investment_nextPaymentDate']; ?></td>                                                       
                             </tr>
                         <?php } ?>
