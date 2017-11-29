@@ -64,9 +64,10 @@
  * 
  * 
  * 2017-11-28           version0.8.1
- * New function, generateId, for generating a "random identifier" if cell is empty
+ * New function, generateId, for generating a "random (unique)identifier" if cell is empty
  * Cell data is cleaned before sending it as '$input' to a function
  * Added configurations for Zank
+ * New configuration parameter (changeCronologicalOrder)
  * 
  * 
  * 
@@ -88,11 +89,14 @@ class Fileparser {
     protected $config = array ('offsetStart' => 0,
                             'offsetEnd'     => 0,
                             'separatorChar' => ";",
-                            'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
-                             );                     // if array does not have $sortParameter then "global" index is used
-                                                    // Typically used for sorting by loanId index
+                            'sortParameter' => "",                  // used to "sort" the array and use $sortParameter as prime index.
+                                                                    // if array does not have $sortParameter then "global" index is used
+                                                                    // Typically used for sorting by loanId index
+                            'changeCronologicalOrder' => 0          // Do not 'sort' order of the resulting array. This option is executed AFTER
+                                                                    // the 'sortParameter' is checked. 
+                            );
 
-    protected $errorData = array();                 // Contains the information of the last occurred error
+    protected $errorData = array();                                 // Contains the information of the last occurred error
 
     protected $currencies = array(EUR => ["EUR", "€"],
                                     GBP => ["GBP", "£"],
@@ -804,9 +808,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                     unset($tempArray[$i]);
                 break;               
             }
-        $i++;
+            $i++;
         }
-    return $tempArray;
+        
+    if ($this->config['changeCronologicalOrder'] == YES) {                      // inverse the order of the records
+        return(array_reverse($tempArray));
+    }
+
+    return $tempArray;    
     }
 
 
