@@ -9,6 +9,8 @@
 function overviewDataJS() {
 //Click on platform logo
     $(document).on("click", ".logo", function () {
+        $("#netReturn").unbind('click'); //Delete jquery graph event
+        $("#netReturn").off('click');
         id = $(this).attr("id").split(" ")[0];
         name = $("#logo" + id).attr("alt");
         var params = {
@@ -35,9 +37,41 @@ function overviewDataJS() {
 }
 
 
+function graphOverview(labels, data) {
+    $(document).on("click", "#netReturn", function () {
+        id = $(this).attr("id");
+        $("#chart_" + id).slideToggle();
+        $(this).toggleClass("active");
+        ga_chart(id);
+    });
+    $('[data-toggle="tooltip"]').tooltip();
+    var birdsCanvas = document.getElementById("birdsChart");
+    var polarAreaChart = new Chart(birdsCanvas, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                    label: "netReturn",
+                    fill: false,
+                    data: data,
+                    borderColor: "rgba(0, 230, 77, 1)",
+                    borderWidth: 2
+                }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+            }
+        }
+    });
+    return polarAreaChart;
+}
 
 function singlePfpJS() {
-
     $(document).on("click", "#activeTab", function (event) {
         event.preventDefault();
         id = $(this).attr("value");
@@ -59,6 +93,7 @@ function singlePfpJS() {
         link = $(this).attr("href");
         getServerData(link, data, successLoansAjax, errorLoansAjax);
     });
+    
 
 
     function successLoansAjax(result) {
