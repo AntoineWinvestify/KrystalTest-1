@@ -176,12 +176,8 @@ class Dashboard2sController extends AppController {
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                         $this->range[$i] = $this->Investment->getDefaultedByOutstanding($individualData);
                         $allInvestment[$globalKey]['Userinvestmentdata']['current'] = $this->range[$i]['current'];
-                        //$i++;
+                        $i++;
                         break;
-                    /* case "userinvestmentdata_totalVolume":
-                      //Get global total volume
-                      $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                      break; */
                     case "userinvestmentdata_outstandingPrincipal":
                         //Get global  active in invesment
                         $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
@@ -212,22 +208,22 @@ class Dashboard2sController extends AppController {
             }
         }
 
-        $global['cashDrag'] = bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16);
-        
+        $global['cashDrag'] = bcmul(bcdiv($global['cash'], $global['totalVolume'], 16), 100, 16);
+
         //Set global data
         $this->set('global', $global);
-        
+
         //Get and Set defaulted range
         $defaultedRange = $this->calculateGlobalDefaulted();
         $this->set('defaultedRange', $defaultedRange);
 
         //Set an array with individual info
         $this->set('individualInfoArray', $allInvestment);
-        
-        $graph = array('12', '23', '245', '232', '244');
-        $this->set('graph', json_encode($graph));
-        //$executionEndTime = microtime(true);
-        //echo $executionEndTime - $executionStartTime;
+
+        $graphData = array(12, 24, 48, 24, 12, 6, 18, 36, 24, 48, 60); //Must be data from DB
+        $graphLabel = array(__("Jan"), __("Feb"), __("Mar"), __("Apr"), __("May"), __("Jun"), __("Jul"), __("Aug"), __("Sep"), __("Oct"), __("Nov"), __("Dec"));
+        $this->set('graphLabel', json_encode($graphLabel, true));
+        $this->set('graph', json_encode($graphData));
     }
 
     /**
@@ -238,13 +234,12 @@ class Dashboard2sController extends AppController {
     public function calculateGlobalDefaulted() {
 
         $investorId = $investorReference = $this->Session->read('Auth.User.Investor.id');
-       // $linkAccountList = $this->Linkedaccount->getData(array('investor_id' => $investorId), array('id'));
-
+        // $linkAccountList = $this->Linkedaccount->getData(array('investor_id' => $investorId), array('id'));
         //Get range of each pfp
         //$defaultedRangeArray = array();
-        /*foreach ($linkAccountList as $linkedAccount) {
-            $defaultedRangeArray[] = $this->Investment->getDefaultedByOutstanding($linkedAccount['Linkedaccount']['id']);
-        }*/
+        /* foreach ($linkAccountList as $linkedAccount) {
+          $defaultedRangeArray[] = $this->Investment->getDefaultedByOutstanding($linkedAccount['Linkedaccount']['id']);
+          } */
 
         //print_r($defaultedRangeArray);
         //Calculate global outstanding

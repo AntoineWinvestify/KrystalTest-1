@@ -252,10 +252,10 @@ public function matchFields($check = array(), $compareField = null) {
      * @param  int   $limit  Limit table result   ---> 1,
      * @return array         data from the table
      */
-    public function getData($filter = null, $field = null, $order = null, $limit = null){
+    public function getData($filter = null, $field = null, $order = null, $limit = null, $type = "all"){
 
        
-        $resultData = $this->find("all", array("recursive" => -1,
+        $resultData = $this->find($type, array("recursive" => -1,
             "conditions" => $filter,
             "fields" => $field,
             "order" => $order,
