@@ -1454,7 +1454,7 @@ class zank extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                echo 'URL SEQUECE FLOW: ' . SHELL_ENDOFLINE;
+                echo 'URL SEQUENCE FLOW: ' . SHELL_ENDOFLINE;
                 print_r($this->urlSequence);
                 $url = array_shift($this->urlSequence) . $this->userId;
 
@@ -1760,7 +1760,7 @@ class zank extends p2pCompany {
      */
     public function translateTypeOfInvestment($inputData) {
         $data = WIN_LOANSTATUS_MANUALINVESTMENT;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData, "UTF-8");
         switch ($inputData) {
             case "AUTO":
                 $data = WIN_LOANSTATUS_AUTOMATEDINVESTMENT;
