@@ -62,11 +62,11 @@
                         <div class="tab-content">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                    <img src="http://via.placeholder.com/250x150" style="height: 150px; width: 250px;" class="center-block"/><br/>
+                                    <img src="/img/initialPanel1CR.png" style="height: 150px; width: 250px;" class="center-block"/><br/>
                                     <input type='button' id="btnStart" class='btn btn-default center-block' name='start' value='<?php echo __('Go to One Click Registration')?>' />
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                    <img src="http://via.placeholder.com/250x150" style="height: 150px; width: 250px;" class="center-block"/><br/>
+                                    <img src="/img/initialPanelLA.png" style="height: 150px; width: 250px;" class="center-block"/><br/>
                                     <input type='button' id="btnAccountLinking" class='btn btn-default center-block' name='accountLinking' value='<?php echo __('Go to Account Linking')?>' />
                                 </div>
                             </div>
