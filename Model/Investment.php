@@ -149,6 +149,7 @@ echo "€€€€€€€€€€€€€€€€€€€€€€€€�
             $defaultedInvestments[$key]['Investment']['investment_paymentStatus'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
         }
         $defaultedInvestments = $this->find("all",array("conditions" => $linkedaccount));
+
         //$this->saveMany($defaultedInvestments); //Save delayed days
         
        // print_r($defaultedInvestments);
@@ -194,6 +195,8 @@ echo "€€€€€€€€€€€€€€€€€€€€€€€€�
         //print_r($defaultedInvestments);
         foreach ($defaultedInvestments as $defaultedInvestment) {
             switch ($defaultedInvestment['Investment']['investment_paymentStatus']) {
+                case 0:
+                    break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 90):
                     $value[">90"] = $value[">90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range[">90"] = round(($value[">90"] / $outstanding) * 100, 2);
