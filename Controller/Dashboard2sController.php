@@ -64,7 +64,7 @@ class Dashboard2sController extends AppController {
             FatalErrorException(__('You cannot access this page directly'));
         }
         //echo 1;
-        $executionStartTime = microtime(true);
+        //$executionStartTime = microtime(true);
 
         //Request data
         $idArray = explode(" ", $this->request->data['id']);

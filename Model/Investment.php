@@ -148,8 +148,8 @@ echo "€€€€€€€€€€€€€€€€€€€€€€€€�
             //echo strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) . HTML_ENDOFLINE;
             $defaultedInvestments[$key]['Investment']['investment_paymentStatus'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
         }
-
-        $this->saveMany($defaultedInvestments); //Save delayed days
+        $defaultedInvestments = $this->find("all",array("conditions" => $linkedaccount));
+        //$this->saveMany($defaultedInvestments); //Save delayed days
         
        // print_r($defaultedInvestments);
         return $defaultedInvestments;
