@@ -124,7 +124,7 @@ class zank extends p2pCompany {
                                 3 => ["principal" => "Capital_repayment"],
                                 4 => ["intereses" => "Regular_gross_interest_income"],
                                 5 => ["recargo" => "Delayed_interest_income"],
-                                6 => ["promocion" => "Incentive_and_bonus"],
+                                6 => ["promocion" => "Incentives_and_bonus"],
                                 7 => ["comision" => "Commission"],
                             ]                    
                         ],
