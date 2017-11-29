@@ -35,12 +35,12 @@ class PreprocessWorkerShell extends GearmanWorkerShell {
      */
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
-        $this->GearmanWorker->addFunction('multicurlScraping', array($this, 'startPreprocess'));
+        $this->GearmanWorker->addFunction('multiCurlPreprocess', array($this, 'multiCurlInit'));
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
         while( $this->GearmanWorker->work() );
     }
     
-    public function startPreprocess($job) {
+    public function multiCurlInit($job) {
         $data = json_decode($job->workload(), true);
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
