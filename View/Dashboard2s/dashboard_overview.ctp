@@ -60,8 +60,10 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 
 <script>
+    <?php /* variable declaration */ ?>
+        labelOvervieW = <?php echo $graphLabel ?>;
+        dataLabelOverview = <?php echo $graph ?>;
     <?php /* Google Analytics for Dashboard 2.0 - Overview */?>
-    
     function ga_company(idCompany, nameCompany) {
         if (typeof ga === 'function') { 
             console.log("ga 'send' 'event' 'Dashboard2'  'company' " + idCompany + nameCompany);
@@ -127,43 +129,15 @@
             $("#showBtn").toggle();
         });
         
-        <?php //Chart invoke ?>
-        $(document).on("click", ".chartIcon", function() {
-            id = $(this).attr("id");
-            $("#chart_" + id).slideToggle();
-            $(this).toggleClass("active");
-            ga_chart(id);
-        });
-        <?php //Bootstrap tooltips ?>
-        $('[data-toggle="tooltip"]').tooltip();
-        
-        var birdsCanvas = document.getElementById("birdsChart");
+        <?php //Chart invoke ?>    
+            
 
-        var polarAreaChart = new Chart(birdsCanvas, {
-            type: "line",
-            data: {
-                labels: <?php echo $graphLabel ?>,
-                datasets: [{
-                    label: "netReturn",
-                    fill: false,
-                    data:  <?php echo $graph ?>,
-                    borderColor: "rgba(0, 230, 77, 1)",
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }]
-                }
-            }
+        polarAreaChart = graphOverview(labelOvervieW, dataLabelOverview);//Create the graph
+        
         });
-    });
     
-   
+       
+
     
 </script>
 <style>

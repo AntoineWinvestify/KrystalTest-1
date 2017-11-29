@@ -67,13 +67,13 @@ echo $companyInvestmentDetails[0];
             $("#showBtn").toggle();
         });
 
-        $(document).on("click", ".chartIcon", function () {
+        /*$(document).on("click", ".chartIcon", function () {
             id = $(this).attr("id");
-            company = <?php echo $companyInvestmentDetails[1]['name'] ?>;
+            company = <?php// echo $companyInvestmentDetails[1]['name'] ?>;
             $("#chart_" + id).slideToggle("slow");
             $(this).toggleClass("active");
             ga_companyChart(id, company);
-        });
+        });*/
         
         $(document).on("click", "#activeTab", function () {
             ga_allInvestments();
@@ -81,11 +81,11 @@ echo $companyInvestmentDetails[0];
 
         $(document).on("click", "#backOverview", function () {
             $(".dashboardGlobalOverview").fadeIn();
-            $(".ajaxResponse").html("");
+            $(".ajaxResponse").html("");       
         });
         
         <?php /* Charts */ ?>
-        var birdsCanvas = document.getElementById("birdsChart");
+       /* var birdsCanvas = document.getElementById("birdsChart");
 
         Chart.defaults.global.defaultFontFamily = "Lato";
         Chart.defaults.global.defaultFontSize = 18;
@@ -133,7 +133,7 @@ echo $companyInvestmentDetails[0];
                     }]
                 }
             }
-        });
+        });*/
     });
 </script>
 <style>
