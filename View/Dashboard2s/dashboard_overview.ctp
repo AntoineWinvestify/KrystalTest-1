@@ -238,6 +238,10 @@
         position: absolute;
         transform: rotate3d(0, 0, 1, -135deg);
     }
+    
+    .chartIcon:hover {
+        cursor: pointer;
+    }
 </style>
 <div class="dashboardGlobalOverview">
     <div class="row" id="overview">
