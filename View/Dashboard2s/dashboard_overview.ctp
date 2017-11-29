@@ -381,7 +381,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
-                                                        <td class="right"><?php echo __('3.678,00 €')?></td>
+                                                        <td class="right"><?php echo __('81.56 €')?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
