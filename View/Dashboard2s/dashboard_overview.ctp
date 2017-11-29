@@ -142,11 +142,11 @@
         var polarAreaChart = new Chart(birdsCanvas, {
             type: "line",
             data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                labels: <?php echo $graphLabel ?>,
                 datasets: [{
                     label: "netReturn",
                     fill: false,
-                    data: [20, 10, 40, 30, 100, 45, 87, 94, 12, 57, 33, 82],
+                    data:  <?php echo $graph ?>,
                     borderColor: "rgba(0, 230, 77, 1)",
                     borderWidth: 2
                 }]

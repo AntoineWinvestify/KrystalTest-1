@@ -314,22 +314,27 @@ class bondora extends p2pCompany {
                 }
 
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
+                $this->tempUrl['getToken'] = array_shift($this->urlSequence);
+                $this->tempUrl['generateReport'] = array_shift($this->urlSequence);
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
                 break;
             case 4:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
+
                 $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    echo 'error';
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($inputs as $key => $input) {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
-                echo "INPUTS VALUE" . SHELL_ENDOFLINE;
-                $this->print_r2($inputsValue);
-                echo "ENDS INPUTS VALUE" . SHELL_ENDOFLINE;
 
                 $dateInit = date("d/m/Y", strtotime($this->dateInit));
-                if ($dateInit == '01/01/1970') {
+                if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $dateInit = '01/01/2009';
                 }
                 $dateFinish = date('d/m/Y', strtotime($this->dateFinish - 1));
@@ -339,11 +344,99 @@ class bondora extends p2pCompany {
                     "NewReports[0].DateFilterRequired" => 'False',
                     "NewReports[0].DateFilterShown" => 'True',
                     "NewReports[0].Selected" => 'true',
-                    //"NewReports[0].Selected" => false,
                     "NewReports[0].DateFilterSelected" => 'true',
-                    //"NewReports[0].DateFilterSelected" => false,
-                    "NewReports[0].StartDate" => $dateInit, //22/08/2017
-                    "NewReports[0].EndDate" => $dateFinish, //20/09/2017
+                    "NewReports[0].StartDate" => $dateInit,
+                    "NewReports[0].EndDate" => $dateFinish,
+                    "NewReports[1].ReportType" => "Repayments",
+                    "NewReports[1].DateFilterRequired" => 'False',
+                    "NewReports[1].DateFilterShown" => 'True',
+                    "NewReports[1].Selected" => 'false',
+                    "NewReports[1].DateFilterSelected" => 'false',
+                    "NewReports[2].ReportType" => 'PlannedFutureCashflows',
+                    "NewReports[2].DateFilterRequired" => 'False',
+                    "NewReports[2].DateFilterShown" => 'True',
+                    "NewReports[2].Selected" => 'false',
+                    "NewReports[2].DateFilterSelected" => 'false',
+                    "NewReports[3].ReportType" => 'SecondMarketArchive',
+                    "NewReports[3].DateFilterRequired" => 'False',
+                    "NewReports[3].DateFilterShown" => 'True',
+                    "NewReports[3].Selected" => 'false',
+                    "NewReports[3].DateFilterSelected" => 'false',
+                    "NewReports[4].ReportType" => 'MonthlyOverview',
+                    "NewReports[4].DateFilterRequired" => 'False',
+                    "NewReports[4].DateFilterShown" => 'True',
+                    "NewReports[4].Selected" => 'false',
+                    "NewReports[4].DateFilterSelected" => 'false',
+                    "NewReports[5].ReportType" => 'AccountStatement',
+                    "NewReports[5].DateFilterRequired" => 'False',
+                    "NewReports[5].DateFilterShown" => 'True',
+                    "NewReports[5].Selected" => 'false',
+                    "NewReports[5].DateFilterSelected" => 'false',
+                    "NewReports[6].ReportType" => 'IncomeReport',
+                    "NewReports[6].DateFilterRequired" => 'False',
+                    "NewReports[6].DateFilterShown" => 'True',
+                    "NewReports[6].DateFilterSelected" => 'True',
+                    "NewReports[6].Selected" => 'false',
+                    "NewReports[7].ReportType" => 'TaxReportPdf',
+                    "NewReports[7].DateFilterRequired" => 'True',
+                    "NewReports[7].DateFilterShown" => 'True',
+                    "NewReports[7].DateFilterSelected" => 'True',
+                    "NewReports[7].Selected" => 'false',
+                    "NewReports[8].ReportType" => 'AccountValue',
+                    "NewReports[8].DateFilterRequired" => 'False',
+                    "NewReports[8].DateFilterShown" => 'True',
+                    "NewReports[8].Selected" => 'false',
+                    "NewReports[8].DateFilterSelected" => 'false',
+                );
+                $this->idForSwitch++;
+                $this->documents = 1;
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
+                break;
+            case 5:
+
+                $this->finishDate = date('d/m/Y', strtotime($this->dateFinish - 1));
+                $this->initDate = date("d/m/Y", strtotime($this->dateFinish - $this->documents * 182));
+                if ($this->documents > 1) {
+                    $this->finishDate = date('d/m/Y', strtotime($this->dateFinish - 1 - $this->documents * 182));
+                    $this->initDate = date("d/m/Y", strtotime($this->dateFinish - $this->documents * 182 * 2));
+                }
+                if ((int) explode("/", $this->initDate)[2] < 2009) { //Minimum date for bondora is 1/1/2009
+                    $this->initDate = '01/01/2009';
+                    $this->control = true;
+                }
+                /* if ((int) explode("/", $this->initDate)[2] + ($this->years - 1) < (int) explode("/", $this->finishDate)[2]) {  //If investment account report have more than one year, generating report take too much time. We generate it year to year.
+                  $this->finishDate = '01/01/' . ((int) explode("/", $this->initDate)[2] + $this->years);
+                  $this->initDate = '01/01/' . ((int) explode("/", $this->initDate)[2] + $this->years - 1);
+                  } else {
+                  $this->initDate = '01/01/' . ((int) explode("/", $this->finishDate)[2]);
+                  } */
+
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
+            case 6:
+
+
+                $dom = new DOMDocument;  //Check if works
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+                $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
+                foreach ($inputs as $key => $input) {
+                    $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
+                }
+
+
+                $credentials = array(
+                    '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
+                    'NewReports[0].ReportType' => 'InvestmentsListV2',
+                    "NewReports[0].DateFilterRequired" => 'False',
+                    "NewReports[0].DateFilterShown" => 'True',
+                    "NewReports[0].Selected" => 'false',
+                    "NewReports[0].DateFilterSelected" => 'false',
                     "NewReports[1].ReportType" => "Repayments",
                     "NewReports[1].DateFilterRequired" => 'False',
                     "NewReports[1].DateFilterShown" => 'True',
@@ -368,11 +461,9 @@ class bondora extends p2pCompany {
                     "NewReports[5].DateFilterRequired" => 'False',
                     "NewReports[5].DateFilterShown" => 'True',
                     "NewReports[5].Selected" => 'true',
-                    //"NewReports[5].Selected" => false,
                     "NewReports[5].DateFilterSelected" => 'true',
-                    //"NewReports[5].DateFilterSelected" => false,
-                    "NewReports[5].StartDate" => $dateInit, //14/09/2017
-                    "NewReports[5].EndDate" => $dateFinish, //21/09/2017
+                    "NewReports[5].StartDate" => $dateInit,
+                    "NewReports[5].EndDate" => $dateFinish,
                     "NewReports[6].ReportType" => 'IncomeReport',
                     "NewReports[6].DateFilterRequired" => 'True',
                     "NewReports[6].DateFilterShown" => 'True',
@@ -392,10 +483,17 @@ class bondora extends p2pCompany {
                 echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
                 echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
-                $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl(null, $credentials);
+                if (!$this->control) {
+                    $this->idForSwitch--;
+                    $this->documents++;
+                } else {
+                    $this->idForSwitch++;
+                }
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                 break;
-            case 5:
+
+
+            case 7:
                 echo $str . SHELL_ENDOFLINE;
                 return $tempArray = 'Generando informe';
         }
@@ -514,7 +612,7 @@ class bondora extends p2pCompany {
                 }
 
                 $dateInit = date("d/m/Y", strtotime($this->dateInit));
-                if ($dateInit == '01/01/1970') {
+                if ((int) explode("/", $dateInit)[2] < 2009) {//Minimum date for bondora is 1/1/2009
                     $dateInit = '01/01/2009';
                 }
                 $dateFinish = date('d/m/Y', strtotime($this->dateFinish - 1));
@@ -752,7 +850,7 @@ class bondora extends p2pCompany {
                   $this->print_r2($inputsValue);
                   echo "ENDS INPUTS VALUE" . SHELL_ENDOFLINE; */
                 $dateInit = date("d/m/Y", strtotime($this->dateInit));
-                if ($dateInit == '01/01/1970') {
+                if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $dateInit = '01/01/2009';
                 }
                 $dateFinish = date('d/m/Y', strtotime($this->dateFinish - 1));
@@ -830,7 +928,7 @@ class bondora extends p2pCompany {
                   $this->print_r2($inputsValue);
                   echo "ENDS INPUTS VALUE" . SHELL_ENDOFLINE; */
                 $dateInit = date("d/m/Y", strtotime($this->dateInit));
-                if ($dateInit == '01/01/1970') {
+                if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $dateInit = '01/01/2009';
                 }
                 $dateFinish = date('d/m/Y', strtotime($this->dateFinish - 1));
