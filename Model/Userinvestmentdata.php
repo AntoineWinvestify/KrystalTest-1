@@ -127,4 +127,12 @@ class Userinvestmentdata extends AppModel {
         ));
         return $investmentIds;
     }       
+    
+    public function saveDataByType($linkedaccountId, $date, $data) {
+        $conditions = array(
+            'linkedaccount_id' => $linkedaccountId,
+            'date'
+            );
+        $this->saveField($data['type'], $data['data']);
+    }
 }

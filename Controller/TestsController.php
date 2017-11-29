@@ -57,7 +57,7 @@ class TestsController extends AppController {
 
 
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel"));
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel", "insertDummyData"));
     }
 
     function arrayToExcel(/*$array, $excelName*/) {
@@ -208,6 +208,40 @@ class TestsController extends AppController {
         // redirect user to $url. After login, user will be redirected back with get parameter 'code'
         // get token from 'code' provided after user successful login. Store access_token and refresh_token
         //$token_object = $api->getToken($code);
+    }
+    
+    public function insertDummyData() {
+        $model = ClassRegistry::init("Userinvestmentdata");
+        
+        for ($i = 0; $i < 600; $i++) {
+            $random = rand(500, 15000);
+            $random2 = rand(100, 5000);
+            $random3 = rand(300, 5000);
+            $date = date("Y-m-d",strtotime("-$i days"));
+            
+            $data['Userinvestmentdata']['linkedaccount_id'] = 35705;
+            $data['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = "39048098ab409be490A";
+            $data['Userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $random;
+            $data['Userinvestmentdata']['userinvestmentdata_totalLoansCost'] = $random2;
+            $data['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] = $random3;
+            $data['Userinvestmentdata']['date'] = $date;
+            round(bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP);
+            //echo $random . "<br>";
+            //echo $date . "<br>";
+            $model->create();
+            $model->save($data);
+        }
+        
+        
+        
+        /*$sumValue  =  $model->find('list',array(
+                'fields' => array('linkedaccount_id', $value . '_sum'),
+                'conditions' => array(
+                    $modelName .  ".created >=" => $dateInit,
+                    $modelName .  ".created <=" => $dateFinish
+                )
+            )
+        );*/
     }
 
 }
