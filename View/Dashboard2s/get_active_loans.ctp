@@ -21,10 +21,10 @@ echo $activeInvestments[0];
                             <th><?php echo __('Investment Date') ?></th>
                             <th><?php echo __('My Investment') ?></th>
                             <th><?php echo __('Interest Rate') ?></th>
-                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 27') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Instalment Progress') ?></th>
-                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 28') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
-                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 29') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
-                            <th><i data-toggle="tooltip" data-placement="top" title="<?php echo __('some text to tooltip 30') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
+                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The number of received payments divided by total number of payments.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Instalment Progress') ?></th>
+                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Unpaid loan amount.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
+                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Next payment date.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
+                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Indicates the number of days of payment delay.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                         </tr>
                     </thead>
                     <tbody>

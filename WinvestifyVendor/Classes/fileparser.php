@@ -63,6 +63,13 @@
  * Added a new function "getConceptChars"; 
  * 
  * 
+ * 2017-11-28           version0.8.1
+ * New function, generateId, for generating a "random (unique)identifier" if cell is empty
+ * Cell data is cleaned before sending it as '$input' to a function
+ * Added configurations for Zank
+ * New configuration parameter (changeCronologicalOrder)
+ * 
+ * 
  * 
  * 
  * Pending:
@@ -82,11 +89,14 @@ class Fileparser {
     protected $config = array ('offsetStart' => 0,
                             'offsetEnd'     => 0,
                             'separatorChar' => ";",
-                            'sortParameter' => ""   // used to "sort" the array and use $sortParameter as prime index.
-                             );                     // if array does not have $sortParameter then "global" index is used
-                                                    // Typically used for sorting by loanId index
+                            'sortParameter' => "",                  // used to "sort" the array and use $sortParameter as prime index.
+                                                                    // if array does not have $sortParameter then "global" index is used
+                                                                    // Typically used for sorting by loanId index
+                            'changeCronologicalOrder' => 0          // Do not 'sort' order of the resulting array. This option is executed AFTER
+                                                                    // the 'sortParameter' is checked. 
+                            );
 
-    protected $errorData = array();                 // Contains the information of the last occurred error
+    protected $errorData = array();                                 // Contains the information of the last occurred error
 
     protected $currencies = array(EUR => ["EUR", "€"],
                                     GBP => ["GBP", "£"],
@@ -125,17 +135,18 @@ class Fileparser {
 
                             );   
  // Possible lables that can be applied to each concept are:
- // AM_TABLE        => collect amortization table. This might be a brandnew table or an update of a table for 
- //                 an already existing loan if a extra participation is bought
+ // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
+ //                 an already existing loan if a extra participation is bought.
  // LOAN_FINISHED   => The last payment on a loan has happened and the loan is fully repaid and finished
  /*
   * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
   * array can be done using both "detail" or "type" as search key
   */   
+
     protected $transactionDetails = [  
             1 => [
                 "detail" => "Cash_deposit",
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,                                    // 1 = income, 2 = cost
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,                   // 1 = income, 2 = cost
                 "account" => "CF",                                              // Not (yet) used
                 "type" => "globalcashflowdata_platformDeposits"            
                 ],
@@ -217,7 +228,7 @@ class Fileparser {
                 "detail" => "Incentives_and_bonus",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept14"  
+                "type" => "payment_loanIncentivesAndBonus"  
                 ],
             15 => [
                 "detail" => "Compensation",
@@ -248,7 +259,7 @@ class Fileparser {
                 "detail" => "Commission",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept20"
+                "type" => "payment_commissionPaid"
                 ],
             21 => [
                 "detail" => "Bank_charges",
@@ -599,15 +610,27 @@ protected $countries = [
         
         switch($extension) {
             case "xlsx":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing xlsx file";
+                }
                 $tempArray = $this->analyzeFileExcel($file, $configuration);
                 break;
             case "csv":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing csv file";
+                }
                 $tempArray = $this->analyzeFileCSV($file, $configuration);
                 break;
             case "json":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing json file";
+                }
                 $tempArray = $this->analyzeFileJson($file, $configuration);
                 break;
             case "html":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing html file";
+                }
                 $tempArray = $this->analyzeFileHtml($file, $configuration);
                 break;
         }
@@ -756,7 +779,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                             }
                         }
 
-                        array_unshift($userFunction['inputData'], $rowData[$key]);       // Add cell content to list of input parameters
+                        array_unshift($userFunction['inputData'], trim($rowData[$key]));       // Add cell content to list of input parameters
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
                                                                        $userFunction['functionName']),
@@ -797,9 +820,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                     unset($tempArray[$i]);
                 break;               
             }
-        $i++;
+            $i++;
         }
-    return $tempArray;
+        
+    if ($this->config['changeCronologicalOrder'] == YES) {                      // inverse the order of the records
+        return(array_reverse($tempArray));
+    }
+
+    return $tempArray;    
     }
 
 
@@ -1184,9 +1212,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
     }
 
-
     /**
-     * get hash of a string
+     *  Extracts the loanId from the file, and if no loanId exists, a global loanId will be generated.
      *
      * @param string    $input
      * @return string   $extractedString
@@ -1194,8 +1221,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */
     private function getHash($input) {
         return  hash ("md5", $input, false);
-    }
-
+    }    
 
     /**
      *
@@ -1271,7 +1297,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * If $search == "" then $extractedString starts from beginning of $input.
      * If $separator = "" then $extractedString contains the $input starting from $search to end
      *
-     * @param string    $input      It is the string to which we search the information
+     * @param string    $input      It is the string in which we search the information
      * @param string    $search     The character to search. 
      * @param string    $separator  The separator character
      * @param int       $mandatory  Indicates if it is mandatory that $search exists. If it does not exist 
@@ -1554,7 +1580,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return string  space delimited set of characteristics, 0,1 or more
      *
      */
-
     private function getConceptChars($input, $search) {
         foreach ($this->transactionDetails as $detail) { 
             if ($detail['detail'] == $search) {
@@ -1568,7 +1593,49 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }   
     
     
+    /**
+     * Generates a 'uuid' string
+     +
+     * @return string   
+     */
+    private function guidv4()
+    {
+    if (function_exists('com_create_guid') === true)
+        return trim(com_create_guid(), '{}');
+
+    $data = openssl_random_pseudo_bytes(16);
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }   
     
-    
+
+    /**
+     * Return an "ID". This is the contents of the cell or an id as generated by the system.
+     *
+     * @param string    $input
+     * @param string    $prefix     Optional prefix which which the "id" is to start
+     * @param string    $algorithm  The algorithm to be used for generating the ID 
+     * @return string   $id
+     */
+    private function generateId($input, $prefix = "", $algorithm = ""){
+        if (!empty($input))  {
+           return $input;
+        }
+        
+        switch ($algorithm) {
+            case "md5":
+                return $prefix . hash ("md5", $input, false);
+            break;
+        
+            case "rand":
+                return $prefix . mt_rand();
+            break;
+        
+            case "uuid":
+                return $prefix . $this->guidv4();
+            break;
+        }
+    }
 
 }

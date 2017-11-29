@@ -252,6 +252,9 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             
             echo "New loans are\n";
             print_r($returnData[$linkedAccountKey]['newLoans']); 
+            
+            
+            
         }
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {

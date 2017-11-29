@@ -734,7 +734,7 @@ class mintos extends p2pCompany {
                 $headers = json_decode($headers, true);
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
-                if ($this->originExecution == WIN_QUEUE_ORINGIN_EXECUTION_LINKACCOUNT) {
+                if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
                     $this->idForSwitch++;
                 }
                 else {
