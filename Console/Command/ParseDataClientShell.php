@@ -278,7 +278,7 @@ class ParseDataClientShell extends GearmanClientShell {
 echo "dateKey = $dateKey \n";
 if ($dateKey == "2016-10-28"){ 
     echo "Exiting when date = " . $dateKey . "\n";
-       exit;
+ //      exit;
 }
 // Lets allocate a userinvestmentdata for this calculation period (normally daily)
             // reset the relevant variables before going to next date
@@ -304,7 +304,7 @@ if ($keyDateTransaction == "1691379-01") {
     echo " Continueing\n ";
  //   continue;
     echo "Exiting\n";
-  //  exit;
+ //   exit;
 } 
                 if (isset($dateTransaction[0]['conceptChars'])) {                       // To get rid of PHP warning
                     if ($dateTransaction[0]['conceptChars'] == "AM_TABLE") {

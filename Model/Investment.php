@@ -76,7 +76,7 @@ var $validate = array(
      *
      * creates a new 'investment' table and also links an 'investmentSlice' database table.
      * One field of the $investmentdata must be $investmentdata['sliceIdentifier']. This call
-     * will FAIL if $investmentdata['sliceIdentifier'] is empty or non-existent.
+     * will FAIL if $investmentdata['investment_sliceIdentifier'] is empty or non-existent.
      * 	
      * 	@param 		array 	$investmentdata 	All the data to be saved
      * 	@return 	array[0]    => boolean
@@ -88,21 +88,19 @@ var $validate = array(
         $result = array();
         
         $this->create();
-        if (!isset($investmentdata['sliceIdentifier'])) {
+        if (!isset($investmentdata['investment_sliceIdentifier'])) {
+            echo "ANANANANANAN%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
             $result[0] = false;            
             return $result;
         }
-
+echo "€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€ee";
         if ($this->save($investmentdata, $validate = true)) {   // OK
             $investmentId = $this->id;
             
             $this->Investmentslice = ClassRegistry::init('Investmentslice');
-            $data = array( "investment_id" => $investmentId,
-                            "investment_sliceIdentifier" => $investmentdata['sliceIdentifier']
-                        );
             $this->Investmentslice->create();
           
-            if ($this->Investmentslice->save($data)) {
+            if ($this->Investmentslice->getNewSlice($investmentId, $investmentdata['investment_sliceIdentifier'])) {
                 $result[0] = true;
                 $result[1] = $investmentId;  
             }
