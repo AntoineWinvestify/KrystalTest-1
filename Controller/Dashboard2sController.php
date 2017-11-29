@@ -163,6 +163,10 @@ class Dashboard2sController extends AppController {
         $i = 0;
         //$global['netDeposits'] = 0; 
         foreach ($allInvestment as $globalKey => $individualPfpData) {
+            if(empty($individualPfpData)){
+                unset($allInvestment[$globalKey]);
+                continue;
+            }
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
                 switch ($key) {
                     case "linkedaccount_id":
