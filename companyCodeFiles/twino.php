@@ -357,7 +357,7 @@ class twino extends p2pCompany {
                     echo 'Reading download status: ' . SHELL_ENDOFLINE;
                     $this->statusDownloadUrl = array_shift($this->urlSequence);
                     $this->idForSwitch++;
-                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
+                    $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
                     break;
                 }
                 $this->idForSwitch++;
