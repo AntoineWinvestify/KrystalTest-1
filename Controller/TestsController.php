@@ -211,9 +211,9 @@ class TestsController extends AppController {
     }
     
     public function insertDummyData() {
-        $model = ClassRegistry::init("Userinvestmentdata");
+        //$model = ClassRegistry::init("Userinvestmentdata");
         
-        for ($i = 0; $i < 600; $i++) {
+        /*for ($i = 0; $i < 600; $i++) {
             $random = rand(500, 15000);
             $random2 = rand(100, 5000);
             $random3 = rand(300, 5000);
@@ -230,9 +230,66 @@ class TestsController extends AppController {
             //echo $date . "<br>";
             $model->create();
             $model->save($data);
+        }*/
+        
+        $model = ClassRegistry::init("Paymenttotal");
+        $model->virtualFields = array('paymenttotal_myInvestment' . '_sum' => 'sum(paymenttotal_myInvestment)');
+        $sumValue  =  $model->find('list',array(
+                'fields' => array('date', 'paymenttotal_myInvestment' . '_sum'),
+                'group' => array('date')
+                /*'conditions' => array(
+                    "date >=" => $dateInit,
+                    "date <=" => $dateFinish,
+                    "linkedaccount_id" => $linkedaccountId
+                )*/
+            )
+        );
+        
+        /*$model->virtualFields = array('paymenttotal_regularGrossInterestIncome' . '_sum' => 'sum(paymenttotal_regularGrossInterestIncome)');
+        $sumValue2  =  $model->find('list',array(
+                'fields' => array('date', 'paymenttotal_regularGrossInterestIncome' . '_sum'),
+                'group' => array('date')
+                /*'conditions' => array(
+                    "date >=" => $dateInit,
+                    "date <=" => $dateFinish,
+                    "linkedaccount_id" => $linkedaccountId
+                )*/
+            /*)
+        );*/
+        
+        /*foreach ($sumValue as $key => $value) {
+            $totalSum[$key] = $value + $sumValue2[$key]; 
         }
         
+        print_r($totalSum);
+        /*$sumValue  =  $model->find('list',array(
+                'fields' => array('linkedaccount_id', $value . '_sum'),
+                'conditions' => array(
+                    $modelName .  ".created >=" => $dateInit,
+                    $modelName .  ".created <=" => $dateFinish
+                )
+            )
+        );*/
         
+        $model2 = ClassRegistry::init("Userinvestmentdata");
+        
+        $idByDate =  $model2->find('list',array(
+                'fields' => array('date', 'id'),
+                'group' => array('date')
+                /*'conditions' => array(
+                    "date >=" => $dateInit,
+                    "date <=" => $dateFinish,
+                    "linkedaccount_id" => $linkedaccountId
+                )*/
+            )
+        );
+        
+
+        foreach ($sumValue as $key => $sum) {
+            //$data['Userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $sum;
+            $model2->id = $idByDate[$key];
+            $model2->saveField('userinvestmentdata_totalLoansCost', $sum);
+        }
         
         /*$sumValue  =  $model->find('list',array(
                 'fields' => array('linkedaccount_id', $value . '_sum'),
