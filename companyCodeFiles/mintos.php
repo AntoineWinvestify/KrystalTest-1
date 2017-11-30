@@ -732,7 +732,7 @@ class mintos extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['transactionPage']);
                 break;
             case 6:
-                $continue = $this->downloadTimePeriod("20100101", 365);
+                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
 
                 $dateInit = date("d.m.Y",  strtotime($this->dateInitPeriod));      //date("d.m.Y", strtotime($this->dateInit));
                 $dateFinish = date("d.m.Y",  strtotime($this->dateFinishPeriod));  //date('d.m.Y',strtotime($this->dateFinish));
