@@ -174,6 +174,7 @@
     }
     td.logo:hover {
         background-color: rgba(0,0,0,0.3);
+        cursor: pointer;
     }
     #showBtn {
         position: absolute;
@@ -207,6 +208,10 @@
         border-bottom: none;
         position: absolute;
         transform: rotate3d(0, 0, 1, -135deg);
+    }
+    
+    .clickable:hover {
+        cursor: pointer;
     }
 </style>
 <div class="dashboardGlobalOverview">
@@ -295,7 +300,7 @@
                                                     <tr>
                                                         <td class="left">
                                                             <i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Return.')?>" class="ion ion-ios-information-outline" ></i> 
-                                                            <span class="chartIcon" id="netReturn">
+                                                            <span class="chartIcon clickable" id="netReturn">
                                                                 <?php echo __('Net Return')?> 
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
@@ -347,7 +352,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
-                                                        <td class="right"><?php echo __('3.678,00 €')?></td>
+                                                        <td class="right"><?php echo __('81.56 €')?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

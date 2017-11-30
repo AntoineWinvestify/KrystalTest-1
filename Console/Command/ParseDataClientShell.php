@@ -660,7 +660,7 @@ echo "DANIEL: orignal amount = " . $database[$varName[0]][$varName[1]] ." and ne
                     $functionToCall = $this->variablesConfig[$item]['function'];
                     echo "Calling the function: $functionToCall and index = $keyItem\n";
                     $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
-                    echo "inputs are " . $varName[0] . " and" . $varName[1] . "\n";
+                    echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
                     echo $database[$varName[0]][$varName[1]];
                     $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
              //   }

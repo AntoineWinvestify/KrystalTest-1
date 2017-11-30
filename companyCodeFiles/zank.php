@@ -230,7 +230,22 @@ class zank extends p2pCompany {
         ],
         ///CHANGEEEE WITH REAL VALUE
         "J" =>  [
-            "name" => "investment_originalLoanState"
+            [
+                "type" => "investment_statusOfLoan",                               // 
+                "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                            "input2" => "",                                 // 
+                            "input3" => "",
+                            "input4" => 0                                   // 'input3' is NOT mandatory. 
+                        ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "investment_originalLoanState",                               // 
+                "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                            "input2" => "#current.investment_statusOfLoan",                                 //                                 // 'input3' is NOT mandatory. 
+                        ],
+                "functionName" => "getDefaultValue",
+            ]
         ]
     ];
 
@@ -314,7 +329,7 @@ class zank extends p2pCompany {
     protected $callbacks = [
         "investment" => [
             "investment_loanType" => "translateTypeOfInvestment",
-            "investment_originalLoanState" => "translateLoanStatus"
+            "investment_statusOfLoan" => "translateLoanStatus"
         ]
     ];
 
@@ -1439,7 +1454,7 @@ class zank extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                echo 'URL SEQUECE FLOW: ' . SHELL_ENDOFLINE;
+                echo 'URL SEQUENCE FLOW: ' . SHELL_ENDOFLINE;
                 print_r($this->urlSequence);
                 $url = array_shift($this->urlSequence) . $this->userId;
 
@@ -1745,7 +1760,7 @@ class zank extends p2pCompany {
      */
     public function translateTypeOfInvestment($inputData) {
         $data = WIN_LOANSTATUS_MANUALINVESTMENT;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData, "UTF-8");
         switch ($inputData) {
             case "AUTO":
                 $data = WIN_LOANSTATUS_AUTOMATEDINVESTMENT;
@@ -1761,9 +1776,10 @@ class zank extends p2pCompany {
      * @return int                  Winvestify standardized loan status
      */ 
     public function translateLoanStatus($inputData){
-        $status = WIN_LOANSTATUS_UNKNOWN;
-        $inputData = strtoupper(trim($inputData));
-         switch ($inputData) {
+        $data = WIN_LOANSTATUS_UNKNOWN;
+        $inputData = mb_strtoupper(trim($inputData), "UTF-8");
+        $input = explode(" ", $inputData);
+         switch ($input[0]) {
             case "PUBLICADO":
                 $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
                 break;

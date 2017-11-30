@@ -9,14 +9,12 @@
 function overviewDataJS() {
 //Click on platform logo
     $(document).on("click", ".logo", function () {
-        $("#netReturn").unbind('click'); //Delete jquery graph event
-        $("#netReturn").off('click');
         id = $(this).attr("id").split(" ")[0];
         name = $("#logo" + id).attr("alt");
         var params = {
             id: $(this).attr("id"),
             logo: $("#logo" + id).attr("src"),
-            name: name,
+            name: name
         };
         ga_company(id, name);
         var data = jQuery.param(params);
@@ -38,7 +36,7 @@ function overviewDataJS() {
 
 
 function graphOverview(labels, data) {
-    $(document).on("click", "#netReturn", function () {
+    $(document).on("click", ".chartIcon", function () {
         id = $(this).attr("id");
         $("#chart_" + id).slideToggle();
         $(this).toggleClass("active");
@@ -76,7 +74,7 @@ function singlePfpJS() {
         event.preventDefault();
         id = $(this).attr("value");
         var params = {
-            id: id,
+            id: id
         };
         var data = jQuery.param(params);
         link = $(this).attr("href");
@@ -88,7 +86,7 @@ function singlePfpJS() {
         event.preventDefault();
         id = $(this).attr("value");
         var params = {
-            id: id,
+            id: id
         };
         var data = jQuery.param(params);
         link = $(this).attr("href");
