@@ -1460,7 +1460,7 @@ class zank extends p2pCompany {
                 }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
-                $newFile = $path . DS . $this->nameFileExpiredLoans . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $newFile = $path . DS . $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->copyFile($file, $newFile);
                 exit;
                 echo 'URL SEQUENCE FLOW: ' . SHELL_ENDOFLINE;

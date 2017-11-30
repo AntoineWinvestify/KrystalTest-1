@@ -754,7 +754,7 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $this->fileName = $this->nameFileExpiredLoans . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $credentials = array_shift($this->urlSequence);
