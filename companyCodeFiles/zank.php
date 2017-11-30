@@ -1451,8 +1451,8 @@ class zank extends p2pCompany {
                 // goto page "MI CARTERA"
                 $url = array_shift($this->urlSequence) . $this->userId;
                 $this->idForSwitch++;
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
-                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
                 if (!$this->verifyFileIsCorrect()) {
@@ -1460,9 +1460,9 @@ class zank extends p2pCompany {
                 }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
-                $newfile = $path . DS . $this->nameFileExpiredLoans . $this->numFileExpiredLoans . "." . $this->typeFileExpiredLoan;
+                $newFile = $path . DS . $this->nameFileExpiredLoans . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->copyFile($file, $newFile);
-                
+                exit;
                 echo 'URL SEQUENCE FLOW: ' . SHELL_ENDOFLINE;
                 print_r($this->urlSequence);
                 $url = array_shift($this->urlSequence) . $this->userId;
