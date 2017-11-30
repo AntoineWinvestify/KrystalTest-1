@@ -168,7 +168,10 @@ class bondora extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
-
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass

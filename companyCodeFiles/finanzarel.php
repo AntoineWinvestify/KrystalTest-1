@@ -252,6 +252,10 @@ class finanzarel extends p2pCompany {
     
     function __construct() {
         parent::__construct();
+        $this->typeFileTransaction = "csv";
+        $this->typeFileInvestment = "csv";
+        //$this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
 // Do whatever is needed for this subsclass
     }   
 

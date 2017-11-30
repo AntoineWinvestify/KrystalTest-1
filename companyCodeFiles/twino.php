@@ -245,6 +245,10 @@ class twino extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array(629337, 629331, 629252);  
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass

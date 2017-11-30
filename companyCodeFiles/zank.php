@@ -338,6 +338,10 @@ class zank extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array(8363);
         //$this->maxLoans = count($this->loanIdArray);
         //{"loanIds": "683":["8800", "8800"]}}

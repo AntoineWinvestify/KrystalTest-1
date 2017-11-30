@@ -371,6 +371,10 @@ class finbee extends p2pCompany {
 
     function __construct() {
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
