@@ -234,6 +234,9 @@ class loanbook extends p2pCompany {
             'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
             'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
         $this->UserLoansId = array();
+        $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
+            'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
+            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
         //$this->loanIdArray = array(472);
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
@@ -1367,17 +1370,19 @@ class loanbook extends p2pCompany {
                                 case 15:
                                     $this->loanArray[$this->j - 1]['K'] = trim($td->nodeValue); //Loan start date
                                     break;
+                                case 17:
+                                    $this->loanArray[$this->j - 1]['L'] = trim($td->nodeValue);
+                                    break;
                                 case 19:
                                     $str = array_values(array_unique(explode(" ", trim($td->nodeValue))));
                                     print_r($str);
                                     $this->loanArray[$this->j - 1]['M'] = trim($str[2]); //Duration
                                     break;
-                                case 17:
-                                    $this->loanArray[$this->j - 1]['L'] = trim($td->nodeValue);
+
                                 //case 21 SECTOR
                             }
                         }
-                        break;
+                        
                     }
                 }
 

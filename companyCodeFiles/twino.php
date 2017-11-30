@@ -86,7 +86,8 @@ class twino extends p2pCompany {
                         //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
                         14 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_positive"],
                         15 => ["PRINCIPAL RECOVERY" => "Recoveries"],
-                        16 => ["PRINCIPAL WRITEOFF" => "Write-off"]
+                        16 => ["PRINCIPAL WRITEOFF" => "Write-off"],
+                        17 => ["WITHDRAWAL" => "Cash_withdrawal"]
                     ], // Thousands seperator, typically "."
                     "input3" => "#current.transactionDetail", // Decimal seperator, typically ","
                 // is ALWAYS the contents of the cell
@@ -369,7 +370,7 @@ class twino extends p2pCompany {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
                     $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                     $this->tempUrl['refererInvestment'] = array_shift($this->urlSequence);
-                    if ($this->originExecution == WIN_QUEUE_ORINGIN_EXECUTION_LINKACCOUNT) { //Only download expired loans the first time(in link account)
+                    if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) { //Only download expired loans the first time(in link account)
                         $this->idForSwitch++;
                     } else {
                         $this->idForSwitch = 9;
@@ -434,7 +435,7 @@ class twino extends p2pCompany {
 
 
             case 9:
-                if ($this->originExecution == WIN_QUEUE_ORINGIN_EXECUTION_LINKACCOUNT) {
+                if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
                     if (!$this->verifyFileIsCorrect()) {
                         echo 'error';
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);

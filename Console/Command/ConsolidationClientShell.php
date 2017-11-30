@@ -41,11 +41,16 @@ class ConsolidationClientShell extends GearmanClientShell {
         $this->flowName = "GEARMAN_FLOW4";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
-        //$pendingJobs = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
-        //$pendingJobs[] = $this->Queue->getNextFromQueue(FIFO);
+
+        $this->flowName = "GEARMAN_FLOW4";
+        $inActivityCounter = 0;
+        $workerFunction = "consolidation";
+        echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 4 Client\n";
+        }
         
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
@@ -56,61 +61,67 @@ class ConsolidationClientShell extends GearmanClientShell {
         while ($numberOfIteration == 0){
             $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, $jobsInParallel);
             print_r($pendingJobs);
+            
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
+            }
+            
             if (!empty($pendingJobs)) {
+                
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
+                }
+                
                 $linkedaccountsResults = [];
-                foreach ($pendingJobs as $job) {
+                foreach ($pendingJobs as $keyjobs => $job) {
+                    
                     $queueInfo = json_decode($job['Queue']['queue_info'], true);
                     $this->queueInfo[$job['Queue']['id']] = $queueInfo;
-                    $date = $queueInfo['date'];
+                    
+                    $data["companies"] = $queueInfo['companiesInFlow'];
+                    $data["queue_userReference"] = $job['Queue']['queue_userReference'];
+                    $data["queue_id"] = $job['Queue']['id'];
+                    $data["date"] = $queueInfo['date'];
+                    if (Configure::read('debug')) {
+                        $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
+                        print_r($data["companies"]);
+                        echo "userReference ". $data["queue_userReference"] . "\n";
+                        echo "queueId " . $data["queue_id"] . "\n";
+                        echo "the date is " . $data["date"] . "\n";
+                        echo "All information \n";
+                        print_r($data);
+                    }
+                    $this->GearmanClient->addTask($workerFunction, json_encode($data), null, $data["queue_id"] . ".-;" .  $workerFunction . ".-;" . $job['Queue']['queue_userReference']);
+
+                }
+                
+                
+                
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
+                }
+
+                $this->GearmanClient->runTasks();
+
+                // ######################################################################################################
+
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
+                }
+                
+                $this->saveConsolidationFields();
+                
+                //$this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
+                foreach ($this->userResult as $queueId => $userResult) {
+                    $date = $this->queueInfo[$queueId]['date'];
                     $lastAccess = date("Y-m-d", strtotime($date-1));
-                    foreach ($queueInfo['companiesInFlow'] as $linkaccountId) {
+                    foreach ($this->queueInfo[$queueId]['companiesInFlow'] as $linkaccountId) {
                         $this->Linkedaccount->id = $linkaccountId;
                         $this->Linkedaccount->saveField('linkedaccount_lastAccessed', $lastAccess);
                     }
-                    /*$jobInvestor = $this->Investor->find("first", array('conditions' =>
-                        array('Investor.investor_identity' => $job['Queue']['queue_userReference']),
-                        'fields' => 'id',
-                        'recursive' => -1,
-                    ));
-                    print_r($jobInvestor);
-                    $investorId = $jobInvestor['Investor']['id'];
-                    $filterConditions = array(  'investor_id' => $investorId,
-                                            );
-                    $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
-                    echo "linkAccount \n";
-                    print_r($linkedaccountsResults);*/
-                    //$linkedaccountsResults[$job['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
-                //$userLinkedaccounts = [];
-                /*foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
-                    //In this case $key is the number of the linkaccount inside the array 0,1,2,3
-                    $i = 0;
-                    foreach ($linkedaccountResult as $linkedaccount) {
-                        $userLinkedaccounts[$key][$i] = $linkedaccount;
-                        //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
-                        $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
-                        $i++;
-                    }
-                }*/
+               
                 
-                //$key is the number of the internal id of the array (0,1,2)
-                //$key2 is type of access to company (multicurl, casper, etc)
-                /*foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
-                    $data["companies"] = $userLinkedaccount;
-                    $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
-                    $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
-                    print_r($data["companies"]);
-                    echo "\n";
-                    echo "userReference " . $data["queue_userReference"];
-                    echo "\n";
-                    echo "queueId " . $data["queue_id"];
-                    echo "\n";
-                    echo json_encode($data);
-                    echo "\n";
-                    echo $key2;
-                    echo "\n aquiiiiiiiiiiiiiii";
-                    $this->GearmanClient->addTask('consolidation', json_encode($data), null, $data["queue_id"] . ".-;" . "consolidation" . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
-                }*/
             }
             else {
                 $inActivityCounter++;
@@ -120,6 +131,29 @@ class ConsolidationClientShell extends GearmanClientShell {
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  
                 exit;
+            }
+            $numberOfIteration++;
+        }
+    }
+    
+    /**
+     * Function to save all the amortization tables on DB per user and per linkaccount
+     */
+    public function saveConsolidationFields() {
+        $result = [];
+        foreach ($this->tempArray as $queuekey => $tempArray) {
+            foreach ($tempArray as $linkedaccountId => $tempArrayByCompany) {
+                foreach ($tempArrayByCompany as $key => $formulaValues) {
+                    $model = ClassRegistry::init($formulaValues['table']);
+                    $this->model->saveDataByType($linkedaccountId, $this->date, $formulaValues);
+                }
+            }
+        }
+        $this->model = ClassRegistry::init('Investment');
+        $investmentIds = $this->Investment->getInvestmentIdByLoanId($loanIds);
+        foreach ($this->tempArray as $queuekey => $tempArray) {
+            foreach ($tempArray as $linkaccount => $linkaccountData) {
+                $this->Amortizationtable->saveAmortizationtable($linkaccountData, $investmentIds);
             }
         }
     }

@@ -1794,7 +1794,7 @@ class p2pCompany {
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
-                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_TIMEOUT, 300)
                 ->set(CURLOPT_ENCODING, "gzip,deflate,br")
                 // Do not check the SSL certificates
                 ->set(CURLOPT_SSL_VERIFYHOST, false)

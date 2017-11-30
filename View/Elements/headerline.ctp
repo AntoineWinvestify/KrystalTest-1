@@ -71,11 +71,17 @@
     .blackImportant {
        color: black !important;
     }
+    .navGreen>li>a {
+        border-bottom: 5px solid #ECF0F5 !important;
+    }
+    .navGreen>li>a:hover {
+        border-bottom: 5px solid #87e14b !important;
+    }
 </style>
 
       <!-- Navbar Right Menu -->
 	<div class="navbar-custom-menu">
-		<ul class="nav navbar-nav">
+		<ul class="nav navbar-nav navGreen">
 			<!-- Notifications -->
                         <li class="dropdown notifications-menu" id="notifications-list" href="/notifications/getNotifications">
                             <a id="bell" class="dropdown-toggle" data-toggle="dropdown">

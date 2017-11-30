@@ -57,8 +57,8 @@ class Investment extends AppModel
             'fields' => '',
             'order' => '',
         ),
-        'Amortizationtable' => array(
-            'className' => 'Amortizationtable',
+        'Investmentslice' => array(
+            'className' => 'Investmentslice',
             'foreignKey' => 'investment_id',
             'fields' => '',
             'order' => '',
@@ -78,7 +78,9 @@ var $validate = array(
 
     /**
      *
-     * creates a new 'investment' table and also links the 'paymenttotal' database table
+     * creates a new 'investment' table and also links an 'investmentSlice' database table.
+     * One field of the $investmentdata must be $investmentdata['sliceIdentifier']. This call
+     * will FAIL if $investmentdata['investment_sliceIdentifier'] is empty or non-existent.
      * 	
      * 	@param 		array 	$investmentdata 	All the data to be saved
      * 	@return 	array[0]    => boolean
@@ -88,13 +90,28 @@ var $validate = array(
      */
     public function createInvestment($investmentdata) {
         $result = array();
+        
         $this->create();
-        if ($this->save($investmentdata, $validation = true)) {   // OK
+        if (!isset($investmentdata['investment_sliceIdentifier'])) {
+            echo "ANANANANANAN%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
+            $result[0] = false;            
+            return $result;
+        }
+echo "€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€ee";
+        if ($this->save($investmentdata, $validate = true)) {   // OK
             $investmentId = $this->id;
-            $result[0] = true;
-            $result[1] = $investmentId;
+            
+            $this->Investmentslice = ClassRegistry::init('Investmentslice');
+            $this->Investmentslice->create();
+          
+            if ($this->Investmentslice->getNewSlice($investmentId, $investmentdata['investment_sliceIdentifier'])) {
+                $result[0] = true;
+                $result[1] = $investmentId;  
+            }
+            else {
+                $result[0] = false;
+            }
         } 
- 
         else {                     // error occurred while trying to save the Investment data
             $result[0] = false;
             $result[1] = $this->validationErrors;
@@ -209,34 +226,31 @@ var $validate = array(
         return $range;
     }
 
-    /*
-     * 
-     * Update the corresponding fields in the paymenttotal table 
-     * 
-     */
-    function afterSave1($created, $options = array()) {
-
-    }
+ 
 
     /**
      *
-     * 	Callback Function
-     * 	Format the date
-     *
-     */
-    public function afterFind($results, $primary = false) {
-
-
-        return $results;
-    }
-
-    /**
-     *
-     * 	Rules are defined for what should happen when a database record is created or updated.
+     * 	Create a new Investmentslice when a new investment takes place in an existing loan
      * 	
      */
-    function beforeSave1($created, $options = array()) {
+    function beforeSave($created, $options = array()) {
 
+        if (isset($this->data[$this->alias]['id'])) {       // = UPDATE of existing model
+            if (isset($this->data[$this->alias]['markCollectNewAmortizationTable'])) { // adding a new slice
+                if ($this->data[$this->alias]['markCollectNewAmortizationTable'] == "AM_TABLE") {
+                    $this->Investmentslice = ClassRegistry::init('Investmentslice');
+
+                    $data = array( "investment_id" => $this->data[$this->alias]['id'],
+                                    "sliceIdentifier" => $this->data[$this->alias]['sliceIdentifier']
+                                );
+
+                    if (!$this->Investmentslice->save($data, $validate = true)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 

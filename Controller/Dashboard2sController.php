@@ -91,7 +91,7 @@ class Dashboard2sController extends AppController {
         $this->set('defaultedInvestments', $defaultedInvestments);
         //Get and set range
         $this->set('defaultedRange', $this->Investment->getDefaultedByOutstanding($linkedAccount));
-        
+
         $executionEndTime = microtime(true);
         //echo $executionEndTime - $executionStartTime;
     }
@@ -101,44 +101,43 @@ class Dashboard2sController extends AppController {
      * Get active loans of a linked account
      * @throws FatalErrorException Error when you access winouth ajax
      */
-    function getActiveLoans(){
+    function getActiveLoans() {
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
-        
+
         $linkedAccount = $this->request->data['id']; //Link account id
         $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
-        
-        if(!empty($activeInvestments)){
-            $this->set('activeInvestments', [1,$activeInvestments]);
+
+        if (!empty($activeInvestments)) {
+            $this->set('activeInvestments', [1, $activeInvestments]);
         } else {
-            $this->set('activeInvestments', [1,"Not active loans found"]);
+            $this->set('activeInvestments', [1, "Not active loans found"]);
         }
     }
-    
-        /**
+
+    /**
      * [AJAX call]
      * Get defaulted loans of a linked account
      * @throws FatalErrorException Error when you access winouth ajax
      */
-    function getDefaultedLoans(){
+    function getDefaultedLoans() {
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
-        
+
         $linkedAccount = $this->request->data['id']; //Link account id
         $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90), array("*"));
-       
-        if(!empty($defaultedInvestments)){
-            $this->set('defaultedInvestments', [1,$defaultedInvestments]);
+
+        if (!empty($defaultedInvestments)) {
+            $this->set('defaultedInvestments', [1, $defaultedInvestments]);
         } else {
-            $this->set('defaultedInvestments', [1,"Not defaulted loans found"]);
+            $this->set('defaultedInvestments', [1, "Not defaulted loans found"]);
         }
     }
-    
-    
+
     /**
      * Global dashboard view
      */
@@ -154,13 +153,19 @@ class Dashboard2sController extends AppController {
         $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorIdentityId);
 
         //Get global data
-        $global['totalVolume'] = 0; // totalVolume = investedAssets + reservedFunds + cash
+        $this->range = array();
+        $global['totalVolume'] = 0;
         $global['investedAssets'] = 0;
         $global['reservedFunds'] = 0;
         $global['cash'] = 0;
         $global['activeInvestment'] = 0;
-        $global['netDeposits'] = 0;
+        $i = 0;
+        //$global['netDeposits'] = 0; 
         foreach ($allInvestment as $globalKey => $individualPfpData) {
+            if(empty($individualPfpData)){
+                unset($allInvestment[$globalKey]);
+                continue;
+            }
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
                 switch ($key) {
                     case "linkedaccount_id":
@@ -172,11 +177,10 @@ class Dashboard2sController extends AppController {
                         $pfpOtherData = $this->Company->getData(array('id' => $pfpId), array("company_logoGUID", "company_name"));
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
+                        $this->range[$i] = $this->Investment->getDefaultedByOutstanding($individualData);
+                        $allInvestment[$globalKey]['Userinvestmentdata']['current'] = $this->range[$i]['current'];
+                        $i++;
                         break;
-                    /*case "userinvestmentdata_totalVolume":
-                        //Get global total volume
-                        $global['totalVolume'] = bcadd($global['totalVolume'], $individualData, 16);
-                        break;*/
                     case "userinvestmentdata_outstandingPrincipal":
                         //Get global  active in invesment
                         $global['investedAssets'] = bcadd($global['investedAssets'], $individualData, 16);
@@ -198,8 +202,8 @@ class Dashboard2sController extends AppController {
                     case "userinvestmentdata_numberActiveInvestments":
                         //get global active invesment:
                         $global['activeInvestment'] = $global['activeInvestment'] + $individualData;
-                        break;                             
-                    case "userinvestmentdata_totalNetDeposits": 
+                        break;
+                    case "userinvestmentdata_totalNetDeposits":
                         //get global net deposits:
                         $global['netDeposits'] = $global['netDeposits'] + $individualData;
                         break;
@@ -207,16 +211,22 @@ class Dashboard2sController extends AppController {
             }
         }
 
+        $global['cashDrag'] = bcmul(bcdiv($global['cash'], $global['totalVolume'], 16), 100, 16);
+
         //Set global data
         $this->set('global', $global);
-        //Set an array with individual info
-        $this->set('individualInfoArray', $allInvestment);
+
         //Get and Set defaulted range
         $defaultedRange = $this->calculateGlobalDefaulted();
         $this->set('defaultedRange', $defaultedRange);
-        
-        $executionEndTime = microtime(true);
-        //echo $executionEndTime - $executionStartTime;
+
+        //Set an array with individual info
+        $this->set('individualInfoArray', $allInvestment);
+
+        $graphData = array(12, 24, 48, 24, 12, 6, 18, 36, 24, 48, 60); //Must be data from DB
+        $graphLabel = array(__("Jan"), __("Feb"), __("Mar"), __("Apr"), __("May"), __("Jun"), __("Jul"), __("Aug"), __("Sep"), __("Oct"), __("Nov"), __("Dec"));
+        $this->set('graphLabel', json_encode($graphLabel, true));
+        $this->set('graph', json_encode($graphData));
     }
 
     /**
@@ -227,17 +237,16 @@ class Dashboard2sController extends AppController {
     public function calculateGlobalDefaulted() {
 
         $investorId = $investorReference = $this->Session->read('Auth.User.Investor.id');
-        $linkAccountList = $this->Linkedaccount->getData(array('investor_id' => $investorId), array('id'));
-
+        // $linkAccountList = $this->Linkedaccount->getData(array('investor_id' => $investorId), array('id'));
         //Get range of each pfp
-        $defaultedRangeArray = array();
-        foreach ($linkAccountList as $linkedAccount) {
-            $defaultedRangeArray[] = $this->Investment->getDefaultedByOutstanding($linkedAccount['Linkedaccount']['id']);
-        }
+        //$defaultedRangeArray = array();
+        /* foreach ($linkAccountList as $linkedAccount) {
+          $defaultedRangeArray[] = $this->Investment->getDefaultedByOutstanding($linkedAccount['Linkedaccount']['id']);
+          } */
 
         //print_r($defaultedRangeArray);
         //Calculate global outstanding
-        foreach ($defaultedRangeArray as $key => $defaultedRange) {
+        foreach ($this->range as $key => $defaultedRange) {
             $globalTotal = $globalTotal + $defaultedRange["total"];
         }
 
@@ -245,7 +254,7 @@ class Dashboard2sController extends AppController {
         $globalRange = array("1-7" => 0, "8-30" => 0, "31-60" => 0, "61-90" => 0, ">90" => 0);
 
         //Calculate global range
-        foreach ($defaultedRangeArray as $defaultedRange) {
+        foreach ($this->range as $defaultedRange) {
             foreach ($defaultedRange as $key => $range) {
                 switch ($key) {
                     case "1-7":
@@ -276,12 +285,13 @@ class Dashboard2sController extends AppController {
                 }
             }
         }
-             
-        $globalRange["current"] = abs(round(100 - $globalRange["1-7"] - $globalRange["8-30"] -$globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"], 2));
+
+        $globalRange["current"] = abs(round(100 - $globalRange["1-7"] - $globalRange["8-30"] - $globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"], 2));
         return $globalRange;
     }
 
     function showInitialPanel() {
         $this->layout = 'azarus_private_layout';
     }
+
 }

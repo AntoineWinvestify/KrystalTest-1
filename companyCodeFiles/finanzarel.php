@@ -529,8 +529,7 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $this->request[1]);
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
-                $this->numFileInvestment++;
+                $fileName = "expiredLoans" . "." . $this->typeFileInvestment;
                 $headers = array('Expect:');
                 if (count($this->request) > 2) {
                     $this->idForSwitch++;
