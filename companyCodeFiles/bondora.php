@@ -394,22 +394,11 @@ class bondora extends p2pCompany {
                 break;
             case 5:
 
-                $this->finishDate = date('d/m/Y', strtotime($this->dateFinish - 1));
-                $this->initDate = date("d/m/Y", strtotime($this->dateFinish - $this->documents * 182));
-                if ($this->documents > 1) {
-                    $this->finishDate = date('d/m/Y', strtotime($this->dateFinish - 1 - $this->documents * 182));
-                    $this->initDate = date("d/m/Y", strtotime($this->dateFinish - $this->documents * 182 * 2));
+                $dateInit = date('d/m/Y', strtotime($this->dateInit - 1));
+                if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
+                    $dateInit = '01/01/2009';
                 }
-                if ((int) explode("/", $this->initDate)[2] < 2009) { //Minimum date for bondora is 1/1/2009
-                    $this->initDate = '01/01/2009';
-                    $this->control = true;
-                }
-                /* if ((int) explode("/", $this->initDate)[2] + ($this->years - 1) < (int) explode("/", $this->finishDate)[2]) {  //If investment account report have more than one year, generating report take too much time. We generate it year to year.
-                  $this->finishDate = '01/01/' . ((int) explode("/", $this->initDate)[2] + $this->years);
-                  $this->initDate = '01/01/' . ((int) explode("/", $this->initDate)[2] + $this->years - 1);
-                  } else {
-                  $this->initDate = '01/01/' . ((int) explode("/", $this->finishDate)[2]);
-                  } */
+                $dateFinish = date("d/m/Y", strtotime($this->dateFinish));
 
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
