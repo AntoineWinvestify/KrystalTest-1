@@ -137,11 +137,13 @@ class p2pCompany {
     protected $typeFileInvestment;
     protected $typeFileExpiredLoan;
     protected $typeFileAmortizationtable;
+    protected $typeFileControlVariables = ".json";
     protected $nameFileTransaction = WIN_FLOW_TRANSACTION_FILE . "_";
     protected $nameFileInvestment = WIN_FLOW_INVESTMENT_FILE . "_";
     protected $nameFileExpiredLoan = WIN_FLOW_EXPIRED_LOAN_FILE . "_";
     protected $nameFileAmortizationTable = WIN_FLOW_AMORTIZATION_TABLE_FILE . "_";
     protected $nameFileAmortizationTableList = WIN_FLOW_AMORTIZATION_TABLE_ARRAY . ".json";
+    protected $nameFileControlVariables = WIN_FLOW_CONTROL_FILE;
     protected $numFileTransaction = 1;
     protected $numFileInvestment = 1;
     protected $numFileExpiredLoan = 1;
@@ -1797,7 +1799,7 @@ class p2pCompany {
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
-                ->set(CURLOPT_TIMEOUT, 300)
+                ->set(CURLOPT_TIMEOUT, 100)
                 ->set(CURLOPT_ENCODING, "gzip,deflate,br")
                 // Do not check the SSL certificates
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
