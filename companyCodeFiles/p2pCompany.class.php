@@ -137,11 +137,11 @@ class p2pCompany {
     protected $typeFileInvestment;
     protected $typeFileExpiredLoan;
     protected $typeFileAmortizationtable;
-    protected $nameFileTransaction = "transaction_";
-    protected $nameFileInvestment = "investment_";
-    protected $nameFileExpiredLoans = "expiredLoan_";
-    protected $nameFileAmortizationTable = "amortizationTable_";
-    protected $nameFileAmortizationTableList = "amortizationTableList.json";
+    protected $nameFileTransaction = WIN_FLOW_TRANSACTION_FILE . "_";
+    protected $nameFileInvestment = WIN_FLOW_INVESTMENT_FILE . "_";
+    protected $nameFileExpiredLoans = WIN_FLOW_EXPIRED_LOAN_FILE . "_";
+    protected $nameFileAmortizationTable = WIN_FLOW_AMORTIZATION_TABLE_FILE . "_";
+    protected $nameFileAmortizationTableList = WIN_FLOW_AMORTIZATION_TABLE_ARRAY . ".json";
     protected $numFileTransaction = 1;
     protected $numFileInvestment = 1;
     protected $numFileExpiredLoan = 1;
