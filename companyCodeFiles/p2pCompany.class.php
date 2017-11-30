@@ -135,13 +135,16 @@ class p2pCompany {
     //Variables to download files
     protected $typeFileTransaction;
     protected $typeFileInvestment;
+    protected $typeFileExpiredLoan;
     protected $typeFileAmortizationtable;
     protected $nameFileTransaction = "transaction_";
     protected $nameFileInvestment = "investment_";
+    protected $nameFileExpiredLoans = "expiredLoan_";
     protected $nameFileAmortizationTable = "amortizationTable_";
     protected $nameFileAmortizationTableList = "amortizationTableList.json";
     protected $numFileTransaction = 1;
     protected $numFileInvestment = 1;
+    protected $numFileExpiredLoan = 1;
     protected $numFileAmortizationtable = 1;
     protected $companyName;
     protected $userReference;
@@ -2765,6 +2768,14 @@ FRAGMENT
         //https://stackoverflow.com/questions/35037313/casperjs-download-and-save-file-to-specific-location
         //https://stackoverflow.com/questions/16144252/downloading-a-file-that-comes-as-an-attachment-in-a-post-request-response-in-pha/31124037#31124037
         //http://docs.casperjs.org/en/latest/modules/casper.html#download
+    }
+    
+    public function copyFile($file, $newFile) {
+        $created = true;
+        if (!copy($file, $newFile)) {
+            $created = false;
+        }
+        return $created;
     }
     
 }
