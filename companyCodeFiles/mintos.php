@@ -662,7 +662,7 @@ class mintos extends p2pCompany {
                 }
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $a) {
-                    echo $a->nodeValue . SHELL_ENDOFLINE;
+                    //echo $a->nodeValue . SHELL_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": Login found";
@@ -683,6 +683,7 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
+                    echo "Error login";   
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
 
@@ -714,39 +715,61 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                
+                
+                if(empty($this->tempUrl['transactionPage'])){                 
+                    $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
+                    //Url preparation for download multiple tramsaction files
+                    $this->numberOfFiles = 0;
+                    $this->dateInitPeriod = 0;
+                    $this->dateFinishPeriod = 0;
+                    $this->tempUrl['downloadTransacitonUrl'] = array_shift($this->urlSequence);
+                    $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);         
+                    $this->tempUrl['transactionsCredentials'] = array_shift($this->urlSequence);
+                    $this->tempUrl['headersJson'] = array_shift($this->urlSequence);
+                }
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['transactionPage']);
                 break;
             case 6:
-                //This two variables should disappear
-                $dateInit = date("d.m.Y", strtotime($this->dateInit));
-                $dateFinish = date('d.m.Y',strtotime($this->dateFinish));
-                //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
-                $url = array_shift($this->urlSequence);
-                $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array('{$date1}' => $dateInit));
+                $continue = $this->downloadTimePeriod("20100101", 365);
+
+                $dateInit = date("d.m.Y",  strtotime($this->dateInitPeriod));      //date("d.m.Y", strtotime($this->dateInit));
+                $dateFinish = date("d.m.Y",  strtotime($this->dateFinishPeriod));  //date('d.m.Y',strtotime($this->dateFinish));
+                
+                $referer = strtr($this->tempUrl['transactionReferer'], array('{$date1}' => $dateInit));
                 $referer = strtr($referer, array('{$date2}' => $dateFinish));
-                $credentials = array_shift($this->urlSequence);
-                $credentials = strtr($credentials, array('{$date1}' => $dateInit));
+                echo "referer " . $referer;
+                
+                $credentials = strtr($this->tempUrl['transactionsCredentials'], array('{$date1}' => $dateInit));
                 $credentials = strtr($credentials, array('{$date2}' => $dateFinish));
-                $headersJson = array_shift($this->urlSequence);
-                $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
+                echo "credentials " . $credentials;
+                
+                $headers = strtr( $this->tempUrl['headersJson'], array('{$baseUrl}' => $this->baseUrl));
                 $headers = json_decode($headers, true);
+                echo "headers " . $headers;
+                
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
-                if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
-                    $this->idForSwitch++;
+                $this->numFileTransaction++;
+                if(!$continue){
+                    if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
+                        $this->idForSwitch++;
+                    }
+                    else {
+                        array_shift($this->urlSequence);
+                        array_shift($this->urlSequence);
+                        array_shift($this->urlSequence);
+                        array_shift($this->urlSequence);
+                        $this->idForSwitch = 9;
+                    }
                 }
                 else {
-                    array_shift($this->urlSequence);
-                    array_shift($this->urlSequence);
-                    array_shift($this->urlSequence);
-                    array_shift($this->urlSequence);
-                    $this->idForSwitch = 9;
+                     $this->idForSwitch = 5;
                 }
-                $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
+                $this->getPFPFileMulticurl($this->tempUrl['downloadTransacitonUrl'], $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
+                exit;
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }

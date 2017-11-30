@@ -708,9 +708,9 @@ class bondora extends p2pCompany {
 
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvestment'];
                 echo 'Investment url' . $url;
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, null, $fileName);
+                $this->getPFPFileMulticurl($url, null, false, null, $this->fileName);
                 break;
 
             case 5:
@@ -718,9 +718,9 @@ class bondora extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadCashFlow'];
-                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, null, $fileName);
+                $this->getPFPFileMulticurl($url, null, false, null, $this->fileName);
                 break;
 
             case 6:
