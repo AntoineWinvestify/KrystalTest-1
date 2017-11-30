@@ -213,7 +213,7 @@
         transform: rotate3d(0, 0, 1, -135deg);
     }
     
-    .chartIcon:hover {
+    .clickable:hover {
         cursor: pointer;
     }
 </style>
@@ -303,7 +303,7 @@
                                                     <tr>
                                                         <td class="left">
                                                             <i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Return.')?>" class="ion ion-ios-information-outline" ></i> 
-                                                            <span class="chartIcon" id="netReturn">
+                                                            <span class="chartIcon clickable" id="netReturn">
                                                                 <?php echo __('Net Return')?> 
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
