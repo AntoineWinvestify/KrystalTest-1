@@ -64,24 +64,25 @@ class TestsController extends AppController {
     var $numberOfFiles = 0;
    
      public function downloadTimePeriod($dateMin, $datePeriod){         
-        $dateMin = "20051212";
-        echo date("Ymd", $dateMin);
-        $datePeriod = 30;
+        $dateMin = "20090101";
+        $datePeriod = 120;
         echo "start" . HTML_ENDOFLINE;
-        echo $this->dateInit . " / " . date("Ymd", $dateMin);
         do{
-        // strtotime("+".$days." days", strtotime($date));
         if( $this->numberOfFiles == 0){
-            $this->dateInit =  date("Ymd", strtotime(strtotime("Ymd",$this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
-            //echo "Empiezo en " . $this->dateInit . " Termino en " .  $this->dateFinish . " ";
-            //echo $this->numberOfFiles++ . HTML_ENDOFLINE;
+            $this->dateInit =  date("Ymd", strtotime($this->dateFinish . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
+            echo "Empiezo en " . $this->dateInit . " Termino en " .  $this->dateFinish . " ";
             $this->numberOfFiles++; 
+            echo $this->numberOfFiles . HTML_ENDOFLINE;
         }
         else {
             $this->dateFinish = date("Ymd", strtotime($this->dateInit . " " . -1 . " days"));//Next finish date will we the previous day of the last Init date
             $this->dateInit = date("Ymd", strtotime($this->dateInit . " " . -$datePeriod . " days"));
-            //echo "Otro Empiezo en " . $this->dateInit . " Termino en " .  $this->dateFinish . HTML_ENDOFLINE;
-            $this->numberOfFiles++; 
+            if(date($this->dateInit) < date($dateMin)){
+                $this->dateInit = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            }
+            echo "Otro Empiezo en " . $this->dateInit . " Termino en " .  $this->dateFinish . " ";
+            $this->numberOfFiles++;
+            echo $this->numberOfFiles . HTML_ENDOFLINE;
          }
         } while( date($this->dateInit) > date($dateMin));
          
