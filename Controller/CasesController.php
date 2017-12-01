@@ -30,7 +30,7 @@ class CasesController extends AppController {
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
             'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData",
-            'testDefault',
+            'testDefault', 'testGenerateId' ,'testGenerateId2'
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'transaction.xlsx';
@@ -965,4 +965,180 @@ class CasesController extends AppController {
         return $tempResult;
     }
 
+    public function testGenerateId() {
+
+        $config = array('offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
+        $myParser = new Fileparser();
+        $myParser->setConfig($config);
+
+        $parserConfig = [
+            "B" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "global_",
+                        "input3" => "md5"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "B" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "global_",
+                        "input3" => "hash"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "B" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "global_",
+                        "input3" => "uuid"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "B" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => "md5"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "B" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => "hash"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "B" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => "uuid"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");        
+        $this->print_r2($tempResult);
+        return $tempResult;
+    }
+    public function testGenerateId2() {
+
+        $config = array('offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
+        $myParser = new Fileparser();
+        $myParser->setConfig($config);
+
+        $parserConfig = [
+            "AA" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "global_",
+                        "input3" => "md5"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "AA" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "global_",
+                        "input3" => "hash"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "AA" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "global_",
+                        "input3" => "uuid"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "AA" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => "md5"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "AA" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => "hash"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $parserConfig = [
+            "AA" => [
+                [
+                    "type" => "myValue",
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => "uuid"
+                    ],
+                    "functionName" => "generateId"]
+            ]
+        ];
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");        
+        $this->print_r2($tempResult);
+        return $tempResult;
+    }
 }

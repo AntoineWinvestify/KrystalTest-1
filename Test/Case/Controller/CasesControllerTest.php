@@ -1,4 +1,5 @@
 
+
 <?php
 
 class CasesControllerTest extends ControllerTestCase {
@@ -51,7 +52,7 @@ class CasesControllerTest extends ControllerTestCase {
     public function testDate1() {// D-M-Y
         $expected = '2015-12-04';
         $actual = $this->testAction("/cases/testDate1");
-        $this->assertEquals($expected, $actual['85005-01']['investmentDate']);
+        $this->assertEquals($expected, $actual['85005-01'][0]['investmentDate']);
     }
 
     public function testDate2() { //mm-dd-YYYY
@@ -152,8 +153,6 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected[4], $actual[13]['investment']['fullLoanAmount']);
     }
 
-
-
     public function testExtracData() {
         $expected = 'n for th';
         $expected2 = 'bcd';
@@ -161,7 +160,7 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected, $actual[0]['investment']['test']);
         $this->assertEquals($expected2, $actual[1]['investment']['test']);
     }
-   
+
     public function testExtracData2() {
         $expected = 'n for the revival of the next generation of solar cells that can function in a hostile environment$';
         $expected2 = 'bcdetheabcde';
@@ -169,68 +168,69 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected, $actual[0]['investment']['test']);
         $this->assertEquals($expected2, $actual[1]['investment']['test']);
     }
-    
+
     public function testHash() { //hash (Latvia)
         $expected = 'a09f4b2ae67f0a63ab8912047a1a1b55';
         $actual = $this->testAction("/cases/testHash");
         $this->assertEquals($expected, $actual[0]['investment']['hashCoutry']);
     }
-    
-    public function testRowData() { 
+
+    public function testRowData() {
         $expected = 'Business Loan';
         $actual = $this->testAction("/cases/testRowData");
         $this->assertEquals($expected, $actual[12]['loanType']);
     }
 
-   public function testTransactionDetail() { 
+    public function testTransactionDetail() {
         $expected = array('investment_myInvestment', 'Unknown_income', 'Unknown_cost', 'Unknown_concept');
-        
+
         $actual = $this->testAction("/cases/testTransactionDetail");
         $this->assertEquals($expected[0], $actual[0]['internalName']);
         $this->assertEquals($expected[1], $actual[14]['transactionDetail']);
         $this->assertEquals($expected[2], $actual[15]['transactionDetail']);
         $this->assertEquals($expected[3], $actual[16]['transactionDetail']);
     }
-        
-    
-    public function testHtmlData(){
-        $expected =  array(
-            "amortizationtable_scheduledDate" => 2017-10-25,
+
+    public function testHtmlData() {
+        $expected = array(
+            "amortizationtable_scheduledDate" => 2017 - 10 - 25,
             "amortizationtable_capitalAndInterestPayment" => 7726,
             "amortizationtable_capitalRepayment" => 6994,
             "amortizationtable_interest" => 732,
             "amortizationtable_paymentStatus" => CURRENT);
-        
+
         $actual = $this->testAction("/cases/testHtmlData");
         $this->assertEquals($expected, $actual[0]);
     }
-    
-    public function  testDefault(){
+
+    public function testDefault() {
         $expected = 2;
         $actual = $this->testAction("/cases/testDefault");
-        foreach ($actual as $testDefault){
+        foreach ($actual as $testDefault) {
             $this->assertEquals($expected, $testDefault['investment_statusOfLoan']);
         }
     }
 
-    public function  testCountry(){
+    public function testCountry() {
         $expected = array("LV", "XX");
         $actual = $this->testAction("/cases/testCountry");
         $this->assertEquals($expected[0], $actual[0]['investment_country']);
-        $this->assertEquals($expected[1], $actual[1]['investment_country']);   
+        $this->assertEquals($expected[1], $actual[1]['investment_country']);
     }
-    
-     public function  testProgressString(){
+
+    public function testProgressString() {
         $expected = "18/50";
         $actual = $this->testAction("/cases/testProgressString");
         $this->assertEquals($expected, $actual[0]['progress']);
     }
 
-        public function tearDown() {
+    public function testGenerateId() {
+        
+    }
+
+    public function tearDown() {
         parent::tearDown();
         unset($this->Hello);
     }
-    
-    
 
 }
