@@ -338,6 +338,10 @@ class zank extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array(8363);
         //$this->maxLoans = count($this->loanIdArray);
         //{"loanIds": "683":["8800", "8800"]}}
@@ -1447,22 +1451,26 @@ class zank extends p2pCompany {
                 // goto page "MI CARTERA"
                 $url = array_shift($this->urlSequence) . $this->userId;
                 $this->idForSwitch++;
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
-                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                $path = $this->getFolderPFPFile();
+                $file = $path . DS . $this->fileName;
+                $newFile = $path . DS . $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->copyFile($file, $newFile);
                 echo 'URL SEQUENCE FLOW: ' . SHELL_ENDOFLINE;
                 print_r($this->urlSequence);
                 $url = array_shift($this->urlSequence) . $this->userId;
 
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
-                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $$this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, $fileName);  // load Webpage into a string variable so it can be parsed	
+                $this->getPFPFileMulticurl($url, null, false, false, $$this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {

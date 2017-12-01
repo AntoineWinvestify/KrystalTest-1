@@ -246,6 +246,10 @@ class twino extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array(629337, 629331, 629252);  
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
@@ -374,7 +378,7 @@ class twino extends p2pCompany {
                 print_r($response);
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
-                    $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                    $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                     $this->tempUrl['refererInvestment'] = array_shift($this->urlSequence);
                     if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) { //Only download expired loans the first time(in link account)
                         $this->idForSwitch++;
@@ -382,7 +386,7 @@ class twino extends p2pCompany {
                         $this->idForSwitch = 9;
                     }
 
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $this->fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
@@ -411,9 +415,9 @@ class twino extends p2pCompany {
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
                     $this->numFileInvestment++;
-                    $fileName = "expiredLoans." . $this->typeFileInvestment;
+                    $this->fileName = "expiredLoans." . $this->typeFileInvestment;
                     $this->idForSwitch = 9;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $this->fileName);
                 } else {
                     $this->controlVariable = false;
                     $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
@@ -427,10 +431,10 @@ class twino extends p2pCompany {
                 print_r($response);
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
-                    $fileName = "expiredLoans." . $this->typeFileInvestment;
+                    $this->fileName = "expiredLoans." . $this->typeFileInvestment;
                     $this->idForSwitch++;
                     echo 'downloading in ' . $this->statusDownloadUrl . $response['reportId'] . '/download';
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $fileName);
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $this->fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
@@ -476,9 +480,9 @@ class twino extends p2pCompany {
                     break;
                 } else {
                     echo 'Status true, downloading';
-                    $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                    $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                     $this->idForSwitch = 9;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $this->fileName);
                     break;
                 }
             case 11:
@@ -487,9 +491,9 @@ class twino extends p2pCompany {
                 print_r($response);
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
-                    $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                    $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                     $this->idForSwitch++;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $fileName);
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $this->fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
