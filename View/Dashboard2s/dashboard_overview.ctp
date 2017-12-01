@@ -141,23 +141,10 @@
     
 </script>
 <style>
-    td {
-        text-align: center;
-    }
-    #box1Table td, #box2Table td, #box3Table td {
-        font-size: 12px;
-        padding: 5px 0px !important;
-    }
     th {
         text-align: center;
         font-weight: 500 !important;
         padding-bottom: 4px !important;
-    }
-    td.right { 
-        text-align: right; 
-    }
-    td.left {
-        text-align: left;
     }
     .card-footer {
         border-top: 1px solid #00e64d !important;
@@ -175,46 +162,20 @@
     .ion-ios-information-outline {
         color: lightslategray;
     }
-    td.logo:hover {
-        background-color: rgba(0,0,0,0.3);
-        cursor: pointer;
-    }
-    #showBtn {
-        position: absolute;
-        margin-left: 80px;
-    }
     canvas {
         padding: 15px;
     }
     span.active {
         font-weight: bold;
         color: rgb(0, 230, 77);
+    }    
+    .togetoverlay .overlay  {
+        z-index: 50;
+        background: rgba(255, 255, 255, 0);
+        border-radius: 3px;
     }
-    .tooltip.top .tooltip-inner {
-        border: 1px solid #87e14b;
-        border-radius: 0px;
-        background-color: rgba(255,255,255,1);
-        color: black;
-        text-align: center;
-        padding: 8px 12px;
-        -webkit-box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15);
-        -moz-box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15);
-        box-shadow: 5px 5px 0px rgba(85, 85, 85, 0.15); 
-    }
-    .tooltip.top .tooltip-arrow {
-        background: white;
-        border: 1px solid #87e14b;
-        content: '';
-        width: 10px;
-        height: 10px;
-        border-right: none;
-        border-bottom: none;
-        position: absolute;
-        transform: rotate3d(0, 0, 1, -135deg);
-    }
-    
-    .clickable:hover {
-        cursor: pointer;
+    .togetoverlay .overlay > .fa {
+        font-size: 50px;
     }
 </style>
 <div class="dashboardGlobalOverview">
@@ -235,7 +196,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-content">
+                <div class="card-content togetoverlay">
+                    <div class="overlay">
+                        <div class="fa fa-spin fa-spinner" style="color:green">	
+                        </div>
+                    </div>
                     <div class="tab-content">
                         <div class="tab-pane active" id="globalOverviewTab">
                             <div class="row">
