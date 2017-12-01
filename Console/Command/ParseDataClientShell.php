@@ -280,7 +280,7 @@ class ParseDataClientShell extends GearmanClientShell {
 echo "dateKey = $dateKey \n";
 if ($dateKey == "2016-08-08"){ 
     echo "Exiting when date = " . $dateKey . "\n";
-       exit;    
+//       exit;    
 }
 // Lets allocate a userinvestmentdata for this calculation period (normally daily)
             // reset the relevant variables before going to next date
