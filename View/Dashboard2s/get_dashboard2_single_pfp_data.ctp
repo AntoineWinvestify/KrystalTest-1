@@ -159,11 +159,7 @@ echo $companyInvestmentDetails[0];
                         </div>
                     </div>
                 </div>
-                <div class="card-content togetoverlay">
-                    <div class="overlay">
-                        <div class="fa fa-spin fa-spinner" style="color:green">	
-                        </div>
-                    </div>
+                <div class="card-content">
                     <div class="tab-content">
                         <div class="tab-pane active" id="<?php echo $companyInvestmentDetails[1]['name'] ?>Tab">
                             <div class="row">

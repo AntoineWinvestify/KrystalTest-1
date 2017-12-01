@@ -207,6 +207,15 @@
     .clickable:hover {
         cursor: pointer;
     }
+    
+    .togetoverlay .overlay  {
+        z-index: 50;
+        background: rgba(255, 255, 255, 0);
+        border-radius: 3px;
+    }
+    .togetoverlay .overlay > .fa {
+        font-size: 50px;
+    }
 </style>
 <div class ="dashboardGlobalOverview">
     <div class="row" id="overview">
@@ -226,7 +235,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-content">
+                <div class="card-content togetoverlay">
+                    <div class="overlay">
+                        <div class="fa fa-spin fa-spinner" style="color:green">	
+                        </div>
+                    </div>
                     <div class="tab-content">
                         <div class="tab-pane active" id="globalOverviewTab">
                             <div class="row">
