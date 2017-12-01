@@ -163,7 +163,9 @@ class p2pCompany {
     protected $valuesAmortizationTable;
     protected $callbacks;
     protected $originExecution;
-
+    
+    //Number of days for each company download. Only some pfp uses it.
+    protected $period = 365;
     /**
      *
      * Prepare all the default data of the class and its subclasses
@@ -181,7 +183,6 @@ class p2pCompany {
         $this->cookiesDir = $createdFolder;
         $this->config['tracingActive'] = false;
         $this->headers = array();
-
 
 // ******************************** end of configuration parameters *************************************
         mkdir($this->tracingDir, 0777);
@@ -1820,6 +1821,9 @@ class p2pCompany {
      */
     public function downloadTimePeriod($dateMin, $datePeriod){         
 
+        if(empty($dateMin)){
+            $dateMin = "20090101";
+        }
         // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
         if( $this->numberOfFiles == 0){
             $this->dateInitPeriod =  date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
