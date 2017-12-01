@@ -94,7 +94,7 @@
     
     $(function (){
         overviewDataJS();
-        
+        singlePfpJS(); //JS for this view
         //Click on Account Linking btn
         $(document).on("click", "#btnAccountLinking", function(){
             counterLinkAccount = 0;
@@ -129,12 +129,9 @@
             $("#showBtn").toggle();
         });
         
-        <?php //Chart invoke ?>    
-            
-
-        polarAreaChart = graphOverview(labelOvervieW, dataLabelOverview);//Create the graph
-        
-        });
+        <?php //Chart invoke ?>           
+        polarAreaChart = graphOverview(labelOvervieW, dataLabelOverview);//Create the graph  
+    });
     
        
 

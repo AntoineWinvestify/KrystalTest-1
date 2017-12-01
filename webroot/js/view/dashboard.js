@@ -78,6 +78,7 @@ function singlePfpJS() {
         };
         var data = jQuery.param(params);
         link = $(this).attr("href");
+         ga_allInvestments();
         getServerData(link, data, successLoansAjax, errorLoansAjax);
     });
 

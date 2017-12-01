@@ -1809,7 +1809,42 @@ class p2pCompany {
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
     }
+    
+    /**
+     * Download multiple files betwen two dates given a period.
+     * Need for companies that take too long to download the historical, like bondora.
+     * 
+     * @param string $dateMin Minumum date init
+     * @param int $datePeriod Duration of each period in days.
+     * @return boolean
+     */
+    public function downloadTimePeriod($dateMin, $datePeriod){         
 
+        // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
+        if( $this->numberOfFiles == 0){
+            $this->dateInitPeriod =  date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
+            if(date($this->dateInitPeriod) < date($dateMin)){
+                $this->dateInitPeriod = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            }
+            $this->dateFinishPeriod = date('Ymd',strtotime($this->dateFinish));
+            //echo 'Date ' . $this->dateInitPeriod . " " . $this->dateFinishPeriod;
+            $this->numberOfFiles++; 
+        }
+        else {
+            $this->dateFinishPeriod = date("Ymd", strtotime($this->dateInitPeriod . " " . -1 . " days"));//Next finish date will we the previous day of the last Init date
+            $this->dateInitPeriod = date("Ymd", strtotime($this->dateInitPeriod . " " . -$datePeriod . " days"));
+            if(date($this->dateInitPeriod) < date($dateMin)){
+                $this->dateInitPeriod = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            }
+            $this->numberOfFiles++;
+         }
+        if(date($this->dateInitPeriod) > date($dateMin)){
+            return true;   //Continue period download
+        }
+        else{
+            return false;  //End period download
+        }
+    }
   
     /**
      * Transform an array amortization table to a html structure with <table> tag

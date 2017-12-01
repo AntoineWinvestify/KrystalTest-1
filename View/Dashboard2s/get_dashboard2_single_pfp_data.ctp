@@ -55,9 +55,7 @@ echo $companyInvestmentDetails[0];
         }
     }
     
-    $(function () {
-
-        singlePfpJS(); //JS for this view
+    $(function () {   
 
         $("#defaultedInvestmentTable").DataTable();
 
@@ -74,14 +72,11 @@ echo $companyInvestmentDetails[0];
             $(this).toggleClass("active");
             ga_companyChart(id, company);
         });*/
-        
-        $(document).on("click", "#activeTab", function () {
-            ga_allInvestments();
-        });
 
         $(document).on("click", "#backOverview", function () {
             $(".dashboardGlobalOverview").fadeIn();
-            $(".ajaxResponse").html("");       
+            $(".ajaxResponse").html("");
+
         });
         
         <?php /* Charts */ ?>

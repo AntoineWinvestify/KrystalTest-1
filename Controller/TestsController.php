@@ -57,9 +57,44 @@ class TestsController extends AppController {
 
 
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel", "insertDummyData"));
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel", "insertDummyData","downloadTimePeriod"));
     }
 
+    var $dateFinish = "20171129";
+    var $numberOfFiles = 0;
+   
+     public function downloadTimePeriod($dateMin, $datePeriod){         
+        $dateMin = "20090101";
+        $datePeriod = 120;
+        echo "start" . HTML_ENDOFLINE;
+        do{
+        if( $this->numberOfFiles == 0){
+            $this->dateInit =  date("Ymd", strtotime($this->dateFinish . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
+            echo "Empiezo en " . $this->dateInit . " Termino en " .  $this->dateFinish . " ";
+            $this->numberOfFiles++; 
+            echo $this->numberOfFiles . HTML_ENDOFLINE;
+        }
+        else {
+            $this->dateFinish = date("Ymd", strtotime($this->dateInit . " " . -1 . " days"));//Next finish date will we the previous day of the last Init date
+            $this->dateInit = date("Ymd", strtotime($this->dateInit . " " . -$datePeriod . " days"));
+            if(date($this->dateInit) < date($dateMin)){
+                $this->dateInit = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            }
+            echo "Otro Empiezo en " . $this->dateInit . " Termino en " .  $this->dateFinish . " ";
+            $this->numberOfFiles++;
+            echo $this->numberOfFiles . HTML_ENDOFLINE;
+         }
+        } while( date($this->dateInit) > date($dateMin));
+         
+        
+        /*if($this->dateInit <= date("Ymd", $dateMin)){
+            return false; //End period download
+        }
+            return true; //Continue period download*/
+    }
+    
+    
+    
     function arrayToExcel(/*$array, $excelName*/) {
         $array = array("market" => 1,"q" => 2,"a" => 3,"s" => 4,"d" => 5,"f" => 6,"e" => 7,"r" => 8,"t" => 9,"y" => 11,"u" => 12,"i" => 13,"o" => 14,"p" => 15,"l" => 16);
         $excelName = "prueba";
