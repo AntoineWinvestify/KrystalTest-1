@@ -298,8 +298,14 @@ class loanbook extends p2pCompany {
             $tempArray['marketplace_rating'] = trim($subdivs[0]);
             $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]);
             $tempArray['marketplace_timeLeft'] = trim($subdivs[8]);
-            $tempArray['marketplace_subscriptionProgress'] = 10000;
-
+            $progress = $this->getElementsByClass($dom, "progress-bar");
+            if(!empty($progress)){
+                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($progress[0]->nodeValue);
+            }
+            else{
+                $tempArray['marketplace_subscriptionProgress'] = 0;    
+            }
+            
             $table = $dom->getElementById("table-1");
             $tds = $table->getElementsByTagName('td');
             foreach ($tds as $keyTd => $td) {
