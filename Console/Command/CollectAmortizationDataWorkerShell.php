@@ -75,7 +75,6 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
             $this->newComp[$i]->setClassForQueue($this);
             $this->newComp[$i]->setQueueId($data["queue_id"]);
             $this->newComp[$i]->setBaseUrl($result[$i][$this->companyId[$i]]['company_url']);
-            $this->newComp[$i]->setTypeFileAmortizationtable($result[$i][$this->companyId[$i]]['company_typeFileAmortizationtable']);
             $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
             $this->newComp[$i]->setUserReference($data["queue_userReference"]);
             $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);

@@ -234,6 +234,10 @@ class loanbook extends p2pCompany {
         $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
             'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
             'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "json";
+        //$this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array(472);
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
@@ -1239,8 +1243,8 @@ class loanbook extends p2pCompany {
                 $dateFinish = strtotime($this->dateFinish) * 1000;
                 $url = strtr($url, array('{$date1}' => $dateInit)); //Date in milliseconds from 1970 
                 $url = strtr($url, array('{$date2}' => $dateFinish));
-                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {

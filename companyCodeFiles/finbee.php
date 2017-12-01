@@ -371,6 +371,11 @@ class finbee extends p2pCompany {
 
     function __construct() {
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
+        $this->typeFileControlVariables = ".xlsx";
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
@@ -478,36 +483,40 @@ class finbee extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
             case 4:
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $fileName = "ControlVariables.xlsx"; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $path = $this->getFolderPFPFile();
+                $file = $path . DS . $this->fileName;
+                $newFile = $path . DS . $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->copyFile($file, $newFile);
+                $fileName = $this->nameFileControlVariables . $this->typeFileControlVariables; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 6:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 $this->numFileInvestment++;
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 7:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $headersJson = '["accept-language: en-US,en;q=0.8"]';
                 $headers = json_decode($headersJson,true);
-                $this->getPFPFileMulticurl($url, false, false, $headers, $fileName);
+                $this->getPFPFileMulticurl($url, false, false, $headers, $this->fileName);
                 break;
             case 8:
                 if (!$this->verifyFileIsCorrect()) {
