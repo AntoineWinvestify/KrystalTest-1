@@ -652,7 +652,7 @@ echo "INPUT FILE = $file \n";
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n";
         $objPHPExcel = PHPExcel_IOFactory::load($file);
 
-        ini_set('memory_limit','2048M');
+        ini_set('memory_limit','4096M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
@@ -1139,7 +1139,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * Determines the 'transactiondetail' based on a translationtable (=$config) and the sign of the amount ( positive or negative).
      * Note that the amount must already have been calculated before executing this function
      *
-     * @param string    $input
+     * @param string    $input          Represents an amount with - 
      * @param string    $originalConcept
      * @param array     $config             Translation table
      * @return array    [0] => Winvestify standardized concept
@@ -1150,14 +1150,26 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *                  The variable name is read from "internal variable" $this->transactionDetails.
      */   
     private function getComplexTransactionDetail($input, $originalConcept, $config) {
-        $position = strpos($input, "-");
+
+        $type = WIN_CONCEPT_TYPE_INCOME;
+// take care of amounts in scientific notation
         
-        if ($position !== false) {      // contains - sign 
-            $type = WIN_CONCEPT_TYPE_COST;
-        }    
-        else {
-            $type = WIN_CONCEPT_TYPE_INCOME;
+        $input = strtoupper($input);
+        $sciencePosition = strpos($input, "E");
+        if ($sciencePosition !== false) {
+            $input = $this->getAmount($input, "", ".", 16);   
+            $temp = explode("-", $input);
+            if (count($temp) == 3) {
+                $type = WIN_CONCEPT_TYPE_COST;
+            }
         }
+        else {
+            $position = strpos($input, "-");        
+            if ($position !== false) {      // contains - sign 
+                $type = WIN_CONCEPT_TYPE_COST;
+            }    
+        }
+        
         $found = NO;        
         foreach ($config as $configKey => $item) {
             $configItemKey = key($item);

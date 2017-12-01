@@ -66,9 +66,9 @@
  */
 class mintos extends p2pCompany {
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
-            "A" =>  [
-                    "name" => "transaction_transactionId"                       // Winvestify standardized name
-             ],
+//            "A" =>  [
+//                    "name" => "transaction_transactionId"                       // Winvestify standardized name  NOT NEEDED, ONLY USEFULL FOR TESTING
+//             ],
             "B" => [ 
                 [
                     "type" => "date",                                           // Winvestify standardized name  OK
@@ -111,10 +111,12 @@ class mintos extends p2pCompany {
                                             7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
-                                            10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
-                                            11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            13 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS
+                                            10 => ["Discount/premium for secondary market transactiont" => "Income_secondary_market"],   // For seller
+                                            11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], // ?????????
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],         // ?????????
+                                            14 => ["Client withdrawal" => "Cash_withdrawal"],
+                                            15 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS, TESTING ONLY
                                             ]                      
                             ],
                     "functionName" => "getTransactionDetail",
@@ -148,10 +150,12 @@ class mintos extends p2pCompany {
                                             7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
-                                            10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
-                                            11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            13 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS
+                                            10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
+                                            11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            // ?????????
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],                     // ?????????
+                                            14 => ["Client withdrawal" => "Cash_withdrawal"],
+                                            15 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS, TESTING ONLY
                                             ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
@@ -446,6 +450,12 @@ class mintos extends p2pCompany {
     
 
     protected $valuesExpiredLoan = [                                            // We are only interested in the investment_loanId
+        "A" =>  [
+            [
+                "type" => "investment_country",                                 // Winvestify standardized name  OK              
+                "functionName" => "getCountry",
+                ],
+             ],
         "B" => [
                 "name" => "investment_loanId"                                   // Winvestify standardized name  OK
              ],
@@ -461,8 +471,11 @@ class mintos extends p2pCompany {
                 "functionName" => "getAmount",
             ]           
          ],
-*/        
-        "M" => [
+*/
+        "L" =>  [
+                "name" => "investment_nominalInterestRate",                     // Winvestify standardized name   OK
+             ],  
+        "M" =>  [
                 "name" => "investment_stateOfLoan"                              // Winvestify standardized name  OK
              ],       
         "R" =>  [
@@ -475,8 +488,14 @@ class mintos extends p2pCompany {
                             ],
                 "functionName" => "getAmount",
             ]
-         ],        
-        "W" => [
+         ],
+        "V" =>  [
+            [
+                "type" => "investment_currency",                            // Winvestify standardized name  OK
+                "functionName" => "getCurrency",
+                ],
+            ],
+        "W" =>  [
                 "name" => "investment_state"                                    // Winvestify standardized name  OK
         ]
     ];
@@ -511,7 +530,7 @@ class mintos extends p2pCompany {
   
     protected $expiredLoanConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("investment_loanId")          // used to "sort" the array and use $sortParameter as prime index.
                                  ); 
     
 

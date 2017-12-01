@@ -127,15 +127,10 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
-        echo "########  ANTOINE \n"; 
 
-        if ($transactionData['investment_loanId'] == "1691271-01"    ){ 
-echo "AABBBBA";
-            print_r($resultData);
-        }
-        $result = $resultData['investment']['investment_outstandingPrincipalOriginal'];
-        if (isset($resultData['investment']['investment_myInvestment'])) {
-            $result = bcadd($result,$resultData['investment']['investment_myInvestment'], 16); 
+        $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices where bought of same loan
+        if (isset($resultData['payment']['payment_myInvestment'])) {
+            $result = bcadd($result,$resultData['payment']['payment_myInvestment'], 16); 
         }
         if (isset($resultData['payment']['payment_secondaryMarketInvestment'])) {
             $result = bcadd($result,$resultData['payment']['payment_secondaryMarketInvestment'], 16); 
@@ -147,9 +142,10 @@ echo "AABBBBA";
             $result = bcsub($result,$resultData['payment']['payment_partialPrincipalRepayment'], 16); 
         }  
         if (isset($resultData['payment']['payment_principalBuyback'])) {
+            echo "AAAAAAA\n";
             $result = bcsub($result,$resultData['payment']['payment_principalBuyback'], 16); 
         }
-        if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) { // read from db
+        if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) { 
             $result = bcsub($result,$resultData['investment']['investment_priceInSecondaryMarket'], 16); 
         }
         if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
@@ -602,8 +598,9 @@ echo "AABBBBA";
      * @return string      the string representation of a large integer
      */
     public function calculateTotalOutstandingPrincipal(&$transactionData, &$resultData) {
-  //      echo "CALCULATE TOTAL OUTSTANDING\n";
-//print_r($resultData);       
+echo "CALCULATE TOTAL OUTSTANDING\n";
+//print_r($resultData);
+echo "---\n";
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'],
                       $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);

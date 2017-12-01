@@ -126,7 +126,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
             }
 
-            print_r($data);
             $files = $data['files'];
 
             // First analyze the transaction file(s)
@@ -163,7 +162,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Files with expired Loans\n";
                         } 
                         $parserConfigFile = $companyHandle->getParserConfigExpiredLoanFile(); 
-                        $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
+                                $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
                 
@@ -188,11 +187,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
-                            foreach ($tempResult as $expiredloankey => $item) {
-                                $listOfExpiredLoans[] = $expiredloankey;
+                            $totalParsingresultExpiredInvestments = $tempResult;
+                            foreach ($tempResult as $expiredLoankey => $item) {
+                                $listOfExpiredLoans[] = $expiredLoankey;
                             }
                             break;                            
                     }
+                    
 /*
                     try {
 
@@ -218,13 +219,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
+            $returnData[$linkedAccountKey]['parsingResultExpiredInvestments'] = $totalParsingresultExpiredInvestments;
             $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
-            $returnData[$linkedAccountKey]['pfp'] = $platform;
+            $returnData[$linkedAccountKey]['pfp'] = $platform;  
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
-            $returnData[$linkedAccountKey]['controlVariableFile'] = $controlVariableFile; 
-            
-            
+            $returnData[$linkedAccountKey]['controlVariableFile'] = $controlVariableFile;         
             
  // THIS DEPENDS ON THE WORK DONE BY ANTONIO (SUPPORT OF VARIOUS SHEETS OF XLS FILE           &$investmentList,  
             $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
@@ -242,32 +242,31 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         if (in_array($value, $listOfExpiredLoans) == false){
                             $newLoans[] = $value;
                         }
-                        $newLoans[] = $value;
+                   //     $newLoans[] = $value;         temp fix for Zank
                     }
                 }
-            }
+            } 
             
             $newLoans = array_unique($newLoans);
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
             
             echo "New loans are\n";
-            print_r($returnData[$linkedAccountKey]['newLoans']); 
-            
-            
-            
+            print_r(count($returnData[$linkedAccountKey]['newLoans'])); 
+   
         }
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
- //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
- //      print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
+//print_r($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']);
+//      print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+//       print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']['2015-10-29']);
  //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
-        print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
+ //       print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
  //     print_r($data['tempArray'][$linkedAccountKey]['error']);
  //     print_r($data);
- 
+ echo "Done\n";
         return json_encode($data);
     }       
         

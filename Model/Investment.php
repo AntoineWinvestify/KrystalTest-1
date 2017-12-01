@@ -89,11 +89,10 @@ var $validate = array(
         
         $this->create();
         if (!isset($investmentdata['investment_sliceIdentifier'])) {
-            echo "ANANANANANAN%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
             $result[0] = false;            
             return $result;
         }
-echo "€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€ee";
+
         if ($this->save($investmentdata, $validate = true)) {   // OK
             $investmentId = $this->id;
             
@@ -149,7 +148,7 @@ echo "€€€€€€€€€€€€€€€€€€€€€€€€�
             $defaultedInvestments[$key]['Investment']['investment_paymentStatus'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
         }
 
-        $this->saveMany($defaultedInvestments); //Save delayed days
+    //    $this->saveMany($defaultedInvestments); //Save delayed days
         
        // print_r($defaultedInvestments);
         return $defaultedInvestments;
