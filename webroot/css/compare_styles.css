@@ -2363,3 +2363,27 @@ hr.specialHr:after {
     position: absolute;
     transform: rotate3d(0, 0, 1, -135deg);
 }
+
+/* Table styling */
+td {
+    text-align: center;
+}
+td.right { 
+    text-align: right; 
+}
+td.left {
+    text-align: left;
+}
+td.logo:hover {
+    background-color: rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+#box1Table td, #box2Table td, #box3Table td {
+    font-size: 12px;
+    padding: 5px 0px !important;
+}
+
+/*Clickable element with pointer*/
+.clickable:hover {
+    cursor: pointer;
+}
