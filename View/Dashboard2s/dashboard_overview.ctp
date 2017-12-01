@@ -173,6 +173,7 @@
         z-index: 50;
         background: rgba(255, 255, 255, 0);
         border-radius: 3px;
+        display:none;
     }
     .togetoverlay .overlay > .fa {
         font-size: 50px;
