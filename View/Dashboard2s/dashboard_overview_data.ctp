@@ -208,7 +208,7 @@
         cursor: pointer;
     }
 </style>
-
+<div class ="dashboardGlobalOverview">
     <div class="row" id="overview">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card card-nav-tabs">
@@ -423,5 +423,6 @@
             </div>
         </div>
     </div> <?php  } ?>
+</div>
 <div class = "ajaxResponse"> 
 </div>
