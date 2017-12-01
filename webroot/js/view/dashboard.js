@@ -4,6 +4,19 @@
  * and open the template in the editor.
  */
 
+function successAjaxMain(result) {
+    $("#MainContainer").html(result);
+}
+
+function errorAjaxMain(result) {
+}
+
+function overviewAjax() {
+    link = "dashboardOverviewData";
+    getServerData(link, null, successAjaxMain, errorAjaxMain);
+}
+
+
 
 
 function overviewDataJS() {
@@ -78,7 +91,7 @@ function singlePfpJS() {
         };
         var data = jQuery.param(params);
         link = $(this).attr("href");
-         ga_allInvestments();
+        ga_allInvestments();
         getServerData(link, data, successLoansAjax, errorLoansAjax);
     });
 
@@ -92,7 +105,7 @@ function singlePfpJS() {
         link = $(this).attr("href");
         getServerData(link, data, successLoansAjax, errorLoansAjax);
     });
-    
+
 
 
     function successLoansAjax(result) {
