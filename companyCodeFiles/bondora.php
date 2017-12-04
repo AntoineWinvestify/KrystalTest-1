@@ -393,22 +393,21 @@ class bondora extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                 break;
             case 5:
-
-                $dateInit = date('d/m/Y', strtotime($this->dateInit - 1));
-                if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
-                    $dateInit = '01/01/2009';
-                }
-                $dateFinish = date("d/m/Y", strtotime($this->dateFinish));
-
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
             case 6:
-
+                
 
                 $dom = new DOMDocument;  //Check if works
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
+                $continue = $this->downloadTimePeriod("20171104"/*$this->dateInit*/, $this->period);
+                $dateInit = date('d/m/Y', strtotime($this->dateInitPeriod));
+                if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
+                    $dateInit = '01/01/2009';
+                }
+                $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " day"));
                 $inputs = $dom->getElementsByTagName('input');
                 $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
