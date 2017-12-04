@@ -416,21 +416,34 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     }
     
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
-        $tempResult = [];
+        $filesJoinedByParts = $this->joinFilesByParts($filesByType);
+        if (in_array("fileConfigParam")) {
+            $orderParam = array_slice($configParameters, 0);
+        }
         $i = 0;
-        $orderParam = array_shift($configParameters);
-        foreach ($filesByType as $file) {
-            if (!empty($configParameters[$i]['offsetStart'])) {
-                $tempResult[] = $this->getSimpleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
-            }
-            else {
-                //if multiple files, we need an offset and offsetEnd individual
-                //An array is necessary 
-                $tempResult[] = $this->getMultipleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+        $arrayByType = [];
+        foreach ($filesJoinedByParts as $filesByType) {
+            $tempResult = null;
+            $arrayByType[$i] = [];
+            foreach ($filesByType as $file) {
+                if (!empty($configParameters[$i]['offsetStart'])) {
+                    $tempResult = $this->getSimpleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+                }
+                else {
+                    //if multiple files, we need an offset and offsetEnd individual
+                    //An array is necessary 
+                    $tempResult = $this->getMultipleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+                }
+                $arrayByType[$i] = array_merge($arrayByType[$i], $tempResult);
             }
             $i++;
         }
-        $tempResultOrdered = $this->resultOrdering($tempResult, $orderParam);
+        if (!empty($orderParam)) {
+            $tempResultOrdered = $this->resultOrdering($arrayByType, $orderParam);
+        }
+        else {
+            $tempResultOrdered = $arrayByType[0];
+        }
         return $tempResultOrdered;
     }
     
@@ -482,6 +495,18 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 unset($tempArray[$i]);
             break;               
         }
+        return $tempArray;
+    }
+    
+    public function joinFilesByParts ($filesByType) {
+        $tempArrayFiles = [];
+        foreach ($filesByType as $filePath) {
+            $file = new File($filePath);
+            $nameFile = $file->name();
+            $tempNumber = explode("_", $nameFile);
+            $tempArrayFiles[$tempNumber[1]][$tempNumber[2]] = $filePath;
+        }
+        return $tempArrayFiles;
     }
     
 }
