@@ -225,9 +225,25 @@ class CasesControllerTest extends ControllerTestCase {
     }
 
     public function testGenerateId() {
-        
+        $expected = "85005-01";
+        $actual = $this->testAction("/cases/testGenerateId");
+        $this->assertEquals($expected, $actual[0][0]["myValue"]);
+        $this->assertEquals($expected, $actual[1][0]["myValue"]);
+        $this->assertEquals($expected, $actual[2][0]["myValue"]);
     }
 
+    public function testGenerateId2() {
+        $expectedmb5 = array("global_d41d8cd98f00b204e9800998ecf8427e", "d41d8cd98f00b204e9800998ecf8427e");
+        //$expectedrand = 
+        $expecteduuid = array(5, 43); 
+        $actual = $this->testAction("/cases/testGenerateId2");
+        $this->assertEquals($expectedmb5[0], $actual[0][0]["myValue"]);
+        $this->assertEquals($expectedmb5[1], $actual[3][0]["myValue"]);
+        $this->assertNotNull($actual[1]);
+        $this->assertNotNull($actual[4]);
+        $this->assertEquals($expecteduuid[0], count(explode("-", $actual[5][0]["myValue"])));
+        $this->assertEquals($expecteduuid[1], strlen($actual[2][0]["myValue"]));
+    }
     public function tearDown() {
         parent::tearDown();
         unset($this->Hello);

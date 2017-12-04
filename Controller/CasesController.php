@@ -991,7 +991,7 @@ class CasesController extends AppController {
                     "type" => "myValue",
                     "inputData" => [
                         "input2" => "global_",
-                        "input3" => "hash"
+                        "input3" => "rand"
                     ],
                     "functionName" => "generateId"]
             ]
@@ -1031,7 +1031,7 @@ class CasesController extends AppController {
                     "type" => "myValue",
                     "inputData" => [
                         "input2" => "",
-                        "input3" => "hash"
+                        "input3" => "rand"
                     ],
                     "functionName" => "generateId"]
             ]
@@ -1079,7 +1079,7 @@ class CasesController extends AppController {
                     "type" => "myValue",
                     "inputData" => [
                         "input2" => "global_",
-                        "input3" => "hash"
+                        "input3" => "rand"
                     ],
                     "functionName" => "generateId"]
             ]
@@ -1119,7 +1119,7 @@ class CasesController extends AppController {
                     "type" => "myValue",
                     "inputData" => [
                         "input2" => "",
-                        "input3" => "hash"
+                        "input3" => "rand"
                     ],
                     "functionName" => "generateId"]
             ]
