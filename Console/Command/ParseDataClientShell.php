@@ -300,6 +300,7 @@ if ($dateKey == "2016-08-08"){
             $database['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] = $controlVariableActiveInvestments;
 echo "Printing initally userinvestmentdata for Date = $dateKey\n";
 print_r($database);
+exit;
             foreach ($dates as $keyDateTransaction => $dateTransaction) {               // read all *individual* transactions for 1 day
 
 if ($keyDateTransaction == "12622-04") {   
@@ -320,8 +321,8 @@ if ($keyDateTransaction == "12622-04") {
  */            
                 $newLoan = NO;
                 echo "\nkeyDateTransaction = $keyDateTransaction \n";
-                //        print_r($dateTransaction);
-// special procedure for platform related transactions, i.e. when we don't have a real loanId
+                
+                // special procedure for platform related transactions, i.e. when we don't have a real loanId
                 $keyDateTransactionNames = explode("_", $keyDateTransaction);
                 if ($keyDateTransactionNames[0] == "global") {               // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     // cycle through all individual fields of the transaction record
@@ -338,7 +339,6 @@ if ($keyDateTransaction == "12622-04") {
                             $dbTable = $dataInformation[0];
                             if (!empty($functionToCall)) {
                                 $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-//                                echo "result=  $result and cashflow Operation = " . $tempResult['cashflowOperation'] . "\n";
 
                                 // update the field userinvestmentdata_cashInPlatform   
                                 $cashflowOperation = $tempResult['cashflowOperation'];
@@ -422,6 +422,7 @@ if ($keyDateTransaction == "12622-04") {
 echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an existing loan with investmentId = $investmentId\n";
 
                     $database['investment']['investment_outstandingPrincipal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
+ //CHECK THE FOLLOWING STATEMENT 
                     $database['investment']['investment_outstandingPrincipalOriginal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipalOriginal'];
                     $database['investment']['investment_totalGrossIncome'] = $tempInvestmentData[0]['Investment']['investment_totalGrossIncome'];   
                     $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];                        
@@ -508,8 +509,9 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                          }
                     }                           
                             
- // CALCULATE outstanding principal for a loan                         
-                    $internalVariableToHandle = array(37);
+ // CALCULATE outstanding principal for a loan, check total number active investments, 
+ // Investments that are no longer active should be removed from "numberActiveInvestments"                 
+                    $internalVariableToHandle = array(37,);
                     echo "\n";
                     echo "Running index 37\n";
                     foreach ($internalVariableToHandle as $keyItem => $item) {
@@ -575,20 +577,21 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                 print_r($database['payment']);
 
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for date = $dateKey\n";
-                $internalVariablesToHandle = array(10001);
+// If 
+                $internalVariablesToHandle = array(10001,10002);      // TotalCashflow numberActiveInvestments
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
             //        if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17]
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
-                        echo "Calling the function: $functionToCall and index = $keyItem\n";
+//                        echo "Calling the function: $functionToCall and index = $keyItem\n";
                         $result = $calculationClassHandle->$functionToCall($transactionData, $database);                
-echo "DANIEL: orignal amount = " . $database[$varName[0]][$varName[1]] ." and new result =$result". "\n";
-                        print_r($this->variablesConfig[$item]);
+//echo "DANIEL: orignal amount = " . $database[$varName[0]][$varName[1]] ." and new result =$result". "\n";
+  //                      print_r($this->variablesConfig[$item]);
 
                         if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                            echo "Charo ADDING,dbTable = " . $dbTable . " transactionDataKey = " . $transactionDataKey . " original = " . "\n";
+    //                        echo "Charo ADDING,dbTable = " . $dbTable . " transactionDataKey = " . $transactionDataKey . " original = " . "\n";
                             if (!isset($database[$varName[0]][$varName[1]])) {
-                                echo"Chari init2";
+      //                          echo"Chari init2";
                                 $database[$dbTable][$transactionDataKey] = 0;
                             }
                             $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
@@ -597,14 +600,16 @@ echo "DANIEL: orignal amount = " . $database[$varName[0]][$varName[1]] ." and ne
                         }
                 
  
-                    echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
+ //                   echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
                     echo $database[$varName[0]][$varName[1]];
                     $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
                 }
-                
-                if ($database['investment']['investment_outstandingPrincipal'] == 0) {     // Loan has been completely repaid
-                    $platformOutstandingPrincipal = $platformOutstandingPrincipal - $database['investment']['investment_outstandingPrincipalOriginal'];
-                    $platformNumberOfActiveInvestments = $database['Userinvestmentdata']['numberActiveInvestments'] - 1;
+                if ($database['investment']['investment_outstandingPrincipal'] == 0) {
+                    $database['Userinvestmentdata']['finishedLoans'] = $database['Userinvestmentdata']['finishedLoans'] + 1;
+                }
+ //               if ($database['investment']['investment_outstandingPrincipal'] == 0) {     // Loan has been completely repaid
+ //                   $platformOutstandingPrincipal = $platformOutstandingPrincipal - $database['investment']['investment_outstandingPrincipalOriginal'];
+ //                   $platformNumberOfActiveInvestments = $database['Userinvestmentdata']['numberActiveInvestments'] - 1;
                 }
                 unset($investmentId);
                 unset($database['investment']);
@@ -612,6 +617,33 @@ echo "DANIEL: orignal amount = " . $database[$varName[0]][$varName[1]] ." and ne
             }
             
 
+             echo "printing global data for the date = $dateKey\n";
+            
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
+            // The following is done only once per readout period independent if period covers one day, 1 week or if
+            // it is a "link account" action
+            // We also have to reduce the total values with the amounts of the investments that we finished TODAY, as (normally)
+            // all loan related amounts are for active investments only
+            // 
+            // determine which loans have terminated
+            // loop through all of them and subtracts amounts from total values
+            echo "Starting to consolidate the platform data, using the control variables, calculating each variable\n\n\n\n";
+            $internalVariableToHandle = array(10002, 10003);  // Can be expanded according to new requirements
+            // = outstanding principal,. totalnumberofinvestments and cashinplatform
+            foreach ($internalVariableToHandle as $keyItem => $item) {
+                echo "VariableIndex being handled = " . $item . "\n";
+             //   if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   
+                    $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                    $functionToCall = $this->variablesConfig[$item]['function'];
+                    echo "Calling the function: $functionToCall and index = $keyItem\n";
+                    $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
+                    echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
+                    echo $database[$varName[0]][$varName[1]];
+                    $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+             //   }
+            }            
+            
+            
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";
             if ($this->Userinvestmentdata->save($database['Userinvestmentdata'], $validate = true)) {
                 $userInvestmentDataId = $this->Userinvestmentdata->id;
@@ -639,37 +671,7 @@ echo "DANIEL: orignal amount = " . $database[$varName[0]][$varName[1]] ." and ne
                     }
                 }
             }
-            
-            
-            
-            
-            echo "printing global data for the date = $dateKey\n";
-            
-            echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
-            // The following is done only once per readout period independent if period covers one day, 1 week or if
-            // it is a "link account" action
-            // We also have to reduce the total values with the amounts of the investments that we finished TODAY, as (normally)
-            // all loan related amounts are for active investments only
-            // 
-            // determine which loans have terminated
-            // loop through all of them and subtracts amounts from total values
-            echo "Starting to consolidate the platform data, using the control variables, calculating each variable\n\n\n\n";
-            $internalVariableToHandle = array(10001, 10002, 10003);  // Can be expanded according to new requirements
-            // = outstanding principal,. totalnumberofinvestments and cashinplatform
-            foreach ($internalVariableToHandle as $keyItem => $item) {
-                echo "VariableIndex being handled = " . $item . "\n";
-             //   if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   
-                    $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
-                    $functionToCall = $this->variablesConfig[$item]['function'];
-                    echo "Calling the function: $functionToCall and index = $keyItem\n";
-                    $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
-                    echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
-                    echo $database[$varName[0]][$varName[1]];
-                    $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-             //   }
-            }            
-            
-
+ 
             print_r($database['Userinvestmentdata']);
             print_r($database['globalcashflowdata']);         
         }

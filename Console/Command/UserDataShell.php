@@ -490,6 +490,9 @@ class UserDataShell extends AppShell {
      * 20000
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
+        if (isset($resultData['investment']['investment_outstandingPrincipal']) == 0) {
+            
+        }
         $filterConditions = array('Investment.investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE);
         $activeInvestments = $this->Investment->find('count', array(
             'conditions' => $filterConditions));
