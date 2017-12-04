@@ -1483,7 +1483,7 @@ class zank extends p2pCompany {
                         echo " " . $key . "=>" . $div->nodeValue . " ";
                     }
                 }*/
-                $this->tempArray['global']['activeInvestment'] = $ps[28]->nodeValue;
+                $this->tempArray['global']['activeInvestment'] = $divs[28]->nodeValue;
                 return $this->tempArray; 
         }
     }
