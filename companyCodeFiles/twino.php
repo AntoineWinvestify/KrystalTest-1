@@ -446,10 +446,12 @@ class twino extends p2pCompany {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                     }
                 }
+                $this->continue = $this->downloadTimePeriod($this->dateFinish, $this->period);
+
                 echo 'Preparing cashflow download';
                 //Download cash flow
-                $dateInit = date("Y,m,d", strtotime($this->dateInit)); //date must be a string with the year,month,day format
-                $dateFinish = date('Y,m,d', strtotime($this->dateFinish));
+                $dateInit = date("Y,m,d", strtotime($this->dateInitPeriod)); //date must be a string with the year,month,day format
+                $dateFinish = date('Y,m,d', strtotime($this->dateFinishPeriod));
                 $dateInitArray = explode(",", $dateInit);
                 $dateFinishArray = explode(",", $dateFinish);
                 $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","processingDateFrom":[{$year1},{$month1},{$day1}],"processingDateTo":[{$year2},{$month2},{$day2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
@@ -459,9 +461,12 @@ class twino extends p2pCompany {
                 $credentialsFile = strtr($credentialsFile, array('{$month2}' => (int)$dateFinishArray[1]));
                 $credentialsFile = strtr($credentialsFile, array('{$day1}' => (int)$dateInitArray[2])); 
                 $credentialsFile = strtr($credentialsFile, array('{$day2}' => (int)$dateFinishArray[2]));
+                if(empty($this->tempUrl['transactionDownloadInit'])){
+                    $this->tempUrl['transactionDownloadInit'] = array_shift($this->urlSequence);
+                    $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence); 
+                }
                 $this->idForSwitch++;
-                //$this->headers = array("accept:application/json, text/plain, */*",  "accept-encoding:gzip, deflate, br", "accept-language:en-US,en;q=0.9", "content-type:application/json;charset=UTF-8", "origin:https://www.twino.eu", "referer:https://www.twino.eu/en/profile/investor/my-investments/individual-investments");
-                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
+                $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['transactionDownloadInit'], $credentialsFile, true);
                 break;
             case 10:
                 echo $str;
@@ -476,8 +481,14 @@ class twino extends p2pCompany {
                 } else {
                     echo 'Status true, downloading';
                     $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                    $this->idForSwitch = 9;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $this->fileName);
+                    $this->numFileTransaction++;
+                    if($this->continue){
+                        $this->idForSwitch = 9;
+                    }
+                    else{
+                        $this->idForSwitch = 12;
+                    }
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['transactionReferer'], false, false, $this->fileName);
                     break;
                 }
             case 11:
@@ -487,8 +498,14 @@ class twino extends p2pCompany {
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
                     $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                    $this->idForSwitch++;
-                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', null, false, false, $this->fileName);
+                    $this->numFileTransaction++;
+                    if($this->continue){
+                        $this->idForSwitch = 9;
+                    }
+                    else{
+                        $this->idForSwitch++;
+                    }
+                    $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['transactionReferer'], false, false, $this->fileName);
                 } else {
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
