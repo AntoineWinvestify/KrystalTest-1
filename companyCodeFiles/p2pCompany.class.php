@@ -141,7 +141,9 @@ class p2pCompany {
     protected $nameFileAmortizationTable = "amortizationTable_";
     protected $nameFileAmortizationTableList = "amortizationTableList.json";
     protected $numFileTransaction = 1;
+    protected $numPartFileTransaction = 1;
     protected $numFileInvestment = 1;
+    protected $numPartFileInvestment = 1;
     protected $numFileAmortizationtable = 1;
     protected $companyName;
     protected $userReference;

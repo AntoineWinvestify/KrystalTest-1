@@ -749,8 +749,8 @@ class mintos extends p2pCompany {
                 $headers = json_decode($headers, true);
                 echo "headers " . $headers;
                 
-                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                $this->numFileTransaction++;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
+                $this->numPartFileTransaction++;
                 if(!$continue){
                     if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
                         $this->idForSwitch++;

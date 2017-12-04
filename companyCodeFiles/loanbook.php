@@ -228,7 +228,7 @@ class loanbook extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
-        $this->j = 1;
+        $this->j = 0;
         $this->loanArray;
         $this->UserLoansId = array();
         $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
@@ -1157,7 +1157,7 @@ class loanbook extends p2pCompany {
 
                 $resultMiLoanbook = false; // Could not login, credential error
                 $uls = $dom->getElementsByTagName('ul');
-                $this->verifyNodeHasElements($uls);
+               /* $this->verifyNodeHasElements($uls);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
@@ -1188,58 +1188,69 @@ class loanbook extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
-                }
+                }*/
 
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
+                if(empty($this->tempUrl['globalVariablespage'])){
+                    $this->tempUrl['globalVariablespage'] = array_shift($this->urlSequence);
+                }
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['globalVariablespage']);  //str1 load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
+                if(empty($this->tempArray)){
+                    $dom = new DOMDocument;
+                    libxml_use_internal_errors(true);
+                    $dom->loadHTML($str); // obtained in the function	"companyUserLogin"	
+                    $dom->preserveWhiteSpace = false;
 
-                $dom = new DOMDocument;
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($str); // obtained in the function	"companyUserLogin"	
-                $dom->preserveWhiteSpace = false;
-
-                // Read the global investment data of this user
-                $spans = $dom->getElementsByTagName('span');
-                $this->verifyNodeHasElements($spans);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
-                foreach ($spans as $span) {
-                    if ($span->getAttribute('class') == 'lb_main_menu_bold') {
-                        $this->tempArray['global']['myWallet'] = $span->nodeValue;
-                        echo $this->tempArray['global']['myWallet'];
-                        break; //myWallet is only the first span
+                    // Read the global investment data of this user
+                    $spans = $dom->getElementsByTagName('span');
+                    $this->verifyNodeHasElements($spans);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
-                }
-
-                $divs = $dom->getElementsByTagName('div');
-                $this->verifyNodeHasElements($divs);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
-                foreach ($divs as $div) {
-                    if ($div->getAttribute('id') == 'lb_cartera_data_2') {
-                        $this->tempArray['global']['activeInvestments'] = trim($div->nodeValue);
-                        echo $div->nodeValue;
+                    foreach ($spans as $span) {
+                        if ($span->getAttribute('class') == 'lb_main_menu_bold') {
+                            $this->tempArray['global']['myWallet'] = $span->nodeValue;
+                            echo $this->tempArray['global']['myWallet'];
+                            break; //myWallet is only the first span
+                        }
                     }
+
+                    $divs = $dom->getElementsByTagName('div');
+                    $this->verifyNodeHasElements($divs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
+                    foreach ($divs as $div) {
+                        if ($div->getAttribute('id') == 'lb_cartera_data_2') {
+                            $this->tempArray['global']['activeInvestments'] = trim($div->nodeValue);
+                            echo $div->nodeValue;
+                        }
+                    }              
+                    $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
+                    $this->tempArray['global']['outstandingPrincipal'] = $outstanding; //$this->getMonetaryValue($spans[0]->nodeValue);
                 }
-
-
-                $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
-                $this->tempArray['global']['outstandingPrincipal'] = $outstanding; //$this->getMonetaryValue($spans[0]->nodeValue);
-
-
-                print_r($this->tempArray);
-
-                $this->idForSwitch++;
-                $url = array_shift($this->urlSequence);
-                $dateInit = strtotime($this->dateInit) * 1000;
-                $dateFinish = strtotime($this->dateFinish) * 1000;
+                
+                //$continue = $this->downloadTimePeriod("20171104", $this->period);
+                //echo "_" . $this->dateInitPeriod . "/" . $this->dateFinishPeriod . "_";
+                $dateInit = strtotime($this->dateInit); //strtotime($this->dateInitPeriod);
+                $dateFinish = strtotime($this->dateFinish); //strtotime($this->dateFinishPeriod);
+               // echo "_" . $dateInit . "/" . $dateFinish . "_";
+                /*if($continue){
+                    $this->idForSwitch = 3;
+                }
+                else{*/
+                    $this->idForSwitch++;
+                //}
+                if(empty($this->tempUrl['downloadTransaction'])){
+                    $this->tempUrl['downloadTransaction'] = array_shift($this->urlSequence);
+                }
+                $url = $this->tempUrl['downloadTransaction'];
                 $url = strtr($url, array('{$date1}' => $dateInit)); //Date in milliseconds from 1970 
                 $url = strtr($url, array('{$date2}' => $dateFinish));
-                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
+                $this->numPartFileTransaction++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 5:

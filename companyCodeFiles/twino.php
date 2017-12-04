@@ -446,7 +446,7 @@ class twino extends p2pCompany {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                     }
                 }
-                $this->continue = $this->downloadTimePeriod($this->dateFinish, $this->period);
+                $this->continue = $this->downloadTimePeriod($this->dateInit, $this->period);
 
                 echo 'Preparing cashflow download';
                 //Download cash flow
@@ -480,8 +480,8 @@ class twino extends p2pCompany {
                     break;
                 } else {
                     echo 'Status true, downloading';
-                    $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                    $this->numFileTransaction++;
+                    $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
+                    $this->numPartFileTransaction++;
                     if($this->continue){
                         $this->idForSwitch = 9;
                     }
@@ -497,8 +497,8 @@ class twino extends p2pCompany {
                 print_r($response);
                 if ($response['reportReady'] == true) {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
-                    $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                    $this->numFileTransaction++;
+                    $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
+                    $this->numPartFileTransaction++;
                     if($this->continue){
                         $this->idForSwitch = 9;
                     }
