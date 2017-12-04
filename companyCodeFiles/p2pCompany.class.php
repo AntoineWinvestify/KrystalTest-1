@@ -135,15 +135,20 @@ class p2pCompany {
     //Variables to download files
     protected $typeFileTransaction;
     protected $typeFileInvestment;
+    protected $typeFileExpiredLoan;
     protected $typeFileAmortizationtable;
-    protected $nameFileTransaction = "transaction_";
-    protected $nameFileInvestment = "investment_";
-    protected $nameFileAmortizationTable = "amortizationTable_";
-    protected $nameFileAmortizationTableList = "amortizationTableList.json";
+    protected $typeFileControlVariables = ".json";
+    protected $nameFileTransaction = WIN_FLOW_TRANSACTION_FILE . "_";
+    protected $nameFileInvestment = WIN_FLOW_INVESTMENT_FILE . "_";
+    protected $nameFileExpiredLoan = WIN_FLOW_EXPIRED_LOAN_FILE . "_";
+    protected $nameFileAmortizationTable = WIN_FLOW_AMORTIZATION_TABLE_FILE . "_";
+    protected $nameFileAmortizationTableList = WIN_FLOW_AMORTIZATION_TABLE_ARRAY . ".json";
+    protected $nameFileControlVariables = WIN_FLOW_CONTROL_FILE;
     protected $numFileTransaction = 1;
     protected $numPartFileTransaction = 1;
     protected $numFileInvestment = 1;
     protected $numPartFileInvestment = 1;
+    protected $numFileExpiredLoan = 1;
     protected $numFileAmortizationtable = 1;
     protected $companyName;
     protected $userReference;
@@ -1797,7 +1802,7 @@ class p2pCompany {
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
-                ->set(CURLOPT_TIMEOUT, 300)
+                ->set(CURLOPT_TIMEOUT, 100)
                 ->set(CURLOPT_ENCODING, "gzip,deflate,br")
                 // Do not check the SSL certificates
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
@@ -2806,6 +2811,14 @@ FRAGMENT
         //https://stackoverflow.com/questions/35037313/casperjs-download-and-save-file-to-specific-location
         //https://stackoverflow.com/questions/16144252/downloading-a-file-that-comes-as-an-attachment-in-a-post-request-response-in-pha/31124037#31124037
         //http://docs.casperjs.org/en/latest/modules/casper.html#download
+    }
+    
+    public function copyFile($file, $newFile) {
+        $created = true;
+        if (!copy($file, $newFile)) {
+            $created = false;
+        }
+        return $created;
     }
     
 }

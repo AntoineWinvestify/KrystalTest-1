@@ -234,6 +234,10 @@ class loanbook extends p2pCompany {
         $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
             'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
             'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "json";
+        //$this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array(472);
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass

@@ -371,6 +371,11 @@ class finbee extends p2pCompany {
 
     function __construct() {
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
+        $this->typeFileControlVariables = ".xlsx";
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
@@ -486,7 +491,11 @@ class finbee extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $this->fileName = "ControlVariables.xlsx"; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $path = $this->getFolderPFPFile();
+                $file = $path . DS . $this->fileName;
+                $newFile = $path . DS . $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->copyFile($file, $newFile);
+                $fileName = $this->nameFileControlVariables . $this->typeFileControlVariables; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;

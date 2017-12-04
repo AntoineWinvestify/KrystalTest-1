@@ -92,7 +92,8 @@ class twino extends p2pCompany {
                         //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
                         14 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_positive"],
                         15 => ["PRINCIPAL RECOVERY" => "Recoveries"],
-                        16 => ["PRINCIPAL WRITEOFF" => "Write-off"]
+                        16 => ["PRINCIPAL WRITEOFF" => "Write-off"],
+                        17 => ["WITHDRAWAL" = "Cash_withdrawal"]
                     ], // Thousands seperator, typically "."
                     "input3" => "#current.transactionDetail", // Decimal seperator, typically ","
                 // is ALWAYS the contents of the cell
@@ -245,6 +246,10 @@ class twino extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array(629337, 629331, 629252);  
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
