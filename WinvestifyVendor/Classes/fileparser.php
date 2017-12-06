@@ -70,7 +70,8 @@
  * New configuration parameter (changeCronologicalOrder)
  * 
  * 
- * 
+ * 2017-12-07
+ * rectified an error in saveExcelToArray. Error was related to removing an item at random
  * 
  * Pending:
  * chunking, csv file check
@@ -703,7 +704,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return array $temparray the data after the parsing process.
      *
      */
-    private function saveExcelToArray($rowDatas, $values, $totalRows) {
+    private function saveExcelToArray(&$rowDatas, $values, $totalRows) {
         $tempArray = [];
         $maxRows = count($rowDatas);
 
@@ -727,18 +728,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             }
         }   
  
-        $i = 0;
-        $totalRows = count($rowData);
-        echo "totalRows = $totalRows\n";
-        foreach ($rowDatas as $key => $rowData) {
-            if ($i == $this->config['offsetEnd'] - 1) {
-                break;
-            }
-            unset($rowDatas[$totalRows]);
-            $i++;
-        }  
+        // remove items at from the end of the array
+        for ($i == 0; $i < $this->config['offsetEnd']; $i++) {
+            array_pop($rowDatas);
+        }
        
-         
         $i = 0;
         $outOfRange = false;
 
@@ -804,7 +798,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                     }
                 }
             }
-
+          
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:

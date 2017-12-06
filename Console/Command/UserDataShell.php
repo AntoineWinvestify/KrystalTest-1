@@ -128,8 +128,10 @@ class UserDataShell extends AppShell {
      */
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
 
-        $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices where bought of same loan
-        if (isset($resultData['payment']['payment_myInvestment'])) {
+        $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
+ echo __FILE__ . "resultAAAA = $result\n";
+print_r($transactionData);
+ if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result,$resultData['payment']['payment_myInvestment'], 16); 
         }
         if (isset($resultData['payment']['payment_secondaryMarketInvestment'])) {
@@ -142,7 +144,6 @@ class UserDataShell extends AppShell {
             $result = bcsub($result,$resultData['payment']['payment_partialPrincipalRepayment'], 16); 
         }  
         if (isset($resultData['payment']['payment_principalBuyback'])) {
-            echo "AAAAAAA\n";
             $result = bcsub($result,$resultData['payment']['payment_principalBuyback'], 16); 
         }
         if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) { 
@@ -154,6 +155,7 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result,$resultData['payment']['payment_currencyFluctuationPositive'], 16);   
         } 
+        echo "calculateOutstnadinfPrincipal: resultBBBBB = $result\n";
         return $result;
     }
 
@@ -490,13 +492,13 @@ class UserDataShell extends AppShell {
      * 20000
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
-        if (isset($resultData['investment']['investment_outstandingPrincipal']) == 0) {
-            
+        // We only check if existing ones have finished. In the main flow I check for NEW investments
+        if (isset($resultData['investment']['investment_outstandingPrincipal'])) {
+            if ($resultData['investment']['investment_outstandingPrincipal'] == 0) {
+                return $resultData['userinvestmentdatas']['userinvestmentdata_numberActiveInvestments'] + 1;
+            }
         }
-        $filterConditions = array('Investment.investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE);
-        $activeInvestments = $this->Investment->find('count', array(
-            'conditions' => $filterConditions));
-        return $activeInvestments;
+        return $resultData['userinvestmentdatas']['userinvestmentdata_numberActiveInvestments'];
     }
 
     /*
@@ -630,7 +632,7 @@ echo "---\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 47
+     * 
      */
     public function calculateIncomeSecondaryMarket(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -642,7 +644,7 @@ echo "---\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 47
+     * 26
      */
     public function calculateSecondaryMarketInvestment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
