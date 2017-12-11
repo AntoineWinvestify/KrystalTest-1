@@ -192,8 +192,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             foreach ($tempResult as $expiredLoankey => $item) {
                                 $listOfExpiredLoans[] = $expiredLoankey;
                                 $i++;
-                                echo $expiredLoankey ."\n";
-                                if ($i == 100) {break;}
                             }
                             break;                            
                     }
@@ -272,6 +270,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
  //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
  //echo "new loans = ";
  //       print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
+        echo "Number of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
+        echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
+        echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
+        
  echo "Done\n";
         return json_encode($data);
     }       

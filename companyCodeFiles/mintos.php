@@ -459,6 +459,14 @@ class mintos extends p2pCompany {
         "B" => [
                 "name" => "investment_loanId"                                   // Winvestify standardized name  OK
              ],
+        "D" =>  [
+            "name" => "investment_loanType"                                 // Winvestify standardized name   OK
+         ],
+
+        "E" =>  [
+            "name" => "investment_amortizationMethod"                       // Winvestify standardized name  OK
+         ],
+        
         "F" =>  [
                 "name" => "investment_loanOriginator"                           // Winvestify standardized name  OK
              ],
@@ -473,6 +481,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
+
         /*        
         "H" =>  [
             [
@@ -486,7 +495,7 @@ class mintos extends p2pCompany {
             ]           
          ],
 */
-        "L" =>  [
+        "J" =>  [
                 "name" => "investment_nominalInterestRate",                     // Winvestify standardized name   OK
              ],  
         "M" =>  [
@@ -529,8 +538,11 @@ class mintos extends p2pCompany {
             "investment_statusOfLoan" => "translateOriginalLoanState"
         ],
         "expiredLoan" => [
-            "investment_originalState" => "translateOriginalLoanState",
             "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
+            "investment_loanType" => "translateLoanType",
+            "investment_amortizationMethod" => "translateAmortizationMethod", 
+            "investment_statusOfLoan" => "translateOriginalLoanState",
+            
         ]
     ];  
     

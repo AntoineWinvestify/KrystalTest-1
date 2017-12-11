@@ -483,22 +483,26 @@ print_r($transactionData);
     }
 
     /*
-     * Calculates the number of active investments. This function SHOULD be the very last function to execute
-     * and will execute only once per DAY
+     * Calculates the number of active investments. This function is executed once for each loan / day
      *
      *  @param  array       array with the current transaction data [NOT REALLY NEEDED]
      *  @param  array       array with all data so far calculated and to be written to DB [NOT REALLY NEEDED]
-     *  @return string
+     *  @return int         number of active loans
      * 20000
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
         // We only check if existing ones have finished. In the main flow I check for NEW investments
+    echo __FUNCTION__ . " " . __LINE__ ."\n";
+    echo "investment_new = " . $resultData['investment']['investment_new'] ;
+    echo " and resultData['investment'] = " . $resultData['investment']['investment_outstandingPrincipal'];
         if (isset($resultData['investment']['investment_outstandingPrincipal'])) {
             if ($resultData['investment']['investment_outstandingPrincipal'] == 0) {
-                return $resultData['userinvestmentdatas']['userinvestmentdata_numberActiveInvestments'] + 1;
+                return $resultData['userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1;
             }
         }
-        return $resultData['userinvestmentdatas']['userinvestmentdata_numberActiveInvestments'];
+        if ($resultData['investment']['investment_new'] == YES) {
+            return $resultData['userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1;
+        }
     }
 
     /*
