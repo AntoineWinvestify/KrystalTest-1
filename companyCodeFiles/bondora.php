@@ -219,8 +219,8 @@ class bondora extends p2pCompany {
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        
-        
+
+
         $confirm = false;
 
         $spans = $dom->getElementsByTagName('span');
@@ -258,6 +258,9 @@ class bondora extends p2pCompany {
     function generateReportParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
+                $this->numberOfFiles = 0;
+                $this->investmentNumber = 0;
+                $this->transactionNumber = 0;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to page of the company
                 break;
@@ -322,6 +325,10 @@ class bondora extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
                 break;
             case 4:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
+                break;
+            case 5:
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
@@ -336,11 +343,18 @@ class bondora extends p2pCompany {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
-                $dateInit = date("d/m/Y", strtotime($this->dateInit));
+                $continue = $this->downloadTimePeriod("20171109"/* $this->dateInit */, $this->period);
+                $dateInit = date('d/m/Y', strtotime($this->dateInitPeriod));
                 if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $dateInit = '01/01/2009';
                 }
-                $dateFinish = date('d/m/Y', strtotime($this->dateFinish - 1));
+                
+                if($this->investmentNumber === 0) {
+                    $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
+                } else {
+                    $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod));
+                }
+
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
                     'NewReports[0].ReportType' => 'InvestmentsListV2',
@@ -391,29 +405,41 @@ class bondora extends p2pCompany {
                     "NewReports[8].Selected" => 'false',
                     "NewReports[8].DateFilterSelected" => 'false',
                 );
-                $this->idForSwitch++;
+                echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
+                $this->print_r2($credentials);
+                echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
+                $this->investmentNumber = $this->numberOfFiles;
+                if ($continue !== false) {
+                    $this->idForSwitch--;
+                } else {
+                    $this->idForSwitch++;
+                    $this->numberOfFiles = 0;
+                }
+
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                 break;
-            case 5:
+            case 6:
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
-            case 6:
-                
-
+                break;
+            case 7:
                 $dom = new DOMDocument;  //Check if works
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
-                $continue = $this->downloadTimePeriod("20171112"/*$this->dateInit*/, $this->period);
+                $continue = $this->downloadTimePeriod("20171109"/* $this->dateInit */, $this->period);
                 $dateInit = date('d/m/Y', strtotime($this->dateInitPeriod));
                 if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $dateInit = '01/01/2009';
                 }
-                echo $this->dateFinishPeriod;
-                $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod  . " " . -1 . " days"));
-                echo $dateFinish;
+                
+                if($this->investmentNumber === 0) {
+                    $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
+                } else {
+                    $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod));
+                }            
+      
                 $inputs = $dom->getElementsByTagName('input');
-                $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
@@ -421,7 +447,7 @@ class bondora extends p2pCompany {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
-                echo "-" . $dateFinish . "-";
+                //echo "-" . $dateFinish . "-";
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
                     'NewReports[0].ReportType' => 'InvestmentsListV2',
@@ -475,17 +501,20 @@ class bondora extends p2pCompany {
                 echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
                 echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
-                if ($continue) {
+                $this->transactionNumber = $this->numberOfFiles;
+                if ($continue !== false) {
                     $this->idForSwitch--;
                 } else {
+                    echo 'adios';
                     $this->idForSwitch++;
+                    echo $this->idForSwitch;
                 }
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                 break;
 
 
-            case 7:
-                echo $str . SHELL_ENDOFLINE;
+            case 8:
+                //echo $str . SHELL_ENDOFLINE;
                 return $tempArray = 'Generando informe';
         }
     }

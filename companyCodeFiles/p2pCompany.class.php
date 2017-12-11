@@ -1829,8 +1829,8 @@ class p2pCompany {
         // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
         if( $this->numberOfFiles == 0){
             $this->dateInitPeriod =  date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
-            if(date($this->dateInitPeriod) < date($dateMin)){
-                $this->dateInitPeriod = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            if(date($this->dateInitPeriod) <= date($dateMin)){
+                $this->dateInitPeriod = date('Ymd',strtotime($dateMin)); //Condition for dont go a previus date than $dateMin;
             }
             $this->dateFinishPeriod = date('Ymd',strtotime($this->dateFinish));
             //echo 'Date ' . $this->dateInitPeriod . " " . $this->dateFinishPeriod;
@@ -1844,10 +1844,13 @@ class p2pCompany {
             }
             $this->numberOfFiles++;
          }
+         /*echo "aassassa" . $this->dateInitPeriod . "_" . $dateMin;
+         echo "dasfs" . date("Ymd", $this->dateInitPeriod);
+         echo "jljhka" . date("Ymd",$dateMin);*/
         if(date($this->dateInitPeriod) > date($dateMin)){
             return true;   //Continue period download
         }
-        else{
+        else {
             return false;  //End period download
         }
     }
