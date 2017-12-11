@@ -292,18 +292,18 @@ class loanbook extends p2pCompany {
               echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
               } */
             $subdivs = $divs[6]->getElementsByTagName('div');
-            /* foreach ($subdivs as $keyDiv => $div) {
+            /*foreach ($subdivs as $keyDiv => $div) {
               echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
-              } */
-            $tempArray['marketplace_rating'] = trim($subdivs[0]);
-            $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]);
-            $tempArray['marketplace_timeLeft'] = trim($subdivs[8]);
+              }*/
+            $tempArray['marketplace_rating'] = trim($subdivs[0]->nodeValue);
+            $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]->nodeValue);
+            $tempArray['marketplace_timeLeft'] = trim($subdivs[8]->nodeValue);
             $progress = $this->getElementsByClass($dom, "progress-bar");
             if(!empty($progress)){
                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($progress[0]->nodeValue);
             }
             else{
-                $tempArray['marketplace_subscriptionProgress'] = 0;    
+                $tempArray['marketplace_subscriptionProgress'] = 0;
             }
             
             $table = $dom->getElementById("table-1");
@@ -341,6 +341,7 @@ class loanbook extends p2pCompany {
                         break;
                 }
             }
+            print_r($tempArray);
             $newTotalArray[] = $tempArray;
         }
         return $newTotalArray;
@@ -1040,12 +1041,15 @@ class loanbook extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'a'), //Contain loan id
             array('typeSearch' => 'element', 'tag' => 'div'), //Contain an id
             array('typeSearch' => 'element', 'tag' => 'button'), //Contain loan id
-                ), array('title', 'href', 'contracttypeid', 'style', 'id'));
+                ), array('title', 'href', 'contracttypeid', 'style', 'id', 'title'));
 
         $node1 = $this->cleanDom($node1, array(//We only want delete class of the span div, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('class'));
-
+        
+        $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'br'),
+        ));
         /* $node1 = $this->cleanDomTag($node1, array(
           array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment,
           )); */
@@ -1056,13 +1060,16 @@ class loanbook extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'button'),
-                ), array('title', 'href', 'contracttypeid', 'style', 'id'));
+                ), array('title', 'href', 'contracttypeid', 'style', 'id', 'title'));
 
 
         $node2 = $this->cleanDom($node2, array(//We only want delete class of the span div, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('class'));
 
+        $node2 = $this->cleanDomTag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'br'),
+        ));
         /* $node2 = $this->cleanDomTag($node2, array(
           array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment,
           )); */
