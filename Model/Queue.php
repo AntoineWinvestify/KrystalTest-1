@@ -231,7 +231,7 @@ public function beforeSave1($options = array()) {
         if (empty($status)) {
             $status =  START_COLLECTING;
         }
-        echo "VVV";
+
         $conditions = [];
         if (empty($limit)) {
             $limit = 100;
@@ -247,11 +247,11 @@ public function beforeSave1($options = array()) {
                     "order" => $order,
                     "limit" => $limit
                 ));
-echo "FFF";
+
         if (empty($result)) {
             return;
         }
-        echo "ddddd";
+
         print_r($result);
         return $result;
     }
