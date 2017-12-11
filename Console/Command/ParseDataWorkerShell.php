@@ -382,7 +382,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     
     
     /**
-     * 
      * get the loanIds obtained during the parsing of the transactions
      * @param array $tempResult It contains the value to change
      * @param object $companyHandle It is the company instance
@@ -404,17 +403,34 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return($listExpiredInvestments);
     }
     
+    /**
+     * Get the data from a single file but it could have a single sheet file or 
+     * a file with multiple sheet
+     * @param string $file FQDN of the files
+     * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
+     * @param array $configParameters Configuration parameters
+     * @return array
+     */
     public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
-        echo __LINE__ . "Dealing with file $file\n";     
-        if (!empty($configParameters['offsetStart'])) {
-            $tempResult = $this->getSimpleSheetData($file, $parserConfigFile, $configParameters);
+        echo __LINE__ . "Dealing with file $file\n";  
+        //We need to pass the 0 value of the array because every company has a two-dimensional array starting with the value 0
+        if (!empty($configParameters[0]['offsetStart'])) {
+            $tempResult = $this->getSimpleSheetData($file, $parserConfigFile[0], $configParameters[0]);
         }
         else {
-            $tempResult = $this->getMultipleSheetData($file, $parserConfigFile, $configParameters);
+            $tempResult = $this->getMultipleSheetData($file, $parserConfigFile[0], $configParameters[0]);
         }
         return $tempResult;
     }
     
+    /**
+     * Get data from multiples files, it could be the same file with the same structure cut in files
+     * or different files with different structure
+     * @param string $filesByType FQDN of the files
+     * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
+     * @param array $configParameters Configuration parameters
+     * @return array
+     */
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
         $filesJoinedByParts = $this->joinFilesByParts($filesByType);
         if (in_array("fileConfigParam")) {
@@ -447,6 +463,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempResultOrdered;
     }
     
+    /**
+     * Get data from one sheet data
+     * @param string $file FQDN of the files
+     * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
+     * @param array $configParameters Configuration parameters
+     * @return array
+     */
     public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
         $this->myParser->setConfig($configParameters);
         $extension = $this->getExtensionFile($file);
@@ -461,6 +484,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempResult;
     }
     
+    /**
+     * Get data from multiple sheet data with their individual configparameters
+     * @param string $file FQDN of the files
+     * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
+     * @param array $configParameters Configuration parameters
+     * @return array
+     */
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
         $orderParam = array_shift($configParameters);
         foreach ($configParameters as $key => $individualConfigParameters) {       
@@ -479,6 +509,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempResultOrdered;
     }
     
+    /**
+     * Order an array based on a ordering parameters
+     * @param array $tempArray Contain all the data
+     * @param array $orderParam Contain the order parameters
+     * @return array
+     */
     public function resultOrdering($tempArray, $orderParam) {
         $countSortParameters = count($this->config['sortParameter']);
         switch ($countSortParameters) {
@@ -498,6 +534,14 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempArray;
     }
     
+    /**
+     * Group the FQDN of the files by number, for example, the transaction_1 could have
+     * transaction_1_1, transaction_1_2, transaction_1_3 and transaction_2_1
+     * This function groups the FQDN of the file in an array bidimensional like
+     * $tempArray[1][1], $tempArray[1][2]...
+     * @param string $filesByType The FQDN of the files
+     * @return array
+     */
     public function joinFilesByParts ($filesByType) {
         $tempArrayFiles = [];
         foreach ($filesByType as $filePath) {
