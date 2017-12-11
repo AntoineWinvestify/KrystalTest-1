@@ -178,7 +178,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         case WIN_FLOW_INVESTMENT_FILE:
                             $this->callbacks = $callbacks["investment"];
                             $this->callbackInit($tempResult, $companyHandle);
-                            $totalParsingresultInvestments = $tempResult;                                
+                            $totalParsingresultInvestments = $tempResult;
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
                             $totalParsingresultTransactions = $tempResult;
@@ -215,7 +215,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
                 }
             }
-
+            
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
@@ -228,7 +228,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             
  // THIS DEPENDS ON THE WORK DONE BY ANTONIO (SUPPORT OF VARIOUS SHEETS OF XLS FILE           &$investmentList,  
             $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
-           
+            
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
             $iteriter = new RecursiveIteratorIterator($arrayiter);
@@ -246,7 +246,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     }
                 }
             }
-            
+
             $newLoans = array_unique($newLoans);
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
@@ -260,7 +260,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
-        } 
+        }
  //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
  //      print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
  //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
@@ -433,6 +433,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      */
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
         $filesJoinedByParts = $this->joinFilesByParts($filesByType);
+        //If exit this key in the array, it is a multi variable files data an it has that in the first key of the array
         if (in_array("fileConfigParam")) {
             $orderParam = array_slice($configParameters, 0);
         }
