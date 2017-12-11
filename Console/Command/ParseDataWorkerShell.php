@@ -300,6 +300,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         }
         $this->companyHandle = $companyHandle;
         array_walk_recursive($tempResult,array($this, 'changeValueIteratingCallback'));
+        $result = array_walk_recursive_delete($array, "one");
     }
     
     /**
@@ -560,6 +561,36 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         }
         return $tempArrayFiles;
     }
+    
+    /**
+    * Remove any elements where the callback returns true
+    * Code from https://akrabat.com/recursively-deleting-elements-from-an-array/
+    * @param  array    $array    the array to walk
+    * @param  callable $callback callback takes ($value, $key, $userdata)
+    * @param  mixed    $userdata additional data passed to the callback.
+    * @return array
+    */
+   function array_walk_recursive_delete(&$array, callable $callback, $userdata = null) {
+       foreach ($array as $key => &$value) {
+           if (is_array($value)) {
+               $value = array_walk_recursive_delete($value, $callback, $userdata);
+           }
+           if ($callback($value, $key, $userdata)) {
+               unset($array[$key]);
+           }
+       }
+       return $array;
+   }
+   
+   function one ($value, $key) {
+        if (is_array($value)) {
+            return empty($value);
+        }
+        return ($value === null);
+    }
+   
+   
+   
     
 }
 
