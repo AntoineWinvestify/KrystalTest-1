@@ -127,15 +127,12 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
-        echo "########  ANTOINE \n"; 
 
-        if ($transactionData['investment_loanId'] == "1691271-01"    ){ 
-echo "AABBBBA";
-            print_r($resultData);
-        }
-        $result = $resultData['investment']['investment_outstandingPrincipalOriginal'];
-        if (isset($resultData['investment']['investment_myInvestment'])) {
-            $result = bcadd($result,$resultData['investment']['investment_myInvestment'], 16); 
+        $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
+ echo __FILE__ . "resultAAAA = $result\n";
+print_r($transactionData);
+ if (isset($resultData['payment']['payment_myInvestment'])) {
+            $result = bcadd($result,$resultData['payment']['payment_myInvestment'], 16); 
         }
         if (isset($resultData['payment']['payment_secondaryMarketInvestment'])) {
             $result = bcadd($result,$resultData['payment']['payment_secondaryMarketInvestment'], 16); 
@@ -149,7 +146,7 @@ echo "AABBBBA";
         if (isset($resultData['payment']['payment_principalBuyback'])) {
             $result = bcsub($result,$resultData['payment']['payment_principalBuyback'], 16); 
         }
-        if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) { // read from db
+        if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) { 
             $result = bcsub($result,$resultData['investment']['investment_priceInSecondaryMarket'], 16); 
         }
         if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
@@ -158,6 +155,7 @@ echo "AABBBBA";
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result,$resultData['payment']['payment_currencyFluctuationPositive'], 16);   
         } 
+        echo "calculateOutstnadinfPrincipal: resultBBBBB = $result\n";
         return $result;
     }
 
@@ -485,19 +483,26 @@ echo "AABBBBA";
     }
 
     /*
-     * Calculates the number of active investments. This function SHOULD be the very last function to execute
-     * and will execute only once per DAY
+     * Calculates the number of active investments. This function is executed once for each loan / day
      *
      *  @param  array       array with the current transaction data [NOT REALLY NEEDED]
      *  @param  array       array with all data so far calculated and to be written to DB [NOT REALLY NEEDED]
-     *  @return string
+     *  @return int         number of active loans
      * 20000
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
-        $filterConditions = array('Investment.investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE);
-        $activeInvestments = $this->Investment->find('count', array(
-            'conditions' => $filterConditions));
-        return $activeInvestments;
+        // We only check if existing ones have finished. In the main flow I check for NEW investments
+    echo __FUNCTION__ . " " . __LINE__ ."\n";
+    echo "investment_new = " . $resultData['investment']['investment_new'] ;
+    echo " and resultData['investment'] = " . $resultData['investment']['investment_outstandingPrincipal'];
+        if (isset($resultData['investment']['investment_outstandingPrincipal'])) {
+            if ($resultData['investment']['investment_outstandingPrincipal'] == 0) {
+                return $resultData['userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1;
+            }
+        }
+        if ($resultData['investment']['investment_new'] == YES) {
+            return $resultData['userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1;
+        }
     }
 
     /*
@@ -602,8 +607,9 @@ echo "AABBBBA";
      * @return string      the string representation of a large integer
      */
     public function calculateTotalOutstandingPrincipal(&$transactionData, &$resultData) {
-  //      echo "CALCULATE TOTAL OUTSTANDING\n";
-//print_r($resultData);       
+echo "CALCULATE TOTAL OUTSTANDING\n";
+//print_r($resultData);
+echo "---\n";
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'],
                       $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
@@ -630,7 +636,7 @@ echo "AABBBBA";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 47
+     * 
      */
     public function calculateIncomeSecondaryMarket(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -642,7 +648,7 @@ echo "AABBBBA";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 47
+     * 26
      */
     public function calculateSecondaryMarketInvestment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
