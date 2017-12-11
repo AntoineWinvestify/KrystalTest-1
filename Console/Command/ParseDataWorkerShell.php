@@ -294,7 +294,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             echo __FUNCTION__ . " " . __LINE__ ;
             print_r($this->callbacks);
         }
-
+        
         if (empty($this->callbacks)) {
             return;
         }
@@ -304,8 +304,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     
     /**
      * Function to iterate in an array when callback is called and change the value if needed
-     * @param type $item
-     * @param type $key
+     * @param arrayValue $item It is the value of an array key
+     * @param arrayKey $key It is the key of the array value
      */
     public function changeValueIteratingCallback(&$item,$key){
         foreach ($this->callbacks as $callbackKey => $callback) {
