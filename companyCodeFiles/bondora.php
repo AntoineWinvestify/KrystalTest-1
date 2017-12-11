@@ -392,7 +392,6 @@ class bondora extends p2pCompany {
                     "NewReports[8].DateFilterSelected" => 'false',
                 );
                 $this->idForSwitch++;
-                $this->documents = 1;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                 break;
             case 5:
@@ -410,7 +409,8 @@ class bondora extends p2pCompany {
                 if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $dateInit = '01/01/2009';
                 }
-                $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " day"));
+                echo $this->dateFinishPeriod;
+                $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod -1));
                 $inputs = $dom->getElementsByTagName('input');
                 $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
@@ -474,9 +474,8 @@ class bondora extends p2pCompany {
                 echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
                 echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
-                if (!$this->control) {
+                if ($continue) {
                     $this->idForSwitch--;
-                    $this->documents++;
                 } else {
                     $this->idForSwitch++;
                 }
