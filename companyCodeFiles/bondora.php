@@ -219,14 +219,14 @@ class bondora extends p2pCompany {
         $dom = new DOMDocument;  //Check if works
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
-        //echo $str;
-
+        
+        
         $confirm = false;
 
         $spans = $dom->getElementsByTagName('span');
         foreach ($spans as $span) {
             //echo $span->nodeValue . HTML_ENDOFLINE;
-            if (trim($span->nodeValue) == 'Account value') {
+            if (trim($span->nodeValue) == 'Dashboard') {
                 $confirm = true;
                 break;
             }
@@ -298,7 +298,7 @@ class bondora extends p2pCompany {
                 $spans = $dom->getElementsByTagName('span');
                 foreach ($spans as $span) {
                     echo $span->nodeValue . SHELL_ENDOFLINE;
-                    if (trim($span->nodeValue) == 'Account value') {
+                    if (trim($span->nodeValue) == 'Dashboard') {
                         echo 'Login ok' . SHELL_ENDOFLINE;
                         $confirm = true;
                         break;
@@ -404,13 +404,14 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
-                $continue = $this->downloadTimePeriod("20171104"/*$this->dateInit*/, $this->period);
+                $continue = $this->downloadTimePeriod("20171112"/*$this->dateInit*/, $this->period);
                 $dateInit = date('d/m/Y', strtotime($this->dateInitPeriod));
                 if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $dateInit = '01/01/2009';
                 }
                 echo $this->dateFinishPeriod;
-                $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod -1));
+                $dateFinish = date("d/m/Y", strtotime($this->dateFinishPeriod  . " " . -1 . " days"));
+                echo $dateFinish;
                 $inputs = $dom->getElementsByTagName('input');
                 $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
@@ -420,7 +421,7 @@ class bondora extends p2pCompany {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
-
+                echo "-" . $dateFinish . "-";
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
                     'NewReports[0].ReportType' => 'InvestmentsListV2',
