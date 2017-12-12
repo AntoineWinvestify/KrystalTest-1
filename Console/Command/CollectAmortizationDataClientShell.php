@@ -61,7 +61,13 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     $queueInfo = json_decode($queueInfoJson, true);
                     $this->queueInfo[$job['Queue']['id']] = $queueInfo;
                     $linkAccountId = [];
-                    foreach ($queueInfo['loanIds'] as $key => $loanId) {
+                    
+                    $baseDirectory = Configure::read('dashboard2Files') . $job['Queue']['queue_userReference'] . DS . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
+                    $dir = new Folder($baseDirectory);
+                    $loanIdsFromFile = $dir->findRecursive(WIN_FLOW_NEW_LOAN_FILE . ".*");
+                    $loanIds = json_decode($loanIdsFromFile, true);
+                    //foreach ($queueInfo['loanIds'] as $key => $loanId) {
+                    foreach ($loanIds as $key => $loanId) {
                         if (!in_array($key, $linkAccountId)) {
                             $linkAccountId[] = $key; 
                         }
