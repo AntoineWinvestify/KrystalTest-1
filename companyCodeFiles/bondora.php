@@ -164,6 +164,54 @@ class bondora extends p2pCompany {
             //       'separatorChar' => ";",
             //'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
     );
+    
+    protected  $credentials = array(
+                    "NewReports[0].ReportType" => 'InvestmentsListV2',
+                    "NewReports[0].DateFilterRequired" => 'False',
+                    "NewReports[0].DateFilterShown" => 'True',
+                    "NewReports[0].Selected" => 'false',
+                    "NewReports[0].DateFilterSelected" => 'false',
+                    "NewReports[1].ReportType" => "Repayments",
+                    "NewReports[1].DateFilterRequired" => 'False',
+                    "NewReports[1].DateFilterShown" => 'True',
+                    "NewReports[1].Selected" => 'false',
+                    "NewReports[1].DateFilterSelected" => 'false',
+                    "NewReports[2].ReportType" => 'PlannedFutureCashflows',
+                    "NewReports[2].DateFilterRequired" => 'False',
+                    "NewReports[2].DateFilterShown" => 'True',
+                    "NewReports[2].Selected" => 'false',
+                    "NewReports[2].DateFilterSelected" => 'false',
+                    "NewReports[3].ReportType" => 'SecondMarketArchive',
+                    "NewReports[3].DateFilterRequired" => 'False',
+                    "NewReports[3].DateFilterShown" => 'True',
+                    "NewReports[3].Selected" => 'false',
+                    "NewReports[3].DateFilterSelected" => 'false',
+                    "NewReports[4].ReportType" => 'MonthlyOverview',
+                    "NewReports[4].DateFilterRequired" => 'False',
+                    "NewReports[4].DateFilterShown" => 'True',
+                    "NewReports[4].Selected" => 'false',
+                    "NewReports[4].DateFilterSelected" => 'false',
+                    "NewReports[5].ReportType" => 'AccountStatement',
+                    "NewReports[5].DateFilterRequired" => 'False',
+                    "NewReports[5].DateFilterShown" => 'True',
+                    "NewReports[5].Selected" => 'false',
+                    "NewReports[5].DateFilterSelected" => 'false',
+                    "NewReports[6].ReportType" => 'IncomeReport',
+                    "NewReports[6].DateFilterRequired" => 'False',
+                    "NewReports[6].DateFilterShown" => 'True',
+                    "NewReports[6].DateFilterSelected" => 'True',
+                    "NewReports[6].Selected" => 'false',
+                    "NewReports[7].ReportType" => 'TaxReportPdf',
+                    "NewReports[7].DateFilterRequired" => 'True',
+                    "NewReports[7].DateFilterShown" => 'True',
+                    "NewReports[7].DateFilterSelected" => 'True',
+                    "NewReports[7].Selected" => 'false',
+                    "NewReports[8].ReportType" => 'AccountValue',
+                    "NewReports[8].DateFilterRequired" => 'False',
+                    "NewReports[8].DateFilterShown" => 'True',
+                    "NewReports[8].Selected" => 'false',
+                    "NewReports[8].DateFilterSelected" => 'false',
+                );
 
     function __construct() {
         parent::__construct();
@@ -172,6 +220,11 @@ class bondora extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
+        
+        
+        
+        
+        
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
@@ -320,8 +373,8 @@ class bondora extends p2pCompany {
                 }
 
                 $this->idForSwitch++;
-                $this->tempUrl['getToken'] = array_shift($this->urlSequence);
-                $this->tempUrl['generateReport'] = array_shift($this->urlSequence);
+                $this->tempUrl['getToken'] = array_shift($this->urlSequence);       //Url to read that contains the page with the security token to generate the reports.
+                $this->tempUrl['generateReport'] = array_shift($this->urlSequence); //Url that generate the report.
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
                 break;
             case 4:
@@ -333,7 +386,7 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
-                $inputs = $dom->getElementsByTagName('input');
+                $inputs = $dom->getElementsByTagName('input'); //Get all inputs in the page, with this we get the token
                 $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
                     echo 'error';
@@ -343,18 +396,20 @@ class bondora extends p2pCompany {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
-                $continue = $this->downloadTimePeriod("20171109"/* $this->dateInit */, $this->period);
+                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
                 if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';
                 }
 
-                if ($this->investmentNumber === 0) {
+                if ($this->investmentNumber === 0) { //Max day in bondora is yesterday
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
                 } else {
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
                 }
 
+                
+                $credentials = $this->credentials; //Credentials to generate the investments
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
                     'NewReports[0].ReportType' => 'InvestmentsListV2',
@@ -364,47 +419,8 @@ class bondora extends p2pCompany {
                     "NewReports[0].DateFilterSelected" => 'true',
                     "NewReports[0].StartDate" => $this->dateInitBondora,
                     "NewReports[0].EndDate" => $this->dateFinishBondora,
-                    "NewReports[1].ReportType" => "Repayments",
-                    "NewReports[1].DateFilterRequired" => 'False',
-                    "NewReports[1].DateFilterShown" => 'True',
-                    "NewReports[1].Selected" => 'false',
-                    "NewReports[1].DateFilterSelected" => 'false',
-                    "NewReports[2].ReportType" => 'PlannedFutureCashflows',
-                    "NewReports[2].DateFilterRequired" => 'False',
-                    "NewReports[2].DateFilterShown" => 'True',
-                    "NewReports[2].Selected" => 'false',
-                    "NewReports[2].DateFilterSelected" => 'false',
-                    "NewReports[3].ReportType" => 'SecondMarketArchive',
-                    "NewReports[3].DateFilterRequired" => 'False',
-                    "NewReports[3].DateFilterShown" => 'True',
-                    "NewReports[3].Selected" => 'false',
-                    "NewReports[3].DateFilterSelected" => 'false',
-                    "NewReports[4].ReportType" => 'MonthlyOverview',
-                    "NewReports[4].DateFilterRequired" => 'False',
-                    "NewReports[4].DateFilterShown" => 'True',
-                    "NewReports[4].Selected" => 'false',
-                    "NewReports[4].DateFilterSelected" => 'false',
-                    "NewReports[5].ReportType" => 'AccountStatement',
-                    "NewReports[5].DateFilterRequired" => 'False',
-                    "NewReports[5].DateFilterShown" => 'True',
-                    "NewReports[5].Selected" => 'false',
-                    "NewReports[5].DateFilterSelected" => 'false',
-                    "NewReports[6].ReportType" => 'IncomeReport',
-                    "NewReports[6].DateFilterRequired" => 'False',
-                    "NewReports[6].DateFilterShown" => 'True',
-                    "NewReports[6].DateFilterSelected" => 'True',
-                    "NewReports[6].Selected" => 'false',
-                    "NewReports[7].ReportType" => 'TaxReportPdf',
-                    "NewReports[7].DateFilterRequired" => 'True',
-                    "NewReports[7].DateFilterShown" => 'True',
-                    "NewReports[7].DateFilterSelected" => 'True',
-                    "NewReports[7].Selected" => 'false',
-                    "NewReports[8].ReportType" => 'AccountValue',
-                    "NewReports[8].DateFilterRequired" => 'False',
-                    "NewReports[8].DateFilterShown" => 'True',
-                    "NewReports[8].Selected" => 'false',
-                    "NewReports[8].DateFilterSelected" => 'false',
                 );
+                
                 echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
                 echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
@@ -433,13 +449,13 @@ class bondora extends p2pCompany {
                     $this->dateInitBondora = '01/01/2009';
                 }
 
-                if ($this->investmentNumber === 0) {
+                if ($this->investmentNumber === 0) { //Max day in bondora is yesterday
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
                 } else {
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
                 }
 
-                $inputs = $dom->getElementsByTagName('input');
+                $inputs = $dom->getElementsByTagName('input');  //Get all input, we get the token with this
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
@@ -447,34 +463,9 @@ class bondora extends p2pCompany {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
-                //echo "-" . $this->dateFinishBondora . "-";
+                $credentials = $this->credentials; //Credentials to generate transactons report
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
-                    'NewReports[0].ReportType' => 'InvestmentsListV2',
-                    "NewReports[0].DateFilterRequired" => 'False',
-                    "NewReports[0].DateFilterShown" => 'True',
-                    "NewReports[0].Selected" => 'false',
-                    "NewReports[0].DateFilterSelected" => 'false',
-                    "NewReports[1].ReportType" => "Repayments",
-                    "NewReports[1].DateFilterRequired" => 'False',
-                    "NewReports[1].DateFilterShown" => 'True',
-                    "NewReports[1].Selected" => 'false',
-                    "NewReports[1].DateFilterSelected" => 'false',
-                    "NewReports[2].ReportType" => 'PlannedFutureCashflows',
-                    "NewReports[2].DateFilterRequired" => 'False',
-                    "NewReports[2].DateFilterShown" => 'True',
-                    "NewReports[2].Selected" => 'false',
-                    "NewReports[2].DateFilterSelected" => 'false',
-                    "NewReports[3].ReportType" => 'SecondMarketArchive',
-                    "NewReports[3].DateFilterRequired" => 'False',
-                    "NewReports[3].DateFilterShown" => 'True',
-                    "NewReports[3].Selected" => 'false',
-                    "NewReports[3].DateFilterSelected" => 'false',
-                    "NewReports[4].ReportType" => 'MonthlyOverview',
-                    "NewReports[4].DateFilterRequired" => 'False',
-                    "NewReports[4].DateFilterShown" => 'True',
-                    "NewReports[4].Selected" => 'false',
-                    "NewReports[4].DateFilterSelected" => 'false',
                     "NewReports[5].ReportType" => 'AccountStatement',
                     "NewReports[5].DateFilterRequired" => 'False',
                     "NewReports[5].DateFilterShown" => 'True',
@@ -482,22 +473,8 @@ class bondora extends p2pCompany {
                     "NewReports[5].DateFilterSelected" => 'true',
                     "NewReports[5].StartDate" => $this->dateInitBondora,
                     "NewReports[5].EndDate" => $this->dateFinishBondora,
-                    "NewReports[6].ReportType" => 'IncomeReport',
-                    "NewReports[6].DateFilterRequired" => 'True',
-                    "NewReports[6].DateFilterShown" => 'True',
-                    "NewReports[6].DateFilterSelected" => 'True',
-                    "NewReports[6].Selected" => 'false',
-                    "NewReports[7].ReportType" => 'TaxReportPdf',
-                    "NewReports[7].DateFilterRequired" => 'True',
-                    "NewReports[7].DateFilterShown" => 'True',
-                    "NewReports[7].DateFilterSelected" => 'True',
-                    "NewReports[7].Selected" => 'false',
-                    "NewReports[8].ReportType" => 'AccountValue',
-                    "NewReports[8].DateFilterRequired" => 'False',
-                    "NewReports[8].DateFilterShown" => 'True',
-                    "NewReports[8].Selected" => 'false',
-                    "NewReports[8].DateFilterSelected" => 'false',
                 );
+                
                 echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
                 echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
@@ -617,10 +594,10 @@ class bondora extends p2pCompany {
 
                 $this->idForSwitch++;
                 if (empty($this->tempUrl['tokenUrl'])) {
-                    $this->tempUrl['tokenUrl'] = array_shift($this->urlSequence);
-                    $this->tempUrl['reportUrl'] = array_shift($this->urlSequence);
+                    $this->tempUrl['tokenUrl'] = array_shift($this->urlSequence);  //Page that contain the security token necesary to generate the reports
+                    $this->tempUrl['reportUrl'] = array_shift($this->urlSequence);  //page that contains the report list
                     $this->tempUrl['generateReport'] = array_shift($this->urlSequence); //Get url for generate reports if we dont have it.
-                    $this->tempUrl['baseDownloadDelete'] = array_shift($this->urlSequence);
+                    $this->tempUrl['baseDownloadDelete'] = array_shift($this->urlSequence); //Base url that download and delete the reports.
                 }
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
                 break;
@@ -644,7 +621,7 @@ class bondora extends p2pCompany {
                     $this->dateInitBondora = '01/01/2009';
                 }
 
-                if ($this->numberOfFiles === 0) {
+                if ($this->numberOfFiles === 0) { //max date is yesterday
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
                 } else {
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
@@ -653,9 +630,9 @@ class bondora extends p2pCompany {
                 $waitInvestment = false;
                 echo "Search this: init-" . $this->dateInitBondora . "     finish-" . $this->dateFinishBondora;
                 //Search investment report
-                foreach ($trs as $tr) {
+                foreach ($trs as $tr) { //Search the report
                     echo $tr->nodeValue . SHELL_ENDOFLINESHELL_ENDOFLINE;
-                    if (strpos($tr->nodeValue, "Investments list") && strpos($tr->nodeValue, "Please refresh your browser after a few minutes.")) {
+                    if (strpos($tr->nodeValue, "Investments list") && strpos($tr->nodeValue, "Please refresh your browser after a few minutes.")) { //If the report is not genrated yet, wait.-
                         echo 'waiting report';
                         sleep(10);
                         $this->timerInvestment++;
@@ -670,7 +647,7 @@ class bondora extends p2pCompany {
                         }
                         //Get urls
                         foreach ($urls as $value) {
-                            if (strpos($value->getAttribute('href'), "downloaddataexport")) {
+                            if (strpos($value->getAttribute('href'), "downloaddataexport")) {  //Save the download url for that report
                                 $this->tempUrl['downloadInvestment'] = $value->getAttribute('href');
                             } else if (strpos($value->getAttribute('href'), "deletereport")) {
                                 $this->tempUrl['deleteInvestment'] = $value->getAttribute('href');
@@ -681,7 +658,7 @@ class bondora extends p2pCompany {
                     }
                 }
 
-                if ($waitInvestment == true) {
+                if ($waitInvestment == true) { //Wait the report generation
                     if ($this->timerInvestment > 6) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
@@ -690,14 +667,14 @@ class bondora extends p2pCompany {
                     break;
                 }
 
-                if (!$searchInvestment) {
+                if (!$searchInvestment) { //If we doesnt find the report, we generate it.
                     echo "file not found";
                     $this->idForSwitch = 11;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['tokenUrl']);
                     break;
                 }
 
-                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvestment'];
+                $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvestment']; //Build the report download url
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "_" . $this->numPartFileInvestment . "." . $this->typeFileInvestment;
                 $this->numPartFileInvestment++;
 
@@ -708,13 +685,13 @@ class bondora extends p2pCompany {
                     $this->idForSwitch++;
                 }
 
-                if (empty($this->tempUrl['investmentReferer'])) {
+                if (empty($this->tempUrl['investmentReferer'])) { //Header and referer for download
                     $this->tempUrl['investmentReferer'] = array_shift($this->urlSequence);
                     $this->tempUrl['investmentHeaders'] = array_shift($this->urlSequence);
                 }
                 //echo  $this->tempUrl['investmentHeaders'];        
                 $headerJsonDecode = json_decode(mb_convert_encoding($this->tempUrl["investmentHeaders"], 'UTF-8'), true);
-                $this->getPFPFileMulticurl($url, $this->tempUrl['investmentReferer'], false, $headerJsonDecode, $this->fileName);
+                $this->getPFPFileMulticurl($url, $this->tempUrl['investmentReferer'], false, $headerJsonDecode, $this->fileName); //Download the report.
                 break;
 
             case 5:
@@ -726,6 +703,9 @@ class bondora extends p2pCompany {
                 break;
 
             case 6:
+                /**
+                 * This is like case 4 but we download the cashflow reports instead investments reports.
+                 */
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
@@ -830,9 +810,6 @@ class bondora extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
-                /* foreach($tds as $key=>$td){
-                  echo $key . " is " . $td->nodeValue;
-                  } */
 
                 $this->tempArray['global']['outstandingPrincipal'] = $tds[14]->nodeValue;  //Capital vivo
                 $this->tempArray['global']['myWallet'] = $tds[2]->nodeValue; //My wallet
@@ -842,15 +819,15 @@ class bondora extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
-                /* foreach($spans as $key=>$span){
-                  echo $key . " is " . $span->getAttribute('title');
-                  } */
 
                 //$this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($spans[3]->getAttribute('title'));
 
                 print_r($this->tempArray);
                 return $this->tempArray;
                 break;
+                /**
+                 * Extra cases to generate the report if the user delete it before we download it.
+                 */
             case 9:
                 sleep(10);
                 $this->idForSwitch = 4;
@@ -879,6 +856,7 @@ class bondora extends p2pCompany {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
+                $credentials = $this->credentials;
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
                     'NewReports[0].ReportType' => 'InvestmentsListV2',
@@ -888,47 +866,8 @@ class bondora extends p2pCompany {
                     "NewReports[0].DateFilterSelected" => 'true',
                     "NewReports[0].StartDate" => $this->dateInitBondora,
                     "NewReports[0].EndDate" => $this->dateFinishBondora,
-                    "NewReports[1].ReportType" => "Repayments",
-                    "NewReports[1].DateFilterRequired" => 'False',
-                    "NewReports[1].DateFilterShown" => 'True',
-                    "NewReports[1].Selected" => 'false',
-                    "NewReports[1].DateFilterSelected" => 'false',
-                    "NewReports[2].ReportType" => 'PlannedFutureCashflows',
-                    "NewReports[2].DateFilterRequired" => 'False',
-                    "NewReports[2].DateFilterShown" => 'True',
-                    "NewReports[2].Selected" => 'false',
-                    "NewReports[2].DateFilterSelected" => 'false',
-                    "NewReports[3].ReportType" => 'SecondMarketArchive',
-                    "NewReports[3].DateFilterRequired" => 'False',
-                    "NewReports[3].DateFilterShown" => 'True',
-                    "NewReports[3].Selected" => 'false',
-                    "NewReports[3].DateFilterSelected" => 'false',
-                    "NewReports[4].ReportType" => 'MonthlyOverview',
-                    "NewReports[4].DateFilterRequired" => 'False',
-                    "NewReports[4].DateFilterShown" => 'True',
-                    "NewReports[4].Selected" => 'false',
-                    "NewReports[4].DateFilterSelected" => 'false',
-                    "NewReports[5].ReportType" => 'AccountStatement',
-                    "NewReports[5].DateFilterRequired" => 'False',
-                    "NewReports[5].DateFilterShown" => 'True',
-                    "NewReports[5].Selected" => 'false',
-                    "NewReports[5].DateFilterSelected" => 'false',
-                    "NewReports[6].ReportType" => 'IncomeReport',
-                    "NewReports[6].DateFilterRequired" => 'False',
-                    "NewReports[6].DateFilterShown" => 'True',
-                    "NewReports[6].DateFilterSelected" => 'True',
-                    "NewReports[6].Selected" => 'false',
-                    "NewReports[7].ReportType" => 'TaxReportPdf',
-                    "NewReports[7].DateFilterRequired" => 'True',
-                    "NewReports[7].DateFilterShown" => 'True',
-                    "NewReports[7].DateFilterSelected" => 'True',
-                    "NewReports[7].Selected" => 'false',
-                    "NewReports[8].ReportType" => 'AccountValue',
-                    "NewReports[8].DateFilterRequired" => 'False',
-                    "NewReports[8].DateFilterShown" => 'True',
-                    "NewReports[8].Selected" => 'false',
-                    "NewReports[8].DateFilterSelected" => 'false',
                 );
+                
                 echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
                 echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
@@ -950,33 +889,9 @@ class bondora extends p2pCompany {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
+                $credentials = $this->credentials;
                 $credentials = array(
                     '__RequestVerificationToken' => $inputsValue['__RequestVerificationToken'],
-                    'NewReports[0].ReportType' => 'InvestmentsListV2',
-                    "NewReports[0].DateFilterRequired" => 'False',
-                    "NewReports[0].DateFilterShown" => 'True',
-                    "NewReports[0].Selected" => 'false',
-                    "NewReports[0].DateFilterSelected" => 'false',
-                    "NewReports[1].ReportType" => "Repayments",
-                    "NewReports[1].DateFilterRequired" => 'False',
-                    "NewReports[1].DateFilterShown" => 'True',
-                    "NewReports[1].Selected" => 'false',
-                    "NewReports[1].DateFilterSelected" => 'false',
-                    "NewReports[2].ReportType" => 'PlannedFutureCashflows',
-                    "NewReports[2].DateFilterRequired" => 'False',
-                    "NewReports[2].DateFilterShown" => 'True',
-                    "NewReports[2].Selected" => 'false',
-                    "NewReports[2].DateFilterSelected" => 'false',
-                    "NewReports[3].ReportType" => 'SecondMarketArchive',
-                    "NewReports[3].DateFilterRequired" => 'False',
-                    "NewReports[3].DateFilterShown" => 'True',
-                    "NewReports[3].Selected" => 'false',
-                    "NewReports[3].DateFilterSelected" => 'false',
-                    "NewReports[4].ReportType" => 'MonthlyOverview',
-                    "NewReports[4].DateFilterRequired" => 'False',
-                    "NewReports[4].DateFilterShown" => 'True',
-                    "NewReports[4].Selected" => 'false',
-                    "NewReports[4].DateFilterSelected" => 'false',
                     "NewReports[5].ReportType" => 'AccountStatement',
                     "NewReports[5].DateFilterRequired" => 'False',
                     "NewReports[5].DateFilterShown" => 'True',
@@ -984,21 +899,6 @@ class bondora extends p2pCompany {
                     "NewReports[5].DateFilterSelected" => 'true',
                     "NewReports[5].StartDate" => $this->dateInitBondora,
                     "NewReports[5].EndDate" => $this->dateFinishBondora,
-                    "NewReports[6].ReportType" => 'IncomeReport',
-                    "NewReports[6].DateFilterRequired" => 'True',
-                    "NewReports[6].DateFilterShown" => 'True',
-                    "NewReports[6].DateFilterSelected" => 'True',
-                    "NewReports[6].Selected" => 'false',
-                    "NewReports[7].ReportType" => 'TaxReportPdf',
-                    "NewReports[7].DateFilterRequired" => 'True',
-                    "NewReports[7].DateFilterShown" => 'True',
-                    "NewReports[7].DateFilterSelected" => 'True',
-                    "NewReports[7].Selected" => 'false',
-                    "NewReports[8].ReportType" => 'AccountValue',
-                    "NewReports[8].DateFilterRequired" => 'False',
-                    "NewReports[8].DateFilterShown" => 'True',
-                    "NewReports[8].Selected" => 'false',
-                    "NewReports[8].DateFilterSelected" => 'false',
                 );
                 echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
