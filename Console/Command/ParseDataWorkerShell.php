@@ -63,7 +63,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     protected $callbacks = [];
     protected $companyHandle;
     protected $myParser;
-
+    protected $cleanValueControlStop = false;
+    protected $cleanDepthControl = 0;
 
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
@@ -175,7 +176,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 if (empty($tempResult['error'])) {
                     switch ($fileTypeKey) {
                         case WIN_FLOW_INVESTMENT_FILE:
-                            $this->callbacks = $callbacks["investment"];
+                            $this->cleanData($tempResult, $callbacks["investment"]["cleanTempArray"]);
+                            print_r($tempResult);
+                            exit;
+                            $this->callbacks = $callbacks["investment"]["parserData"];
                             $this->callbackInit($tempResult, $companyHandle);
                             $totalParsingresultInvestments = $tempResult;
                             break;
@@ -300,7 +304,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         }
         $this->companyHandle = $companyHandle;
         array_walk_recursive($tempResult,array($this, 'changeValueIteratingCallback'));
-        $result = array_walk_recursive_delete($array, "one");
     }
     
     /**
@@ -562,6 +565,15 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempArrayFiles;
     }
     
+    public function cleanData(&$tempArray, $config) {
+        if (empty($config)) {
+            return;
+        }
+        foreach ($config as $functionNameKey => $values) {
+            $this->array_walk_recursive_delete($tempArray, array($this, $functionNameKey), $values);
+        }
+    }
+    
     /**
     * Remove any elements where the callback returns true
     * Code from https://akrabat.com/recursively-deleting-elements-from-an-array/
@@ -570,29 +582,56 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     * @param  mixed    $userdata additional data passed to the callback.
     * @return array
     */
-   function array_walk_recursive_delete(&$array, callable $callback, $valueToDelete, $userdata = null) {
-       foreach ($array as $key => &$value) {
-           if (is_array($value)) {
-               $value = array_walk_recursive_delete($value, $callback, $userdata);
-           }
-           if ($callback($value, $key, $valueToDelete, $userdata)) {
-               unset($array[$key]);
-           }
-       }
-       return $array;
-   }
+    function array_walk_recursive_delete(&$array, callable $callback, $valuesToDelete, $userdata = null) {
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                $value = $this->array_walk_recursive_delete($value, $callback, $valuesToDelete, $userdata);
+            }
+            if ($this->cleanValueControlStop && $this->cleanDepthControl < $valuesToDelete['valueDepth']) {
+                unset($array[$key]);
+                $this->cleanDepthControl++;
+                if ($this->cleanDepthControl == $valuesToDelete['valueDepth']) {
+                    $this->cleanDepthControl = 0;
+                    $this->cleanValueControlStop = false;
+                }
+            }
+            else if ($callback($value, $key, $valuesToDelete, $userdata)) {
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
    
-   function one($value, $key, $valuesToDelete, $userdata = null) {
+    function findValueInArray($value, $key, $valuesToDelete, $userdata = null) {
         $result = false;
         if (is_array($value)) {
             return empty($value);
         }
         if ($key == $valuesToDelete['key']) {
             foreach ($valuesToDelete['values'] as $valueToDelete) {
-                if ($value == $valueToDelete) {
+                $functionToCall = $valuesToDelete['function'];
+                if ($this->$functionToCall($value, $valueToDelete)) {
                     $result = true;
+                    $this->cleanValueControlStop = true;
+                    break;
                 }
             }
+        }
+        return $result;
+    }
+    
+    public function verifyEqual($value, $valueToVerify) {
+        $result = false;
+        if ($value === $valueToVerify) {
+            $result  = true;
+        }
+        return $result;
+    }
+    
+    public function verifyNotEqual($value, $valueToVerify) {
+        $result = false;
+        if ($value !== $valueToVerify) {
+            $result  = true;
         }
         return $result;
     }
