@@ -35,21 +35,21 @@ class WinFormulas {
                 "dateInit" => "-366",
                 "dateFinish" => "-1",
                 "intervals" => "inclusive"
-            ],
+            ]
+        ],
+        "B" => [
             [
                 "type" => "userinvestmentdata_totalLoansCost",
                 "table" => "Userinvestmentdata",
-                "operation" => "substract",
                 "dateInit" => "-366",
                 "dateFinish" => "-1",
                 "intervals" => "inclusive"
             ]
         ],
-        "B" => [
+        "C" => [
             [
                 "type" => "userinvestmentdata_outstandingPrincipal",
                 "table" => "userinvestmentdata",
-                "operation" => "add",
                 "dateInit" => "-366",
                 "dateFinish" => "-1",
                 "intervals" => "inclusive"
@@ -58,9 +58,11 @@ class WinFormulas {
     ];
     
     protected $configFormula_A = [
+        "functionName" => "stepByStep",
         "steps" => [
             ["A"],
-            ["B", "divide"],
+            ["B", "substract"],
+            ["C", "divide"],
             [1, "add"],
             [365, "pow"],
             [1, "substract"]
