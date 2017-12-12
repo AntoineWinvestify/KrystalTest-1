@@ -345,8 +345,18 @@ class zank extends p2pCompany {
     
     protected $callbacks = [
         "investment" => [
-            "investment_typeOfInvestment" => "translateTypeOfInvestment",
-            "investment_statusOfLoan" => "translateLoanStatus"
+            "cleanTempArray" => [
+                "findValueInArray" => [
+                    "key" => "investment_statusOfLoan",
+                    "function" => "verifyNotEqual",
+                    "values" => ["Amortizado"],
+                    "valueDepth" => 2
+                ]
+            ],
+            "parserData" => [
+                "investment_typeOfInvestment" => "translateTypeOfInvestment",
+                "investment_statusOfLoan" => "translateLoanStatus"
+            ]
         ]
     ];
 
