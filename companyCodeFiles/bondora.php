@@ -25,6 +25,10 @@
  * 2017-08-24
  * Created
  * link account
+ * 
+ * 2017-12-12
+ * Generate and download in time period
+ * 
  */
 
 /**
