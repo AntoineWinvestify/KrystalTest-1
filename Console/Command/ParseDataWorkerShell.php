@@ -570,23 +570,31 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     * @param  mixed    $userdata additional data passed to the callback.
     * @return array
     */
-   function array_walk_recursive_delete(&$array, callable $callback, $userdata = null) {
+   function array_walk_recursive_delete(&$array, callable $callback, $valueToDelete, $userdata = null) {
        foreach ($array as $key => &$value) {
            if (is_array($value)) {
                $value = array_walk_recursive_delete($value, $callback, $userdata);
            }
-           if ($callback($value, $key, $userdata)) {
+           if ($callback($value, $key, $valueToDelete, $userdata)) {
                unset($array[$key]);
            }
        }
        return $array;
    }
    
-   function one ($value, $key) {
+   function one($value, $key, $valuesToDelete, $userdata = null) {
+        $result = false;
         if (is_array($value)) {
             return empty($value);
         }
-        return ($value === null);
+        if ($key == $valuesToDelete['key']) {
+            foreach ($valuesToDelete['values'] as $valueToDelete) {
+                if ($value == $valueToDelete) {
+                    $result = true;
+                }
+            }
+        }
+        return $result;
     }
    
    
