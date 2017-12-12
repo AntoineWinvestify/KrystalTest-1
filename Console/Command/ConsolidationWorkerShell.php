@@ -103,9 +103,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                         $dateInit = $this->getDateForSum($variableFormula['dateInit']);
                         $dateFinish = $this->getDateForSum($variableFormula['dateFinish']);
                         $value = $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type'], $linkaccountIdKey, $dateInit, $dateFinish);
-                        $dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
+                        //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
                     }
-                    $formulasByCompany[$linkaccountIdKey][$key]['formula']['variables'][$variablesKey] = $dataFormula;
+                    $formulasByCompany[$linkaccountIdKey][$key]['formula']['variables'][$variablesKey] = $value;
                 }
             }
         }
