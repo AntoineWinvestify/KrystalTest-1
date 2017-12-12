@@ -129,9 +129,9 @@ class UserDataShell extends AppShell {
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
 
         $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
- echo __FILE__ . "resultAAAA = $result\n";
-print_r($transactionData);
- if (isset($resultData['payment']['payment_myInvestment'])) {
+ //echo __FILE__ . "resultAAAA = $result\n";
+//print_r($transactionData);
+        if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result,$resultData['payment']['payment_myInvestment'], 16); 
         }
         if (isset($resultData['payment']['payment_secondaryMarketInvestment'])) {
@@ -155,7 +155,7 @@ print_r($transactionData);
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result,$resultData['payment']['payment_currencyFluctuationPositive'], 16);   
         } 
-        echo "calculateOutstnadinfPrincipal: resultBBBBB = $result\n";
+//        echo "calculateOutstandingPrincipal: resultBBBBB = $result\n";
         return $result;
     }
 
@@ -260,8 +260,6 @@ print_r($transactionData);
         if (isset($resultData['payment']['payment.payment_costSecondaryMarket'])) {
             $result = bcadd($resultData['payment']['payment_costSecondaryMarket'],$result, 16);
         }       
-        
-        
         return $result;   
     }
 
@@ -483,25 +481,28 @@ print_r($transactionData);
     }
 
     /*
-     * Calculates the number of active investments. This function is executed once for each loan / day
-     *
-     *  @param  array       array with the current transaction data [NOT REALLY NEEDED]
-     *  @param  array       array with all data so far calculated and to be written to DB [NOT REALLY NEEDED]
+     * Calculates the number of active investments. Various investments in the same loan 
+     * are counted as 1 investment
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB 
      *  @return int         number of active loans
-     * 20000
+     * 
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
-        // We only check if existing ones have finished. In the main flow I check for NEW investments
-    echo __FUNCTION__ . " " . __LINE__ ."\n";
-    echo "investment_new = " . $resultData['investment']['investment_new'] ;
-    echo " and resultData['investment'] = " . $resultData['investment']['investment_outstandingPrincipal'];
+
         if (isset($resultData['investment']['investment_outstandingPrincipal'])) {
             if ($resultData['investment']['investment_outstandingPrincipal'] == 0) {
-                return $resultData['userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1;
+//                echo "Decrementing number of active investments\n";
+                return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1;
             }
         }
         if ($resultData['investment']['investment_new'] == YES) {
-            return $resultData['userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1;
+            $resultData['investment']['investment_new'] = NO;       // To avoid possible double counting
+            return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1);
+        }
+        else {
+            return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'];
         }
     }
 
