@@ -348,12 +348,12 @@ class zank extends p2pCompany {
             "cleanTempArray" => [
                 "findValueInArray" => [
                     "key" => "investment_statusOfLoan",
-                    "function" => "verifyNotEqual",
+                    "function" => "verifyEqual",
                     "values" => ["Amortizado"],
                     "valueDepth" => 2
                 ]
             ],
-            "parserData" => [
+            "parserDataCallback" => [
                 "investment_typeOfInvestment" => "translateTypeOfInvestment",
                 "investment_statusOfLoan" => "translateLoanStatus"
             ]
