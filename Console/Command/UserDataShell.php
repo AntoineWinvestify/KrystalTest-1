@@ -121,7 +121,7 @@ class UserDataShell extends AppShell {
 
     /* var 37
      *  Get the amount which corresponds to the "OutstandingPrincipal" concept
-     *  "Outstanding principal" = total amount of investment - paymenttotal_capitalRepayment
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
@@ -129,8 +129,7 @@ class UserDataShell extends AppShell {
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
 
         $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
- //echo __FILE__ . "resultAAAA = $result\n";
-//print_r($transactionData);
+
         if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result,$resultData['payment']['payment_myInvestment'], 16); 
         }
@@ -155,7 +154,6 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result,$resultData['payment']['payment_currencyFluctuationPositive'], 16);   
         } 
-//        echo "calculateOutstandingPrincipal: resultBBBBB = $result\n";
         return $result;
     }
 
@@ -354,11 +352,12 @@ class UserDataShell extends AppShell {
      *  Get the amount which corresponds to the "Primary_market_investment" concept, which is a new investment
      *  @param  $transactionData    array      array with the current transaction data
      *  @param  $resultData         array       array of shadow database with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     *  @return string      the string representation of a float
      * 12
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
-        $resultData['payment']['payment_myInvestment'] = $transactionData['amount'];        // THIS IS A HARDCODED RULE
+        echo __FUNCTION__ . " " . __LINE__ . "returning " . $transactionData['amount'] . "\n";
+//       $resultData['payment']['payment_myInvestment'] = $transactionData['amount'];        // THIS IS A HARDCODED RULE
         return $transactionData['amount'];
     }   
     
@@ -377,7 +376,6 @@ class UserDataShell extends AppShell {
      * 17
      */
     public function calculateRemainingTerm(&$transactionData, &$resultData) {
-        return 44332211;
         return $transactionData['amount'];
         //investment.investment_remainingDuration
     }
@@ -491,14 +489,13 @@ class UserDataShell extends AppShell {
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
 
-        if (isset($resultData['investment']['investment_outstandingPrincipal'])) {
-            if ($resultData['investment']['investment_outstandingPrincipal'] == 0) {
-//                echo "Decrementing number of active investments\n";
-                return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1;
-            }
+//        if (isset($resultData['investment']['investment_outstandingPrincipal'])) {
+        if ($resultData['investment']['investment_outstandingPrincipal'] == 0) {
+            return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1;
         }
+ //       }
         if ($resultData['investment']['investment_new'] == YES) {
-            $resultData['investment']['investment_new'] = NO;       // To avoid possible double counting
+ //           $resultData['investment']['investment_new'] = NO;       // To avoid possible double counting
             return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1);
         }
         else {
@@ -548,14 +545,6 @@ class UserDataShell extends AppShell {
     }
 
     
-    
-    
-    
-    
-    
-    
-    
-    
     /* NOT YET  checck if the index is investment or payment
      * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
      * @param  array       array with the current transaction data
@@ -572,30 +561,8 @@ class UserDataShell extends AppShell {
         $result = bcsub($resultData['investment_totalGrossIncome'],$resultData['investment_loanTotalCost'], 16);
         return $result;
     }    
-    
-
-
-
-    /*
-     * Get the amount which corresponds to the "InterestgrossIncome" concept
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     * @return string      the string representation of a large integer
-     */
-    public function calculateMyWallet() {
-        $sum = 0;
-        return;
-        $listResult = $this->Paymenttotal->find('list', array(
-            'fields' => array('paymenttotal_interestgrossIncome'),
-            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
-        ));
-
-        foreach ($listResult as $item) {
-            $sum = bcadd($sum, $item, 16);
-        }
-        return $sum;
-    }
-    
+   
+ 
     /*
      * 
      * 
@@ -608,9 +575,7 @@ class UserDataShell extends AppShell {
      * @return string      the string representation of a large integer
      */
     public function calculateTotalOutstandingPrincipal(&$transactionData, &$resultData) {
-echo "CALCULATE TOTAL OUTSTANDING\n";
-//print_r($resultData);
-echo "---\n";
+//        if (isset($resultData['investment']['investment_outstandingPrincipal)
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'],
                       $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);

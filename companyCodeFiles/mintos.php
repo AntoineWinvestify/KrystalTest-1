@@ -111,12 +111,11 @@ class mintos extends p2pCompany {
                                             7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
-                                            10 => ["Discount/premium for secondary market transactiont" => "Income_secondary_market"],   // For seller
+                                            10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
                                             12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], // ?????????
                                             13 => ["Default interest income" => "Late_payment_fee_income"],         // ?????????
-                                            14 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            15 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS, TESTING ONLY
+                                            14 => ["Client withdrawal" => "Cash_withdrawal"]
                                             ]                      
                             ],
                     "functionName" => "getTransactionDetail",
@@ -154,8 +153,7 @@ class mintos extends p2pCompany {
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
                                             12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            // ?????????
                                             13 => ["Default interest income" => "Late_payment_fee_income"],                     // ?????????
-                                            14 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            15 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS, TESTING ONLY
+                                            14 => ["Client withdrawal" => "Cash_withdrawal"]
                                             ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",

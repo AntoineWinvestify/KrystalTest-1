@@ -189,7 +189,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         if ($mapResult == true) { 
                             $newLoans = $platformResult['newLoans'];
                             if (!empty($newLoans)) {
-                  //              $controlVariableFile =  $platformData['controlVariableFile'];?
+                      //          $controlVariableFile =  $platformData['controlVariableFile'];
                                 file_put_contents($baseDirectory . "loanIds.json", json_encode(($newLoans)));
                                 $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
                             } 
@@ -295,10 +295,11 @@ $timeStart = time();
         
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');          // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+        $this->Payment = ClassRegistry::init('Payment');
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
-if ($dateKey == "2016-01-01"){ 
+if ($dateKey == "2015-10-31"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -399,9 +400,14 @@ if ($keyDateTransaction == "29016-01") {
                 
 
                 if (in_array($keyDateTransaction, $platformData['workingNewLoans'])) {          // check if loanId is new
+$AAA_NEWLOAN = $AAA_NEWLOAN + 1;
                     $arrayIndex = array_search($keyDateTransaction, $platformData['workingNewLoans']);
                     if ($arrayIndex !== false) {        // Deleting the array from new loans list
                         unset($platformData['workingNewLoans'][$arrayIndex]);
+$AAA_VALUE_DELETED = $AAA_VALUE_DELETED + 1;
+                    }
+                    else {
+ $AAA_CANNOT_DELETE_ERROR = $AAA_CANNOT_DELETE_ERROR + 1;                       
                     }
                     echo "Storing the data of a 'NEW LOAN' in the shadow DB table\n";
                     $database['investment']['investment_myInvestment'] = 0;
@@ -472,6 +478,7 @@ print_r($transactionData);
                             unset($result);
                             
                             $functionToCall = $tempResult['function'];
+
                             echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transactionDataKey = $transactionDataKey\n";
                             $dataInformation = explode(".", $tempResult['databaseName']);
                             $dbTable = $dataInformation[0];
@@ -479,7 +486,7 @@ echo "index = " . $tempResult['internalIndex'] . " \n";
                             echo "Execute calculationfunction: $functionToCall\n";
                             if (!empty($functionToCall)) {
                                 $result = $calculationClassHandle->$functionToCall($transactionData, $database);
-                                
+
 echo "Result = $result and index = " . $tempResult['internalIndex'] ."\n";
 
                                 if (isset($tempResult['linkedIndex'])) {
@@ -487,8 +494,7 @@ echo "Result = $result and index = " . $tempResult['internalIndex'] ."\n";
                                     print_r($this->variablesConfig[$tempResult['linkedIndex']]);
                                     $dataInformationInternalIndex = explode(".", $this->variablesConfig[$tempResult['linkedIndex']]['databaseName']);
                                     $dbTableInternalIndex = $dataInformationInternalIndex[0];
-                                //    $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = $result;
- print_r($dataInformationInternalIndex);                                  
+                                 
                                     if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {   
                                         echo "ADDING $result to existing result " . $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] . "\n";
                                         $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = 
@@ -503,9 +509,8 @@ echo "Result = $result and index = " . $tempResult['internalIndex'] ."\n";
                                 // update the field userinvestmentdata_cashInPlatform   
                                 $cashflowOperation = $tempResult['cashflowOperation'];
                                 if (!empty($cashflowOperation)) {
-                                    echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDataKey .  
-                                                                                        " and dbTableInternalIndex = $dbTableInternalIndex\n";
-                                    echo "================>>  " . $cashflowOperation . " ADDING THE AMOUNT OF " . $result ."\n";
+echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDataKey . " and dbTableInternalIndex = $dbTableInternalIndex\n";
+echo "================>>  " . $cashflowOperation . " ADDING THE AMOUNT OF " . $result ."\n";
                                     $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = 
                                                 $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 
                                                 $result, 16); 
@@ -540,10 +545,7 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                 //           $internalVariableToHandle = array(17,47,34,45,44,36,46,66,67,43);
              
                 $internalVariableToHandle = array(37);
-                echo "\n";
-                echo "Running index 37\n";
                 foreach ($internalVariableToHandle as $keyItem => $item) {
-                    echo __FUNCTION__ . " " . __LINE__ . " Variable being handled = " . $item . "\n";
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
                     echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1].  "\n";
@@ -557,7 +559,6 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                     } else {
                         $database[$varName[0]][$varName[1]] = $result;
                     }                  
-//                   $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
                 }                 
                 
 
@@ -588,7 +589,6 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                     }
                 }
 
-                $this->Payment = ClassRegistry::init('Payment');
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
                 $database['payment']['investment_id'] = $investmentId;
                 $database['payment']['date'] = $dateKey;
@@ -605,39 +605,31 @@ echo "#########========> database_cashInPlatform = " .    $database['Userinvestm
                 print_r($database['investment']);
                 print_r($database['payment']);
                         
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for date = $dateKey\n";
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
  
-                $internalVariablesToHandle = array(10001,10002);      // TotalCashflow numberActiveInvestments
+                $internalVariablesToHandle = array(10001, 10002);      // TotalOutstandingPrincipal and numberActiveInvestments
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
-            //        if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // remaining term [17]
-                        $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
-                        $functionToCall = $this->variablesConfig[$item]['function'];
-                        print_r($this->variablesConfig[$item]);                       
-//                        echo "Calling the function: $functionToCall and index = $keyItem\n";
-                        $result = $calculationClassHandle->$functionToCall($transactionData, $database);                
+                    $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                    $functionToCall = $this->variablesConfig[$item]['function'];
+                    print_r($this->variablesConfig[$item]);                       
+                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);                
 echo "&&&&&=>: original amount = " . $database[$varName[0]][$varName[1]] ." and new result = $result". "\n";
 
-                        if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                            if (!isset($database[$varName[0]][$varName[1]])) {
-                                $database[$dbTable][$transactionDataKey] = 0;
-                            }
-                            $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
-                        } else {
-                            $database[$varName[0]][$varName[1]] = $result;
+                    if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                        if (!isset($database[$varName[0]][$varName[1]])) {
+                            $database[$dbTable][$transactionDataKey] = 0;
                         }
-                
-                    echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
-                    echo $database[$varName[0]][$varName[1]];
-//                    $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+                        $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
+                    } else {
+                        $database[$varName[0]][$varName[1]] = $result;
+                    }
                 }
                 unset($investmentId);
                 unset($database['investment']);
                 unset($database['payment']);
             }
-            
 
             echo "printing global data for the date = $dateKey\n";
-            
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
             // The following is done only once per readout period independent if period covers one day, 1 week or if
             // it is a "link account" action
@@ -651,15 +643,13 @@ echo "&&&&&=>: original amount = " . $database[$varName[0]][$varName[1]] ." and 
             // = outstanding principal,. totalnumberofinvestments and cashinplatform
             foreach ($internalVariableToHandle as $keyItem => $item) {
                 echo "VariableIndex being handled = " . $item . "\n";
-             //   if ($this->variablesConfig[$item]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   
-                    $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
-                    $functionToCall = $this->variablesConfig[$item]['function'];
-                    echo "Calling the function: $functionToCall and index = $keyItem\n";
-                    $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
-                    echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
-                    echo $database[$varName[0]][$varName[1]];
-//                    $this->variablesConfig[$item]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-             //   }
+
+                $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                $functionToCall = $this->variablesConfig[$item]['function'];
+                echo "Calling the function: $functionToCall and index = $keyItem\n";
+                $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
+                echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
+                echo $database[$varName[0]][$varName[1]];
             }            
             
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Userinvestmentdata Data... ";
@@ -693,9 +683,23 @@ echo "&&&&&=>: original amount = " . $database[$varName[0]][$varName[1]] ." and 
             print_r($database['globalcashflowdata']);         
         }
          
-echo "THE FOLLOWING IS NOT YET NEEDED\n";
-     
-        $controlVariables['myWallet'] = $database['Userinvestmentdata']['cashInPlatform'];      // Holds the last calculated value
+//echo "THE FOLLOWING IS NOT YET NEEDED\n";
+echo "\n****************************************************\n";
+echo "*  AAA_NEWLOAN = $AAA_NEWLOAN \n";
+echo "\n";
+echo "*  AAA_MYINVESTMENT = $AAA_MYINVESTMENT\n"; 
+echo "*  AAA_2ND_MYINVESTMENT = $AAA_2ND_MYINVESTMENT\n";
+//echo "*  AAA_REPAID = $AAA_REPAID\n";
+echo "\n";
+echo "*  AAA_PRINCIPAL_BUYBACK = $AAA_PRINCIPAL_BUYBACK\n";  
+echo "*  AAA_CAPITAL_REPAYMENT = $AAA_CAPITAL_REPAYMENT\n";
+echo "\n";
+echo "*  AAA_CANNOT_DELETE_ERROR = $AAA_CANNOT_DELETE_ERROR\n";
+echo "*  AAA_VALUE_DELETED = $AAA_VALUE_DELETED\n";
+echo "****************************************************\n";
+
+
+        $controlVariables['myWallet'] = $database['Userinvestmentdata']['cashInPlatform'];      // Holds the *last* calculated value
         $controlVariables['activeInvestments'] = $database['Userinvestmentdata']['numberActiveInvestments']; // Holds the last calculated value
 
         $fileString = file_get_contents($controlVariableFile);         // must be a json file
