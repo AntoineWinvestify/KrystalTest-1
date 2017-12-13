@@ -176,11 +176,9 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 if (empty($tempResult['error'])) {
                     switch ($fileTypeKey) {
                         case WIN_FLOW_INVESTMENT_FILE:
-                            $this->cleanData($tempResult, $callbacks["investment"]["cleanTempArray"]);
+                            $this->callbackInit($tempResult, $companyHandle, $callbacks["investment"]);
                             print_r($tempResult);
                             exit;
-                            $this->callbacks = $callbacks["investment"]["parserData"];
-                            $this->callbackInit($tempResult, $companyHandle);
                             $totalParsingresultInvestments = $tempResult;
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
@@ -289,10 +287,36 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      * @param object $companyHandle It is the company instance
      * @return It nothing if the callback array is empty
      */
-    public function callbackInit(&$tempResult, $companyHandle) {
+    public function callbackInit(&$tempResult, $companyHandle, $callbackFunctions) {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
         }
+        //$this->getCallbackFunction($valuesFile);
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ ;
+            print_r($callbackFunctions);
+        }
+        
+        if (empty($callbackFunctions)) {
+            return;
+        }
+        
+        foreach ($callbackFunctions as $functionNameKey => $callback) {
+            $this->$functionNameKey($tempResult, $companyHandle, $callback);
+        }
+    }
+    
+    /**
+     * Function to change values depending on callback functions for each company
+     * @param array $tempResult It contains the value to change
+     * @param object $companyHandle It is the company instance
+     * @return It nothing if the callback array is empty
+     */
+    public function parserDataCallback(&$tempResult, $companyHandle, $callbackData) {
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
+        }
+        $this->callbacks = $callbackData;
         //$this->getCallbackFunction($valuesFile);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ ;
@@ -302,6 +326,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         if (empty($this->callbacks)) {
             return;
         }
+        
+        //$this->cleanData($tempResult, $callbacks["investment"]["cleanTempArray"]);
+        
+        
         $this->companyHandle = $companyHandle;
         array_walk_recursive($tempResult,array($this, 'changeValueIteratingCallback'));
     }
@@ -565,7 +593,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempArrayFiles;
     }
     
-    public function cleanData(&$tempArray, $config) {
+    public function cleanTempArray(&$tempArray, $companyHandle, $config) {
         if (empty($config)) {
             return;
         }
