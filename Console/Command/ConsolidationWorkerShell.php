@@ -44,9 +44,77 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      */
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
-        $this->GearmanWorker->addFunction('consolidation', array($this, 'consolidateUserData'));
+        //$this->GearmanWorker->addFunction('consolidation', array($this, 'consolidateUserData'));
+        $this->GearmanWorker->addFunction('netAnnualReturn', array($this, 'calculateNetAnnualReturn'));
+        $this->GearmanWorker->addFunction('netAnnualTotalFunds', array($this, 'calculateNetAnnualTotalFunds'));
+        $this->GearmanWorker->addFunction('netAnnualPastReturn', array($this, 'calculateNetAnnualPastReturn'));
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting GEARMAN_FLOW4 to listen to data from its Client\n";
         while( $this->GearmanWorker->work());
+    }
+    
+    public function calculateNetAnnualReturn($job) {
+        $data = json_decode($job->workload(), true);
+        $this->job = $job;
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        print_r($data);
+        //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
+        $index = 0;
+        $i = 0;
+        $this->winFormulas = new WinFormulas();
+        //Get investor ID by queue_userReference
+        //$investorId = $this->investor->find("userReference");
+        
+        Configure::load('internalVariablesConfiguration.php', 'default');
+        $this->variablesConfig = Configure::read('internalVariables');
+        $formula = $this->winFormulas->getFormula("formula_A");
+        $variables = $this->winFormulas->getFormulaParams("formula_A");
+        $dateInit = $this->getDateForSum($variableFormula['dateInit']);
+        $dateFinish = $this->getDateForSum($variableFormula['dateFinish']);
+        foreach ($data["companies"] as $linkedaccountId) {
+            foreach ($variables as $variableKey => $variable) {
+                $dateInit = $this->getDateForSum($variable['dateInit']);
+                $dateFinish = $this->getDateForSum($variable['dateFinish']);
+                $value = $this->winFormulas->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
+                //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
+            }
+            $formulaByCompany[$linkedaccountId][$key]['formula']['variables'][$variableKey] = $value;
+        }
+        
+        
+    }
+    
+    public function calculateNetAnnualTotalFunds($job) {
+        $data = json_decode($job->workload(), true);
+        $this->job = $job;
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        print_r($data);
+        //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
+        $index = 0;
+        $i = 0;
+        $this->winFormulas = new WinFormulas();
+        //Get investor ID by queue_userReference
+        //$investorId = $this->investor->find("userReference");
+        
+        Configure::load('internalVariablesConfiguration.php', 'default');
+        $this->variablesConfig = Configure::read('internalVariables');
+        $formulasByInvestor = [];
+    }
+    
+    public function calculateNetAnnualPastReturn($job) {
+        $data = json_decode($job->workload(), true);
+        $this->job = $job;
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        print_r($data);
+        //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
+        $index = 0;
+        $i = 0;
+        $this->winFormulas = new WinFormulas();
+        //Get investor ID by queue_userReference
+        //$investorId = $this->investor->find("userReference");
+        
+        Configure::load('internalVariablesConfiguration.php', 'default');
+        $this->variablesConfig = Configure::read('internalVariables');
+        $formulasByInvestor = [];
     }
     
     /**
@@ -74,16 +142,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
         $formulasByInvestor = [];
-        //Future implementation
-        //$formulaByInvestor = $this->getFormulasFromDB();
-        foreach ($data["companies"] as $key => $company) {
-            $i = 0;
-            $formulasByInvestor[$company][$i]['formula'] = "formula_A";
-            $formulasByInvestor[$company][$i]['variables'] = "formula_A";
-            $i++;
-            $formulasByInvestor[$company][$i]['formula'] = "formula_B";
-            $formulasByInvestor[$company][$i]['variables'] = "formula_B";
-        }
         
         foreach ($formulasByInvestor as $linkaccountIdKey => $formulas) {
             $i = 0;
@@ -201,7 +259,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     /**
      * Function to initiate the formulas, in the future, this will be a config file
      */
-    public function initFormula() {
+    /*public function initFormula() {
         $this->formula[0]['eval'] = "$interestPaidGlobalOld-$interestPaidOld+$interestPaidNew";
         $this->formula[0]['externalName'] = 'interestPaidGlobal';
         $this->formula[0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal';
@@ -228,7 +286,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->formula[1]['param'][2] = 'outstandingPrincipalGlobal';
         
         $this->config['interestPaidGlobal'] = "newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal";
-        $this->config['chargeOffGlobal'] = 'userinvestmentdata.userinvestmentdata_myWallet';*/
-    }
+        $this->config['chargeOffGlobal'] = 'userinvestmentdata.userinvestmentdata_myWallet';
+    }*/
     
 }
