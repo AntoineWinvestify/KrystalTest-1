@@ -163,9 +163,9 @@ class ConsolidationClientShell extends GearmanClientShell {
         //$formulaByInvestor = $this->getFormulasFromDB();
         ///////////////* THIS IS TEMPORAL
         $services = [];
-        $service[] = "netAnnualReturn";
-        $service[] = "netAnnualTotalFunds";
-        $service[] = "netAnnualPastReturn";
+        $services[] = "netAnnualReturn";
+        $services[] = "netAnnualTotalFunds";
+        $services[] = "netAnnualPastReturn";
         /////////////////////
         return $service;
     }
